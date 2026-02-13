@@ -26,31 +26,31 @@ export interface OriginRequestPolicyProps {
    * The name must only include '-', '_', or alphanumeric characters.
    * @default - generated from the `id`
    */
-  readonly originRequestPolicyName?: string;
+  readonly originRequestPolicyName?: string | undefined;
 
   /**
    * A comment to describe the origin request policy.
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The cookies from viewer requests to include in origin requests.
    * @default OriginRequestCookieBehavior.none()
    */
-  readonly cookieBehavior?: OriginRequestCookieBehavior;
+  readonly cookieBehavior?: OriginRequestCookieBehavior | undefined;
 
   /**
    * The HTTP headers to include in origin requests. These can include headers from viewer requests and additional headers added by CloudFront.
    * @default OriginRequestHeaderBehavior.none()
    */
-  readonly headerBehavior?: OriginRequestHeaderBehavior;
+  readonly headerBehavior?: OriginRequestHeaderBehavior | undefined;
 
   /**
    * The URL query strings from viewer requests to include in origin requests.
    * @default OriginRequestQueryStringBehavior.none()
    */
-  readonly queryStringBehavior?: OriginRequestQueryStringBehavior;
+  readonly queryStringBehavior?: OriginRequestQueryStringBehavior | undefined;
 }
 
 /**
@@ -176,7 +176,7 @@ export class OriginRequestCookieBehavior {
   /** The behavior of cookies: allow all, none or an allow list. */
   public readonly behavior: string;
   /** The cookies to allow, if the behavior is an allow list. */
-  public readonly cookies?: string[];
+  public readonly cookies?: string[] | undefined;
 
   private constructor(behavior: string, cookies?: string[]) {
     this.behavior = behavior;
@@ -232,7 +232,7 @@ export class OriginRequestHeaderBehavior {
   /** The behavior of headers: allow all, none or an allow list. */
   public readonly behavior: string;
   /** The headers for the allow list or the included CloudFront headers, if applicable. */
-  public readonly headers?: string[];
+  public readonly headers?: string[] | undefined;
 
   private constructor(behavior: string, headers?: string[]) {
     this.behavior = behavior;
@@ -273,7 +273,7 @@ export class OriginRequestQueryStringBehavior {
   /** The behavior of query strings -- allow all, none, or only an allow list. */
   public readonly behavior: string;
   /** The query strings to allow, if the behavior is an allow list. */
-  public readonly queryStrings?: string[];
+  public readonly queryStrings?: string[] | undefined;
 
   private constructor(behavior: string, queryStrings?: string[]) {
     this.behavior = behavior;

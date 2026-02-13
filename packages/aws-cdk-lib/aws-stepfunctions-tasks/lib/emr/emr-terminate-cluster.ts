@@ -56,8 +56,8 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

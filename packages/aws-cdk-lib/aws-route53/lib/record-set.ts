@@ -198,7 +198,7 @@ export interface RecordSetOptions {
   /**
    * The geographical origin for this record to return DNS records based on the user's location.
    */
-  readonly geoLocation?: GeoLocation;
+  readonly geoLocation?: GeoLocation | undefined;
 
   /**
    * The subdomain name for this record. This should be relative to the zone root name.
@@ -211,21 +211,21 @@ export interface RecordSetOptions {
    *
    * @default zone root
    */
-  readonly recordName?: string;
+  readonly recordName?: string | undefined;
 
   /**
    * The resource record cache time to live (TTL).
    *
    * @default Duration.minutes(30)
    */
-  readonly ttl?: Duration;
+  readonly ttl?: Duration | undefined;
 
   /**
    * A comment to add on the record.
    *
    * @default no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * Whether to delete the same record set in the hosted zone if it already exists (dangerous!)
@@ -242,7 +242,7 @@ export interface RecordSetOptions {
    * @deprecated This property is dangerous and can lead to unintended record deletion in case of deployment failure.
    * @default false
    */
-  readonly deleteExisting?: boolean;
+  readonly deleteExisting?: boolean | undefined;
 
   /**
    * Among resource record sets that have the same combination of DNS name and type,
@@ -257,7 +257,7 @@ export interface RecordSetOptions {
    *
    * @default - Do not set weighted routing
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
@@ -272,14 +272,14 @@ export interface RecordSetOptions {
    *
    * @default - Do not set latency based routing
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Whether to return multiple values, such as IP addresses for your web servers, in response to DNS queries.
    *
    * @default false
    */
-  readonly multiValueAnswer?: boolean;
+  readonly multiValueAnswer?: boolean | undefined;
 
   /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
@@ -289,7 +289,7 @@ export interface RecordSetOptions {
    *
    * @default - Auto generated string
    */
-  readonly setIdentifier?: string;
+  readonly setIdentifier?: string | undefined;
 
   /**
    * The health check to associate with the record set.
@@ -298,7 +298,7 @@ export interface RecordSetOptions {
    *
    * @default - No health check configured
    */
-  readonly healthCheck?: IHealthCheck;
+  readonly healthCheck?: IHealthCheck | undefined;
 
   /**
    * The object that is specified in resource record set object when you are linking a resource record set to a CIDR location.
@@ -308,7 +308,7 @@ export interface RecordSetOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-cidrroutingconfig
    * @default - No CIDR routing configured
    */
-  readonly cidrRoutingConfig?: CidrRoutingConfig;
+  readonly cidrRoutingConfig?: CidrRoutingConfig | undefined;
 
   /**
    * Failover configuration for the record set.
@@ -322,7 +322,7 @@ export interface RecordSetOptions {
    * @default - No failover configuration
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html
    */
-  readonly failover?: Failover;
+  readonly failover?: Failover | undefined;
 }
 
 /**
@@ -383,11 +383,11 @@ export class RecordSet extends Resource implements IRecordSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
-  private readonly geoLocation?: GeoLocation;
-  private readonly weight?: number;
-  private readonly region?: string;
-  private readonly multiValueAnswer?: boolean;
-  private readonly failover?: Failover;
+  private readonly geoLocation?: GeoLocation | undefined;
+  private readonly weight?: number | undefined;
+  private readonly region?: string | undefined;
+  private readonly multiValueAnswer?: boolean | undefined;
+  private readonly failover?: Failover | undefined;
 
   public get recordSetRef(): RecordSetReference {
     return {
@@ -1070,7 +1070,7 @@ interface SvcbRecordValueCommonProps {
    *
    * @default - No mandatory keys
    */
-  readonly mandatory?: string[];
+  readonly mandatory?: string[] | undefined;
 
   /**
    * Indicates the set of Application-Layer Protocol Negotiation (ALPN) protocol identifiers
@@ -1078,7 +1078,7 @@ interface SvcbRecordValueCommonProps {
    *
    * @default - No ALPN protocol identifiers
    */
-  readonly alpn?: Alpn[];
+  readonly alpn?: Alpn[] | undefined;
 
   /**
    * Indicates no default ALPN protocol identifiers.
@@ -1086,28 +1086,28 @@ interface SvcbRecordValueCommonProps {
    *
    * @default false
    */
-  readonly noDefaultAlpn?: boolean;
+  readonly noDefaultAlpn?: boolean | undefined;
 
   /**
    * The alternative port number.
    *
    * @default - Use the default port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * Conveys that clients may use to reach the service.
    *
    * @default - No hints.
    */
-  readonly ipv4hint?: string[];
+  readonly ipv4hint?: string[] | undefined;
 
   /**
    * Conveys that clients may use to reach the service.
    *
    * @default - No hints.
    */
-  readonly ipv6hint?: string[];
+  readonly ipv6hint?: string[] | undefined;
 }
 
 /**
@@ -1167,14 +1167,14 @@ export interface SvcbRecordServiceModeProps extends SvcbRecordValueCommonProps {
    *
    * @default 1
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   /**
    * The domain name of the alternative endpoint.
    *
    * @default '.' - The record name of the record itself
    */
-  readonly targetName?: string;
+  readonly targetName?: string | undefined;
 }
 
 /**
@@ -1272,14 +1272,14 @@ export interface HttpsRecordProps extends RecordSetOptions {
    *
    * @default - Specify exactly one of either `values` or `target`.
    */
-  readonly values?: HttpsRecordValue[];
+  readonly values?: HttpsRecordValue[] | undefined;
 
   /**
    * The target (mostly used as an alias target to CloudFront).
    *
    * @default - Specify exactly one of either `values` or `target`.
    */
-  readonly target?: RecordTarget;
+  readonly target?: RecordTarget | undefined;
 }
 
 /**
@@ -1354,14 +1354,14 @@ export interface CrossAccountZoneDelegationRecordProps {
    *
    * @default - no zone name
    */
-  readonly parentHostedZoneName?: string;
+  readonly parentHostedZoneName?: string | undefined;
 
   /**
    * The hosted zone id in the parent account
    *
    * @default - no zone id
    */
-  readonly parentHostedZoneId?: string;
+  readonly parentHostedZoneId?: string | undefined;
 
   /**
    * The delegation role in the parent account
@@ -1373,21 +1373,21 @@ export interface CrossAccountZoneDelegationRecordProps {
    *
    * @default Duration.days(2)
    */
-  readonly ttl?: Duration;
+  readonly ttl?: Duration | undefined;
 
   /**
    * The removal policy to apply to the record set.
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Region from which to obtain temporary credentials.
    *
    * @default - the Route53 signing region in the current partition
    */
-  readonly assumeRoleRegion?: string;
+  readonly assumeRoleRegion?: string | undefined;
 }
 
 /**

@@ -22,7 +22,7 @@ export interface PolicyViolationBeta1 {
    *
    * @default - no fix is provided
    */
-  readonly fix?: string;
+  readonly fix?: string | undefined;
 
   /**
    * The severity of the violation, only used for reporting purposes.
@@ -31,7 +31,7 @@ export interface PolicyViolationBeta1 {
    *
    * @default - no severity
    */
-  readonly severity?: string;
+  readonly severity?: string | undefined;
 
   /**
    * Additional metadata to include with the rule results.
@@ -40,7 +40,7 @@ export interface PolicyViolationBeta1 {
    *
    * @default - no rule metadata
    */
-  readonly ruleMetadata?: { readonly [key: string]: string };
+  readonly ruleMetadata?: { readonly [key: string]: string } | undefined;
 }
 
 /**
@@ -96,12 +96,12 @@ export interface PolicyValidationPluginReportBeta1 {
    * The version of the plugin that created the report.
    * @default - no version
    */
-  readonly pluginVersion?: string;
+  readonly pluginVersion?: string | undefined;
 
   /**
    * Arbitrary information about the report.
    *
    * @default - no metadata
    */
-  readonly metadata?: { readonly [key: string]: string };
+  readonly metadata?: { readonly [key: string]: string } | undefined;
 }

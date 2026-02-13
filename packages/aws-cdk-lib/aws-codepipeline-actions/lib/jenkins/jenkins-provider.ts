@@ -60,7 +60,7 @@ export interface JenkinsProviderAttributes {
    *
    * @default '1'
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 export interface JenkinsProviderProps {
@@ -83,7 +83,7 @@ export interface JenkinsProviderProps {
    *
    * @default '1'
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 
   /**
    * Whether to immediately register a Jenkins Provider for the build category.
@@ -91,7 +91,7 @@ export interface JenkinsProviderProps {
    *
    * @default false
    */
-  readonly forBuild?: boolean;
+  readonly forBuild?: boolean | undefined;
 
   /**
    * Whether to immediately register a Jenkins Provider for the test category.
@@ -99,7 +99,7 @@ export interface JenkinsProviderProps {
    *
    * @default false
    */
-  readonly forTest?: boolean;
+  readonly forTest?: boolean | undefined;
 }
 
 export abstract class BaseJenkinsProvider extends Construct implements IJenkinsProvider {

@@ -121,12 +121,12 @@ export interface RuntimePlatform {
    *
    * @default - Undefined.
    */
-  readonly cpuArchitecture?: CpuArchitecture;
+  readonly cpuArchitecture?: CpuArchitecture | undefined;
 
   /**
    * The operating system for Fargate Runtime Platform.
    *
    * @default - Undefined.
    */
-  readonly operatingSystemFamily?: OperatingSystemFamily;
+  readonly operatingSystemFamily?: OperatingSystemFamily | undefined;
 }

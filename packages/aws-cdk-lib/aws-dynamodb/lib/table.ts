@@ -59,7 +59,7 @@ export interface SchemaOptions {
    *
    * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey?: Attribute;
+  readonly partitionKey?: Attribute | undefined;
 
   /**
    * Sort key attribute definition.
@@ -70,7 +70,7 @@ export interface SchemaOptions {
    *
    * @default - no sort key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: Attribute | undefined;
 }
 
 /**
@@ -110,7 +110,7 @@ export interface CsvOptions {
    *
    * @default - use comma as a delimiter.
    */
-  readonly delimiter?: string;
+  readonly delimiter?: string | undefined;
 
   /**
    * List of the headers used to specify a common header for all source CSV files being imported.
@@ -120,7 +120,7 @@ export interface CsvOptions {
    *
    * @default - the first line of the CSV file is treated as the header
    */
-  readonly headerList?: string[];
+  readonly headerList?: string[] | undefined;
 }
 
 /**
@@ -209,7 +209,7 @@ export interface ImportSourceSpecification {
    *
    * @default InputCompressionType.NONE
    */
-  readonly compressionType?: InputCompressionType;
+  readonly compressionType?: InputCompressionType | undefined;
 
   /**
    * The format of the imported data.
@@ -226,14 +226,14 @@ export interface ImportSourceSpecification {
    *
    * @default - no value
    */
-  readonly bucketOwner?: string;
+  readonly bucketOwner?: string | undefined;
 
   /**
    * The key prefix shared by all S3 Objects that are being imported.
    *
    * @default - no value
    */
-  readonly keyPrefix?: string;
+  readonly keyPrefix?: string | undefined;
 }
 
 /**
@@ -262,12 +262,12 @@ interface IContributorInsightsConfigurable {
    * Whether CloudWatch contributor insights is enabled.
    * @deprecated use `contributorInsightsSpecification` instead
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsightsEnabled?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 }
 
 /**
@@ -284,7 +284,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default 5
    */
-  readonly readCapacity?: number;
+  readonly readCapacity?: number | undefined;
   /**
    * The write capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -293,7 +293,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default 5
    */
-  readonly writeCapacity?: number;
+  readonly writeCapacity?: number | undefined;
 
   /**
    * The maximum read request units for the table. Careful if you add Global Secondary Indexes, as
@@ -303,7 +303,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - on-demand throughput is disabled
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
   /**
    * The write request units for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's maximum on-demand throughput.
@@ -312,14 +312,14 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - on-demand throughput is disabled
    */
-  readonly maxWriteRequestUnits?: number;
+  readonly maxWriteRequestUnits?: number | undefined;
 
   /**
    * Specify how you are charged for read and write throughput and how you manage capacity.
    *
    * @default PROVISIONED if `replicationRegions` is not specified, PAY_PER_REQUEST otherwise
    */
-  readonly billingMode?: BillingMode;
+  readonly billingMode?: BillingMode | undefined;
 
   /**
    * Specify values to pre-warm you DynamoDB Table
@@ -327,14 +327,14 @@ export interface TableOptions extends SchemaOptions {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
    * @default - warm throughput is not configured
    */
-  readonly warmThroughput?: WarmThroughput;
+  readonly warmThroughput?: WarmThroughput | undefined;
 
   /**
    * Whether point-in-time recovery is enabled.
    * @deprecated use `pointInTimeRecoverySpecification` instead
    * @default false - point in time recovery is not enabled.
    */
-  readonly pointInTimeRecovery?: boolean;
+  readonly pointInTimeRecovery?: boolean | undefined;
 
   /**
    * Whether point-in-time recovery is enabled
@@ -342,7 +342,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - point in time recovery is not enabled.
    */
-  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification | undefined;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
@@ -354,13 +354,13 @@ export interface TableOptions extends SchemaOptions {
    * @deprecated This property is deprecated. In order to obtain the same behavior as
    * enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead.
    */
-  readonly serverSideEncryption?: boolean;
+  readonly serverSideEncryption?: boolean | undefined;
 
   /**
    * Specify the table class.
    * @default STANDARD
    */
-  readonly tableClass?: TableClass;
+  readonly tableClass?: TableClass | undefined;
 
   /**
    * Whether server-side encryption with an AWS managed customer master key is enabled.
@@ -376,7 +376,7 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - The table is encrypted with an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
-  readonly encryption?: TableEncryption;
+  readonly encryption?: TableEncryption | undefined;
 
   /**
    * External KMS key to use for table encryption.
@@ -388,13 +388,13 @@ export interface TableOptions extends SchemaOptions {
    * If `encryption` and this property are both undefined, then the table is encrypted with
    * an encryption key managed by DynamoDB, and you are not charged any fee for using it.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * The name of TTL attribute.
    * @default - TTL is disabled
    */
-  readonly timeToLiveAttribute?: string;
+  readonly timeToLiveAttribute?: string | undefined;
 
   /**
    * When an item in the table is modified, StreamViewType determines what information
@@ -402,35 +402,35 @@ export interface TableOptions extends SchemaOptions {
    *
    * @default - streams are disabled unless `replicationRegions` is specified
    */
-  readonly stream?: StreamViewType;
+  readonly stream?: StreamViewType | undefined;
 
   /**
    * The removal policy to apply to the DynamoDB Table.
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The removal policy to apply to the DynamoDB replica tables.
    *
    * @default undefined - use DynamoDB Table's removal policy
    */
-  readonly replicaRemovalPolicy?: RemovalPolicy;
+  readonly replicaRemovalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Regions where replica tables will be created
    *
    * @default - no replica tables are created
    */
-  readonly replicationRegions?: string[];
+  readonly replicationRegions?: string[] | undefined;
 
   /**
    * The timeout for a table replication operation in a single region.
    *
    * @default Duration.minutes(30)
    */
-  readonly replicationTimeout?: Duration;
+  readonly replicationTimeout?: Duration | undefined;
 
   /**
    * [WARNING: Use this flag with caution, misusing this flag may cause deleting existing replicas, refer to the detailed documentation for more information]
@@ -454,41 +454,41 @@ export interface TableOptions extends SchemaOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
    * @default true
    */
-  readonly waitForReplicationToFinish?: boolean;
+  readonly waitForReplicationToFinish?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled.
    * @deprecated use `contributorInsightsSpecification instead
    * @default false
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsightsEnabled?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    * @default - contributor insights is not enabled
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 
   /**
    * Enables deletion protection for the table.
    *
    * @default false
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * The properties of data being imported from the S3 bucket source to the table.
    *
    * @default - no data import from the S3 bucket
    */
-  readonly importSource?: ImportSourceSpecification;
+  readonly importSource?: ImportSourceSpecification | undefined;
 
   /**
    * Resource policy to assign to table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
    * @default - No resource policy statement
    */
-  readonly resourcePolicy?: iam.PolicyDocument;
+  readonly resourcePolicy?: iam.PolicyDocument | undefined;
 }
 
 /**
@@ -499,21 +499,21 @@ export interface TableProps extends TableOptions {
    * Enforces a particular physical table name.
    * @default <generated>
    */
-  readonly tableName?: string;
+  readonly tableName?: string | undefined;
 
   /**
    * Kinesis Data Stream to capture item-level changes for the table.
    *
    * @default - no Kinesis Data Stream
    */
-  readonly kinesisStream?: kinesis.IStream;
+  readonly kinesisStream?: kinesis.IStream | undefined;
 
   /**
    * Kinesis Data Stream approximate creation timestamp precision
    *
    * @default ApproximateCreationDateTimePrecision.MICROSECOND
    */
-  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision;
+  readonly kinesisPrecisionTimestamp?: ApproximateCreationDateTimePrecision | undefined;
 }
 
 /**
@@ -538,7 +538,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKeys?: Attribute[];
+  readonly partitionKeys?: Attribute[] | undefined;
 
   /**
    * Multi-attribute sort key
@@ -558,7 +558,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default - no sort key
    */
-  readonly sortKeys?: Attribute[];
+  readonly sortKeys?: Attribute[] | undefined;
 
   /**
    * The read capacity for the global secondary index.
@@ -567,7 +567,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default 5
    */
-  readonly readCapacity?: number;
+  readonly readCapacity?: number | undefined;
 
   /**
    * The write capacity for the global secondary index.
@@ -576,7 +576,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default 5
    */
-  readonly writeCapacity?: number;
+  readonly writeCapacity?: number | undefined;
 
   /**
    * The maximum read request units for the global secondary index.
@@ -585,7 +585,7 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default - on-demand throughput is disabled
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
 
   /**
    * The maximum write request units for the global secondary index.
@@ -594,27 +594,27 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    *
    * @default - on-demand throughput is disabled
    */
-  readonly maxWriteRequestUnits?: number;
+  readonly maxWriteRequestUnits?: number | undefined;
 
   /**
    * The warm throughput configuration for the global secondary index.
    *
    * @default - no warm throughput is configured
    */
-  readonly warmThroughput?: WarmThroughput;
+  readonly warmThroughput?: WarmThroughput | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
    * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
-  readonly contributorInsightsEnabled?: boolean;
+  readonly contributorInsightsEnabled?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    * @default - contributor insights is not enabled
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 }
 
 /**
@@ -627,7 +627,7 @@ export interface TableAttributes {
    *
    * @default - no table arn
    */
-  readonly tableArn?: string;
+  readonly tableArn?: string | undefined;
 
   /**
    * The table name of the dynamodb table.
@@ -635,21 +635,21 @@ export interface TableAttributes {
    *
    * @default - no table name
    */
-  readonly tableName?: string;
+  readonly tableName?: string | undefined;
 
   /**
    * The ARN of the table's stream.
    *
    * @default - no table stream
    */
-  readonly tableStreamArn?: string;
+  readonly tableStreamArn?: string | undefined;
 
   /**
    * KMS encryption key, if this table uses a customer-managed encryption key.
    *
    * @default - no key
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * The name of the global indexes set for this Table.
@@ -660,7 +660,7 @@ export interface TableAttributes {
    *
    * @default - no global indexes
    */
-  readonly globalIndexes?: string[];
+  readonly globalIndexes?: string[] | undefined;
 
   /**
    * The name of the local indexes set for this Table.
@@ -671,7 +671,7 @@ export interface TableAttributes {
    *
    * @default - no local indexes
    */
-  readonly localIndexes?: string[];
+  readonly localIndexes?: string[] | undefined;
 
   /**
    * If set to true, grant methods always grant permissions for all indexes.
@@ -680,7 +680,7 @@ export interface TableAttributes {
    *
    * @default - false
    */
-  readonly grantIndexPermissions?: boolean;
+  readonly grantIndexPermissions?: boolean | undefined;
 }
 
 export abstract class TableBase extends Resource implements ITable, ITableRef, iam.IResourceWithPolicy, IEncryptedResource {
@@ -697,12 +697,12 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   /**
    * @attribute
    */
-  public abstract readonly tableStreamArn?: string;
+  public abstract readonly tableStreamArn?: string | undefined;
 
   /**
    * KMS encryption key, if this table uses a customer-managed encryption key.
    */
-  public abstract readonly encryptionKey?: kms.IKey;
+  public abstract readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Resource policy to assign to table.
@@ -714,7 +714,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Additional regions other than the main one that this table is replicated to
    *
    */
-  public abstract readonly regions?: string[];
+  public abstract readonly regions?: string[] | undefined;
 
   /**
    * @deprecated This member is still filled but it is not read
@@ -1195,8 +1195,8 @@ export class Table extends TableBase {
     class Import extends TableBase {
       public readonly tableName: string;
       public readonly tableArn: string;
-      public readonly tableStreamArn?: string;
-      public readonly encryptionKey?: kms.IKey;
+      public readonly tableStreamArn?: string | undefined;
+      public readonly encryptionKey?: kms.IKey | undefined;
       public resourcePolicy?: iam.PolicyDocument;
       public readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
           (attrs.globalIndexes ?? []).length > 0 ||
@@ -1246,7 +1246,7 @@ export class Table extends TableBase {
     return new Import(arn, name, attrs.tableStreamArn);
   }
 
-  public readonly encryptionKey?: kms.IKey;
+  public readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Resource policy to assign to DynamoDB Table.
@@ -1268,8 +1268,8 @@ export class Table extends TableBase {
   private readonly schemas = new Map<string, KeySchema>();
   private readonly nonKeyAttributes = new Set<string>();
 
-  private readonly tablePartitionKey?: Attribute;
-  private readonly tableSortKey?: Attribute;
+  private readonly tablePartitionKey?: Attribute | undefined;
+  private readonly tableSortKey?: Attribute | undefined;
 
   private readonly billingMode: BillingMode;
   private readonly tableScaling: ScalableAttributePair = {};

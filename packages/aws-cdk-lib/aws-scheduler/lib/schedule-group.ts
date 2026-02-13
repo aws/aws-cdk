@@ -21,14 +21,14 @@ export interface ScheduleGroupProps {
    *
    * @default - A unique name will be generated
    */
-  readonly scheduleGroupName?: string;
+  readonly scheduleGroupName?: string | undefined;
 
   /**
    * The removal policy for the group. If the group is removed also all schedules are removed.
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

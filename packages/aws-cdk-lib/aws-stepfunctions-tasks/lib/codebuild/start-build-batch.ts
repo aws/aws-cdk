@@ -16,7 +16,7 @@ interface CodeBuildStartBuildBatchOptions {
    *
    * @default - the latest environment variables already defined in the build project.
    */
-  readonly environmentVariablesOverride?: { [name: string]: codebuild.BuildEnvironmentVariable };
+  readonly environmentVariablesOverride?: { [name: string]: codebuild.BuildEnvironmentVariable } | undefined;
 }
 
 /**
@@ -63,8 +63,8 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

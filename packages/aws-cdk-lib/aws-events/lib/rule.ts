@@ -25,7 +25,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The schedule or rate (frequency) that determines when EventBridge
@@ -40,7 +40,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - None.
    */
-  readonly schedule?: Schedule;
+  readonly schedule?: Schedule | undefined;
 
   /**
    * Targets to invoke when this rule matches an event.
@@ -50,14 +50,14 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - No targets.
    */
-  readonly targets?: IRuleTarget[];
+  readonly targets?: IRuleTarget[] | undefined;
 
   /**
    * The event bus to associate with this rule.
    *
    * @default - The default event bus.
    */
-  readonly eventBus?: IEventBusRef;
+  readonly eventBus?: IEventBusRef | undefined;
 
   /**
    * The role that is used for target invocation.
@@ -65,7 +65,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - No role associated
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRoleRef | undefined;
 }
 
 /**
@@ -130,8 +130,8 @@ export class Rule extends Resource implements IRule {
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
-  private readonly scheduleExpression?: string;
-  private readonly description?: string;
+  private readonly scheduleExpression?: string | undefined;
+  private readonly description?: string | undefined;
 
   /** Set to keep track of what target accounts and regions we've already created event buses for */
   private readonly _xEnvTargetsAdded = new Set<string>();

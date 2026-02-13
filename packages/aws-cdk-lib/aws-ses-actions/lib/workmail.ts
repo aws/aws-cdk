@@ -20,7 +20,7 @@ export interface WorkMailProps {
    *
    * @default - no topic will be attached to the action
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ITopic | undefined;
 }
 
 /**

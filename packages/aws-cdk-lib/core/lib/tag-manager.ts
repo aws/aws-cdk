@@ -269,7 +269,7 @@ export interface TagManagerOptions {
    *
    * @default "tags"
    */
-  readonly tagPropertyName?: string;
+  readonly tagPropertyName?: string | undefined;
 }
 
 /**

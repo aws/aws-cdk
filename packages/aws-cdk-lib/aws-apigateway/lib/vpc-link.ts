@@ -26,13 +26,13 @@ export interface VpcLinkProps {
    * The name used to label and identify the VPC link.
    * @default - automatically generated name
    */
-  readonly vpcLinkName?: string;
+  readonly vpcLinkName?: string | undefined;
 
   /**
    * The description of the VPC link.
    * @default no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The network load balancers of the VPC targeted by the VPC link.
@@ -40,7 +40,7 @@ export interface VpcLinkProps {
    *
    * @default - no targets. Use `addTargets` to add targets
    */
-  readonly targets?: elbv2.INetworkLoadBalancer[];
+  readonly targets?: elbv2.INetworkLoadBalancer[] | undefined;
 }
 
 /**

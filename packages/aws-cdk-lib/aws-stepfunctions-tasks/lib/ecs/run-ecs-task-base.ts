@@ -33,7 +33,7 @@ export interface CommonEcsRunTaskProps {
    *
    * @default - No overrides
    */
-  readonly containerOverrides?: ContainerOverride[];
+  readonly containerOverrides?: ContainerOverride[] | undefined;
 
   /**
    * The service integration pattern indicates different ways to call RunTask in ECS.
@@ -42,7 +42,7 @@ export interface CommonEcsRunTaskProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 }
 
 /**
@@ -55,7 +55,7 @@ export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
    *
    * @default - No additional parameters passed
    */
-  readonly parameters?: {[key: string]: any};
+  readonly parameters?: {[key: string]: any} | undefined;
 }
 
 /**

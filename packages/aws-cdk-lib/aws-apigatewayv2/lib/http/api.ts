@@ -42,7 +42,7 @@ export interface IHttpApi extends IApi, IHttpApiRef {
    * @attribute
    * @default - no default authorizer
    */
-  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer | undefined;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
@@ -51,7 +51,7 @@ export interface IHttpApi extends IApi, IHttpApiRef {
    * @attribute
    * @default - no default authorization scopes
    */
-  readonly defaultAuthorizationScopes?: string[];
+  readonly defaultAuthorizationScopes?: string[] | undefined;
 
   /**
    * The default stage of this API
@@ -59,7 +59,7 @@ export interface IHttpApi extends IApi, IHttpApiRef {
    * @attribute
    * @default - a stage will be created
    */
-  readonly defaultStage?: IHttpStage;
+  readonly defaultStage?: IHttpStage | undefined;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
@@ -132,39 +132,39 @@ export interface HttpApiProps {
    * Name for the HTTP API resource
    * @default - id of the HttpApi construct.
    */
-  readonly apiName?: string;
+  readonly apiName?: string | undefined;
 
   /**
    * The description of the API.
    * @default - none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * An integration that will be configured on the catch-all route ($default).
    * @default - none
    */
-  readonly defaultIntegration?: HttpRouteIntegration;
+  readonly defaultIntegration?: HttpRouteIntegration | undefined;
 
   /**
    * Whether a default stage and deployment should be automatically created.
    * @default true
    */
-  readonly createDefaultStage?: boolean;
+  readonly createDefaultStage?: boolean | undefined;
 
   /**
    * Specifies a CORS configuration for an API.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html
    * @default - CORS disabled.
    */
-  readonly corsPreflight?: CorsPreflightOptions;
+  readonly corsPreflight?: CorsPreflightOptions | undefined;
 
   /**
    * Configure a custom domain with the API mapping resource to the HTTP API
    *
    * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
-  readonly defaultDomainMapping?: DomainMappingOptions;
+  readonly defaultDomainMapping?: DomainMappingOptions | undefined;
 
   /**
    * Specifies whether clients can invoke your API using the default endpoint.
@@ -173,14 +173,14 @@ export interface HttpApiProps {
    * true if you would like clients to use your custom domain name.
    * @default false execute-api endpoint enabled.
    */
-  readonly disableExecuteApiEndpoint?: boolean;
+  readonly disableExecuteApiEndpoint?: boolean | undefined;
 
   /**
    * Default Authorizer applied to all routes in the gateway.
    *
    * @default - no default authorizer
    */
-  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer | undefined;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
@@ -188,7 +188,7 @@ export interface HttpApiProps {
    *
    * @default - no default authorization scopes
    */
-  readonly defaultAuthorizationScopes?: string[];
+  readonly defaultAuthorizationScopes?: string[] | undefined;
 
   /**
    * Whether to set the default route selection expression for the API.
@@ -197,7 +197,7 @@ export interface HttpApiProps {
    *
    * @default false
    */
-  readonly routeSelectionExpression?: boolean;
+  readonly routeSelectionExpression?: boolean | undefined;
 
   /**
    * The IP address types that can invoke the API.
@@ -206,7 +206,7 @@ export interface HttpApiProps {
    *
    * @default undefined - AWS default is IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 }
 
 /**
@@ -239,37 +239,37 @@ export interface CorsPreflightOptions {
    * Specifies whether credentials are included in the CORS request.
    * @default false
    */
-  readonly allowCredentials?: boolean;
+  readonly allowCredentials?: boolean | undefined;
 
   /**
    * Represents a collection of allowed headers.
    * @default - No Headers are allowed.
    */
-  readonly allowHeaders?: string[];
+  readonly allowHeaders?: string[] | undefined;
 
   /**
    * Represents a collection of allowed HTTP methods.
    * @default - No Methods are allowed.
    */
-  readonly allowMethods?: CorsHttpMethod[];
+  readonly allowMethods?: CorsHttpMethod[] | undefined;
 
   /**
    * Represents a collection of allowed origins.
    * @default - No Origins are allowed.
    */
-  readonly allowOrigins?: string[];
+  readonly allowOrigins?: string[] | undefined;
 
   /**
    * Represents a collection of exposed headers.
    * @default - No Expose Headers are allowed.
    */
-  readonly exposeHeaders?: string[];
+  readonly exposeHeaders?: string[] | undefined;
 
   /**
    * The duration that the browser should cache preflight request results.
    * @default Duration.seconds(0)
    */
-  readonly maxAge?: Duration;
+  readonly maxAge?: Duration | undefined;
 }
 
 /**
@@ -285,7 +285,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * The HTTP methods to be configured
    * @default HttpMethod.ANY
    */
-  readonly methods?: HttpMethod[];
+  readonly methods?: HttpMethod[] | undefined;
 
   /**
    * Authorizer to be associated to these routes.
@@ -294,7 +294,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    *
    * @default - uses the default authorizer if one is specified on the HttpApi
    */
-  readonly authorizer?: IHttpRouteAuthorizer;
+  readonly authorizer?: IHttpRouteAuthorizer | undefined;
 
   /**
    * The list of OIDC scopes to include in the authorization.
@@ -304,7 +304,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    *
    * @default - uses defaultAuthorizationScopes if configured on the API, otherwise none.
    */
-  readonly authorizationScopes?: string[];
+  readonly authorizationScopes?: string[] | undefined;
 }
 
 abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that this is not exported
@@ -374,7 +374,7 @@ export interface HttpApiAttributes {
    * The endpoint URL of the HttpApi
    * @default - throws an error if apiEndpoint is accessed.
    */
-  readonly apiEndpoint?: string;
+  readonly apiEndpoint?: string | undefined;
 }
 
 /**
@@ -410,7 +410,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
-  public readonly httpApiName?: string;
+  public readonly httpApiName?: string | undefined;
   public readonly apiId: string;
 
   /**
@@ -422,7 +422,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * Specifies whether clients can invoke this HTTP API by using the default execute-api endpoint.
    */
-  public readonly disableExecuteApiEndpoint?: boolean;
+  public readonly disableExecuteApiEndpoint?: boolean | undefined;
 
   /**
    * The default stage of this API
@@ -432,13 +432,13 @@ export class HttpApi extends HttpApiBase {
   /**
    * Default Authorizer applied to all routes in the gateway.
    */
-  public readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  public readonly defaultAuthorizer?: IHttpRouteAuthorizer | undefined;
 
   /**
    * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
    * The scopes are used with a COGNITO_USER_POOLS authorizer to authorize the method invocation.
    */
-  public readonly defaultAuthorizationScopes?: string[];
+  public readonly defaultAuthorizationScopes?: string[] | undefined;
 
   private readonly _apiEndpoint: string;
 

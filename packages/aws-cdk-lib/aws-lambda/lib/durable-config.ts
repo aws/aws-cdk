@@ -23,5 +23,5 @@ export interface DurableConfig {
    *
    * @default Duration.days(14)
    */
-  readonly retentionPeriod?: Duration;
+  readonly retentionPeriod?: Duration | undefined;
 }

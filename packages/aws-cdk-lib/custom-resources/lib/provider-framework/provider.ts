@@ -44,7 +44,7 @@ export interface ProviderProps {
    * @default - provider is synchronous. This means that the `onEvent` handler
    * is expected to finish all lifecycle operations within the initial invocation.
    */
-  readonly isCompleteHandler?: lambda.IFunction;
+  readonly isCompleteHandler?: lambda.IFunction | undefined;
 
   /**
    * Time between calls to the `isComplete` handler which determines if the
@@ -56,7 +56,7 @@ export interface ProviderProps {
    *
    * @default Duration.seconds(5)
    */
-  readonly queryInterval?: Duration;
+  readonly queryInterval?: Duration | undefined;
 
   /**
    * Total timeout for the entire operation.
@@ -65,7 +65,7 @@ export interface ProviderProps {
    *
    * @default Duration.minutes(30)
    */
-  readonly totalTimeout?: Duration;
+  readonly totalTimeout?: Duration | undefined;
 
   /**
    * The number of days framework log events are kept in CloudWatch Logs. When
@@ -77,7 +77,7 @@ export interface ProviderProps {
    *
    * @default logs.RetentionDays.INFINITE
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
@@ -87,14 +87,14 @@ export interface ProviderProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * The vpc to provision the lambda functions in.
    *
    * @default - functions are not provisioned inside a vpc.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Which subnets from the VPC to place the lambda functions in.
@@ -104,7 +104,7 @@ export interface ProviderProps {
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Security groups to attach to the provider functions.
@@ -114,7 +114,7 @@ export interface ProviderProps {
    * @default - If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security
    * group is created for each function.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * AWS Lambda execution role.
@@ -126,7 +126,7 @@ export interface ProviderProps {
    * @default - A default role will be created.
    * @deprecated - Use frameworkOnEventRole, frameworkCompleteAndTimeoutRole
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Lambda execution role for provider framework's onEvent Lambda function. Note that this role must be assumed
@@ -136,7 +136,7 @@ export interface ProviderProps {
    *
    * @default - A default role will be created.
    */
-  readonly frameworkOnEventRole?: iam.IRole;
+  readonly frameworkOnEventRole?: iam.IRole | undefined;
 
   /**
    * Lambda execution role for provider framework's isComplete/onTimeout Lambda function. Note that this role
@@ -148,7 +148,7 @@ export interface ProviderProps {
    *
    * @default - A default role will be created.
    */
-  readonly frameworkCompleteAndTimeoutRole?: iam.IRole;
+  readonly frameworkCompleteAndTimeoutRole?: iam.IRole | undefined;
 
   /**
    * Provider Lambda name.
@@ -157,35 +157,35 @@ export interface ProviderProps {
    *
    * @default -  CloudFormation default name from unique physical ID
    */
-  readonly providerFunctionName?: string;
+  readonly providerFunctionName?: string | undefined;
 
   /**
    * AWS KMS key used to encrypt provider lambda's environment variables.
    *
    * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
    */
-  readonly providerFunctionEnvEncryption?: kms.IKeyRef;
+  readonly providerFunctionEnvEncryption?: kms.IKeyRef | undefined;
 
   /**
    * Defines what execution history events of the waiter state machine are logged and where they are logged.
    *
    * @default - A default log group will be created if logging for the waiter state machine is enabled.
    */
-  readonly waiterStateMachineLogOptions?: LogOptions;
+  readonly waiterStateMachineLogOptions?: LogOptions | undefined;
 
   /**
    * Whether logging for the waiter state machine is disabled.
    *
    * @default - true
    */
-  readonly disableWaiterStateMachineLogging?: boolean;
+  readonly disableWaiterStateMachineLogging?: boolean | undefined;
 
   /**
    * Log level of the provider framework lambda
    *
    * @default true - Logging is disabled by default
    */
-  readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
+  readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel | undefined;
 }
 
 /**
@@ -208,7 +208,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
    * The user-defined AWS Lambda function which is invoked asynchronously in
    * order to determine if the operation is complete.
    */
-  public readonly isCompleteHandler?: lambda.IFunction;
+  public readonly isCompleteHandler?: lambda.IFunction | undefined;
 
   /**
    * The service token to use in order to define custom resources that are
@@ -217,14 +217,14 @@ export class Provider extends Construct implements ICustomResourceProvider {
   public readonly serviceToken: string;
 
   private readonly entrypoint: lambda.Function;
-  private readonly logRetention?: logs.RetentionDays;
-  private readonly logGroup?: logs.ILogGroupRef;
-  private readonly vpc?: ec2.IVpc;
-  private readonly vpcSubnets?: ec2.SubnetSelection;
-  private readonly securityGroups?: ec2.ISecurityGroup[];
-  private readonly role?: iam.IRole;
-  private readonly providerFunctionEnvEncryption?: kms.IKeyRef;
-  private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel;
+  private readonly logRetention?: logs.RetentionDays | undefined;
+  private readonly logGroup?: logs.ILogGroupRef | undefined;
+  private readonly vpc?: ec2.IVpc | undefined;
+  private readonly vpcSubnets?: ec2.SubnetSelection | undefined;
+  private readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
+  private readonly role?: iam.IRole | undefined;
+  private readonly providerFunctionEnvEncryption?: kms.IKeyRef | undefined;
+  private readonly frameworkLambdaLoggingLevel?: lambda.ApplicationLogLevel | undefined;
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);

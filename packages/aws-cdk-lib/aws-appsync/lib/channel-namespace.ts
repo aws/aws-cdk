@@ -36,13 +36,13 @@ export interface NamespaceAuthConfig {
    * The publish auth modes for this Event Api
    * @default - API Key authorization
    */
-  readonly publishAuthModeTypes?: AppSyncAuthorizationType[];
+  readonly publishAuthModeTypes?: AppSyncAuthorizationType[] | undefined;
 
   /**
    * The subscribe auth modes for this Event Api
    * @default - API Key authorization
    */
-  readonly subscribeAuthModeTypes?: AppSyncAuthorizationType[];
+  readonly subscribeAuthModeTypes?: AppSyncAuthorizationType[] | undefined;
 }
 
 /**
@@ -68,21 +68,21 @@ export interface HandlerConfig {
    *
    * @default - false
    */
-  readonly direct?: boolean;
+  readonly direct?: boolean | undefined;
 
   /**
    * The Event Handler data source
    *
    * @default - no data source is used
    */
-  readonly dataSource?: AppSyncBackedDataSource;
+  readonly dataSource?: AppSyncBackedDataSource | undefined;
 
   /**
    * The Lambda invocation type for direct integrations
    *
    * @default - LambdaInvokeType.REQUEST_RESPONSE
    */
-  readonly lambdaInvokeType?: LambdaInvokeType;
+  readonly lambdaInvokeType?: LambdaInvokeType | undefined;
 }
 
 /**
@@ -94,35 +94,35 @@ export interface BaseChannelNamespaceProps {
    *
    * @default - the construct's id will be used
    */
-  readonly channelNamespaceName?: string;
+  readonly channelNamespaceName?: string | undefined;
 
   /**
    * The Event Handler code
    *
    * @default - no code is used
    */
-  readonly code?: Code;
+  readonly code?: Code | undefined;
 
   /**
    * onPublish handler config
    *
    * @default - no handler config
    */
-  readonly publishHandlerConfig?: HandlerConfig;
+  readonly publishHandlerConfig?: HandlerConfig | undefined;
 
   /**
    * onSubscribe handler config
    *
    * @default - no handler config
    */
-  readonly subscribeHandlerConfig?: HandlerConfig;
+  readonly subscribeHandlerConfig?: HandlerConfig | undefined;
 
   /**
    * Authorization config for channel namespace
    *
    * @default - defaults to Event API default auth config
    */
-  readonly authorizationConfig?: NamespaceAuthConfig;
+  readonly authorizationConfig?: NamespaceAuthConfig | undefined;
 }
 
 /**
@@ -144,35 +144,35 @@ export interface ChannelNamespaceOptions {
    *
    * @default - the construct's id will be used
    */
-  readonly channelNamespaceName?: string;
+  readonly channelNamespaceName?: string | undefined;
 
   /**
    * The Event Handler code
    *
    * @default - no code is used
    */
-  readonly code?: Code;
+  readonly code?: Code | undefined;
 
   /**
    * onPublish handler config
    *
    * @default - no handler config
    */
-  readonly publishHandlerConfig?: HandlerConfig;
+  readonly publishHandlerConfig?: HandlerConfig | undefined;
 
   /**
    * onSubscribe handler config
    *
    * @default - no handler config
    */
-  readonly subscribeHandlerConfig?: HandlerConfig;
+  readonly subscribeHandlerConfig?: HandlerConfig | undefined;
 
   /**
    * Authorization config for channel namespace
    *
    * @default - defaults to Event API default auth config
    */
-  readonly authorizationConfig?: NamespaceAuthConfig;
+  readonly authorizationConfig?: NamespaceAuthConfig | undefined;
 }
 
 /**

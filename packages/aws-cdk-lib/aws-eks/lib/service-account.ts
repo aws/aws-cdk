@@ -50,7 +50,7 @@ export interface ServiceAccountOptions {
    * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @default - If no name is given, it will use the id of the resource.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The namespace of the service account.
@@ -59,27 +59,27 @@ export interface ServiceAccountOptions {
    * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
    * @default "default"
    */
-  readonly namespace?: string;
+  readonly namespace?: string | undefined;
 
   /**
    * Additional annotations of the service account.
    *
    * @default - no additional annotations
    */
-  readonly annotations?: { [key: string]: string };
+  readonly annotations?: { [key: string]: string } | undefined;
 
   /**
    * Additional labels of the service account.
    *
    * @default - no additional labels
    */
-  readonly labels?: { [key: string]: string };
+  readonly labels?: { [key: string]: string } | undefined;
 
   /**
    * The identity type to use for the service account.
    * @default IdentityType.IRSA
    */
-  readonly identityType?: IdentityType;
+  readonly identityType?: IdentityType | undefined;
 
   /**
    * The removal policy applied to the service account resources.
@@ -93,7 +93,7 @@ export interface ServiceAccountOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Overwrite existing service account.
@@ -104,7 +104,7 @@ export interface ServiceAccountOptions {
    *
    * @default false
    */
-  readonly overwriteServiceAccount?: boolean;
+  readonly overwriteServiceAccount?: boolean | undefined;
 }
 
 /**

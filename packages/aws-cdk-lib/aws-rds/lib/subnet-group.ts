@@ -37,14 +37,14 @@ export interface SubnetGroupProps {
    *
    * @default - a name is generated
    */
-  readonly subnetGroupName?: string;
+  readonly subnetGroupName?: string | undefined;
 
   /**
    * Which subnets within the VPC to associate with this group.
    *
    * @default - private subnets
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The removal policy to apply when the subnet group are removed
@@ -52,7 +52,7 @@ export interface SubnetGroupProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

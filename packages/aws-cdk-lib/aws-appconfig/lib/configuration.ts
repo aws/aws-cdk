@@ -33,35 +33,35 @@ export interface ConfigurationOptions {
    * @default - A deployment strategy with the rollout strategy set to
    * RolloutStrategy.CANARY_10_PERCENT_20_MINUTES
    */
-  readonly deploymentStrategy?: IDeploymentStrategyRef;
+  readonly deploymentStrategy?: IDeploymentStrategyRef | undefined;
 
   /**
    * The name of the configuration.
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The validators for the configuration.
    *
    * @default - No validators.
    */
-  readonly validators?: IValidator[];
+  readonly validators?: IValidator[] | undefined;
 
   /**
    * The description of the configuration.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The type of configuration.
    *
    * @default ConfigurationType.FREEFORM
    */
-  readonly type?: ConfigurationType;
+  readonly type?: ConfigurationType | undefined;
 
   /**
    * The list of environments to deploy the configuration to.
@@ -74,14 +74,14 @@ export interface ConfigurationOptions {
    *
    * @default - None.
    */
-  readonly deployTo?: IEnvironment[];
+  readonly deployTo?: IEnvironment[] | undefined;
 
   /**
    * The deployment key of the configuration.
    *
    * @default - None.
    */
-  readonly deploymentKey?: kms.IKey;
+  readonly deploymentKey?: kms.IKey | undefined;
 
   /**
    * A parameter to configure deletion protection.
@@ -92,7 +92,7 @@ export interface ConfigurationOptions {
    *
    * @default DeletionProtectionCheck.ACCOUNT_DEFAULT
    */
-  readonly deletionProtectionCheck?: DeletionProtectionCheck;
+  readonly deletionProtectionCheck?: DeletionProtectionCheck | undefined;
 }
 
 /**
@@ -109,12 +109,12 @@ export interface IConfiguration extends IConstruct {
   /**
    * The deployment strategy for the configuration.
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  readonly deploymentStrategy?: IDeploymentStrategy | undefined;
 
   /**
    * The configuration version number.
    */
-  readonly versionNumber?: string;
+  readonly versionNumber?: string | undefined;
 
   /**
    * The application associated with the configuration.
@@ -124,32 +124,32 @@ export interface IConfiguration extends IConstruct {
   /**
    * The name of the configuration.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The validators for the configuration.
    */
-  readonly validators?: IValidator[];
+  readonly validators?: IValidator[] | undefined;
 
   /**
    * The description of the configuration.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The configuration type.
    */
-  readonly type?: ConfigurationType;
+  readonly type?: ConfigurationType | undefined;
 
   /**
    * The environments to deploy to.
    */
-  readonly deployTo?: IEnvironment[];
+  readonly deployTo?: IEnvironment[] | undefined;
 
   /**
    * The deployment key for the configuration.
    */
-  readonly deploymentKey?: kms.IKey;
+  readonly deploymentKey?: kms.IKey | undefined;
 
   /**
    * The ID of the configuration profile.
@@ -158,7 +158,7 @@ export interface IConfiguration extends IConstruct {
 }
 
 abstract class ConfigurationBase extends Construct implements IConfiguration, IExtensible {
-  public abstract readonly versionNumber?: string;
+  public abstract readonly versionNumber?: string | undefined;
   public abstract readonly configurationProfileId: string;
 
   /**
@@ -169,34 +169,34 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   /**
    * The environments to deploy to.
    */
-  public readonly deployTo?: IEnvironment[];
+  public readonly deployTo?: IEnvironment[] | undefined;
 
   /**
    * The name of the configuration.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The validators for the configuration.
    */
-  public readonly validators?: IValidator[];
+  public readonly validators?: IValidator[] | undefined;
 
   /**
    * The description of the configuration.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The configuration type.
    */
-  public readonly type?: ConfigurationType;
+  public readonly type?: ConfigurationType | undefined;
 
   /**
    * The deployment key for the configuration.
    */
-  public readonly deploymentKey?: kms.IKey;
+  public readonly deploymentKey?: kms.IKey | undefined;
 
-  private readonly _deploymentStrategy?: IDeploymentStrategyRef;
+  private readonly _deploymentStrategy?: IDeploymentStrategyRef | undefined;
 
   /**
    * The deployment strategy for the configuration.
@@ -374,14 +374,14 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
    *
    * @default - None.
    */
-  readonly latestVersionNumber?: number;
+  readonly latestVersionNumber?: number | undefined;
 
   /**
    * The version label of the hosted configuration.
    *
    * @default - None.
    */
-  readonly versionLabel?: string;
+  readonly versionLabel?: string | undefined;
 }
 
 /**
@@ -398,21 +398,21 @@ export interface HostedConfigurationProps extends ConfigurationProps {
    *
    * @default - None.
    */
-  readonly latestVersionNumber?: number;
+  readonly latestVersionNumber?: number | undefined;
 
   /**
    * The version label of the hosted configuration.
    *
    * @default - None.
    */
-  readonly versionLabel?: string;
+  readonly versionLabel?: string | undefined;
 
   /**
    * The customer managed key to encrypt hosted configuration.
    *
    * @default None
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -435,22 +435,22 @@ export class HostedConfiguration extends ConfigurationBase {
    * For an up-to-date list of valid MIME types, see:
    * https://www.iana.org/assignments/media-types/media-types.xhtml
    */
-  public readonly contentType?: string;
+  public readonly contentType?: string | undefined;
 
   /**
    * The latest version number of the hosted configuration.
    */
-  public readonly latestVersionNumber?: number;
+  public readonly latestVersionNumber?: number | undefined;
 
   /**
    * The version label of the hosted configuration.
    */
-  public readonly versionLabel?: string;
+  public readonly versionLabel?: string | undefined;
 
   /**
    * The version number of the hosted configuration.
    */
-  public readonly versionNumber?: string;
+  public readonly versionNumber?: string | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the hosted configuration version.
@@ -533,14 +533,14 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
    *
    * @default - None.
    */
-  readonly versionNumber?: string;
+  readonly versionNumber?: string | undefined;
 
   /**
    * The IAM role to retrieve the configuration.
    *
    * @default - A role is generated.
    */
-  readonly retrievalRole?: iam.IRoleRef;
+  readonly retrievalRole?: iam.IRoleRef | undefined;
 }
 
 /**
@@ -558,14 +558,14 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
    *
    * @default - None.
    */
-  readonly versionNumber?: string;
+  readonly versionNumber?: string | undefined;
 
   /**
    * The IAM role to retrieve the configuration.
    *
    * @default - Auto generated if location type is not ConfigurationSourceType.CODE_PIPELINE otherwise no role specified.
    */
-  readonly retrievalRole?: iam.IRoleRef;
+  readonly retrievalRole?: iam.IRoleRef | undefined;
 }
 
 /**
@@ -581,14 +581,14 @@ export class SourcedConfiguration extends ConfigurationBase {
   /**
    * The version number of the configuration to deploy.
    */
-  public readonly versionNumber?: string;
+  public readonly versionNumber?: string | undefined;
 
   /**
    * The key to decrypt the configuration if applicable. This key
    * can be used when storing configuration in AWS Secrets Manager, Systems Manager Parameter Store,
    * or Amazon S3.
    */
-  public readonly sourceKey?: kms.IKey;
+  public readonly sourceKey?: kms.IKey | undefined;
 
   /**
    * The ID of the configuration profile.
@@ -602,7 +602,7 @@ export class SourcedConfiguration extends ConfigurationBase {
 
   private readonly locationUri: string;
   private readonly _cfnConfigurationProfile: CfnConfigurationProfile;
-  private readonly _retrievalRole?: iam.IRoleRef;
+  private readonly _retrievalRole?: iam.IRoleRef | undefined;
 
   constructor(scope: Construct, id: string, props: SourcedConfigurationProps) {
     super(scope, id, props);
@@ -1050,5 +1050,5 @@ export abstract class ConfigurationSource {
   /**
    * The KMS Key that encrypts the configuration.
    */
-  public abstract readonly key?: kms.IKey;
+  public abstract readonly key?: kms.IKey | undefined;
 }

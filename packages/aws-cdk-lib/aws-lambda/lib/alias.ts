@@ -41,7 +41,7 @@ export interface AliasOptions extends EventInvokeConfigOptions {
    *
    * @default No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Additional versions with individual weights this alias points to
@@ -60,14 +60,14 @@ export interface AliasOptions extends EventInvokeConfigOptions {
    *
    * @default No additional versions
    */
-  readonly additionalVersions?: VersionWeight[];
+  readonly additionalVersions?: VersionWeight[] | undefined;
 
   /**
    * Specifies a provisioned concurrency configuration for a function's alias.
    *
    * @default No provisioned concurrency
    */
-  readonly provisionedConcurrentExecutions?: number;
+  readonly provisionedConcurrentExecutions?: number | undefined;
 }
 
 /**

@@ -92,12 +92,12 @@ export interface IBucket extends IResource, IBucketRef {
   /**
    * If this bucket has been configured for static website hosting.
    */
-  readonly isWebsite?: boolean;
+  readonly isWebsite?: boolean | undefined;
 
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * The resource policy associated with this bucket.
@@ -433,7 +433,7 @@ export interface BucketAttributes {
    * The ARN of the bucket. At least one of bucketArn or bucketName must be
    * defined in order to initialize a bucket ref.
    */
-  readonly bucketArn?: string;
+  readonly bucketArn?: string | undefined;
 
   /**
    * The name of the bucket. If the underlying value of ARN is a string, the
@@ -441,31 +441,31 @@ export interface BucketAttributes {
    * some features that require the bucket name such as auto-creating a bucket
    * policy, won't work.
    */
-  readonly bucketName?: string;
+  readonly bucketName?: string | undefined;
 
   /**
    * The domain name of the bucket.
    *
    * @default - Inferred from bucket name
    */
-  readonly bucketDomainName?: string;
+  readonly bucketDomainName?: string | undefined;
 
   /**
    * The website URL of the bucket (if static web hosting is enabled).
    *
    * @default - Inferred from bucket name and region
    */
-  readonly bucketWebsiteUrl?: string;
+  readonly bucketWebsiteUrl?: string | undefined;
 
   /**
    * The regional domain name of the specified bucket.
    */
-  readonly bucketRegionalDomainName?: string;
+  readonly bucketRegionalDomainName?: string | undefined;
 
   /**
    * The IPv6 DNS name of the specified bucket.
    */
-  readonly bucketDualStackDomainName?: string;
+  readonly bucketDualStackDomainName?: string | undefined;
 
   /**
    * Force the format of the website URL of the bucket. This should be true for
@@ -477,28 +477,28 @@ export interface BucketAttributes {
    * Always provide the bucket region if the `bucketWebsiteUrl` will be used.
    * Alternatively provide the full `bucketWebsiteUrl` manually.
    */
-  readonly bucketWebsiteNewUrlFormat?: boolean;
+  readonly bucketWebsiteNewUrlFormat?: boolean | undefined;
 
   /**
    * KMS encryption key associated with this bucket.
    *
    * @default - no encryption key
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * If this bucket has been configured for static website hosting.
    *
    * @default false
    */
-  readonly isWebsite?: boolean;
+  readonly isWebsite?: boolean | undefined;
 
   /**
    * The account this existing bucket belongs to.
    *
    * @default - it's assumed the bucket belongs to the same account as the scope it's being imported into
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * The region this existing bucket is in.
@@ -507,14 +507,14 @@ export interface BucketAttributes {
    *
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The role to be used by the notifications handler
    *
    * @default - a new role will be created.
    */
-  readonly notificationsHandlerRole?: iam.IRole;
+  readonly notificationsHandlerRole?: iam.IRole | undefined;
 }
 
 /**
@@ -531,7 +531,7 @@ export interface GrantReplicationPermissionDestinationProps {
    *
    * @default - no KMS key is used for replication.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 }
 
 /**
@@ -544,7 +544,7 @@ export interface GrantReplicationPermissionProps {
    *
    * @default - it's assumed the source bucket is not encrypted with a customer-managed KMS key.
    */
-  readonly sourceDecryptionKey?: kms.IKey;
+  readonly sourceDecryptionKey?: kms.IKey | undefined;
 
   /**
    * The destination buckets for replication.
@@ -585,12 +585,12 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Optional KMS encryption key associated with this bucket.
    */
-  public abstract readonly encryptionKey?: kms.IKey;
+  public abstract readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * If this bucket has been configured for static website hosting.
    */
-  public abstract readonly isWebsite?: boolean;
+  public abstract readonly isWebsite?: boolean | undefined;
 
   /**
    * The resource policy associated with this bucket.
@@ -1127,28 +1127,28 @@ export interface BlockPublicAccessOptions {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  readonly blockPublicAcls?: boolean;
+  readonly blockPublicAcls?: boolean | undefined;
 
   /**
    * Whether to block public policy
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  readonly blockPublicPolicy?: boolean;
+  readonly blockPublicPolicy?: boolean | undefined;
 
   /**
    * Whether to ignore public ACLs
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  readonly ignorePublicAcls?: boolean;
+  readonly ignorePublicAcls?: boolean | undefined;
 
   /**
    * Whether to restrict public access
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html#access-control-block-public-access-options
    */
-  readonly restrictPublicBuckets?: boolean;
+  readonly restrictPublicBuckets?: boolean | undefined;
 }
 
 export class BlockPublicAccess {
@@ -1206,12 +1206,12 @@ export interface BucketMetrics {
   /**
    * The prefix that an object must have to be included in the metrics results.
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
   /**
    * Specifies a list of tag filters to use as a metrics configuration filter.
    * The metrics configuration includes only objects that meet the filter's criteria.
    */
-  readonly tagFilters?: { [tag: string]: any };
+  readonly tagFilters?: { [tag: string]: any } | undefined;
 }
 
 /**
@@ -1249,19 +1249,19 @@ export interface CorsRule {
    *
    * @default - No id specified.
    */
-  readonly id?: string;
+  readonly id?: string | undefined;
   /**
    * The time in seconds that your browser is to cache the preflight response for the specified resource.
    *
    * @default - No caching.
    */
-  readonly maxAge?: number;
+  readonly maxAge?: number | undefined;
   /**
    * Headers that are specified in the Access-Control-Request-Headers header.
    *
    * @default - No headers allowed.
    */
-  readonly allowedHeaders?: string[];
+  readonly allowedHeaders?: string[] | undefined;
   /**
    * An HTTP method that you allow the origin to execute.
    */
@@ -1275,7 +1275,7 @@ export interface CorsRule {
    *
    * @default - No headers exposed.
    */
-  readonly exposedHeaders?: string[];
+  readonly exposedHeaders?: string[] | undefined;
 }
 
 /**
@@ -1300,7 +1300,7 @@ export interface RedirectTarget {
    *
    * @default - The protocol used in the original request.
    */
-  readonly protocol?: RedirectProtocol;
+  readonly protocol?: RedirectProtocol | undefined;
 }
 
 /**
@@ -1362,7 +1362,7 @@ export interface InventoryDestination {
    *
    * @default - No prefix.
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
   /**
    * The account ID that owns the destination S3 bucket.
    * If no account ID is provided, the owner is not validated before exporting data.
@@ -1370,7 +1370,7 @@ export interface InventoryDestination {
    *
    * @default - No account ID.
    */
-  readonly bucketOwner?: string;
+  readonly bucketOwner?: string | undefined;
 }
 
 /**
@@ -1388,44 +1388,44 @@ export interface Inventory {
    *
    * @default - No objects prefix
    */
-  readonly objectsPrefix?: string;
+  readonly objectsPrefix?: string | undefined;
   /**
    * The format of the inventory.
    *
    * @default InventoryFormat.CSV
    */
-  readonly format?: InventoryFormat;
+  readonly format?: InventoryFormat | undefined;
   /**
    * Whether the inventory is enabled or disabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
   /**
    * The inventory configuration ID.
    * Should be limited to 64 characters and can only contain letters, numbers, periods, dashes, and underscores.
    *
    * @default - generated ID.
    */
-  readonly inventoryId?: string;
+  readonly inventoryId?: string | undefined;
   /**
    * Frequency at which the inventory should be generated.
    *
    * @default InventoryFrequency.WEEKLY
    */
-  readonly frequency?: InventoryFrequency;
+  readonly frequency?: InventoryFrequency | undefined;
   /**
    * If the inventory should contain all the object versions or only the current one.
    *
    * @default InventoryObjectVersion.ALL
    */
-  readonly includeObjectVersions?: InventoryObjectVersion;
+  readonly includeObjectVersions?: InventoryObjectVersion | undefined;
   /**
    * A list of optional fields to be included in the inventory result.
    *
    * @default - No optional fields.
    */
-  readonly optionalFields?: string[];
+  readonly optionalFields?: string[] | undefined;
 }
 /**
  * The ObjectOwnership of the bucket.
@@ -1466,14 +1466,14 @@ export interface IntelligentTieringConfiguration {
    *
    * @default this configuration will apply to **all** objects in the bucket.
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * You can limit the scope of this rule to the key value pairs added below.
    *
    * @default No filtering will be performed on tags
    */
-  readonly tags?: Tag[];
+  readonly tags?: Tag[] | undefined;
 
   /**
    * When enabled, Intelligent-Tiering will automatically move objects that
@@ -1481,7 +1481,7 @@ export interface IntelligentTieringConfiguration {
    *
    * @default Objects will not move to Glacier
    */
-  readonly archiveAccessTierTime?: Duration;
+  readonly archiveAccessTierTime?: Duration | undefined;
 
   /**
    * When enabled, Intelligent-Tiering will automatically move objects that
@@ -1490,7 +1490,7 @@ export interface IntelligentTieringConfiguration {
    *
    * @default Objects will not move to Glacier Deep Access
    */
-  readonly deepArchiveAccessTierTime?: Duration;
+  readonly deepArchiveAccessTierTime?: Duration | undefined;
 }
 
 /**
@@ -1593,7 +1593,7 @@ export interface ReplicationRule {
    *
    * @default - The replicas are owned by same AWS account that owns the source object
    */
-  readonly accessControlTransition?: boolean;
+  readonly accessControlTransition?: boolean | undefined;
 
   /**
    * Specifying S3 Replication Time Control (S3 RTC),
@@ -1601,7 +1601,7 @@ export interface ReplicationRule {
    *
    * @default - S3 Replication Time Control is not enabled
    */
-  readonly replicationTimeControl?: ReplicationTimeValue;
+  readonly replicationTimeControl?: ReplicationTimeValue | undefined;
 
   /**
    * A container specifying replication metrics-related settings enabling replication metrics and events.
@@ -1610,7 +1610,7 @@ export interface ReplicationRule {
    *
    * @default - Replication metrics are not enabled
    */
-  readonly metrics?: ReplicationTimeValue;
+  readonly metrics?: ReplicationTimeValue | undefined;
 
   /**
    * The customer managed AWS KMS key stored in AWS Key Management Service (KMS) for the destination bucket.
@@ -1622,28 +1622,28 @@ export interface ReplicationRule {
    *
    * @default - Amazon S3 uses the AWS managed KMS key for encryption
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The storage class to use when replicating objects, such as S3 Standard or reduced redundancy.
    *
    * @default - The storage class of the source object
    */
-  readonly storageClass?: StorageClass;
+  readonly storageClass?: StorageClass | undefined;
 
   /**
    * Specifies whether Amazon S3 replicates objects created with server-side encryption using an AWS KMS key stored in AWS Key Management Service.
    *
    * @default false
    */
-  readonly sseKmsEncryptedObjects?: boolean;
+  readonly sseKmsEncryptedObjects?: boolean | undefined;
 
   /**
    * Specifies whether Amazon S3 replicates modifications on replicas.
    *
    * @default false
    */
-  readonly replicaModifications?: boolean;
+  readonly replicaModifications?: boolean | undefined;
 
   /**
    * The priority indicates which rule has precedence whenever two or more replication rules conflict.
@@ -1658,7 +1658,7 @@ export interface ReplicationRule {
    *
    * @default 0
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   /**
    * Specifies whether Amazon S3 replicates delete markers.
@@ -1667,7 +1667,7 @@ export interface ReplicationRule {
    *
    * @default - delete markers in source bucket is not replicated to destination bucket
    */
-  readonly deleteMarkerReplication?: boolean;
+  readonly deleteMarkerReplication?: boolean | undefined;
 
   /**
    * A unique identifier for the rule.
@@ -1676,14 +1676,14 @@ export interface ReplicationRule {
    *
    * @default - auto generated random ID
    */
-  readonly id?: string;
+  readonly id?: string | undefined;
 
   /**
    * A filter that identifies the subset of objects to which the replication rule applies.
    *
    * @default - applies to all objects
    */
-  readonly filter?: Filter;
+  readonly filter?: Filter | undefined;
 }
 
 /**
@@ -1695,7 +1695,7 @@ export interface Filter {
    *
    * @default - applies to all objects
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * The tag array used for tag filters.
@@ -1704,7 +1704,7 @@ export interface Filter {
    *
    * @default - applies to all objects
    */
-  readonly tags?: Tag[];
+  readonly tags?: Tag[] | undefined;
 }
 
 /**
@@ -1734,7 +1734,7 @@ export interface BucketProps {
    *
    * @default - `KMS` if `encryptionKey` is specified, or `S3_MANAGED` otherwise.
    */
-  readonly encryption?: BucketEncryption;
+  readonly encryption?: BucketEncryption | undefined;
 
   /**
    * External KMS key to use for bucket encryption.
@@ -1745,7 +1745,7 @@ export interface BucketProps {
    * @default - If `encryption` is set to `KMS` and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
@@ -1753,7 +1753,7 @@ export interface BucketProps {
    *
    * @default false
    */
-  readonly enforceSSL?: boolean;
+  readonly enforceSSL?: boolean | undefined;
 
   /**
    * Whether Amazon S3 should use its own intermediary key to generate data keys.
@@ -1768,21 +1768,21 @@ export interface BucketProps {
    *
    * @default - false
    */
-  readonly bucketKeyEnabled?: boolean;
+  readonly bucketKeyEnabled?: boolean | undefined;
 
   /**
    * Physical name of this bucket.
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly bucketName?: string;
+  readonly bucketName?: string | undefined;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
    *
    * @default - The bucket will be orphaned.
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Whether all objects should be automatically deleted when the bucket is
@@ -1802,14 +1802,14 @@ export interface BucketProps {
    *
    * @default false
    */
-  readonly autoDeleteObjects?: boolean;
+  readonly autoDeleteObjects?: boolean | undefined;
 
   /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false (unless object lock is enabled, then true)
    */
-  readonly versioned?: boolean;
+  readonly versioned?: boolean | undefined;
 
   /**
    * Enable object lock on the bucket.
@@ -1821,7 +1821,7 @@ export interface BucketProps {
    *
    * @default false, unless objectLockDefaultRetention is set (then, true)
    */
-  readonly objectLockEnabled?: boolean;
+  readonly objectLockEnabled?: boolean | undefined;
 
   /**
    * The default retention mode and rules for S3 Object Lock.
@@ -1833,21 +1833,21 @@ export interface BucketProps {
    *
    * @default no default retention period
    */
-  readonly objectLockDefaultRetention?: ObjectLockRetention;
+  readonly objectLockDefaultRetention?: ObjectLockRetention | undefined;
 
   /**
    * Whether this bucket should send notifications to Amazon EventBridge or not.
    *
    * @default false
    */
-  readonly eventBridgeEnabled?: boolean;
+  readonly eventBridgeEnabled?: boolean | undefined;
 
   /**
    * Rules that define how Amazon S3 manages objects during their lifetime.
    *
    * @default - No lifecycle rules.
    */
-  readonly lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[] | undefined;
 
   /**
    * Indicates which default minimum object size behavior is applied to the lifecycle configuration.
@@ -1859,7 +1859,7 @@ export interface BucketProps {
    * @default - TransitionDefaultMinimumObjectSize.VARIES_BY_STORAGE_CLASS before September 2024,
    * otherwise TransitionDefaultMinimumObjectSize.ALL_STORAGE_CLASSES_128_K.
    */
-  readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
+  readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize | undefined;
 
   /**
    * The name of the index document (e.g. "index.html") for the website. Enables static website
@@ -1867,7 +1867,7 @@ export interface BucketProps {
    *
    * @default - No index document.
    */
-  readonly websiteIndexDocument?: string;
+  readonly websiteIndexDocument?: string | undefined;
 
   /**
    * The name of the error document (e.g. "404.html") for the website.
@@ -1875,7 +1875,7 @@ export interface BucketProps {
    *
    * @default - No error document.
    */
-  readonly websiteErrorDocument?: string;
+  readonly websiteErrorDocument?: string | undefined;
 
   /**
    * Specifies the redirect behavior of all requests to a website endpoint of a bucket.
@@ -1884,21 +1884,21 @@ export interface BucketProps {
    *
    * @default - No redirection.
    */
-  readonly websiteRedirect?: RedirectTarget;
+  readonly websiteRedirect?: RedirectTarget | undefined;
 
   /**
    * Rules that define when a redirect is applied and the redirect behavior
    *
    * @default - No redirection rules.
    */
-  readonly websiteRoutingRules?: RoutingRule[];
+  readonly websiteRoutingRules?: RoutingRule[] | undefined;
 
   /**
    * Specifies a canned ACL that grants predefined permissions to the bucket.
    *
    * @default BucketAccessControl.PRIVATE
    */
-  readonly accessControl?: BucketAccessControl;
+  readonly accessControl?: BucketAccessControl | undefined;
 
   /**
    * Grants public read access to all objects in the bucket.
@@ -1906,7 +1906,7 @@ export interface BucketProps {
    *
    * @default false
    */
-  readonly publicReadAccess?: boolean;
+  readonly publicReadAccess?: boolean | undefined;
 
   /**
    * The block public access configuration of this bucket.
@@ -1916,7 +1916,7 @@ export interface BucketProps {
    *
    * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
    */
-  readonly blockPublicAccess?: BlockPublicAccess;
+  readonly blockPublicAccess?: BlockPublicAccess | undefined;
 
   /**
    * The metrics configuration of this bucket.
@@ -1925,7 +1925,7 @@ export interface BucketProps {
    *
    * @default - No metrics configuration.
    */
-  readonly metrics?: BucketMetrics[];
+  readonly metrics?: BucketMetrics[] | undefined;
 
   /**
    * The CORS configuration of this bucket.
@@ -1934,27 +1934,27 @@ export interface BucketProps {
    *
    * @default - No CORS configuration.
    */
-  readonly cors?: CorsRule[];
+  readonly cors?: CorsRule[] | undefined;
 
   /**
    * Destination bucket for the server access logs.
    * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
-  readonly serverAccessLogsBucket?: IBucket;
+  readonly serverAccessLogsBucket?: IBucket | undefined;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
    * If defined without "serverAccessLogsBucket", enables access logs to current bucket with this prefix.
    * @default - No log file prefix
    */
-  readonly serverAccessLogsPrefix?: string;
+  readonly serverAccessLogsPrefix?: string | undefined;
 
   /**
    * Optional key format for log objects.
    *
    * @default - the default key format is: [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
    */
-  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat | undefined;
 
   /**
    * The inventory configuration of the bucket.
@@ -1963,7 +1963,7 @@ export interface BucketProps {
    *
    * @default - No inventory configuration
    */
-  readonly inventories?: Inventory[];
+  readonly inventories?: Inventory[] | undefined;
   /**
    * The objectOwnership of the bucket.
    *
@@ -1973,28 +1973,28 @@ export interface BucketProps {
    * This means ACLs are disabled and the bucket owner will own every object.
    *
    */
-  readonly objectOwnership?: ObjectOwnership;
+  readonly objectOwnership?: ObjectOwnership | undefined;
 
   /**
    * Whether this bucket should have transfer acceleration turned on or not.
    *
    * @default false
    */
-  readonly transferAcceleration?: boolean;
+  readonly transferAcceleration?: boolean | undefined;
 
   /**
    * The role to be used by the notifications handler
    *
    * @default - a new role will be created.
    */
-  readonly notificationsHandlerRole?: iam.IRole;
+  readonly notificationsHandlerRole?: iam.IRole | undefined;
 
   /**
    * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
    *
    * @default false
    */
-  readonly notificationsSkipDestinationValidation?: boolean;
+  readonly notificationsSkipDestinationValidation?: boolean | undefined;
 
   /**
    * Intelligent Tiering Configurations
@@ -2003,7 +2003,7 @@ export interface BucketProps {
    *
    * @default No Intelligent Tiiering Configurations.
    */
-  readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+  readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[] | undefined;
 
   /**
    * Enforces minimum TLS version for requests.
@@ -2014,7 +2014,7 @@ export interface BucketProps {
    *
    * @default No minimum TLS version is enforced.
    */
-  readonly minimumTLSVersion?: number;
+  readonly minimumTLSVersion?: number | undefined;
 
   /**
    * The role to be used by the replication.
@@ -2023,14 +2023,14 @@ export interface BucketProps {
    *
    * @default - a new role will be created.
    */
-  readonly replicationRole?: iam.IRole;
+  readonly replicationRole?: iam.IRole | undefined;
 
   /**
    * A container for one or more replication rules.
    *
    * @default - No replication
    */
-  readonly replicationRules?: ReplicationRule[];
+  readonly replicationRules?: ReplicationRule[] | undefined;
 }
 
 /**
@@ -2285,8 +2285,8 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
-  public readonly encryptionKey?: kms.IKey;
-  public readonly isWebsite?: boolean;
+  public readonly encryptionKey?: kms.IKey | undefined;
+  public readonly isWebsite?: boolean | undefined;
   public policy?: BucketPolicy;
 
   public replicationRoleArn?: string;
@@ -2294,8 +2294,8 @@ export class Bucket extends BucketBase {
   public disallowPublicAccess?: boolean;
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
-  private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
-  private readonly eventBridgeEnabled?: boolean;
+  private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize | undefined;
+  private readonly eventBridgeEnabled?: boolean | undefined;
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
@@ -3445,12 +3445,12 @@ export interface NotificationKeyFilter {
   /**
    * S3 keys must have the specified prefix.
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * S3 keys must have the specified suffix.
    */
-  readonly suffix?: string;
+  readonly suffix?: string | undefined;
 }
 
 /**
@@ -3462,7 +3462,7 @@ export interface OnCloudTrailBucketEventOptions extends events.OnEventOptions {
    *
    * @default - Watch changes to all objects
    */
-  readonly paths?: string[];
+  readonly paths?: string[] | undefined;
 }
 
 /**
@@ -3526,7 +3526,7 @@ export interface RoutingRuleCondition {
    *
    * @default - The HTTP error code will not be verified
    */
-  readonly httpErrorCodeReturnedEquals?: string;
+  readonly httpErrorCodeReturnedEquals?: string | undefined;
 
   /**
    * The object key name prefix when the redirect is applied
@@ -3535,7 +3535,7 @@ export interface RoutingRuleCondition {
    *
    * @default - The object key name will not be verified
    */
-  readonly keyPrefixEquals?: string;
+  readonly keyPrefixEquals?: string | undefined;
 }
 
 export class ReplaceKey {
@@ -3568,35 +3568,35 @@ export interface RoutingRule {
    *
    * @default - The host name used in the original request.
    */
-  readonly hostName?: string;
+  readonly hostName?: string | undefined;
 
   /**
    * The HTTP redirect code to use on the response
    *
    * @default "301" - Moved Permanently
    */
-  readonly httpRedirectCode?: string;
+  readonly httpRedirectCode?: string | undefined;
 
   /**
    * Protocol to use when redirecting requests
    *
    * @default - The protocol used in the original request.
    */
-  readonly protocol?: RedirectProtocol;
+  readonly protocol?: RedirectProtocol | undefined;
 
   /**
    * Specifies the object key prefix to use in the redirect request
    *
    * @default - The key will not be replaced
    */
-  readonly replaceKey?: ReplaceKey;
+  readonly replaceKey?: ReplaceKey | undefined;
 
   /**
    * Specifies a condition that must be met for the specified redirect to apply.
    *
    * @default - No condition
    */
-  readonly condition?: RoutingRuleCondition;
+  readonly condition?: RoutingRuleCondition | undefined;
 }
 
 /**
@@ -3695,7 +3695,7 @@ export interface VirtualHostedStyleUrlOptions {
    *
    * @default - true
    */
-  readonly regional?: boolean;
+  readonly regional?: boolean | undefined;
 }
 
 /**
@@ -3707,7 +3707,7 @@ export interface TransferAccelerationUrlOptions {
    *
    * @default - false
    */
-  readonly dualStack?: boolean;
+  readonly dualStack?: boolean | undefined;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

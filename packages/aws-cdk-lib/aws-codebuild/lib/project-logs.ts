@@ -10,7 +10,7 @@ export interface S3LoggingOptions {
    *
    * @default true
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 
   /**
    * The S3 Bucket to send logs to
@@ -22,14 +22,14 @@ export interface S3LoggingOptions {
    *
    * @default - no prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * The current status of the logs in Amazon CloudWatch Logs for a build project
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 }
 
 /**
@@ -41,21 +41,21 @@ export interface CloudWatchLoggingOptions {
    *
    * @default - no log group specified
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroup | undefined;
 
   /**
    * The prefix of the stream name of the Amazon CloudWatch Logs
    *
    * @default - no prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * The current status of the logs in Amazon CloudWatch Logs for a build project
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 }
 
 /**
@@ -67,12 +67,12 @@ export interface LoggingOptions {
    *
    * @default - disabled
    */
-  readonly s3?: S3LoggingOptions;
+  readonly s3?: S3LoggingOptions | undefined;
 
   /**
    * Information about Amazon CloudWatch Logs for a build project.
    *
    * @default - enabled
    */
-  readonly cloudWatch?: CloudWatchLoggingOptions;
+  readonly cloudWatch?: CloudWatchLoggingOptions | undefined;
 }

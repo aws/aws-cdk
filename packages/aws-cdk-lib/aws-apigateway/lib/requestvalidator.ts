@@ -23,7 +23,7 @@ export interface RequestValidatorOptions {
    *
    * @default None
    */
-  readonly requestValidatorName?: string;
+  readonly requestValidatorName?: string | undefined;
 
   /**
    * Indicates whether to validate the request body according to
@@ -31,14 +31,14 @@ export interface RequestValidatorOptions {
    *
    * @default false
    */
-  readonly validateRequestBody?: boolean;
+  readonly validateRequestBody?: boolean | undefined;
 
   /**
    * Indicates whether to validate request parameters.
    *
    * @default false
    */
-  readonly validateRequestParameters?: boolean;
+  readonly validateRequestParameters?: boolean | undefined;
 }
 
 export interface RequestValidatorProps extends RequestValidatorOptions {

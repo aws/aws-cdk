@@ -63,21 +63,21 @@ export interface EcsOptimizedAmiProps {
    *
    * @default AmazonLinuxGeneration.AmazonLinux2
    */
-  readonly generation?: ec2.AmazonLinuxGeneration;
+  readonly generation?: ec2.AmazonLinuxGeneration | undefined;
 
   /**
    * The Windows Server version to use.
    *
    * @default none, uses Linux generation
    */
-  readonly windowsVersion?: WindowsOptimizedVersion;
+  readonly windowsVersion?: WindowsOptimizedVersion | undefined;
 
   /**
    * The ECS-optimized AMI variant to use.
    *
    * @default AmiHardwareType.Standard
    */
-  readonly hardwareType?: AmiHardwareType;
+  readonly hardwareType?: AmiHardwareType | undefined;
 
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -98,14 +98,14 @@ export interface EcsOptimizedAmiProps {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 
 /*
@@ -117,13 +117,13 @@ export interface EcsOptimizedAmiProps {
  * @deprecated see `EcsOptimizedImage#amazonLinux`, `EcsOptimizedImage#amazonLinux` and `EcsOptimizedImage#windows`
  */
 export class EcsOptimizedAmi implements ec2.IMachineImage {
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
+  private readonly generation?: ec2.AmazonLinuxGeneration | undefined;
+  private readonly windowsVersion?: WindowsOptimizedVersion | undefined;
   private readonly hwType: AmiHardwareType;
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
-  private readonly additionalCacheKey?: string;
+  private readonly additionalCacheKey?: string | undefined;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -207,14 +207,14 @@ export interface EcsOptimizedImageOptions {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 
 /**
@@ -269,13 +269,13 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     });
   }
 
-  private readonly generation?: ec2.AmazonLinuxGeneration;
-  private readonly windowsVersion?: WindowsOptimizedVersion;
-  private readonly hwType?: AmiHardwareType;
+  private readonly generation?: ec2.AmazonLinuxGeneration | undefined;
+  private readonly windowsVersion?: WindowsOptimizedVersion | undefined;
+  private readonly hwType?: AmiHardwareType | undefined;
 
   private readonly amiParameterName: string;
   private readonly cachedInContext: boolean;
-  private readonly additionalCacheKey?: string;
+  private readonly additionalCacheKey?: string | undefined;
 
   /**
    * Constructs a new instance of the EcsOptimizedAmi class.
@@ -357,14 +357,14 @@ export interface BottleRocketImageProps {
    *
    * @default - BottlerocketEcsVariant.AWS_ECS_1
    */
-  readonly variant?: BottlerocketEcsVariant;
+  readonly variant?: BottlerocketEcsVariant | undefined;
 
   /**
    * The CPU architecture
    *
    * @default - x86_64
    */
-  readonly architecture?: ec2.InstanceArchitecture;
+  readonly architecture?: ec2.InstanceArchitecture | undefined;
 
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -385,14 +385,14 @@ export interface BottleRocketImageProps {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 
 /**
@@ -419,7 +419,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
 
   private readonly cachedInContext: boolean;
 
-  private readonly additionalCacheKey?: string;
+  private readonly additionalCacheKey?: string | undefined;
 
   /**
    * Constructs a new instance of the BottleRocketImage class.

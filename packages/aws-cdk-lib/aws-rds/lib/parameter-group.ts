@@ -80,21 +80,21 @@ export interface ParameterGroupProps {
    *
    * @default - CloudFormation-generated name
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * Description for this parameter group
    *
    * @default a CDK generated description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The parameters in this parameter group
    *
    * @default - None
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * The CloudFormation policy to apply when the instance is removed from the
@@ -102,7 +102,7 @@ export interface ParameterGroupProps {
    *
    * @default - RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -154,9 +154,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   private readonly parameters: { [key: string]: string };
   private readonly family: string;
-  private readonly removalPolicy?: RemovalPolicy;
-  private readonly description?: string;
-  private readonly name?: string;
+  private readonly removalPolicy?: RemovalPolicy | undefined;
+  private readonly description?: string | undefined;
+  private readonly name?: string | undefined;
 
   private clusterCfnGroup?: CfnDBClusterParameterGroup;
   private instanceCfnGroup?: CfnDBParameterGroup;

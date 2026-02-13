@@ -76,14 +76,14 @@ export interface DeploymentGroupBaseProps {
    *
    * @default An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: string | undefined;
 
   /**
    * The service Role of this Deployment Group.
    *
    * @default A new Role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Id of the role construct, if created by this construct

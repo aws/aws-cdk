@@ -61,7 +61,7 @@ export interface VpnTunnelOption {
    * @default an Amazon generated pre-shared key
    * @deprecated Use `preSharedKeySecret` instead
    */
-  readonly preSharedKey?: string;
+  readonly preSharedKey?: string | undefined;
 
   /**
    * The pre-shared key (PSK) to establish initial authentication between the
@@ -71,7 +71,7 @@ export interface VpnTunnelOption {
    *
    * @default an Amazon generated pre-shared key
    */
-  readonly preSharedKeySecret?: SecretValue;
+  readonly preSharedKeySecret?: SecretValue | undefined;
 
   /**
    * The range of inside IP addresses for the tunnel. Any specified CIDR blocks must be
@@ -80,7 +80,7 @@ export interface VpnTunnelOption {
    *
    * @default an Amazon generated inside IP CIDR
    */
-  readonly tunnelInsideCidr?: string;
+  readonly tunnelInsideCidr?: string | undefined;
 }
 
 export interface VpnConnectionOptions {
@@ -94,14 +94,14 @@ export interface VpnConnectionOptions {
    *
    * @default 65000
    */
-  readonly asn?: number;
+  readonly asn?: number | undefined;
 
   /**
    * The static routes to be routed from the VPN gateway to the customer gateway.
    *
    * @default Dynamic routing (BGP)
    */
-  readonly staticRoutes?: string[];
+  readonly staticRoutes?: string[] | undefined;
 
   /**
    * The tunnel options for the VPN connection. At most two elements (one per tunnel).
@@ -109,7 +109,7 @@ export interface VpnConnectionOptions {
    *
    * @default Amazon generated tunnel options
    */
-  readonly tunnelOptions?: VpnTunnelOption[];
+  readonly tunnelOptions?: VpnTunnelOption[] | undefined;
 }
 
 /**
@@ -126,7 +126,7 @@ export interface VpnGatewayProps {
    * Explicitly specify an Asn or let aws pick an Asn for you.
    * @default 65000
    */
-  readonly amazonSideAsn?: number;
+  readonly amazonSideAsn?: number | undefined;
 }
 
 /**
@@ -137,7 +137,7 @@ export interface EnableVpnGatewayOptions extends VpnGatewayProps {
    * Provide an array of subnets where the route propagation should be added.
    * @default noPropagation
    */
-  readonly vpnRoutePropagation?: SubnetSelection[];
+  readonly vpnRoutePropagation?: SubnetSelection[] | undefined;
 }
 
 export interface VpnConnectionProps extends VpnConnectionOptions {

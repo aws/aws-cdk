@@ -37,7 +37,7 @@ export interface IHostedZone extends IResource, INamedHostedZoneRef {
    *
    * @attribute
    */
-  readonly hostedZoneNameServers?: string[];
+  readonly hostedZoneNameServers?: string[] | undefined;
 
   /**
    * Grant permissions to add delegation records to this zone
@@ -61,7 +61,7 @@ export interface GrantDelegationOptions {
    *
    * @default the grant allows delegation to any hosted zone
    */
-  readonly delegatedZoneNames?: string[];
+  readonly delegatedZoneNames?: string[] | undefined;
 }
 
 /**

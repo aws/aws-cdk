@@ -51,7 +51,7 @@ export interface DomainMappingOptions {
    * The API mapping key. Leave it undefined for the root path mapping.
    * @default - empty key for the root path mapping
    */
-  readonly mappingKey?: string;
+  readonly mappingKey?: string | undefined;
 }
 
 /**
@@ -63,42 +63,42 @@ export interface StageOptions {
    * Whether updates to an API automatically trigger a new deployment.
    * @default false
    */
-  readonly autoDeploy?: boolean;
+  readonly autoDeploy?: boolean | undefined;
 
   /**
    * The options for custom domain and api mapping
    *
    * @default - no custom domain and api mapping configuration
    */
-  readonly domainMapping?: DomainMappingOptions;
+  readonly domainMapping?: DomainMappingOptions | undefined;
 
   /**
    * Throttle settings for the routes of this stage
    *
    * @default - no throttling configuration
    */
-  readonly throttle?: ThrottleSettings;
+  readonly throttle?: ThrottleSettings | undefined;
 
   /**
    * The description for the API stage
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Specifies whether detailed metrics are enabled.
    *
    * @default false
    */
-  readonly detailedMetricsEnabled?: boolean;
+  readonly detailedMetricsEnabled?: boolean | undefined;
 
   /**
    * Settings for access logging.
    *
    * @default - No access logging
    */
-  readonly accessLogSettings?: IAccessLogSettings;
+  readonly accessLogSettings?: IAccessLogSettings | undefined;
 
   /**
    * Stage variables for the stage.
@@ -108,7 +108,7 @@ export interface StageOptions {
    *
    * @default - No stage variables
    */
-  readonly stageVariables?: { [key: string]: string };
+  readonly stageVariables?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -129,13 +129,13 @@ export interface ThrottleSettings {
    * The API request steady-state rate limit (average requests per second over an extended period of time)
    * @default none
    */
-  readonly rateLimit?: number;
+  readonly rateLimit?: number | undefined;
 
   /**
    * The maximum API request rate limit over a time ranging from one to a few seconds.
    * @default none
    */
-  readonly burstLimit?: number;
+  readonly burstLimit?: number | undefined;
 }
 
 /**
@@ -158,5 +158,5 @@ export interface IAccessLogSettings {
    *
    * @default - Common Log Format
    */
-  readonly format?: AccessLogFormat;
+  readonly format?: AccessLogFormat | undefined;
 }

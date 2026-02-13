@@ -19,18 +19,18 @@ export interface CfnCreationPolicy {
    * For an Auto Scaling group replacement update, specifies how many instances must signal success for the
    * update to succeed.
    */
-  readonly autoScalingCreationPolicy?: CfnResourceAutoScalingCreationPolicy;
+  readonly autoScalingCreationPolicy?: CfnResourceAutoScalingCreationPolicy | undefined;
 
   /**
    * When AWS CloudFormation creates the associated resource, configures the number of required success signals and
    * the length of time that AWS CloudFormation waits for those signals.
    */
-  readonly resourceSignal?: CfnResourceSignal;
+  readonly resourceSignal?: CfnResourceSignal | undefined;
 
   /**
    * For an AppStream Fleet creation, specifies that the fleet is started after creation.
    */
-  readonly startFleet?: boolean;
+  readonly startFleet?: boolean | undefined;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface CfnResourceAutoScalingCreationPolicy {
    * If an instance doesn't send a signal within the time specified by the Timeout property, AWS CloudFormation assumes that the
    * instance wasn't created.
    */
-  readonly minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number | undefined;
 }
 
 /**
@@ -59,14 +59,14 @@ export interface CfnResourceSignal {
    * If the resource receives a failure signal or doesn't receive the specified number of signals before the timeout period
    * expires, the resource creation fails and AWS CloudFormation rolls the stack back.
    */
-  readonly count?: number;
+  readonly count?: number | undefined;
 
   /**
    * The length of time that AWS CloudFormation waits for the number of signals that was specified in the Count property.
    * The timeout period starts after AWS CloudFormation starts creating the resource, and the timeout expires no sooner
    * than the time you specify but can occur shortly thereafter. The maximum time that you can specify is 12 hours.
    */
-  readonly timeout?: string;
+  readonly timeout?: string | undefined;
 }
 
 /**
@@ -121,39 +121,39 @@ export interface CfnUpdatePolicy {
    * AWS CloudFormation retains the old group until it finishes creating the new one. If the update fails, AWS CloudFormation
    * can roll back to the old Auto Scaling group and delete the new Auto Scaling group.
    */
-  readonly autoScalingReplacingUpdate?: CfnAutoScalingReplacingUpdate;
+  readonly autoScalingReplacingUpdate?: CfnAutoScalingReplacingUpdate | undefined;
 
   /**
    * To specify how AWS CloudFormation handles rolling updates for an Auto Scaling group, use the AutoScalingRollingUpdate
    * policy. Rolling updates enable you to specify whether AWS CloudFormation updates instances that are in an Auto Scaling
    * group in batches or all at once.
    */
-  readonly autoScalingRollingUpdate?: CfnAutoScalingRollingUpdate;
+  readonly autoScalingRollingUpdate?: CfnAutoScalingRollingUpdate | undefined;
 
   /**
    * To specify how AWS CloudFormation handles updates for the MinSize, MaxSize, and DesiredCapacity properties when
    * the AWS::AutoScaling::AutoScalingGroup resource has an associated scheduled action, use the AutoScalingScheduledAction
    * policy.
    */
-  readonly autoScalingScheduledAction?: CfnAutoScalingScheduledAction;
+  readonly autoScalingScheduledAction?: CfnAutoScalingScheduledAction | undefined;
 
   /**
    * To perform an AWS CodeDeploy deployment when the version changes on an AWS::Lambda::Alias resource,
    * use the CodeDeployLambdaAliasUpdate update policy.
    */
-  readonly codeDeployLambdaAliasUpdate?: CfnCodeDeployLambdaAliasUpdate;
+  readonly codeDeployLambdaAliasUpdate?: CfnCodeDeployLambdaAliasUpdate | undefined;
 
   /**
    * To modify a replication group's shards by adding or removing shards, rather than replacing the entire
    * AWS::ElastiCache::ReplicationGroup resource, use the UseOnlineResharding update policy.
    */
-  readonly useOnlineResharding?: boolean;
+  readonly useOnlineResharding?: boolean | undefined;
 
   /**
    * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
    * AWS::Elasticsearch::Domain resource, use the EnableVersionUpgrade update policy.
    */
-  readonly enableVersionUpgrade?: boolean;
+  readonly enableVersionUpgrade?: boolean | undefined;
 
 }
 
@@ -167,13 +167,13 @@ export interface CfnAutoScalingRollingUpdate {
   /**
    * Specifies the maximum number of instances that AWS CloudFormation updates.
    */
-  readonly maxBatchSize?: number;
+  readonly maxBatchSize?: number | undefined;
 
   /**
    * Specifies the minimum number of instances that must be in service within the Auto Scaling group while AWS
    * CloudFormation updates old instances.
    */
-  readonly minInstancesInService?: number;
+  readonly minInstancesInService?: number | undefined;
 
   /**
    * Specifies the percentage of instances in an Auto Scaling rolling update that must signal success for an update to succeed.
@@ -185,14 +185,14 @@ export interface CfnAutoScalingRollingUpdate {
    *
    * If you specify this property, you must also enable the WaitOnResourceSignals and PauseTime properties.
    */
-  readonly minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number | undefined;
 
   /**
    * Specifies the percentage of instances in an Auto Scaling group that must remain in service while AWS CloudFormation
    * updates old instances. You can specify a value from 0 to 100. AWS CloudFormation rounds to the nearest tenth of a percent.
    * For example, if you update five instances with a minimum active percentage of 50, three instances must remain in service.
    */
-  readonly minActiveInstancesPercent?: number;
+  readonly minActiveInstancesPercent?: number | undefined;
 
   /**
    * The amount of time that AWS CloudFormation pauses after making a change to a batch of instances to give those instances
@@ -208,7 +208,7 @@ export interface CfnAutoScalingRollingUpdate {
    * Specify PauseTime in the ISO8601 duration format (in the format PT#H#M#S, where each # is the number of hours, minutes,
    * and seconds, respectively). The maximum PauseTime is one hour (PT1H).
    */
-  readonly pauseTime?: string;
+  readonly pauseTime?: string | undefined;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update. Suspending processes prevents Auto Scaling from
@@ -216,7 +216,7 @@ export interface CfnAutoScalingRollingUpdate {
    * policies associated with an alarm. For valid values, see the ScalingProcesses.member.N parameter for the SuspendProcesses
    * action in the Auto Scaling API Reference.
    */
-  readonly suspendProcesses?: string[];
+  readonly suspendProcesses?: string[] | undefined;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update. Use this property to
@@ -229,7 +229,7 @@ export interface CfnAutoScalingRollingUpdate {
    * verification by using the cfn-init helper script. For an example, see the verify_instance_health command in the Auto Scaling
    * rolling updates sample template.
    */
-  readonly waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean | undefined;
 }
 
 /**
@@ -246,7 +246,7 @@ export interface CfnAutoScalingRollingUpdate {
  * Auto Scaling group.
  */
 export interface CfnAutoScalingReplacingUpdate {
-  readonly willReplace?: boolean;
+  readonly willReplace?: boolean | undefined;
 }
 
 /**
@@ -266,7 +266,7 @@ export interface CfnAutoScalingScheduledAction {
   * a stack update. If you modify any of the group size property values in your template, AWS CloudFormation uses the modified
   * values and updates your Auto Scaling group.
   */
-  readonly ignoreUnmodifiedGroupSizeProperties?: boolean;
+  readonly ignoreUnmodifiedGroupSizeProperties?: boolean | undefined;
 }
 
 /**
@@ -287,10 +287,10 @@ export interface CfnCodeDeployLambdaAliasUpdate {
   /**
    * The name of the Lambda function to run before traffic routing starts.
    */
-  readonly beforeAllowTrafficHook?: string;
+  readonly beforeAllowTrafficHook?: string | undefined;
 
   /**
    * The name of the Lambda function to run after traffic routing completes.
    */
-  readonly afterAllowTrafficHook?: string;
+  readonly afterAllowTrafficHook?: string | undefined;
 }

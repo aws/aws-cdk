@@ -20,7 +20,7 @@ interface StepFunctionsInvokeActivityJsonPathOptions {
    *
    * @default No parameters
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -68,9 +68,9 @@ export class StepFunctionsInvokeActivity extends sfn.TaskStateBase {
     });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
   // No IAM permissions necessary unless the Activity uses a customer managed KMS key
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsInvokeActivityProps) {
     super(scope, id, props);

@@ -22,14 +22,14 @@ export interface ActivityProps {
    *
    * @default - If not supplied, a name is generated
    */
-  readonly activityName?: string;
+  readonly activityName?: string | undefined;
 
   /**
    * The encryptionConfiguration object used for server-side encryption of the activity inputs.
    *
    * @default - data is transparently encrypted using an AWS owned key
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly encryptionConfiguration?: EncryptionConfiguration | undefined;
 }
 
 /**
@@ -74,7 +74,7 @@ export class Activity extends Resource implements IActivity {
   /**
    * @attribute
    */
-  public readonly encryptionConfiguration?: EncryptionConfiguration;
+  public readonly encryptionConfiguration?: EncryptionConfiguration | undefined;
 
   private readonly resource: CfnActivity;
 
@@ -300,5 +300,5 @@ export interface IActivity extends IResource, IActivityRef {
    *
    * @attribute
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly encryptionConfiguration?: EncryptionConfiguration | undefined;
 }

@@ -33,7 +33,7 @@ export interface SubscriptionOptions {
    *
    * @default false
    */
-  readonly rawMessageDelivery?: boolean;
+  readonly rawMessageDelivery?: boolean | undefined;
 
   /**
    * The filter policy.
@@ -48,14 +48,14 @@ export interface SubscriptionOptions {
    *
    * @default - all messages are delivered
    */
-  readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy };
+  readonly filterPolicyWithMessageBody?: { [attribute: string]: FilterOrPolicy } | undefined;
 
   /**
    * The region where the topic resides, in the case of cross-region subscriptions
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region
    * @default - the region where the CloudFormation stack is being deployed.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Queue to be used as dead letter queue.
@@ -63,21 +63,21 @@ export interface SubscriptionOptions {
    *
    * @default - No dead letter queue enabled.
    */
-  readonly deadLetterQueue?: IQueue;
+  readonly deadLetterQueue?: IQueue | undefined;
 
   /**
    * Arn of role allowing access to firehose delivery stream.
    * Required for a firehose subscription protocol.
    * @default - No subscription role is provided
    */
-  readonly subscriptionRoleArn?: string;
+  readonly subscriptionRoleArn?: string | undefined;
 
   /**
    * The delivery policy.
    *
    * @default - if the initial delivery of the message fails, three retries with a delay between failed attempts set at 20 seconds
    */
-  readonly deliveryPolicy?: DeliveryPolicy;
+  readonly deliveryPolicy?: DeliveryPolicy | undefined;
 }
 /**
  * Properties for creating a new subscription
@@ -105,9 +105,9 @@ export class Subscription extends Resource {
   /**
    * The DLQ associated with this subscription if present.
    */
-  public readonly deadLetterQueue?: IQueue;
+  public readonly deadLetterQueue?: IQueue | undefined;
 
-  private readonly filterPolicy?: { [attribute: string]: any[] };
+  private readonly filterPolicy?: { [attribute: string]: any[] } | undefined;
 
   private readonly filterPolicyWithMessageBody? : {[attribute: string]: FilterOrPolicy };
 

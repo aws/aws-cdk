@@ -18,21 +18,21 @@ export interface CompositeAlarmProps {
    *
    * @default true
    */
-  readonly actionsEnabled?: boolean;
+  readonly actionsEnabled?: boolean | undefined;
 
   /**
    * Description for the alarm
    *
    * @default - No description.
    */
-  readonly alarmDescription?: string;
+  readonly alarmDescription?: string | undefined;
 
   /**
    * Name of the alarm
    *
    * @default - Automatically generated name.
    */
-  readonly compositeAlarmName?: string;
+  readonly compositeAlarmName?: string | undefined;
 
   /**
    * Expression that specifies which other alarms are to be evaluated to determine this composite alarm's state.
@@ -44,7 +44,7 @@ export interface CompositeAlarmProps {
    *
    * @default - alarm will not be suppressed.
    */
-  readonly actionsSuppressor?: IAlarmRef;
+  readonly actionsSuppressor?: IAlarmRef | undefined;
 
   /**
    * The maximum duration that the composite alarm waits after suppressor alarm goes out of the ALARM state.
@@ -52,7 +52,7 @@ export interface CompositeAlarmProps {
    *
    * @default - 1 minute extension period will be set.
    */
-  readonly actionsSuppressorExtensionPeriod?: Duration;
+  readonly actionsSuppressorExtensionPeriod?: Duration | undefined;
 
   /**
    * The maximum duration that the composite alarm waits for the suppressor alarm to go into the ALARM state.
@@ -60,7 +60,7 @@ export interface CompositeAlarmProps {
    *
    * @default - 1 minute wait period will be set.
    */
-  readonly actionsSuppressorWaitPeriod?: Duration;
+  readonly actionsSuppressorWaitPeriod?: Duration | undefined;
 }
 
 /**

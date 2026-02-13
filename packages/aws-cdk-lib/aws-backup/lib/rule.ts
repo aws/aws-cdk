@@ -13,7 +13,7 @@ export interface BackupPlanRuleProps {
    *
    * @default - 7 days
    */
-  readonly completionWindow?: Duration;
+  readonly completionWindow?: Duration | undefined;
 
   /**
    * Specifies the duration after creation that a recovery point is deleted.
@@ -21,7 +21,7 @@ export interface BackupPlanRuleProps {
    *
    * @default - recovery point is never deleted
    */
-  readonly deleteAfter?: Duration;
+  readonly deleteAfter?: Duration | undefined;
 
   /**
    * Specifies the duration after creation that a recovery point is moved to cold
@@ -29,35 +29,35 @@ export interface BackupPlanRuleProps {
    *
    * @default - recovery point is never moved to cold storage
    */
-  readonly moveToColdStorageAfter?: Duration;
+  readonly moveToColdStorageAfter?: Duration | undefined;
 
   /**
    * A display name for the backup rule.
    *
    * @default - a CDK generated name
    */
-  readonly ruleName?: string;
+  readonly ruleName?: string | undefined;
 
   /**
    * A CRON expression specifying when AWS Backup initiates a backup job.
    *
    * @default - no schedule
    */
-  readonly scheduleExpression?: events.Schedule;
+  readonly scheduleExpression?: events.Schedule | undefined;
 
   /**
    * The timezone in which the schedule expression is set.
    *
    * @default - UTC
    */
-  readonly scheduleExpressionTimezone?: TimeZone;
+  readonly scheduleExpressionTimezone?: TimeZone | undefined;
 
   /**
    * The duration after a backup is scheduled before a job is canceled if it doesn't start successfully.
    *
    * @default - 8 hours
    */
-  readonly startWindow?: Duration;
+  readonly startWindow?: Duration | undefined;
 
   /**
    * The backup vault where backups are
@@ -65,7 +65,7 @@ export interface BackupPlanRuleProps {
    * @default - use the vault defined at the plan level. If not defined a new
    * common vault for the plan will be created
    */
-  readonly backupVault?: IBackupVaultRef;
+  readonly backupVault?: IBackupVaultRef | undefined;
 
   /**
    * Enables continuous backup and point-in-time restores (PITR).
@@ -77,21 +77,21 @@ export interface BackupPlanRuleProps {
    *
    * @default false
    */
-  readonly enableContinuousBackup?: boolean;
+  readonly enableContinuousBackup?: boolean | undefined;
 
   /**
    * Copy operations to perform on recovery points created by this rule
    *
    * @default - no copy actions
    */
-  readonly copyActions?: BackupPlanCopyActionProps[];
+  readonly copyActions?: BackupPlanCopyActionProps[] | undefined;
 
   /**
    * To help organize your resources, you can assign your own metadata to the resources that you create. Each tag is a key-value pair.
    *
    * @default - no recovery point tags.
    */
-  readonly recoveryPointTags?: { [key: string]: string };
+  readonly recoveryPointTags?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -109,14 +109,14 @@ export interface BackupPlanCopyActionProps {
    *
    * @default - recovery point is never deleted
    */
-  readonly deleteAfter?: Duration;
+  readonly deleteAfter?: Duration | undefined;
 
   /**
    * Specifies the duration after creation that a copied recovery point is moved to cold storage.
    *
    * @default - recovery point is never moved to cold storage
    */
-  readonly moveToColdStorageAfter?: Duration;
+  readonly moveToColdStorageAfter?: Duration | undefined;
 }
 
 /**

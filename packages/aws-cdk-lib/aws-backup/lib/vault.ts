@@ -45,7 +45,7 @@ export interface BackupVaultProps {
    *
    * @default - A CDK generated name
    */
-  readonly backupVaultName?: string;
+  readonly backupVaultName?: string | undefined;
 
   /**
    * A resource-based policy that is used to manage access permissions on the
@@ -53,14 +53,14 @@ export interface BackupVaultProps {
    *
    * @default - access is not restricted
    */
-  readonly accessPolicy?: iam.PolicyDocument;
+  readonly accessPolicy?: iam.PolicyDocument | undefined;
 
   /**
    * The server-side encryption key to use to protect your backups.
    *
    * @default - an Amazon managed KMS key
    */
-  readonly encryptionKey?: kms.IKeyRef;
+  readonly encryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * A SNS topic to send vault events to.
@@ -69,7 +69,7 @@ export interface BackupVaultProps {
    *
    * @default - no notifications
    */
-  readonly notificationTopic?: sns.ITopic;
+  readonly notificationTopic?: sns.ITopic | undefined;
 
   /**
    * The vault events to send.
@@ -78,7 +78,7 @@ export interface BackupVaultProps {
    *
    * @default - all vault events if `notificationTopic` is defined
    */
-  readonly notificationEvents?: BackupVaultEvents[];
+  readonly notificationEvents?: BackupVaultEvents[] | undefined;
 
   /**
    * The removal policy to apply to the vault. Note that removing a vault
@@ -86,7 +86,7 @@ export interface BackupVaultProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Whether to add statements to the vault access policy that prevents anyone
@@ -94,7 +94,7 @@ export interface BackupVaultProps {
    *
    * @default false
    */
-  readonly blockRecoveryPointDeletion?: boolean;
+  readonly blockRecoveryPointDeletion?: boolean | undefined;
 
   /**
    * Configuration for AWS Backup Vault Lock
@@ -103,7 +103,7 @@ export interface BackupVaultProps {
    *
    * @default - AWS Backup Vault Lock is disabled
    */
-  readonly lockConfiguration?: LockConfiguration;
+  readonly lockConfiguration?: LockConfiguration | undefined;
 }
 
 /**
@@ -181,7 +181,7 @@ export interface LockConfiguration {
    *
    * @default - Vault Lock does not enforce a maximum retention period
    */
-  readonly maxRetention?: Duration;
+  readonly maxRetention?: Duration | undefined;
 
   /**
    * The duration before the lock date.
@@ -195,7 +195,7 @@ export interface LockConfiguration {
    *
    * @default - Vault Lock can be deleted or changed at any time
    */
-  readonly changeableFor?: Duration;
+  readonly changeableFor?: Duration | undefined;
 }
 
 abstract class BackupVaultBase extends Resource implements IBackupVault {

@@ -68,7 +68,7 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
    */
-  readonly instanceResourceId?: string;
+  readonly instanceResourceId?: string | undefined;
 
   /**
    * The instance endpoint.
@@ -80,7 +80,7 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
    * May be not known for imported Instances if it wasn't provided explicitly,
    * or for read replicas.
    */
-  readonly engine?: IInstanceEngine;
+  readonly engine?: IInstanceEngine | undefined;
 
   /**
    * Add a new db proxy to this instance.
@@ -127,7 +127,7 @@ export interface DatabaseInstanceAttributes {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
    */
-  readonly instanceResourceId?: string;
+  readonly instanceResourceId?: string | undefined;
 
   /**
    * The security groups of the instance.
@@ -139,7 +139,7 @@ export interface DatabaseInstanceAttributes {
    *
    * @default - the imported Instance's engine is unknown
    */
-  readonly engine?: IInstanceEngine;
+  readonly engine?: IInstanceEngine | undefined;
 }
 
 /**
@@ -228,10 +228,10 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   public abstract readonly instanceIdentifier: string;
   public abstract readonly dbInstanceEndpointAddress: string;
   public abstract readonly dbInstanceEndpointPort: string;
-  public abstract readonly instanceResourceId?: string;
+  public abstract readonly instanceResourceId?: string | undefined;
   public abstract readonly instanceEndpoint: Endpoint;
   // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
-  public abstract readonly engine?: IInstanceEngine;
+  public abstract readonly engine?: IInstanceEngine | undefined;
   protected abstract enableIamAuthentication?: boolean;
 
   /**
@@ -383,14 +383,14 @@ export interface ProcessorFeatures {
    *
    * @default - the default number of CPU cores for the chosen instance class.
    */
-  readonly coreCount?: number;
+  readonly coreCount?: number | undefined;
 
   /**
    * The number of threads per core.
    *
    * @default - the default number of threads per core for the chosen instance class.
    */
-  readonly threadsPerCore?: number;
+  readonly threadsPerCore?: number | undefined;
 }
 
 /**
@@ -471,14 +471,14 @@ export interface DatabaseInstanceNewProps {
    *
    * @default false
    */
-  readonly multiAz?: boolean;
+  readonly multiAz?: boolean | undefined;
 
   /**
    * The name of the Availability Zone where the DB instance will be located.
    *
    * @default - no preference
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * The storage type to associate with the DB instance.
@@ -488,7 +488,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default StorageType.GP2
    */
-  readonly storageType?: StorageType;
+  readonly storageType?: StorageType | undefined;
 
   /**
    * The storage throughput, specified in mebibytes per second (MiBps).
@@ -501,7 +501,7 @@ export interface DatabaseInstanceNewProps {
    * less than 200 GiB for Oracle and less than 20 GiB for SQL Server. 500 MiBps otherwise (except for
    * SQL Server where the default is always 125 MiBps).
    */
-  readonly storageThroughput?: number;
+  readonly storageThroughput?: number | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) that the database provisions.
@@ -512,7 +512,7 @@ export interface DatabaseInstanceNewProps {
    * less than 20 GiB for SQL Server. 12,000 IOPS otherwise (except for SQL Server where the default is
    * always 3,000 IOPS).
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The number of CPU cores and the number of threads per core.
@@ -522,7 +522,7 @@ export interface DatabaseInstanceNewProps {
    *
    * See https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.DBInstanceClass.html#USER_ConfigureProcessor
    */
-  readonly processorFeatures?: ProcessorFeatures;
+  readonly processorFeatures?: ProcessorFeatures | undefined;
 
   /**
    * A name for the DB instance. If you specify a name, AWS CloudFormation
@@ -530,7 +530,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - a CloudFormation generated name
    */
-  readonly instanceIdentifier?: string;
+  readonly instanceIdentifier?: string | undefined;
 
   /**
    * The VPC network where the DB subnet group should be created.
@@ -543,42 +543,42 @@ export interface DatabaseInstanceNewProps {
    * @deprecated use `vpcSubnets`
    * @default - private subnets
    */
-  readonly vpcPlacement?: ec2.SubnetSelection;
+  readonly vpcPlacement?: ec2.SubnetSelection | undefined;
 
   /**
    * The type of subnets to add to the created DB subnet group.
    *
    * @default - private subnets
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The security groups to assign to the DB instance.
    *
    * @default - a new security group is created
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The port for the instance.
    *
    * @default - the default port for the chosen engine.
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The DB parameter group to associate with the instance.
    *
    * @default - no parameter group
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 
   /**
    * The option group to associate with the instance.
    *
    * @default - no option group
    */
-  readonly optionGroup?: IOptionGroup;
+  readonly optionGroup?: IOptionGroup | undefined;
 
   /**
    * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
@@ -586,7 +586,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default false
    */
-  readonly iamAuthentication?: boolean;
+  readonly iamAuthentication?: boolean | undefined;
 
   /**
    * The number of days during which automatic DB snapshots are retained.
@@ -596,7 +596,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - Duration.days(1) for source instances, disabled for read replicas
    */
-  readonly backupRetention?: Duration;
+  readonly backupRetention?: Duration | undefined;
 
   /**
    * The daily time range during which automated backups are performed.
@@ -611,7 +611,7 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region. To see the time blocks available, see
    * https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow
    */
-  readonly preferredBackupWindow?: string;
+  readonly preferredBackupWindow?: string | undefined;
 
   /**
    * Indicates whether to copy all of the user-defined tags from the
@@ -619,7 +619,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default true
    */
-  readonly copyTagsToSnapshot?: boolean;
+  readonly copyTagsToSnapshot?: boolean | undefined;
 
   /**
    * Indicates whether automated backups should be deleted or retained when
@@ -627,7 +627,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default true
    */
-  readonly deleteAutomatedBackups?: boolean;
+  readonly deleteAutomatedBackups?: boolean | undefined;
 
   /**
    * The interval, in seconds, between points when Amazon RDS collects enhanced
@@ -635,21 +635,21 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - no enhanced monitoring
    */
-  readonly monitoringInterval?: Duration;
+  readonly monitoringInterval?: Duration | undefined;
 
   /**
    * Role that will be used to manage DB instance monitoring.
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: iam.IRoleRef;
+  readonly monitoringRole?: iam.IRoleRef | undefined;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
-  readonly enablePerformanceInsights?: boolean;
+  readonly enablePerformanceInsights?: boolean | undefined;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
@@ -658,21 +658,21 @@ export interface DatabaseInstanceNewProps {
    *
    * @default 7 this is the free tier
    */
-  readonly performanceInsightRetention?: PerformanceInsightRetention;
+  readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKeyRef;
+  readonly performanceInsightEncryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * The database insights mode.
    *
    * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled, otherwise not set.
    */
-  readonly databaseInsightsMode?: DatabaseInsightsMode;
+  readonly databaseInsightsMode?: DatabaseInsightsMode | undefined;
 
   /**
    * The list of log types that need to be enabled for exporting to
@@ -680,7 +680,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - no log exports
    */
-  readonly cloudwatchLogsExports?: string[];
+  readonly cloudwatchLogsExports?: string[] | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -689,7 +689,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - logs never expire
    */
-  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+  readonly cloudwatchLogsRetention?: logs.RetentionDays | undefined;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -697,7 +697,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - a new role is created.
    */
-  readonly cloudwatchLogsRetentionRole?: iam.IRole;
+  readonly cloudwatchLogsRetentionRole?: iam.IRole | undefined;
 
   /**
    * Indicates that minor engine upgrades are applied automatically to the
@@ -705,7 +705,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default true
    */
-  readonly autoMinorVersionUpgrade?: boolean;
+  readonly autoMinorVersionUpgrade?: boolean | undefined;
 
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
@@ -717,14 +717,14 @@ export interface DatabaseInstanceNewProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string | undefined;
 
   /**
    * Indicates whether the DB instance should have deletion protection enabled.
    *
    * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * The CloudFormation policy to apply when the instance is removed from the
@@ -732,21 +732,21 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - RemovalPolicy.SNAPSHOT (remove the resource, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Upper limit to which RDS can scale the storage in GiB(Gibibyte).
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_PIOPS.StorageTypes.html#USER_PIOPS.Autoscaling
    * @default - No autoscaling of RDS instance
    */
-  readonly maxAllocatedStorage?: number;
+  readonly maxAllocatedStorage?: number | undefined;
 
   /**
    * The Active Directory directory ID to create the DB instance in.
    *
    * @default - Do not join domain
    */
-  readonly domain?: string;
+  readonly domain?: string | undefined;
 
   /**
    * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
@@ -754,14 +754,14 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - The role will be created for you if `DatabaseInstanceNewProps#domain` is specified
    */
-  readonly domainRole?: iam.IRoleRef;
+  readonly domainRole?: iam.IRoleRef | undefined;
 
   /**
    * Existing subnet group for the instance.
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef | undefined;
 
   /**
    * Role that will be associated with this DB instance to enable S3 import.
@@ -778,7 +778,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
    */
-  readonly s3ImportRole?: iam.IRole;
+  readonly s3ImportRole?: iam.IRole | undefined;
 
   /**
    * S3 buckets that you want to load data from.
@@ -795,7 +795,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - None
    */
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.IBucket[] | undefined;
 
   /**
    * Role that will be associated with this DB instance to enable S3 export.
@@ -809,7 +809,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
    */
-  readonly s3ExportRole?: iam.IRole;
+  readonly s3ExportRole?: iam.IRole | undefined;
 
   /**
    * S3 buckets that you want to load data into.
@@ -823,7 +823,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - None
    */
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.IBucket[] | undefined;
 
   /**
    * Indicates whether the DB instance is an internet-facing instance. If not specified,
@@ -832,14 +832,14 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - `true` if the instance's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
-  readonly publiclyAccessible?: boolean;
+  readonly publiclyAccessible?: boolean | undefined;
 
   /**
    * The network type of the DB instance.
    *
    * @default - IPV4
    */
-  readonly networkType?: NetworkType;
+  readonly networkType?: NetworkType | undefined;
 
   /**
    * The identifier of the CA certificate for this DB instance.
@@ -853,7 +853,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - RDS will choose a certificate authority
    */
-  readonly caCertificate?: CaCertificate;
+  readonly caCertificate?: CaCertificate | undefined;
 
   /**
    * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
@@ -867,7 +867,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - Changes will be applied immediately
    */
-  readonly applyImmediately?: boolean;
+  readonly applyImmediately?: boolean | undefined;
 
   /**
    * The life cycle type for this DB instance.
@@ -877,7 +877,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
-  readonly engineLifecycleSupport?: EngineLifecycleSupport;
+  readonly engineLifecycleSupport?: EngineLifecycleSupport | undefined;
 }
 
 /**
@@ -900,15 +900,15 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   protected abstract readonly instanceType: ec2.InstanceType;
 
-  protected readonly vpcPlacement?: ec2.SubnetSelection;
+  protected readonly vpcPlacement?: ec2.SubnetSelection | undefined;
   protected readonly newCfnProps: CfnDBInstanceProps;
 
-  private readonly cloudwatchLogsExports?: string[];
-  private readonly cloudwatchLogsRetention?: logs.RetentionDays;
-  private readonly cloudwatchLogsRetentionRole?: iam.IRole;
+  private readonly cloudwatchLogsExports?: string[] | undefined;
+  private readonly cloudwatchLogsRetention?: logs.RetentionDays | undefined;
+  private readonly cloudwatchLogsRetentionRole?: iam.IRole | undefined;
 
-  private readonly domainId?: string;
-  private readonly domainRole?: iam.IRoleRef;
+  private readonly domainId?: string | undefined;
+  private readonly domainRole?: iam.IRoleRef | undefined;
 
   protected enableIamAuthentication?: boolean;
 
@@ -1077,42 +1077,42 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    *
    * @default - m5.large (or, more specifically, db.m5.large)
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * The license model.
    *
    * @default - RDS default license model
    */
-  readonly licenseModel?: LicenseModel;
+  readonly licenseModel?: LicenseModel | undefined;
 
   /**
    * Whether to allow major version upgrades.
    *
    * @default false
    */
-  readonly allowMajorVersionUpgrade?: boolean;
+  readonly allowMajorVersionUpgrade?: boolean | undefined;
 
   /**
    * The time zone of the instance. This is currently supported only by Microsoft Sql Server.
    *
    * @default - RDS default timezone
    */
-  readonly timezone?: string;
+  readonly timezone?: string | undefined;
 
   /**
    * The allocated storage size, specified in gibibytes (GiB).
    *
    * @default 100
    */
-  readonly allocatedStorage?: number;
+  readonly allocatedStorage?: number | undefined;
 
   /**
    * The name of the database.
    *
    * @default - no name
    */
-  readonly databaseName?: string;
+  readonly databaseName?: string | undefined;
 
   /**
    * The parameters in the DBParameterGroup to create automatically
@@ -1122,18 +1122,18 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    *
    * @default - None
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 }
 
 /**
  * A new source database instance (not a read replica)
  */
 abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDatabaseInstance {
-  public readonly engine?: IInstanceEngine;
+  public readonly engine?: IInstanceEngine | undefined;
   /**
    * The AWS Secrets Manager secret attached to the instance.
    */
-  public abstract readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret | undefined;
 
   protected readonly sourceCfnProps: CfnDBInstanceProps;
   protected readonly instanceType: ec2.InstanceType;
@@ -1294,7 +1294,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
-  readonly credentials?: Credentials;
+  readonly credentials?: Credentials | undefined;
 
   /**
    * For supported engines, specifies the character set to associate with the
@@ -1302,21 +1302,21 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default - RDS default character set name
    */
-  readonly characterSetName?: string;
+  readonly characterSetName?: string | undefined;
 
   /**
    * Indicates whether the DB instance is encrypted.
    *
    * @default - true if storageEncryptionKey has been provided, false otherwise
    */
-  readonly storageEncrypted?: boolean;
+  readonly storageEncrypted?: boolean | undefined;
 
   /**
    * The KMS key that's used to encrypt the DB instance.
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKeyRef;
+  readonly storageEncryptionKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -1338,9 +1338,9 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
-  public readonly instanceResourceId?: string;
+  public readonly instanceResourceId?: string | undefined;
   public readonly instanceEndpoint: Endpoint;
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   private readonly _resource: CfnDBInstance;
 
@@ -1398,7 +1398,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    *
    * @default - None
    */
-  readonly snapshotIdentifier?: string;
+  readonly snapshotIdentifier?: string | undefined;
 
   /**
    * The identifier for the Multi-AZ DB cluster snapshot to restore from.
@@ -1415,7 +1415,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_RestoreFromMultiAZDBClusterSnapshot.html
    * @default - None
    */
-  readonly clusterSnapshotIdentifier?: string;
+  readonly clusterSnapshotIdentifier?: string | undefined;
 
   /**
    * Master user credentials.
@@ -1425,7 +1425,7 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    *
    * @default - The existing username and password from the snapshot will be used.
    */
-  readonly credentials?: SnapshotCredentials;
+  readonly credentials?: SnapshotCredentials | undefined;
 }
 
 /**
@@ -1447,9 +1447,9 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
-  public readonly instanceResourceId?: string;
+  public readonly instanceResourceId?: string | undefined;
   public readonly instanceEndpoint: Endpoint;
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   private readonly _resource: CfnDBInstance;
 
@@ -1530,20 +1530,20 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    *
    * @default - true if storageEncryptionKey has been provided, false otherwise
    */
-  readonly storageEncrypted?: boolean;
+  readonly storageEncrypted?: boolean | undefined;
 
   /**
    * The KMS key that's used to encrypt the DB instance.
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKeyRef;
+  readonly storageEncryptionKey?: kms.IKeyRef | undefined;
   /**
    * The allocated storage size, specified in gibibytes (GiB).
    *
    * @default - The replica will inherit the allocated storage of the source database instance
    */
-  readonly allocatedStorage?: number;
+  readonly allocatedStorage?: number | undefined;
 }
 
 /**
@@ -1572,7 +1572,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbinstance.html#aws-resource-rds-dbinstance-return-values
    */
-  public readonly instanceResourceId?: string;
+  public readonly instanceResourceId?: string | undefined;
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;

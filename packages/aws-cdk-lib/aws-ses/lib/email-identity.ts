@@ -62,21 +62,21 @@ export interface EmailIdentityProps {
    *
    * @default - do not use a specific configuration set
    */
-  readonly configurationSet?: IConfigurationSetRef;
+  readonly configurationSet?: IConfigurationSetRef | undefined;
 
   /**
    * Whether the messages that are sent from the identity are signed using DKIM
    *
    * @default true
    */
-  readonly dkimSigning?: boolean;
+  readonly dkimSigning?: boolean | undefined;
 
   /**
    * The type of DKIM identity to use
    *
    * @default - Easy DKIM with a key length of 2048-bit
    */
-  readonly dkimIdentity?: DkimIdentity;
+  readonly dkimIdentity?: DkimIdentity | undefined;
 
   /**
    * Whether to receive email notifications when bounce or complaint events occur.
@@ -90,7 +90,7 @@ export interface EmailIdentityProps {
    *
    * @default true
    */
-  readonly feedbackForwarding?: boolean;
+  readonly feedbackForwarding?: boolean | undefined;
 
   /**
    * The custom MAIL FROM domain that you want the verified identity to use. The MAIL FROM domain
@@ -102,7 +102,7 @@ export interface EmailIdentityProps {
    *
    * @default - use amazonses.com
    */
-  readonly mailFromDomain?: string;
+  readonly mailFromDomain?: string | undefined;
 
   /**
    * The action to take if the required MX record for the MAIL FROM domain isn't
@@ -110,7 +110,7 @@ export interface EmailIdentityProps {
    *
    * @default MailFromBehaviorOnMxFailure.USE_DEFAULT_VALUE
    */
-  readonly mailFromBehaviorOnMxFailure?: MailFromBehaviorOnMxFailure;
+  readonly mailFromBehaviorOnMxFailure?: MailFromBehaviorOnMxFailure | undefined;
 }
 
 /**
@@ -160,7 +160,7 @@ export abstract class Identity {
    *
    * @default - no hosted zone is associated and no records are created
    */
-  public abstract readonly hostedZone?: IPublicHostedZone;
+  public abstract readonly hostedZone?: IPublicHostedZone | undefined;
 }
 
 /**
@@ -189,7 +189,7 @@ export interface DkimIdentityConfig {
    *
    * @default - use Easy DKIM
    */
-  readonly domainSigningPrivateKey?: string;
+  readonly domainSigningPrivateKey?: string | undefined;
 
   /**
    * A string that's used to identify a public key in the DNS configuration for
@@ -197,7 +197,7 @@ export interface DkimIdentityConfig {
    *
    * @default - use Easy DKIM
    */
-  readonly domainSigningSelector?: string;
+  readonly domainSigningSelector?: string | undefined;
 
   /**
    * The key length of the future DKIM key pair to be generated. This can be changed
@@ -205,7 +205,7 @@ export interface DkimIdentityConfig {
    *
    * @default EasyDkimSigningKeyLength.RSA_2048_BIT
    */
-  readonly nextSigningKeyLength?: EasyDkimSigningKeyLength;
+  readonly nextSigningKeyLength?: EasyDkimSigningKeyLength | undefined;
 }
 
 /**
@@ -301,7 +301,7 @@ export interface ByoDkimOptions {
    *
    * @default - the validation TXT record with the public key is not created
    */
-  readonly publicKey?: string;
+  readonly publicKey?: string | undefined;
 }
 
 class ByoDkim extends DkimIdentity {

@@ -18,7 +18,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    * @default the Action will not have any inputs
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    */
-  readonly inputs?: codepipeline.Artifact[];
+  readonly inputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * The optional names of the output Artifacts of the Action.
@@ -29,7 +29,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    *
    * @default the Action will not have any outputs
    */
-  readonly outputs?: codepipeline.Artifact[];
+  readonly outputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * A set of key-value pairs that will be accessible to the invoked Lambda
@@ -40,7 +40,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html#actions-invoke-lambda-function-json-event-example
    * @default - no user parameters will be passed
    */
-  readonly userParameters?: { [key: string]: any };
+  readonly userParameters?: { [key: string]: any } | undefined;
 
   /**
    * The string representation of the user parameters that will be
@@ -51,7 +51,7 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    *
    * @default - no user parameters will be passed
    */
-  readonly userParametersString?: string;
+  readonly userParametersString?: string | undefined;
 
   /**
    * The lambda function to invoke.

@@ -10,7 +10,7 @@ export interface ItemBatcherProps {
    * @default - uses value of `maxItemsPerBatchPath` as the max items per batch,
    *   no limits on the number of items in a batch under the 256KB limit if that property was also not provided
    */
-  readonly maxItemsPerBatch?: number;
+  readonly maxItemsPerBatch?: number | undefined;
 
   /**
    * MaxItemsPerBatchPath
@@ -20,7 +20,7 @@ export interface ItemBatcherProps {
    * @default - uses value of `maxItemsPerBatch` as the max items per batch,
    *   no limits on the number of items in a batch under the 256KB limit if that property was also not provided
    */
-  readonly maxItemsPerBatchPath?: string;
+  readonly maxItemsPerBatchPath?: string | undefined;
 
   /**
    * MaxInputBytesPerBatch
@@ -30,7 +30,7 @@ export interface ItemBatcherProps {
    * @default - uses value of `maxInputBytesPerBatchPath` as the max size per batch,
    *   no limits on the batch size under the 256KB limit if that property was also not provided
    */
-  readonly maxInputBytesPerBatch?: number;
+  readonly maxInputBytesPerBatch?: number | undefined;
 
   /**
    * MaxInputBytesPerBatchPath
@@ -40,7 +40,7 @@ export interface ItemBatcherProps {
    * @default - uses value of `maxInputBytesPerBatch` as the max size per batch,
    *   no limits on the batch size under the 256KB limit if that property was also not provided
    */
-  readonly maxInputBytesPerBatchPath?: string;
+  readonly maxInputBytesPerBatchPath?: string | undefined;
 
   /**
    * BatchInput
@@ -49,7 +49,7 @@ export interface ItemBatcherProps {
    *
    * @default - No batchInput
    */
-  readonly batchInput?: object;
+  readonly batchInput?: object | undefined;
 }
 
 /**

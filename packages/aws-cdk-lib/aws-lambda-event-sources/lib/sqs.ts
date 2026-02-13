@@ -15,7 +15,7 @@ export interface SqsEventSourceProps {
    *
    * @default 10
    */
-  readonly batchSize?: number;
+  readonly batchSize?: number | undefined;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -24,7 +24,7 @@ export interface SqsEventSourceProps {
    *
    * @default - no batching window. The lambda function will be invoked immediately with the records that are available.
    */
-  readonly maxBatchingWindow?: Duration;
+  readonly maxBatchingWindow?: Duration | undefined;
 
   /**
    * Allow functions to return partially successful responses for a batch of records.
@@ -33,21 +33,21 @@ export interface SqsEventSourceProps {
    *
    * @default false
    */
-  readonly reportBatchItemFailures?: boolean;
+  readonly reportBatchItemFailures?: boolean | undefined;
 
   /**
    * If the SQS event source mapping should be enabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Add filter criteria option
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{[key: string]: any}> | undefined;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -57,7 +57,7 @@ export interface SqsEventSourceProps {
    *
    * @default - none
    */
-  readonly filterEncryption?: IKey;
+  readonly filterEncryption?: IKey | undefined;
 
   /**
    * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
@@ -68,7 +68,7 @@ export interface SqsEventSourceProps {
    *
    * @default - No specific limit.
    */
-  readonly maxConcurrency?: number;
+  readonly maxConcurrency?: number | undefined;
 
   /**
    * Configuration for enhanced monitoring metrics collection
@@ -76,7 +76,7 @@ export interface SqsEventSourceProps {
    *
    * @default - Enhanced monitoring is disabled
    */
-  readonly metricsConfig?: lambda.MetricsConfig;
+  readonly metricsConfig?: lambda.MetricsConfig | undefined;
 }
 
 /**

@@ -60,7 +60,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    *
    * @default 'master'
    */
-  readonly branch?: string;
+  readonly branch?: string | undefined;
 
   // long URL in @see
   /**
@@ -74,7 +74,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
    */
-  readonly codeBuildCloneOutput?: boolean;
+  readonly codeBuildCloneOutput?: boolean | undefined;
 
   /**
    * Controls automatically starting your pipeline when a new commit
@@ -84,7 +84,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
    * @default true
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
-  readonly triggerOnPush?: boolean;
+  readonly triggerOnPush?: boolean | undefined;
 }
 
 /**

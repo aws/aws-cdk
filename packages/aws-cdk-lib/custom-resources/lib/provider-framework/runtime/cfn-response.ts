@@ -8,8 +8,8 @@ export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderF
 export const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';
 
 export interface CloudFormationResponseOptions {
-  readonly reason?: string;
-  readonly noEcho?: boolean;
+  readonly reason?: string | undefined;
+  readonly noEcho?: boolean | undefined;
 }
 
 export interface CloudFormationEventContext {

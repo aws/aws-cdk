@@ -18,7 +18,7 @@ export interface SqsSubscriptionProps extends SubscriptionProps {
    *
    * @default false
    */
-  readonly rawMessageDelivery?: boolean;
+  readonly rawMessageDelivery?: boolean | undefined;
 }
 
 /**

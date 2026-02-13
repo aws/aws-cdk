@@ -33,26 +33,26 @@ export interface SignInAliases {
    * Whether user is allowed to sign up or sign in with a username
    * @default true
    */
-  readonly username?: boolean;
+  readonly username?: boolean | undefined;
 
   /**
    * Whether a user is allowed to sign up or sign in with an email address
    * @default false
    */
-  readonly email?: boolean;
+  readonly email?: boolean | undefined;
 
   /**
    * Whether a user is allowed to sign up or sign in with a phone number
    * @default false
    */
-  readonly phone?: boolean;
+  readonly phone?: boolean | undefined;
 
   /**
    * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
-  readonly preferredUsername?: boolean;
+  readonly preferredUsername?: boolean | undefined;
 }
 
 /**
@@ -67,13 +67,13 @@ export interface AutoVerifiedAttrs {
    *
    * @default - true, if email is turned on for `signIn`. false, otherwise.
    */
-  readonly email?: boolean;
+  readonly email?: boolean | undefined;
 
   /**
    * Whether the phone number of the user should be auto verified at sign up.
    * @default - true, if phone is turned on for `signIn`. false, otherwise.
    */
-  readonly phone?: boolean;
+  readonly phone?: boolean | undefined;
 }
 
 /**
@@ -85,14 +85,14 @@ export interface KeepOriginalAttrs {
    *
    * @default - false
    */
-  readonly email?: boolean;
+  readonly email?: boolean | undefined;
 
   /**
    * Whether the phone number of the user should remain the original value until the new phone number is verified.
    *
    * @default - false
    */
-  readonly phone?: boolean;
+  readonly phone?: boolean | undefined;
 }
 
 /**
@@ -105,84 +105,84 @@ export interface UserPoolTriggers {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-create-auth-challenge.html
    * @default - no trigger configured
    */
-  readonly createAuthChallenge?: lambda.IFunction;
+  readonly createAuthChallenge?: lambda.IFunction | undefined;
 
   /**
    * A custom Message AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-message.html
    * @default - no trigger configured
    */
-  readonly customMessage?: lambda.IFunction;
+  readonly customMessage?: lambda.IFunction | undefined;
 
   /**
    * Defines the authentication challenge.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-define-auth-challenge.html
    * @default - no trigger configured
    */
-  readonly defineAuthChallenge?: lambda.IFunction;
+  readonly defineAuthChallenge?: lambda.IFunction | undefined;
 
   /**
    * A post-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-authentication.html
    * @default - no trigger configured
    */
-  readonly postAuthentication?: lambda.IFunction;
+  readonly postAuthentication?: lambda.IFunction | undefined;
 
   /**
    * A post-confirmation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html
    * @default - no trigger configured
    */
-  readonly postConfirmation?: lambda.IFunction;
+  readonly postConfirmation?: lambda.IFunction | undefined;
 
   /**
    * A pre-authentication AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-authentication.html
    * @default - no trigger configured
    */
-  readonly preAuthentication?: lambda.IFunction;
+  readonly preAuthentication?: lambda.IFunction | undefined;
 
   /**
    * A pre-registration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-sign-up.html
    * @default - no trigger configured
    */
-  readonly preSignUp?: lambda.IFunction;
+  readonly preSignUp?: lambda.IFunction | undefined;
 
   /**
    * A pre-token-generation AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    * @default - no trigger configured
    */
-  readonly preTokenGeneration?: lambda.IFunction;
+  readonly preTokenGeneration?: lambda.IFunction | undefined;
 
   /**
    * A user-migration AWS Lambda trigger.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
    * @default - no trigger configured
    */
-  readonly userMigration?: lambda.IFunction;
+  readonly userMigration?: lambda.IFunction | undefined;
 
   /**
    * Verifies the authentication challenge response.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    * @default - no trigger configured
    */
-  readonly verifyAuthChallengeResponse?: lambda.IFunction;
+  readonly verifyAuthChallengeResponse?: lambda.IFunction | undefined;
 
   /**
    * Amazon Cognito invokes this trigger to send email notifications to users.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
    * @default - no trigger configured
    */
-  readonly customEmailSender?: lambda.IFunction;
+  readonly customEmailSender?: lambda.IFunction | undefined;
 
   /**
    * Amazon Cognito invokes this trigger to send SMS notifications to users.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
    * @default - no trigger configured
    */
-  readonly customSmsSender?: lambda.IFunction;
+  readonly customSmsSender?: lambda.IFunction | undefined;
 
   /**
    * Index signature.
@@ -336,7 +336,7 @@ export interface UserVerificationConfig {
    * learn more about message templates.
    * @default 'Verify your new account'
    */
-  readonly emailSubject?: string;
+  readonly emailSubject?: string | undefined;
 
   /**
    * The email body template for the verification email sent to the user upon sign up.
@@ -346,14 +346,14 @@ export interface UserVerificationConfig {
    * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
    * 'Verify your account by clicking on {##Verify Email##}' if VerificationEmailStyle.LINK is chosen.
    */
-  readonly emailBody?: string;
+  readonly emailBody?: string | undefined;
 
   /**
    * Emails can be verified either using a code or a link.
    * Learn more at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-email-verification-message-customization.html
    * @default VerificationEmailStyle.CODE
    */
-  readonly emailStyle?: VerificationEmailStyle;
+  readonly emailStyle?: VerificationEmailStyle | undefined;
 
   /**
    * The message template for the verification SMS sent to the user upon sign up.
@@ -363,7 +363,7 @@ export interface UserVerificationConfig {
    * @default - 'The verification code to your new account is {####}' if VerificationEmailStyle.CODE is chosen,
    * not configured if VerificationEmailStyle.LINK is chosen
    */
-  readonly smsMessage?: string;
+  readonly smsMessage?: string | undefined;
 }
 
 /**
@@ -374,19 +374,19 @@ export interface UserInvitationConfig {
    * The template to the email subject that is sent to the user when an administrator signs them up to the user pool.
    * @default 'Your temporary password'
    */
-  readonly emailSubject?: string;
+  readonly emailSubject?: string | undefined;
 
   /**
    * The template to the email body that is sent to the user when an administrator signs them up to the user pool.
    * @default 'Your username is {username} and temporary password is {####}.'
    */
-  readonly emailBody?: string;
+  readonly emailBody?: string | undefined;
 
   /**
    * The template to the SMS message that is sent to the user when an administrator signs them up to the user pool.
    * @default 'Your username is {username} and temporary password is {####}'
    */
-  readonly smsMessage?: string;
+  readonly smsMessage?: string | undefined;
 }
 
 /**
@@ -430,7 +430,7 @@ export interface MfaSecondFactor {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-mfa-sms-email-message.html
    * @default false
    */
-  readonly email?: boolean;
+  readonly email?: boolean | undefined;
 }
 
 /**
@@ -443,37 +443,37 @@ export interface PasswordPolicy {
    * Fractional days, such as Duration.hours(20), will generate an error.
    * @default Duration.days(7)
    */
-  readonly tempPasswordValidity?: Duration;
+  readonly tempPasswordValidity?: Duration | undefined;
 
   /**
    * Minimum length required for a user's password.
    * @default 8
    */
-  readonly minLength?: number;
+  readonly minLength?: number | undefined;
 
   /**
    * Whether the user is required to have lowercase characters in their password.
    * @default true
    */
-  readonly requireLowercase?: boolean;
+  readonly requireLowercase?: boolean | undefined;
 
   /**
    * Whether the user is required to have uppercase characters in their password.
    * @default true
    */
-  readonly requireUppercase?: boolean;
+  readonly requireUppercase?: boolean | undefined;
 
   /**
    * Whether the user is required to have digits in their password.
    * @default true
    */
-  readonly requireDigits?: boolean;
+  readonly requireDigits?: boolean | undefined;
 
   /**
    * Whether the user is required to have symbols in their password.
    * @default true
    */
-  readonly requireSymbols?: boolean;
+  readonly requireSymbols?: boolean | undefined;
 
   /**
    * The number of previous passwords that you want Amazon Cognito to restrict each user from reusing.
@@ -482,7 +482,7 @@ export interface PasswordPolicy {
    *
    * @default undefined - Cognito default setting is no restriction
    */
-  readonly passwordHistorySize?: number;
+  readonly passwordHistorySize?: number | undefined;
 }
 
 /**
@@ -495,7 +495,7 @@ export interface SignInPolicy {
    *
    * @default - Password only
    */
-  readonly allowedFirstAuthFactors?: AllowedFirstAuthFactors;
+  readonly allowedFirstAuthFactors?: AllowedFirstAuthFactors | undefined;
 }
 
 /**
@@ -512,17 +512,17 @@ export interface AllowedFirstAuthFactors {
    * Whether the email message one-time password is allowed.
    * @default false
    */
-  readonly emailOtp?: boolean;
+  readonly emailOtp?: boolean | undefined;
   /**
    * Whether the SMS message one-time password is allowed.
    * @default false
    */
-  readonly smsOtp?: boolean;
+  readonly smsOtp?: boolean | undefined;
   /**
    * Whether the Passkey (WebAuthn) is allowed.
    * @default false
    */
-  readonly passkey?: boolean;
+  readonly passkey?: boolean | undefined;
 }
 
 /**
@@ -544,14 +544,14 @@ export interface EmailSettings {
    * The 'from' address on the emails received by the user.
    * @default noreply@verificationemail.com
    */
-  readonly from?: string;
+  readonly from?: string | undefined;
 
   /**
    * The 'replyTo' address on the emails received by the user as defined by IETF RFC-5322.
    * When set, most email clients recognize to change 'to' line to this address when a reply is drafted.
    * @default - Not set.
    */
-  readonly replyTo?: string;
+  readonly replyTo?: string | undefined;
 }
 
 /**
@@ -685,7 +685,7 @@ export interface UserPoolProps {
    *
    * @default - automatically generated name by CloudFormation at deploy time.
    */
-  readonly userPoolName?: string;
+  readonly userPoolName?: string | undefined;
 
   /**
    * Whether self sign-up should be enabled.
@@ -693,7 +693,7 @@ export interface UserPoolProps {
    *
    * @default - false
    */
-  readonly selfSignUpEnabled?: boolean;
+  readonly selfSignUpEnabled?: boolean | undefined;
 
   /**
    * Configuration around users signing themselves up to the user pool.
@@ -701,21 +701,21 @@ export interface UserPoolProps {
    *
    * @default - see defaults in UserVerificationConfig.
    */
-  readonly userVerification?: UserVerificationConfig;
+  readonly userVerification?: UserVerificationConfig | undefined;
 
   /**
    * Configuration around admins signing up users into a user pool.
    *
    * @default - see defaults in UserInvitationConfig.
    */
-  readonly userInvitation?: UserInvitationConfig;
+  readonly userInvitation?: UserInvitationConfig | undefined;
 
   /**
    * The IAM role that Cognito will assume while sending SMS messages.
    *
    * @default - a new IAM role is created.
    */
-  readonly smsRole?: IRoleRef;
+  readonly smsRole?: IRoleRef | undefined;
 
   /**
    * The 'ExternalId' that Cognito service must be using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
@@ -725,7 +725,7 @@ export interface UserPoolProps {
    *
    * @default - No external id will be configured.
    */
-  readonly smsRoleExternalId?: string;
+  readonly smsRoleExternalId?: string | undefined;
 
   /**
    * The region to integrate with SNS to send SMS messages.
@@ -734,7 +734,7 @@ export interface UserPoolProps {
    *
    * @default - The same region as the user pool, with a few exceptions - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html#user-pool-sms-settings-first-time
    */
-  readonly snsRegion?: string;
+  readonly snsRegion?: string | undefined;
 
   /**
    * Setting this would explicitly enable or disable SMS role creation.
@@ -742,7 +742,7 @@ export interface UserPoolProps {
    *
    * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
    */
-  readonly enableSmsRole?: boolean;
+  readonly enableSmsRole?: boolean | undefined;
 
   /**
    * Methods in which a user registers or signs in to a user pool.
@@ -757,7 +757,7 @@ export interface UserPoolProps {
    *
    * @default { username: true }
    */
-  readonly signInAliases?: SignInAliases;
+  readonly signInAliases?: SignInAliases | undefined;
 
   /**
    * Attributes which Cognito will look to verify automatically upon user sign up.
@@ -766,7 +766,7 @@ export interface UserPoolProps {
    * @default - If `signInAlias` includes email and/or phone, they will be included in `autoVerifiedAttributes` by default.
    * If absent, no attributes will be auto-verified.
    */
-  readonly autoVerify?: AutoVerifiedAttrs;
+  readonly autoVerify?: AutoVerifiedAttrs | undefined;
 
   /**
    * Attributes which Cognito will look to handle changes to the value of your users' email address and phone number attributes.
@@ -774,7 +774,7 @@ export interface UserPoolProps {
    *
    * @default - Nothing is kept.
    */
-  readonly keepOriginal?: KeepOriginalAttrs;
+  readonly keepOriginal?: KeepOriginalAttrs | undefined;
 
   /**
    * The set of attributes that are required for every user in the user pool.
@@ -782,28 +782,28 @@ export interface UserPoolProps {
    *
    * @default - All standard attributes are optional and mutable.
    */
-  readonly standardAttributes?: StandardAttributes;
+  readonly standardAttributes?: StandardAttributes | undefined;
 
   /**
    * Define a set of custom attributes that can be configured for each user in the user pool.
    *
    * @default - No custom attributes.
    */
-  readonly customAttributes?: { [key: string]: ICustomAttribute };
+  readonly customAttributes?: { [key: string]: ICustomAttribute } | undefined;
 
   /**
    * Configure whether users of this user pool can or are required use MFA to sign in.
    *
    * @default Mfa.OFF
    */
-  readonly mfa?: Mfa;
+  readonly mfa?: Mfa | undefined;
 
   /**
    * The SMS message template sent during MFA verification.
    * Use '{####}' in the template where Cognito should insert the verification code.
    * @default 'Your authentication code is {####}.'
    */
-  readonly mfaMessage?: string;
+  readonly mfaMessage?: string | undefined;
 
   /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
@@ -811,19 +811,19 @@ export interface UserPoolProps {
    * @default - { sms: true, otp: false, email: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
    * { sms: false, otp: false, email:false }, otherwise
    */
-  readonly mfaSecondFactor?: MfaSecondFactor;
+  readonly mfaSecondFactor?: MfaSecondFactor | undefined;
 
   /**
    * Password policy for this user pool.
    * @default - see defaults on each property of PasswordPolicy.
    */
-  readonly passwordPolicy?: PasswordPolicy;
+  readonly passwordPolicy?: PasswordPolicy | undefined;
 
   /**
    * Sign-in policy for this user pool.
    * @default - see defaults on each property of SignInPolicy.
    */
-  readonly signInPolicy?: SignInPolicy;
+  readonly signInPolicy?: SignInPolicy | undefined;
 
   /**
    * The authentication domain that passkey providers must use as a relying party (RP) in their configuration.
@@ -835,7 +835,7 @@ export interface UserPoolProps {
    *
    * @default - No authentication domain
    */
-  readonly passkeyRelyingPartyId?: string;
+  readonly passkeyRelyingPartyId?: string | undefined;
 
   /**
    * Your user-pool treatment for MFA with a passkey.
@@ -844,7 +844,7 @@ export interface UserPoolProps {
    *
    * @default - Cognito default setting is PasskeyUserVerification.PREFERRED
    */
-  readonly passkeyUserVerification?: PasskeyUserVerification;
+  readonly passkeyUserVerification?: PasskeyUserVerification | undefined;
 
   /**
    * Email settings for a user pool.
@@ -852,68 +852,68 @@ export interface UserPoolProps {
    * @default - see defaults on each property of EmailSettings.
    * @deprecated Use 'email' instead.
    */
-  readonly emailSettings?: EmailSettings;
+  readonly emailSettings?: EmailSettings | undefined;
 
   /**
    * Email settings for a user pool.
    * @default - cognito will use the default email configuration
    */
-  readonly email?: UserPoolEmail;
+  readonly email?: UserPoolEmail | undefined;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    * @default - No Lambda triggers.
    */
-  readonly lambdaTriggers?: UserPoolTriggers;
+  readonly lambdaTriggers?: UserPoolTriggers | undefined;
 
   /**
    * Whether sign-in aliases should be evaluated with case sensitivity.
    * For example, when this option is set to false, users will be able to sign in using either `MyUsername` or `myusername`.
    * @default true
    */
-  readonly signInCaseSensitive?: boolean;
+  readonly signInCaseSensitive?: boolean | undefined;
 
   /**
    * How will a user be able to recover their account?
    *
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
-  readonly accountRecovery?: AccountRecovery;
+  readonly accountRecovery?: AccountRecovery | undefined;
 
   /**
    * Policy to apply when the user pool is removed from the stack
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Indicates whether the user pool should have deletion protection enabled.
    *
    * @default false
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * Device tracking settings
    * @default - see defaults on each property of DeviceTracking.
    */
-  readonly deviceTracking?: DeviceTracking;
+  readonly deviceTracking?: DeviceTracking | undefined;
 
   /**
    * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
    * @default - no key ID configured
    */
-  readonly customSenderKmsKey?: IKeyRef;
+  readonly customSenderKmsKey?: IKeyRef | undefined;
 
   /**
    * The user pool's Advanced Security Mode
    * @deprecated Advanced Security Mode is deprecated due to user pool feature plans. Use StandardThreatProtectionMode and CustomThreatProtectionMode to set Thread Protection level.
    * @default - no value
    */
-  readonly advancedSecurityMode?: AdvancedSecurityMode;
+  readonly advancedSecurityMode?: AdvancedSecurityMode | undefined;
 
   /**
    * The user pool feature plan, or tier.
@@ -921,7 +921,7 @@ export interface UserPoolProps {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sign-in-feature-plans.html
    * @default - FeaturePlan.ESSENTIALS for a newly created user pool; FeaturePlan.LITE otherwise
    */
-  readonly featurePlan?: FeaturePlan;
+  readonly featurePlan?: FeaturePlan | undefined;
 
   /**
    * The Type of Threat Protection Enabled for Standard Authentication
@@ -934,7 +934,7 @@ export interface UserPoolProps {
    *
    * @default - StandardThreatProtectionMode.NO_ENFORCEMENT
    */
-  readonly standardThreatProtectionMode?: StandardThreatProtectionMode;
+  readonly standardThreatProtectionMode?: StandardThreatProtectionMode | undefined;
 
   /**
    * The Type of Threat Protection Enabled for Custom Authentication
@@ -947,7 +947,7 @@ export interface UserPoolProps {
    *
    * @default - no value
    */
-  readonly customThreatProtectionMode?: CustomThreatProtectionMode;
+  readonly customThreatProtectionMode?: CustomThreatProtectionMode | undefined;
 }
 
 /**

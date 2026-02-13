@@ -22,14 +22,14 @@ export interface DeploymentStrategyProps {
    *
    * @default - A name is generated.
    */
-  readonly deploymentStrategyName?: string;
+  readonly deploymentStrategyName?: string | undefined;
 
   /**
    * A description of the deployment strategy.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -113,32 +113,32 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
   /**
    * The name of the deployment strategy.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The deployment duration in minutes of the deployment strategy.
    */
-  public readonly deploymentDurationInMinutes?: number;
+  public readonly deploymentDurationInMinutes?: number | undefined;
 
   /**
    * The growth factor of the deployment strategy.
    */
-  public readonly growthFactor?: number;
+  public readonly growthFactor?: number | undefined;
 
   /**
    * The description of the deployment strategy.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The final bake time in minutes of the deployment strategy.
    */
-  public readonly finalBakeTimeInMinutes?: number;
+  public readonly finalBakeTimeInMinutes?: number | undefined;
 
   /**
    * The growth type of the deployment strategy.
    */
-  public readonly growthType?: GrowthType;
+  public readonly growthType?: GrowthType | undefined;
 
   /**
    * The ID of the deployment strategy.
@@ -286,7 +286,7 @@ export interface RolloutStrategyProps {
    *
    * @default Duration.minutes(0)
    */
-  readonly finalBakeTime?: Duration;
+  readonly finalBakeTime?: Duration | undefined;
 }
 
 /**
@@ -375,44 +375,44 @@ export abstract class RolloutStrategy {
   /**
    * The growth type of the rollout strategy.
    */
-  public abstract readonly growthType?: GrowthType;
+  public abstract readonly growthType?: GrowthType | undefined;
 
   /**
    * The final bake time of the deployment strategy.
    */
-  public abstract readonly finalBakeTime?: Duration;
+  public abstract readonly finalBakeTime?: Duration | undefined;
 }
 
 export interface IDeploymentStrategy extends IResource, IDeploymentStrategyRef {
   /**
    * The name of the deployment strategy.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The deployment duration in minutes.
    */
-  readonly deploymentDurationInMinutes?: number;
+  readonly deploymentDurationInMinutes?: number | undefined;
 
   /**
    * The growth factor of the deployment strategy.
    */
-  readonly growthFactor?: number;
+  readonly growthFactor?: number | undefined;
 
   /**
    * The description of the deployment strategy.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The final bake time in minutes.
    */
-  readonly finalBakeTimeInMinutes?: number;
+  readonly finalBakeTimeInMinutes?: number | undefined;
 
   /**
    * The growth type of the deployment strategy.
    */
-  readonly growthType?: GrowthType;
+  readonly growthType?: GrowthType | undefined;
 
   /**
    * The ID of the deployment strategy.

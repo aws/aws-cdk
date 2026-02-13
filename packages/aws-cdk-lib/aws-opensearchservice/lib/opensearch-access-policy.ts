@@ -28,7 +28,7 @@ export interface OpenSearchAccessPolicyProps {
    * This is can be used to limit the response body of the custom resource, in cases it exceeds the CFN 4k limit
    * @default true
    */
-  readonly verboseOutput?: boolean;
+  readonly verboseOutput?: boolean | undefined;
 }
 
 /**

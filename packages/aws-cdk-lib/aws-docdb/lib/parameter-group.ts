@@ -60,7 +60,7 @@ export interface ClusterParameterGroupProps {
    *
    * @default a CDK generated description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Database family of this parameter group
@@ -72,7 +72,7 @@ export interface ClusterParameterGroupProps {
    *
    * @default A CDK generated name for the cluster parameter group
    */
-  readonly dbClusterParameterGroupName?: string;
+  readonly dbClusterParameterGroupName?: string | undefined;
 
   /**
    * The parameters in this parameter group

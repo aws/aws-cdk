@@ -29,7 +29,7 @@ export interface ApiMappingOptions {
    *
    * @default - map requests from the domain root (e.g. `example.com`).
    */
-  readonly basePath?: string;
+  readonly basePath?: string | undefined;
 }
 
 /**
@@ -60,20 +60,20 @@ export interface DomainNameOptions {
    * The type of endpoint for this DomainName.
    * @default REGIONAL
    */
-  readonly endpointType?: EndpointType;
+  readonly endpointType?: EndpointType | undefined;
 
   /**
    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
    * @default SecurityPolicy.TLS_1_2
    */
-  readonly securityPolicy?: SecurityPolicy;
+  readonly securityPolicy?: SecurityPolicy | undefined;
 
   /**
    * The mutual TLS authentication configuration for a custom domain name.
    * @default - mTLS is not configured.
    */
-  readonly mtls?: MTLSConfig;
+  readonly mtls?: MTLSConfig | undefined;
 
   /**
    * The base path name that callers of the API must provide in the URL after
@@ -82,7 +82,7 @@ export interface DomainNameOptions {
    *
    * @default - map requests from the domain root (e.g. `example.com`).
    */
-  readonly basePath?: string;
+  readonly basePath?: string | undefined;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -94,7 +94,7 @@ export interface DomainNameProps extends DomainNameOptions {
    * @default - you will have to call `addBasePathMapping` to map this domain to
    * API endpoints.
    */
-  readonly mapping?: IRestApi;
+  readonly mapping?: IRestApi | undefined;
 }
 
 export interface IDomainName extends IResource, IDomainNameRef {
@@ -154,7 +154,7 @@ export class DomainName extends Resource implements IDomainName {
   public readonly domainNameAliasDomainName: string;
   public readonly domainNameAliasHostedZoneId: string;
   private readonly basePaths = new Set<string | undefined>();
-  private readonly securityPolicy?: SecurityPolicy;
+  private readonly securityPolicy?: SecurityPolicy | undefined;
   private readonly endpointType: EndpointType;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -321,5 +321,5 @@ export interface MTLSConfig {
    *  To specify a version, you must have versioning enabled for the S3 bucket.
    *  @default - latest version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }

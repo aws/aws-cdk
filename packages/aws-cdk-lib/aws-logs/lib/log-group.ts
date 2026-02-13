@@ -539,21 +539,21 @@ export interface LogGroupProps {
    *
    * @default Server-side encryption managed by the CloudWatch Logs service
    */
-  readonly encryptionKey?: kms.IKeyRef;
+  readonly encryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * Name of the log group.
    *
    * @default Automatically generated
    */
-  readonly logGroupName?: string;
+  readonly logGroupName?: string | undefined;
 
   /**
    * Data Protection Policy for this log group.
    *
    * @default - no data protection policy
    */
-  readonly dataProtectionPolicy?: DataProtectionPolicy;
+  readonly dataProtectionPolicy?: DataProtectionPolicy | undefined;
 
   /**
    * Indicates whether deletion protection is enabled for this log group. When enabled,
@@ -561,14 +561,14 @@ export interface LogGroupProps {
    *
    * @default false
    */
-  readonly deletionProtectionEnabled?: boolean;
+  readonly deletionProtectionEnabled?: boolean | undefined;
 
   /**
    * Field Index Policies for this log group.
    *
    * @default - no field index policies for this log group.
    */
-  readonly fieldIndexPolicies?: FieldIndexPolicy[];
+  readonly fieldIndexPolicies?: FieldIndexPolicy[] | undefined;
 
   /**
    * How long, in days, the log contents will be retained.
@@ -577,7 +577,7 @@ export interface LogGroupProps {
    *
    * @default RetentionDays.TWO_YEARS
    */
-  readonly retention?: RetentionDays;
+  readonly retention?: RetentionDays | undefined;
 
   /**
    * The class of the log group. Possible values are: STANDARD and INFREQUENT_ACCESS.
@@ -588,7 +588,7 @@ export interface LogGroupProps {
    *
    * @default LogGroupClass.STANDARD
    */
-  readonly logGroupClass?: LogGroupClass;
+  readonly logGroupClass?: LogGroupClass | undefined;
 
   /**
    * Determine the removal policy of this log group.
@@ -600,7 +600,7 @@ export interface LogGroupProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -742,7 +742,7 @@ export interface StreamOptions {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: string | undefined;
 }
 
 /**
@@ -766,7 +766,7 @@ export interface SubscriptionFilterOptions {
    *
    * @default Automatically generated
    */
-  readonly filterName?: string;
+  readonly filterName?: string | undefined;
 
   /**
    * The method used to distribute log data to the destination.
@@ -774,7 +774,7 @@ export interface SubscriptionFilterOptions {
    *
    * @default Distribution.BY_LOG_STREAM
    */
-  readonly distribution?: Distribution;
+  readonly distribution?: Distribution | undefined;
 }
 
 /**
@@ -811,14 +811,14 @@ export interface MetricFilterOptions {
    *
    * @default "1"
    */
-  readonly metricValue?: string;
+  readonly metricValue?: string | undefined;
 
   /**
    * The value to emit if the pattern does not match a particular event.
    *
    * @default No metric emitted.
    */
-  readonly defaultValue?: number;
+  readonly defaultValue?: number | undefined;
 
   /**
    * The fields to use as dimensions for the metric. One metric filter can include as many as three dimensions.
@@ -826,7 +826,7 @@ export interface MetricFilterOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-dimensions
    * @default - No dimensions attached to metrics.
    */
-  readonly dimensions?: Record<string, string>;
+  readonly dimensions?: Record<string, string> | undefined;
 
   /**
    * The unit to assign to the metric.
@@ -834,14 +834,14 @@ export interface MetricFilterOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-logs-metricfilter-metrictransformation.html#cfn-logs-metricfilter-metrictransformation-unit
    * @default - No unit attached to metrics.
    */
-  readonly unit?: cloudwatch.Unit;
+  readonly unit?: cloudwatch.Unit | undefined;
 
   /**
    * The name of the metric filter.
    *
    * @default - Cloudformation generated name.
    */
-  readonly filterName?: string;
+  readonly filterName?: string | undefined;
 
   /**
    * Whether the metric filter is applied on the tranformed logs. This parameter is valid only for log groups that have an active log transformer.
@@ -849,7 +849,7 @@ export interface MetricFilterOptions {
    *
    * @default - false
    */
-  readonly applyOnTransformedLogs?: boolean;
+  readonly applyOnTransformedLogs?: boolean | undefined;
 }
 
 /**

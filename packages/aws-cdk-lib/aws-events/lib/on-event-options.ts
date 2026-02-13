@@ -11,14 +11,14 @@ export interface EventCommonOptions {
    *
    * @default - No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * A name for the rule.
    *
    * @default AWS CloudFormation generates a unique physical ID.
    */
-  readonly ruleName?: string;
+  readonly ruleName?: string | undefined;
 
   /**
    * Additional restrictions for the event to route to the specified target
@@ -32,7 +32,7 @@ export interface EventCommonOptions {
    * @see
    * https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-and-event-patterns.html
    */
-  readonly eventPattern?: EventPattern;
+  readonly eventPattern?: EventPattern | undefined;
 
   /**
    * The scope to use if the source of the rule and its target are in different Stacks
@@ -41,7 +41,7 @@ export interface EventCommonOptions {
    *
    * @default - none (the main scope will be used, even for cross-stack Events)
    */
-  readonly crossStackScope?: Construct;
+  readonly crossStackScope?: Construct | undefined;
 }
 
 /**
@@ -53,5 +53,5 @@ export interface OnEventOptions extends EventCommonOptions {
    *
    * @default - No target is added to the rule. Use `addTarget()` to add a target.
    */
-  readonly target?: IRuleTarget;
+  readonly target?: IRuleTarget | undefined;
 }

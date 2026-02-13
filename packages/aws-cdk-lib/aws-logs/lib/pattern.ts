@@ -409,14 +409,14 @@ export interface ColumnRestriction {
    *
    * Exactly one of 'stringValue' and 'numberValue' must be set.
    */
-  readonly stringValue?: string;
+  readonly stringValue?: string | undefined;
 
   /**
    * Number value to compare to
    *
    * Exactly one of 'stringValue' and 'numberValue' must be set.
    */
-  readonly numberValue?: number;
+  readonly numberValue?: number | undefined;
 }
 
 /**

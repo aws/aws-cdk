@@ -16,7 +16,7 @@ export interface IItemReader {
   /**
    * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * The Amazon S3 API action that Step Functions must invoke depending on the specified dataset.
@@ -28,7 +28,7 @@ export interface IItemReader {
    *
    * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
-  readonly maxItems?: number;
+  readonly maxItems?: number | undefined;
 
   /**
    * Render the ItemReader as JSON object
@@ -55,21 +55,21 @@ export interface ItemReaderProps {
    *
    * @default - S3 bucket will be determined from @see bucketNamePath
    */
-  readonly bucket?: IBucket;
+  readonly bucket?: IBucket | undefined;
 
   /**
    * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
    *
    * @default - S3 bucket will be determined from @see bucket
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * Limits the number of items passed to the Distributed Map state
    *
    * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
-  readonly maxItems?: number;
+  readonly maxItems?: number | undefined;
 }
 
 /**
@@ -81,14 +81,14 @@ export interface S3ObjectsItemReaderProps extends ItemReaderProps {
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 }
 
 /**
  * Item Reader configuration for iterating over objects in an S3 bucket
  */
 export class S3ObjectsItemReader implements IItemReader {
-  private readonly _bucket?: IBucket;
+  private readonly _bucket?: IBucket | undefined;
 
   /**
    * S3 Bucket containing objects to iterate over
@@ -103,7 +103,7 @@ export class S3ObjectsItemReader implements IItemReader {
   /**
    * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * ARN for the `listObjectsV2` method of the S3 API
@@ -116,14 +116,14 @@ export class S3ObjectsItemReader implements IItemReader {
    *
    * @default - No prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * Limits the number of items passed to the Distributed Map state
    *
    * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
-  readonly maxItems?: number;
+  readonly maxItems?: number | undefined;
 
   constructor(props: S3ObjectsItemReaderProps) {
     this._bucket = props.bucket;
@@ -204,7 +204,7 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
  * Base Item Reader configuration for iterating over entries in a S3 file
  */
 abstract class S3FileItemReader implements IItemReader {
-  private readonly _bucket?: IBucket;
+  private readonly _bucket?: IBucket | undefined;
 
   /**
    * S3 Bucket containing a file with a list to iterate over
@@ -219,7 +219,7 @@ abstract class S3FileItemReader implements IItemReader {
   /**
    * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
    */
-  readonly bucketNamePath?: string;
+  readonly bucketNamePath?: string | undefined;
 
   /**
    * S3 key of a file with a list to iterate over
@@ -237,7 +237,7 @@ abstract class S3FileItemReader implements IItemReader {
    *
    * @default - No maxItems
    */
-  readonly maxItems?: number;
+  readonly maxItems?: number | undefined;
 
   protected abstract readonly inputType: string;
 
@@ -378,7 +378,7 @@ export class CsvHeaders {
   /**
    * List of headers if `headerLocation` is `GIVEN`
    */
-  public readonly headers?: string[];
+  public readonly headers?: string[] | undefined;
 
   private constructor(headerLocation: CsvHeaderLocation, headers?: string[]) {
     this.headerLocation = headerLocation;
@@ -395,14 +395,14 @@ export interface S3CsvItemReaderProps extends S3FileItemReaderProps {
    *
    * @default - CsvHeaders with CsvHeadersLocation.FIRST_ROW
    */
-  readonly csvHeaders?: CsvHeaders;
+  readonly csvHeaders?: CsvHeaders | undefined;
 
   /**
    * Delimiter used in a CSV file
    *
    * @default undefined - Default setting is COMMA.
    */
-  readonly csvDelimiter?: CsvDelimiter;
+  readonly csvDelimiter?: CsvDelimiter | undefined;
 }
 
 /**
@@ -447,7 +447,7 @@ export class S3CsvItemReader extends S3FileItemReader {
   /**
    * Delimiter used in CSV file
    */
-  readonly csvDelimiter?: CsvDelimiter;
+  readonly csvDelimiter?: CsvDelimiter | undefined;
   protected readonly inputType: string = 'CSV';
 
   constructor(props: S3CsvItemReaderProps) {

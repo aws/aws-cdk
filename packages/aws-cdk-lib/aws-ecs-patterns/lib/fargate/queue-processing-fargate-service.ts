@@ -19,28 +19,28 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    *
    * @default - QueueProcessingContainer
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The health check command and associated configuration parameters for the container.
    *
    * @default - Health check configuration from container.
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * The subnets to associate with the service.
    *
    * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
-  readonly taskSubnets?: ec2.SubnetSelection;
+  readonly taskSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * @default - A new security group is created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -49,7 +49,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
@@ -57,7 +57,7 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: Duration;
+  readonly healthCheckGracePeriod?: Duration | undefined;
 }
 
 /**

@@ -28,7 +28,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *
    * @default - all parameters within request context will be set as false
    */
-  readonly requestContext?: RequestContext;
+  readonly requestContext?: RequestContext | undefined;
 
   /**
    * Check if querystring is to be included inside the execution input. The execution input will include a new key `queryString`:
@@ -42,7 +42,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *
    * @default true
    */
-  readonly querystring?: boolean;
+  readonly querystring?: boolean | undefined;
 
   /**
    * Check if path is to be included inside the execution input. The execution input will include a new key `path`:
@@ -56,7 +56,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *
    * @default true
    */
-  readonly path?: boolean;
+  readonly path?: boolean | undefined;
 
   /**
    * Check if header is to be included inside the execution input. The execution input will include a new key `headers`:
@@ -70,7 +70,7 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * }
    * @default false
    */
-  readonly headers?: boolean;
+  readonly headers?: boolean | undefined;
 
   /**
    * If the whole authorizer object, including custom context values should be in the execution input. The execution input will include a new key `authorizer`:
@@ -84,14 +84,14 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *
    * @default false
    */
-  readonly authorizer?: boolean;
+  readonly authorizer?: boolean | undefined;
 
   /**
    * Whether to add default response models with 200, 400, and 500 status codes to the method.
    *
    * @default true
    */
-  readonly useDefaultMethodResponses?: boolean;
+  readonly useDefaultMethodResponses?: boolean | undefined;
 }
 
 /**

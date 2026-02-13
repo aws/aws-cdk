@@ -71,7 +71,7 @@ export interface PosixUser {
    *
    * @default - None
    */
-  readonly secondaryGids?: string[];
+  readonly secondaryGids?: string[] | undefined;
 }
 
 /**
@@ -85,7 +85,7 @@ export interface AccessPointOptions {
    *
    * @default - None. The directory specified by `path` must exist.
    */
-  readonly createAcl?: Acl;
+  readonly createAcl?: Acl | undefined;
 
   /**
    * Specifies the path on the EFS file system to expose as the root directory to NFS clients using the access point
@@ -93,7 +93,7 @@ export interface AccessPointOptions {
    *
    * @default '/'
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The full POSIX identity, including the user ID, group ID, and any secondary group IDs, on the access point
@@ -105,7 +105,7 @@ export interface AccessPointOptions {
    *
    * @default - user identity not enforced
    */
-  readonly posixUser?: PosixUser;
+  readonly posixUser?: PosixUser | undefined;
 
   /**
    * The opaque string specified in the request to ensure idempotent creation.
@@ -114,7 +114,7 @@ export interface AccessPointOptions {
    *
    * @default - No client token
    */
-  readonly clientToken?: string;
+  readonly clientToken?: string | undefined;
 }
 
 /**
@@ -137,7 +137,7 @@ export interface AccessPointAttributes {
    *
    * @default - determined based on accessPointArn
    */
-  readonly accessPointId?: string;
+  readonly accessPointId?: string | undefined;
 
   /**
    * The ARN of the AccessPoint
@@ -145,14 +145,14 @@ export interface AccessPointAttributes {
    *
    * @default - determined based on accessPointId
    */
-  readonly accessPointArn?: string;
+  readonly accessPointArn?: string | undefined;
 
   /**
    * The EFS file system
    *
    * @default - no EFS file system
    */
-  readonly fileSystem?: IFileSystemRef;
+  readonly fileSystem?: IFileSystemRef | undefined;
 }
 
 abstract class AccessPointBase extends Resource implements IAccessPoint {
@@ -272,7 +272,7 @@ class ImportedAccessPoint extends AccessPointBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-efs.ImportedAccessPoint';
   public readonly accessPointId: string;
   public readonly accessPointArn: string;
-  private readonly _fileSystem?: IFileSystemRef;
+  private readonly _fileSystem?: IFileSystemRef | undefined;
 
   constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
     super(scope, id);

@@ -25,7 +25,7 @@ export interface IPlacementGroup extends IResource, IPlacementGroupRef {
    *
    * @default 0
    */
-  readonly partitions?: number;
+  readonly partitions?: number | undefined;
 
   /**
    * Places instances on distinct hardware. Spread placement groups are recommended for applications
@@ -42,14 +42,14 @@ export interface IPlacementGroup extends IResource, IPlacementGroupRef {
    *
    * @default - no spread level
    */
-  readonly spreadLevel?: PlacementGroupSpreadLevel;
+  readonly spreadLevel?: PlacementGroupSpreadLevel | undefined;
 
   /**
    * Which strategy to use when launching instances
    *
    * @default - `PlacementGroupStrategy.PARTITION` if `partitions` is defined, `CLUSTER` otherwise
    */
-  readonly strategy?: PlacementGroupStrategy;
+  readonly strategy?: PlacementGroupStrategy | undefined;
 }
 
 /**
@@ -64,14 +64,14 @@ export interface PlacementGroupProps {
    *
    * @attribute
    */
-  readonly placementGroupName?: string;
+  readonly placementGroupName?: string | undefined;
 
   /**
    * The number of partitions. Valid only when Strategy is set to partition.
    *
    * @default 0
    */
-  readonly partitions?: number;
+  readonly partitions?: number | undefined;
 
   /**
    * Places instances on distinct hardware. Spread placement groups are recommended for applications
@@ -88,14 +88,14 @@ export interface PlacementGroupProps {
    *
    * @default - no spread level
    */
-  readonly spreadLevel?: PlacementGroupSpreadLevel;
+  readonly spreadLevel?: PlacementGroupSpreadLevel | undefined;
 
   /**
    * Which strategy to use when launching instances
    *
    * @default - `PlacementGroupStrategy.PARTITION` if `partitions` is defined, `CLUSTER` otherwise
    */
-  readonly strategy?: PlacementGroupStrategy;
+  readonly strategy?: PlacementGroupStrategy | undefined;
 }
 
 /**
@@ -173,9 +173,9 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
     return new Import(scope, id);
   }
 
-  public readonly partitions?: number;
-  public readonly spreadLevel?: PlacementGroupSpreadLevel;
-  public readonly strategy?: PlacementGroupStrategy;
+  public readonly partitions?: number | undefined;
+  public readonly spreadLevel?: PlacementGroupSpreadLevel | undefined;
+  public readonly strategy?: PlacementGroupStrategy | undefined;
 
   private readonly resource: CfnPlacementGroup;
 

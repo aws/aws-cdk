@@ -276,14 +276,14 @@ export interface SsmParameterImageOptions {
    *
    * @default OperatingSystemType.LINUX
    */
-  readonly os?: OperatingSystemType;
+  readonly os?: OperatingSystemType | undefined;
 
   /**
    * Custom UserData
    *
    * @default - UserData appropriate for the OS
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -304,21 +304,21 @@ export interface SsmParameterImageOptions {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 
   /**
    * The version of the SSM parameter.
    *
    * @default no version specified.
    */
-  readonly parameterVersion?: string;
+  readonly parameterVersion?: string | undefined;
 }
 
 /**
@@ -359,7 +359,7 @@ export interface WindowsImageProps {
    *
    * @default - Empty UserData for Windows machines
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 }
 
 /**
@@ -406,49 +406,49 @@ export interface AmazonLinuxImageProps {
    *
    * @default AmazonLinux
    */
-  readonly generation?: AmazonLinuxGeneration;
+  readonly generation?: AmazonLinuxGeneration | undefined;
 
   /**
    * What edition of Amazon Linux to use
    *
    * @default Standard
    */
-  readonly edition?: AmazonLinuxEdition;
+  readonly edition?: AmazonLinuxEdition | undefined;
 
   /**
    * What kernel version of Amazon Linux to use
    *
    * @default -
    */
-  readonly kernel?: AmazonLinuxKernel;
+  readonly kernel?: AmazonLinuxKernel | undefined;
 
   /**
    * What storage backed image to use
    *
    * @default GeneralPurpose
    */
-  readonly storage?: AmazonLinuxStorage;
+  readonly storage?: AmazonLinuxStorage | undefined;
 
   /**
    * Initial user data
    *
    * @default - Empty UserData for Linux machines
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 
   /**
    * CPU Type
    *
    * @default X86_64
    */
-  readonly cpuType?: AmazonLinuxCpuType;
+  readonly cpuType?: AmazonLinuxCpuType | undefined;
 
   /**
    * Virtualization type
    *
    * @default HVM
    */
-  readonly virtualization?: AmazonLinuxVirt;
+  readonly virtualization?: AmazonLinuxVirt | undefined;
 
   /**
    * Whether the AMI ID is cached to be stable between deployments
@@ -469,14 +469,14 @@ export interface AmazonLinuxImageProps {
    *
    * @default false
    */
-  readonly cachedInContext?: boolean;
+  readonly cachedInContext?: boolean | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 
 /**
@@ -583,7 +583,7 @@ export interface GenericLinuxImageProps {
    *
    * @default - Empty UserData for Linux machines
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 }
 
 /**
@@ -595,7 +595,7 @@ export interface GenericWindowsImageProps {
    *
    * @default - Empty UserData for Windows machines
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 }
 
 /**
@@ -743,7 +743,7 @@ export interface LookupMachineImageProps {
    *
    * @default - All owners
    */
-  readonly owners?: string[];
+  readonly owners?: string[] | undefined;
 
   /**
    * Additional filters on the AMI
@@ -751,27 +751,27 @@ export interface LookupMachineImageProps {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_DescribeImages.html
    * @default - No additional filters
    */
-  readonly filters?: {[key: string]: string[]};
+  readonly filters?: {[key: string]: string[]} | undefined;
 
   /**
    * Look for Windows images
    *
    * @default false
    */
-  readonly windows?: boolean;
+  readonly windows?: boolean | undefined;
 
   /**
    * Custom userdata for this image
    *
    * @default - Empty user data appropriate for the platform type
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.
    *
    * @default - no additional cache key
    */
-  readonly additionalCacheKey?: string;
+  readonly additionalCacheKey?: string | undefined;
 }
 

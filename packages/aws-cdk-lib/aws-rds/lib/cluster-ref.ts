@@ -49,7 +49,7 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * The engine of this Cluster.
    * May be not known for imported Clusters if it wasn't provided explicitly.
    */
-  readonly engine?: IClusterEngine;
+  readonly engine?: IClusterEngine | undefined;
 
   /**
    * The ARN of the database cluster
@@ -94,28 +94,28 @@ export interface DatabaseClusterAttributes {
    *
    * @default none
    */
-  readonly clusterResourceIdentifier?: string;
+  readonly clusterResourceIdentifier?: string | undefined;
 
   /**
    * The database port
    *
    * @default - none
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The security groups of the database cluster
    *
    * @default - no security groups
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Identifier for the instances
    *
    * @default - no instance identifiers
    */
-  readonly instanceIdentifiers?: string[];
+  readonly instanceIdentifiers?: string[] | undefined;
   // Actual underlying type: DBInstanceId[], but we have to type it more loosely for Java's benefit.
 
   /**
@@ -123,40 +123,40 @@ export interface DatabaseClusterAttributes {
    *
    * @default - no endpoint address
    */
-  readonly clusterEndpointAddress?: string;
+  readonly clusterEndpointAddress?: string | undefined;
 
   /**
    * Reader endpoint address
    *
    * @default - no reader address
    */
-  readonly readerEndpointAddress?: string;
+  readonly readerEndpointAddress?: string | undefined;
 
   /**
    * Endpoint addresses of individual instances
    *
    * @default - no instance endpoints
    */
-  readonly instanceEndpointAddresses?: string[];
+  readonly instanceEndpointAddresses?: string[] | undefined;
 
   /**
    * The engine of the existing Cluster.
    *
    * @default - the imported Cluster's engine is unknown
    */
-  readonly engine?: IClusterEngine;
+  readonly engine?: IClusterEngine | undefined;
 
   /**
    * The secret attached to the database cluster
    *
    * @default - the imported Cluster's secret is unknown
    */
-  readonly secret?: secretsmanager.ISecret;
+  readonly secret?: secretsmanager.ISecret | undefined;
 
   /**
    * Whether the Data API for the cluster is enabled.
    *
    * @default false
    */
-  readonly dataApiEnabled?: boolean;
+  readonly dataApiEnabled?: boolean | undefined;
 }

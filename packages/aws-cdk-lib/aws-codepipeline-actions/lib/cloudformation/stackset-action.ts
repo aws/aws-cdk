@@ -31,7 +31,7 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Specify where to create or update Stack Instances
@@ -40,7 +40,7 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    *
    * @default - don't create or update any Stack Instances
    */
-  readonly stackInstances?: StackInstances;
+  readonly stackInstances?: StackInstances | undefined;
 
   /**
    * Determines how IAM roles are created and managed.
@@ -62,7 +62,7 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    *
    * @default StackSetDeploymentModel.selfManaged()
    */
-  readonly deploymentModel?: StackSetDeploymentModel;
+  readonly deploymentModel?: StackSetDeploymentModel | undefined;
 
   /**
    * The template parameters for your stack set
@@ -71,7 +71,7 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    *
    * @default - no parameters will be used
    */
-  readonly parameters?: StackSetParameters;
+  readonly parameters?: StackSetParameters | undefined;
 
   /**
    * Indicates that the template can create and update resources, depending on the types of resources in the template.
@@ -80,7 +80,7 @@ export interface CloudFormationDeployStackSetActionProps extends codepipeline.Co
    *
    * @default - the StackSet will have no IAM capabilities
    */
-  readonly cfnCapabilities?: cdk.CfnCapabilities[];
+  readonly cfnCapabilities?: cdk.CfnCapabilities[] | undefined;
 }
 
 /**

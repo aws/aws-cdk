@@ -8,31 +8,31 @@ export interface LambdaRuntimeProps {
    * Whether the ``ZipFile`` (aka inline code) property can be used with this runtime.
    * @default false
    */
-  readonly supportsInlineCode?: boolean;
+  readonly supportsInlineCode?: boolean | undefined;
 
   /**
    * Whether the runtime enum is meant to change over time, IE NODEJS_LATEST.
    * @default false
    */
-  readonly isVariable?: boolean;
+  readonly isVariable?: boolean | undefined;
 
   /**
    * The Docker image name to be used for bundling in this runtime.
    * @default - the latest docker image "amazon/public.ecr.aws/sam/build-<runtime>" from https://gallery.ecr.aws
    */
-  readonly bundlingDockerImage?: string;
+  readonly bundlingDockerImage?: string | undefined;
 
   /**
    * Whether this runtime is integrated with and supported for profiling using Amazon CodeGuru Profiler.
    * @default false
    */
-  readonly supportsCodeGuruProfiling?: boolean;
+  readonly supportsCodeGuruProfiling?: boolean | undefined;
 
   /**
    * Whether this runtime supports SnapStart.
    * @default false
    */
-  readonly supportsSnapStart?: boolean;
+  readonly supportsSnapStart?: boolean | undefined;
 }
 
 export enum RuntimeFamily {
@@ -403,7 +403,7 @@ export class Runtime {
   /**
    * The runtime family.
    */
-  public readonly family?: RuntimeFamily;
+  public readonly family?: RuntimeFamily | undefined;
 
   /**
    * DEPRECATED

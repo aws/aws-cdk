@@ -18,7 +18,7 @@ export interface ResourcePolicyProps {
    *
    * @default - policy is not associated to a stream
    */
-  readonly stream?: IStream;
+  readonly stream?: IStream | undefined;
 
   /**
    * The stream consumer this policy applies to.
@@ -27,14 +27,14 @@ export interface ResourcePolicyProps {
    *
    * @default - policy is not associated to a consumer
    */
-  readonly streamConsumer?: IStreamConsumer;
+  readonly streamConsumer?: IStreamConsumer | undefined;
 
   /**
    * IAM policy document to apply to a data stream.
    *
    * @default - empty policy document
    */
-  readonly policyDocument?: PolicyDocument;
+  readonly policyDocument?: PolicyDocument | undefined;
 }
 
 /**

@@ -108,14 +108,14 @@ export interface SigningProfileProps {
    *
    * @default - 135 months
    */
-  readonly signatureValidity?: Duration;
+  readonly signatureValidity?: Duration | undefined;
 
   /**
    * Physical name of this Signing Profile.
    *
    * @default - Assigned by CloudFormation (recommended).
    */
-  readonly signingProfileName?: string;
+  readonly signingProfileName?: string | undefined;
 }
 
 /**

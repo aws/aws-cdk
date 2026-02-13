@@ -25,13 +25,13 @@ export interface PublicKeyProps {
    * A name to identify the public key.
    * @default - generated from the `id`
    */
-  readonly publicKeyName?: string;
+  readonly publicKeyName?: string | undefined;
 
   /**
    * A comment to describe the public key.
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The public key that you can use with signed URLs and signed cookies, or with field-level encryption.

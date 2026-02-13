@@ -23,7 +23,7 @@ export interface ConstructTrace {
    *
    * @default - undefined if this is the last construct in the tree
    */
-  readonly child?: ConstructTrace;
+  readonly child?: ConstructTrace | undefined;
 
   /**
    * The name of the construct
@@ -33,14 +33,14 @@ export interface ConstructTrace {
    *
    * @default - undefined if this is a locally defined construct
    */
-  readonly construct?: string;
+  readonly construct?: string | undefined;
 
   /**
    * The version of the library the construct comes from
    *
    * @default - undefined if this is a locally defined construct
    */
-  readonly libraryVersion?: string;
+  readonly libraryVersion?: string | undefined;
 
   /**
    * If `CDK_DEBUG` is set to true, then this will show
@@ -53,7 +53,7 @@ export interface ConstructTrace {
    * @default - undefined if the construct comes from a library
    * and the location would point to node_modules
    */
-  readonly location?: string;
+  readonly location?: string | undefined;
 }
 
 /**

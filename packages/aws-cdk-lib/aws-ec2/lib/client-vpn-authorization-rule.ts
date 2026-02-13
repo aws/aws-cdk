@@ -21,14 +21,14 @@ export interface ClientVpnAuthorizationRuleOptions {
    *
    * @default - authorize all groups
    */
-  readonly groupId?: string;
+  readonly groupId?: string | undefined;
 
   /**
    * A brief description of the authorization rule.
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -39,14 +39,14 @@ export interface ClientVpnAuthorizationRuleProps extends ClientVpnAuthorizationR
    * The client VPN endpoint to which to add the rule.
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndpoint?: IClientVpnEndpointRef;
+  readonly clientVpnEndpoint?: IClientVpnEndpointRef | undefined;
 
   /**
    * The client VPN endpoint to which to add the rule.
    * @deprecated Use `clientVpnEndpoint` instead
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndoint?: IClientVpnEndpointRef;
+  readonly clientVpnEndoint?: IClientVpnEndpointRef | undefined;
 }
 
 /**

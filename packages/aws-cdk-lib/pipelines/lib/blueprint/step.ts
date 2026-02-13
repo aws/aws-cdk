@@ -140,19 +140,19 @@ export interface StackSteps {
    *
    * @default - no additional steps
    */
-  readonly pre?: Step[];
+  readonly pre?: Step[] | undefined;
 
   /**
    * Steps that execute after stack is prepared but before stack is deployed
    *
    * @default - no additional steps
    */
-  readonly changeSet?: Step[];
+  readonly changeSet?: Step[] | undefined;
 
   /**
    * Steps that execute after stack is deployed
    *
    * @default - no additional steps
    */
-  readonly post?: Step[];
+  readonly post?: Step[] | undefined;
 }

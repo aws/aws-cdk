@@ -28,7 +28,7 @@ export interface CloudFormationDeployStackInstancesActionProps extends codepipel
    *
    * @default - no parameters will be overridden
    */
-  readonly parameterOverrides?: StackSetParameters;
+  readonly parameterOverrides?: StackSetParameters | undefined;
 }
 
 /**

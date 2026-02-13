@@ -69,7 +69,7 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - matches requests with any path
    */
-  readonly path?: HttpGatewayRoutePathMatch;
+  readonly path?: HttpGatewayRoutePathMatch | undefined;
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -77,21 +77,21 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly headers?: HeaderMatch[];
+  readonly headers?: HeaderMatch[] | undefined;
 
   /**
    * The gateway route host name to be matched on.
    *
    * @default - do not match on host name
    */
-  readonly hostname?: GatewayRouteHostnameMatch;
+  readonly hostname?: GatewayRouteHostnameMatch | undefined;
 
   /**
    * The method to match on.
    *
    * @default - do not match on method
    */
-  readonly method?: HttpRouteMethod;
+  readonly method?: HttpRouteMethod | undefined;
 
   /**
    * The query parameters to match on.
@@ -99,7 +99,7 @@ export interface HttpGatewayRouteMatch {
    *
    * @default - do not match on query parameters
    */
-  readonly queryParameters?: QueryParameterMatch[];
+  readonly queryParameters?: QueryParameterMatch[] | undefined;
 
   /**
    * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
@@ -107,14 +107,14 @@ export interface HttpGatewayRouteMatch {
    *
    * @default true
    */
-  readonly rewriteRequestHostname?: boolean;
+  readonly rewriteRequestHostname?: boolean | undefined;
 
   /**
    * The port number to match on.
    *
    * @default - no default port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 }
 
 /**
@@ -126,14 +126,14 @@ export interface GrpcGatewayRouteMatch {
    *
    * @default - no matching on service name
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 
   /**
    * Create host name based gRPC gateway route match.
    *
    * @default - no matching on host name
    */
-  readonly hostname?: GatewayRouteHostnameMatch;
+  readonly hostname?: GatewayRouteHostnameMatch | undefined;
 
   /**
    * Create metadata based gRPC gateway route match.
@@ -141,7 +141,7 @@ export interface GrpcGatewayRouteMatch {
    *
    * @default - no matching on metadata
    */
-  readonly metadata?: HeaderMatch[];
+  readonly metadata?: HeaderMatch[] | undefined;
 
   /**
    * When `true`, rewrites the original request received at the Virtual Gateway to the destination Virtual Service name.
@@ -149,14 +149,14 @@ export interface GrpcGatewayRouteMatch {
    *
    * @default true
    */
-  readonly rewriteRequestHostname?: boolean;
+  readonly rewriteRequestHostname?: boolean | undefined;
 
   /**
    * The port to match from the request.
    *
    * @default - do not match on port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 }
 
 /**
@@ -170,7 +170,7 @@ export interface CommonGatewayRouteSpecOptions {
    *
    * @default - no particular priority
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**
@@ -183,7 +183,7 @@ export interface HttpGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptio
    *
    * @default - matches any path and automatically rewrites the path to '/'
    */
-  readonly match?: HttpGatewayRouteMatch;
+  readonly match?: HttpGatewayRouteMatch | undefined;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -215,21 +215,21 @@ export interface GatewayRouteSpecConfig {
    *
    * @default - no http spec
    */
-  readonly httpSpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty;
+  readonly httpSpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty | undefined;
 
   /**
    * The spec for an http2 gateway route
    *
    * @default - no http2 spec
    */
-  readonly http2SpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty;
+  readonly http2SpecConfig?: CfnGatewayRoute.HttpGatewayRouteProperty | undefined;
 
   /**
    * The spec for a grpc gateway route
    *
    * @default - no grpc spec
    */
-  readonly grpcSpecConfig?: CfnGatewayRoute.GrpcGatewayRouteProperty;
+  readonly grpcSpecConfig?: CfnGatewayRoute.GrpcGatewayRouteProperty | undefined;
 
   /**
    * The priority for the gateway route. When a Virtual Gateway has multiple gateway routes, gateway route match
@@ -238,7 +238,7 @@ export interface GatewayRouteSpecConfig {
    *
    * @default - no particular priority
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**
@@ -280,7 +280,7 @@ export abstract class GatewayRouteSpec {
 }
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
-  readonly match?: HttpGatewayRouteMatch;
+  readonly match?: HttpGatewayRouteMatch | undefined;
 
   /**
    * The VirtualService this GatewayRoute directs traffic to
@@ -291,7 +291,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * Type of route you are creating
    */
   readonly routeType: Protocol;
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
@@ -352,7 +352,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();

@@ -80,7 +80,7 @@ export interface AccessScope {
    *
    * @default - no specific namespaces for this scope.
    */
-  readonly namespaces?: string[];
+  readonly namespaces?: string[] | undefined;
   /**
    * The scope type of the policy, either 'namespace' or 'cluster'.
    */
@@ -190,7 +190,7 @@ export interface AccessPolicyNameOptions {
    * An optional array of Kubernetes namespaces to which the access policy applies.
    * @default - no specific namespaces for this scope
    */
-  readonly namespaces?: string[];
+  readonly namespaces?: string[] | undefined;
 }
 
 /**
@@ -300,13 +300,13 @@ export interface AccessEntryProps {
    *
    * @default - No access entry name is provided
    */
-  readonly accessEntryName?: string;
+  readonly accessEntryName?: string | undefined;
   /**
    * The type of the AccessEntry.
    *
    * @default STANDARD
    */
-  readonly accessEntryType?: AccessEntryType;
+  readonly accessEntryType?: AccessEntryType | undefined;
   /**
    * The Amazon EKS cluster to which the access entry applies.
    */
@@ -332,7 +332,7 @@ export interface AccessEntryProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -378,7 +378,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private cluster: ICluster;
   private principal: string;
   private accessPolicies: IAccessPolicy[];
-  private readonly accessEntryType?: AccessEntryType;
+  private readonly accessEntryType?: AccessEntryType | undefined;
   private readonly resource: CfnAccessEntry;
 
   @memoizedGetter

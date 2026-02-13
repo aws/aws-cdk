@@ -28,7 +28,7 @@ export interface WebSocketAuthorizerProps {
    * Name of the authorizer
    * @default - id of the WebSocketAuthorizer construct.
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * WebSocket Api to attach the authorizer to
@@ -53,7 +53,7 @@ export interface WebSocketAuthorizerProps {
    *
    * @default - required for Request authorizer types
    */
-  readonly authorizerUri?: string;
+  readonly authorizerUri?: string | undefined;
 }
 
 /**
@@ -164,7 +164,7 @@ export interface WebSocketRouteAuthorizerConfig {
    *
    * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
-  readonly authorizerId?: string;
+  readonly authorizerId?: string | undefined;
 
   /**
    * The type of authorization

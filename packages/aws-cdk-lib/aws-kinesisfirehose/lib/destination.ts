@@ -10,14 +10,14 @@ export interface DestinationConfig {
    *
    * @default - S3 destination is not used.
    */
-  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
+  readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty | undefined;
 
   /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
    *
    * @default []
    */
-  readonly dependables?: IDependable[];
+  readonly dependables?: IDependable[] | undefined;
 }
 
 /**

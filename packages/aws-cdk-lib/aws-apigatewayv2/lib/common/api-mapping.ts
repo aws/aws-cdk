@@ -30,7 +30,7 @@ export interface ApiMappingProps {
    * Api mapping key. The path where this stage should be mapped to on the domain
    * @default - undefined for the root path mapping.
    */
-  readonly apiMappingKey?: string;
+  readonly apiMappingKey?: string | undefined;
 
   /**
    * The Api to which this mapping is applied
@@ -49,7 +49,7 @@ export interface ApiMappingProps {
    *
    * @default - Default stage of the passed API for HTTP API, required for WebSocket API
    */
-  readonly stage?: IStage;
+  readonly stage?: IStage | undefined;
 }
 
 /**
@@ -66,7 +66,7 @@ export interface ApiMappingAttributes {
    *
    * @default - Certain operations on the referenced object may fail if not supplied
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 }
 
 /**
@@ -107,7 +107,7 @@ export class ApiMapping extends Resource implements IApiMapping {
   /**
    * API Mapping key
    */
-  public readonly mappingKey?: string;
+  public readonly mappingKey?: string | undefined;
 
   /**
    * API domain name

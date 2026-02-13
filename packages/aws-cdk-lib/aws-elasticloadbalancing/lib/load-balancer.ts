@@ -35,7 +35,7 @@ export interface LoadBalancerProps {
    *
    * @default false
    */
-  readonly internetFacing?: boolean;
+  readonly internetFacing?: boolean | undefined;
 
   /**
    * What listeners to set up for the load balancer.
@@ -44,7 +44,7 @@ export interface LoadBalancerProps {
    *
    * @default -
    */
-  readonly listeners?: LoadBalancerListener[];
+  readonly listeners?: LoadBalancerListener[] | undefined;
 
   /**
    * What targets to load balance to.
@@ -53,7 +53,7 @@ export interface LoadBalancerProps {
    *
    * @default - None.
    */
-  readonly targets?: ILoadBalancerTarget[];
+  readonly targets?: ILoadBalancerTarget[] | undefined;
 
   /**
    * Health check settings for the load balancing targets.
@@ -62,7 +62,7 @@ export interface LoadBalancerProps {
    *
    * @default - None.
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * Whether cross zone load balancing is enabled
@@ -72,7 +72,7 @@ export interface LoadBalancerProps {
    *
    * @default true
    */
-  readonly crossZone?: boolean;
+  readonly crossZone?: boolean | undefined;
 
   /**
    * Which subnets to deploy the load balancer
@@ -82,7 +82,7 @@ export interface LoadBalancerProps {
    *
    * @default - Public subnets if internetFacing, Private subnets otherwise
    */
-  readonly subnetSelection?: SubnetSelection;
+  readonly subnetSelection?: SubnetSelection | undefined;
 
   /**
    * Enable Loadbalancer access logs
@@ -92,7 +92,7 @@ export interface LoadBalancerProps {
    * Can set bucket prefix in order to provide folder name inside bucket
    * @default - disabled
    */
-  readonly accessLoggingPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty;
+  readonly accessLoggingPolicy?: CfnLoadBalancer.AccessLoggingPolicyProperty | undefined;
 
 }
 
@@ -112,7 +112,7 @@ export interface HealthCheck {
    *
    * @default Automatic
    */
-  readonly protocol?: LoadBalancingProtocol;
+  readonly protocol?: LoadBalancingProtocol | undefined;
 
   /**
    * What path to use for HTTP or HTTPS health check (must return 200)
@@ -122,35 +122,35 @@ export interface HealthCheck {
    *
    * @default "/"
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * After how many successful checks is an instance considered healthy
    *
    * @default 2
    */
-  readonly healthyThreshold?: number;
+  readonly healthyThreshold?: number | undefined;
 
   /**
    * After how many unsuccessful checks is an instance considered unhealthy
    *
    * @default 5
    */
-  readonly unhealthyThreshold?: number;
+  readonly unhealthyThreshold?: number | undefined;
 
   /**
    * Number of seconds between health checks
    *
    * @default Duration.seconds(30)
    */
-  readonly interval?: Duration;
+  readonly interval?: Duration | undefined;
 
   /**
    * Health check timeout
    *
    * @default Duration.seconds(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 }
 
 /**
@@ -180,7 +180,7 @@ export interface LoadBalancerListener {
    *
    * May be omitted if the external port is either 80 or 443.
    */
-  readonly externalProtocol?: LoadBalancingProtocol;
+  readonly externalProtocol?: LoadBalancingProtocol | undefined;
 
   /**
    * Instance listening port
@@ -189,7 +189,7 @@ export interface LoadBalancerListener {
    *
    * @default externalPort
    */
-  readonly internalPort?: number;
+  readonly internalPort?: number | undefined;
 
   /**
    * What public protocol to use for load balancing
@@ -202,25 +202,25 @@ export interface LoadBalancerListener {
    * is 'tcp' or 'ssl', the instance protocol is 'http' if the
    * front-end protocol is 'https'.
    */
-  readonly internalProtocol?: LoadBalancingProtocol;
+  readonly internalProtocol?: LoadBalancingProtocol | undefined;
 
   /**
    * SSL policy names
    */
-  readonly policyNames?: string[];
+  readonly policyNames?: string[] | undefined;
 
   /**
    * the ARN of the SSL certificate
    * @deprecated - use sslCertificateArn instead
    */
-  readonly sslCertificateId?: string;
+  readonly sslCertificateId?: string | undefined;
 
   /**
    * the ARN of the SSL certificate
    *
    * @default - none
    */
-  readonly sslCertificateArn?: string;
+  readonly sslCertificateArn?: string | undefined;
 
   /**
    * Allow connections to the load balancer from the given set of connection peers
@@ -231,7 +231,7 @@ export interface LoadBalancerListener {
    *
    * @default Anywhere
    */
-  readonly allowConnectionsFrom?: IConnectable[];
+  readonly allowConnectionsFrom?: IConnectable[] | undefined;
 }
 
 export enum LoadBalancingProtocol {

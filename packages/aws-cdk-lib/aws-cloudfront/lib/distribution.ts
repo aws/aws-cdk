@@ -113,7 +113,7 @@ export interface DistributionAttributes {
 
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
-  readonly originGroupId?: string;
+  readonly originGroupId?: string | undefined;
 }
 
 /**
@@ -130,21 +130,21 @@ export interface DistributionProps {
    *
    * @default - no additional behaviors are added.
    */
-  readonly additionalBehaviors?: Record<string, BehaviorOptions>;
+  readonly additionalBehaviors?: Record<string, BehaviorOptions> | undefined;
 
   /**
    * A certificate to associate with the distribution. The certificate must be located in N. Virginia (us-east-1).
    *
    * @default - the CloudFront wildcard certificate (*.cloudfront.net) will be used.
    */
-  readonly certificate?: ICertificateRef;
+  readonly certificate?: ICertificateRef | undefined;
 
   /**
    * Any comments you want to include about the distribution.
    *
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The object that you want CloudFront to request from your origin (for example, index.html)
@@ -153,7 +153,7 @@ export interface DistributionProps {
    *
    * @default - no default root object
    */
-  readonly defaultRootObject?: string;
+  readonly defaultRootObject?: string | undefined;
 
   /**
    * Alternative domain names for this distribution.
@@ -167,14 +167,14 @@ export interface DistributionProps {
    *
    * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
    */
-  readonly domainNames?: string[];
+  readonly domainNames?: string[] | undefined;
 
   /**
    * Enable or disable the distribution.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
@@ -184,21 +184,21 @@ export interface DistributionProps {
    *
    * @default true
    */
-  readonly enableIpv6?: boolean;
+  readonly enableIpv6?: boolean | undefined;
 
   /**
    * Enable access logging for the distribution.
    *
    * @default - false, unless `logBucket` is specified.
    */
-  readonly enableLogging?: boolean;
+  readonly enableLogging?: boolean | undefined;
 
   /**
    * Controls the countries in which your content is distributed.
    *
    * @default - No geographic restrictions
    */
-  readonly geoRestriction?: GeoRestriction;
+  readonly geoRestriction?: GeoRestriction | undefined;
 
   /**
    * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
@@ -207,7 +207,7 @@ export interface DistributionProps {
    *
    * @default HttpVersion.HTTP2
    */
-  readonly httpVersion?: HttpVersion;
+  readonly httpVersion?: HttpVersion | undefined;
 
   /**
    * The Amazon S3 bucket to store the access logs in.
@@ -215,21 +215,21 @@ export interface DistributionProps {
    *
    * @default - A bucket is created if `enableLogging` is true
    */
-  readonly logBucket?: s3.IBucket;
+  readonly logBucket?: s3.IBucket | undefined;
 
   /**
    * Specifies whether you want CloudFront to include cookies in access logs
    *
    * @default false
    */
-  readonly logIncludesCookies?: boolean;
+  readonly logIncludesCookies?: boolean | undefined;
 
   /**
    * An optional string that you want CloudFront to prefix to the access log filenames for this distribution.
    *
    * @default - no prefix
    */
-  readonly logFilePrefix?: string;
+  readonly logFilePrefix?: string | undefined;
 
   /**
    * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
@@ -239,7 +239,7 @@ export interface DistributionProps {
    *
    * @default PriceClass.PRICE_CLASS_ALL
    */
-  readonly priceClass?: PriceClass;
+  readonly priceClass?: PriceClass | undefined;
 
   /**
    * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
@@ -253,14 +253,14 @@ export interface DistributionProps {
    *
    * @default - No AWS Web Application Firewall web access control list (web ACL).
    */
-  readonly webAclId?: string;
+  readonly webAclId?: string | undefined;
 
   /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
    * @default - No custom error responses.
    */
-  readonly errorResponses?: ErrorResponse[];
+  readonly errorResponses?: ErrorResponse[] | undefined;
 
   /**
    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
@@ -270,7 +270,7 @@ export interface DistributionProps {
    *
    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
    */
-  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol | undefined;
 
   /**
    * The SSL method CloudFront will use for your distribution.
@@ -289,7 +289,7 @@ export interface DistributionProps {
    *
    * @default SSLMethod.SNI
    */
-  readonly sslSupportMethod?: SSLMethod;
+  readonly sslSupportMethod?: SSLMethod | undefined;
 
   /**
    * Whether to enable additional CloudWatch metrics.
@@ -298,7 +298,7 @@ export interface DistributionProps {
    *
    * @default false
    */
-  readonly publishAdditionalMetrics?: boolean;
+  readonly publishAdditionalMetrics?: boolean | undefined;
 }
 
 /**
@@ -370,8 +370,8 @@ export class Distribution extends Resource implements IDistribution {
   private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
-  private readonly certificate?: ICertificateRef;
-  private readonly publishAdditionalMetrics?: boolean;
+  private readonly certificate?: ICertificateRef | undefined;
+  private readonly publishAdditionalMetrics?: boolean | undefined;
   private webAclId?: string;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
@@ -1021,7 +1021,7 @@ export interface ErrorResponse {
    *
    * @default - the default caching TTL behavior applies
    */
-  readonly ttl?: Duration;
+  readonly ttl?: Duration | undefined;
   /**
    * The HTTP status code for which you want to specify a custom error page and/or a caching duration.
    */
@@ -1033,14 +1033,14 @@ export interface ErrorResponse {
    *
    * @default - the error code will be returned as the response code.
    */
-  readonly responseHttpStatus?: number;
+  readonly responseHttpStatus?: number | undefined;
   /**
    * The path to the custom error page that you want CloudFront to return to a viewer when your origin returns the
    * `httpStatus`, for example, /4xx-errors/403-forbidden.html
    *
    * @default - the default CloudFront response is shown.
    */
-  readonly responsePagePath?: string;
+  readonly responsePagePath?: string | undefined;
 }
 
 /**
@@ -1092,7 +1092,7 @@ export interface EdgeLambda {
    *
    * @default false
    */
-  readonly includeBody?: boolean;
+  readonly includeBody?: boolean | undefined;
 }
 
 /**
@@ -1104,14 +1104,14 @@ export interface AddBehaviorOptions {
    *
    * @default AllowedMethods.ALLOW_GET_HEAD
    */
-  readonly allowedMethods?: AllowedMethods;
+  readonly allowedMethods?: AllowedMethods | undefined;
 
   /**
    * HTTP methods to cache for this behavior.
    *
    * @default CachedMethods.CACHE_GET_HEAD
    */
-  readonly cachedMethods?: CachedMethods;
+  readonly cachedMethods?: CachedMethods | undefined;
 
   /**
    * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
@@ -1120,7 +1120,7 @@ export interface AddBehaviorOptions {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
    * @default CachePolicy.CACHING_OPTIMIZED
    */
-  readonly cachePolicy?: ICachePolicyRef;
+  readonly cachePolicy?: ICachePolicyRef | undefined;
 
   /**
    * Whether you want CloudFront to automatically compress certain files for this cache behavior.
@@ -1129,7 +1129,7 @@ export interface AddBehaviorOptions {
    *
    * @default true
    */
-  readonly compress?: boolean;
+  readonly compress?: boolean | undefined;
 
   /**
    * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
@@ -1137,42 +1137,42 @@ export interface AddBehaviorOptions {
    *
    * @default - none
    */
-  readonly originRequestPolicy?: IOriginRequestPolicyRef;
+  readonly originRequestPolicy?: IOriginRequestPolicyRef | undefined;
 
   /**
    * The real-time log configuration to be attached to this cache behavior.
    *
    * @default - none
    */
-  readonly realtimeLogConfig?: IRealtimeLogConfigRef;
+  readonly realtimeLogConfig?: IRealtimeLogConfigRef | undefined;
 
   /**
    * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
    *
    * @default - none
    */
-  readonly responseHeadersPolicy?: IResponseHeadersPolicyRef;
+  readonly responseHeadersPolicy?: IResponseHeadersPolicyRef | undefined;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
    *
    * @default false
    */
-  readonly smoothStreaming?: boolean;
+  readonly smoothStreaming?: boolean | undefined;
 
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
    * @default ViewerProtocolPolicy.ALLOW_ALL
    */
-  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy | undefined;
 
   /**
    * The CloudFront functions to invoke before serving the contents.
    *
    * @default - no functions will be invoked
    */
-  readonly functionAssociations?: FunctionAssociation[];
+  readonly functionAssociations?: FunctionAssociation[] | undefined;
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.
@@ -1180,7 +1180,7 @@ export interface AddBehaviorOptions {
    * @default - no Lambda functions will be invoked
    * @see https://aws.amazon.com/lambda/edge
    */
-  readonly edgeLambdas?: EdgeLambda[];
+  readonly edgeLambdas?: EdgeLambda[] | undefined;
 
   /**
    * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
@@ -1188,7 +1188,7 @@ export interface AddBehaviorOptions {
    * @default - no KeyGroups are associated with cache behavior
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    */
-  readonly trustedKeyGroups?: IKeyGroupRef[];
+  readonly trustedKeyGroups?: IKeyGroupRef[] | undefined;
 
   /**
    * Enables your CloudFront distribution to receive gRPC requests and to proxy them directly to your origins.
@@ -1201,7 +1201,7 @@ export interface AddBehaviorOptions {
    * @default false
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-using-grpc.html
    */
-  readonly enableGrpc?: boolean;
+  readonly enableGrpc?: boolean | undefined;
 }
 
 /**

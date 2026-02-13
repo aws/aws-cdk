@@ -29,12 +29,12 @@ export interface JenkinsActionProps extends codepipeline.CommonActionProps {
   /**
    * The source to use as input for this build.
    */
-  readonly inputs?: codepipeline.Artifact[];
+  readonly inputs?: codepipeline.Artifact[] | undefined;
 
   /**
    *
    */
-  readonly outputs?: codepipeline.Artifact[];
+  readonly outputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * The Jenkins Provider for this Action.

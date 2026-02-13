@@ -38,7 +38,7 @@ export interface TriggerOptions {
    *
    * @default []
    */
-  readonly executeAfter?: Construct[];
+  readonly executeAfter?: Construct[] | undefined;
 
   /**
    * Adds this trigger as a dependency on other constructs. This means that this
@@ -48,7 +48,7 @@ export interface TriggerOptions {
    *
    * @default []
    */
-  readonly executeBefore?: Construct[];
+  readonly executeBefore?: Construct[] | undefined;
 
   /**
    * Re-executes the trigger every time the handler changes.
@@ -59,7 +59,7 @@ export interface TriggerOptions {
    *
    * @default true
    */
-  readonly executeOnHandlerChange?: boolean;
+  readonly executeOnHandlerChange?: boolean | undefined;
 }
 
 /**
@@ -98,14 +98,14 @@ export interface TriggerProps extends TriggerOptions {
    *
    * @default RequestResponse
    */
-  readonly invocationType?: InvocationType;
+  readonly invocationType?: InvocationType | undefined;
 
   /**
    * The timeout of the invocation call of the Lambda function to be triggered.
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 }
 
 /**

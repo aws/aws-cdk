@@ -16,7 +16,7 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    *
    * @default - No principals that can read file asset.
    */
-  readonly readers?: iam.IGrantable[];
+  readonly readers?: iam.IGrantable[] | undefined;
 
   /**
    * Custom hash to use when identifying the specific version of the asset. For consistency,
@@ -34,7 +34,7 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    *
    * @deprecated see `assetHash` and `assetHashType`
    */
-  readonly sourceHash?: string;
+  readonly sourceHash?: string | undefined;
 
   /**
    * Whether or not the asset needs to exist beyond deployment time; i.e.
@@ -49,12 +49,12 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    *
    * @default false
    */
-  readonly deployTime?: boolean;
+  readonly deployTime?: boolean | undefined;
   /**
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: kms.IKeyRef;
+  readonly sourceKMSKey?: kms.IKeyRef | undefined;
 
   /**
    * A display name for this asset
@@ -76,7 +76,7 @@ export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.Asse
    *
    * @default - Stack-relative construct path
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 export interface AssetProps extends AssetOptions {

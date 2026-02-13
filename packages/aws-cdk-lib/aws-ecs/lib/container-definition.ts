@@ -23,13 +23,13 @@ export interface SecretVersionInfo {
    *
    * @default - use default version id
    */
-  readonly versionId?: string;
+  readonly versionId?: string | undefined;
   /**
    * version stage of the secret
    *
    * @default - use default version stage
    */
-  readonly versionStage?: string;
+  readonly versionStage?: string | undefined;
 }
 
 /**
@@ -92,7 +92,7 @@ export abstract class Secret {
   /**
    * Whether this secret uses a specific JSON field
    */
-  public abstract readonly hasField?: boolean;
+  public abstract readonly hasField?: boolean | undefined;
 
   /**
    * Grants reading the secret to a principal
@@ -121,7 +121,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - id of node associated with ContainerDefinition.
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The command that is passed to the container.
@@ -130,7 +130,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - CMD value built into container image.
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * A list of ARNs in SSM or Amazon S3 to a credential spec (`CredSpec`) file that configures the container for Active Directory authentication.
@@ -141,14 +141,14 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No credential specs.
    */
-  readonly credentialSpecs?: CredentialSpec[];
+  readonly credentialSpecs?: CredentialSpec[] | undefined;
 
   /**
    * The minimum number of CPU units to reserve for the container.
    *
    * @default - No minimum CPU units reserved.
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * Specifies whether networking is disabled within the container.
@@ -157,35 +157,35 @@ export interface ContainerDefinitionOptions {
    *
    * @default false
    */
-  readonly disableNetworking?: boolean;
+  readonly disableNetworking?: boolean | undefined;
 
   /**
    * A list of DNS search domains that are presented to the container.
    *
    * @default - No search domains.
    */
-  readonly dnsSearchDomains?: string[];
+  readonly dnsSearchDomains?: string[] | undefined;
 
   /**
    * A list of DNS servers that are presented to the container.
    *
    * @default - Default DNS servers.
    */
-  readonly dnsServers?: string[];
+  readonly dnsServers?: string[] | undefined;
 
   /**
    * A key/value map of labels to add to the container.
    *
    * @default - No labels.
    */
-  readonly dockerLabels?: { [key: string]: string };
+  readonly dockerLabels?: { [key: string]: string } | undefined;
 
   /**
    * A list of strings to provide custom labels for SELinux and AppArmor multi-level security systems.
    *
    * @default - No security labels.
    */
-  readonly dockerSecurityOptions?: string[];
+  readonly dockerSecurityOptions?: string[] | undefined;
 
   /**
    * The ENTRYPOINT value to pass to the container.
@@ -194,14 +194,14 @@ export interface ContainerDefinitionOptions {
    *
    * @default - Entry point configured in container.
    */
-  readonly entryPoint?: string[];
+  readonly entryPoint?: string[] | undefined;
 
   /**
    * The environment variables to pass to the container.
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The environment files to pass to the container.
@@ -210,28 +210,28 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No environment files.
    */
-  readonly environmentFiles?: EnvironmentFile[];
+  readonly environmentFiles?: EnvironmentFile[] | undefined;
 
   /**
    * The secret environment variables to pass to the container.
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: Secret };
+  readonly secrets?: { [key: string]: Secret } | undefined;
 
   /**
    * Time duration (in seconds) to wait before giving up on resolving dependencies for a container.
    *
    * @default - none
    */
-  readonly startTimeout?: cdk.Duration;
+  readonly startTimeout?: cdk.Duration | undefined;
 
   /**
    * Time duration (in seconds) to wait before the container is forcefully killed if it doesn't exit normally on its own.
    *
    * @default - none
    */
-  readonly stopTimeout?: cdk.Duration;
+  readonly stopTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies whether the container is marked essential.
@@ -245,28 +245,28 @@ export interface ContainerDefinitionOptions {
    *
    * @default true
    */
-  readonly essential?: boolean;
+  readonly essential?: boolean | undefined;
 
   /**
    * A list of hostnames and IP address mappings to append to the /etc/hosts file on the container.
    *
    * @default - No extra hosts.
    */
-  readonly extraHosts?: { [name: string]: string };
+  readonly extraHosts?: { [name: string]: string } | undefined;
 
   /**
    * The health check command and associated configuration parameters for the container.
    *
    * @default - Health check configuration from container.
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * The hostname to use for your container.
    *
    * @default - Automatic hostname.
    */
-  readonly hostname?: string;
+  readonly hostname?: string | undefined;
 
   /**
    * When this parameter is true, you can deploy containerized applications that require stdin or a tty to be allocated.
@@ -274,7 +274,7 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-interactive
    * @default - false
    */
-  readonly interactive?: boolean;
+  readonly interactive?: boolean | undefined;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -286,7 +286,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No memory limit.
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -301,7 +301,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No memory reserved.
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number | undefined;
 
   /**
    * Specifies whether the container is marked as privileged.
@@ -309,14 +309,14 @@ export interface ContainerDefinitionOptions {
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * When this parameter is true, the container is given read-only access to its root file system.
    *
    * @default false
    */
-  readonly readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean | undefined;
 
   /**
    * The user to use inside the container. This parameter maps to User in the Create a container section of the Docker Remote API and the --user option to docker run.
@@ -324,7 +324,7 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user
    * @default root
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * Specifies whether Amazon ECS will resolve the container image tag provided
@@ -337,21 +337,21 @@ export interface ContainerDefinitionOptions {
    * @default VersionConsistency.DISABLED if `image` is a CDK asset, VersionConsistency.ENABLED otherwise
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-versionconsistency
    */
-  readonly versionConsistency?: VersionConsistency;
+  readonly versionConsistency?: VersionConsistency | undefined;
 
   /**
    * The working directory in which to run commands inside the container.
    *
    * @default /
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 
   /**
    * The log configuration specification for the container.
    *
    * @default - Containers use the same logging driver that the Docker daemon uses.
    */
-  readonly logging?: LogDriver;
+  readonly logging?: LogDriver | undefined;
 
   /**
    * Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
@@ -359,26 +359,26 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No Linux parameters.
    */
-  readonly linuxParameters?: LinuxParameters;
+  readonly linuxParameters?: LinuxParameters | undefined;
 
   /**
    * The number of GPUs assigned to the container.
    *
    * @default - No GPUs assigned.
    */
-  readonly gpuCount?: number;
+  readonly gpuCount?: number | undefined;
 
   /**
    * The port mappings to add to the container definition.
    * @default - No ports are mapped.
    */
-  readonly portMappings?: PortMapping[];
+  readonly portMappings?: PortMapping[] | undefined;
 
   /**
    * The inference accelerators referenced by the container.
    * @default - No inference accelerators assigned.
    */
-  readonly inferenceAcceleratorResources?: string[];
+  readonly inferenceAcceleratorResources?: string[] | undefined;
 
   /**
    * A list of namespaced kernel parameters to set in the container.
@@ -387,7 +387,7 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
    */
-  readonly systemControls?: SystemControl[];
+  readonly systemControls?: SystemControl[] | undefined;
 
   /**
    * When this parameter is true, a TTY is allocated. This parameter maps to Tty in the "Create a container section" of the
@@ -396,12 +396,12 @@ export interface ContainerDefinitionOptions {
    * @default - false
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_pseudoterminal
    */
-  readonly pseudoTerminal?: boolean;
+  readonly pseudoTerminal?: boolean | undefined;
 
   /**
    * An array of ulimits to set in the container.
    */
-  readonly ulimits?: Ulimit[];
+  readonly ulimits?: Ulimit[] | undefined;
 
   /**
    * Enable a restart policy for a container.
@@ -411,7 +411,7 @@ export interface ContainerDefinitionOptions {
    * @default - false unless `restartIgnoredExitCodes` or `restartAttemptPeriod` is set.
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container-restart-policy.html
    */
-  readonly enableRestartPolicy?: boolean;
+  readonly enableRestartPolicy?: boolean | undefined;
 
   /**
    * A list of exit codes that Amazon ECS will ignore and not attempt a restart on.
@@ -422,7 +422,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No exit codes are ignored.
    */
-  readonly restartIgnoredExitCodes?: number[];
+  readonly restartIgnoredExitCodes?: number[] | undefined;
 
   /**
    * A period of time that the container must run for before a restart can be attempted.
@@ -437,7 +437,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - Duration.seconds(300) if `enableRestartPolicy` is true, otherwise no period.
    */
-  readonly restartAttemptPeriod?: cdk.Duration;
+  readonly restartAttemptPeriod?: cdk.Duration | undefined;
 }
 
 /**
@@ -467,7 +467,7 @@ export class ContainerDefinition extends Construct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
-  public readonly linuxParameters?: LinuxParameters;
+  public readonly linuxParameters?: LinuxParameters | undefined;
 
   /**
    * The mount points for data volumes in your container.
@@ -525,17 +525,17 @@ export class ContainerDefinition extends Construct {
   /**
    * The environment files for this container
    */
-  public readonly environmentFiles?: EnvironmentFileConfig[];
+  public readonly environmentFiles?: EnvironmentFileConfig[] | undefined;
 
   /**
    * The log configuration specification for the container.
    */
-  public readonly logDriverConfig?: LogDriverConfig;
+  public readonly logDriverConfig?: LogDriverConfig | undefined;
 
   /**
    * The crdential specifications for this container.
    */
-  public readonly credentialSpecs?: CredentialSpecConfig[];
+  public readonly credentialSpecs?: CredentialSpecConfig[] | undefined;
 
   /**
    * The name of the image referenced by this container.
@@ -545,7 +545,7 @@ export class ContainerDefinition extends Construct {
   /**
    * The number of cpu units reserved for the container.
    */
-  public readonly cpu?: number;
+  public readonly cpu?: number | undefined;
 
   /**
    * The inference accelerators referenced by this container.
@@ -555,7 +555,7 @@ export class ContainerDefinition extends Construct {
   /**
    * Specifies whether a TTY must be allocated for this container.
    */
-  public readonly pseudoTerminal?: boolean;
+  public readonly pseudoTerminal?: boolean | undefined;
 
   /**
    * The configured container links
@@ -994,7 +994,7 @@ export interface HealthCheck {
    *
    * @default Duration.seconds(30)
    */
-  readonly interval?: cdk.Duration;
+  readonly interval?: cdk.Duration | undefined;
 
   /**
    * The number of times to retry a failed health check before the container is considered unhealthy.
@@ -1003,7 +1003,7 @@ export interface HealthCheck {
    *
    * @default 3
    */
-  readonly retries?: number;
+  readonly retries?: number | undefined;
 
   /**
    * The optional grace period within which to provide containers time to bootstrap before
@@ -1013,7 +1013,7 @@ export interface HealthCheck {
    *
    * @default No start period
    */
-  readonly startPeriod?: cdk.Duration;
+  readonly startPeriod?: cdk.Duration | undefined;
 
   /**
    * The time period in seconds to wait for a health check to succeed before it is considered a failure.
@@ -1022,7 +1022,7 @@ export interface HealthCheck {
    *
    * @default Duration.seconds(5)
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 }
 
 function renderKV(env: { [key: string]: string }, keyName: string, valueName: string): any[] {
@@ -1193,7 +1193,7 @@ export interface ContainerDependency {
    *
    * @default ContainerDependencyCondition.HEALTHY
    */
-  readonly condition?: ContainerDependencyCondition;
+  readonly condition?: ContainerDependencyCondition | undefined;
 }
 
 export enum ContainerDependencyCondition {
@@ -1261,7 +1261,7 @@ export interface PortMapping {
    *
    * If you want to expose a single port, you must not set a range.
    */
-  readonly containerPortRange?: string;
+  readonly containerPortRange?: string | undefined;
 
   /**
    * The port number on the container instance to reserve for your container.
@@ -1275,14 +1275,14 @@ export interface PortMapping {
    * your container automatically receives a port in the ephemeral port range for
    * your container instance operating system and Docker version.
    */
-  readonly hostPort?: number;
+  readonly hostPort?: number | undefined;
 
   /**
    * The protocol used for the port mapping. Valid values are Protocol.TCP and Protocol.UDP.
    *
    * @default TCP
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * The name to give the port mapping.
@@ -1292,7 +1292,7 @@ export interface PortMapping {
    *
    * @default - no port mapping name
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The protocol used by Service Connect. Valid values are AppProtocol.http, AppProtocol.http2, and
@@ -1303,7 +1303,7 @@ export interface PortMapping {
    *
    * @default - no app protocol
    */
-  readonly appProtocol?: AppProtocol;
+  readonly appProtocol?: AppProtocol | undefined;
 }
 
 /**

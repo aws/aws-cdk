@@ -19,7 +19,7 @@ interface MapOptions extends MapBaseOptions {
    *
    * @default $
    */
-  readonly parameters?: { [key: string]: any };
+  readonly parameters?: { [key: string]: any } | undefined;
 }
 /**
  * Properties for defining a Map state that using JSONPath

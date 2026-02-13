@@ -14,7 +14,7 @@ export interface S3EventSourceProps {
    * against the s3 object key. Refer to the S3 Developer Guide for details
    * about allowed filter rules.
    */
-  readonly filters?: s3.NotificationKeyFilter[];
+  readonly filters?: s3.NotificationKeyFilter[] | undefined;
 }
 
 /**

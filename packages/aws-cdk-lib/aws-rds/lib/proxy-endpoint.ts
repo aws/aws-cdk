@@ -42,7 +42,7 @@ export interface DatabaseProxyEndpointOptions {
    *
    * @default - a CDK generated name
    */
-  readonly dbProxyEndpointName?: string;
+  readonly dbProxyEndpointName?: string | undefined;
 
   /**
    * The VPC of the DB proxy endpoint.
@@ -54,21 +54,21 @@ export interface DatabaseProxyEndpointOptions {
    *
    * @default - Default security group for the VPC
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The subnets of DB proxy endpoint.
    *
    * @default - the VPC default strategy if not specified.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * A value that indicates whether the DB proxy endpoint can be used for read/write or read-only operations.
    *
    * @default - ProxyEndpointTargetRole.READ_WRITE
    */
-  readonly targetRole?: ProxyEndpointTargetRole;
+  readonly targetRole?: ProxyEndpointTargetRole | undefined;
 }
 
 /**

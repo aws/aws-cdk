@@ -26,12 +26,12 @@ export interface IApplication extends cdk.IResource, IApplicationRef {
   /**
    * The description of the application.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The name of the application.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The ID of the application.
@@ -179,14 +179,14 @@ export interface ApplicationProps {
    *
    * @default - A name is generated.
    */
-  readonly applicationName?: string;
+  readonly applicationName?: string | undefined;
 
   /**
    * The description for the application.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 abstract class ApplicationBase extends cdk.Resource implements IApplication, IExtensible {
@@ -424,12 +424,12 @@ export class Application extends ApplicationBase {
   /**
    * The description of the application.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The name of the application.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The ID of the application.

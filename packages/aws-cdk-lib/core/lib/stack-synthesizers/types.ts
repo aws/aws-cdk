@@ -11,14 +11,14 @@ export interface IStackSynthesizer {
    *
    * @default - no qualifier
    */
-  readonly bootstrapQualifier?: string;
+  readonly bootstrapQualifier?: string | undefined;
 
   /**
    * The role used to lookup for this stack
    *
    * @default - no role
    */
-  readonly lookupRole?: string;
+  readonly lookupRole?: string | undefined;
 
   /**
    * Bind to the stack this environment is going to be used on

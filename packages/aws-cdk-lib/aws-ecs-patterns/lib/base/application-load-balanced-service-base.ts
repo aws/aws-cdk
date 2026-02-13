@@ -51,7 +51,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
    * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster?: ICluster;
+  readonly cluster?: ICluster | undefined;
 
   /**
    * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
@@ -59,28 +59,28 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
    * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: IVpc | undefined;
 
   /**
    * The properties required to create a new task definition. TaskDefinition or TaskImageOptions must be specified, but not both.
    *
    * @default none
    */
-  readonly taskImageOptions?: ApplicationLoadBalancedTaskImageOptions;
+  readonly taskImageOptions?: ApplicationLoadBalancedTaskImageOptions | undefined;
 
   /**
    * Determines whether the Load Balancer will be internet-facing.
    *
    * @default true
    */
-  readonly publicLoadBalancer?: boolean;
+  readonly publicLoadBalancer?: boolean | undefined;
 
   /**
    * Determines whether or not the Security Group for the Load Balancer's Listener will be open to all traffic by default.
    *
    * @default true -- The security group allows ingress from all IP addresses.
    */
-  readonly openListener?: boolean;
+  readonly openListener?: boolean | undefined;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -89,7 +89,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - The default is 1 for all new services and uses the existing service's desired count
    * when updating an existing service.
    */
-  readonly desiredCount?: number;
+  readonly desiredCount?: number | undefined;
 
   /**
    * Certificate Manager certificate to associate with the load balancer.
@@ -100,7 +100,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * created for the load balancer's specified domain name if a domain name
    * and domain zone are specified.
    */
-  readonly certificate?: ICertificate;
+  readonly certificate?: ICertificate | undefined;
 
   /**
    * The protocol for connections from the load balancer to the ECS tasks.
@@ -109,7 +109,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default HTTP.
    */
-  readonly targetProtocol?: ApplicationProtocol;
+  readonly targetProtocol?: ApplicationProtocol | undefined;
 
   /**
    * The protocol for connections from clients to the load balancer.
@@ -120,35 +120,35 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default HTTP. If a certificate is specified, the protocol will be
    * set by default to HTTPS.
    */
-  readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol | undefined;
 
   /**
    * The protocol version to use
    *
    * @default ApplicationProtocolVersion.HTTP1
    */
-  readonly protocolVersion?: ApplicationProtocolVersion;
+  readonly protocolVersion?: ApplicationProtocolVersion | undefined;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 
   /**
    * The Route53 hosted zone for the domain, e.g. "example.com."
    *
    * @default - No Route53 hosted domain zone.
    */
-  readonly domainZone?: IHostedZone;
+  readonly domainZone?: IHostedZone | undefined;
 
   /**
    * The name of the service.
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 
   /**
    * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
@@ -156,7 +156,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: Duration;
+  readonly healthCheckGracePeriod?: Duration | undefined;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -165,7 +165,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - 100 if daemon, otherwise 200
    */
-  readonly maxHealthyPercent?: number;
+  readonly maxHealthyPercent?: number | undefined;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -174,7 +174,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minHealthyPercent?: number;
+  readonly minHealthyPercent?: number | undefined;
 
   /**
    * The application load balancer that will serve traffic to the service.
@@ -185,7 +185,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - a new load balancer will be created.
    */
-  readonly loadBalancer?: IApplicationLoadBalancer;
+  readonly loadBalancer?: IApplicationLoadBalancer | undefined;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -193,14 +193,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - The default listener port is determined from the protocol (port 80 for HTTP,
    * port 443 for HTTPS). A domain name and zone must be also be specified if using HTTPS.
    */
-  readonly listenerPort?: number;
+  readonly listenerPort?: number | undefined;
 
   /**
    * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
    *
    * @default - The recommended elastic load balancing security policy
    */
-  readonly sslPolicy?: SslPolicy;
+  readonly sslPolicy?: SslPolicy | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -208,7 +208,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - none
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: PropagatedTagSource | undefined;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -216,14 +216,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default false
    */
-  readonly enableECSManagedTags?: boolean;
+  readonly enableECSManagedTags?: boolean | undefined;
 
   /**
    * The options for configuring an Amazon ECS service to use service discovery.
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly cloudMapOptions?: CloudMapOptions;
+  readonly cloudMapOptions?: CloudMapOptions | undefined;
 
   /**
    * Specifies whether the load balancer should redirect traffic on port 80 to the {@link listenerPort} to support HTTP->HTTPS redirects.
@@ -231,7 +231,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default false
    */
-  readonly redirectHTTP?: boolean;
+  readonly redirectHTTP?: boolean | undefined;
 
   /**
    * Specifies whether the Route53 record should be a CNAME, an A record using the Alias feature or no record at all.
@@ -239,7 +239,7 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default ApplicationLoadBalancedServiceRecordType.ALIAS
    */
-  readonly recordType?: ApplicationLoadBalancedServiceRecordType;
+  readonly recordType?: ApplicationLoadBalancedServiceRecordType | undefined;
 
   /**
    * Specifies which deployment controller to use for the service. For more information, see
@@ -247,14 +247,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * @default - Rolling update (ECS)
    */
-  readonly deploymentController?: DeploymentController;
+  readonly deploymentController?: DeploymentController | undefined;
 
   /**
    * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
    * enabled.
    * @default - disabled
    */
-  readonly circuitBreaker?: DeploymentCircuitBreaker;
+  readonly circuitBreaker?: DeploymentCircuitBreaker | undefined;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -262,35 +262,35 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - undefined
    *
    */
-  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[] | undefined;
 
   /**
    * Name of the load balancer
    *
    * @default - Automatically generated name.
    */
-  readonly loadBalancerName?: string;
+  readonly loadBalancerName?: string | undefined;
 
   /**
    * Whether ECS Exec should be enabled
    *
    * @default - false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds
    *
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
-  readonly idleTimeout?: Duration;
+  readonly idleTimeout?: Duration | undefined;
 
   /**
    * The type of IP address to use
    *
    * @default - IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -306,49 +306,49 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: Secret };
+  readonly secrets?: { [key: string]: Secret } | undefined;
 
   /**
    * Flag to indicate whether to enable logging.
    *
    * @default true
    */
-  readonly enableLogging?: boolean;
+  readonly enableLogging?: boolean | undefined;
 
   /**
    * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
-  readonly logDriver?: LogDriver;
+  readonly logDriver?: LogDriver | undefined;
 
   /**
    * The name of the task execution IAM role that grants the Amazon ECS container agent permission to call AWS APIs on your behalf.
    *
    * @default - No value
    */
-  readonly executionRole?: IRole;
+  readonly executionRole?: IRole | undefined;
 
   /**
    * The name of the task IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default - A task role is automatically created for you.
    */
-  readonly taskRole?: IRole;
+  readonly taskRole?: IRole | undefined;
 
   /**
    * The container name value to be specified in the task definition.
    *
    * @default - none
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The port number on the container that is bound to the user-specified or automatically assigned host port.
@@ -364,21 +364,21 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    *
    * @default 80
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 
   /**
    * The name of a family that this task definition is registered to. A family groups multiple versions of a task definition.
    *
    * @default - Automatically generated name.
    */
-  readonly family?: string;
+  readonly family?: string | undefined;
 
   /**
    * A key/value map of labels to add to the container.
    *
    * @default - No labels.
    */
-  readonly dockerLabels?: { [key: string]: string };
+  readonly dockerLabels?: { [key: string]: string } | undefined;
 
   /**
    * The entry point that's passed to the container.
@@ -391,7 +391,7 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    *
    * @default none
    */
-  readonly entryPoint?: string[];
+  readonly entryPoint?: string[] | undefined;
 
   /**
    * The command that's passed to the container. If there are multiple arguments, make sure that each argument is a separated string in the array.
@@ -404,7 +404,7 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    *
    * @default none
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 }
 
 /**
@@ -422,7 +422,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
    * The default is 1 for all new services and uses the existing services desired count
    * when updating an existing service if one is not provided.
    */
-  public readonly internalDesiredCount?: number;
+  public readonly internalDesiredCount?: number | undefined;
 
   /**
    * The Application Load Balancer for the service.
@@ -442,7 +442,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
   /**
    * The redirect listener for the service if redirectHTTP is enabled.
    */
-  public readonly redirectListener?: ApplicationListener;
+  public readonly redirectListener?: ApplicationListener | undefined;
 
   /**
    * The target group for the service.
@@ -452,14 +452,14 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
   /**
    * Certificate Manager certificate to associate with the load balancer.
    */
-  public readonly certificate?: ICertificate;
+  public readonly certificate?: ICertificate | undefined;
 
   /**
    * The cluster that hosts the service.
    */
   public readonly cluster: ICluster;
 
-  private readonly _applicationLoadBalancer?: ApplicationLoadBalancer;
+  private readonly _applicationLoadBalancer?: ApplicationLoadBalancer | undefined;
 
   /**
    * Constructs a new instance of the ApplicationLoadBalancedServiceBase class.

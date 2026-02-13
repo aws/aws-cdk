@@ -31,14 +31,14 @@ export interface CfnRuleProps {
    *
    * @default - Rule's assertions will always take effect.
    */
-  readonly ruleCondition?: ICfnConditionExpression;
+  readonly ruleCondition?: ICfnConditionExpression | undefined;
 
   /**
    * Assertions which define the rule.
    *
    * @default - No assertions for the rule.
    */
-  readonly assertions?: CfnRuleAssertion[];
+  readonly assertions?: CfnRuleAssertion[] | undefined;
 }
 
 /**

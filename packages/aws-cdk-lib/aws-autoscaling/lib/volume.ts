@@ -33,7 +33,7 @@ export interface BlockDevice {
    * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping.
    *
    */
-  readonly mappingEnabled?: boolean;
+  readonly mappingEnabled?: boolean | undefined;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
    */
-  readonly deleteOnTermination?: boolean;
+  readonly deleteOnTermination?: boolean | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume.
@@ -59,7 +59,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default - none, required for `EbsDeviceVolumeType.IO1`
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The EBS volume type
@@ -67,7 +67,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default `EbsDeviceVolumeType.GP2`
    */
-  readonly volumeType?: EbsDeviceVolumeType;
+  readonly volumeType?: EbsDeviceVolumeType | undefined;
 
   /**
    * The throughput that the volume supports, in MiB/s
@@ -75,7 +75,7 @@ export interface EbsDeviceOptionsBase {
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
-  readonly throughput?: number;
+  readonly throughput?: number | undefined;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default false
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 }
 
 /**
@@ -104,7 +104,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
    *
    * @default - The snapshot size
    */
-  readonly volumeSize?: number;
+  readonly volumeSize?: number | undefined;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface EbsDeviceProps extends EbsDeviceSnapshotOptions {
    *
    * @default - No snapshot will be used
    */
-  readonly snapshotId?: string;
+  readonly snapshotId?: string | undefined;
 }
 
 /**

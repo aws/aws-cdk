@@ -22,7 +22,7 @@ export interface BaseStreamEventSourceProps {
    *
    * @default 100
    */
-  readonly batchSize?: number;
+  readonly batchSize?: number | undefined;
 
   /**
    * Where to begin consuming the stream.
@@ -37,14 +37,14 @@ export interface BaseStreamEventSourceProps {
    *
    * @default - Duration.seconds(0) for Kinesis, DynamoDB, and SQS event sources, Duration.millis(500) for MSK, self-managed Kafka, and Amazon MQ.
    */
-  readonly maxBatchingWindow?: Duration;
+  readonly maxBatchingWindow?: Duration | undefined;
 
   /**
    * If the stream event source mapping should be enabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Configuration for provisioned pollers that read from the event source.
@@ -52,7 +52,7 @@ export interface BaseStreamEventSourceProps {
    * that can be provisioned to process events from the source.
    * @default - no provisioned pollers
    */
-  readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+  readonly provisionedPollerConfig?: ProvisionedPollerConfig | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface ProvisionedPollerConfig {
    *
    * @default - not set, dedicated compute resource per event source.
    */
-  readonly pollerGroupName?: string;
+  readonly pollerGroupName?: string | undefined;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default false
    */
-  readonly bisectBatchOnError?: boolean;
+  readonly bisectBatchOnError?: boolean | undefined;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -105,7 +105,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default -1
    */
-  readonly maxRecordAge?: Duration;
+  readonly maxRecordAge?: Duration | undefined;
 
   /**
    * Maximum number of retry attempts.
@@ -116,7 +116,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default -1 (infinite retries)
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 
   /**
    * The number of batches to process from each shard concurrently.
@@ -126,7 +126,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default 1
    */
-  readonly parallelizationFactor?: number;
+  readonly parallelizationFactor?: number | undefined;
 
   /**
    * Allow functions to return partially successful responses for a batch of records.
@@ -135,7 +135,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default false
    */
-  readonly reportBatchItemFailures?: boolean;
+  readonly reportBatchItemFailures?: boolean | undefined;
 
   /**
    * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
@@ -143,21 +143,21 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - None
    */
-  readonly tumblingWindow?: Duration;
+  readonly tumblingWindow?: Duration | undefined;
 
   /**
    * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceDlq;
+  readonly onFailure?: lambda.IEventSourceDlq | undefined;
 
   /**
    * Add filter criteria option
    *
    * @default - None
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{[key: string]: any}> | undefined;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -167,7 +167,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly filterEncryption?: IKey;
+  readonly filterEncryption?: IKey | undefined;
 
   /**
    * Configuration for enhanced monitoring metrics collection
@@ -175,7 +175,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - Enhanced monitoring is disabled
    */
-  readonly metricsConfig?: lambda.MetricsConfig;
+  readonly metricsConfig?: lambda.MetricsConfig | undefined;
 }
 
 /**

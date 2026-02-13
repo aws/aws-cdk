@@ -18,7 +18,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - no extra inputs
    */
-  readonly extraInputs?: codepipeline.Artifact[];
+  readonly extraInputs?: codepipeline.Artifact[] | undefined;
 
   /**
    * The output artifact for this action.
@@ -30,7 +30,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - no output artifact
    */
-  readonly output?: codepipeline.Artifact;
+  readonly output?: codepipeline.Artifact | undefined;
 
   /**
    * The names of the variables in your environment that you want to export.
@@ -41,7 +41,7 @@ export interface CommandsActionProps extends codepipeline.CommonAwsActionProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
    * @default - No output variables are exported
    */
-  readonly outputVariables?: string[];
+  readonly outputVariables?: string[] | undefined;
 
   /**
    * Shell commands for the Commands action to run.

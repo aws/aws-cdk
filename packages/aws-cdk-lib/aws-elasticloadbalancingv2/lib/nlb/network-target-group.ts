@@ -28,14 +28,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - TCP
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * Indicates whether Proxy Protocol version 2 is enabled.
    *
    * @default false
    */
-  readonly proxyProtocolV2?: boolean;
+  readonly proxyProtocolV2?: boolean | undefined;
 
   /**
    * Indicates whether client IP preservation is enabled.
@@ -43,7 +43,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    * @default false if the target group type is IP address and the
    * target group protocol is TCP or TLS. Otherwise, true.
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 
   /**
    * The targets to add to this target group.
@@ -54,7 +54,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - No targets.
    */
-  readonly targets?: INetworkLoadBalancerTarget[];
+  readonly targets?: INetworkLoadBalancerTarget[] | undefined;
 
   /**
    *
@@ -63,7 +63,7 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default false
    */
-  readonly connectionTermination?: boolean;
+  readonly connectionTermination?: boolean | undefined;
 }
 
 /**
@@ -336,7 +336,7 @@ export interface INetworkTargetGroup extends ITargetGroup, INetworkTargetGroupRe
  */
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
   public readonly isNetworkTargetGroup = true;
-  private readonly _metrics?: INetworkTargetGroupMetrics;
+  private readonly _metrics?: INetworkTargetGroupMetrics | undefined;
 
   public constructor(scope: Construct, id: string, props: TargetGroupImportProps) {
     super(scope, id, props);

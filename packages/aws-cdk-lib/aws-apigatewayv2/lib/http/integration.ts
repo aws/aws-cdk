@@ -179,7 +179,7 @@ export interface HttpIntegrationProps {
    *
    * @default - none, required if no `integrationUri` is defined.
    */
-  readonly integrationSubtype?: HttpIntegrationSubtype;
+  readonly integrationSubtype?: HttpIntegrationSubtype | undefined;
 
   /**
    * Integration URI.
@@ -188,41 +188,41 @@ export interface HttpIntegrationProps {
    *
    * @default - none, required if no `integrationSubtype` is defined.
    */
-  readonly integrationUri?: string;
+  readonly integrationUri?: string | undefined;
 
   /**
    * The HTTP method to use when calling the underlying HTTP proxy
    * @default - none. required if the integration type is `HttpIntegrationType.HTTP_PROXY`.
    */
-  readonly method?: HttpMethod;
+  readonly method?: HttpMethod | undefined;
 
   /**
    * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
    *
    * @default - undefined
    */
-  readonly connectionId?: string;
+  readonly connectionId?: string | undefined;
 
   /**
    * The type of the network connection to the integration endpoint
    *
    * @default HttpConnectionType.INTERNET
    */
-  readonly connectionType?: HttpConnectionType;
+  readonly connectionType?: HttpConnectionType | undefined;
 
   /**
    * The version of the payload format
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    * @default - defaults to latest in the case of HttpIntegrationType.AWS_PROXY`, irrelevant otherwise.
    */
-  readonly payloadFormatVersion?: PayloadFormatVersion;
+  readonly payloadFormatVersion?: PayloadFormatVersion | undefined;
 
   /**
    * Specifies the TLS configuration for a private integration
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
    * @default undefined private integration traffic will use HTTP protocol
    */
-  readonly secureServerName?: string;
+  readonly secureServerName?: string | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -230,21 +230,21 @@ export interface HttpIntegrationProps {
    *
    *  @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Specifies how to transform HTTP requests before sending them to the backend
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @default undefined requests are sent to the backend unmodified
    */
-  readonly parameterMapping?: ParameterMapping;
+  readonly parameterMapping?: ParameterMapping | undefined;
 
   /**
    * The credentials with which to invoke the integration.
    *
    * @default - no credentials, use resource-based permissions on supported AWS services
    */
-  readonly credentials?: IntegrationCredentials;
+  readonly credentials?: IntegrationCredentials | undefined;
 }
 
 /**
@@ -400,35 +400,35 @@ export interface HttpRouteIntegrationConfig {
    *
    * @default - none, required if no `integrationUri` is defined.
    */
-  readonly subtype?: HttpIntegrationSubtype;
+  readonly subtype?: HttpIntegrationSubtype | undefined;
 
   /**
    * Integration URI
    *
    * @default - none, required if no `integrationSubtype` is defined.
    */
-  readonly uri?: string;
+  readonly uri?: string | undefined;
 
   /**
    * The HTTP method that must be used to invoke the underlying proxy.
    * Required for `HttpIntegrationType.HTTP_PROXY`
    * @default - undefined
    */
-  readonly method?: HttpMethod;
+  readonly method?: HttpMethod | undefined;
 
   /**
    * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
    *
    * @default - undefined
    */
-  readonly connectionId?: string;
+  readonly connectionId?: string | undefined;
 
   /**
    * The type of the network connection to the integration endpoint
    *
    * @default HttpConnectionType.INTERNET
    */
-  readonly connectionType?: HttpConnectionType;
+  readonly connectionType?: HttpConnectionType | undefined;
 
   /**
    * Payload format version in the case of lambda proxy integration
@@ -442,7 +442,7 @@ export interface HttpRouteIntegrationConfig {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
    * @default undefined private integration traffic will use HTTP protocol
    */
-  readonly secureServerName?: string;
+  readonly secureServerName?: string | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -450,19 +450,19 @@ export interface HttpRouteIntegrationConfig {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Specifies how to transform HTTP requests before sending them to the backend
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @default undefined requests are sent to the backend unmodified
    */
-  readonly parameterMapping?: ParameterMapping;
+  readonly parameterMapping?: ParameterMapping | undefined;
 
   /**
    * The credentials with which to invoke the integration.
    *
    * @default - no credentials, use resource-based permissions on supported AWS services
    */
-  readonly credentials?: IntegrationCredentials;
+  readonly credentials?: IntegrationCredentials | undefined;
 }

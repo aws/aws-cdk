@@ -9,21 +9,21 @@ export interface ManualApprovalStepProps {
    *
    * @default - No comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The URL for review associated with this manual approval
    *
    * @default - No URL
    */
-  readonly reviewUrl?: string;
+  readonly reviewUrl?: string | undefined;
 
   /**
    * Optional SNS topic to send notifications to when an approval is pending
    *
    * @default - No notifications
    */
-  readonly notificationTopic?: ITopic;
+  readonly notificationTopic?: ITopic | undefined;
 }
 
 /**
@@ -41,21 +41,21 @@ export class ManualApprovalStep extends Step {
    *
    * @default - No comment
    */
-  public readonly comment?: string;
+  public readonly comment?: string | undefined;
 
   /**
    * The URL for review associated with this manual approval
    *
    * @default - No URL
    */
-  public readonly reviewUrl?: string;
+  public readonly reviewUrl?: string | undefined;
 
   /**
    * Optional SNS topic to send notifications
    *
    * @default - No notifications
    */
-  public readonly notificationTopic?: ITopic;
+  public readonly notificationTopic?: ITopic | undefined;
 
   constructor(id: string, props: ManualApprovalStepProps = {}) {
     super(id);

@@ -44,7 +44,7 @@ export interface LambdaDeploymentConfigProps extends BaseDeploymentConfigOptions
    * target group to the 'green' target group during a deployment.
    * @default AllAtOnce
    */
-  readonly trafficRouting?: TrafficRouting;
+  readonly trafficRouting?: TrafficRouting | undefined;
 }
 
 /**

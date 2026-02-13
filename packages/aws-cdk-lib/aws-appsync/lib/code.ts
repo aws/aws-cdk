@@ -10,13 +10,13 @@ export interface CodeConfig {
    * The location of the code in S3 (mutually exclusive with `inlineCode`.
    * @default - code is not an s3 location
    */
-  readonly s3Location?: string;
+  readonly s3Location?: string | undefined;
 
   /**
    * Inline code (mutually exclusive with `s3Location`).
    * @default - code is not inline code
    */
-  readonly inlineCode?: string;
+  readonly inlineCode?: string | undefined;
 }
 
 /**

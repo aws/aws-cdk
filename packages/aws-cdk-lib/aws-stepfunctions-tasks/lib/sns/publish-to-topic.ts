@@ -26,7 +26,7 @@ export interface PublishToTopicProps {
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    * @default false
    */
-  readonly messagePerSubscriptionType?: boolean;
+  readonly messagePerSubscriptionType?: boolean | undefined;
 
   /**
    * Used as the "Subject" line when the message is delivered to email endpoints.
@@ -34,7 +34,7 @@ export interface PublishToTopicProps {
    *
    * @default - No subject
    */
-  readonly subject?: string;
+  readonly subject?: string | undefined;
 
   /**
    * The service integration pattern indicates different ways to call Publish to SNS.
@@ -43,7 +43,7 @@ export interface PublishToTopicProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 }
 
 /**

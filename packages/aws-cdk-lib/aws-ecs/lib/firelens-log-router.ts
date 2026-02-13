@@ -52,7 +52,7 @@ export interface FirelensOptions {
    * You can disable this action by setting enable-ecs-log-metadata to false.
    * @default - true
    */
-  readonly enableECSLogMetadata?: boolean;
+  readonly enableECSLogMetadata?: boolean | undefined;
 
   /**
    * Custom configuration file, s3 or file.
@@ -61,7 +61,7 @@ export interface FirelensOptions {
    *
    * @default - determined by checking configFileValue with S3 ARN.
    */
-  readonly configFileType?: FirelensConfigFileType;
+  readonly configFileType?: FirelensConfigFileType | undefined;
 
   /**
    * Custom configuration file, S3 ARN or a file path
@@ -70,7 +70,7 @@ export interface FirelensOptions {
    *
    * @default - no config file value
    */
-  readonly configFileValue?: string;
+  readonly configFileValue?: string | undefined;
 }
 
 /**
@@ -89,7 +89,7 @@ export interface FirelensConfig {
    * Firelens options
    * @default - no additional options
    */
-  readonly options?: FirelensOptions;
+  readonly options?: FirelensOptions | undefined;
 }
 
 /**

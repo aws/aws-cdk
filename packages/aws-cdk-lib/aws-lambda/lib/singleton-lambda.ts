@@ -36,7 +36,7 @@ export interface SingletonFunctionProps extends FunctionProps {
    *
    * @default SingletonLambda
    */
-  readonly lambdaPurpose?: string;
+  readonly lambdaPurpose?: string | undefined;
 }
 
 /**
@@ -53,11 +53,11 @@ export interface SingletonFunctionProps extends FunctionProps {
 export class SingletonFunction extends FunctionBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-lambda.SingletonFunction';
-  public readonly tenancyConfig?: TenancyConfig;
+  public readonly tenancyConfig?: TenancyConfig | undefined;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly functionName: string;
   public readonly functionArn: string;
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
   public readonly permissionsNode: Node;
   public readonly architecture: Architecture;
 

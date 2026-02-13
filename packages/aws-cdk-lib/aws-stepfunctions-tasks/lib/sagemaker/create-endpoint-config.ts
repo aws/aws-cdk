@@ -19,7 +19,7 @@ interface SageMakerCreateEndpointConfigOptions {
    *
    * @default - None
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 
   /**
    * An list of ProductionVariant objects, one for each model that you want to host at this endpoint.
@@ -33,7 +33,7 @@ interface SageMakerCreateEndpointConfigOptions {
    *
    * @default - No tags
    */
-  readonly tags?: sfn.TaskInput;
+  readonly tags?: sfn.TaskInput | undefined;
 }
 
 /**
@@ -93,8 +93,8 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateEndpointConfigProps) {

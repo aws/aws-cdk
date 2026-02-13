@@ -20,7 +20,7 @@ export interface FleetProps {
    *
    * @default - CloudFormation generated name
    */
-  readonly fleetName?: string;
+  readonly fleetName?: string | undefined;
 
   /**
    * The number of machines allocated to the compute ﬂeet.
@@ -53,7 +53,7 @@ export interface FleetProps {
    *
    * @default - do not specify compute configuration
    */
-  readonly computeConfiguration?: ComputeConfiguration;
+  readonly computeConfiguration?: ComputeConfiguration | undefined;
 
   /**
    * The compute fleet overflow behavior.
@@ -64,7 +64,7 @@ export interface FleetProps {
    *
    * @default undefined - AWS CodeBuild default behavior is QUEUE
    */
-  readonly overflowBehavior?: FleetOverflowBehavior;
+  readonly overflowBehavior?: FleetOverflowBehavior | undefined;
 
   /**
    * Service Role assumed by Fleet instances.
@@ -74,7 +74,7 @@ export interface FleetProps {
    *
    * @default - A role will be created if any permissions are granted
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * VPC network to place fleet instance network interfaces.
@@ -83,7 +83,7 @@ export interface FleetProps {
    *
    * @default - No VPC is specified.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -101,7 +101,7 @@ export interface FleetProps {
    *
    * @default - private subnets if available else public subnets
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * What security groups to associate with the fleet's network interfaces.
@@ -111,7 +111,7 @@ export interface FleetProps {
    *
    * @default - A security group will be automatically created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 }
 
 /**
@@ -140,28 +140,28 @@ export interface ComputeConfiguration {
    *
    * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
-  readonly disk?: Size;
+  readonly disk?: Size | undefined;
 
   /**
    * When using ATTRIBUTE_BASED, the machine type of the instance type included in your fleet.
    *
    * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
-  readonly machineType?: MachineType;
+  readonly machineType?: MachineType | undefined;
 
   /**
    * When using ATTRIBUTE_BASED, the amount of memory of the instance type included in your fleet.
    *
    * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
-  readonly memory?: Size;
+  readonly memory?: Size | undefined;
 
   /**
    * When using ATTRIBUTE_BASED, the number of vCPUs of the instance type included in your fleet.
    *
    * @default - No requirement, the actual value will be based on the other selected configuration properties
    */
-  readonly vCpu?: number;
+  readonly vCpu?: number | undefined;
 
   /**
    * When using CUSTOM_INSTANCE_TYPE, the EC2 instance type to use for fleet instances.
@@ -172,7 +172,7 @@ export interface ComputeConfiguration {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment-reserved-capacity.instance-types
    * @default none
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 }
 
 /**

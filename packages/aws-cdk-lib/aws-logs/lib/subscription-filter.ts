@@ -39,7 +39,7 @@ export interface LogSubscriptionDestinationConfig {
    *
    * @default No role assumed
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

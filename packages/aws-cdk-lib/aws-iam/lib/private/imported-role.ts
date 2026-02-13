@@ -24,7 +24,7 @@ import { AttachedPolicies } from '../util';
 export interface ImportedRoleProps extends FromRoleArnOptions {
   readonly roleArn: string;
   readonly roleName: string;
-  readonly account?: string;
+  readonly account?: string | undefined;
 }
 
 @propertyInjectable
@@ -32,13 +32,13 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.ImportedRole';
   public readonly grantPrincipal: IPrincipal = this;
-  public readonly principalAccount?: string;
+  public readonly principalAccount?: string | undefined;
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly roleArn: string;
   public readonly roleName: string;
   private readonly attachedPolicies = new AttachedPolicies();
-  private readonly defaultPolicyName?: string;
+  private readonly defaultPolicyName?: string | undefined;
   private defaultPolicy?: Policy;
 
   constructor(scope: Construct, id: string, props: ImportedRoleProps) {

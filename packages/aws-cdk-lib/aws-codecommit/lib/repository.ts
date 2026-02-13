@@ -230,7 +230,7 @@ export interface OnCommitOptions extends events.OnEventOptions {
    *
    * @default - All branches
    */
-  readonly branches?: string[];
+  readonly branches?: string[] | undefined;
 }
 
 /**
@@ -522,21 +522,21 @@ export interface RepositoryProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The contents with which to initialize the repository after it has been created.
    *
    * @default - No initialization (create empty repo)
    */
-  readonly code?: Code;
+  readonly code?: Code | undefined;
 
   /**
    * The customer managed key used to encrypt and decrypt the data in repository.
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -677,27 +677,27 @@ export interface RepositoryTriggerOptions {
   /**
    * A name for the trigger.Triggers on a repository must have unique names.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The repository events for which AWS CodeCommit sends information to the
    * target, which you specified in the DestinationArn property.If you don't
    * specify events, the trigger runs for all repository events.
    */
-  readonly events?: RepositoryEventTrigger[];
+  readonly events?: RepositoryEventTrigger[] | undefined;
 
   /**
    * The names of the branches in the AWS CodeCommit repository that contain
    * events that you want to include in the trigger. If you don't specify at
    * least one branch, the trigger applies to all branches.
    */
-  readonly branches?: string[];
+  readonly branches?: string[] | undefined;
 
   /**
    * When an event is triggered, additional information that AWS CodeCommit
    * includes when it sends information to the target.
    */
-  readonly customData?: string;
+  readonly customData?: string | undefined;
 }
 
 /**

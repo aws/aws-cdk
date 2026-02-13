@@ -173,21 +173,21 @@ export interface S3DestinationOptions {
    *
    * @default false
    */
-  readonly hiveCompatiblePartitions?: boolean;
+  readonly hiveCompatiblePartitions?: boolean | undefined;
 
   /**
    * The format for the flow log
    *
    * @default FlowLogFileFormat.PLAIN_TEXT
    */
-  readonly fileFormat?: FlowLogFileFormat;
+  readonly fileFormat?: FlowLogFileFormat | undefined;
 
   /**
    * Partition the flow log per hour
    *
    * @default false
    */
-  readonly perHourPartition?: boolean;
+  readonly perHourPartition?: boolean | undefined;
 }
 
 /**
@@ -284,28 +284,28 @@ export interface FlowLogDestinationConfig {
    *
    * @default - default IAM role is created for you if the destination type is CloudWatch logs
    */
-  readonly iamRole?: iam.IRole;
+  readonly iamRole?: iam.IRole | undefined;
 
   /**
    * The CloudWatch Logs Log Group to publish the flow logs to
    *
    * @default - default log group is created for you
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * S3 bucket to publish the flow logs to
    *
    * @default - undefined
    */
-  readonly s3Bucket?: s3.IBucket;
+  readonly s3Bucket?: s3.IBucket | undefined;
 
   /**
    * S3 bucket key prefix to publish the flow logs to
    *
    * @default - undefined
    */
-  readonly keyPrefix?: string;
+  readonly keyPrefix?: string | undefined;
 
   /**
    * The ARN of Amazon Data Firehose delivery stream to publish the flow logs to
@@ -313,21 +313,21 @@ export interface FlowLogDestinationConfig {
    * @deprecated use deliveryStream
    * @default - undefined
    */
-  readonly deliveryStreamArn?: string;
+  readonly deliveryStreamArn?: string | undefined;
 
   /**
    * The Amazon Data Firehose delivery stream to publish the flow logs to
    *
    * @default - undefined
    */
-  readonly deliveryStream?: firehose.IDeliveryStreamRef;
+  readonly deliveryStream?: firehose.IDeliveryStreamRef | undefined;
 
   /**
    * Options for writing flow logs to a supported destination
    *
    * @default - undefined
    */
-  readonly destinationOptions?: DestinationOptions;
+  readonly destinationOptions?: DestinationOptions | undefined;
 }
 
 /**
@@ -781,7 +781,7 @@ export interface FlowLogOptions {
    *
    * @default ALL
    */
-  readonly trafficType?: FlowLogTrafficType;
+  readonly trafficType?: FlowLogTrafficType | undefined;
 
   /**
    * Specifies the type of destination to which the flow log data is to be published.
@@ -789,7 +789,7 @@ export interface FlowLogOptions {
    *
    * @default FlowLogDestinationType.toCloudWatchLogs()
    */
-  readonly destination?: FlowLogDestination;
+  readonly destination?: FlowLogDestination | undefined;
 
   /**
    * The fields to include in the flow log record, in the order in which they should appear.
@@ -801,7 +801,7 @@ export interface FlowLogOptions {
    *
    * @default - default log format is used.
    */
-  readonly logFormat?: LogFormat[];
+  readonly logFormat?: LogFormat[] | undefined;
 
   /**
    * The maximum interval of time during which a flow of packets is captured
@@ -814,7 +814,7 @@ export interface FlowLogOptions {
    *
    * @default - FlowLogMaxAggregationInterval.ONE_MINUTES if creating flow logs for Transit Gateway, otherwise FlowLogMaxAggregationInterval.TEN_MINUTES.
    */
-  readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
+  readonly maxAggregationInterval?: FlowLogMaxAggregationInterval | undefined;
 }
 
 /**
@@ -828,7 +828,7 @@ export interface FlowLogProps extends FlowLogOptions {
    *
    * @default CDK generated name
    */
-  readonly flowLogName?: string;
+  readonly flowLogName?: string | undefined;
 
   /**
    * The type of resource for which to create the flow log
@@ -884,22 +884,22 @@ export class FlowLog extends FlowLogBase {
   /**
    * The S3 bucket to publish flow logs to
    */
-  public readonly bucket?: s3.IBucket;
+  public readonly bucket?: s3.IBucket | undefined;
 
   /**
    * S3 bucket key prefix to publish the flow logs under
    */
-  readonly keyPrefix?: string;
+  readonly keyPrefix?: string | undefined;
 
   /**
    * The iam role used to publish logs to CloudWatch
    */
-  public readonly iamRole?: iam.IRole;
+  public readonly iamRole?: iam.IRole | undefined;
 
   /**
    * The CloudWatch Logs LogGroup to publish flow logs to
    */
-  private readonly _logGroup?: logs.ILogGroupRef;
+  private readonly _logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * The CloudWatch Logs LogGroup to publish flow logs to
@@ -912,12 +912,12 @@ export class FlowLog extends FlowLogBase {
    * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
    * @deprecated Use deliveryStream
    */
-  public readonly deliveryStreamArn?: string;
+  public readonly deliveryStreamArn?: string | undefined;
 
   /**
    * The Amazon Data Firehose delivery stream to publish flow logs to
    */
-  public readonly deliveryStream?: firehose.IDeliveryStreamRef;
+  public readonly deliveryStream?: firehose.IDeliveryStreamRef | undefined;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);

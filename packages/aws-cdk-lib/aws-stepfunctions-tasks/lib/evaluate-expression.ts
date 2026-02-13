@@ -22,7 +22,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
    *
    * @default - the latest Lambda node runtime available in your region.
    */
-  readonly runtime?: lambda.Runtime;
+  readonly runtime?: lambda.Runtime | undefined;
 
   /**
    * The system architecture compatible with this lambda function.
@@ -31,7 +31,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
    *
    * @default Architecture.X86_64
    */
-  readonly architecture?: lambda.Architecture;
+  readonly architecture?: lambda.Architecture | undefined;
 }
 
 /**
@@ -60,8 +60,8 @@ export interface Event {
  *
  */
 export class EvaluateExpression extends sfn.TaskStateBase {
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly evalFn: lambda.SingletonFunction;
 

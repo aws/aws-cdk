@@ -70,14 +70,14 @@ export interface CodeConfig {
    *
    * @default - none
    */
-  readonly s3Location?: s3.Location;
+  readonly s3Location?: s3.Location | undefined;
 
   /**
    * Inline code (mutually exclusive with `s3Location`).
    *
    * @default - none
    */
-  readonly inlineCode?: string;
+  readonly inlineCode?: string | undefined;
 }
 
 /**

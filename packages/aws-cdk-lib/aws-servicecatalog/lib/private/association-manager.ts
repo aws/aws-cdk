@@ -216,12 +216,12 @@ export class AssociationManager {
 
 interface LaunchRoleArnOption {
   readonly roleArn: string;
-  readonly localRoleName?: never;
+  readonly localRoleName?: never | undefined;
 }
 
 interface LaunchRoleNameOption {
   readonly localRoleName: string;
-  readonly roleArn?: never;
+  readonly roleArn?: never | undefined;
 }
 
 type LaunchRoleConstraintRoleOptions = LaunchRoleArnOption | LaunchRoleNameOption;

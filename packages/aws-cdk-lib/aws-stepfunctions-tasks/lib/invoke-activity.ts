@@ -14,7 +14,7 @@ export interface InvokeActivityProps {
    *
    * @default No heart beat timeout
    */
-  readonly heartbeat?: Duration;
+  readonly heartbeat?: Duration | undefined;
 }
 
 /**

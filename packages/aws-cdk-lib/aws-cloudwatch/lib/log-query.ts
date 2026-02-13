@@ -47,7 +47,7 @@ export interface LogQueryWidgetProps {
    *
    * @default No title
    */
-  readonly title?: string;
+  readonly title?: string | undefined;
 
   /**
    * Names of log groups to query
@@ -62,7 +62,7 @@ export interface LogQueryWidgetProps {
    *
    * @default - Exactly one of `queryString`, `queryLines` is required.
    */
-  readonly queryString?: string;
+  readonly queryString?: string | undefined;
 
   /**
    * A sequence of lines to use to build the query
@@ -71,41 +71,41 @@ export interface LogQueryWidgetProps {
    *
    * @default - Exactly one of `queryString`, `queryLines` is required.
    */
-  readonly queryLines?: string[];
+  readonly queryLines?: string[] | undefined;
 
   /**
    * The query language to use for the query.
    * @default LogQueryLanguage.LOGS_INSIGHTS
    */
-  readonly queryLanguage?: LogQueryLanguage;
+  readonly queryLanguage?: LogQueryLanguage | undefined;
 
   /**
    * The region the metrics of this widget should be taken from
    *
    * @default Current region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The type of view to use
    *
    * @default LogQueryVisualizationType.TABLE
    */
-  readonly view?: LogQueryVisualizationType;
+  readonly view?: LogQueryVisualizationType | undefined;
 
   /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
    */
-  readonly width?: number;
+  readonly width?: number | undefined;
 
   /**
    * Height of the widget
    *
    * @default 6
    */
-  readonly height?: number;
+  readonly height?: number | undefined;
 
   /**
    * The AWS account ID where the log groups are located.
@@ -119,7 +119,7 @@ export interface LogQueryWidgetProps {
    *
    * @default - Current account
    */
-  readonly accountId?: string;
+  readonly accountId?: string | undefined;
 
 }
 

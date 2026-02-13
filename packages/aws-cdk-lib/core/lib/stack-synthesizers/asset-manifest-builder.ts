@@ -206,7 +206,7 @@ export interface AddFileAssetOptions {
    *
    * @default - No display name
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**
@@ -218,7 +218,7 @@ export interface AddDockerImageAssetOptions {
    *
    * @default - No display name
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**
@@ -235,14 +235,14 @@ export interface AssetManifestFileDestination {
    *
    * @default ''
    */
-  readonly bucketPrefix?: string;
+  readonly bucketPrefix?: string | undefined;
 
   /**
    * Role to use for uploading
    *
    * @default - current role
    */
-  readonly role?: RoleOptions;
+  readonly role?: RoleOptions | undefined;
 }
 
 /**
@@ -259,14 +259,14 @@ export interface AssetManifestDockerImageDestination {
    *
    * @default ''
    */
-  readonly dockerTagPrefix?: string;
+  readonly dockerTagPrefix?: string | undefined;
 
   /**
    * Role to use to perform the upload
    *
    * @default - No role
    */
-  readonly role?: RoleOptions;
+  readonly role?: RoleOptions | undefined;
 }
 
 /**
@@ -283,7 +283,7 @@ export interface RoleOptions {
    *
    * @default - No external ID
    */
-  readonly assumeRoleExternalId?: string;
+  readonly assumeRoleExternalId?: string | undefined;
 
   /**
    * Additional options to pass to STS when assuming the role for cloudformation deployments.
@@ -295,7 +295,7 @@ export interface RoleOptions {
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/STS.html#assumeRole-property
    * @default - No additional options.
    */
-  readonly assumeRoleAdditionalOptions?: { [key: string]: any };
+  readonly assumeRoleAdditionalOptions?: { [key: string]: any } | undefined;
 
 }
 

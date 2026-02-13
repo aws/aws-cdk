@@ -18,7 +18,7 @@ export interface ProductStackSynthesizerProps {
    *
    * @default - No bucket provided and assets will not be supported
    */
-  readonly assetBucket?: IBucket;
+  readonly assetBucket?: IBucket | undefined;
 
   /**
    * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket.
@@ -43,7 +43,7 @@ export interface ProductStackSynthesizerProps {
    *
    * @default 128
    */
-  readonly memoryLimit?: number;
+  readonly memoryLimit?: number | undefined;
 }
 
 /**
@@ -53,10 +53,10 @@ export interface ProductStackSynthesizerProps {
  */
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private readonly parentStack: cdk.Stack;
-  private readonly assetBucket?: IBucket;
+  private readonly assetBucket?: IBucket | undefined;
   private readonly serverSideEncryption? : ServerSideEncryption;
   private readonly serverSideEncryptionAwsKmsKeyId? : string;
-  private readonly memoryLimit?: number;
+  private readonly memoryLimit?: number | undefined;
   private parentAssetBucket?: IBucket;
 
   constructor(props: ProductStackSynthesizerProps) {

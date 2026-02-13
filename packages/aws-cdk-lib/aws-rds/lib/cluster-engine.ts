@@ -17,21 +17,21 @@ export interface ClusterEngineBindOptions {
    *
    * @default - none
    */
-  readonly s3ImportRole?: iam.IRoleRef;
+  readonly s3ImportRole?: iam.IRoleRef | undefined;
 
   /**
    * The role used for S3 exporting.
    *
    *  @default - none
    */
-  readonly s3ExportRole?: iam.IRoleRef;
+  readonly s3ExportRole?: iam.IRoleRef | undefined;
 
   /**
    * The customer-provided ParameterGroup.
    *
    * @default - none
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 }
 
 /**
@@ -43,7 +43,7 @@ export interface ClusterEngineConfig {
    *
    * @default - no ParameterGroup will be used
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 
   /**
    * The port to use for this cluster,
@@ -51,7 +51,7 @@ export interface ClusterEngineConfig {
    *
    * @default - use the default port for clusters (3306)
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * Features supported by the database engine.
@@ -60,7 +60,7 @@ export interface ClusterEngineConfig {
    *
    * @default - no features
    */
-  readonly features?: ClusterEngineFeatures;
+  readonly features?: ClusterEngineFeatures | undefined;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface ClusterEngineFeatures {
    *
    * @default - no s3Import feature name
    */
-  readonly s3Import?: string;
+  readonly s3Import?: string | undefined;
 
   /**
    * Feature name for the DB instance that the IAM role to export to S3 bucket is to be
@@ -81,14 +81,14 @@ export interface ClusterEngineFeatures {
    *
    * @default - no s3Export feature name
    */
-  readonly s3Export?: string;
+  readonly s3Export?: string | undefined;
 
   /**
    * Whether the DB cluster engine supports the Aurora ServerlessV2 auto-pause feature.
    *
    * @default false
    */
-  readonly serverlessV2AutoPauseSupported?: boolean;
+  readonly serverlessV2AutoPauseSupported?: boolean | undefined;
 }
 
 /**
@@ -110,7 +110,7 @@ export interface IClusterEngine extends IEngine {
    *
    * @default false
    */
-  readonly combineImportAndExportRoles?: boolean;
+  readonly combineImportAndExportRoles?: boolean | undefined;
 
   /**
    * Method called when the engine is used to create a new cluster.
@@ -122,21 +122,21 @@ interface ClusterEngineBaseProps {
   readonly engineType: string;
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  readonly defaultPort?: number;
-  readonly engineVersion?: EngineVersion;
-  readonly features?: ClusterEngineFeatures;
+  readonly defaultPort?: number | undefined;
+  readonly engineVersion?: EngineVersion | undefined;
+  readonly features?: ClusterEngineFeatures | undefined;
 }
 
 abstract class ClusterEngineBase implements IClusterEngine {
   public readonly engineType: string;
-  public readonly engineVersion?: EngineVersion;
-  public readonly parameterGroupFamily?: string;
+  public readonly engineVersion?: EngineVersion | undefined;
+  public readonly parameterGroupFamily?: string | undefined;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   public abstract readonly supportedLogTypes: string[];
 
-  private readonly defaultPort?: number;
-  private readonly features?: ClusterEngineFeatures;
+  private readonly defaultPort?: number | undefined;
+  private readonly features?: ClusterEngineFeatures | undefined;
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
@@ -167,10 +167,10 @@ abstract class ClusterEngineBase implements IClusterEngine {
 
 interface MysqlClusterEngineBaseProps {
   readonly engineType: string;
-  readonly engineVersion?: EngineVersion;
+  readonly engineVersion?: EngineVersion | undefined;
   readonly defaultMajorVersion: string;
-  readonly combineImportAndExportRoles?: boolean;
-  readonly serverlessV2AutoPauseSupported?: boolean;
+  readonly combineImportAndExportRoles?: boolean | undefined;
+  readonly serverlessV2AutoPauseSupported?: boolean | undefined;
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
@@ -181,7 +181,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
    * for reference: https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBCluster.html
    */
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'];
-  public readonly combineImportAndExportRoles?: boolean;
+  public readonly combineImportAndExportRoles?: boolean | undefined;
 
   constructor(props: MysqlClusterEngineBaseProps) {
     super({
@@ -348,7 +348,7 @@ interface AuroraMysqlEngineVersionOptions {
    *
    * @default false
    */
-  readonly combineImportAndExportRoles?: boolean;
+  readonly combineImportAndExportRoles?: boolean | undefined;
 
   /**
    * Whether this version supports the Aurora SeverlessV2 auto-pause feature.
@@ -356,7 +356,7 @@ interface AuroraMysqlEngineVersionOptions {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
    * @default false
    */
-  readonly serverlessV2AutoPauseSupported?: boolean;
+  readonly serverlessV2AutoPauseSupported?: boolean | undefined;
 }
 
 /**
@@ -764,14 +764,14 @@ export class AuroraMysqlEngineVersion {
    *
    * @internal
    */
-  public readonly _combineImportAndExportRoles?: boolean;
+  public readonly _combineImportAndExportRoles?: boolean | undefined;
   /**
    * Whether this version supports the Aurora ServerlessV2 auto-pause feature.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html
    * @internal
    */
-  public readonly _serverlessV2AutoPauseSupported?: boolean;
+  public readonly _serverlessV2AutoPauseSupported?: boolean | undefined;
 
   private constructor(
     auroraMysqlFullVersion: string,
@@ -825,14 +825,14 @@ export interface AuroraPostgresEngineFeatures {
    *
    * @default false
    */
-  readonly s3Import?: boolean;
+  readonly s3Import?: boolean | undefined;
 
   /**
    * Whether this version of the Aurora Postgres cluster engine supports the S3 data export feature.
    *
    * @default false
    */
-  readonly s3Export?: boolean;
+  readonly s3Export?: boolean | undefined;
 
   /**
    * Whether this version of the Aurora Postgres cluster engine supports the Aurora SeverlessV2 auto-pause feature.
@@ -840,7 +840,7 @@ export interface AuroraPostgresEngineFeatures {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
    * @default false
    */
-  readonly serverlessV2AutoPauseSupported?: boolean;
+  readonly serverlessV2AutoPauseSupported?: boolean | undefined;
 }
 
 /**

@@ -14,14 +14,14 @@ export interface CfnEipEndpointProps {
    *
    * @default 128
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 }
 
 /**
  * Use an EC2 Instance as a Global Accelerator Endpoint
  */
 export class CfnEipEndpoint implements ga.IEndpoint {
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   constructor(private readonly eip: ec2.CfnEIP, private readonly options: CfnEipEndpointProps = {}) {
     validateWeight(eip, options.weight);

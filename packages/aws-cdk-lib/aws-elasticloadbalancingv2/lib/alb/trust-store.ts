@@ -35,7 +35,7 @@ export interface TrustStoreProps {
    *
    * @default - Auto generated
    */
-  readonly trustStoreName?: string;
+  readonly trustStoreName?: string | undefined;
 
   /**
    * The bucket that the trust store is hosted in
@@ -53,7 +53,7 @@ export interface TrustStoreProps {
    *
    * @default - latest version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**

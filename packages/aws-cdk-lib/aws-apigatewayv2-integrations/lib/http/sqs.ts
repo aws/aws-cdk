@@ -17,7 +17,7 @@ export interface HttpSqsIntegrationProps {
    * @default - specify `QueueUrl`. Additionally, set `MessageBody` to `$request.body.MessageBody` for `SQS_SEND_MESSAGE` subtype
    * and set `ReceiptHandle` to `$request.body.ReceiptHandle` for `SQS_DELETE_MESSAGE` subtype.
    */
-  readonly parameterMapping?: apigwv2.ParameterMapping;
+  readonly parameterMapping?: apigwv2.ParameterMapping | undefined;
 
   /**
    * The subtype of the HTTP integration.
@@ -26,7 +26,7 @@ export interface HttpSqsIntegrationProps {
    *
    * @default HttpIntegrationSubtype.SQS_SEND_MESSAGE
    */
-  readonly subtype?: apigwv2.HttpIntegrationSubtype;
+  readonly subtype?: apigwv2.HttpIntegrationSubtype | undefined;
 
   /**
    * SQS queue that Integrates with API Gateway

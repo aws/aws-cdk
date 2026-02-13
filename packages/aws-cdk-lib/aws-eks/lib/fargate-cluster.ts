@@ -15,7 +15,7 @@ export interface FargateClusterProps extends ClusterOptions {
    * @default - A profile called "default" with 'default' and 'kube-system'
    *            selectors will be created if this is left undefined.
    */
-  readonly defaultProfile?: FargateProfileOptions;
+  readonly defaultProfile?: FargateProfileOptions | undefined;
 }
 
 /**

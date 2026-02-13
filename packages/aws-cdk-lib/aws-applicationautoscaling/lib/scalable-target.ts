@@ -39,7 +39,7 @@ export interface ScalableTargetProps {
    *
    * @default A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The resource identifier to associate with this scalable target.
@@ -271,14 +271,14 @@ export interface ScalingSchedule {
    *
    * @default The rule is activate immediately
    */
-  readonly startTime?: Date;
+  readonly startTime?: Date | undefined;
 
   /**
    * When this scheduled action expires.
    *
    * @default The rule never expires.
    */
-  readonly endTime?: Date;
+  readonly endTime?: Date | undefined;
 
   /**
    * The new minimum capacity.
@@ -290,7 +290,7 @@ export interface ScalingSchedule {
    *
    * @default No new minimum capacity
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 
   /**
    * The new maximum capacity.
@@ -302,7 +302,7 @@ export interface ScalingSchedule {
    *
    * @default No new maximum capacity
    */
-  readonly maxCapacity?: number;
+  readonly maxCapacity?: number | undefined;
 
   /**
    * The time zone used when referring to the date and time of a scheduled action,
@@ -310,7 +310,7 @@ export interface ScalingSchedule {
    *
    * @default - UTC
    */
-  readonly timeZone?: TimeZone;
+  readonly timeZone?: TimeZone | undefined;
 }
 
 /**

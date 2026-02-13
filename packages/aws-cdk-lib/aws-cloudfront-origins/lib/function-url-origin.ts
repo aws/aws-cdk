@@ -18,7 +18,7 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(30)
    */
-  readonly readTimeout?: cdk.Duration;
+  readonly readTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
@@ -29,7 +29,7 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(5)
    */
-  readonly keepaliveTimeout?: cdk.Duration;
+  readonly keepaliveTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies which IP protocol CloudFront uses when connecting to your origin.
@@ -38,7 +38,7 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * @default OriginIpAddressType.IPV4
    */
-  readonly ipAddressType?: OriginIpAddressType;
+  readonly ipAddressType?: OriginIpAddressType | undefined;
 }
 
 /**
@@ -55,7 +55,7 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: cloudfront.IOriginAccessControlRef;
+  readonly originAccessControl?: cloudfront.IOriginAccessControlRef | undefined;
 
 }
 

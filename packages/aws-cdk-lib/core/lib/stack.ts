@@ -49,7 +49,7 @@ export interface StackProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The AWS environment (account/region) where this stack will be deployed.
@@ -115,14 +115,14 @@ export interface StackProps {
    * @default - The environment of the containing `Stage` if available,
    * otherwise create the stack will be environment-agnostic.
    */
-  readonly env?: Environment;
+  readonly env?: Environment | undefined;
 
   /**
    * Name to deploy the stack with
    *
    * @default - Derived from construct path.
    */
-  readonly stackName?: string;
+  readonly stackName?: string | undefined;
 
   /**
    * Tags that will be applied to the Stack
@@ -137,14 +137,14 @@ export interface StackProps {
    *
    * @default {}
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 
   /**
    * SNS Topic ARNs that will receive stack events.
    *
    * @default - no notification arns.
    */
-  readonly notificationArns?: string[];
+  readonly notificationArns?: string[] | undefined;
 
   /**
    * Synthesis method to use while deploying this stack
@@ -161,14 +161,14 @@ export interface StackProps {
    *
    * @default - The synthesizer specified on `App`, or `DefaultStackSynthesizer` otherwise.
    */
-  readonly synthesizer?: IStackSynthesizer;
+  readonly synthesizer?: IStackSynthesizer | undefined;
 
   /**
    * Whether to enable termination protection for this stack.
    *
    * @default false
    */
-  readonly terminationProtection?: boolean;
+  readonly terminationProtection?: boolean | undefined;
 
   /**
    * Include runtime versioning information in this Stack
@@ -176,7 +176,7 @@ export interface StackProps {
    * @default `analyticsReporting` setting of containing `App`, or value of
    * 'aws:cdk:version-reporting' context key
    */
-  readonly analyticsReporting?: boolean;
+  readonly analyticsReporting?: boolean | undefined;
 
   /**
    * Enable this flag to allow native cross region stack references.
@@ -188,7 +188,7 @@ export interface StackProps {
    *
    * @default false
    */
-  readonly crossRegionReferences?: boolean;
+  readonly crossRegionReferences?: boolean | undefined;
 
   /**
    * Options for applying a permissions boundary to all IAM Roles
@@ -196,7 +196,7 @@ export interface StackProps {
    *
    * @default - no permissions boundary is applied
    */
-  readonly permissionsBoundary?: PermissionsBoundary;
+  readonly permissionsBoundary?: PermissionsBoundary | undefined;
 
   /**
    * Enable this flag to suppress indentation in generated
@@ -208,13 +208,13 @@ export interface StackProps {
    *
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
    */
-  readonly suppressTemplateIndentation?: boolean;
+  readonly suppressTemplateIndentation?: boolean | undefined;
 
   /**
    * A list of IPropertyInjector attached to this Stack.
    * @default - no PropertyInjectors
    */
-  readonly propertyInjectors?: IPropertyInjector[];
+  readonly propertyInjectors?: IPropertyInjector[] | undefined;
 }
 
 /**
@@ -352,7 +352,7 @@ export class Stack extends Construct implements ITaggable {
    * resource. `undefined` for top-level (non-nested) stacks.
    *
    */
-  public readonly nestedStackResource?: CfnResource;
+  public readonly nestedStackResource?: CfnResource | undefined;
 
   /**
    * The name of the CloudFormation template file emitted to the output
@@ -394,7 +394,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public readonly _notificationArns?: string[];
+  public readonly _notificationArns?: string[] | undefined;
 
   /**
    * Logical ID generation strategy
@@ -1849,14 +1849,14 @@ export interface ExportValueOptions {
    *
    * @default - A name is automatically chosen
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The description of the outputs
    *
    * @default - No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 function count(xs: string[]): Record<string, number> {

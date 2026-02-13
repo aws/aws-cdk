@@ -34,7 +34,7 @@ export interface KubernetesPatchProps {
    *
    * @default "default"
    */
-  readonly resourceNamespace?: string;
+  readonly resourceNamespace?: string | undefined;
 
   /**
    * The patch type to pass to `kubectl patch`.
@@ -42,7 +42,7 @@ export interface KubernetesPatchProps {
    *
    * @default PatchType.STRATEGIC
    */
-  readonly patchType?: PatchType;
+  readonly patchType?: PatchType | undefined;
 
   /**
    * The removal policy applied to the custom resource that manages the Kubernetes patch.
@@ -56,7 +56,7 @@ export interface KubernetesPatchProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

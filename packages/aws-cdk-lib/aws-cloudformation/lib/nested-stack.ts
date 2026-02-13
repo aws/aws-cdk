@@ -19,7 +19,7 @@ export interface NestedStackProps {
    *
    * @default - no user-defined parameters are passed to the nested stack
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * The length of time that CloudFormation waits for the nested stack to reach
@@ -34,7 +34,7 @@ export interface NestedStackProps {
    *
    * @default - no timeout
    */
-  readonly timeout?: core.Duration;
+  readonly timeout?: core.Duration | undefined;
 
   /**
    * The Simple Notification Service (SNS) topics to publish stack related
@@ -42,7 +42,7 @@ export interface NestedStackProps {
    *
    * @default - notifications are not sent for this stack.
    */
-  readonly notifications?: sns.ITopic[];
+  readonly notifications?: sns.ITopic[] | undefined;
 }
 
 /**

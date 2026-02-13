@@ -17,7 +17,7 @@ export interface CfnHookProps {
    *
    * @default - no properties
    */
-  readonly properties?: { [name: string]: any };
+  readonly properties?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -30,7 +30,7 @@ export class CfnHook extends CfnElement {
    */
   public readonly type: string;
 
-  private readonly _cfnHookProperties?: { [name: string]: any };
+  private readonly _cfnHookProperties?: { [name: string]: any } | undefined;
 
   /**
    * Creates a new Hook object.

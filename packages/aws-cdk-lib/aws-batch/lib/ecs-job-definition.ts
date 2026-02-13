@@ -26,7 +26,7 @@ interface IEcsJobDefinition extends IJobDefinition {
    *
    * @default false
    */
-  readonly propagateTags?: boolean;
+  readonly propagateTags?: boolean | undefined;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
    *
    * @default false
    */
-  readonly propagateTags?: boolean;
+  readonly propagateTags?: boolean | undefined;
 }
 
 /**
@@ -85,7 +85,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   }
 
   readonly container: IEcsContainerDefinition;
-  public readonly propagateTags?: boolean;
+  public readonly propagateTags?: boolean | undefined;
 
   private readonly resource: CfnJobDefinition;
 

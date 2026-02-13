@@ -17,7 +17,7 @@ export interface LambdaActionProps {
    * @see https://github.com/aws/aws-cdk/issues/33958
    * @default - false
    */
-  readonly useUniquePermissionId?: boolean;
+  readonly useUniquePermissionId?: boolean | undefined;
 }
 
 /**

@@ -29,44 +29,44 @@ export interface BaseResolverProps {
    * @default - no pipeline resolver configuration
    * An empty array | undefined sets resolver to be of kind, unit
    */
-  readonly pipelineConfig?: IFunctionConfigurationRef[];
+  readonly pipelineConfig?: IFunctionConfigurationRef[] | undefined;
   /**
    * The request mapping template for this resolver
    *
    * @default - No mapping template
    */
-  readonly requestMappingTemplate?: MappingTemplate;
+  readonly requestMappingTemplate?: MappingTemplate | undefined;
   /**
    * The response mapping template for this resolver
    *
    * @default - No mapping template
    */
-  readonly responseMappingTemplate?: MappingTemplate;
+  readonly responseMappingTemplate?: MappingTemplate | undefined;
   /**
    * The caching configuration for this resolver
    *
    * @default - No caching configuration
    */
-  readonly cachingConfig?: CachingConfig;
+  readonly cachingConfig?: CachingConfig | undefined;
   /**
    * The maximum number of elements per batch, when using batch invoke
    *
    * @default - No max batch size
    */
-  readonly maxBatchSize?: number;
+  readonly maxBatchSize?: number | undefined;
 
   /**
    * The functions runtime
    *
    * @default - no function runtime, VTL mapping templates used
    */
-  readonly runtime?: FunctionRuntime;
+  readonly runtime?: FunctionRuntime | undefined;
   /**
    * The function code
    *
    * @default - no code is used
    */
-  readonly code?: Code;
+  readonly code?: Code | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface ExtendedResolverProps extends BaseResolverProps {
    *
    * @default - No datasource
    */
-  readonly dataSource?: BaseDataSource;
+  readonly dataSource?: BaseDataSource | undefined;
 }
 
 /**

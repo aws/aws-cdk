@@ -10,7 +10,7 @@ export interface CachingConfig {
    *
    * @default - No caching keys
    */
-  readonly cachingKeys?: string[];
+  readonly cachingKeys?: string[] | undefined;
 
   /**
    * The TTL in seconds for a resolver that has caching enabled.

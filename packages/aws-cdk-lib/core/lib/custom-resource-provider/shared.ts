@@ -15,7 +15,7 @@ export interface CustomResourceProviderOptions {
    *
    * @default - `true` if `inlineCode: false` and `false` otherwise.
    */
-  readonly useCfnResponseWrapper?: boolean;
+  readonly useCfnResponseWrapper?: boolean | undefined;
 
   /**
    * A set of IAM policy statements to include in the inline policy of the
@@ -39,14 +39,14 @@ export interface CustomResourceProviderOptions {
    *   ],
    * });
    */
-  readonly policyStatements?: any[];
+  readonly policyStatements?: any[] | undefined;
 
   /**
    * AWS Lambda timeout for the provider.
    *
    * @default Duration.minutes(15)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The amount of memory that your function has access to. Increasing the
@@ -54,19 +54,19 @@ export interface CustomResourceProviderOptions {
    *
    * @default Size.mebibytes(128)
    */
-  readonly memorySize?: Size;
+  readonly memorySize?: Size | undefined;
 
   /**
    * Key-value pairs that are passed to Lambda as Environment
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * A description of the function.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }

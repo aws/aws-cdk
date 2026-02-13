@@ -47,7 +47,7 @@ export interface AwsLogDriverProps {
    *
    * @default - A log group is automatically created.
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs when the log
@@ -55,7 +55,7 @@ export interface AwsLogDriverProps {
    *
    * @default - Logs never expire.
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * This option defines a multiline start pattern in Python strftime format.
@@ -66,7 +66,7 @@ export interface AwsLogDriverProps {
    *
    * @default - No multiline matching.
    */
-  readonly datetimeFormat?: string;
+  readonly datetimeFormat?: string | undefined;
 
   /**
    * This option defines a multiline start pattern using a regular expression.
@@ -79,14 +79,14 @@ export interface AwsLogDriverProps {
    *
    * @default - No multiline matching.
    */
-  readonly multilinePattern?: string;
+  readonly multilinePattern?: string | undefined;
 
   /**
    * The delivery mode of log messages from the container to awslogs.
    *
    * @default - AwsLogDriverMode.BLOCKING
    */
-  readonly mode?: AwsLogDriverMode;
+  readonly mode?: AwsLogDriverMode | undefined;
 
   /**
    * When AwsLogDriverMode.NON_BLOCKING is configured, this parameter
@@ -96,7 +96,7 @@ export interface AwsLogDriverProps {
    *
    * @default - 1 megabyte if driver mode is non-blocking, otherwise this property is not set
    */
-  readonly maxBufferSize?: Size;
+  readonly maxBufferSize?: Size | undefined;
 }
 
 /**

@@ -29,28 +29,28 @@ interface VirtualNodeListenerCommonOptions {
    *
    * @default - 8080
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The health check information for the listener
    *
    * @default - no healthcheck
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * Represents the configuration for enabling TLS on a listener
    *
    * @default - none
    */
-  readonly tls?: ListenerTlsOptions;
+  readonly tls?: ListenerTlsOptions | undefined;
 
   /**
    * Represents the configuration for enabling outlier detection
    *
    * @default - none
    */
-  readonly outlierDetection?: OutlierDetection;
+  readonly outlierDetection?: OutlierDetection | undefined;
 }
 
 interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
@@ -59,7 +59,7 @@ interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
    *
    * @default - None
    */
-  readonly timeout?: HttpTimeout;
+  readonly timeout?: HttpTimeout | undefined;
 }
 
 /**
@@ -72,7 +72,7 @@ export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeLis
    *
    * @default - None
    */
-  readonly connectionPool?: HttpConnectionPool;
+  readonly connectionPool?: HttpConnectionPool | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeLi
    *
    * @default - None
    */
-  readonly connectionPool?: Http2ConnectionPool;
+  readonly connectionPool?: Http2ConnectionPool | undefined;
 }
 
 /**
@@ -96,14 +96,14 @@ export interface GrpcVirtualNodeListenerOptions extends VirtualNodeListenerCommo
    *
    * @default - None
    */
-  readonly timeout?: GrpcTimeout;
+  readonly timeout?: GrpcTimeout | undefined;
 
   /**
    * Connection pool for http listeners
    *
    * @default - None
    */
-  readonly connectionPool?: GrpcConnectionPool;
+  readonly connectionPool?: GrpcConnectionPool | undefined;
 }
 
 /**
@@ -115,14 +115,14 @@ export interface TcpVirtualNodeListenerOptions extends VirtualNodeListenerCommon
    *
    * @default - None
    */
-  readonly timeout?: TcpTimeout;
+  readonly timeout?: TcpTimeout | undefined;
 
   /**
    * Connection pool for http listeners
    *
    * @default - None
    */
-  readonly connectionPool?: TcpConnectionPool;
+  readonly connectionPool?: TcpConnectionPool | undefined;
 }
 
 /**

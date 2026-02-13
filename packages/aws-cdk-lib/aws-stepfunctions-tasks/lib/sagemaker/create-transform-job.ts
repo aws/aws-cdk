@@ -21,21 +21,21 @@ interface SageMakerCreateTransformJobOptions {
    *
    * @default - A role is created with `AmazonSageMakerFullAccess` managed policy
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Number of records to include in a mini-batch for an HTTP inference request.
    *
    * @default - No batch strategy
    */
-  readonly batchStrategy?: BatchStrategy;
+  readonly batchStrategy?: BatchStrategy | undefined;
 
   /**
    * Environment variables to set in the Docker container.
    *
    * @default - No environment variables
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * Maximum number of parallel requests that can be sent to each instance in a transform job.
@@ -43,14 +43,14 @@ interface SageMakerCreateTransformJobOptions {
    * @default - Amazon SageMaker checks the optional execution-parameters to determine the settings for your chosen algorithm.
    * If the execution-parameters endpoint is not enabled, the default value is 1.
    */
-  readonly maxConcurrentTransforms?: number;
+  readonly maxConcurrentTransforms?: number | undefined;
 
   /**
    * Maximum allowed size of the payload, in MB.
    *
    * @default 6
    */
-  readonly maxPayload?: Size;
+  readonly maxPayload?: Size | undefined;
 
   /**
    * Name of the model that you want to use for the transform job.
@@ -62,14 +62,14 @@ interface SageMakerCreateTransformJobOptions {
    *
    * @default - 0 retries and 60 seconds of timeout
    */
-  readonly modelClientOptions?: ModelClientOptions;
+  readonly modelClientOptions?: ModelClientOptions | undefined;
 
   /**
    * Tags to be applied to the train job.
    *
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 
   /**
    * Dataset to be transformed and the Amazon S3 location where it is stored.
@@ -86,7 +86,7 @@ interface SageMakerCreateTransformJobOptions {
    *
    * @default - 1 instance of type M4.XLarge
    */
-  readonly transformResources?: TransformResources;
+  readonly transformResources?: TransformResources | undefined;
 }
 
 /**
@@ -130,8 +130,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   /**
    * Dataset to be transformed and the Amazon S3 location where it is stored.

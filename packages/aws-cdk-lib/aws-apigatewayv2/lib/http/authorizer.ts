@@ -44,7 +44,7 @@ export interface HttpAuthorizerProps {
    * Name of the authorizer
    * @default - id of the HttpAuthorizer construct.
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * HTTP Api to attach the authorizer to
@@ -67,13 +67,13 @@ export interface HttpAuthorizerProps {
    * A valid JWT must provide an aud that matches at least one entry in this list.
    * @default - required for JWT authorizer typess.
    */
-  readonly jwtAudience?: string[];
+  readonly jwtAudience?: string[] | undefined;
 
   /**
    * The base domain of the identity provider that issues JWT.
    * @default - required for JWT authorizer types.
    */
-  readonly jwtIssuer?: string;
+  readonly jwtIssuer?: string | undefined;
 
   /**
    * Specifies whether a Lambda authorizer returns a response in a simple format.
@@ -82,14 +82,14 @@ export interface HttpAuthorizerProps {
    *
    * @default - The lambda authorizer must return an IAM policy as its response
    */
-  readonly enableSimpleResponses?: boolean;
+  readonly enableSimpleResponses?: boolean | undefined;
 
   /**
    * Specifies the format of the payload sent to an HTTP API Lambda authorizer.
    *
    * @default AuthorizerPayloadVersion.VERSION_2_0 if the authorizer type is HttpAuthorizerType.LAMBDA
    */
-  readonly payloadFormatVersion?: AuthorizerPayloadVersion;
+  readonly payloadFormatVersion?: AuthorizerPayloadVersion | undefined;
 
   /**
    * The authorizer's Uniform Resource Identifier (URI).
@@ -98,14 +98,14 @@ export interface HttpAuthorizerProps {
    *
    * @default - required for Request authorizer types
    */
-  readonly authorizerUri?: string;
+  readonly authorizerUri?: string | undefined;
 
   /**
    * How long APIGateway should cache the results. Max 1 hour.
    *
    * @default - API Gateway will not cache authorizer responses
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 }
 
 /**
@@ -239,7 +239,7 @@ export interface HttpRouteAuthorizerConfig {
    *
    * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
-  readonly authorizerId?: string;
+  readonly authorizerId?: string | undefined;
 
   /**
    * The type of authorization
@@ -256,7 +256,7 @@ export interface HttpRouteAuthorizerConfig {
    * The list of OIDC scopes to include in the authorization.
    * @default - no authorization scopes
    */
-  readonly authorizationScopes?: string[];
+  readonly authorizationScopes?: string[] | undefined;
 }
 
 /**

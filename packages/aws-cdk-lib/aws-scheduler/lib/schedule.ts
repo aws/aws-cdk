@@ -31,7 +31,7 @@ export interface ISchedule extends IResource, IScheduleRef {
   /**
    * The schedule group associated with this schedule.
    */
-  readonly scheduleGroup?: IScheduleGroup;
+  readonly scheduleGroup?: IScheduleGroup | undefined;
 }
 
 /**
@@ -67,7 +67,7 @@ export class TimeWindow {
    *
    * @default - no value
    */
-  public readonly maxWindow?: Duration;
+  public readonly maxWindow?: Duration | undefined;
 
   private constructor(mode: 'OFF' | 'FLEXIBLE', maxWindow?: Duration) {
     this.mode = mode;
@@ -97,35 +97,35 @@ export interface ScheduleProps {
    *
    * @default - A unique name will be generated
    */
-  readonly scheduleName?: string;
+  readonly scheduleName?: string | undefined;
 
   /**
    * The description you specify for the schedule.
    *
    * @default - no value
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The schedule's group.
    *
    * @default - By default a schedule will be associated with the `default` group.
    */
-  readonly scheduleGroup?: IScheduleGroup;
+  readonly scheduleGroup?: IScheduleGroup | undefined;
 
   /**
    * Indicates whether the schedule is enabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    *
    * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
    */
-  readonly key?: kms.IKey;
+  readonly key?: kms.IKey | undefined;
 
   /**
    * A time window during which EventBridge Scheduler invokes the schedule.
@@ -134,7 +134,7 @@ export interface ScheduleProps {
    *
    * @default TimeWindow.off()
    */
-  readonly timeWindow?: TimeWindow;
+  readonly timeWindow?: TimeWindow | undefined;
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
@@ -142,7 +142,7 @@ export interface ScheduleProps {
    *
    * @default - no value
    */
-  readonly start?: Date;
+  readonly start?: Date | undefined;
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
@@ -150,7 +150,7 @@ export interface ScheduleProps {
    *
    * @default - no value
    */
-  readonly end?: Date;
+  readonly end?: Date | undefined;
 }
 
 /**
@@ -283,7 +283,7 @@ export class Schedule extends Resource implements ISchedule {
   /**
    * The schedule group associated with this schedule.
    */
-  public readonly scheduleGroup?: IScheduleGroup;
+  public readonly scheduleGroup?: IScheduleGroup | undefined;
 
   /**
    * The arn of the schedule.
@@ -308,14 +308,14 @@ export class Schedule extends Resource implements ISchedule {
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
    */
-  readonly key?: kms.IKey;
+  readonly key?: kms.IKey | undefined;
 
   private readonly _resource: CfnSchedule;
 
   /**
    * A `RetryPolicy` object that includes information about the retry policy settings.
    */
-  private readonly retryPolicy?: CfnSchedule.RetryPolicyProperty;
+  private readonly retryPolicy?: CfnSchedule.RetryPolicyProperty | undefined;
 
   constructor(scope: Construct, id: string, props: ScheduleProps) {
     super(scope, id, {

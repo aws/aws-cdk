@@ -16,14 +16,14 @@ interface AthenaGetQueryResultsOptions {
    *
    * @default - No next token
    */
-  readonly nextToken?: string;
+  readonly nextToken?: string | undefined;
 
   /**
    * Max number of results
    *
    * @default 1000
    */
-  readonly maxResults?: number;
+  readonly maxResults?: number | undefined;
 }
 
 /**
@@ -71,8 +71,8 @@ export class AthenaGetQueryResults extends sfn.TaskStateBase {
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

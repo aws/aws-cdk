@@ -15,7 +15,7 @@ export interface ContainerOverride {
    *
    * @default - Default command from the Docker image or the task definition
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to send to the container.
@@ -25,28 +25,28 @@ export interface ContainerOverride {
    *
    * @default - The existing environment variables from the Docker image or the task definition
    */
-  readonly environment?: TaskEnvironmentVariable[];
+  readonly environment?: TaskEnvironmentVariable[] | undefined;
 
   /**
    * The number of cpu units reserved for the container
    *
    * @default - The default value from the task definition.
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The hard limit (in MiB) of memory to present to the container
    *
    * @default - The default value from the task definition.
    */
-  readonly memoryLimit?: number;
+  readonly memoryLimit?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container
    *
    * @default - The default value from the task definition.
    */
-  readonly memoryReservation?: number;
+  readonly memoryReservation?: number | undefined;
 }
 
 /**

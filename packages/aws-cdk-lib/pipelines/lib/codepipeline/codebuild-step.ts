@@ -17,7 +17,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - Automatically generated
    */
-  readonly projectName?: string;
+  readonly projectName?: string | undefined;
 
   /**
    * Additional configuration that can only be configured via BuildSpec
@@ -34,14 +34,14 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - BuildSpec completely derived from other properties
    */
-  readonly partialBuildSpec?: codebuild.BuildSpec;
+  readonly partialBuildSpec?: codebuild.BuildSpec | undefined;
 
   /**
    * The VPC where to execute the SimpleSynth.
    *
    * @default - No VPC
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Which subnets to use.
@@ -50,14 +50,14 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - All private subnets.
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * Caching strategy to use.
    *
    * @default - No cache
    */
-  readonly cache?: codebuild.Cache;
+  readonly cache?: codebuild.Cache | undefined;
 
   /**
    * Policy statements to add to role used during the synth
@@ -66,21 +66,21 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - No policy statements added to CodeBuild Project Role
    */
-  readonly rolePolicyStatements?: iam.PolicyStatement[];
+  readonly rolePolicyStatements?: iam.PolicyStatement[] | undefined;
 
   /**
    * Custom execution role to be used for the CodeBuild project
    *
    * @default - A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Custom execution role to be used for the Code Build Action
    *
    * @default - A role is automatically created
    */
-  readonly actionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole | undefined;
 
   /**
    * Changes to environment
@@ -90,7 +90,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - Use the pipeline's default build environment
    */
-  readonly buildEnvironment?: codebuild.BuildEnvironment;
+  readonly buildEnvironment?: codebuild.BuildEnvironment | undefined;
 
   /**
    * Which security group to associate with the script's project network interfaces.
@@ -100,7 +100,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - Security group will be automatically created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -109,7 +109,7 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default Duration.hours(1)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * ProjectFileSystemLocation objects for CodeBuild build projects.
@@ -119,14 +119,14 @@ export interface CodeBuildStepProps extends ShellStepProps {
    *
    * @default - no file system locations
    */
-  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[] | undefined;
 
   /**
    * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
    *
    * @default - no log configuration is set
    */
-  readonly logging?: codebuild.LoggingOptions;
+  readonly logging?: codebuild.LoggingOptions | undefined;
 }
 
 /**
@@ -149,63 +149,63 @@ export class CodeBuildStep extends ShellStep {
    *
    * @default - No value specified at construction time, use defaults
    */
-  public readonly projectName?: string;
+  public readonly projectName?: string | undefined;
 
   /**
    * The VPC where to execute the SimpleSynth.
    *
    * @default - No value specified at construction time, use defaults
    */
-  public readonly vpc?: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Which subnets to use.
    *
    * @default - No value specified at construction time, use defaults
    */
-  public readonly subnetSelection?: ec2.SubnetSelection;
+  public readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * Caching strategy to use.
    *
    * @default - No cache
    */
-  public readonly cache?: codebuild.Cache;
+  public readonly cache?: codebuild.Cache | undefined;
 
   /**
    * Policy statements to add to role used during the synth
    *
    * @default - No value specified at construction time, use defaults
    */
-  public readonly rolePolicyStatements?: iam.PolicyStatement[];
+  public readonly rolePolicyStatements?: iam.PolicyStatement[] | undefined;
 
   /**
    * Custom execution role to be used for the CodeBuild project
    *
    * @default - No value specified at construction time, use defaults
    */
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
 
   /**
    * Custom execution role to be used for the Code Build Action
    *
    * @default - A role is automatically created
    */
-  readonly actionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole | undefined;
 
   /**
    * Build environment
    *
    * @default - No value specified at construction time, use defaults
    */
-  readonly buildEnvironment?: codebuild.BuildEnvironment;
+  readonly buildEnvironment?: codebuild.BuildEnvironment | undefined;
 
   /**
    * Which security group to associate with the script's project network interfaces.
    *
    * @default - No value specified at construction time, use defaults
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -214,7 +214,7 @@ export class CodeBuildStep extends ShellStep {
    *
    * @default Duration.hours(1)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * ProjectFileSystemLocation objects for CodeBuild build projects.
@@ -224,14 +224,14 @@ export class CodeBuildStep extends ShellStep {
    *
    * @default - no file system locations
    */
-  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[] | undefined;
 
   /**
    * Information about logs for CodeBuild projects. A CodeBuilde project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
    *
    * @default - no log configuration is set
    */
-  readonly logging?: codebuild.LoggingOptions;
+  readonly logging?: codebuild.LoggingOptions | undefined;
 
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;

@@ -44,7 +44,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 256
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The amount (in MiB) of memory used by the task. For tasks using the Fargate launch type,
@@ -69,7 +69,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 512
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
@@ -78,7 +78,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default 20
    */
-  readonly ephemeralStorageGiB?: number;
+  readonly ephemeralStorageGiB?: number | undefined;
 
   /**
    * The operating system that your task definitions are running on.
@@ -87,7 +87,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - Undefined.
    */
-  readonly runtimePlatform?: RuntimePlatform;
+  readonly runtimePlatform?: RuntimePlatform | undefined;
 
   /**
    * The process namespace to use for the containers in the task.
@@ -101,7 +101,7 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - PidMode used by the task is not specified
    */
-  readonly pidMode?: PidMode;
+  readonly pidMode?: PidMode | undefined;
 }
 
 /**
@@ -165,7 +165,7 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
    */
-  public readonly ephemeralStorageGiB?: number;
+  public readonly ephemeralStorageGiB?: number | undefined;
 
   /**
    * The number of cpu units used by the task.

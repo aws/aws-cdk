@@ -44,7 +44,7 @@ export interface BundlingOptions {
    *
    * @default - run the entrypoint defined in the image
    */
-  readonly entrypoint?: string[];
+  readonly entrypoint?: string[] | undefined;
 
   /**
    * The command to run in the Docker container.
@@ -55,35 +55,35 @@ export interface BundlingOptions {
    *
    * @default - run the command defined in the image
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * Additional Docker volumes to mount.
    *
    * @default - no additional volumes are mounted
    */
-  readonly volumes?: DockerVolume[];
+  readonly volumes?: DockerVolume[] | undefined;
 
   /**
    * Where to mount the specified volumes from
    * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
    * @default - no containers are specified to mount volumes from
    */
-  readonly volumesFrom?: string[];
+  readonly volumesFrom?: string[] | undefined;
 
   /**
    * The environment variables to pass to the Docker container.
    *
    * @default - no environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * Working directory inside the Docker container.
    *
    * @default /asset-input
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 
   /**
    * The user to use when running the Docker container.
@@ -94,7 +94,7 @@ export interface BundlingOptions {
    *
    * @default - uid:gid of the current user or 1000:1000 on Windows
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * Local bundling provider.
@@ -106,7 +106,7 @@ export interface BundlingOptions {
    * @default - bundling will only be performed in a Docker container
    *
    */
-  readonly local?: ILocalBundling;
+  readonly local?: ILocalBundling | undefined;
 
   /**
    * The type of output that this bundling operation is producing.
@@ -114,7 +114,7 @@ export interface BundlingOptions {
    * @default BundlingOutput.AUTO_DISCOVER
    *
    */
-  readonly outputType?: BundlingOutput;
+  readonly outputType?: BundlingOutput | undefined;
 
   /**
    * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
@@ -122,19 +122,19 @@ export interface BundlingOptions {
    *
    * @default - no security options
    */
-  readonly securityOpt?: string;
+  readonly securityOpt?: string | undefined;
   /**
    * Docker [Networking options](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network)
    *
    * @default - no networking options
    */
-  readonly network?: string;
+  readonly network?: string | undefined;
 
   /**
    * The access mechanism used to make source files available to the bundling container and to return the bundling output back to the host.
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly bundlingFileAccess?: BundlingFileAccess;
+  readonly bundlingFileAccess?: BundlingFileAccess | undefined;
 
   /**
    * Platform to build for. _Requires Docker Buildx_.
@@ -143,7 +143,7 @@ export interface BundlingOptions {
    *
    * @default - no platform specified (the current machine architecture will be used)
    */
-  readonly platform?: string;
+  readonly platform?: string | undefined;
 }
 
 /**
@@ -482,7 +482,7 @@ export interface DockerVolume {
    * @default DockerConsistency.DELEGATED
    * @see https://docs.docker.com/storage/bind-mounts/#configure-mount-consistency-for-macos
    */
-  readonly consistency?: DockerVolumeConsistency;
+  readonly consistency?: DockerVolumeConsistency | undefined;
 }
 
 /**
@@ -512,49 +512,49 @@ export interface DockerRunOptions {
    *
    * @default - run the entrypoint defined in the image
    */
-  readonly entrypoint?: string[];
+  readonly entrypoint?: string[] | undefined;
 
   /**
    * The command to run in the container.
    *
    * @default - run the command defined in the image
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * Docker volumes to mount.
    *
    * @default - no volumes are mounted
    */
-  readonly volumes?: DockerVolume[];
+  readonly volumes?: DockerVolume[] | undefined;
 
   /**
    * Where to mount the specified volumes from
    * @see https://docs.docker.com/engine/reference/commandline/run/#mount-volumes-from-container---volumes-from
    * @default - no containers are specified to mount volumes from
    */
-  readonly volumesFrom?: string[];
+  readonly volumesFrom?: string[] | undefined;
 
   /**
    * The environment variables to pass to the container.
    *
    * @default - no environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * Working directory inside the container.
    *
    * @default - image default
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 
   /**
    * The user to use when running the container.
    *
    * @default - root or image default
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * [Security configuration](https://docs.docker.com/engine/reference/run/#security-configuration)
@@ -562,14 +562,14 @@ export interface DockerRunOptions {
    *
    * @default - no security options
    */
-  readonly securityOpt?: string;
+  readonly securityOpt?: string | undefined;
 
   /**
    * Docker [Networking options](https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network)
    *
    * @default - no networking options
    */
-  readonly network?: string;
+  readonly network?: string | undefined;
 
   /**
    * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
@@ -578,7 +578,7 @@ export interface DockerRunOptions {
    *
    * @default - no platform specified
    */
-  readonly platform?: string;
+  readonly platform?: string | undefined;
 }
 
 /**
@@ -590,21 +590,21 @@ export interface DockerBuildOptions {
    *
    * @default - no build args
    */
-  readonly buildArgs?: { [key: string]: string };
+  readonly buildArgs?: { [key: string]: string } | undefined;
 
   /**
    * Name of the Dockerfile, must relative to the docker build path.
    *
    * @default `Dockerfile`
    */
-  readonly file?: string;
+  readonly file?: string | undefined;
 
   /**
    * Docker [Networking options](https://docs.docker.com/reference/cli/docker/buildx/build/#network)
    *
    * @default - no networking options
    */
-  readonly network?: string;
+  readonly network?: string | undefined;
 
   /**
    * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
@@ -613,7 +613,7 @@ export interface DockerBuildOptions {
    *
    * @default - no platform specified
    */
-  readonly platform?: string;
+  readonly platform?: string | undefined;
 
   /**
    * Set build target for multi-stage container builds. Any stage defined afterwards will be ignored.
@@ -622,28 +622,28 @@ export interface DockerBuildOptions {
    *
    * @default - Build all stages defined in the Dockerfile
    */
-  readonly targetStage?: string;
+  readonly targetStage?: string | undefined;
 
   /**
    * Cache from options to pass to the `docker build` command.
    *
    * @default - no cache from args are passed
    */
-  readonly cacheFrom?: DockerCacheOption[];
+  readonly cacheFrom?: DockerCacheOption[] | undefined;
 
   /**
    * Cache to options to pass to the `docker build` command.
    *
    * @default - no cache to args are passed
    */
-  readonly cacheTo?: DockerCacheOption;
+  readonly cacheTo?: DockerCacheOption | undefined;
 
   /**
    * Disable the cache and pass `--no-cache` to the `docker build` command.
    *
    * @default - cache is used
    */
-  readonly cacheDisabled?: boolean;
+  readonly cacheDisabled?: boolean | undefined;
 }
 
 function flatten(x: string[][]) {

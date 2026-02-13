@@ -74,7 +74,7 @@ export interface DeploymentController {
    *
    * @default DeploymentControllerType.ECS
    */
-  readonly type?: DeploymentControllerType;
+  readonly type?: DeploymentControllerType | undefined;
 }
 
 /**
@@ -85,14 +85,14 @@ export interface DeploymentCircuitBreaker {
    * Whether to enable the deployment circuit breaker logic
    * @default true
    */
-  readonly enable?: boolean;
+  readonly enable?: boolean | undefined;
 
   /**
    * Whether to enable rollback on deployment failure
    *
    * @default false
    */
-  readonly rollback?: boolean;
+  readonly rollback?: boolean | undefined;
 }
 
 /**
@@ -106,7 +106,7 @@ export interface TrafficShiftConfig {
    *
    * @default - 10.0 for linear, 5.0 for canary
    */
-  readonly stepPercent?: number;
+  readonly stepPercent?: number | undefined;
 
   /**
    * The duration to wait between traffic shifting steps.
@@ -114,7 +114,7 @@ export interface TrafficShiftConfig {
    *
    * @default - Duration.minutes(6) for linear, Duration.minutes(10) for canary
    */
-  readonly stepBakeTime?: Duration;
+  readonly stepBakeTime?: Duration | undefined;
 }
 
 /**
@@ -143,7 +143,7 @@ export interface DeploymentAlarmOptions {
    * Default rollback on alarm
    * @default AlarmBehavior.ROLLBACK_ON_ALARM
    */
-  readonly behavior?: AlarmBehavior;
+  readonly behavior?: AlarmBehavior | undefined;
 }
 
 /**
@@ -167,14 +167,14 @@ export interface EcsTarget {
    *
    * @default - Container port of the first added port mapping.
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 
   /**
    * The protocol used for the port mapping. Only applicable when using application load balancers.
    *
    * @default Protocol.TCP
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * ID for a target group to be created.
@@ -202,7 +202,7 @@ export interface ServiceConnectProps {
    *
    * @default the cloudmap namespace specified on the cluster.
    */
-  readonly namespace?: string;
+  readonly namespace?: string | undefined;
 
   /**
    * The list of Services, including a port mapping, terse client alias, and optional intermediate DNS name.
@@ -211,14 +211,14 @@ export interface ServiceConnectProps {
    *
    * @default none
    */
-  readonly services?: ServiceConnectService[];
+  readonly services?: ServiceConnectService[] | undefined;
 
   /**
    * The log driver configuration to use for the Service Connect agent logs.
    *
    * @default - none
    */
-  readonly logDriver?: LogDriver;
+  readonly logDriver?: LogDriver | undefined;
 }
 
 /**
@@ -237,7 +237,7 @@ export interface ServiceConnectService {
    *
    * @default - port mapping name
    */
-  readonly discoveryName?: string;
+  readonly discoveryName?: string | undefined;
 
   /**
    * The terse DNS alias to use for this port mapping in the service connect mesh.
@@ -246,21 +246,21 @@ export interface ServiceConnectService {
    *
    * @default - No alias is created. The service is reachable at `portMappingName.namespace:port`.
    */
-  readonly dnsName?: string;
+  readonly dnsName?: string | undefined;
 
   /**
    * The port for clients to use to communicate with this service via Service Connect.
    *
    * @default the container port specified by the port mapping in portMappingName.
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * Optional. The port on the Service Connect agent container to use for traffic ingress to this service.
    *
    * @default - none
    */
-  readonly ingressPortOverride?: number;
+  readonly ingressPortOverride?: number | undefined;
 
   /**
    * The amount of time in seconds a connection for Service Connect will stay active while idle.
@@ -272,7 +272,7 @@ export interface ServiceConnectService {
    *
    * @default - Duration.minutes(5) for HTTP/HTTP2/GRPC, Duration.hours(1) for TCP.
    */
-  readonly idleTimeout?: Duration;
+  readonly idleTimeout?: Duration | undefined;
 
   /**
    * The amount of time waiting for the upstream to respond with a complete response per request for
@@ -286,14 +286,14 @@ export interface ServiceConnectService {
    *
    * @default - Duration.seconds(15)
    */
-  readonly perRequestTimeout?: Duration;
+  readonly perRequestTimeout?: Duration | undefined;
 
   /**
    * A reference to an object that represents a Transport Layer Security (TLS) configuration.
    *
    * @default - none
    */
-  readonly tls?: ServiceConnectTlsConfiguration;
+  readonly tls?: ServiceConnectTlsConfiguration | undefined;
 }
 
 /**
@@ -305,21 +305,21 @@ export interface ServiceConnectTlsConfiguration {
    *
    * @default - none
    */
-  readonly awsPcaAuthorityArn?: string;
+  readonly awsPcaAuthorityArn?: string | undefined;
 
   /**
    * The KMS key used for encryption and decryption.
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 
   /**
    * The IAM role that's associated with the Service Connect TLS.
    *
    * @default - none
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**
@@ -337,14 +337,14 @@ export interface BaseServiceOptions {
    * @default - When creating the service, default is 1; when updating the service, default uses
    * the current task number.
    */
-  readonly desiredCount?: number;
+  readonly desiredCount?: number | undefined;
 
   /**
    * The name of the service.
    *
    * @default - CloudFormation-generated name.
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS
@@ -353,7 +353,7 @@ export interface BaseServiceOptions {
    *
    * @default - 100 if daemon, otherwise 200
    */
-  readonly maxHealthyPercent?: number;
+  readonly maxHealthyPercent?: number | undefined;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -362,7 +362,7 @@ export interface BaseServiceOptions {
    *
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minHealthyPercent?: number;
+  readonly minHealthyPercent?: number | undefined;
 
   /**
    * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
@@ -370,14 +370,14 @@ export interface BaseServiceOptions {
    *
    * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
    */
-  readonly healthCheckGracePeriod?: Duration;
+  readonly healthCheckGracePeriod?: Duration | undefined;
 
   /**
    * The options for configuring an Amazon ECS service to use service discovery.
    *
    * @default - AWS Cloud Map service discovery is not enabled.
    */
-  readonly cloudMapOptions?: CloudMapOptions;
+  readonly cloudMapOptions?: CloudMapOptions | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service
@@ -386,7 +386,7 @@ export interface BaseServiceOptions {
    *
    * @default PropagatedTagSource.NONE
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: PropagatedTagSource | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
@@ -395,7 +395,7 @@ export interface BaseServiceOptions {
    * @deprecated Use `propagateTags` instead.
    * @default PropagatedTagSource.NONE
    */
-  readonly propagateTaskTagsFrom?: PropagatedTagSource;
+  readonly propagateTaskTagsFrom?: PropagatedTagSource | undefined;
 
   /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
@@ -403,7 +403,7 @@ export interface BaseServiceOptions {
    *
    * @default false
    */
-  readonly enableECSManagedTags?: boolean;
+  readonly enableECSManagedTags?: boolean | undefined;
 
   /**
    * Specifies which deployment controller to use for the service. For more information, see
@@ -411,14 +411,14 @@ export interface BaseServiceOptions {
    *
    * @default - Rolling update (ECS)
    */
-  readonly deploymentController?: DeploymentController;
+  readonly deploymentController?: DeploymentController | undefined;
 
   /**
    * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
    * enabled.
    * @default - disabled
    */
-  readonly circuitBreaker?: DeploymentCircuitBreaker;
+  readonly circuitBreaker?: DeploymentCircuitBreaker | undefined;
 
   /**
    * The alarm(s) to monitor during deployment, and behavior to apply if at least one enters a state of alarm
@@ -427,7 +427,7 @@ export interface BaseServiceOptions {
    *
    * @default - No alarms will be monitored during deployment.
    */
-  readonly deploymentAlarms?: DeploymentAlarmConfig;
+  readonly deploymentAlarms?: DeploymentAlarmConfig | undefined;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -435,14 +435,14 @@ export interface BaseServiceOptions {
    * @default - undefined
    *
    */
-  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[] | undefined;
 
   /**
    * Whether to enable the ability to execute into a container
    *
    *  @default - undefined
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Configuration for Service Connect.
@@ -450,14 +450,14 @@ export interface BaseServiceOptions {
    * @default No ports are advertised via Service Connect on this service, and the service
    * cannot make requests to other services via Service Connect.
    */
-  readonly serviceConnectConfiguration?: ServiceConnectProps;
+  readonly serviceConnectConfiguration?: ServiceConnectProps | undefined;
 
   /**
    * Revision number for the task definition or `latest` to use the latest active task revision.
    *
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
-  readonly taskDefinitionRevision?: TaskDefinitionRevision;
+  readonly taskDefinitionRevision?: TaskDefinitionRevision | undefined;
 
   /**
    * Configuration details for a volume used by the service. This allows you to specify
@@ -465,25 +465,25 @@ export interface BaseServiceOptions {
    *
    * @default - undefined
    */
-  readonly volumeConfigurations?: ServiceManagedVolume[];
+  readonly volumeConfigurations?: ServiceManagedVolume[] | undefined;
 
   /**
    * The deployment strategy to use for the service.
    * @default ROLLING
    */
-  readonly deploymentStrategy?: DeploymentStrategy;
+  readonly deploymentStrategy?: DeploymentStrategy | undefined;
 
   /**
    * bake time minutes for service.
    * @default - none
    */
-  readonly bakeTime?: Duration;
+  readonly bakeTime?: Duration | undefined;
 
   /**
    * The lifecycle hooks to execute during deployment stages
    * @default - none;
    */
-  readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[];
+  readonly lifecycleHooks?: IDeploymentLifecycleHookTarget[] | undefined;
 
   /**
    * Configuration for linear deployment strategy.
@@ -491,7 +491,7 @@ export interface BaseServiceOptions {
    *
    * @default - no linear configuration
    */
-  readonly linearConfiguration?: TrafficShiftConfig;
+  readonly linearConfiguration?: TrafficShiftConfig | undefined;
 
   /**
    * Configuration for canary deployment strategy.
@@ -499,7 +499,7 @@ export interface BaseServiceOptions {
    *
    * @default - no canary configuration
    */
-  readonly canaryConfiguration?: TrafficShiftConfig;
+  readonly canaryConfiguration?: TrafficShiftConfig | undefined;
 
 }
 
@@ -761,7 +761,7 @@ export abstract class BaseService extends Resource
   /**
    * The deployment strategy for the service
    */
-  private readonly deploymentStrategy?: DeploymentStrategy;
+  private readonly deploymentStrategy?: DeploymentStrategy | undefined;
 
   /**
    * Constructs a new instance of the BaseService class.
@@ -1807,28 +1807,28 @@ export interface CloudMapOptions {
    *
    * @default CloudFormation-generated name
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The service discovery namespace for the Cloud Map service to attach to the ECS service.
    *
    * @default - the defaultCloudMapNamespace associated to the cluster
    */
-  readonly cloudMapNamespace?: cloudmap.INamespace;
+  readonly cloudMapNamespace?: cloudmap.INamespace | undefined;
 
   /**
    * The DNS record type that you want AWS Cloud Map to create. The supported record types are A or SRV.
    *
    * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
-  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV;
+  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV | undefined;
 
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
    * @default Duration.minutes(1)
    */
-  readonly dnsTtl?: Duration;
+  readonly dnsTtl?: Duration | undefined;
 
   /**
    * The number of 30-second intervals that you want Cloud Map to wait after receiving an UpdateInstanceCustomHealthStatus
@@ -1836,19 +1836,19 @@ export interface CloudMapOptions {
    *
    * NOTE: This is used for HealthCheckCustomConfig
    */
-  readonly failureThreshold?: number;
+  readonly failureThreshold?: number | undefined;
 
   /**
    * The container to point to for a SRV record.
    * @default - the task definition's default container
    */
-  readonly container?: ContainerDefinition;
+  readonly container?: ContainerDefinition | undefined;
 
   /**
    * The port to point to for a SRV record.
    * @default - the default port of the task definition's default container
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 }
 
 /**
@@ -1864,13 +1864,13 @@ export interface AssociateCloudMapServiceOptions {
    * The container to point to for a SRV record.
    * @default - the task definition's default container
    */
-  readonly container?: ContainerDefinition;
+  readonly container?: ContainerDefinition | undefined;
 
   /**
    * The port to point to for a SRV record.
    * @default - the default port of the task definition's default container
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 }
 
 /**
@@ -1889,7 +1889,7 @@ interface ServiceRegistry {
    * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The container port value, already specified in the task definition, to be used for your service discovery service.
@@ -1898,7 +1898,7 @@ interface ServiceRegistry {
    * If the task definition that your service task specifies uses the awsvpc network mode and a type SRV DNS record is
    * used, you must specify either a containerName and containerPort combination or a port value, but not both.
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 }
 
 /**

@@ -23,7 +23,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * (`new NodejsFunction(this, 'my-handler')`), the construct will look at `stack.my-handler.ts`
    * and `stack.my-handler.js`.
    */
-  readonly entry?: string;
+  readonly entry?: string | undefined;
 
   /**
    * The name of the exported handler in the entry file.
@@ -37,7 +37,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * @default handler
    */
-  readonly handler?: string;
+  readonly handler?: string | undefined;
 
   /**
    * The runtime environment. Only runtimes of the Node.js family are
@@ -45,7 +45,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * @default `Runtime.NODEJS_LATEST` if the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, otherwise `Runtime.NODEJS_16_X`
    */
-  readonly runtime?: lambda.Runtime;
+  readonly runtime?: lambda.Runtime | undefined;
 
   /**
    * The `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable does not exist in the AWS SDK for JavaScript v3.
@@ -65,7 +65,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * @default - false (obsolete) for runtimes >= Node 18, true for runtimes <= Node 16.
    */
-  readonly awsSdkConnectionReuse?: boolean;
+  readonly awsSdkConnectionReuse?: boolean | undefined;
 
   /**
    * The path to the dependencies lock file (`yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`, `bun.lock` or `package-lock.json`).
@@ -79,7 +79,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the path is found by walking up parent directories searching for
    *   a `yarn.lock`, `pnpm-lock.yaml`, `bun.lockb`, `bun.lock` or `package-lock.json` file
    */
-  readonly depsLockFilePath?: string;
+  readonly depsLockFilePath?: string | undefined;
 
   /**
    * Bundling options
@@ -87,14 +87,14 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - use default bundling options: no minify, no sourcemap, all
    *   modules are bundled.
    */
-  readonly bundling?: BundlingOptions;
+  readonly bundling?: BundlingOptions | undefined;
 
   /**
    * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
    *
    * @default - the directory containing the `depsLockFilePath`
    */
-  readonly projectRoot?: string;
+  readonly projectRoot?: string | undefined;
 
   /**
    * The code that will be deployed to the Lambda Handler. If included, then properties related to
@@ -104,7 +104,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * @default - the code is bundled by esbuild
    */
-  readonly code?: lambda.Code;
+  readonly code?: lambda.Code | undefined;
 }
 
 /**

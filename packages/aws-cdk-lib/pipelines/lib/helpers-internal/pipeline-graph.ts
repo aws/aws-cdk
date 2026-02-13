@@ -11,21 +11,21 @@ export interface PipelineGraphProps {
    *
    * @default false
    */
-  readonly selfMutation?: boolean;
+  readonly selfMutation?: boolean | undefined;
 
   /**
    * Publishes the template asset to S3.
    *
    * @default false
    */
-  readonly publishTemplate?: boolean;
+  readonly publishTemplate?: boolean | undefined;
 
   /**
    * Whether to combine asset publishers for the same type into one step
    *
    * @default false
    */
-  readonly singlePublisherPerAssetType?: boolean;
+  readonly singlePublisherPerAssetType?: boolean | undefined;
 
   /**
    * Add a "prepare" step for each stack which can be used to create the change
@@ -33,7 +33,7 @@ export interface PipelineGraphProps {
    *
    * @default true
    */
-  readonly prepareStep?: boolean;
+  readonly prepareStep?: boolean | undefined;
 }
 
 /**
@@ -54,8 +54,8 @@ export class PipelineGraph {
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
   private readonly assetNodesByType = new Map<AssetType, AGraphNode>();
-  private readonly synthNode?: AGraphNode;
-  private readonly selfMutateNode?: AGraphNode;
+  private readonly synthNode?: AGraphNode | undefined;
+  private readonly selfMutateNode?: AGraphNode | undefined;
   private readonly stackOutputDependencies = new DependencyBuilders<StackDeployment>();
   /** Mapping steps to depbuilders, satisfied by the step itself  */
   private readonly nodeDependencies = new DependencyBuilders<Step>();
@@ -408,7 +408,7 @@ interface ExecuteAnnotation {
    *
    * @default false
    */
-  readonly withoutChangeSet?: boolean;
+  readonly withoutChangeSet?: boolean | undefined;
 }
 
 // Type aliases for the graph nodes tagged with our specific annotation type

@@ -39,7 +39,7 @@ export interface IVpcOrigin extends IResource, IVpcOriginRef {
   /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 }
 
 /**
@@ -50,27 +50,27 @@ export interface VpcOriginOptions {
    * The HTTP port for the CloudFront VPC origin endpoint configuration.
    * @default 80
    */
-  readonly httpPort?: number;
+  readonly httpPort?: number | undefined;
   /**
    * The HTTPS port of the CloudFront VPC origin endpoint configuration.
    * @default 443
    */
-  readonly httpsPort?: number;
+  readonly httpsPort?: number | undefined;
   /**
    * The name of the CloudFront VPC origin endpoint configuration.
    * @default - generated from the `id`
    */
-  readonly vpcOriginName?: string;
+  readonly vpcOriginName?: string | undefined;
   /**
    * The origin protocol policy for the CloudFront VPC origin endpoint configuration.
    * @default OriginProtocolPolicy.MATCH_VIEWER
    */
-  readonly protocolPolicy?: OriginProtocolPolicy;
+  readonly protocolPolicy?: OriginProtocolPolicy | undefined;
   /**
    * A list that contains allowed SSL/TLS protocols for this distribution.
    * @default - TLSv1.2
    */
-  readonly originSslProtocols?: OriginSslPolicy[];
+  readonly originSslProtocols?: OriginSslPolicy[] | undefined;
 }
 
 /**
@@ -94,7 +94,7 @@ export interface VpcOriginAttributes {
    *
    * @default - derived from `vpcOriginId`.
    */
-  readonly vpcOriginArn?: string;
+  readonly vpcOriginArn?: string | undefined;
   /**
    * The ID of the VPC origin.
    *
@@ -102,12 +102,12 @@ export interface VpcOriginAttributes {
    *
    * @default - derived from `vpcOriginArn`.
    */
-  readonly vpcOriginId?: string;
+  readonly vpcOriginId?: string | undefined;
   /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
    * @default - No domain name configured
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 }
 
 /**
@@ -148,7 +148,7 @@ export abstract class VpcOriginEndpoint {
    * The domain name of the CloudFront VPC origin endpoint configuration.
    * @default - No domain name configured
    */
-  abstract readonly domainName?: string;
+  abstract readonly domainName?: string | undefined;
 }
 
 /**
@@ -229,7 +229,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
   /**
    * The domain name of the CloudFront VPC origin endpoint configuration.
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 
   readonly vpcOriginRef: VpcOriginReference;
 

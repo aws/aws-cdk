@@ -14,7 +14,7 @@ interface IPubliclyAccessibleBucket extends IBucketRef {
   /**
    * Whether public access is disallowed for this bucket
    */
-  readonly disallowPublicAccess?: boolean;
+  readonly disallowPublicAccess?: boolean | undefined;
 }
 
 /**

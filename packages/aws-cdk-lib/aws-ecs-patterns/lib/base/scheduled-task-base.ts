@@ -19,7 +19,7 @@ export interface ScheduledTaskBaseProps {
    * If a cluster is specified, the vpc construct should be omitted. Alternatively, you can omit both cluster and vpc.
    * @default - create a new cluster; if both cluster and vpc are omitted, a new VPC will be created for you.
    */
-  readonly cluster?: ICluster;
+  readonly cluster?: ICluster | undefined;
 
   /**
    * The VPC where the container instances will be launched or the elastic network interfaces (ENIs) will be deployed.
@@ -27,7 +27,7 @@ export interface ScheduledTaskBaseProps {
    * If a vpc is specified, the cluster construct should be omitted. Alternatively, you can omit both vpc and cluster.
    * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: IVpc | undefined;
 
   /**
    * The schedule or rate (frequency) that determines when CloudWatch Events
@@ -42,7 +42,7 @@ export interface ScheduledTaskBaseProps {
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * A name for the rule.
@@ -50,14 +50,14 @@ export interface ScheduledTaskBaseProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html).
    */
-  readonly ruleName?: string;
+  readonly ruleName?: string | undefined;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
    */
-  readonly desiredTaskCount?: number;
+  readonly desiredTaskCount?: number | undefined;
 
   /**
    * In what subnets to place the task's ENIs
@@ -66,28 +66,28 @@ export interface ScheduledTaskBaseProps {
    *
    * @default Private subnets
    */
-  readonly subnetSelection?: SubnetSelection;
+  readonly subnetSelection?: SubnetSelection | undefined;
 
   /**
    * Existing security groups to use for your service.
    *
    * @default - a new security group will be created.
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
    *
    * @default - Tags will not be propagated
    */
-  readonly propagateTags?: PropagatedTagSource;
+  readonly propagateTags?: PropagatedTagSource | undefined;
 
   /**
    * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
    *
    * @default - No tags are applied to the task
    */
-  readonly tags?: Tag[];
+  readonly tags?: Tag[] | undefined;
 }
 
 export interface ScheduledTaskImageProps {
@@ -103,7 +103,7 @@ export interface ScheduledTaskImageProps {
    *
    * @default - ScheduledContainer
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The command that is passed to the container.
@@ -112,28 +112,28 @@ export interface ScheduledTaskImageProps {
    *
    * @default - CMD value built into container image.
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to pass to the container.
    *
    * @default none
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The secret to expose to the container as an environment variable.
    *
    * @default - No secret environment variables.
    */
-  readonly secrets?: { [key: string]: Secret };
+  readonly secrets?: { [key: string]: Secret } | undefined;
 
   /**
    * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
    */
-  readonly logDriver?: LogDriver;
+  readonly logDriver?: LogDriver | undefined;
 }
 
 /**
@@ -168,21 +168,21 @@ export abstract class ScheduledTaskBase extends Construct {
   /**
    * The security group to use for the ECS Task.
    */
-  private readonly _securityGroups?: ISecurityGroup[];
+  private readonly _securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
    *
    * @default - Tags will not be propagated
    */
-  public readonly propagateTags?: PropagatedTagSource;
+  public readonly propagateTags?: PropagatedTagSource | undefined;
 
   /**
    * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
    *
    * @default - No tags are applied to the task
    */
-  public readonly tags?: Tag[];
+  public readonly tags?: Tag[] | undefined;
 
   /**
    * Constructs a new instance of the ScheduledTaskBase class.

@@ -49,21 +49,21 @@ export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmP
    *
    * @default GeneralPurpose
    */
-  readonly storage?: AmazonLinuxStorage;
+  readonly storage?: AmazonLinuxStorage | undefined;
 
   /**
    * What kernel version of Amazon Linux to use
    *
    * @default -
    */
-  readonly kernel?: AmazonLinux2Kernel;
+  readonly kernel?: AmazonLinux2Kernel | undefined;
 
   /**
    * Virtualization type
    *
    * @default HVM
    */
-  readonly virtualization?: AmazonLinuxVirt;
+  readonly virtualization?: AmazonLinuxVirt | undefined;
 }
 
 /**

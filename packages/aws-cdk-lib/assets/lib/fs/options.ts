@@ -12,14 +12,14 @@ export interface CopyOptions {
    * @default Never
    * @deprecated use `followSymlinks` instead
    */
-  readonly follow?: FollowMode;
+  readonly follow?: FollowMode | undefined;
 
   /**
    * Glob patterns to exclude from the copy.
    *
    * @default nothing is excluded
    */
-  readonly exclude?: string[];
+  readonly exclude?: string[] | undefined;
 
   /**
    * The ignore behavior to use for exclude patterns.
@@ -27,7 +27,7 @@ export interface CopyOptions {
    * @default - GLOB for file assets, DOCKER or GLOB for docker assets depending on whether the
    * '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport' flag is set.
    */
-  readonly ignoreMode?: IgnoreMode;
+  readonly ignoreMode?: IgnoreMode | undefined;
 }
 
 /**
@@ -41,5 +41,5 @@ export interface FingerprintOptions extends CopyOptions {
    *
    * @default - hash is only based on source content
    */
-  readonly extraHash?: string;
+  readonly extraHash?: string | undefined;
 }

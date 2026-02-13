@@ -18,7 +18,7 @@ export interface TagProps {
    *
    * @default true
    */
-  readonly applyToLaunchedInstances?: boolean;
+  readonly applyToLaunchedInstances?: boolean | undefined;
 
   /**
    * An array of Resource Types that will not receive this tag
@@ -29,7 +29,7 @@ export interface TagProps {
    *
    * @default []
    */
-  readonly excludeResourceTypes?: string[];
+  readonly excludeResourceTypes?: string[] | undefined;
 
   /**
    * An array of Resource Types that will receive this tag
@@ -38,7 +38,7 @@ export interface TagProps {
    * tag only to Resource types that are included in this array.
    * @default []
    */
-  readonly includeResourceTypes?: string[];
+  readonly includeResourceTypes?: string[] | undefined;
 
   /**
    * Priority of the tag operation
@@ -58,7 +58,7 @@ export interface TagProps {
    * - 50 for tags added directly to CloudFormation resources
    *
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**

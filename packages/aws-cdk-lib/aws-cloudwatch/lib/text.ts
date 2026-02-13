@@ -28,21 +28,21 @@ export interface TextWidgetProps {
    *
    * @default 6
    */
-  readonly width?: number;
+  readonly width?: number | undefined;
 
   /**
    * Height of the widget
    *
    * @default 2
    */
-  readonly height?: number;
+  readonly height?: number | undefined;
 
   /**
    * Background for the widget
    *
    * @default solid
    */
-  readonly background?: TextWidgetBackground;
+  readonly background?: TextWidgetBackground | undefined;
 }
 
 /**
@@ -50,7 +50,7 @@ export interface TextWidgetProps {
  */
 export class TextWidget extends ConcreteWidget {
   private readonly markdown: string;
-  private readonly background?: TextWidgetBackground;
+  private readonly background?: TextWidgetBackground | undefined;
 
   constructor(props: TextWidgetProps) {
     super(props.width || 6, props.height || 2);

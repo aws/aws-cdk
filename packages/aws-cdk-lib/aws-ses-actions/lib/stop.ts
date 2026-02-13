@@ -8,7 +8,7 @@ export interface StopProps {
   /**
    * The SNS topic to notify when the stop action is taken.
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ITopic | undefined;
 }
 
 /**

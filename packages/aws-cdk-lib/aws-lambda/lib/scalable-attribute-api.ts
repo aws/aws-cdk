@@ -36,7 +36,7 @@ export interface AutoScalingOptions {
    *
    * @default 1
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 
   /**
    * Maximum capacity to scale to

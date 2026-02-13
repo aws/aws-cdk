@@ -13,7 +13,7 @@ export interface InstanceEndpointProps {
    *
    * @default 128
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * Forward the client IP address
@@ -26,14 +26,14 @@ export interface InstanceEndpointProps {
    *
    * @default true if available
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 }
 
 /**
  * Use an EC2 Instance as a Global Accelerator Endpoint
  */
 export class InstanceEndpoint implements ga.IEndpoint {
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   constructor(private readonly instance: ec2.IInstance, private readonly options: InstanceEndpointProps = {}) {
     validateWeight(instance, options.weight);

@@ -57,14 +57,14 @@ export interface ClusterProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName?: string | undefined;
 
   /**
    * The VPC where your ECS instances will be running or your ENIs will be deployed
    *
    * @default - creates a new VPC with two AZs
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The service discovery namespace created in this cluster
@@ -72,14 +72,14 @@ export interface ClusterProps {
    * @default - no service discovery namespace created, you can use `addDefaultCloudMapNamespace` to add a
    * default service discovery namespace later.
    */
-  readonly defaultCloudMapNamespace?: CloudMapNamespaceOptions;
+  readonly defaultCloudMapNamespace?: CloudMapNamespaceOptions | undefined;
 
   /**
    * The ec2 capacity to add to the cluster
    *
    * @default - no EC2 capacity will be added, you can use `addCapacity` to add capacity later.
    */
-  readonly capacity?: AddCapacityOptions;
+  readonly capacity?: AddCapacityOptions | undefined;
 
   /**
    * The capacity providers to add to the cluster
@@ -87,14 +87,14 @@ export interface ClusterProps {
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
    * @deprecated Use `ClusterProps.enableFargateCapacityProviders` instead.
    */
-  readonly capacityProviders?: string[];
+  readonly capacityProviders?: string[] | undefined;
 
   /**
    * Whether to enable Fargate Capacity Providers
    *
    * @default false
    */
-  readonly enableFargateCapacityProviders?: boolean;
+  readonly enableFargateCapacityProviders?: boolean | undefined;
 
   /**
    * If true CloudWatch Container Insights will be enabled for the cluster
@@ -102,27 +102,27 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluster.
    * @deprecated See {@link containerInsightsV2}
    */
-  readonly containerInsights?: boolean;
+  readonly containerInsights?: boolean | undefined;
 
   /**
    * The CloudWatch Container Insights configuration for the cluster
    *  @default {@link ContainerInsights.DISABLED} This may be overridden by ECS account level settings.
    */
-  readonly containerInsightsV2?: ContainerInsights;
+  readonly containerInsightsV2?: ContainerInsights | undefined;
 
   /**
    * The execute command configuration for the cluster
    *
    * @default - no configuration will be provided.
    */
-  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration | undefined;
 
   /**
    * Encryption configuration for ECS Managed storage
    *
    * @default - no encryption will be applied.
    */
-  readonly managedStorageConfiguration?: ManagedStorageConfiguration;
+  readonly managedStorageConfiguration?: ManagedStorageConfiguration | undefined;
 }
 
 /**
@@ -934,17 +934,17 @@ export interface ICluster extends IResource, IClusterRef {
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
-  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace | undefined;
 
   /**
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
-  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup | undefined;
 
   /**
    * The execute command configuration for the cluster
    */
-  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration | undefined;
 }
 
 /**
@@ -961,7 +961,7 @@ export interface ClusterAttributes {
    *
    * @default Derived from clusterName
    */
-  readonly clusterArn?: string;
+  readonly clusterArn?: string | undefined;
 
   /**
    * The VPC associated with the cluster.
@@ -973,35 +973,35 @@ export interface ClusterAttributes {
    *
    * @default - no security groups
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Specifies whether the cluster has EC2 instance capacity.
    *
    * @default true
    */
-  readonly hasEc2Capacity?: boolean;
+  readonly hasEc2Capacity?: boolean | undefined;
 
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
    *
    * @default - No default namespace
    */
-  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace | undefined;
 
   /**
    * Autoscaling group added to the cluster if capacity is added
    *
    * @default - No default autoscaling group
    */
-  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup | undefined;
 
   /**
    * The execute command configuration for the cluster
    *
    * @default - none.
    */
-  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration | undefined;
 }
 
 /**
@@ -1046,7 +1046,7 @@ class ImportedCluster extends Resource implements ICluster {
   /**
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
-  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup | undefined;
 
   /**
    * Cloudmap namespace created in the cluster
@@ -1109,7 +1109,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @deprecated The lifecycle draining hook is not configured if using the EC2 Capacity Provider. Enable managed termination protection instead.
    * @default Duration.minutes(5)
    */
-  readonly taskDrainTime?: Duration;
+  readonly taskDrainTime?: Duration | undefined;
 
   /**
    * Specify whether to enable Automated Draining for Spot Instances running Amazon ECS Services.
@@ -1117,7 +1117,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  readonly spotInstanceDraining?: boolean;
+  readonly spotInstanceDraining?: boolean | undefined;
 
   /**
    * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
@@ -1127,7 +1127,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default The SNS Topic will not be encrypted.
    */
-  readonly topicEncryptionKey?: kms.IKey;
+  readonly topicEncryptionKey?: kms.IKey | undefined;
 
   /**
    * What type of machine image this is
@@ -1142,7 +1142,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default - Automatically determined from `machineImage`, if available, otherwise `MachineImageType.AMAZON_LINUX_2`.
    */
-  readonly machineImageType?: MachineImageType;
+  readonly machineImageType?: MachineImageType | undefined;
 }
 
 /**
@@ -1177,7 +1177,7 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    *
    * @default - Automatically updated, ECS-optimized Amazon Linux 2
    */
-  readonly machineImage?: ec2.IMachineImage;
+  readonly machineImage?: ec2.IMachineImage | undefined;
 }
 
 /**
@@ -1194,21 +1194,21 @@ export interface CloudMapNamespaceOptions {
    *
    * @default PrivateDns
    */
-  readonly type?: cloudmap.NamespaceType;
+  readonly type?: cloudmap.NamespaceType | undefined;
 
   /**
    * The VPC to associate the namespace with. This property is required for private DNS namespaces.
    *
    * @default VPC of the cluster for Private DNS Namespace, otherwise none
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * This property specifies whether to set the provided namespace as the service connect default in the cluster properties.
    *
    * @default false
    */
-  readonly useForServiceConnect?: boolean;
+  readonly useForServiceConnect?: boolean | undefined;
 
 }
 
@@ -1250,7 +1250,7 @@ export interface CapacityProviderStrategy {
    *
    * @default - none
    */
-  readonly base?: number;
+  readonly base?: number | undefined;
 
   /**
    * The weight value designates the relative percentage of the total number of tasks launched that should use the
@@ -1259,7 +1259,7 @@ export interface CapacityProviderStrategy {
    *
    * @default - 0
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 }
 
 /**
@@ -1272,21 +1272,21 @@ export interface ExecuteCommandConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.
    *
    * @default - none
    */
-  readonly logConfiguration?: ExecuteCommandLogConfiguration;
+  readonly logConfiguration?: ExecuteCommandLogConfiguration | undefined;
 
   /**
    * The log settings to use for logging the execute command session.
    *
    * @default - none
    */
-  readonly logging?: ExecuteCommandLogging;
+  readonly logging?: ExecuteCommandLogging | undefined;
 }
 
 /**
@@ -1320,34 +1320,34 @@ export interface ExecuteCommandLogConfiguration {
    *
    * @default - encryption will be disabled.
    */
-  readonly cloudWatchEncryptionEnabled?: boolean;
+  readonly cloudWatchEncryptionEnabled?: boolean | undefined;
 
   /**
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    * @default - none
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
    *
    * @default - none
    */
-  readonly s3Bucket?: s3.IBucket;
+  readonly s3Bucket?: s3.IBucket | undefined;
 
   /**
    * Whether or not to enable encryption on the S3 bucket.
    *
    * @default - encryption will be disabled.
    */
-  readonly s3EncryptionEnabled?: boolean;
+  readonly s3EncryptionEnabled?: boolean | undefined;
 
   /**
    * An optional folder in the S3 bucket to place logs in.
    *
    * @default - none
    */
-  readonly s3KeyPrefix?: string;
+  readonly s3KeyPrefix?: string | undefined;
 }
 
 /**
@@ -1363,7 +1363,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    *
    * @default CloudFormation-generated name
    */
-  readonly capacityProviderName?: string;
+  readonly capacityProviderName?: string | undefined;
 
   /**
    * The autoscaling group to add as a Capacity Provider.
@@ -1381,7 +1381,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    *
    * @default true
    */
-  readonly enableManagedScaling?: boolean;
+  readonly enableManagedScaling?: boolean | undefined;
 
   /**
    * When enabled the Auto Scaling Group will only terminate EC2 instances that no longer have running non-daemon
@@ -1397,7 +1397,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    *
    * @default true
    */
-  readonly enableManagedTerminationProtection?: boolean;
+  readonly enableManagedTerminationProtection?: boolean | undefined;
 
   /**
    * Managed instance draining facilitates graceful termination of Amazon ECS instances.
@@ -1407,28 +1407,28 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    *
    * @default true
    */
-  readonly enableManagedDraining?: boolean;
+  readonly enableManagedDraining?: boolean | undefined;
 
   /**
    * Maximum scaling step size. In most cases this should be left alone.
    *
    * @default 1000
    */
-  readonly maximumScalingStepSize?: number;
+  readonly maximumScalingStepSize?: number | undefined;
 
   /**
    * Minimum scaling step size. In most cases this should be left alone.
    *
    * @default 1
    */
-  readonly minimumScalingStepSize?: number;
+  readonly minimumScalingStepSize?: number | undefined;
 
   /**
    * Target capacity percent. In most cases this should be left alone.
    *
    * @default 100
    */
-  readonly targetCapacityPercent?: number;
+  readonly targetCapacityPercent?: number | undefined;
 
   /**
    * The period of time, in seconds, after a newly launched Amazon EC2 instance
@@ -1438,7 +1438,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    *
    * @default 300
    */
-  readonly instanceWarmupPeriod?: number;
+  readonly instanceWarmupPeriod?: number | undefined;
 }
 
 /**
@@ -1454,7 +1454,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly fargateEphemeralStorageKmsKey?: kms.IKey;
+  readonly fargateEphemeralStorageKmsKey?: kms.IKey | undefined;
 
   /**
    * Customer KMS Key used to encrypt ECS managed Storage.
@@ -1463,7 +1463,7 @@ export interface ManagedStorageConfiguration {
    *
    * @default - Encrypted using AWS-managed key
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -1524,7 +1524,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly capacityProviderName?: string;
+  readonly capacityProviderName?: string | undefined;
 
   /**
    * The IAM role that ECS uses to manage the infrastructure for the capacity provider.
@@ -1534,7 +1534,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default - A new role will be created with the AmazonECSInfrastructureRolePolicyForManagedInstances managed policy
    */
-  readonly infrastructureRole?: iam.IRole;
+  readonly infrastructureRole?: iam.IRole | undefined;
 
   /**
    * The EC2 instance profile that will be attached to instances launched by this capacity provider.
@@ -1551,7 +1551,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default - A new instance profile prefixed with 'ecsInstanceRole' will be created
    */
-  readonly ec2InstanceProfile?: iam.IInstanceProfile;
+  readonly ec2InstanceProfile?: iam.IInstanceProfile | undefined;
 
   /**
    * The VPC subnets where EC2 instances will be launched.
@@ -1574,7 +1574,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default Size.gibibytes(80)
    */
-  readonly taskVolumeStorage?: Size;
+  readonly taskVolumeStorage?: Size | undefined;
 
   /**
    * The CloudWatch monitoring configuration for the EC2 instances.
@@ -1583,7 +1583,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default - no enhanced monitoring (basic monitoring only)
    */
-  readonly monitoring?: InstanceMonitoring;
+  readonly monitoring?: InstanceMonitoring | undefined;
 
   /**
    * The instance requirements configuration for EC2 instance selection.
@@ -1594,7 +1594,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default - no specific instance requirements, ECS will choose appropriate instances
    */
-  readonly instanceRequirements?: InstanceRequirementsConfig;
+  readonly instanceRequirements?: InstanceRequirementsConfig | undefined;
 
   /**
    * Specifies whether to propagate tags from the capacity provider to the launched instances.
@@ -1603,7 +1603,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default PropagateManagedInstancesTags.NONE - no tag propagation
    */
-  readonly propagateTags?: PropagateManagedInstancesTags;
+  readonly propagateTags?: PropagateManagedInstancesTags | undefined;
 
   /**
    * Specifies the capacity option type for instances launched by this capacity provider.
@@ -1611,7 +1611,7 @@ export interface ManagedInstancesCapacityProviderProps {
    *
    * @default - `ON_DEMAND`
    */
-  readonly capacityOptionType?: CapacityOptionType;
+  readonly capacityOptionType?: CapacityOptionType | undefined;
 }
 
 /**
@@ -1959,12 +1959,12 @@ export class AsgCapacityProvider extends Construct {
   /**
    * Whether managed termination protection is enabled.
    */
-  readonly enableManagedTerminationProtection?: boolean;
+  readonly enableManagedTerminationProtection?: boolean | undefined;
 
   /**
    * Whether managed draining is enabled.
    */
-  readonly enableManagedDraining?: boolean;
+  readonly enableManagedDraining?: boolean | undefined;
 
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);

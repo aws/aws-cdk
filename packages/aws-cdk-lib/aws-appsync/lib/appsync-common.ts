@@ -108,20 +108,20 @@ export interface AppSyncLogConfig {
    *
    * @default false
    */
-  readonly excludeVerboseContent?: boolean;
+  readonly excludeVerboseContent?: boolean | undefined;
   /**
    * log level for fields
    *
    * @default - Use AppSync default
    */
-  readonly fieldLogLevel?: AppSyncFieldLogLevel;
+  readonly fieldLogLevel?: AppSyncFieldLogLevel | undefined;
 
   /**
    * The role for CloudWatch Logs
    *
    * @default - None
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRoleRef | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -131,7 +131,7 @@ export interface AppSyncLogConfig {
    *
    * @default RetentionDays.INFINITE
    */
-  readonly retention?: RetentionDays;
+  readonly retention?: RetentionDays | undefined;
 }
 
 /**

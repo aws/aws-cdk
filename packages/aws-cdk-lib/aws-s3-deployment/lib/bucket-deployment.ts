@@ -44,14 +44,14 @@ export interface BucketDeploymentProps {
    *
    * @default "/" (unzip to root of the destination bucket)
    */
-  readonly destinationKeyPrefix?: string;
+  readonly destinationKeyPrefix?: string | undefined;
 
   /**
    * If this is set, the zip file will be synced to the destination S3 bucket and extracted.
    * If false, the file will remain zipped in the destination bucket.
    * @default true
    */
-  readonly extract?: boolean;
+  readonly extract?: boolean | undefined;
 
   /**
    * If this is set, matching files or objects will be excluded from the deployment's sync
@@ -64,7 +64,7 @@ export interface BucketDeploymentProps {
    * @default - No exclude filters are used
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly exclude?: string[];
+  readonly exclude?: string[] | undefined;
 
   /**
    * If this is set, matching files or objects will be included with the deployment's sync
@@ -74,7 +74,7 @@ export interface BucketDeploymentProps {
    * @default - No include filters are used and all files are included with the sync command
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly include?: string[];
+  readonly include?: string[] | undefined;
 
   /**
    * By default, files in the destination bucket that don't exist in the source will be deleted
@@ -87,7 +87,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly prune?: boolean;
+  readonly prune?: boolean | undefined;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -99,7 +99,7 @@ export interface BucketDeploymentProps {
    * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
-  readonly retainOnDelete?: boolean;
+  readonly retainOnDelete?: boolean | undefined;
 
   /**
    * The CloudFront distribution using the destination bucket as an origin.
@@ -108,14 +108,14 @@ export interface BucketDeploymentProps {
    *
    * @default - No invalidation occurs
    */
-  readonly distribution?: cloudfront.IDistributionRef;
+  readonly distribution?: cloudfront.IDistributionRef | undefined;
 
   /**
    * The file paths to invalidate in the CloudFront distribution.
    *
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
-  readonly distributionPaths?: string[];
+  readonly distributionPaths?: string[] | undefined;
 
   /**
    * In case of using a cloudfront distribtuion, if this property is set to false then the custom resource
@@ -126,7 +126,7 @@ export interface BucketDeploymentProps {
    * @see https://github.com/aws/aws-cdk/issues/15891
    * @default true
    */
-  readonly waitForDistributionInvalidation?: boolean;
+  readonly waitForDistributionInvalidation?: boolean | undefined;
 
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
@@ -136,7 +136,7 @@ export interface BucketDeploymentProps {
    *
    * @default logs.RetentionDays.INFINITE
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
@@ -146,7 +146,7 @@ export interface BucketDeploymentProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -157,14 +157,14 @@ export interface BucketDeploymentProps {
    *
    * @default 128
    */
-  readonly memoryLimit?: number;
+  readonly memoryLimit?: number | undefined;
 
   /**
    * The size of the AWS Lambda function’s /tmp directory in MiB.
    *
    * @default 512 MiB
    */
-  readonly ephemeralStorageSize?: cdk.Size;
+  readonly ephemeralStorageSize?: cdk.Size | undefined;
 
   /**
    *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
@@ -172,95 +172,95 @@ export interface BucketDeploymentProps {
    *
    * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
-  readonly useEfs?: boolean;
+  readonly useEfs?: boolean | undefined;
 
   /**
    * Execution role associated with this function
    *
    * @default - A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * User-defined object metadata to be set on all objects in the deployment
    * @default - No user metadata is set
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
-  readonly metadata?: { [key: string]: string };
+  readonly metadata?: { [key: string]: string } | undefined;
 
   /**
    * System-defined cache-control metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly cacheControl?: CacheControl[];
+  readonly cacheControl?: CacheControl[] | undefined;
   /**
    * System-defined cache-disposition metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly contentDisposition?: string;
+  readonly contentDisposition?: string | undefined;
   /**
    * System-defined content-encoding metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly contentEncoding?: string;
+  readonly contentEncoding?: string | undefined;
   /**
    * System-defined content-language metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly contentLanguage?: string;
+  readonly contentLanguage?: string | undefined;
   /**
    * System-defined content-type metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
   /**
    * System-defined expires metadata to be set on all objects in the deployment.
    * @default - The objects in the distribution will not expire.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly expires?: cdk.Expiration;
+  readonly expires?: cdk.Expiration | undefined;
   /**
    * System-defined x-amz-server-side-encryption metadata to be set on all objects in the deployment.
    * @default - Server side encryption is not used.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly serverSideEncryption?: ServerSideEncryption;
+  readonly serverSideEncryption?: ServerSideEncryption | undefined;
   /**
    * System-defined x-amz-storage-class metadata to be set on all objects in the deployment.
    * @default - Default storage-class for the bucket is used.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly storageClass?: StorageClass;
+  readonly storageClass?: StorageClass | undefined;
   /**
    * System-defined x-amz-website-redirect-location metadata to be set on all objects in the deployment.
    * @default - No website redirection.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly websiteRedirectLocation?: string;
+  readonly websiteRedirectLocation?: string | undefined;
   /**
    * System-defined x-amz-server-side-encryption-aws-kms-key-id metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
-  readonly serverSideEncryptionAwsKmsKeyId?: string;
+  readonly serverSideEncryptionAwsKmsKeyId?: string | undefined;
   /**
    * System-defined x-amz-server-side-encryption-customer-algorithm metadata to be set on all objects in the deployment.
    * Warning: This is not a useful parameter until this bug is fixed: https://github.com/aws/aws-cdk/issues/6080
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
-  readonly serverSideEncryptionCustomerAlgorithm?: string;
+  readonly serverSideEncryptionCustomerAlgorithm?: string | undefined;
   /**
    * System-defined x-amz-acl metadata to be set on all objects in the deployment.
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
    */
-  readonly accessControl?: s3.BucketAccessControl;
+  readonly accessControl?: s3.BucketAccessControl | undefined;
 
   /**
    * The VPC network to place the deployment lambda handler in.
@@ -268,7 +268,7 @@ export interface BucketDeploymentProps {
    *
    * @default None
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where in the VPC to place the deployment lambda handler.
@@ -276,7 +276,7 @@ export interface BucketDeploymentProps {
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
@@ -284,7 +284,7 @@ export interface BucketDeploymentProps {
    *
    * @default - `x-amz-content-sha256` will not be computed
    */
-  readonly signContent?: boolean;
+  readonly signContent?: boolean | undefined;
 
   /**
    * If set to false, the custom resource will not send back the SourceObjectKeys.
@@ -294,7 +294,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly outputObjectKeys?: boolean;
+  readonly outputObjectKeys?: boolean | undefined;
 
   /**
    * The list of security groups to associate with the lambda handlers network interfaces.
@@ -304,7 +304,7 @@ export interface BucketDeploymentProps {
    * @default undefined - If the function is placed within a VPC and a security group is
    * not specified a dedicated security group will be created for this function.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 }
 
 /**
@@ -681,7 +681,7 @@ export interface DeployTimeSubstitutedFileProps {
    * file would be written to.
    * @default - Fingerprint of the file content would be used as object key
    */
-  readonly destinationKey?: string;
+  readonly destinationKey?: string | undefined;
 
   /**
    * The S3 bucket to sync the contents of the zip file to.
@@ -702,7 +702,7 @@ export interface DeployTimeSubstitutedFileProps {
    *
    * @default - A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

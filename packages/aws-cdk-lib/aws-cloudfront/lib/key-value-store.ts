@@ -170,14 +170,14 @@ export interface KeyValueStoreProps {
    *
    * @default A generated name
    */
-  readonly keyValueStoreName?: string;
+  readonly keyValueStoreName?: string | undefined;
 
   /**
    * A comment for the Key Value Store
    *
    * @default No comment will be specified
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The import source for the Key Value Store.
@@ -187,7 +187,7 @@ export interface KeyValueStoreProps {
    *
    * @default No data will be imported to the store
    */
-  readonly source?: ImportSource;
+  readonly source?: ImportSource | undefined;
 }
 
 /**

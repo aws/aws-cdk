@@ -42,7 +42,7 @@ export interface HttpsRedirectProps {
    *
    * @default - the domain name of the hosted zone
    */
-  readonly recordNames?: string[];
+  readonly recordNames?: string[] | undefined;
 
   /**
    * The AWS Certificate Manager (ACM) certificate that will be associated with
@@ -51,7 +51,7 @@ export interface HttpsRedirectProps {
    *
    * @default - A new certificate is created in us-east-1 (N. Virginia)
    */
-  readonly certificate?: ICertificateRef;
+  readonly certificate?: ICertificateRef | undefined;
 }
 
 /**

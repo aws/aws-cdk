@@ -28,14 +28,14 @@ export interface SchemaConfigurationFromCfnTableProps {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-schemaconfiguration.html#cfn-kinesisfirehose-deliverystream-schemaconfiguration-versionid
    * @default `LATEST`
    */
-  readonly versionId?: string;
+  readonly versionId?: string | undefined;
 
   /**
    * The region of the database the table is in.
    *
    * @default the region of the stack that contains the table reference is used
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**

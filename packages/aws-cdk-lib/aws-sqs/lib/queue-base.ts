@@ -33,7 +33,7 @@ export interface IQueue extends IResource, IQueueRef {
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  readonly encryptionMasterKey?: kms.IKey;
+  readonly encryptionMasterKey?: kms.IKey | undefined;
 
   /**
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
@@ -43,7 +43,7 @@ export interface IQueue extends IResource, IQueueRef {
   /**
    * Whether the contents of the queue are encrypted, and by what type of key.
    */
-  readonly encryptionType?: QueueEncryption;
+  readonly encryptionType?: QueueEncryption | undefined;
 
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
@@ -127,7 +127,7 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
   /**
    * If this queue is server-side encrypted, this is the KMS encryption key.
    */
-  public abstract readonly encryptionMasterKey?: kms.IKey;
+  public abstract readonly encryptionMasterKey?: kms.IKey | undefined;
 
   /**
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
@@ -137,7 +137,7 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
   /**
    * Whether the contents of the queue are encrypted, and by what type of key.
    */
-  public abstract readonly encryptionType?: QueueEncryption;
+  public abstract readonly encryptionType?: QueueEncryption | undefined;
 
   /**
    * Collection of grant methods for a Queue
@@ -303,20 +303,20 @@ export interface QueueAttributes {
    *
    * @default - 'https://sqs.<region-endpoint>/<account-ID>/<queue-name>'
    */
-  readonly queueUrl?: string;
+  readonly queueUrl?: string | undefined;
 
   /**
    * The name of the queue.
    * @default if queue name is not specified, the name will be derived from the queue ARN
    */
-  readonly queueName?: string;
+  readonly queueName?: string | undefined;
 
   /**
    * KMS encryption key, if this queue is server-side encrypted by a KMS key.
    *
    * @default - None
    */
-  readonly keyArn?: string;
+  readonly keyArn?: string | undefined;
 
   /**
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
@@ -325,7 +325,7 @@ export interface QueueAttributes {
    *
    * @default - if fifo is not specified, the property will be determined based on the queue name (not possible for FIFO queues imported from a token)
    */
-  readonly fifo?: boolean;
+  readonly fifo?: boolean | undefined;
 }
 
 /**

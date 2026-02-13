@@ -72,21 +72,21 @@ export interface LogOptions {
    *
    * @default No log group. Required if your log level is not set to OFF.
    */
-  readonly destination?: logs.ILogGroupRef;
+  readonly destination?: logs.ILogGroupRef | undefined;
 
   /**
    * Determines whether execution data is included in your log.
    *
    * @default false
    */
-  readonly includeExecutionData?: boolean;
+  readonly includeExecutionData?: boolean | undefined;
 
   /**
    * Defines which category of execution history events are logged.
    *
    * @default ERROR
    */
-  readonly level?: LogLevel;
+  readonly level?: LogLevel | undefined;
 }
 
 /**
@@ -98,44 +98,44 @@ export interface StateMachineProps {
    *
    * @default A name is automatically generated
    */
-  readonly stateMachineName?: string;
+  readonly stateMachineName?: string | undefined;
 
   /**
    * Definition for this state machine
    * @deprecated use definitionBody: DefinitionBody.fromChainable()
    */
-  readonly definition?: IChainable;
+  readonly definition?: IChainable | undefined;
 
   /**
    * Definition for this state machine
    */
-  readonly definitionBody?: DefinitionBody;
+  readonly definitionBody?: DefinitionBody | undefined;
 
   /**
    * substitutions for the definition body as a key-value map
    */
-  readonly definitionSubstitutions?: { [key: string]: string };
+  readonly definitionSubstitutions?: { [key: string]: string } | undefined;
 
   /**
    * The execution role for the state machine service
    *
    * @default A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Maximum run time for this state machine
    *
    * @default No timeout
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Comment that describes this state machine
    *
    * @default - No comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The name of the query language used by the state machine.
@@ -144,42 +144,42 @@ export interface StateMachineProps {
    *
    * @default - JSON_PATH
    */
-  readonly queryLanguage?: QueryLanguage;
+  readonly queryLanguage?: QueryLanguage | undefined;
 
   /**
    * Type of the state machine
    *
    * @default StateMachineType.STANDARD
    */
-  readonly stateMachineType?: StateMachineType;
+  readonly stateMachineType?: StateMachineType | undefined;
 
   /**
    * Defines what execution history events are logged and where they are logged.
    *
    * @default No logging
    */
-  readonly logs?: LogOptions;
+  readonly logs?: LogOptions | undefined;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this state machine.
    *
    * @default false
    */
-  readonly tracingEnabled?: boolean;
+  readonly tracingEnabled?: boolean | undefined;
 
   /**
    * The removal policy to apply to state machine
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Configures server-side encryption of the state machine definition and execution history.
    *
    * @default - data is transparently encrypted using an AWS owned key
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly encryptionConfiguration?: EncryptionConfiguration | undefined;
 }
 
 /**
@@ -768,9 +768,9 @@ export interface IStateMachine extends IResource, iam.IGrantable, IStateMachineR
  * Partial object from the StateMachine L1 construct properties containing definition information
  */
 export interface DefinitionConfig {
-  readonly definition?: any;
-  readonly definitionString?: string;
-  readonly definitionS3Location?: CfnStateMachine.S3LocationProperty;
+  readonly definition?: any | undefined;
+  readonly definitionString?: string | undefined;
+  readonly definitionS3Location?: CfnStateMachine.S3LocationProperty | undefined;
 }
 
 export abstract class DefinitionBody {

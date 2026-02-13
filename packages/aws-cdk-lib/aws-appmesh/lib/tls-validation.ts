@@ -16,7 +16,7 @@ interface TlsValidationCommon {
    * If you don't specify SANs on the originating mesh endpoint,
    * the SAN on the certificate provided by the terminating endpoint must match the mesh endpoint service discovery configuration.
    */
-  readonly subjectAlternativeNames?: SubjectAlternativeNames;
+  readonly subjectAlternativeNames?: SubjectAlternativeNames | undefined;
 }
 
 /**

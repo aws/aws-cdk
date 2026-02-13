@@ -71,21 +71,21 @@ export interface VpcIpamOptions {
    *
    * @default - Only required when Ipam has concrete allocation available for static Vpc
    */
-  readonly cidrBlock?: string;
+  readonly cidrBlock?: string | undefined;
 
   /**
    * CIDR Mask for Vpc
    *
    * @default - Only required when using AWS Ipam
    */
-  readonly ipv4NetmaskLength?: number;
+  readonly ipv4NetmaskLength?: number | undefined;
 
   /**
    * ipv4 IPAM Pool Id
    *
    * @default - Only required when using AWS Ipam
    */
-  readonly ipv4IpamPoolId?: string;
+  readonly ipv4IpamPoolId?: string | undefined;
 }
 
 /**
@@ -172,7 +172,7 @@ export interface CreateIpv6CidrBlocksRequest {
    * Size of the covered bits in the CIDR.
    * @default - 128 - 64 = /64 CIDR.
    */
-  readonly sizeMask?: string;
+  readonly sizeMask?: string | undefined;
 }
 
 /**
@@ -218,7 +218,7 @@ export interface AllocatedSubnet {
    *
    * @default - no IPV6 CIDR
    */
-  readonly ipv6Cidr?: string;
+  readonly ipv6Cidr?: string | undefined;
 }
 
 /**
@@ -244,7 +244,7 @@ export interface AwsIpamProps {
    * @default - Default ipv4 Subnet Mask for subnets in Vpc
    *
    */
-  readonly defaultSubnetIpv4NetmaskLength?: number;
+  readonly defaultSubnetIpv4NetmaskLength?: number | undefined;
 }
 
 /**

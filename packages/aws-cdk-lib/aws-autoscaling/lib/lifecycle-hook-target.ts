@@ -18,7 +18,7 @@ export interface BindHookTargetOptions {
    * [disable-awslint:ref-via-interface]
    * @default: a role is not created unless the target arn is specified
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

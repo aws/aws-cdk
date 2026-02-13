@@ -22,7 +22,7 @@ export interface OpenXJsonInputFormatProps {
    *
    * @default `true`
    */
-  readonly lowercaseColumnNames?: boolean;
+  readonly lowercaseColumnNames?: boolean | undefined;
 
   /**
    * Maps column names to JSON keys that aren't identical to the column names.
@@ -31,7 +31,7 @@ export interface OpenXJsonInputFormatProps {
    *
    * @default JSON keys are not renamed
    */
-  readonly columnToJsonKeyMappings?: Record<string, string>;
+  readonly columnToJsonKeyMappings?: Record<string, string> | undefined;
 
   /**
    * When set to `true`, specifies that the names of the keys include dots and that you want Firehose to replace them with underscores.
@@ -40,7 +40,7 @@ export interface OpenXJsonInputFormatProps {
    *
    * @default `false`
    */
-  readonly convertDotsInJsonKeysToUnderscores?: boolean;
+  readonly convertDotsInJsonKeysToUnderscores?: boolean | undefined;
 }
 
 /**
@@ -52,7 +52,7 @@ export class OpenXJsonInputFormat implements IInputFormat {
   /**
    * Properties for OpenX JSON input format
    */
-  readonly props?: OpenXJsonInputFormatProps;
+  readonly props?: OpenXJsonInputFormatProps | undefined;
 
   public constructor(props?: OpenXJsonInputFormatProps) {
     this.props = props;
@@ -131,7 +131,7 @@ export interface HiveJsonInputFormatProps {
    *
    * @default the default timestamp parser is used
    */
-  readonly timestampParsers?: TimestampParser[];
+  readonly timestampParsers?: TimestampParser[] | undefined;
 }
 
 /**
@@ -143,7 +143,7 @@ export class HiveJsonInputFormat implements IInputFormat {
   /**
    * Properties for Hive JSON input format
    */
-  readonly props?: HiveJsonInputFormatProps;
+  readonly props?: HiveJsonInputFormatProps | undefined;
 
   public constructor(props?: HiveJsonInputFormatProps) {
     this.props = props;

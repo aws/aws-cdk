@@ -96,7 +96,7 @@ export interface HttpStageOptions extends StageOptions {
    * The name of the stage. See `StageName` class for more details.
    * @default '$default' the default stage of the API. This stage will have the URL at the root of the API endpoint.
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 }
 
 /**

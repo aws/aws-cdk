@@ -31,14 +31,14 @@ export interface PrecreatedRoleProps {
    *
    * @default - no assume role policy
    */
-  readonly assumeRolePolicy?: PolicyDocument;
+  readonly assumeRolePolicy?: PolicyDocument | undefined;
 
   /**
    * If the role is missing from the precreatedRole context
    *
    * @default false
    */
-  readonly missing?: boolean;
+  readonly missing?: boolean | undefined;
 
   /**
    * The construct path to display in the report.
@@ -47,7 +47,7 @@ export interface PrecreatedRoleProps {
    *
    * @default the construct path of this construct
    */
-  readonly rolePath?: string;
+  readonly rolePath?: string | undefined;
 
 }
 
@@ -66,7 +66,7 @@ export class PrecreatedRole extends Resource implements IRole {
   public readonly assumeRoleAction: string;
   public readonly policyFragment: PrincipalPolicyFragment;
   public readonly grantPrincipal = this;
-  public readonly principalAccount?: string;
+  public readonly principalAccount?: string | undefined;
   public readonly roleArn: string;
   public readonly roleName: string;
   private readonly _stack: Stack;

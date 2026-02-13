@@ -25,7 +25,7 @@ export interface BackupSelectionOptions {
    *
    * @default - a CDK generated name
    */
-  readonly backupSelectionName?: string;
+  readonly backupSelectionName?: string | undefined;
 
   /**
    * The role that AWS Backup uses to authenticate when backuping or restoring
@@ -35,7 +35,7 @@ export interface BackupSelectionOptions {
    *
    * @default - a new role will be created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Whether to disable automatically assigning default backup permissions to the role
@@ -45,7 +45,7 @@ export interface BackupSelectionOptions {
    *
    * @default false
    */
-  readonly disableDefaultBackupPolicy?: boolean;
+  readonly disableDefaultBackupPolicy?: boolean | undefined;
 
   /**
    * Whether to automatically give restores permissions to the role that AWS
@@ -54,7 +54,7 @@ export interface BackupSelectionOptions {
    *
    * @default false
    */
-  readonly allowRestores?: boolean;
+  readonly allowRestores?: boolean | undefined;
 }
 
 /**

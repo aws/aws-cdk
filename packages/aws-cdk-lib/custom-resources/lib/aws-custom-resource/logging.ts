@@ -11,7 +11,7 @@ export interface LoggingProps {
    *
    * @default true
    */
-  readonly logApiResponseData?: boolean;
+  readonly logApiResponseData?: boolean | undefined;
 }
 
 /**

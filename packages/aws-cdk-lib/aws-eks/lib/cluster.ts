@@ -116,19 +116,19 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * Agent addon. If the addon has not been created yet, it will be created and
    * returned.
    */
-  readonly eksPodIdentityAgent?: IAddon;
+  readonly eksPodIdentityAgent?: IAddon | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
    *
    * The role should be mapped to the `system:masters` Kubernetes RBAC role.
    */
-  readonly kubectlRole?: iam.IRole;
+  readonly kubectlRole?: iam.IRole | undefined;
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
    */
-  readonly kubectlEnvironment?: { [key: string]: string };
+  readonly kubectlEnvironment?: { [key: string]: string } | undefined;
 
   /**
    * A security group to use for `kubectl` execution.
@@ -136,7 +136,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
-  readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
+  readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Subnets to host the `kubectl` compute resources.
@@ -144,7 +144,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
-  readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -153,13 +153,13 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    *
    * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
    */
-  readonly kubectlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole | undefined;
 
   /**
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
    */
-  readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -167,26 +167,26 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
-  readonly ipFamily?: IpFamily;
+  readonly ipFamily?: IpFamily | undefined;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
    * If not defined, a default layer will be used containing the AWS CLI 1.x.
    */
-  readonly awscliLayer?: lambda.ILayerVersion;
+  readonly awscliLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Kubectl Provider for issuing kubectl commands against it
    *
    * If not defined, a default provider will be used
    */
-  readonly kubectlProvider?: IKubectlProvider;
+  readonly kubectlProvider?: IKubectlProvider | undefined;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
    */
-  readonly kubectlMemory?: Size;
+  readonly kubectlMemory?: Size | undefined;
 
   /**
    * A security group to associate with the Cluster Handler's Lambdas.
@@ -197,14 +197,14 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * @default - No security group.
    * @attribute
    */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
    *
    * If not defined, a default layer will be used.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Indicates whether Kubernetes resources can be automatically pruned. When
@@ -218,7 +218,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * The authentication mode for the cluster.
    * @default AuthenticationMode.CONFIG_MAP
    */
-  readonly authenticationMode?: AuthenticationMode;
+  readonly authenticationMode?: AuthenticationMode | undefined;
 
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
@@ -288,7 +288,7 @@ export interface ClusterAttributes {
    * The VPC in which this Cluster was created
    * @default - if not specified `cluster.vpc` will throw an error
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The physical name of the Cluster
@@ -299,28 +299,28 @@ export interface ClusterAttributes {
    * The API Server endpoint URL
    * @default - if not specified `cluster.clusterEndpoint` will throw an error.
    */
-  readonly clusterEndpoint?: string;
+  readonly clusterEndpoint?: string | undefined;
 
   /**
    * The certificate-authority-data for your cluster.
    * @default - if not specified `cluster.clusterCertificateAuthorityData` will
    * throw an error
    */
-  readonly clusterCertificateAuthorityData?: string;
+  readonly clusterCertificateAuthorityData?: string | undefined;
 
   /**
    * The cluster security group that was created by Amazon EKS for the cluster.
    * @default - if not specified `cluster.clusterSecurityGroupId` will throw an
    * error
    */
-  readonly clusterSecurityGroupId?: string;
+  readonly clusterSecurityGroupId?: string | undefined;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
    * @default - if not specified `cluster.clusterEncryptionConfigKeyArn` will
    * throw an error
    */
-  readonly clusterEncryptionConfigKeyArn?: string;
+  readonly clusterEncryptionConfigKeyArn?: string | undefined;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -328,21 +328,21 @@ export interface ClusterAttributes {
    * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
-  readonly ipFamily?: IpFamily;
+  readonly ipFamily?: IpFamily | undefined;
 
   /**
    * Additional security groups associated with this cluster.
    * @default - if not specified, no additional security groups will be
    * considered in `cluster.connections`.
    */
-  readonly securityGroupIds?: string[];
+  readonly securityGroupIds?: string[] | undefined;
 
   /**
    * An IAM role with cluster administrator and "system:masters" permissions.
    * @default - if not specified, it not be possible to issue `kubectl` commands
    * against an imported cluster.
    */
-  readonly kubectlRoleArn?: string;
+  readonly kubectlRoleArn?: string | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -354,27 +354,27 @@ export interface ClusterAttributes {
    * @default - if not specified, the default role created by a lambda function will
    * be used.
    */
-  readonly kubectlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole | undefined;
 
   /**
    * Environment variables to use when running `kubectl` against this cluster.
    * @default - no additional variables
    */
-  readonly kubectlEnvironment?: { [name: string]: string };
+  readonly kubectlEnvironment?: { [name: string]: string } | undefined;
 
   /**
    * A security group to use for `kubectl` execution. If not specified, the k8s
    * endpoint is expected to be accessible publicly.
    * @default - k8s endpoint is expected to be accessible publicly
    */
-  readonly kubectlSecurityGroupId?: string;
+  readonly kubectlSecurityGroupId?: string | undefined;
 
   /**
    * Subnets to host the `kubectl` compute resources. If not specified, the k8s
    * endpoint is expected to be accessible publicly.
    * @default - k8s endpoint is expected to be accessible publicly
    */
-  readonly kubectlPrivateSubnetIds?: string[];
+  readonly kubectlPrivateSubnetIds?: string[] | undefined;
 
   /**
    * An Open ID Connect provider for this cluster that can be used to configure service accounts.
@@ -382,7 +382,7 @@ export interface ClusterAttributes {
    * or create a new provider using `new eks.OpenIdConnectProvider`
    * @default - if not specified `cluster.openIdConnectProvider` and `cluster.addServiceAccount` will throw an error.
    */
-  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
+  readonly openIdConnectProvider?: iam.IOpenIdConnectProvider | undefined;
 
   /**
    * An AWS Lambda Layer which includes `kubectl` and Helm.
@@ -401,7 +401,7 @@ export interface ClusterAttributes {
    *
    * @default - No default layer will be provided
    */
-  readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
@@ -414,21 +414,21 @@ export interface ClusterAttributes {
    *
    * @default - a default layer with the AWS CLI 1.x
    */
-  readonly awscliLayer?: lambda.ILayerVersion;
+  readonly awscliLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * KubectlProvider for issuing kubectl commands.
    *
    * @default - Default CDK provider
    */
-  readonly kubectlProvider?: IKubectlProvider;
+  readonly kubectlProvider?: IKubectlProvider | undefined;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
    *
    * @default Size.gibibytes(1)
    */
-  readonly kubectlMemory?: Size;
+  readonly kubectlMemory?: Size | undefined;
 
   /**
    * A security group id to associate with the Cluster Handler's Lambdas.
@@ -436,7 +436,7 @@ export interface ClusterAttributes {
    *
    * @default - No security group.
    */
-  readonly clusterHandlerSecurityGroupId?: string;
+  readonly clusterHandlerSecurityGroupId?: string | undefined;
 
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
@@ -448,7 +448,7 @@ export interface ClusterAttributes {
    *
    * @default - a layer bundled with this module.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -458,7 +458,7 @@ export interface ClusterAttributes {
    *
    * @default true
    */
-  readonly prune?: boolean;
+  readonly prune?: boolean | undefined;
 }
 
 /**
@@ -470,7 +470,7 @@ export interface CommonClusterOptions {
    *
    * @default - a VPC with default configuration will be created and can be accessed through `cluster.vpc`.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place EKS Control Plane ENIs
@@ -481,28 +481,28 @@ export interface CommonClusterOptions {
    *
    * @default - All public and private subnets
    */
-  readonly vpcSubnets?: ec2.SubnetSelection[];
+  readonly vpcSubnets?: ec2.SubnetSelection[] | undefined;
 
   /**
    * Role that provides permissions for the Kubernetes control plane to make calls to AWS API operations on your behalf.
    *
    * @default - A role is automatically created for you
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Name for the cluster.
    *
    * @default - Automatically generated name
    */
-  readonly clusterName?: string;
+  readonly clusterName?: string | undefined;
 
   /**
    * Security Group to use for Control Plane ENIs
    *
    * @default - A security group is automatically created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The Kubernetes version to run in the cluster
@@ -515,7 +515,7 @@ export interface CommonClusterOptions {
    *
    * @default false
    */
-  readonly outputClusterName?: boolean;
+  readonly outputClusterName?: boolean | undefined;
 
   /**
    * Determines whether a CloudFormation output with the `aws eks
@@ -527,7 +527,7 @@ export interface CommonClusterOptions {
    *
    * @default true
    */
-  readonly outputConfigCommand?: boolean;
+  readonly outputConfigCommand?: boolean | undefined;
 }
 
 /**
@@ -542,7 +542,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - no masters role.
    */
-  readonly mastersRole?: iam.IRole;
+  readonly mastersRole?: iam.IRole | undefined;
 
   /**
    * Controls the "eks.amazonaws.com/compute-type" annotation in the CoreDNS
@@ -551,7 +551,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default CoreDnsComputeType.EC2 (for `FargateCluster` the default is FARGATE)
    */
-  readonly coreDnsComputeType?: CoreDnsComputeType;
+  readonly coreDnsComputeType?: CoreDnsComputeType | undefined;
 
   /**
    * Determines whether a CloudFormation output with the ARN of the "masters"
@@ -559,7 +559,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default false
    */
-  readonly outputMastersRoleArn?: boolean;
+  readonly outputMastersRoleArn?: boolean | undefined;
 
   /**
    * Configure access to the Kubernetes API server endpoint..
@@ -568,14 +568,14 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default EndpointAccess.PUBLIC_AND_PRIVATE
    */
-  readonly endpointAccess?: EndpointAccess;
+  readonly endpointAccess?: EndpointAccess | undefined;
 
   /**
    * Environment variables for the kubectl execution. Only relevant for kubectl enabled clusters.
    *
    * @default - No environment variables.
    */
-  readonly kubectlEnvironment?: { [key: string]: string };
+  readonly kubectlEnvironment?: { [key: string]: string } | undefined;
 
   /**
    * An AWS Lambda Layer which includes `kubectl` and Helm.
@@ -605,21 +605,21 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - a default layer with the AWS CLI 1.x
    */
-  readonly awscliLayer?: lambda.ILayerVersion;
+  readonly awscliLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Amount of memory to allocate to the provider's lambda function.
    *
    * @default Size.gibibytes(1)
    */
-  readonly kubectlMemory?: Size;
+  readonly kubectlMemory?: Size | undefined;
 
   /**
    * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
    *
    * @default - No environment variables.
    */
-  readonly clusterHandlerEnvironment?: { [key: string]: string };
+  readonly clusterHandlerEnvironment?: { [key: string]: string } | undefined;
 
   /**
    * A security group to associate with the Cluster Handler's Lambdas.
@@ -629,7 +629,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - No security group.
    */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
@@ -650,7 +650,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - a layer bundled with this module.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -660,7 +660,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default true
    */
-  readonly prune?: boolean;
+  readonly prune?: boolean | undefined;
 
   /**
    * If set to true, the cluster handler functions will be placed in the private subnets
@@ -668,7 +668,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default false
    */
-  readonly placeClusterHandlerInVpc?: boolean;
+  readonly placeClusterHandlerInVpc?: boolean | undefined;
 
   /**
    * KMS secret for envelope encryption for Kubernetes secrets.
@@ -677,7 +677,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-  readonly secretsEncryptionKey?: kms.IKeyRef;
+  readonly secretsEncryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -685,7 +685,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
-  readonly ipFamily?: IpFamily;
+  readonly ipFamily?: IpFamily | undefined;
 
   /**
    * The CIDR block to assign Kubernetes service IP addresses from.
@@ -694,7 +694,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            10.100.0.0/16 or 172.20.0.0/16 CIDR blocks
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4Cidr
    */
-  readonly serviceIpv4Cidr?: string;
+  readonly serviceIpv4Cidr?: string | undefined;
 
   /**
    * Install the AWS Load Balancer Controller onto the cluster.
@@ -703,32 +703,32 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - The controller is not installed.
    */
-  readonly albController?: AlbControllerOptions;
+  readonly albController?: AlbControllerOptions | undefined;
   /**
    * The cluster log types which you want to enable.
    *
    * @default - none
    */
-  readonly clusterLogging?: ClusterLoggingTypes[];
+  readonly clusterLogging?: ClusterLoggingTypes[] | undefined;
 
   /**
    * The desired authentication mode for the cluster.
    * @default AuthenticationMode.CONFIG_MAP
    */
-  readonly authenticationMode?: AuthenticationMode;
+  readonly authenticationMode?: AuthenticationMode | undefined;
 
   /**
    * IPv4 CIDR blocks defining the expected address range of hybrid nodes
    * that will join the cluster.
    * @default - none
    */
-  readonly remoteNodeNetworks?: RemoteNodeNetwork[];
+  readonly remoteNodeNetworks?: RemoteNodeNetwork[] | undefined;
 
   /**
    * IPv4 CIDR blocks for Pods running Kubernetes webhooks on hybrid nodes.
    * @default - none
    */
-  readonly remotePodNetworks?: RemotePodNetwork[];
+  readonly remotePodNetworks?: RemotePodNetwork[] | undefined;
 
   /**
    * The removal policy applied to all CloudFormation resources created by this construct
@@ -744,7 +744,7 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * @default - Resources will be deleted.
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -767,7 +767,7 @@ interface EndpointAccessConfig {
    *
    * @default - No restrictions.
    */
-  readonly publicCidrs?: string[];
+  readonly publicCidrs?: string[] | undefined;
 
 }
 
@@ -854,7 +854,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default 2
    */
-  readonly defaultCapacity?: number;
+  readonly defaultCapacity?: number | undefined;
 
   /**
    * The instance type to use for the default capacity. This will only be taken
@@ -862,21 +862,21 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default m5.large
    */
-  readonly defaultCapacityInstance?: ec2.InstanceType;
+  readonly defaultCapacityInstance?: ec2.InstanceType | undefined;
 
   /**
    * The default capacity type for the cluster.
    *
    * @default NODEGROUP
    */
-  readonly defaultCapacityType?: DefaultCapacityType;
+  readonly defaultCapacityType?: DefaultCapacityType | undefined;
 
   /**
    * The IAM role to pass to the Kubectl Lambda Handler.
    *
    * @default - Default Lambda IAM Execution Role
    */
-  readonly kubectlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole | undefined;
 
   /**
    * Whether or not IAM principal of the cluster creator was set as a cluster admin access entry
@@ -886,7 +886,7 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default true
    */
-  readonly bootstrapClusterCreatorAdminPermissions?: boolean;
+  readonly bootstrapClusterCreatorAdminPermissions?: boolean | undefined;
 
   /**
    * If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
@@ -897,14 +897,14 @@ export interface ClusterProps extends ClusterOptions {
    *
    * @default true
    */
-  readonly bootstrapSelfManagedAddons?: boolean;
+  readonly bootstrapSelfManagedAddons?: boolean | undefined;
 
   /**
    * The tags assigned to the EKS cluster
    *
    * @default - none
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -1160,15 +1160,15 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroupId: string;
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
-  public abstract readonly ipFamily?: IpFamily;
-  public abstract readonly kubectlRole?: iam.IRole;
-  public abstract readonly kubectlLambdaRole?: iam.IRole;
-  public abstract readonly kubectlLayer?: lambda.ILayerVersion;
-  public abstract readonly kubectlEnvironment?: { [key: string]: string };
-  public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
-  public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
-  public abstract readonly kubectlMemory?: Size;
-  public abstract readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  public abstract readonly ipFamily?: IpFamily | undefined;
+  public abstract readonly kubectlRole?: iam.IRole | undefined;
+  public abstract readonly kubectlLambdaRole?: iam.IRole | undefined;
+  public abstract readonly kubectlLayer?: lambda.ILayerVersion | undefined;
+  public abstract readonly kubectlEnvironment?: { [key: string]: string } | undefined;
+  public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
+  public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
+  public abstract readonly kubectlMemory?: Size | undefined;
+  public abstract readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
   public abstract readonly awsAuth: AwsAuth;
@@ -1379,14 +1379,14 @@ export interface ServiceLoadBalancerAddressOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The namespace the service belongs to.
    *
    * @default 'default'
    */
-  readonly namespace?: string;
+  readonly namespace?: string | undefined;
 
 }
 
@@ -1402,7 +1402,7 @@ interface AddAccessEntryOptions {
   readonly id: string;
   readonly principal: string;
   readonly policies: IAccessPolicy[];
-  readonly accessEntryType?: AccessEntryType;
+  readonly accessEntryType?: AccessEntryType | undefined;
 }
 
 /**
@@ -1421,7 +1421,7 @@ export interface GrantAccessOptions {
    *
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
    */
-  readonly accessEntryType?: AccessEntryType;
+  readonly accessEntryType?: AccessEntryType | undefined;
 }
 
 /**
@@ -1512,21 +1512,21 @@ export class Cluster extends ClusterBase {
    * This will be `undefined` if the `defaultCapacityType` is not `EC2` or
    * `defaultCapacityType` is `EC2` but default capacity is set to 0.
    */
-  public readonly defaultCapacity?: autoscaling.AutoScalingGroup;
+  public readonly defaultCapacity?: autoscaling.AutoScalingGroup | undefined;
 
   /**
    * The node group that hosts the default capacity for this cluster.
    * This will be `undefined` if the `defaultCapacityType` is `EC2` or
    * `defaultCapacityType` is `NODEGROUP` but default capacity is set to 0.
    */
-  public readonly defaultNodegroup?: Nodegroup;
+  public readonly defaultNodegroup?: Nodegroup | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
    *
    * The role should be mapped to the `system:masters` Kubernetes RBAC role.
    */
-  public readonly kubectlRole?: iam.IRole;
+  public readonly kubectlRole?: iam.IRole | undefined;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -1538,12 +1538,12 @@ export class Cluster extends ClusterBase {
    * be used.
    */
 
-  public readonly kubectlLambdaRole?: iam.IRole;
+  public readonly kubectlLambdaRole?: iam.IRole | undefined;
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
    */
-  public readonly kubectlEnvironment?: { [key: string]: string };
+  public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
 
   /**
    * A security group to use for `kubectl` execution.
@@ -1551,7 +1551,7 @@ export class Cluster extends ClusterBase {
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
    */
-  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
+  public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Subnets to host the `kubectl` compute resources.
@@ -1559,7 +1559,7 @@ export class Cluster extends ClusterBase {
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
    */
-  public readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -1567,7 +1567,7 @@ export class Cluster extends ClusterBase {
    * @default - IpFamily.IP_V4
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-ipFamily
    */
-  public readonly ipFamily?: IpFamily;
+  public readonly ipFamily?: IpFamily | undefined;
 
   /**
    * An IAM role with administrative permissions to create or update the
@@ -1595,19 +1595,19 @@ export class Cluster extends ClusterBase {
    * An AWS Lambda layer that includes `kubectl` and `helm`
    *
    */
-  readonly kubectlLayer?: lambda.ILayerVersion;
+  readonly kubectlLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * An AWS Lambda layer that contains the `aws` CLI.
    *
    * If not defined, a default layer will be used containing the AWS CLI 1.x.
    */
-  readonly awscliLayer?: lambda.ILayerVersion;
+  readonly awscliLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
    */
-  public readonly kubectlMemory?: Size;
+  public readonly kubectlMemory?: Size | undefined;
 
   /**
    * A security group to associate with the Cluster Handler's Lambdas.
@@ -1617,13 +1617,13 @@ export class Cluster extends ClusterBase {
    *
    * @default - No security group.
    */
-  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
    * undefined, a SAR app that contains this layer will be used.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * Determines if Kubernetes resources can be pruned automatically.
@@ -1634,7 +1634,7 @@ export class Cluster extends ClusterBase {
    * The ALB Controller construct defined for this cluster.
    * Will be undefined if `albController` wasn't configured.
    */
-  public readonly albController?: AlbController;
+  public readonly albController?: AlbController | undefined;
 
   /**
    * The authentication mode for the Amazon EKS cluster.
@@ -1645,7 +1645,7 @@ export class Cluster extends ClusterBase {
    *
    * @default CONFIG_MAP.
    */
-  public readonly authenticationMode?: AuthenticationMode;
+  public readonly authenticationMode?: AuthenticationMode | undefined;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -1662,7 +1662,7 @@ export class Cluster extends ClusterBase {
 
   private readonly version: KubernetesVersion;
 
-  private readonly logging?: { [key: string]: [ { [key: string]: any } ] };
+  private readonly logging?: { [key: string]: [ { [key: string]: any } ] } | undefined;
 
   /**
    * A dummy CloudFormation resource that is used as a wait barrier which
@@ -1680,7 +1680,7 @@ export class Cluster extends ClusterBase {
 
   private readonly _kubectlResourceProvider: KubectlProvider;
 
-  private readonly _removalPolicy?: RemovalPolicy;
+  private readonly _removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Initiates an EKS Cluster with the supplied arguments
@@ -2485,7 +2485,7 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    *
    * @default - true if the cluster has kubectl enabled (which is the default).
    */
-  readonly mapRole?: boolean;
+  readonly mapRole?: boolean | undefined;
 
   /**
    * Configures the EC2 user-data script for instances in this autoscaling group
@@ -2497,21 +2497,21 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    *
    * @default true
    */
-  readonly bootstrapEnabled?: boolean;
+  readonly bootstrapEnabled?: boolean | undefined;
 
   /**
    * EKS node bootstrapping options.
    *
    * @default - none
    */
-  readonly bootstrapOptions?: BootstrapOptions;
+  readonly bootstrapOptions?: BootstrapOptions | undefined;
 
   /**
    * Machine image type
    *
    * @default MachineImageType.AMAZON_LINUX_2
    */
-  readonly machineImageType?: MachineImageType;
+  readonly machineImageType?: MachineImageType | undefined;
 
   /**
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
@@ -2519,7 +2519,7 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    *
    * @default true
    */
-  readonly spotInterruptHandler?: boolean;
+  readonly spotInterruptHandler?: boolean | undefined;
 }
 
 /**
@@ -2531,21 +2531,21 @@ export interface BootstrapOptions {
    *
    * @default true
    */
-  readonly useMaxPods?: boolean;
+  readonly useMaxPods?: boolean | undefined;
 
   /**
    * Restores the docker default bridge network.
    *
    * @default false
    */
-  readonly enableDockerBridge?: boolean;
+  readonly enableDockerBridge?: boolean | undefined;
 
   /**
    * Number of retry attempts for AWS API call (DescribeCluster).
    *
    * @default 3
    */
-  readonly awsApiRetryAttempts?: number;
+  readonly awsApiRetryAttempts?: number | undefined;
 
   /**
    * The contents of the `/etc/docker/daemon.json` file. Useful if you want a
@@ -2553,7 +2553,7 @@ export interface BootstrapOptions {
    *
    * @default - none
    */
-  readonly dockerConfigJson?: string;
+  readonly dockerConfigJson?: string | undefined;
 
   /**
    * Overrides the IP address to use for DNS queries within the
@@ -2562,7 +2562,7 @@ export interface BootstrapOptions {
    * @default - 10.100.0.10 or 172.20.0.10 based on the IP
    * address of the primary interface.
    */
-  readonly dnsClusterIp?: string;
+  readonly dnsClusterIp?: string | undefined;
 
   /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
@@ -2571,7 +2571,7 @@ export interface BootstrapOptions {
    *
    * @default - none
    */
-  readonly kubeletExtraArgs?: string;
+  readonly kubeletExtraArgs?: string | undefined;
 
   /**
    * Additional command line arguments to pass to the `/etc/eks/bootstrap.sh`
@@ -2580,7 +2580,7 @@ export interface BootstrapOptions {
    * @see https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
    * @default - none
    */
-  readonly additionalArgs?: string;
+  readonly additionalArgs?: string | undefined;
 }
 
 /**
@@ -2595,7 +2595,7 @@ export interface AutoScalingGroupOptions {
    *
    * @default - true if the cluster has kubectl enabled (which is the default).
    */
-  readonly mapRole?: boolean;
+  readonly mapRole?: boolean | undefined;
 
   /**
    * Configures the EC2 user-data script for instances in this autoscaling group
@@ -2607,20 +2607,20 @@ export interface AutoScalingGroupOptions {
    *
    * @default true
    */
-  readonly bootstrapEnabled?: boolean;
+  readonly bootstrapEnabled?: boolean | undefined;
 
   /**
    * Allows options for node bootstrapping through EC2 user data.
    * @default - default options
    */
-  readonly bootstrapOptions?: BootstrapOptions;
+  readonly bootstrapOptions?: BootstrapOptions | undefined;
 
   /**
    * Allow options to specify different machine image type
    *
    * @default MachineImageType.AMAZON_LINUX_2
    */
-  readonly machineImageType?: MachineImageType;
+  readonly machineImageType?: MachineImageType | undefined;
 
   /**
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
@@ -2628,7 +2628,7 @@ export interface AutoScalingGroupOptions {
    *
    * @default true
    */
-  readonly spotInterruptHandler?: boolean;
+  readonly spotInterruptHandler?: boolean | undefined;
 }
 
 /**
@@ -2665,23 +2665,23 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterName: string;
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
-  public readonly kubectlRole?: iam.IRole;
-  public readonly kubectlLambdaRole?: iam.IRole;
+  public readonly kubectlRole?: iam.IRole | undefined;
+  public readonly kubectlLambdaRole?: iam.IRole | undefined;
   public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
-  public readonly kubectlLayer?: lambda.ILayerVersion;
-  public readonly ipFamily?: IpFamily;
-  public readonly awscliLayer?: lambda.ILayerVersion;
-  public readonly kubectlProvider?: IKubectlProvider;
-  public readonly onEventLayer?: lambda.ILayerVersion;
-  public readonly kubectlMemory?: Size;
+  public readonly kubectlLayer?: lambda.ILayerVersion | undefined;
+  public readonly ipFamily?: IpFamily | undefined;
+  public readonly awscliLayer?: lambda.ILayerVersion | undefined;
+  public readonly kubectlProvider?: IKubectlProvider | undefined;
+  public readonly onEventLayer?: lambda.ILayerVersion | undefined;
+  public readonly kubectlMemory?: Size | undefined;
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
   // to null check on an instance of `Cluster`, which will always have this configured.
-  private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
+  private readonly _clusterSecurityGroup?: ec2.ISecurityGroup | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -2779,30 +2779,30 @@ export interface EksOptimizedImageProps {
    *
    * @default NodeType.STANDARD
    */
-  readonly nodeType?: NodeType;
+  readonly nodeType?: NodeType | undefined;
 
   /**
    * What cpu architecture to retrieve the image for (arm64 or x86_64)
    *
    * @default CpuArch.X86_64
    */
-  readonly cpuArch?: CpuArch;
+  readonly cpuArch?: CpuArch | undefined;
 
   /**
    * The Kubernetes version to use
    *
    * @default - The latest version
    */
-  readonly kubernetesVersion?: string;
+  readonly kubernetesVersion?: string | undefined;
 }
 
 /**
  * Construct an Amazon Linux 2 image from the latest EKS Optimized AMI published in SSM
  */
 export class EksOptimizedImage implements ec2.IMachineImage {
-  private readonly nodeType?: NodeType;
-  private readonly cpuArch?: CpuArch;
-  private readonly kubernetesVersion?: string;
+  private readonly nodeType?: NodeType | undefined;
+  private readonly cpuArch?: CpuArch | undefined;
+  private readonly kubernetesVersion?: string | undefined;
   private readonly amiParameterName: string;
 
   /**

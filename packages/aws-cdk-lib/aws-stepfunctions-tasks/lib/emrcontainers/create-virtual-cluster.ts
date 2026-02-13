@@ -54,21 +54,21 @@ interface EmrContainersCreateVirtualClusterOptions {
    *
    * @default - 'default'
    */
-  readonly eksNamespace?: string;
+  readonly eksNamespace?: string | undefined;
 
   /**
    * Name of the virtual cluster that will be created.
    *
    * @default - the name of the state machine execution that runs this task and state name
    */
-  readonly virtualClusterName?: string;
+  readonly virtualClusterName?: string | undefined;
 
   /**
    * The tags assigned to the virtual cluster
    *
    * @default {}
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -117,8 +117,8 @@ export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

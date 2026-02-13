@@ -75,7 +75,7 @@ export interface ParquetOutputFormatProps {
    * @minimum `Size.mebibytes(64)`
    * @default `Size.mebibytes(256)`
    */
-  readonly blockSize?: cdk.Size;
+  readonly blockSize?: cdk.Size | undefined;
 
   /**
    * The compression code to use over data blocks.
@@ -86,7 +86,7 @@ export interface ParquetOutputFormatProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-compression
    * @default `SNAPPY`
    */
-  readonly compression?: ParquetCompression;
+  readonly compression?: ParquetCompression | undefined;
 
   /**
    * Indicates whether to enable dictionary compression.
@@ -94,7 +94,7 @@ export interface ParquetOutputFormatProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-enabledictionarycompression
    * @default `false`
    */
-  readonly enableDictionaryCompression?: boolean;
+  readonly enableDictionaryCompression?: boolean | undefined;
 
   /**
    * The maximum amount of padding to apply.
@@ -103,7 +103,7 @@ export interface ParquetOutputFormatProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-parquetserde.html#cfn-kinesisfirehose-deliverystream-parquetserde-maxpaddingbytes
    * @default no padding is applied
    */
-  readonly maxPadding?: cdk.Size;
+  readonly maxPadding?: cdk.Size | undefined;
 
   /**
    * The Parquet page size.
@@ -114,7 +114,7 @@ export interface ParquetOutputFormatProps {
    * @minimum `Size.kibibytes(64)`
    * @default `Size.mebibytes(1)`
    */
-  readonly pageSize?: cdk.Size;
+  readonly pageSize?: cdk.Size | undefined;
 
   /**
    * Indicates the version of Parquet to output.
@@ -124,7 +124,7 @@ export interface ParquetOutputFormatProps {
    *
    * @default `V1`
    */
-  readonly writerVersion?: ParquetWriterVersion;
+  readonly writerVersion?: ParquetWriterVersion | undefined;
 }
 
 /**
@@ -136,7 +136,7 @@ export class ParquetOutputFormat implements IOutputFormat {
   /**
    * Properties for the Parquet output format
    */
-  readonly props?: ParquetOutputFormatProps;
+  readonly props?: ParquetOutputFormatProps | undefined;
 
   public constructor(props?: ParquetOutputFormatProps) {
     this.props = props;
@@ -241,7 +241,7 @@ export interface OrcOutputFormatProps {
    * @minimum `Size.mebibytes(64)`
    * @default `Size.mebibytes(256)`
    */
-  readonly blockSize?: cdk.Size;
+  readonly blockSize?: cdk.Size | undefined;
 
   /**
    * The compression code to use over data blocks.
@@ -252,7 +252,7 @@ export interface OrcOutputFormatProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-kinesisfirehose-deliverystream-orcserde.html#cfn-kinesisfirehose-deliverystream-orcserde-compression
    * @default `SNAPPY`
    */
-  readonly compression?: OrcCompression;
+  readonly compression?: OrcCompression | undefined;
 
   /**
    * The column names for which you want Firehose to create bloom filters.
@@ -261,7 +261,7 @@ export interface OrcOutputFormatProps {
    *
    * @default no bloom filters are created
    */
-  readonly bloomFilterColumns?: string[];
+  readonly bloomFilterColumns?: string[] | undefined;
 
   /**
    * The Bloom filter false positive probability (FPP).
@@ -273,7 +273,7 @@ export interface OrcOutputFormatProps {
    * @maximum `1`
    * @default `0.05`
    */
-  readonly bloomFilterFalsePositiveProbability?: number;
+  readonly bloomFilterFalsePositiveProbability?: number | undefined;
 
   /**
    * Determines whether dictionary encoding should be applied to a column.
@@ -287,7 +287,7 @@ export interface OrcOutputFormatProps {
    * @maximum `1`
    * @default `0.8`
    */
-  readonly dictionaryKeyThreshold?: number;
+  readonly dictionaryKeyThreshold?: number | undefined;
 
   /**
    * Set this to `true` to indicate that you want stripes to be padded to the HDFS block boundaries.
@@ -297,7 +297,7 @@ export interface OrcOutputFormatProps {
    *
    * @default `false`
    */
-  readonly enablePadding?: boolean;
+  readonly enablePadding?: boolean | undefined;
 
   /**
    * The version of the ORC format to write.
@@ -307,7 +307,7 @@ export interface OrcOutputFormatProps {
    *
    * @default `V0_12`
    */
-  readonly formatVersion?: OrcFormatVersion;
+  readonly formatVersion?: OrcFormatVersion | undefined;
 
   /**
    * A number between 0 and 1 that defines the tolerance for block padding as a decimal fraction of stripe size.
@@ -323,7 +323,7 @@ export interface OrcOutputFormatProps {
    *
    * @default `0.05` if `enablePadding` is `true`
    */
-  readonly paddingTolerance?: number;
+  readonly paddingTolerance?: number | undefined;
 
   /**
    * The number of rows between index entries.
@@ -333,7 +333,7 @@ export interface OrcOutputFormatProps {
    * @minimum 1000
    * @default 10000
    */
-  readonly rowIndexStride?: number;
+  readonly rowIndexStride?: number | undefined;
 
   /**
    * The number of bytes in each stripe.
@@ -344,7 +344,7 @@ export interface OrcOutputFormatProps {
    * @minimum `Size.mebibytes(8)`
    * @default `Size.mebibytes(64)`
    */
-  readonly stripeSize?: cdk.Size;
+  readonly stripeSize?: cdk.Size | undefined;
 }
 
 /**
@@ -356,7 +356,7 @@ export class OrcOutputFormat implements IOutputFormat {
   /**
    * Properties for the ORC output format
    */
-  readonly props?: OrcOutputFormatProps;
+  readonly props?: OrcOutputFormatProps | undefined;
 
   public constructor(props?: OrcOutputFormatProps) {
     this.props = props;

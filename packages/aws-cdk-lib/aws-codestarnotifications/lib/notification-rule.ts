@@ -33,7 +33,7 @@ export interface NotificationRuleOptions {
    *
    * @default - generated from the `id`
    */
-  readonly notificationRuleName?: string;
+  readonly notificationRuleName?: string | undefined;
 
   /**
    * The status of the notification rule.
@@ -41,7 +41,7 @@ export interface NotificationRuleOptions {
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The level of detail to include in the notifications for this resource.
@@ -50,7 +50,7 @@ export interface NotificationRuleOptions {
    *
    * @default DetailType.FULL
    */
-  readonly detailType?: DetailType;
+  readonly detailType?: DetailType | undefined;
 
   /**
    * The name or email alias of the person who created the notification rule.
@@ -58,7 +58,7 @@ export interface NotificationRuleOptions {
    *
    * @default - No alias provided
    */
-  readonly createdBy?: string;
+  readonly createdBy?: string | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export interface NotificationRuleProps extends NotificationRuleOptions {
    *
    * @default - No targets are added to the rule. Use `addTarget()` to add a target.
    */
-  readonly targets?: INotificationRuleTarget[];
+  readonly targets?: INotificationRuleTarget[] | undefined;
 }
 
 /**

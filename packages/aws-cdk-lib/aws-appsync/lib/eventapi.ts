@@ -59,24 +59,24 @@ export interface EventApiAuthConfig {
    * publish, and subscribe operations.
    * @default - API Key authorization
    */
-  readonly authProviders?: AppSyncAuthProvider[];
+  readonly authProviders?: AppSyncAuthProvider[] | undefined;
   /**
    * Connection auth modes
    * @default - API Key authorization
    */
-  readonly connectionAuthModeTypes?: AppSyncAuthorizationType[];
+  readonly connectionAuthModeTypes?: AppSyncAuthorizationType[] | undefined;
 
   /**
    * Default publish auth modes
    * @default - API Key authorization
    */
-  readonly defaultPublishAuthModeTypes?: AppSyncAuthorizationType[];
+  readonly defaultPublishAuthModeTypes?: AppSyncAuthorizationType[] | undefined;
 
   /**
    * Default subscribe auth modes
    * @default - API Key authorization
    */
-  readonly defaultSubscribeAuthModeTypes?: AppSyncAuthorizationType[];
+  readonly defaultSubscribeAuthModeTypes?: AppSyncAuthorizationType[] | undefined;
 }
 
 /**
@@ -475,14 +475,14 @@ export interface EventApiProps {
    *
    * @default - API Key authorization
    */
-  readonly authorizationConfig?: EventApiAuthConfig;
+  readonly authorizationConfig?: EventApiAuthConfig | undefined;
 
   /**
    * Logging configuration for this api
    *
    * @default - None
    */
-  readonly logConfig?: AppSyncLogConfig;
+  readonly logConfig?: AppSyncLogConfig | undefined;
 
   /**
    * The owner contact information for an API resource.
@@ -491,7 +491,7 @@ export interface EventApiProps {
    *
    * @default - No owner contact.
    */
-  readonly ownerContact?: string;
+  readonly ownerContact?: string | undefined;
 
   /**
    * The domain name configuration for the Event API
@@ -501,7 +501,7 @@ export interface EventApiProps {
    *
    * @default - no domain name
    */
-  readonly domainName?: AppSyncDomainOptions;
+  readonly domainName?: AppSyncDomainOptions | undefined;
 }
 
 /**
@@ -512,7 +512,7 @@ export interface EventApiAttributes {
    * the name of the Event API
    * @default - not needed to import API
    */
-  readonly apiName?: string;
+  readonly apiName?: string | undefined;
 
   /**
    * an unique AWS AppSync Event API identifier
@@ -524,7 +524,7 @@ export interface EventApiAttributes {
    * the ARN of the Event API
    * @default - constructed arn
    */
-  readonly apiArn?: string;
+  readonly apiArn?: string | undefined;
 
   /**
    * the domain name of the Api's HTTP endpoint.
@@ -540,7 +540,7 @@ export interface EventApiAttributes {
    * The Authorization Types for this Event Api
    * @default - none, required to construct event rules from imported APIs
    */
-  readonly authProviderTypes?: AppSyncAuthorizationType[];
+  readonly authProviderTypes?: AppSyncAuthorizationType[] | undefined;
 }
 
 /**

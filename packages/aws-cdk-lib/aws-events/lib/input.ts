@@ -77,28 +77,28 @@ export interface RuleTargetInputProperties {
    * @default - input for the event target. If the input contains a paths map
    *   values wil be extracted from event and inserted into the `inputTemplate`.
    */
-  readonly input?: string;
+  readonly input?: string | undefined;
 
   /**
    * JsonPath to take input from the input event
    *
    * @default - None. The entire matched event is passed as input
    */
-  readonly inputPath?: string;
+  readonly inputPath?: string | undefined;
 
   /**
    * Input template to insert paths map into
    *
    * @default - None.
    */
-  readonly inputTemplate?: string;
+  readonly inputTemplate?: string | undefined;
 
   /**
    * Paths map to extract values from event and insert into `inputTemplate`
    *
    * @default - No values extracted from event.
    */
-  readonly inputPathsMap?: { [key: string]: string };
+  readonly inputPathsMap?: { [key: string]: string } | undefined;
 }
 
 /**

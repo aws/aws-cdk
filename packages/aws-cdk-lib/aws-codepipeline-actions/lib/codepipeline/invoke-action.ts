@@ -19,13 +19,13 @@ export interface PipelineInvokeActionProps extends codepipeline.CommonAwsActionP
    * The source revisions that you want the target pipeline to use when it is started by the invoking pipeline.
    * @default - no specific revisions
    */
-  readonly sourceRevisions?: SourceRevision[];
+  readonly sourceRevisions?: SourceRevision[] | undefined;
 
   /**
    * The names and values of variables that you want the action to support.
    * @default - no specific variable
    */
-  readonly variables?: Variable[];
+  readonly variables?: Variable[] | undefined;
 }
 
 /**

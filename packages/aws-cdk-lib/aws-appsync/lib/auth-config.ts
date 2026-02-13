@@ -21,22 +21,22 @@ export interface AppSyncAuthProvider {
    * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
    * @default - none
    */
-  readonly cognitoConfig?: AppSyncCognitoConfig;
+  readonly cognitoConfig?: AppSyncCognitoConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
    * @default - name: 'DefaultAPIKey'
    */
-  readonly apiKeyConfig?: AppSyncApiKeyConfig;
+  readonly apiKeyConfig?: AppSyncApiKeyConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.OIDC`, this option is required.
    * @default - none
    */
-  readonly openIdConnectConfig?: AppSyncOpenIdConnectConfig;
+  readonly openIdConnectConfig?: AppSyncOpenIdConnectConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
    * @default - none
    */
-  readonly lambdaAuthorizerConfig?: AppSyncLambdaAuthorizerConfig;
+  readonly lambdaAuthorizerConfig?: AppSyncLambdaAuthorizerConfig | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface AppSyncCognitoConfig {
    *
    * @default -  None
    */
-  readonly appIdClientRegex?: string;
+  readonly appIdClientRegex?: string | undefined;
 }
 
 /**
@@ -89,12 +89,12 @@ export interface AppSyncApiKeyConfig {
    * Unique name of the API Key
    * @default - 'DefaultAPIKey'
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
   /**
    * Description of API key
    * @default - 'Default API Key created by CDK'
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The time from creation time after which the API key expires.
@@ -103,7 +103,7 @@ export interface AppSyncApiKeyConfig {
    *
    * @default - 7 days rounded down to nearest hour
    */
-  readonly expires?: Expiration;
+  readonly expires?: Expiration | undefined;
 }
 
 /**
@@ -115,20 +115,20 @@ export interface AppSyncOpenIdConnectConfig {
    * `auth_time` claim in OIDC token is required for this validation to work.
    * @default - no validation
    */
-  readonly tokenExpiryFromAuth?: number;
+  readonly tokenExpiryFromAuth?: number | undefined;
   /**
    * The number of milliseconds an OIDC token is valid after being issued to a user.
    * This validation uses `iat` claim of OIDC token.
    * @default - no validation
    */
-  readonly tokenExpiryFromIssue?: number;
+  readonly tokenExpiryFromIssue?: number | undefined;
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
    * @example - 'ABCD|CDEF' // where ABCD and CDEF are two different clientId
    * @default - * (All)
    */
-  readonly clientId?: string;
+  readonly clientId?: string | undefined;
   /**
    * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
    */
@@ -152,14 +152,14 @@ export interface AppSyncLambdaAuthorizerConfig {
    *
    * @default Duration.minutes(5)
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 
   /**
    * A regular expression for validation of tokens before the Lambda function is called.
    *
    * @default - no regex filter will be applied.
    */
-  readonly validationRegex?: string;
+  readonly validationRegex?: string | undefined;
 }
 
 /**

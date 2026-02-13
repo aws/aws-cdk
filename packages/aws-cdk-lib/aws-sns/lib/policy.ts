@@ -19,7 +19,7 @@ export interface TopicPolicyProps {
    * IAM policy document to apply to topic(s).
    * @default empty policy document
    */
-  readonly policyDocument?: PolicyDocument;
+  readonly policyDocument?: PolicyDocument | undefined;
 
   /**
    * Adds a statement to enforce encryption of data in transit when publishing to the topic.
@@ -28,7 +28,7 @@ export interface TopicPolicyProps {
    *
    * @default false
    */
-  readonly enforceSSL?: boolean;
+  readonly enforceSSL?: boolean | undefined;
 }
 
 /**

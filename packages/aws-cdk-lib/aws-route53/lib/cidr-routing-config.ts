@@ -14,7 +14,7 @@ export interface CidrRoutingConfigProps {
    *
    * @default `*`
    */
-  readonly locationName?: string;
+  readonly locationName?: string | undefined;
 }
 
 /**

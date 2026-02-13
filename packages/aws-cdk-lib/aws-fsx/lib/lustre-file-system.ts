@@ -125,7 +125,7 @@ export interface LustreConfiguration {
    *
    * @default s3://import-bucket/FSxLustre[creation-timestamp]
    */
-  readonly exportPath?: string;
+  readonly exportPath?: string | undefined;
 
   /**
    * For files imported from a data repository, this value determines the stripe count and maximum amount of data per
@@ -133,7 +133,7 @@ export interface LustreConfiguration {
    *
    * @default 1024
    */
-  readonly importedFileChunkSizeMiB?: number;
+  readonly importedFileChunkSizeMiB?: number | undefined;
 
   /**
    * The path to the Amazon S3 bucket (including the optional prefix) that you're using as the data repository for
@@ -142,7 +142,7 @@ export interface LustreConfiguration {
    *
    * @default - no bucket is imported
    */
-  readonly importPath?: string;
+  readonly importPath?: string | undefined;
 
   /**
    * Available with `Scratch` and `Persistent_1` deployment types. When you create your file system, your existing S3 objects appear as file and directory listings. Use this property to choose how Amazon FSx keeps your file and directory listings up to date as you add or modify objects in your linked S3 bucket. `AutoImportPolicy` can have the following values:
@@ -154,7 +154,7 @@ export interface LustreConfiguration {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-lustreconfiguration.html#cfn-fsx-filesystem-lustreconfiguration-autoimportpolicy
    * @default - no import policy
    */
-  readonly autoImportPolicy?: LustreAutoImportPolicy;
+  readonly autoImportPolicy?: LustreAutoImportPolicy | undefined;
 
   /**
    * Sets the data compression configuration for the file system.
@@ -164,7 +164,7 @@ export interface LustreConfiguration {
    * @default - no compression
    */
 
-  readonly dataCompressionType?: LustreDataCompressionType;
+  readonly dataCompressionType?: LustreDataCompressionType | undefined;
 
   /**
    * Provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB.
@@ -177,7 +177,7 @@ export interface LustreConfiguration {
    *
    * @default - no default, conditionally required for PERSISTENT_1 and PERSISTENT_2 deployment type
    */
-  readonly perUnitStorageThroughput?: number;
+  readonly perUnitStorageThroughput?: number | undefined;
 
   /**
    * The preferred day and time to perform weekly maintenance. The first digit is the day of the week, starting at 1
@@ -186,7 +186,7 @@ export interface LustreConfiguration {
    *
    * @default - no preference
    */
-  readonly weeklyMaintenanceStartTime?: LustreMaintenanceTime;
+  readonly weeklyMaintenanceStartTime?: LustreMaintenanceTime | undefined;
 
   /**
    * The number of days to retain automatic backups.
@@ -197,28 +197,28 @@ export interface LustreConfiguration {
    *
    * @default Duration.days(0)
    */
-  readonly automaticBackupRetention?: Duration;
+  readonly automaticBackupRetention?: Duration | undefined;
 
   /**
    * A boolean flag indicating whether tags for the file system should be copied to backups.
    *
    * @default - false
    */
-  readonly copyTagsToBackups?: boolean;
+  readonly copyTagsToBackups?: boolean | undefined;
 
   /**
    * Start time for 30-minute daily automatic backup window in Coordinated Universal Time (UTC).
    *
    * @default - no backup window
    */
-  readonly dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime;
+  readonly dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime | undefined;
 
   /**
    * The type of drive cache used by PERSISTENT_1 file systems that are provisioned with HDD storage devices.
    *
    * @default - no drive cache
    */
-  readonly driveCacheType?: DriveCacheType;
+  readonly driveCacheType?: DriveCacheType | undefined;
 }
 
 /**
@@ -237,7 +237,7 @@ export interface LustreFileSystemProps extends FileSystemProps {
    *
    * @default - V_2_10, except for PERSISTENT_2 deployment type, where it is V_2_12 without metadata configuration mode and V_2_15 with metadata configuration mode.
    */
-  readonly fileSystemTypeVersion?: FileSystemTypeVersion;
+  readonly fileSystemTypeVersion?: FileSystemTypeVersion | undefined;
 
   /**
    * The subnet that the file system will be accessible from.

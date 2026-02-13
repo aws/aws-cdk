@@ -22,15 +22,15 @@ export class FullActionDescriptor {
   public readonly version: string;
   public readonly runOrder: number;
   public readonly artifactBounds: ActionArtifactBounds;
-  public readonly namespace?: string;
+  public readonly namespace?: string | undefined;
   public readonly inputs: Artifact[];
   public readonly outputs: Artifact[];
-  public readonly region?: string;
-  public readonly role?: iam.IRole;
+  public readonly region?: string | undefined;
+  public readonly role?: iam.IRole | undefined;
   public readonly configuration: any;
-  public readonly commands?: string[];
-  public readonly outputVariables?: string[];
-  public readonly timeout?: Duration;
+  public readonly commands?: string[] | undefined;
+  public readonly outputVariables?: string[] | undefined;
+  public readonly timeout?: Duration | undefined;
 
   constructor(props: FullActionDescriptorProps) {
     this.action = props.action;

@@ -31,14 +31,14 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * The subnets to associate with the service.
    *
    * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
@@ -46,14 +46,14 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default - A new security group is created.
    * @deprecated use securityGroups instead.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * @default - A new security group is created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The platform version on which to run your service.
@@ -64,7 +64,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * @default Latest
    */
-  readonly platformVersion?: FargatePlatformVersion;
+  readonly platformVersion?: FargatePlatformVersion | undefined;
 
   /**
    * Whether to use Availability Zone rebalancing for the service.
@@ -75,7 +75,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html
    * @default AvailabilityZoneRebalancing.ENABLED
    */
-  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing;
+  readonly availabilityZoneRebalancing?: AvailabilityZoneRebalancing | undefined;
 }
 
 /**
@@ -99,14 +99,14 @@ export interface FargateServiceAttributes {
    *
    * @default - either this, or `serviceName`, is required
    */
-  readonly serviceArn?: string;
+  readonly serviceArn?: string | undefined;
 
   /**
    * The name of the service.
    *
    * @default - either this, or `serviceArn`, is required
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 }
 
 /**

@@ -12,14 +12,14 @@ export interface UntrustedCodeBoundaryPolicyProps {
    *
    * @default - A name is automatically generated.
    */
-  readonly managedPolicyName?: string;
+  readonly managedPolicyName?: string | undefined;
 
   /**
    * Additional statements to add to the default set of statements
    *
    * @default - No additional statements
    */
-  readonly additionalStatements?: iam.PolicyStatement[];
+  readonly additionalStatements?: iam.PolicyStatement[] | undefined;
 }
 
 /**

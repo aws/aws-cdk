@@ -27,7 +27,7 @@ export interface CfnIncludeProps {
    *
    * @default true
    */
-  readonly preserveLogicalIds?: boolean;
+  readonly preserveLogicalIds?: boolean | undefined;
 
   /**
    * Specifies the template files that define nested stacks that should be included.
@@ -42,7 +42,7 @@ export interface CfnIncludeProps {
    *
    * @default - no nested stacks will be included
    */
-  readonly loadNestedStacks?: { [stackName: string]: CfnIncludeProps };
+  readonly loadNestedStacks?: { [stackName: string]: CfnIncludeProps } | undefined;
 
   /**
    * Specifies parameters to be replaced by the values in this mapping.
@@ -56,7 +56,7 @@ export interface CfnIncludeProps {
    *
    * @default - parameters will retain their original definitions
    */
-  readonly parameters?: { [parameterName: string]: any };
+  readonly parameters?: { [parameterName: string]: any } | undefined;
 
   /**
    * Specifies whether to allow cyclical references, effectively disregarding safeguards meant to avoid undeployable
@@ -65,7 +65,7 @@ export interface CfnIncludeProps {
    *
    * @default - will throw an error on detecting any cyclical references
    */
-  readonly allowCyclicalReferences?: boolean;
+  readonly allowCyclicalReferences?: boolean | undefined;
 
   /**
    * Specifies a list of LogicalIDs for resources that will be included in the CDK Stack,
@@ -75,7 +75,7 @@ export interface CfnIncludeProps {
    *
    * @default - All resources are hydrated
    */
-  readonly dehydratedResources?: string[];
+  readonly dehydratedResources?: string[] | undefined;
 }
 
 /**

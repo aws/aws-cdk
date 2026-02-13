@@ -11,37 +11,37 @@ export interface ClusterResourceProviderProps {
   /**
    * The VPC to provision the functions in.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The subnets to place the functions in.
    */
-  readonly subnets?: ec2.ISubnet[];
+  readonly subnets?: ec2.ISubnet[] | undefined;
 
   /**
    * Environment to add to the handler.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
    *
    * If not defined, a default layer will be used.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
 
   /**
    * The security group to associate with the functions.
    *
    * @default - No security group.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
   /**
    * Disable logging for provider
    *
    * @default true
    */
-  readonly disableLogging?: boolean;
+  readonly disableLogging?: boolean | undefined;
 }
 
 /**

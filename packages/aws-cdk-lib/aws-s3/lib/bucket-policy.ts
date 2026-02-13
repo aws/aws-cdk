@@ -21,14 +21,14 @@ export interface BucketPolicyProps {
    *
    * @default - RemovalPolicy.DESTROY.
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Policy document to apply to the bucket.
    *
    * @default - A new empty PolicyDocument will be created.
    */
-  readonly document?: PolicyDocument;
+  readonly document?: PolicyDocument | undefined;
 }
 
 /**

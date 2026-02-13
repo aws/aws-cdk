@@ -52,7 +52,7 @@ export interface AnomalyDetectionAlarmProps extends CreateAlarmOptionsBase {
    *
    * @default 2
    */
-  readonly stdDevs?: number;
+  readonly stdDevs?: number | undefined;
 
   /**
    * Comparison operator to use to check if metric is breaching.
@@ -63,7 +63,7 @@ export interface AnomalyDetectionAlarmProps extends CreateAlarmOptionsBase {
    *
    * @default LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD
    */
-  readonly comparisonOperator?: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator | undefined;
 }
 
 /**

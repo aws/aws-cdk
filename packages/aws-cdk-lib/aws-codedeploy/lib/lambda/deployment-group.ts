@@ -53,21 +53,21 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default - One will be created for you.
    */
-  readonly application?: ILambdaApplication;
+  readonly application?: ILambdaApplication | undefined;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: string | undefined;
 
   /**
    * The Deployment Configuration this Deployment Group uses.
    *
    * @default LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
    */
-  readonly deploymentConfig?: ILambdaDeploymentConfig;
+  readonly deploymentConfig?: ILambdaDeploymentConfig | undefined;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -79,14 +79,14 @@ export interface LambdaDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: IAlarmRef[];
+  readonly alarms?: IAlarmRef[] | undefined;
 
   /**
    * The service Role of this Deployment Group.
    *
    * @default - A new Role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Lambda Alias to shift traffic. Updating the version
@@ -101,35 +101,35 @@ export interface LambdaDeploymentGroupProps {
    *
    * @default - None.
    */
-  readonly preHook?: lambda.IFunction;
+  readonly preHook?: lambda.IFunction | undefined;
 
   /**
    * The Lambda function to run after traffic routing starts.
    *
    * @default - None.
    */
-  readonly postHook?: lambda.IFunction;
+  readonly postHook?: lambda.IFunction | undefined;
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
    *
    * @default false
    */
-  readonly ignorePollAlarmsFailure?: boolean;
+  readonly ignorePollAlarmsFailure?: boolean | undefined;
 
   /**
    * The auto-rollback configuration for this Deployment Group.
    *
    * @default - default AutoRollbackConfig.
    */
-  readonly autoRollback?: AutoRollbackConfig;
+  readonly autoRollback?: AutoRollbackConfig | undefined;
 
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
    * @default - false
    */
-  readonly ignoreAlarmConfiguration?: boolean;
+  readonly ignoreAlarmConfiguration?: boolean | undefined;
 }
 
 /**
@@ -308,7 +308,7 @@ export interface LambdaDeploymentGroupAttributes {
    *
    * @default LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
    */
-  readonly deploymentConfig?: ILambdaDeploymentConfig;
+  readonly deploymentConfig?: ILambdaDeploymentConfig | undefined;
 }
 
 @propertyInjectable

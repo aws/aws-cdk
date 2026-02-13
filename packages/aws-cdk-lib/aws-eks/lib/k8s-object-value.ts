@@ -30,7 +30,7 @@ export interface KubernetesObjectValueProps {
    *
    * @default 'default'
    */
-  readonly objectNamespace?: string;
+  readonly objectNamespace?: string | undefined;
 
   /**
    * JSONPath to the specific value.
@@ -44,7 +44,7 @@ export interface KubernetesObjectValueProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The removal policy applied to the custom resource that manages the Kubernetes object value.
@@ -58,7 +58,7 @@ export interface KubernetesObjectValueProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
 }
 

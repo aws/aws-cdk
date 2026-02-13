@@ -69,14 +69,14 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default 1
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 
   /**
    * Maximum number of instances in the fleet
    *
    * @default desiredCapacity
    */
-  readonly maxCapacity?: number;
+  readonly maxCapacity?: number | undefined;
 
   /**
    * Initial amount of instances in the fleet
@@ -87,7 +87,7 @@ export interface CommonAutoScalingGroupProps {
    * @default minCapacity, and leave unchanged during deployment
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-desiredcapacity
    */
-  readonly desiredCapacity?: number;
+  readonly desiredCapacity?: number | undefined;
 
   /**
    * Name of SSH keypair to grant access to instances
@@ -99,7 +99,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - No SSH access will be possible.
    * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
-  readonly keyName?: string;
+  readonly keyName?: string | undefined;
 
   /**
    * The SSH keypair to grant access to the instance.
@@ -112,14 +112,14 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - No SSH access will be possible.
    */
-  readonly keyPair?: ec2.IKeyPair;
+  readonly keyPair?: ec2.IKeyPair | undefined;
 
   /**
    * Where to place instances within the VPC
    *
    * @default - All Private subnets.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * SNS topic to send notifications about fleet changes
@@ -127,21 +127,21 @@ export interface CommonAutoScalingGroupProps {
    * @default - No fleet change notifications will be sent.
    * @deprecated use `notifications`
    */
-  readonly notificationsTopic?: sns.ITopic;
+  readonly notificationsTopic?: sns.ITopic | undefined;
 
   /**
    * Configure autoscaling group to send notifications about fleet changes to an SNS topic(s)
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-group.html#cfn-as-group-notificationconfigurations
    * @default - No fleet change notifications will be sent.
    */
-  readonly notifications?: NotificationConfiguration[];
+  readonly notifications?: NotificationConfiguration[] | undefined;
 
   /**
    * Whether the instances can initiate connections to anywhere by default
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * What to do when an AutoScalingGroup's instance configuration is changed
@@ -155,7 +155,7 @@ export interface CommonAutoScalingGroupProps {
    * @default UpdateType.REPLACING_UPDATE, unless updatePolicy has been set
    * @deprecated Use `updatePolicy` instead
    */
-  readonly updateType?: UpdateType;
+  readonly updateType?: UpdateType | undefined;
 
   /**
    * Configuration for rolling updates
@@ -165,7 +165,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - RollingUpdateConfiguration with defaults.
    * @deprecated Use `updatePolicy` instead
    */
-  readonly rollingUpdateConfiguration?: RollingUpdateConfiguration;
+  readonly rollingUpdateConfiguration?: RollingUpdateConfiguration | undefined;
 
   /**
    * Configuration for replacing updates.
@@ -176,7 +176,7 @@ export interface CommonAutoScalingGroupProps {
    * @default minSuccessfulInstancesPercent
    * @deprecated Use `signals` instead
    */
-  readonly replacingUpdateMinSuccessfulInstancesPercent?: number;
+  readonly replacingUpdateMinSuccessfulInstancesPercent?: number | undefined;
 
   /**
    * If the ASG has scheduled actions, don't reset unchanged group sizes
@@ -189,7 +189,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default true
    */
-  readonly ignoreUnmodifiedSizeProperties?: boolean;
+  readonly ignoreUnmodifiedSizeProperties?: boolean | undefined;
 
   /**
    * How many ResourceSignal calls CloudFormation expects before the resource is considered created
@@ -197,7 +197,7 @@ export interface CommonAutoScalingGroupProps {
    * @default 1 if resourceSignalTimeout is set, 0 otherwise
    * @deprecated Use `signals` instead.
    */
-  readonly resourceSignalCount?: number;
+  readonly resourceSignalCount?: number | undefined;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -207,14 +207,14 @@ export interface CommonAutoScalingGroupProps {
    * @default Duration.minutes(5) if resourceSignalCount is set, N/A otherwise
    * @deprecated Use `signals` instead.
    */
-  readonly resourceSignalTimeout?: Duration;
+  readonly resourceSignalTimeout?: Duration | undefined;
 
   /**
    * Default scaling cooldown for this AutoScalingGroup
    *
    * @default Duration.minutes(5)
    */
-  readonly cooldown?: Duration;
+  readonly cooldown?: Duration | undefined;
 
   /**
    * Whether instances in the Auto Scaling Group should have public
@@ -224,7 +224,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - Use subnet setting.
    */
-  readonly associatePublicIpAddress?: boolean;
+  readonly associatePublicIpAddress?: boolean | undefined;
 
   /**
    * The maximum hourly price (in USD) to be paid for any Spot Instance launched to fulfill the request. Spot Instances are
@@ -234,7 +234,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default none
    */
-  readonly spotPrice?: string;
+  readonly spotPrice?: string | undefined;
 
   /**
    * Configuration for health checks
@@ -242,7 +242,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - HealthCheck.ec2 with no grace period
    * @deprecated Use `healthChecks` instead
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * Configuration for EC2 or additional health checks
@@ -252,7 +252,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - EC2 type with no grace period
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-health-checks.html
    */
-  readonly healthChecks?: HealthChecks;
+  readonly healthChecks?: HealthChecks | undefined;
 
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
@@ -268,7 +268,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: BlockDevice[];
+  readonly blockDevices?: BlockDevice[] | undefined;
 
   /**
    * The maximum amount of time that an instance can be in service. The maximum duration applies
@@ -282,7 +282,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default none
    */
-  readonly maxInstanceLifetime?: Duration;
+  readonly maxInstanceLifetime?: Duration | undefined;
 
   /**
    * Controls whether instances in this group are launched with detailed or basic monitoring.
@@ -296,7 +296,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - Monitoring.DETAILED
    */
-  readonly instanceMonitoring?: Monitoring;
+  readonly instanceMonitoring?: Monitoring | undefined;
 
   /**
    * Enable monitoring for group metrics, these metrics describe the group rather than any of its instances.
@@ -305,7 +305,7 @@ export interface CommonAutoScalingGroupProps {
    * @default - no group metrics will be reported
    *
    */
-  readonly groupMetrics?: GroupMetrics[];
+  readonly groupMetrics?: GroupMetrics[] | undefined;
 
   /**
    * Configure waiting for signals during deployment
@@ -328,7 +328,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - Do not wait for signals
    */
-  readonly signals?: Signals;
+  readonly signals?: Signals | undefined;
 
   /**
    * What to do when an AutoScalingGroup's instance configuration is changed
@@ -341,7 +341,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - `UpdatePolicy.rollingUpdate()` if using `init`, `UpdatePolicy.none()` otherwise
    */
-  readonly updatePolicy?: UpdatePolicy;
+  readonly updatePolicy?: UpdatePolicy | undefined;
 
   /**
    * Whether newly-launched instances are protected from termination by Amazon
@@ -358,13 +358,13 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default false
    */
-  readonly newInstancesProtectedFromScaleIn?: boolean;
+  readonly newInstancesProtectedFromScaleIn?: boolean | undefined;
 
   /**
    * The name of the Auto Scaling group. This name must be unique per Region per account.
    * @default - Auto generated by CloudFormation
    */
-  readonly autoScalingGroupName?: string;
+  readonly autoScalingGroupName?: string | undefined;
 
   /**
    * A policy or a list of policies that are used to select the instances to
@@ -374,7 +374,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - `TerminationPolicy.DEFAULT`
    */
-  readonly terminationPolicies?: TerminationPolicy[];
+  readonly terminationPolicies?: TerminationPolicy[] | undefined;
 
   /**
    * A lambda function Arn that can be used as a custom termination policy to select the instances
@@ -385,7 +385,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default - No lambda function Arn will be supplied
    */
-  readonly terminationPolicyCustomLambdaFunctionArn?: string;
+  readonly terminationPolicyCustomLambdaFunctionArn?: string | undefined;
 
   /**
    * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
@@ -402,7 +402,7 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default None
    */
-  readonly defaultInstanceWarmup?: Duration;
+  readonly defaultInstanceWarmup?: Duration | undefined;
 
   /**
    * Indicates whether Capacity Rebalancing is enabled. When you turn on Capacity Rebalancing, Amazon EC2 Auto Scaling
@@ -414,7 +414,7 @@ export interface CommonAutoScalingGroupProps {
    * @default false
    *
    */
-  readonly capacityRebalance?: boolean;
+  readonly capacityRebalance?: boolean | undefined;
 
   /**
    * Add SSM session permissions to the instance role
@@ -431,13 +431,13 @@ export interface CommonAutoScalingGroupProps {
    *
    * @default false
    */
-  readonly ssmSessionPermissions?: boolean;
+  readonly ssmSessionPermissions?: boolean | undefined;
 
   /**
    * The strategy for distributing instances across Availability Zones.
    * @default None
    */
-  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy;
+  readonly azCapacityDistributionStrategy?: CapacityDistributionStrategy | undefined;
 }
 
 /**
@@ -453,7 +453,7 @@ export interface MixedInstancesPolicy {
    *
    * @default - The value for each property in it uses a default value.
    */
-  readonly instancesDistribution?: InstancesDistribution;
+  readonly instancesDistribution?: InstancesDistribution | undefined;
 
   /**
    * Launch template to use.
@@ -469,7 +469,7 @@ export interface MixedInstancesPolicy {
    *
    * @default - Do not provide any overrides
    */
-  readonly launchTemplateOverrides?: LaunchTemplateOverrides[];
+  readonly launchTemplateOverrides?: LaunchTemplateOverrides[] | undefined;
 }
 
 /**
@@ -546,7 +546,7 @@ export interface InstancesDistribution {
    *
    * @default OnDemandAllocationStrategy.PRIORITIZED
    */
-  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy;
+  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy | undefined;
 
   /**
    * The minimum amount of the Auto Scaling group's capacity that must be fulfilled by On-Demand Instances. This
@@ -556,7 +556,7 @@ export interface InstancesDistribution {
    *
    * @default 0
    */
-  readonly onDemandBaseCapacity?: number;
+  readonly onDemandBaseCapacity?: number | undefined;
 
   /**
    * Controls the percentages of On-Demand Instances and Spot Instances for your additional capacity beyond
@@ -565,7 +565,7 @@ export interface InstancesDistribution {
    *
    * @default 100
    */
-  readonly onDemandPercentageAboveBaseCapacity?: number;
+  readonly onDemandPercentageAboveBaseCapacity?: number | undefined;
 
   /**
    * If the allocation strategy is lowest-price, the Auto Scaling group launches instances using the Spot pools with the
@@ -580,7 +580,7 @@ export interface InstancesDistribution {
    *
    * @default SpotAllocationStrategy.LOWEST_PRICE
    */
-  readonly spotAllocationStrategy?: SpotAllocationStrategy;
+  readonly spotAllocationStrategy?: SpotAllocationStrategy | undefined;
 
   /**
    * The number of Spot Instance pools to use to allocate your Spot capacity. The Spot pools are determined from the different instance
@@ -589,7 +589,7 @@ export interface InstancesDistribution {
    *
    * @default 2
    */
-  readonly spotInstancePools?: number;
+  readonly spotInstancePools?: number | undefined;
 
   /**
    * The maximum price per unit hour that you are willing to pay for a Spot Instance. If you leave the value at its default (empty),
@@ -598,7 +598,7 @@ export interface InstancesDistribution {
    *
    * @default "" - On-Demand price
    */
-  readonly spotMaxPrice?: string;
+  readonly spotMaxPrice?: string | undefined;
 }
 
 /**
@@ -618,7 +618,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty;
+  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty | undefined;
 
   /**
    * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
@@ -628,7 +628,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * Provides the launch template to be used when launching the instance type. For example, some instance types might
@@ -637,7 +637,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * The number of capacity units provided by the specified instance type in terms of virtual CPUs, memory, storage,
@@ -653,7 +653,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not provide weight
    */
-  readonly weightedCapacity?: number;
+  readonly weightedCapacity?: number | undefined;
 }
 
 /**
@@ -673,14 +673,14 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - Do not provide any launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate;
+  readonly launchTemplate?: ec2.ILaunchTemplate | undefined;
 
   /**
    * Whether safety guardrail should be enforced when migrating to the launch template.
    *
    * @default false
    */
-  readonly migrateToLaunchTemplate?: boolean;
+  readonly migrateToLaunchTemplate?: boolean | undefined;
 
   /**
    * Mixed Instances Policy to use.
@@ -690,7 +690,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - Do not provide any MixedInstancesPolicy
    */
-  readonly mixedInstancesPolicy?: MixedInstancesPolicy;
+  readonly mixedInstancesPolicy?: MixedInstancesPolicy | undefined;
 
   /**
    * Type of instance to launch
@@ -699,7 +699,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - Do not provide any instance type
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * AMI to launch
@@ -708,7 +708,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - Do not provide any machine image
    */
-  readonly machineImage?: ec2.IMachineImage;
+  readonly machineImage?: ec2.IMachineImage | undefined;
 
   /**
    * Security group to launch the instances in.
@@ -717,7 +717,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - A SecurityGroup will be created if none is specified.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Specific UserData to use
@@ -729,7 +729,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - A UserData object appropriate for the MachineImage's
    * Operating System is created.
    */
-  readonly userData?: ec2.UserData;
+  readonly userData?: ec2.UserData | undefined;
 
   /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
@@ -746,7 +746,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default A role will automatically be created, it can be accessed via the `role` property
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Apply the given CloudFormation Init configuration to the instances in the AutoScalingGroup at startup
@@ -757,7 +757,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - no CloudFormation init
    */
-  readonly init?: ec2.CloudFormationInit;
+  readonly init?: ec2.CloudFormationInit | undefined;
 
   /**
    * Use the given options for applying CloudFormation Init
@@ -766,14 +766,14 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - default options
    */
-  readonly initOptions?: ApplyCloudFormationInitOptions;
+  readonly initOptions?: ApplyCloudFormationInitOptions | undefined;
 
   /**
    * Whether IMDSv2 should be required on launched instances.
    *
    * @default false
    */
-  readonly requireImdsv2?: boolean;
+  readonly requireImdsv2?: boolean | undefined;
 
   /**
    * Specifies the upper threshold as a percentage of the desired capacity of the Auto Scaling group.
@@ -791,7 +791,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - No instance maintenance policy.
    */
-  readonly maxHealthyPercentage?: number;
+  readonly maxHealthyPercentage?: number | undefined;
 
   /**
    * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
@@ -809,7 +809,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - No instance maintenance policy.
    */
-  readonly minHealthyPercentage?: number;
+  readonly minHealthyPercentage?: number | undefined;
 }
 
 /**
@@ -901,14 +901,14 @@ export interface RenderSignalsOptions {
    *
    * @default - desired capacity not configured
    */
-  readonly desiredCapacity?: number;
+  readonly desiredCapacity?: number | undefined;
 
   /**
    * The minSize of the ASG
    *
    * @default - minCapacity not configured
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 }
 
 /**
@@ -923,7 +923,7 @@ export interface SignalsOptions {
    *
    * @default 100
    */
-  readonly minSuccessPercentage?: number;
+  readonly minSuccessPercentage?: number | undefined;
 
   /**
    * How long to wait for the signals to be sent
@@ -933,7 +933,7 @@ export interface SignalsOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 }
 
 /**
@@ -992,7 +992,7 @@ interface RenderUpdateOptions {
    *
    * @default - no CreationPolicy configured
    */
-  readonly creationPolicy?: CfnCreationPolicy;
+  readonly creationPolicy?: CfnCreationPolicy | undefined;
 }
 
 /**
@@ -1006,7 +1006,7 @@ export interface RollingUpdateOptions {
    *
    * @default 1
    */
-  readonly maxBatchSize?: number;
+  readonly maxBatchSize?: number | undefined;
 
   /**
    * The minimum number of instances that must be in service before more instances are replaced.
@@ -1015,7 +1015,7 @@ export interface RollingUpdateOptions {
    *
    * @default 0
    */
-  readonly minInstancesInService?: number;
+  readonly minInstancesInService?: number | undefined;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update.
@@ -1025,28 +1025,28 @@ export interface RollingUpdateOptions {
    *
    * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
    */
-  readonly suspendProcesses?: ScalingProcess[];
+  readonly suspendProcesses?: ScalingProcess[] | undefined;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
    *
    * @default true if you configured `signals` on the AutoScalingGroup, false otherwise
    */
-  readonly waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean | undefined;
 
   /**
    * The pause time after making a change to a batch of instances.
    *
    * @default - The `timeout` configured for `signals` on the AutoScalingGroup
    */
-  readonly pauseTime?: Duration;
+  readonly pauseTime?: Duration | undefined;
 
   /**
    * The percentage of instances that must signal success for the update to succeed.
    *
    * @default - The `minSuccessPercentage` configured for `signals` on the AutoScalingGroup
    */
-  readonly minSuccessPercentage?: number;
+  readonly minSuccessPercentage?: number | undefined;
 }
 
 /**
@@ -1358,24 +1358,24 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * The maximum spot price configured for the autoscaling group. `undefined`
    * indicates that this group uses on-demand capacity.
    */
-  public readonly spotPrice?: string;
+  public readonly spotPrice?: string | undefined;
 
   /**
    * The maximum amount of time that an instance can be in service.
    */
-  public readonly maxInstanceLifetime?: Duration;
+  public readonly maxInstanceLifetime?: Duration | undefined;
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
-  private readonly securityGroup?: ec2.ISecurityGroup;
-  private readonly securityGroups?: ec2.ISecurityGroup[];
+  private readonly securityGroup?: ec2.ISecurityGroup | undefined;
+  private readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
   private readonly loadBalancerNames: string[] = [];
   private readonly targetGroupArns: string[] = [];
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
-  private readonly launchTemplate?: ec2.LaunchTemplate;
-  private readonly _connections?: ec2.Connections;
-  private readonly _userData?: ec2.UserData;
-  private readonly _role?: iam.IRole;
+  private readonly launchTemplate?: ec2.LaunchTemplate | undefined;
+  private readonly _connections?: ec2.Connections | undefined;
+  private readonly _userData?: ec2.UserData | undefined;
+  private readonly _role?: iam.IRole | undefined;
 
   protected newInstancesProtectedFromScaleIn?: boolean;
 
@@ -2150,7 +2150,7 @@ export interface NotificationConfiguration {
    * Which fleet scaling events triggers a notification
    * @default ScalingEvents.ALL
    */
-  readonly scalingEvents?: ScalingEvents;
+  readonly scalingEvents?: ScalingEvents | undefined;
 }
 
 /**
@@ -2193,7 +2193,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 1
    */
-  readonly maxBatchSize?: number;
+  readonly maxBatchSize?: number | undefined;
 
   /**
    * The minimum number of instances that must be in service before more instances are replaced.
@@ -2202,7 +2202,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 0
    */
-  readonly minInstancesInService?: number;
+  readonly minInstancesInService?: number | undefined;
 
   /**
    * The percentage of instances that must signal success for an update to succeed.
@@ -2218,7 +2218,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default 100
    */
-  readonly minSuccessfulInstancesPercent?: number;
+  readonly minSuccessfulInstancesPercent?: number | undefined;
 
   /**
    * The pause time after making a change to a batch of instances.
@@ -2231,7 +2231,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default Duration.minutes(5) if the waitOnResourceSignals property is true, otherwise 0
    */
-  readonly pauseTime?: Duration;
+  readonly pauseTime?: Duration | undefined;
 
   /**
    * Specifies whether the Auto Scaling group waits on signals from new instances during an update.
@@ -2246,7 +2246,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default true if you specified the minSuccessfulInstancesPercent property, false otherwise
    */
-  readonly waitOnResourceSignals?: boolean;
+  readonly waitOnResourceSignals?: boolean | undefined;
 
   /**
    * Specifies the Auto Scaling processes to suspend during a stack update.
@@ -2256,7 +2256,7 @@ export interface RollingUpdateConfiguration {
    *
    * @default HealthCheck, ReplaceUnhealthy, AZRebalance, AlarmNotification, ScheduledActions.
    */
-  readonly suspendProcesses?: ScalingProcess[];
+  readonly suspendProcesses?: ScalingProcess[] | undefined;
 }
 
 /**
@@ -2325,7 +2325,7 @@ export interface Ec2HealthCheckOptions {
    *
    * @default Duration.seconds(0)
    */
-  readonly grace?: Duration;
+  readonly grace?: Duration | undefined;
 }
 
 /**
@@ -2381,7 +2381,7 @@ interface HealthChecksBaseOptions {
    * @default Duration.seconds(0)
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html
    */
-  readonly gracePeriod?: Duration;
+  readonly gracePeriod?: Duration | undefined;
 }
 
 /**
@@ -2580,13 +2580,13 @@ export interface RequestCountScalingProps extends BaseTargetTrackingProps {
    * @deprecated Use 'targetRequestsPerMinute' instead
    * @default - Specify exactly one of 'targetRequestsPerMinute' and 'targetRequestsPerSecond'
    */
-  readonly targetRequestsPerSecond?: number;
+  readonly targetRequestsPerSecond?: number | undefined;
 
   /**
    * Target average requests/minute on each instance
    * @default - Specify exactly one of 'targetRequestsPerMinute' and 'targetRequestsPerSecond'
    */
-  readonly targetRequestsPerMinute?: number;
+  readonly targetRequestsPerMinute?: number | undefined;
 }
 
 /**
@@ -2675,7 +2675,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default ['default']
    */
-  readonly configSets?: string[];
+  readonly configSets?: string[] | undefined;
 
   /**
    * Force instance replacement by embedding a config fingerprint
@@ -2693,7 +2693,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default true
    */
-  readonly embedFingerprint?: boolean;
+  readonly embedFingerprint?: boolean | undefined;
 
   /**
    * Print the results of running cfn-init to the Instance System Log
@@ -2708,7 +2708,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default true
    */
-  readonly printLog?: boolean;
+  readonly printLog?: boolean | undefined;
 
   /**
    * Don't fail the instance creation when cfn-init fails
@@ -2718,7 +2718,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly ignoreFailures?: boolean;
+  readonly ignoreFailures?: boolean | undefined;
 
   /**
    * Include --url argument when running cfn-init and cfn-signal commands
@@ -2728,7 +2728,7 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly includeUrl?: boolean;
+  readonly includeUrl?: boolean | undefined;
 
   /**
    * Include --role argument when running cfn-init and cfn-signal commands
@@ -2737,5 +2737,5 @@ export interface ApplyCloudFormationInitOptions {
    *
    * @default false
    */
-  readonly includeRole?: boolean;
+  readonly includeRole?: boolean | undefined;
 }

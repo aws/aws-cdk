@@ -115,7 +115,7 @@ export interface AwsSdkCall {
    * @default - no parameters
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html
    */
-  readonly parameters?: any;
+  readonly parameters?: any | undefined;
 
   /**
    * The physical resource id of the custom resource for this call.
@@ -124,7 +124,7 @@ export interface AwsSdkCall {
    *
    * @default - no physical resource id
    */
-  readonly physicalResourceId?: PhysicalResourceId;
+  readonly physicalResourceId?: PhysicalResourceId | undefined;
 
   /**
    * The regex pattern to use to catch API errors. The `code` property of the
@@ -133,7 +133,7 @@ export interface AwsSdkCall {
    *
    * @default - do not catch errors
    */
-  readonly ignoreErrorCodesMatching?: string;
+  readonly ignoreErrorCodesMatching?: string | undefined;
 
   /**
    * API version to use for the service
@@ -141,7 +141,7 @@ export interface AwsSdkCall {
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html
    * @default - use latest available API version
    */
-  readonly apiVersion?: string;
+  readonly apiVersion?: string | undefined;
 
   /**
    * The region to send service requests to.
@@ -150,7 +150,7 @@ export interface AwsSdkCall {
    *
    * @default - the region where this custom resource is deployed
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Restrict the data returned by the custom resource to a specific path in
@@ -164,7 +164,7 @@ export interface AwsSdkCall {
    *
    * @deprecated use outputPaths instead
    */
-  readonly outputPath?: string;
+  readonly outputPath?: string | undefined;
 
   /**
    * Restrict the data returned by the custom resource to specific paths in
@@ -176,7 +176,7 @@ export interface AwsSdkCall {
    *
    * @default - return all data
    */
-  readonly outputPaths?: string[];
+  readonly outputPaths?: string[] | undefined;
 
   /**
    * Used for running the SDK calls in underlying lambda with a different role.
@@ -188,7 +188,7 @@ export interface AwsSdkCall {
    *
    * @default - run without assuming role
    */
-  readonly assumedRoleArn?: string;
+  readonly assumedRoleArn?: string | undefined;
 
   /**
    * External ID to use when assuming the role for cross-account requests.
@@ -205,7 +205,7 @@ export interface AwsSdkCall {
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html
    * @default - no external ID
    */
-  readonly externalId?: string;
+  readonly externalId?: string | undefined;
 
   /**
    * A property used to configure logging during lambda function execution.
@@ -220,7 +220,7 @@ export interface AwsSdkCall {
    *
    * @default Logging.all()
    */
-  readonly logging?: Logging;
+  readonly logging?: Logging | undefined;
 }
 
 /**
@@ -295,28 +295,28 @@ export interface AwsCustomResourceProps {
    *
    * @default - Custom::AWS
    */
-  readonly resourceType?: string;
+  readonly resourceType?: string | undefined;
 
   /**
    * The AWS SDK call to make when the resource is created.
    *
    * @default - the call when the resource is updated
    */
-  readonly onCreate?: AwsSdkCall;
+  readonly onCreate?: AwsSdkCall | undefined;
 
   /**
    * The AWS SDK call to make when the resource is updated
    *
    * @default - no call
    */
-  readonly onUpdate?: AwsSdkCall;
+  readonly onUpdate?: AwsSdkCall | undefined;
 
   /**
    * The AWS SDK call to make when the resource is deleted
    *
    * @default - no call
    */
-  readonly onDelete?: AwsSdkCall;
+  readonly onDelete?: AwsSdkCall | undefined;
 
   /**
    * The policy that will be added to the execution role of the Lambda
@@ -338,7 +338,7 @@ export interface AwsCustomResourceProps {
    * @see Policy.fromStatements
    * @see Policy.fromSdkCalls
    */
-  readonly policy?: AwsCustomResourcePolicy;
+  readonly policy?: AwsCustomResourcePolicy | undefined;
 
   /**
    * The execution role for the singleton Lambda function implementing this custom
@@ -348,21 +348,21 @@ export interface AwsCustomResourceProps {
    *
    * @default - a new role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The timeout for the singleton Lambda function implementing this custom resource.
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 
   /**
    * The memory size for the singleton Lambda function implementing this custom resource.
    *
    * @default 512 mega in case if installLatestAwsSdk is false.
    */
-  readonly memorySize?: number;
+  readonly memorySize?: number | undefined;
 
   /**
    * The number of days log events of the singleton Lambda function implementing
@@ -373,7 +373,7 @@ export interface AwsCustomResourceProps {
    *
    * @default logs.RetentionDays.INFINITE
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
@@ -383,7 +383,7 @@ export interface AwsCustomResourceProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Whether to install the latest AWS SDK v3.
@@ -399,7 +399,7 @@ export interface AwsCustomResourceProps {
    *
    * @default - The value of `@aws-cdk/customresources:installLatestAwsSdkDefault`, otherwise `true`
    */
-  readonly installLatestAwsSdk?: boolean;
+  readonly installLatestAwsSdk?: boolean | undefined;
 
   /**
    * A name for the singleton Lambda function implementing this custom resource.
@@ -408,21 +408,21 @@ export interface AwsCustomResourceProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
    */
-  readonly functionName?: string;
+  readonly functionName?: string | undefined;
 
   /**
    * The policy to apply when this resource is removed from the application.
    *
    * @default cdk.RemovalPolicy.Destroy
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 
   /**
    * The vpc to provision the lambda function in.
    *
    * @default - the function is not provisioned inside a vpc.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Which subnets from the VPC to place the lambda function in.
@@ -432,7 +432,7 @@ export interface AwsCustomResourceProps {
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The maximum time that can elapse before a custom resource operation times out.
@@ -446,7 +446,7 @@ export interface AwsCustomResourceProps {
    *
    * @default Duration.seconds(3600)
    */
-  readonly serviceTimeout?: cdk.Duration;
+  readonly serviceTimeout?: cdk.Duration | undefined;
 }
 
 /**

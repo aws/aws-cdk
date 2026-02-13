@@ -21,7 +21,7 @@ export interface ServiceCatalogDeployActionBeta1Props extends codepipeline.Commo
    * The optional description of this version of the Service Catalog product.
    * @default ''
    */
-  readonly productVersionDescription?: string;
+  readonly productVersionDescription?: string | undefined;
 
   /**
    * The identifier of the product in the Service Catalog. This product must already exist.
@@ -37,7 +37,7 @@ export interface ServiceCatalogDeployActionBeta1Props extends codepipeline.Commo
 export class ServiceCatalogDeployActionBeta1 extends Action {
   private readonly templatePath: string;
   private readonly productVersionName: string;
-  private readonly productVersionDescription?: string;
+  private readonly productVersionDescription?: string | undefined;
   private readonly productId: string;
   private readonly productType: string;
 

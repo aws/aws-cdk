@@ -14,21 +14,21 @@ export interface SnsTopicProps extends TargetBaseProps {
    *
    * @default the entire EventBridge event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly message?: events.RuleTargetInput | undefined;
 
   /**
    * Specifies whether an IAM role should be used to publish to the topic
    *
    * @default - true if `role` is provided, false otherwise
    */
-  readonly authorizeUsingRole?: boolean;
+  readonly authorizeUsingRole?: boolean | undefined;
 
   /**
    * The IAM role to be used to publish to the topic
    *
    * @default - a new role will be created if `authorizeUsingRole` is true
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

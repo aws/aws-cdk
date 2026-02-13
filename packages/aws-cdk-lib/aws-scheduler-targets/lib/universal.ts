@@ -66,7 +66,7 @@ export interface UniversalTargetProps extends ScheduleTargetBaseProps {
    *
    * @default - Policy with `service:action` action only.
    */
-  readonly policyStatements?: PolicyStatement[];
+  readonly policyStatements?: PolicyStatement[] | undefined;
 }
 
 /**

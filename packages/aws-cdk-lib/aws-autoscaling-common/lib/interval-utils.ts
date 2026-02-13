@@ -4,7 +4,7 @@ import { UnscopedValidationError } from '../../core';
 export interface CompleteScalingInterval {
   readonly lower: number;
   readonly upper: number;
-  readonly change?: number;
+  readonly change?: number | undefined;
 }
 
 /**
@@ -198,8 +198,8 @@ function last<T>(xs: T[]) {
 }
 
 export interface Alarms {
-  readonly lowerAlarmIntervalIndex?: number;
-  readonly upperAlarmIntervalIndex?: number;
+  readonly lowerAlarmIntervalIndex?: number | undefined;
+  readonly upperAlarmIntervalIndex?: number | undefined;
 }
 
 /**

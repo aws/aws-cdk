@@ -26,35 +26,35 @@ export interface BaseAppsyncFunctionProps {
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * the request mapping template for the AppSync Function
    *
    * @default - no request mapping template
    */
-  readonly requestMappingTemplate?: MappingTemplate;
+  readonly requestMappingTemplate?: MappingTemplate | undefined;
 
   /**
    * the response mapping template for the AppSync Function
    *
    * @default - no response mapping template
    */
-  readonly responseMappingTemplate?: MappingTemplate;
+  readonly responseMappingTemplate?: MappingTemplate | undefined;
 
   /**
    * The functions runtime
    *
    * @default - no function runtime, VTL mapping templates used
    */
-  readonly runtime?: FunctionRuntime;
+  readonly runtime?: FunctionRuntime | undefined;
 
   /**
    * The function code
    *
    * @default - no code is used
    */
-  readonly code?: Code;
+  readonly code?: Code | undefined;
 
   /**
    * The maximum number of resolver request inputs that will be sent to a single AWS Lambda function
@@ -64,7 +64,7 @@ export interface BaseAppsyncFunctionProps {
    *
    * @default - No max batch size
    */
-  readonly maxBatchSize?: number;
+  readonly maxBatchSize?: number | undefined;
 }
 
 /**

@@ -31,7 +31,7 @@ export interface DecompressionProcessorOptions {
    * The input compression format
    * @default DecompressionProcessorCompressionFormat.GZIP
    */
-  readonly compressionFormat?: DecompressionProcessorCompressionFormat;
+  readonly compressionFormat?: DecompressionProcessorCompressionFormat | undefined;
 }
 
 /**

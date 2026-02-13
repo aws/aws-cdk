@@ -32,7 +32,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    * @deprecated Use `SplunkLogDriverProps.secretToken` instead.
    * @default - token not provided.
    */
-  readonly token?: SecretValue;
+  readonly token?: SecretValue | undefined;
 
   /**
    * Splunk HTTP Event Collector token (Secret).
@@ -55,56 +55,56 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    *
    * @default - source not set.
    */
-  readonly source?: string;
+  readonly source?: string | undefined;
 
   /**
    * Event source type.
    *
    * @default - sourceType not set.
    */
-  readonly sourceType?: string;
+  readonly sourceType?: string | undefined;
 
   /**
    * Event index.
    *
    * @default - index not set.
    */
-  readonly index?: string;
+  readonly index?: string | undefined;
 
   /**
    * Path to root certificate.
    *
    * @default - caPath not set.
    */
-  readonly caPath?: string;
+  readonly caPath?: string | undefined;
 
   /**
    * Name to use for validating server certificate.
    *
    * @default - The hostname of the splunk-url
    */
-  readonly caName?: string;
+  readonly caName?: string | undefined;
 
   /**
    * Ignore server certificate validation.
    *
    * @default - insecureSkipVerify not set.
    */
-  readonly insecureSkipVerify?: string;
+  readonly insecureSkipVerify?: string | undefined;
 
   /**
    * Message format. Can be inline, json or raw.
    *
    * @default - inline
    */
-  readonly format?: SplunkLogFormat;
+  readonly format?: SplunkLogFormat | undefined;
 
   /**
    * Verify on start, that docker can connect to Splunk server.
    *
    * @default - true
    */
-  readonly verifyConnection?: boolean;
+  readonly verifyConnection?: boolean | undefined;
 
   /**
    * Enable/disable gzip compression to send events to Splunk Enterprise or Splunk
@@ -112,7 +112,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    *
    * @default - false
    */
-  readonly gzip?: boolean;
+  readonly gzip?: boolean | undefined;
 
   /**
    * Set compression level for gzip. Valid values are -1 (default), 0 (no compression),
@@ -120,7 +120,7 @@ export interface SplunkLogDriverProps extends BaseLogDriverProps {
    *
    * @default - -1 (Default Compression)
    */
-  readonly gzipLevel?: number;
+  readonly gzipLevel?: number | undefined;
 }
 
 /**

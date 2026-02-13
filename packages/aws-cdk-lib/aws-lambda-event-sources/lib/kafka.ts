@@ -25,14 +25,14 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default none
    */
-  readonly secret?: secretsmanager.ISecret;
+  readonly secret?: secretsmanager.ISecret | undefined;
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
    */
-  readonly consumerGroupId?: string;
+  readonly consumerGroupId?: string | undefined;
 
   /**
    * Add filter criteria to Event Source
@@ -40,7 +40,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{[key: string]: any}> | undefined;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -50,7 +50,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly filterEncryption?: IKey;
+  readonly filterEncryption?: IKey | undefined;
 
   /**
    * Add an on Failure Destination for this Kafka event.
@@ -63,41 +63,41 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - discarded records are ignored
    */
-  readonly onFailure?: lambda.IEventSourceDlq;
+  readonly onFailure?: lambda.IEventSourceDlq | undefined;
 
   /**
    * The time from which to start reading, in Unix time seconds.
    *
    * @default - no timestamp
    */
-  readonly startingPositionTimestamp?: number;
+  readonly startingPositionTimestamp?: number | undefined;
 
   /**
    * Specific configuration settings for a Kafka schema registry.
    *
    * @default - none
    */
-  readonly schemaRegistryConfig?: ISchemaRegistry;
+  readonly schemaRegistryConfig?: ISchemaRegistry | undefined;
 
   /**
    * Configuration for logging verbosity from the event source mapping poller
    *
    * @default - No logging
    */
-  readonly logLevel?: lambda.EventSourceMappingLogLevel;
+  readonly logLevel?: lambda.EventSourceMappingLogLevel | undefined;
 
   /**
    * Configuration for enhanced monitoring metrics collection
    *
    * @default - Enhanced monitoring is disabled
    */
-  readonly metricsConfig?: lambda.MetricsConfig;
+  readonly metricsConfig?: lambda.MetricsConfig | undefined;
   /***
    * If the function returns an error, split the batch in two and retry.
    *
    * @default false
    */
-  readonly bisectBatchOnError?: boolean;
+  readonly bisectBatchOnError?: boolean | undefined;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -108,7 +108,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default -1
    */
-  readonly maxRecordAge?: Duration;
+  readonly maxRecordAge?: Duration | undefined;
 
   /***
    * Maximum number of retry attempts.
@@ -117,14 +117,14 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default -1 (infinite retries)
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 
   /***
    * Allow functions to return partially successful responses for a batch of records.
    *
    * @default false
    */
-  readonly reportBatchItemFailures?: boolean;
+  readonly reportBatchItemFailures?: boolean | undefined;
 }
 
 /**
@@ -175,28 +175,28 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default none
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: IVpc | undefined;
 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the subnets selection here
    *
    * @default - none, required if setting vpc
    */
-  readonly vpcSubnets?: SubnetSelection;
+  readonly vpcSubnets?: SubnetSelection | undefined;
 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the security group here
    *
    * @default - none, required if setting vpc
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * The authentication method for your Kafka cluster
    *
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
    */
-  readonly authenticationMethod?: AuthenticationMethod;
+  readonly authenticationMethod?: AuthenticationMethod | undefined;
 
   /**
    * The secret with the root CA certificate used by your Kafka brokers for TLS encryption
@@ -204,7 +204,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default - none
    */
-  readonly rootCACertificate?: secretsmanager.ISecret;
+  readonly rootCACertificate?: secretsmanager.ISecret | undefined;
 }
 
 /**

@@ -88,115 +88,115 @@ export interface AttributeMapping {
    * The user's postal address is a required attribute.
    * @default - not mapped
    */
-  readonly address?: ProviderAttribute;
+  readonly address?: ProviderAttribute | undefined;
 
   /**
    * The user's birthday.
    * @default - not mapped
    */
-  readonly birthdate?: ProviderAttribute;
+  readonly birthdate?: ProviderAttribute | undefined;
 
   /**
    * The user's e-mail address.
    * @default - not mapped
    */
-  readonly email?: ProviderAttribute;
+  readonly email?: ProviderAttribute | undefined;
 
   /**
    * The user's e-mail address is verification.
    * @default - not mapped
    */
-  readonly emailVerified?: ProviderAttribute;
+  readonly emailVerified?: ProviderAttribute | undefined;
 
   /**
    * The surname or last name of user.
    * @default - not mapped
    */
-  readonly familyName?: ProviderAttribute;
+  readonly familyName?: ProviderAttribute | undefined;
 
   /**
    * The user's gender.
    * @default - not mapped
    */
-  readonly gender?: ProviderAttribute;
+  readonly gender?: ProviderAttribute | undefined;
 
   /**
    * The user's first name or give name.
    * @default - not mapped
    */
-  readonly givenName?: ProviderAttribute;
+  readonly givenName?: ProviderAttribute | undefined;
 
   /**
    * The user's locale.
    * @default - not mapped
    */
-  readonly locale?: ProviderAttribute;
+  readonly locale?: ProviderAttribute | undefined;
 
   /**
    * The user's middle name.
    * @default - not mapped
    */
-  readonly middleName?: ProviderAttribute;
+  readonly middleName?: ProviderAttribute | undefined;
 
   /**
    * The user's full name in displayable form.
    * @default - not mapped
    */
-  readonly fullname?: ProviderAttribute;
+  readonly fullname?: ProviderAttribute | undefined;
 
   /**
    * The user's nickname or casual name.
    * @default - not mapped
    */
-  readonly nickname?: ProviderAttribute;
+  readonly nickname?: ProviderAttribute | undefined;
 
   /**
    * The user's telephone number.
    * @default - not mapped
    */
-  readonly phoneNumber?: ProviderAttribute;
+  readonly phoneNumber?: ProviderAttribute | undefined;
 
   /**
    * The URL to the user's profile picture.
    * @default - not mapped
    */
-  readonly profilePicture?: ProviderAttribute;
+  readonly profilePicture?: ProviderAttribute | undefined;
 
   /**
    * The user's preferred username.
    * @default - not mapped
    */
-  readonly preferredUsername?: ProviderAttribute;
+  readonly preferredUsername?: ProviderAttribute | undefined;
 
   /**
    * The URL to the user's profile page.
    * @default - not mapped
    */
-  readonly profilePage?: ProviderAttribute;
+  readonly profilePage?: ProviderAttribute | undefined;
 
   /**
    * The user's time zone.
    * @default - not mapped
    */
-  readonly timezone?: ProviderAttribute;
+  readonly timezone?: ProviderAttribute | undefined;
 
   /**
    * Time, the user's information was last updated.
    * @default - not mapped
    */
-  readonly lastUpdateTime?: ProviderAttribute;
+  readonly lastUpdateTime?: ProviderAttribute | undefined;
 
   /**
    * The URL to the user's web page or blog.
    * @default - not mapped
    */
-  readonly website?: ProviderAttribute;
+  readonly website?: ProviderAttribute | undefined;
 
   /**
    * Specify custom attribute mapping here and mapping for any standard attributes not supported yet.
    * @default - no custom attribute mapping
    */
-  readonly custom?: { [key: string]: ProviderAttribute };
+  readonly custom?: { [key: string]: ProviderAttribute } | undefined;
 }
 
 /**
@@ -213,5 +213,5 @@ export interface UserPoolIdentityProviderProps {
    * Mapping attributes from the identity provider to standard and custom attributes of the user pool.
    * @default - no attribute mapping
    */
-  readonly attributeMapping?: AttributeMapping;
+  readonly attributeMapping?: AttributeMapping | undefined;
 }

@@ -8,7 +8,7 @@ import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.gene
 
 interface KeyGrantsProps {
   readonly resource: IKeyRef;
-  readonly trustAccountIdentities?: boolean;
+  readonly trustAccountIdentities?: boolean | undefined;
 }
 
 /**
@@ -23,8 +23,8 @@ export class KeyGrants {
   }
 
   protected readonly resource: IKeyRef;
-  private readonly trustAccountIdentities?: boolean;
-  private readonly policyResource?: iam.IResourceWithPolicyV2;
+  private readonly trustAccountIdentities?: boolean | undefined;
+  private readonly policyResource?: iam.IResourceWithPolicyV2 | undefined;
 
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;

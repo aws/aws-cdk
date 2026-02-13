@@ -301,7 +301,7 @@ export interface TimeConversionOptions {
    *
    * @default true
    */
-  readonly integral?: boolean;
+  readonly integral?: boolean | undefined;
 }
 
 class TimeUnit {

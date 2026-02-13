@@ -38,14 +38,14 @@ export interface CfnTrafficRoutingTimeBasedCanary {
    *
    * @default 15
    */
-  readonly stepPercentage?: number;
+  readonly stepPercentage?: number | undefined;
 
   /**
    * The number of minutes between the first and second traffic shifts of a time-based canary deployment.
    *
    * @default 5
    */
-  readonly bakeTimeMins?: number;
+  readonly bakeTimeMins?: number | undefined;
 }
 
 /**
@@ -59,14 +59,14 @@ export interface CfnTrafficRoutingTimeBasedLinear {
    *
    * @default 15
    */
-  readonly stepPercentage?: number;
+  readonly stepPercentage?: number | undefined;
 
   /**
    * The number of minutes between the first and second traffic shifts of a time-based linear deployment.
    *
    * @default 5
    */
-  readonly bakeTimeMins?: number;
+  readonly bakeTimeMins?: number | undefined;
 }
 
 /**
@@ -85,7 +85,7 @@ export interface CfnTrafficRoutingConfig {
    *
    * @default - none
    */
-  readonly timeBasedCanary?: CfnTrafficRoutingTimeBasedCanary;
+  readonly timeBasedCanary?: CfnTrafficRoutingTimeBasedCanary | undefined;
 
   /**
    * The configuration for traffic routing when `type` is
@@ -93,7 +93,7 @@ export interface CfnTrafficRoutingConfig {
    *
    * @default - none
    */
-  readonly timeBasedLinear?: CfnTrafficRoutingTimeBasedLinear;
+  readonly timeBasedLinear?: CfnTrafficRoutingTimeBasedLinear | undefined;
 }
 
 /**
@@ -106,7 +106,7 @@ export interface CfnCodeDeployBlueGreenAdditionalOptions {
    *
    * @default - 5 minutes
    */
-  readonly terminationWaitTimeInMinutes?: number;
+  readonly terminationWaitTimeInMinutes?: number | undefined;
 }
 
 /**
@@ -119,21 +119,21 @@ export interface CfnCodeDeployBlueGreenLifecycleEventHooks {
    *
    * @default - none
    */
-  readonly beforeInstall?: string;
+  readonly beforeInstall?: string | undefined;
 
   /**
    * Function to use to run tasks after the replacement task set is created and one of the target groups is associated with it.
    *
    * @default - none
    */
-  readonly afterInstall?: string;
+  readonly afterInstall?: string | undefined;
 
   /**
    * Function to use to run tasks after the test listener serves traffic to the replacement task set.
    *
    * @default - none
    */
-  readonly afterAllowTestTraffic?: string;
+  readonly afterAllowTestTraffic?: string | undefined;
 
   /**
    * Function to use to run tasks after the second target group is associated with the replacement task set,
@@ -141,14 +141,14 @@ export interface CfnCodeDeployBlueGreenLifecycleEventHooks {
    *
    * @default - none
    */
-  readonly beforeAllowTraffic?: string;
+  readonly beforeAllowTraffic?: string | undefined;
 
   /**
    * Function to use to run tasks after the second target group serves traffic to the replacement task set.
    *
    * @default - none
    */
-  readonly afterAllowTraffic?: string;
+  readonly afterAllowTraffic?: string | undefined;
 }
 
 /**
@@ -263,14 +263,14 @@ export interface CfnCodeDeployBlueGreenHookProps {
    *
    * @default - time-based canary traffic shifting, with a 15% step percentage and a five minute bake time
    */
-  readonly trafficRoutingConfig?: CfnTrafficRoutingConfig;
+  readonly trafficRoutingConfig?: CfnTrafficRoutingConfig | undefined;
 
   /**
    * Additional options for the blue/green deployment.
    *
    * @default - no additional options
    */
-  readonly additionalOptions?: CfnCodeDeployBlueGreenAdditionalOptions;
+  readonly additionalOptions?: CfnCodeDeployBlueGreenAdditionalOptions | undefined;
 
   /**
    * Use lifecycle event hooks to specify a Lambda function that CodeDeploy can call to validate a deployment.
@@ -281,7 +281,7 @@ export interface CfnCodeDeployBlueGreenHookProps {
    *
    * @default - no lifecycle event hooks
    */
-  readonly lifecycleEventHooks?: CfnCodeDeployBlueGreenLifecycleEventHooks;
+  readonly lifecycleEventHooks?: CfnCodeDeployBlueGreenLifecycleEventHooks | undefined;
 }
 
 /**

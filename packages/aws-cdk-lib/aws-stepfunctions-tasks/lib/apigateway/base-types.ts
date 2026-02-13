@@ -51,31 +51,31 @@ export interface CallApiGatewayEndpointBaseOptions {
    * HTTP request information that does not relate to contents of the request
    * @default - No headers
    */
-  readonly headers?: sfn.TaskInput;
+  readonly headers?: sfn.TaskInput | undefined;
 
   /**
    * Path parameters appended after API endpoint
    * @default - No path
    */
-  readonly apiPath?: string;
+  readonly apiPath?: string | undefined;
 
   /**
    * Query strings attatched to end of request
    * @default - No query parameters
    */
-  readonly queryParameters?: sfn.TaskInput;
+  readonly queryParameters?: sfn.TaskInput | undefined;
 
   /**
    * HTTP Request body
    * @default - No request body
    */
-  readonly requestBody?: sfn.TaskInput;
+  readonly requestBody?: sfn.TaskInput | undefined;
 
   /**
    * Authentication methods
    * @default AuthType.NO_AUTH
    */
-  readonly authType?: AuthType;
+  readonly authType?: AuthType | undefined;
 }
 
 /**

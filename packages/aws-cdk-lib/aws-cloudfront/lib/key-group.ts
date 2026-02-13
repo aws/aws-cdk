@@ -25,13 +25,13 @@ export interface KeyGroupProps {
    * A name to identify the key group.
    * @default - generated from the `id`
    */
-  readonly keyGroupName?: string;
+  readonly keyGroupName?: string | undefined;
 
   /**
    * A comment to describe the key group.
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * A list of public keys to add to the key group.

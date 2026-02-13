@@ -99,13 +99,13 @@ export interface ProvisionedPollerConfig {
    *
    * @default - 1
    */
-  readonly minimumPollers?: number;
+  readonly minimumPollers?: number | undefined;
   /**
    * The maximum number of pollers that can be provisioned.
    *
    * @default - 200
    */
-  readonly maximumPollers?: number;
+  readonly maximumPollers?: number | undefined;
   /**
    * An optional identifier that groups multiple ESMs to share EPU capacity
    * and reduce costs. ESMs with the same PollerGroupName share compute
@@ -113,7 +113,7 @@ export interface ProvisionedPollerConfig {
    *
    * @default - not set, dedicated compute resource per event source.
    */
-  readonly pollerGroupName?: string;
+  readonly pollerGroupName?: string | undefined;
 }
 
 export interface EventSourceMappingOptions {
@@ -123,7 +123,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - not set if using a self managed Kafka cluster, throws an error otherwise
    */
-  readonly eventSourceArn?: string;
+  readonly eventSourceArn?: string | undefined;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -135,28 +135,28 @@ export interface EventSourceMappingOptions {
    * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
    * The default for Amazon SQS is 10 messages. For standard SQS queues, the maximum is 10,000. For FIFO SQS queues, the maximum is 10.
    */
-  readonly batchSize?: number;
+  readonly batchSize?: number | undefined;
 
   /**
    * If the function returns an error, split the batch in two and retry.
    *
    * @default false
    */
-  readonly bisectBatchOnError?: boolean;
+  readonly bisectBatchOnError?: boolean | undefined;
 
   /**
    * An Amazon S3, Amazon SQS queue or Amazon SNS topic destination for discarded records.
    *
    * @default discarded records are ignored
    */
-  readonly onFailure?: IEventSourceDlq;
+  readonly onFailure?: IEventSourceDlq | undefined;
 
   /**
    * Set to false to disable the event source upon creation.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should
@@ -166,14 +166,14 @@ export interface EventSourceMappingOptions {
    *
    * @default - no starting position
    */
-  readonly startingPosition?: StartingPosition;
+  readonly startingPosition?: StartingPosition | undefined;
 
   /**
    * The time from which to start reading, in Unix time seconds.
    *
    * @default - no timestamp
    */
-  readonly startingPositionTimestamp?: number;
+  readonly startingPositionTimestamp?: number | undefined;
 
   /**
    * Allow functions to return partially successful responses for a batch of records.
@@ -182,7 +182,7 @@ export interface EventSourceMappingOptions {
    *
    * @default false
    */
-  readonly reportBatchItemFailures?: boolean;
+  readonly reportBatchItemFailures?: boolean | undefined;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -190,7 +190,7 @@ export interface EventSourceMappingOptions {
    *
    * @default Duration.seconds(0)
    */
-  readonly maxBatchingWindow?: cdk.Duration;
+  readonly maxBatchingWindow?: cdk.Duration | undefined;
 
   /**
    * The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
@@ -201,7 +201,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - No specific limit.
    */
-  readonly maxConcurrency?: number;
+  readonly maxConcurrency?: number | undefined;
 
   /**
    * The maximum age of a record that Lambda sends to a function for processing.
@@ -211,7 +211,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - infinite or until the record expires.
    */
-  readonly maxRecordAge?: cdk.Duration;
+  readonly maxRecordAge?: cdk.Duration | undefined;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -224,7 +224,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - infinite or until the record expires.
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 
   /**
    * The number of batches to process from each shard concurrently.
@@ -234,14 +234,14 @@ export interface EventSourceMappingOptions {
    *
    * @default 1
    */
-  readonly parallelizationFactor?: number;
+  readonly parallelizationFactor?: number | undefined;
 
   /**
    * The name of the Kafka topic.
    *
    * @default - no topic
    */
-  readonly kafkaTopic?: string;
+  readonly kafkaTopic?: string | undefined;
 
   /**
    * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
@@ -252,7 +252,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - None
    */
-  readonly tumblingWindow?: cdk.Duration;
+  readonly tumblingWindow?: cdk.Duration | undefined;
 
   /**
    * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
@@ -261,7 +261,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly kafkaBootstrapServers?: string[];
+  readonly kafkaBootstrapServers?: string[] | undefined;
 
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
@@ -270,7 +270,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly kafkaConsumerGroupId?: string;
+  readonly kafkaConsumerGroupId?: string | undefined;
 
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
@@ -278,7 +278,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly sourceAccessConfigurations?: SourceAccessConfiguration[];
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[] | undefined;
 
   /**
    * Add filter criteria to Event Source
@@ -286,7 +286,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>;
+  readonly filters?: Array<{[key: string]: any}> | undefined;
 
   /**
    * Add Customer managed KMS key to encrypt Filter Criteria.
@@ -296,13 +296,13 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filterEncryption?: IKey;
+  readonly filterEncryption?: IKey | undefined;
 
   /**
    * Check if support S3 onfailure destination(OFD). Kinesis, DynamoDB, MSK and self managed kafka event support S3 OFD
    * @default false
    */
-  readonly supportS3OnFailureDestination?: boolean;
+  readonly supportS3OnFailureDestination?: boolean | undefined;
 
   /**
    * Configuration for provisioned pollers that read from the event source.
@@ -310,7 +310,7 @@ export interface EventSourceMappingOptions {
    * that can be provisioned to process events from the source.
    * @default - no provisioned pollers
    */
-  readonly provisionedPollerConfig?: ProvisionedPollerConfig;
+  readonly provisionedPollerConfig?: ProvisionedPollerConfig | undefined;
 
   /**
    * Configuration for enhanced monitoring metrics collection
@@ -318,7 +318,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - Enhanced monitoring is disabled
    */
-  readonly metricsConfig?: MetricsConfig;
+  readonly metricsConfig?: MetricsConfig | undefined;
 
   /**
    * Configuration for logging verbosity from the event source mapping poller
@@ -329,14 +329,14 @@ export interface EventSourceMappingOptions {
    *
    * @default - No logging
    */
-  readonly logLevel?: EventSourceMappingLogLevel;
+  readonly logLevel?: EventSourceMappingLogLevel | undefined;
 
   /**
    * Specific configuration settings for a Kafka schema registry.
    *
    * @default - none
    */
-  readonly schemaRegistryConfig?: ISchemaRegistry;
+  readonly schemaRegistryConfig?: ISchemaRegistry | undefined;
 }
 
 /**

@@ -53,21 +53,21 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    *
    * @default No validation is performed
    */
-  readonly codeSha256?: string;
+  readonly codeSha256?: string | undefined;
 
   /**
    * Description of the version
    *
    * @default Description of the Lambda
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Specifies a provisioned concurrency configuration for a function's version.
    *
    * @default No provisioned concurrency
    */
-  readonly provisionedConcurrentExecutions?: number;
+  readonly provisionedConcurrentExecutions?: number | undefined;
 
   /**
    * Whether to retain old versions of this function when a new version is
@@ -75,7 +75,7 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The minimum number of execution environments to maintain for this version
@@ -86,7 +86,7 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    *
    * @default - 3 execution environments are set to be the minimum
    */
-  readonly minExecutionEnvironments?: number;
+  readonly minExecutionEnvironments?: number | undefined;
 
   /**
    * The maximum number of execution environments allowed for this version
@@ -97,7 +97,7 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    *
    * @default - No maximum specified
    */
-  readonly maxExecutionEnvironments?: number;
+  readonly maxExecutionEnvironments?: number | undefined;
 }
 
 /**

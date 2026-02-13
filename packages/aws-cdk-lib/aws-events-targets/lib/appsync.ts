@@ -20,7 +20,7 @@ export interface AppSyncGraphQLApiProps extends TargetBaseProps {
    *
    * @default - The entire event is used
    */
-  readonly variables?: events.RuleTargetInput;
+  readonly variables?: events.RuleTargetInput | undefined;
 
   /**
    * The role to assume before invoking the target
@@ -28,7 +28,7 @@ export interface AppSyncGraphQLApiProps extends TargetBaseProps {
    *
    * @default - a new role with permissions to access mutations will be created
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 }
 
 /**

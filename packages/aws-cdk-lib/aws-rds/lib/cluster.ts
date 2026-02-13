@@ -55,28 +55,28 @@ interface DatabaseClusterBaseProps {
    * @default 2
    * @deprecated - use writer and readers instead
    */
-  readonly instances?: number;
+  readonly instances?: number | undefined;
 
   /**
    * Settings for the individual instances that are launched
    *
    * @deprecated - use writer and readers instead
    */
-  readonly instanceProps?: InstanceProps;
+  readonly instanceProps?: InstanceProps | undefined;
 
   /**
    * The instance to use for the cluster writer
    *
    * @default - required if instanceProps is not provided
    */
-  readonly writer?: IClusterInstance;
+  readonly writer?: IClusterInstance | undefined;
 
   /**
    * A list of instances to create as cluster reader instances
    *
    * @default - no readers are created. The cluster will have a single writer/reader
    */
-  readonly readers?: IClusterInstance[];
+  readonly readers?: IClusterInstance[] | undefined;
 
   /**
    * The maximum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
@@ -88,7 +88,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default 2
    */
-  readonly serverlessV2MaxCapacity?: number;
+  readonly serverlessV2MaxCapacity?: number | undefined;
 
   /**
    * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
@@ -102,7 +102,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default 0.5
    */
-  readonly serverlessV2MinCapacity?: number;
+  readonly serverlessV2MinCapacity?: number | undefined;
 
   /**
    * Specifies the duration an Aurora Serverless v2 DB instance must be idle before Aurora attempts to automatically pause it.
@@ -113,35 +113,35 @@ interface DatabaseClusterBaseProps {
    *
    * @default - The default is 300 seconds (5 minutes).
    */
-  readonly serverlessV2AutoPauseDuration?: Duration;
+  readonly serverlessV2AutoPauseDuration?: Duration | undefined;
 
   /**
    * What subnets to run the RDS instances in.
    *
    * Must be at least 2 subnets in two different AZs.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place the instances within the VPC
    *
    * @default - the Vpc default strategy if not specified.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Security group.
    *
    * @default - a new security group is created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The ordering of updates for instances
    *
    * @default InstanceUpdateBehaviour.BULK
    */
-  readonly instanceUpdateBehaviour?: InstanceUpdateBehaviour;
+  readonly instanceUpdateBehaviour?: InstanceUpdateBehaviour | undefined;
 
   /**
    * The number of seconds to set a cluster's target backtrack window to.
@@ -151,7 +151,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
    * @default 0 seconds (no backtrack)
    */
-  readonly backtrackWindow?: Duration;
+  readonly backtrackWindow?: Duration | undefined;
 
   /**
    * Backup settings
@@ -161,21 +161,21 @@ interface DatabaseClusterBaseProps {
    * 8-hour block of time for each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithAutomatedBackups.html#USER_WorkingWithAutomatedBackups.BackupWindow
    */
-  readonly backup?: BackupProps;
+  readonly backup?: BackupProps | undefined;
 
   /**
    * What port to listen on
    *
    * @default - The default for the engine is used.
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * An optional identifier for the cluster
    *
    * @default - A name is automatically generated.
    */
-  readonly clusterIdentifier?: string;
+  readonly clusterIdentifier?: string | undefined;
 
   /**
    * Base identifier for instances
@@ -185,14 +185,14 @@ interface DatabaseClusterBaseProps {
    * @default - clusterIdentifier is used with the word "Instance" appended.
    * If clusterIdentifier is not provided, the identifier is automatically generated.
    */
-  readonly instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string | undefined;
 
   /**
    * Name of a database which is automatically created inside the cluster
    *
    * @default - Database is not created in cluster.
    */
-  readonly defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string | undefined;
 
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
@@ -200,7 +200,7 @@ interface DatabaseClusterBaseProps {
    * @default - true if `removalPolicy` is RETAIN, `undefined` otherwise, which will not enable deletion protection.
    * To disable deletion protection after it has been enabled, you must explicitly set this value to `false`.
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -211,14 +211,14 @@ interface DatabaseClusterBaseProps {
    * each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string | undefined;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default - No parameter group.
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 
   /**
    * The parameters in the DBClusterParameterGroup to create automatically
@@ -228,7 +228,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -236,7 +236,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The list of log types that need to be enabled for exporting to
@@ -244,7 +244,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - no log exports
    */
-  readonly cloudwatchLogsExports?: string[];
+  readonly cloudwatchLogsExports?: string[] | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -253,7 +253,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - logs never expire
    */
-  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+  readonly cloudwatchLogsRetention?: logs.RetentionDays | undefined;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -261,7 +261,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - a new role is created.
    */
-  readonly cloudwatchLogsRetentionRole?: IRole;
+  readonly cloudwatchLogsRetentionRole?: IRole | undefined;
 
   /**
    * The interval between points when Amazon RDS collects enhanced monitoring metrics.
@@ -271,7 +271,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - no enhanced monitoring
    */
-  readonly monitoringInterval?: Duration;
+  readonly monitoringInterval?: Duration | undefined;
 
   /**
    * Role that will be used to manage DB monitoring.
@@ -281,7 +281,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: IRole;
+  readonly monitoringRole?: IRole | undefined;
 
   /**
    * Whether to enable enhanced monitoring at the cluster level.
@@ -291,7 +291,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - When the `monitoringInterval` is set, enhanced monitoring is enabled for each instance.
    */
-  readonly enableClusterLevelEnhancedMonitoring?: boolean;
+  readonly enableClusterLevelEnhancedMonitoring?: boolean | undefined;
 
   /**
    * Role that will be associated with this DB cluster to enable S3 import.
@@ -307,7 +307,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
    */
-  readonly s3ImportRole?: IRole;
+  readonly s3ImportRole?: IRole | undefined;
 
   /**
    * S3 buckets that you want to load data from. This feature is only supported by the Aurora database engine.
@@ -322,7 +322,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.IBucket[] | undefined;
 
   /**
    * Role that will be associated with this DB cluster to enable S3 export.
@@ -338,7 +338,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
    */
-  readonly s3ExportRole?: IRole;
+  readonly s3ExportRole?: IRole | undefined;
 
   /**
    * S3 buckets that you want to load data into. This feature is only supported by the Aurora database engine.
@@ -353,14 +353,14 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.IBucket[] | undefined;
 
   /**
    * Existing subnet group for the cluster.
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef | undefined;
 
   /**
    * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
@@ -368,14 +368,14 @@ interface DatabaseClusterBaseProps {
    *
    * @default false
    */
-  readonly iamAuthentication?: boolean;
+  readonly iamAuthentication?: boolean | undefined;
 
   /**
    * Whether to enable storage encryption.
    *
    * @default - true if storageEncryptionKey is provided, false otherwise
    */
-  readonly storageEncrypted?: boolean;
+  readonly storageEncrypted?: boolean | undefined;
 
   /**
    * The KMS key for storage encryption.
@@ -383,28 +383,28 @@ interface DatabaseClusterBaseProps {
    *
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKeyRef;
+  readonly storageEncryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * The storage type to be associated with the DB cluster.
    *
    * @default - DBClusterStorageType.AURORA
    */
-  readonly storageType?: DBClusterStorageType;
+  readonly storageType?: DBClusterStorageType | undefined;
 
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - true
    */
-  readonly copyTagsToSnapshot?: boolean;
+  readonly copyTagsToSnapshot?: boolean | undefined;
 
   /**
    * The network type of the DB instance.
    *
    * @default - IPV4
    */
-  readonly networkType?: NetworkType;
+  readonly networkType?: NetworkType | undefined;
 
   /**
    * Directory ID for associating the DB cluster with a specific Active Directory.
@@ -414,7 +414,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
    */
-  readonly domain?: string;
+  readonly domain?: string | undefined;
 
   /**
    * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
@@ -422,14 +422,14 @@ interface DatabaseClusterBaseProps {
    *
    * @default - If `DatabaseClusterBaseProps.domain` is specified, a role with the `AmazonRDSDirectoryServiceAccess` policy is automatically created.
    */
-  readonly domainRole?: iam.IRole;
+  readonly domainRole?: iam.IRole | undefined;
 
   /**
    * Whether to enable the Data API for the cluster.
    *
    * @default - false
    */
-  readonly enableDataApi?: boolean;
+  readonly enableDataApi?: boolean | undefined;
 
   /**
    * Whether read replicas can forward write operations to the writer DB instance in the DB cluster.
@@ -442,7 +442,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default false
    */
-  readonly enableLocalWriteForwarding?: boolean;
+  readonly enableLocalWriteForwarding?: boolean | undefined;
 
   /**
    * Whether to enable Performance Insights for the DB cluster.
@@ -450,7 +450,7 @@ interface DatabaseClusterBaseProps {
    * @default - false, unless `performanceInsightRetention` or `performanceInsightEncryptionKey` is set,
    * or `databaseInsightsMode` is set to `DatabaseInsightsMode.ADVANCED`.
    */
-  readonly enablePerformanceInsights?: boolean;
+  readonly enablePerformanceInsights?: boolean | undefined;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
@@ -459,28 +459,28 @@ interface DatabaseClusterBaseProps {
    *
    * @default - 7
    */
-  readonly performanceInsightRetention?: PerformanceInsightRetention;
+  readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKey | undefined;
 
   /**
    * The database insights mode.
    *
    * @default - DatabaseInsightsMode.STANDARD when performance insights are enabled and Amazon Aurora engine is used, otherwise not set.
    */
-  readonly databaseInsightsMode?: DatabaseInsightsMode;
+  readonly databaseInsightsMode?: DatabaseInsightsMode | undefined;
 
   /**
    * Specifies whether minor engine upgrades are applied automatically to the DB cluster during the maintenance window.
    *
    * @default true
    */
-  readonly autoMinorVersionUpgrade?: boolean;
+  readonly autoMinorVersionUpgrade?: boolean | undefined;
 
   /**
    * Specifies the scalability mode of the Aurora DB cluster.
@@ -489,7 +489,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default ClusterScalabilityType.STANDARD
    */
-  readonly clusterScalabilityType?: ClusterScalabilityType;
+  readonly clusterScalabilityType?: ClusterScalabilityType | undefined;
 
   /**
    * [Misspelled] Specifies the scalability mode of the Aurora DB cluster.
@@ -499,7 +499,7 @@ interface DatabaseClusterBaseProps {
    * @default ClusterScailabilityType.STANDARD
    * @deprecated Use clusterScalabilityType instead. This will be removed in the next major version.
    */
-  readonly clusterScailabilityType?: ClusterScailabilityType;
+  readonly clusterScailabilityType?: ClusterScailabilityType | undefined;
 
   /**
    * The life cycle type for this DB cluster.
@@ -509,14 +509,14 @@ interface DatabaseClusterBaseProps {
    *
    * @default undefined - AWS RDS default setting is `EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT`
    */
-  readonly engineLifecycleSupport?: EngineLifecycleSupport;
+  readonly engineLifecycleSupport?: EngineLifecycleSupport | undefined;
 
   /**
    * Specifies whether to remove automated backups immediately after the DB cluster is deleted.
    *
    * @default undefined - AWS RDS default is to remove automated backups immediately after the DB cluster is deleted, unless the AWS Backup policy specifies a point-in-time restore rule.
    */
-  readonly deleteAutomatedBackups?: boolean;
+  readonly deleteAutomatedBackups?: boolean | undefined;
 }
 
 /**
@@ -605,7 +605,7 @@ export interface DatabaseClusterLookupOptions {
  */
 export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
   // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
-  public abstract readonly engine?: IClusterEngine;
+  public abstract readonly engine?: IClusterEngine | undefined;
 
   /**
    * Identifier of the cluster
@@ -647,7 +647,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   /**
    * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret | undefined;
 
   protected abstract enableDataApi?: boolean;
 
@@ -738,19 +738,19 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * The engine for this Cluster.
    * Never undefined.
    */
-  public readonly engine?: IClusterEngine;
+  public readonly engine?: IClusterEngine | undefined;
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroupRef: aws_rds.IDBSubnetGroupRef;
 
-  private readonly domainId?: string;
-  private readonly domainRole?: iam.IRole;
+  private readonly domainId?: string | undefined;
+  private readonly domainRole?: iam.IRole | undefined;
 
   /**
    * Secret in SecretsManager to store the database cluster user credentials.
    */
-  public abstract readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret | undefined;
 
   /**
    * The VPC network to place the cluster in.
@@ -760,7 +760,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The cluster's subnets.
    */
-  public readonly vpcSubnets?: ec2.SubnetSelection;
+  public readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The log group is created when `cloudwatchLogsExports` is set.
@@ -787,26 +787,26 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   /**
    * The amount of time, in days, to retain Performance Insights data.
    */
-  public readonly performanceInsightRetention?: PerformanceInsightRetention;
+  public readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    */
-  public readonly performanceInsightEncryptionKey?: kms.IKey;
+  public readonly performanceInsightEncryptionKey?: kms.IKey | undefined;
 
   /**
    * The database insights mode.
    */
-  public readonly databaseInsightsMode?: DatabaseInsightsMode;
+  public readonly databaseInsightsMode?: DatabaseInsightsMode | undefined;
 
   /**
    * The IAM role for the enhanced monitoring.
    */
-  public readonly monitoringRole?: iam.IRole;
+  public readonly monitoringRole?: iam.IRole | undefined;
 
   protected readonly serverlessV2MinCapacity: number;
   protected readonly serverlessV2MaxCapacity: number;
-  protected readonly serverlessV2AutoPauseDuration?: Duration;
+  protected readonly serverlessV2AutoPauseDuration?: Duration | undefined;
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
@@ -1289,14 +1289,14 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ImportedDatabaseCluster';
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
-  public readonly engine?: IClusterEngine;
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly engine?: IClusterEngine | undefined;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
-  private readonly _clusterResourceIdentifier?: string;
-  private readonly _clusterEndpoint?: Endpoint;
-  private readonly _clusterReadEndpoint?: Endpoint;
-  private readonly _instanceIdentifiers?: string[];
-  private readonly _instanceEndpoints?: Endpoint[];
+  private readonly _clusterResourceIdentifier?: string | undefined;
+  private readonly _clusterEndpoint?: Endpoint | undefined;
+  private readonly _clusterReadEndpoint?: Endpoint | undefined;
+  private readonly _instanceIdentifiers?: string[] | undefined;
+  private readonly _instanceEndpoints?: Endpoint[] | undefined;
 
   protected readonly enableDataApi: boolean;
 
@@ -1371,7 +1371,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    *
    * @default - A username of 'admin' (or 'postgres' for PostgreSQL) and SecretsManager-generated password
    */
-  readonly credentials?: Credentials;
+  readonly credentials?: Credentials | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.
@@ -1379,7 +1379,7 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    *
    * @default - This DB Cluster is not a read replica
    */
-  readonly replicationSourceIdentifier?: string;
+  readonly replicationSourceIdentifier?: string | undefined;
 }
 
 /**
@@ -1475,7 +1475,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
   /**
    * The secret attached to this cluster
    */
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
@@ -1632,7 +1632,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    *
    * @deprecated use `snapshotCredentials` which allows to generate a new password
    */
-  readonly credentials?: Credentials;
+  readonly credentials?: Credentials | undefined;
 
   /**
    * Master user credentials.
@@ -1642,7 +1642,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    *
    * @default - The existing username and password from the snapshot will be used.
    */
-  readonly snapshotCredentials?: SnapshotCredentials;
+  readonly snapshotCredentials?: SnapshotCredentials | undefined;
 }
 
 /**
@@ -1668,7 +1668,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   /**
    * The secret attached to this cluster
    */
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);

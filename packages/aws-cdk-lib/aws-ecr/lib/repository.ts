@@ -515,7 +515,7 @@ export interface OnCloudTrailImagePushedOptions extends events.OnEventOptions {
    *
    * @default - Watch changes to all tags
    */
-  readonly imageTag?: string;
+  readonly imageTag?: string | undefined;
 }
 
 /**
@@ -528,7 +528,7 @@ export interface OnImageScanCompletedOptions extends events.OnEventOptions {
    *
    * @default - Watch the changes to the repository with all image tags
    */
-  readonly imageTags?: string[];
+  readonly imageTags?: string[] | undefined;
 }
 
 export interface RepositoryProps {
@@ -541,7 +541,7 @@ export interface RepositoryProps {
    *
    * @default Automatically generated name.
    */
-  readonly repositoryName?: string;
+  readonly repositoryName?: string | undefined;
 
   /**
    * The kind of server-side encryption to apply to this repository.
@@ -551,7 +551,7 @@ export interface RepositoryProps {
    *
    * @default - `KMS` if `encryptionKey` is specified, or `AES256` otherwise.
    */
-  readonly encryption?: RepositoryEncryption;
+  readonly encryption?: RepositoryEncryption | undefined;
 
   /**
    * External KMS key to use for repository encryption.
@@ -562,14 +562,14 @@ export interface RepositoryProps {
    * @default - If encryption is set to `KMS` and this property is undefined,
    * an AWS managed KMS key is used.
    */
-  readonly encryptionKey?: kms.IKeyRef;
+  readonly encryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * Life cycle rules to apply to this registry
    *
    * @default No life cycle rules
    */
-  readonly lifecycleRules?: LifecycleRule[];
+  readonly lifecycleRules?: LifecycleRule[] | undefined;
 
   /**
    * The AWS account ID associated with the registry that contains the repository.
@@ -577,28 +577,28 @@ export interface RepositoryProps {
    * @see https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_PutLifecyclePolicy.html
    * @default The default registry is assumed.
    */
-  readonly lifecycleRegistryId?: string;
+  readonly lifecycleRegistryId?: string | undefined;
 
   /**
    * Determine what happens to the repository when the resource/stack is deleted.
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Enable the scan on push when creating the repository
    *
    *  @default false
    */
-  readonly imageScanOnPush?: boolean;
+  readonly imageScanOnPush?: boolean | undefined;
 
   /**
    * The tag mutability setting for the repository. If this parameter is omitted, the default setting of MUTABLE will be used which will allow image tags to be overwritten.
    *
    *  @default TagMutability.MUTABLE
    */
-  readonly imageTagMutability?: TagMutability;
+  readonly imageTagMutability?: TagMutability | undefined;
 
   /**
    * The image tag mutability exclusion filters for the repository.
@@ -608,7 +608,7 @@ export interface RepositoryProps {
    * @default undefined - AWS ECR default is no exclusion filters
    * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-tag-mutability.html
    */
-  readonly imageTagMutabilityExclusionFilters?: ImageTagMutabilityExclusionFilter[];
+  readonly imageTagMutabilityExclusionFilters?: ImageTagMutabilityExclusionFilter[] | undefined;
 
   /**
    * Whether all images should be automatically deleted when the repository is
@@ -619,14 +619,14 @@ export interface RepositoryProps {
    * @default false
    * @deprecated Use `emptyOnDelete` instead.
    */
-  readonly autoDeleteImages?: boolean;
+  readonly autoDeleteImages?: boolean | undefined;
 
   /**
    * If true, deleting the repository force deletes the contents of the repository. If false, the repository must be empty before attempting to delete it.
    *
    * @default false
    */
-  readonly emptyOnDelete?: boolean;
+  readonly emptyOnDelete?: boolean | undefined;
 }
 
 /**
@@ -638,13 +638,13 @@ export interface RepositoryLookupOptions {
    *
    * @default - Do not filter on repository name
    */
-  readonly repositoryName?: string;
+  readonly repositoryName?: string | undefined;
   /**
    * The ARN of the repository.
    *
    * @default - Do not filter on repository ARN
    */
-  readonly repositoryArn?: string;
+  readonly repositoryArn?: string | undefined;
 }
 
 export interface RepositoryAttributes {
@@ -814,7 +814,7 @@ export class Repository extends RepositoryBase {
   }
 
   private readonly lifecycleRules = new Array<LifecycleRule>();
-  private readonly registryId?: string;
+  private readonly registryId?: string | undefined;
   private policyDocument?: iam.PolicyDocument;
   private readonly _resource: CfnRepository;
 

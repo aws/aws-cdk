@@ -39,7 +39,7 @@ export interface AwsApiInput {
    *
    * @default - no parameters
    */
-  readonly parameters?: any;
+  readonly parameters?: any | undefined;
 
   /**
    * The regex pattern to use to catch API errors. The `code` property of the
@@ -48,14 +48,14 @@ export interface AwsApiInput {
    *
    * @default - do not catch errors
    */
-  readonly catchErrorPattern?: string;
+  readonly catchErrorPattern?: string | undefined;
 
   /**
    * API version to use for the service
    *
    * @deprecated the handler code was migrated to AWS SDK for JavaScript v3, which does not support this feature anymore
    */
-  readonly apiVersion?: string;
+  readonly apiVersion?: string | undefined;
 }
 
 /**
@@ -68,7 +68,7 @@ export interface AwsApiProps extends AwsApiInput {
    *
    * @default - extract the permission from the API call
    */
-  readonly policyStatement?: iam.PolicyStatement;
+  readonly policyStatement?: iam.PolicyStatement | undefined;
 }
 
 /**

@@ -123,7 +123,7 @@ export interface ArtifactsBucketLocation {
    *
    * @default - no prefix
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 }
 
 /**
@@ -135,7 +135,7 @@ export interface CanaryProps {
    *
    * @default - A new s3 bucket will be created without a prefix.
    */
-  readonly artifactsBucketLocation?: ArtifactsBucketLocation;
+  readonly artifactsBucketLocation?: ArtifactsBucketLocation | undefined;
 
   /**
    * Canary execution role.
@@ -152,7 +152,7 @@ export interface CanaryProps {
    * @default - A unique role will be generated for this canary.
    * You can add permissions to roles by calling 'addToRolePolicy'.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * How long the canary will be in a 'RUNNING' state. For example, if you set `timeToLive` to be 1 hour and `schedule` to be `rate(10 minutes)`,
@@ -160,14 +160,14 @@ export interface CanaryProps {
    *
    * @default - no limit
    */
-  readonly timeToLive?: cdk.Duration;
+  readonly timeToLive?: cdk.Duration | undefined;
 
   /**
    * Specify the schedule for how often the canary runs. For example, if you set `schedule` to `rate(10 minutes)`, then the canary will run every 10 minutes.
    * You can set the schedule with `Schedule.rate(Duration)` (recommended) or you can specify an expression using `Schedule.expression()`.
    * @default 'rate(5 minutes)'
    */
-  readonly schedule?: Schedule;
+  readonly schedule?: Schedule | undefined;
 
   /**
    * The amount of times the canary will automatically retry a failed run.
@@ -177,28 +177,28 @@ export interface CanaryProps {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_autoretry.html
    * @default 0
    */
-  readonly maxRetries?: number;
+  readonly maxRetries?: number | undefined;
 
   /**
    * Whether or not the canary should start after creation.
    *
    * @default true
    */
-  readonly startAfterCreation?: boolean;
+  readonly startAfterCreation?: boolean | undefined;
 
   /**
    * How many days should successful runs be retained.
    *
    * @default Duration.days(31)
    */
-  readonly successRetentionPeriod?: cdk.Duration;
+  readonly successRetentionPeriod?: cdk.Duration | undefined;
 
   /**
    * How many days should failed runs be retained.
    *
    * @default Duration.days(31)
    */
-  readonly failureRetentionPeriod?: cdk.Duration;
+  readonly failureRetentionPeriod?: cdk.Duration | undefined;
 
   /**
    * The name of the canary. Be sure to give it a descriptive name that distinguishes it from
@@ -210,7 +210,7 @@ export interface CanaryProps {
    *
    * @default - A unique name will be generated from the construct ID
    */
-  readonly canaryName?: string;
+  readonly canaryName?: string | undefined;
 
   /**
    * Specify the runtime version to use for the canary.
@@ -235,7 +235,7 @@ export interface CanaryProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html
    */
-  readonly activeTracing?: boolean;
+  readonly activeTracing?: boolean | undefined;
 
   /**
    * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
@@ -244,7 +244,7 @@ export interface CanaryProps {
    *
    * @default - No environment variables.
    */
-  readonly environmentVariables?: { [key: string]: string };
+  readonly environmentVariables?: { [key: string]: string } | undefined;
 
   /**
    * The maximum amount of memory that the canary can use while running.
@@ -253,7 +253,7 @@ export interface CanaryProps {
    *
    * @default Size.mebibytes(1024)
    */
-  readonly memory?: cdk.Size;
+  readonly memory?: cdk.Size | undefined;
 
   /**
    * How long the canary is allowed to run before it must stop.
@@ -264,7 +264,7 @@ export interface CanaryProps {
    *
    * @default - the frequency of the canary is used as this value, up to a maximum of 900 seconds.
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 
   /**
    * The VPC where this canary is run.
@@ -273,14 +273,14 @@ export interface CanaryProps {
    *
    * @default - Not in VPC
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place the network interfaces within the VPC. You must provide `vpc` when using this prop.
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The list of security groups to associate with the canary's network interfaces. You must provide `vpc` when using this prop.
@@ -288,7 +288,7 @@ export interface CanaryProps {
    * @default - If the canary is placed within a VPC and a security group is
    * not specified a dedicated security group will be created for this canary.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Specify the underlying resources to be cleaned up when the canary is deleted.
@@ -298,14 +298,14 @@ export interface CanaryProps {
    *
    * @deprecated use provisionedResourceCleanup
    */
-  readonly cleanup?: Cleanup;
+  readonly cleanup?: Cleanup | undefined;
 
   /**
    * Whether to also delete the Lambda functions and layers used by this canary when the canary is deleted.
    *
    * @default undefined - the default behavior is to not delete the Lambda functions and layers
    */
-  readonly provisionedResourceCleanup?: boolean;
+  readonly provisionedResourceCleanup?: boolean | undefined;
 
   /**
    * Lifecycle rules for the generated canary artifact bucket. Has no effect
@@ -315,7 +315,7 @@ export interface CanaryProps {
    *
    * @default - no rules applied to the generated bucket.
    */
-  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
+  readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule> | undefined;
 
   /**
    * Canary Artifacts in S3 encryption mode.
@@ -326,14 +326,14 @@ export interface CanaryProps {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
    */
-  readonly artifactS3EncryptionMode?: ArtifactsEncryptionMode;
+  readonly artifactS3EncryptionMode?: ArtifactsEncryptionMode | undefined;
 
   /**
    * The KMS key used to encrypt canary artifacts.
    *
    * @default - no kms key if `artifactS3EncryptionMode` is set to `S3_MANAGED`. A key will be created if one is not provided and `artifactS3EncryptionMode` is set to `KMS`.
    */
-  readonly artifactS3KmsKey?: kms.IKey;
+  readonly artifactS3KmsKey?: kms.IKey | undefined;
 
   /**
    * Specifies whether to perform a dry run before updating the canary.
@@ -348,7 +348,7 @@ export interface CanaryProps {
    *
    * @default undefined - AWS CloudWatch default is false
    */
-  readonly dryRunAndUpdate?: boolean;
+  readonly dryRunAndUpdate?: boolean | undefined;
 
   /**
    * Specifies which resources should have their tags replicated to this canary.
@@ -361,7 +361,7 @@ export interface CanaryProps {
    *
    * @default - No resources will have their tags replicated to this canary
    */
-  readonly resourcesToReplicateTags?: ResourceToReplicateTags[];
+  readonly resourcesToReplicateTags?: ResourceToReplicateTags[] | undefined;
 
   /**
    * Browser configurations for the canary.
@@ -375,7 +375,7 @@ export interface CanaryProps {
    * @default undefined - AWS CloudWatch default is using only Chrome browser
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html
    */
-  readonly browserConfigs?: BrowserType[];
+  readonly browserConfigs?: BrowserType[] | undefined;
 }
 
 /**
@@ -446,7 +446,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
    * May be unset, in which case the canary Lambda is not configured for use in a VPC.
    * @internal
    */
-  private readonly _connections?: ec2.Connections;
+  private readonly _connections?: ec2.Connections | undefined;
   private readonly _resource: CfnCanary;
 
   private get resource(): CfnCanary {

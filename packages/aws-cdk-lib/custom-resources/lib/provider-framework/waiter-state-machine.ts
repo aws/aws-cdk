@@ -18,21 +18,21 @@ export interface LogOptions {
    *
    * @default - a new log group will be created
    */
-  readonly destination?: ILogGroupRef;
+  readonly destination?: ILogGroupRef | undefined;
 
   /**
    * Determines whether execution data is included in your log.
    *
    * @default - false
    */
-  readonly includeExecutionData?: boolean;
+  readonly includeExecutionData?: boolean | undefined;
 
   /**
    * Defines which category of execution history events are logged.
    *
    * @default - ERROR
    */
-  readonly level?: LogLevel;
+  readonly level?: LogLevel | undefined;
 }
 
 /**
@@ -69,14 +69,14 @@ export interface WaiterStateMachineProps {
    *
    * @default - A default log group will be created if logging is enabled.
    */
-  readonly logOptions?: LogOptions;
+  readonly logOptions?: LogOptions | undefined;
 
   /**
    * Whether logging for the state machine is disabled.
    *
    * @default - false
    */
-  readonly disableLogging?: boolean;
+  readonly disableLogging?: boolean | undefined;
 }
 
 /**

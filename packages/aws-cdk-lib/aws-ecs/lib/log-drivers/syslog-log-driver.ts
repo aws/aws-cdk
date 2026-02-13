@@ -17,7 +17,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - If the transport is tcp, udp, or tcp+tls, the default port is 514.
    */
-  readonly address?: string;
+  readonly address?: string | undefined;
 
   /**
    * The syslog facility to use. Can be the number or name for any valid
@@ -26,7 +26,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - facility not set
    */
-  readonly facility?: string;
+  readonly facility?: string | undefined;
 
   /**
    * The absolute path to the trust certificates signed by the CA. Ignored
@@ -34,7 +34,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - tlsCaCert not set
    */
-  readonly tlsCaCert?: string;
+  readonly tlsCaCert?: string | undefined;
 
   /**
    * The absolute path to the TLS certificate file. Ignored if the address
@@ -42,7 +42,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - tlsCert not set
    */
-  readonly tlsCert?: string;
+  readonly tlsCert?: string | undefined;
 
   /**
    * The absolute path to the TLS key file. Ignored if the address protocol
@@ -50,7 +50,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - tlsKey not set
    */
-  readonly tlsKey?: string;
+  readonly tlsKey?: string | undefined;
 
   /**
    * If set to true, TLS verification is skipped when connecting to the syslog
@@ -58,7 +58,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - false
    */
-  readonly tlsSkipVerify?: boolean;
+  readonly tlsSkipVerify?: boolean | undefined;
 
   /**
    * The syslog message format to use. If not specified the local UNIX syslog
@@ -68,7 +68,7 @@ export interface SyslogLogDriverProps extends BaseLogDriverProps {
    *
    * @default - format not set
    */
-  readonly format?: string;
+  readonly format?: string | undefined;
 }
 
 /**

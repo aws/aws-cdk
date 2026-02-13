@@ -20,7 +20,7 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * The minimum number of tasks, specified as a percentage of
@@ -29,7 +29,7 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    *
    * @default - 50%
    */
-  readonly minHealthyPercent?: number;
+  readonly minHealthyPercent?: number | undefined;
 
   /**
    * The maximum number of tasks, specified as a percentage of
@@ -38,7 +38,7 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    *
    * @default - 200%
    */
-  readonly maxHealthyPercent?: number;
+  readonly maxHealthyPercent?: number | undefined;
 }
 
 /**

@@ -93,21 +93,21 @@ export interface HealthCheckProps {
    *
    * @default - if the type is CLOUDWATCH_METRIC, this property is required. Otherwise, it is not configured.
    */
-  readonly alarmIdentifier?: AlarmIdentifier;
+  readonly alarmIdentifier?: AlarmIdentifier | undefined;
 
   /**
    * A list of health checks to monitor for this 'CALCULATED' health check.
    *
    * @default - if the type is CALCULATED, this property is required. Otherwise, it is not configured.
    */
-  readonly childHealthChecks?: IHealthCheck[];
+  readonly childHealthChecks?: IHealthCheck[] | undefined;
 
   /**
    * Specify whether you want Amazon Route 53 to send the value of FullyQualifiedDomainName to the endpoint in the client_hello message during TLS negotiation. This allows the endpoint to respond to HTTPS health check requests with the applicable SSL/TLS certificate.
    *
    * @default - if the type is HTTPS or HTTPS_STR_MATCH, this property default value is true. Otherwise, it is not configured.
    */
-  readonly enableSNI?: boolean;
+  readonly enableSNI?: boolean | undefined;
 
   /**
    * The number of consecutive health checks that an endpoint must pass or fail for Amazon Route 53 to change the current status of the endpoint from unhealthy to healthy or vice versa.
@@ -116,7 +116,7 @@ export interface HealthCheckProps {
    * - if the type is CLOUDWATCH_METRIC it's not configured
    * - otherwise, the default value is 3.
    */
-  readonly failureThreshold?: number;
+  readonly failureThreshold?: number | undefined;
 
   /**
    * Fully qualified domain name of the endpoint to be checked.
@@ -136,35 +136,35 @@ export interface HealthCheckProps {
    *
    * @default - not configured
    */
-  readonly fqdn?: string;
+  readonly fqdn?: string | undefined;
 
   /**
    * The number of child health checks that are associated with a CALCULATED health that Amazon Route 53 must consider healthy for the CALCULATED health check to be considered healthy.
    *
    * @default - if the type is CALCULATED, the default value is number of child health checks. Otherwise, it is not configured.
    */
-  readonly healthThreshold?: number;
+  readonly healthThreshold?: number | undefined;
 
   /**
    * The status of the health check when CloudWatch has insufficient data about the state of associated alarm.
    *
    * @default - if the type is CLOUDWATCH_METRIC, the default value is InsufficientDataHealthStatus.LAST_KNOWN_STATUS. Otherwise, it is not configured.
    */
-  readonly insufficientDataHealthStatus?: InsufficientDataHealthStatusEnum;
+  readonly insufficientDataHealthStatus?: InsufficientDataHealthStatusEnum | undefined;
 
   /**
    * Specify whether you want Amazon Route 53 to invert the status of a health check, so a health check that would normally be considered unhealthy is considered healthy, and vice versa.
    *
    * @default false
    */
-  readonly inverted?: boolean;
+  readonly inverted?: boolean | undefined;
 
   /**
    * The IPv4 or IPv6 IP address for the endpoint that you want Amazon Route 53 to perform health checks on. If you don't specify a value for IPAddress, Route 53 sends a DNS request to resolve the domain name that you specify in FullyQualifiedDomainName at the interval that you specify in RequestInterval. Using an IPv4 address that DNS returns, Route 53 then checks the health of the endpoint.
    *
    * @default - not configured
    */
-  readonly ipAddress?: string;
+  readonly ipAddress?: string | undefined;
 
   /**
    * Specify whether you want Amazon Route 53 to measure the latency between health checkers in multiple AWS regions and your endpoint, and to display CloudWatch latency graphs on the Health Checks page in the Route 53 console.
@@ -173,7 +173,7 @@ export interface HealthCheckProps {
    * - if the type is CLOUDWATCH_METRIC it's not configured
    * - otherwise, the default value is false.
    */
-  readonly measureLatency?: boolean;
+  readonly measureLatency?: boolean | undefined;
 
   /**
    * The port on the endpoint that you want Amazon Route 53 to perform health checks on.
@@ -182,7 +182,7 @@ export interface HealthCheckProps {
    * - if the type is HTTPS or HTTPS_STR_MATCH, the default value is 443.
    * - otherwise, it is not configured.
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * An array of region identifiers that you want Amazon Route 53 health checkers to check the health of the endpoint from.
@@ -192,7 +192,7 @@ export interface HealthCheckProps {
    * @default - if the type is CALCULATED, CLOUDWATCH_METRIC, or RECOVERY_CONTROL, this property is not configured.
    * - otherwise, the default value will be set by CloudFormation itself and will include all valid regions. Please refer to the CloudFormation documentation for the most up-to-date list of regions.
    */
-  readonly regions?: string[];
+  readonly regions?: string[] | undefined;
 
   /**
    * The duration between the time that Amazon Route 53 gets a response from your endpoint and the time that it sends the next health check request. Each Route 53 health checker makes requests at this interval.
@@ -201,7 +201,7 @@ export interface HealthCheckProps {
    * - if the type is CLOUDWATCH_METRIC it's not configured
    * - otherwise, the default value is 30 seconds.
    */
-  readonly requestInterval?: Duration;
+  readonly requestInterval?: Duration | undefined;
 
   /**
    * The path that you want Amazon Route 53 to request when performing health checks. The path can be any value for which your endpoint will return an HTTP status code of 2xx or 3xx when the endpoint is healthy, for example the file /docs/route53-health-check.html. Route 53 automatically adds the DNS name for the service and a leading forward slash (/) character.
@@ -209,14 +209,14 @@ export interface HealthCheckProps {
    * @default - if the type is HTTP, HTTPS, HTTP_STR_MATCH, or HTTPS_STR_MATCH, the default value is empty string.
    * - otherwise, it is not configured.
    */
-  readonly resourcePath?: string;
+  readonly resourcePath?: string | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the Route 53 Application Recovery Controller routing control that you want Amazon Route 53 health checkers to use to determine whether the specified health check is healthy.
    *
    * @default - if the type is RECOVERY_CONTROL, this property is required. Otherwise, it is not configured.
    */
-  readonly routingControl?: string;
+  readonly routingControl?: string | undefined;
 
   /**
    * The string that you want Amazon Route 53 to search for in the response body from the specified resource. If the string appears in the response body, Route 53 considers the resource healthy.
@@ -225,7 +225,7 @@ export interface HealthCheckProps {
    *
    * @default - if the type is HTTP_STR_MATCH or HTTPS_STR_MATCH, this property is required. Otherwise, it is not configured.
    */
-  readonly searchString?: string;
+  readonly searchString?: string | undefined;
 }
 
 /**

@@ -22,7 +22,7 @@ export interface IArtifacts {
    * The artifact identifier.
    * This property is required on secondary artifacts.
    */
-  readonly identifier?: string;
+  readonly identifier?: string | undefined;
 
   /**
    * The CodeBuild type of this artifact.
@@ -46,7 +46,7 @@ export interface ArtifactsProps {
    * The artifact identifier.
    * This property is required on secondary artifacts.
    */
-  readonly identifier?: string;
+  readonly identifier?: string | undefined;
 }
 
 /**
@@ -57,7 +57,7 @@ export abstract class Artifacts implements IArtifacts {
     return new S3Artifacts(props);
   }
 
-  public readonly identifier?: string;
+  public readonly identifier?: string | undefined;
   public abstract readonly type: string;
 
   protected constructor(props: ArtifactsProps) {
@@ -90,7 +90,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default the root of the bucket
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The name of the build output ZIP file or folder inside the bucket.
@@ -103,7 +103,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default undefined, and use the name from the buildspec
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * Indicates if the build ID should be included in the path. If this is set to true,
@@ -111,7 +111,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default true
    */
-  readonly includeBuildId?: boolean;
+  readonly includeBuildId?: boolean | undefined;
 
   /**
    * If this is true, all build output will be packaged into a single .zip file.
@@ -119,7 +119,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default true - files will be archived
    */
-  readonly packageZip?: boolean;
+  readonly packageZip?: boolean | undefined;
 
   /**
    * If this is false, build output will not be encrypted.
@@ -127,7 +127,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
    *
    * @default true - output will be encrypted
    */
-  readonly encryption?: boolean;
+  readonly encryption?: boolean | undefined;
 }
 
 /**

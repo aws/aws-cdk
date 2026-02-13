@@ -90,7 +90,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable, n
   readonly projectName: string;
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Enable batch builds.
@@ -268,7 +268,7 @@ abstract class ProjectBase extends Resource implements IProject {
   public abstract readonly projectName: string;
 
   /** The IAM service Role of this Project. */
-  public abstract readonly role?: iam.IRole;
+  public abstract readonly role?: iam.IRole | undefined;
 
   public get projectRef(): ProjectReference {
     return {
@@ -545,7 +545,7 @@ export interface CommonProjectProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Filename or contents of buildspec in JSON format.
@@ -553,35 +553,35 @@ export interface CommonProjectProps {
    *
    * @default - Empty buildspec.
    */
-  readonly buildSpec?: BuildSpec;
+  readonly buildSpec?: BuildSpec | undefined;
 
   /**
    * Service Role to assume while running the build.
    *
    * @default - A role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Encryption key to use to read and write artifacts.
    *
    * @default - The AWS-managed CMK for Amazon Simple Storage Service (Amazon S3) is used.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Caching strategy to use.
    *
    * @default Cache.none
    */
-  readonly cache?: Cache;
+  readonly cache?: Cache | undefined;
 
   /**
    * Build environment to use for the build.
    *
    * @default BuildEnvironment.LinuxBuildImage.STANDARD_7_0
    */
-  readonly environment?: BuildEnvironment;
+  readonly environment?: BuildEnvironment | undefined;
 
   /**
    * Indicates whether AWS CodeBuild generates a publicly accessible URL for
@@ -590,7 +590,7 @@ export interface CommonProjectProps {
    *
    * @default false
    */
-  readonly badge?: boolean;
+  readonly badge?: boolean | undefined;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -599,14 +599,14 @@ export interface CommonProjectProps {
    *
    * @default Duration.hours(1)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Additional environment variables to add to the build environment.
    *
    * @default - No additional environment variables are specified.
    */
-  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable } | undefined;
 
   /**
    * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
@@ -617,14 +617,14 @@ export interface CommonProjectProps {
    *
    * @default true
    */
-  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+  readonly checkSecretsInPlainTextEnvVariables?: boolean | undefined;
 
   /**
    * The physical, human-readable name of the CodeBuild Project.
    *
    * @default - Name is automatically generated.
    */
-  readonly projectName?: string;
+  readonly projectName?: string | undefined;
 
   /**
    * VPC network to place codebuild network interfaces
@@ -633,7 +633,7 @@ export interface CommonProjectProps {
    *
    * @default - No VPC is specified.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -651,7 +651,7 @@ export interface CommonProjectProps {
    *
    * @default - private subnets if available else public subnets
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * What security group to associate with the codebuild project's network interfaces.
@@ -662,7 +662,7 @@ export interface CommonProjectProps {
    * @default - Security group will be automatically created.
    *
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Whether to allow the CodeBuild to send all network traffic
@@ -674,7 +674,7 @@ export interface CommonProjectProps {
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * An  ProjectFileSystemLocation objects for a CodeBuild build project.
@@ -684,7 +684,7 @@ export interface CommonProjectProps {
    *
    * @default - no file system locations
    */
-  readonly fileSystemLocations?: IFileSystemLocation[];
+  readonly fileSystemLocations?: IFileSystemLocation[] | undefined;
 
   /**
    * Add permissions to this project's role to create and use test report groups with name starting with the name of this project.
@@ -699,14 +699,14 @@ export interface CommonProjectProps {
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
    */
-  readonly grantReportGroupPermissions?: boolean;
+  readonly grantReportGroupPermissions?: boolean | undefined;
 
   /**
    * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
    *
    * @default - no log configuration is set
    */
-  readonly logging?: LoggingOptions;
+  readonly logging?: LoggingOptions | undefined;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -715,14 +715,14 @@ export interface CommonProjectProps {
    *
    * @default - no queue timeout is set
    */
-  readonly queuedTimeout?: Duration;
+  readonly queuedTimeout?: Duration | undefined;
 
   /**
    * Maximum number of concurrent builds. Minimum value is 1 and maximum is account build limit.
    *
    * @default - no explicit limit is set
    */
-  readonly concurrentBuildLimit?: number;
+  readonly concurrentBuildLimit?: number | undefined;
 
   /**
    * Add the permissions necessary for debugging builds with SSM Session Manager
@@ -742,14 +742,14 @@ export interface CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/session-manager.html
    * @default false
    */
-  readonly ssmSessionPermissions?: boolean;
+  readonly ssmSessionPermissions?: boolean | undefined;
 
   /**
    * Specifies the visibility of the project's builds.
    *
    * @default - no visibility is set
    */
-  readonly visibility?: ProjectVisibility;
+  readonly visibility?: ProjectVisibility | undefined;
 
   /**
    * CodeBuild will automatically call retry build using the project's service role up to the auto-retry limit.
@@ -757,7 +757,7 @@ export interface CommonProjectProps {
    *
    * @default - no retry
    */
-  readonly autoRetryLimit?: number;
+  readonly autoRetryLimit?: number | undefined;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -768,7 +768,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default - NoSource
    */
-  readonly source?: ISource;
+  readonly source?: ISource | undefined;
 
   /**
    * Defines where build artifacts will be stored.
@@ -776,7 +776,7 @@ export interface ProjectProps extends CommonProjectProps {
    *
    * @default NoArtifacts
    */
-  readonly artifacts?: IArtifacts;
+  readonly artifacts?: IArtifacts | undefined;
 
   /**
    * The secondary sources for the Project.
@@ -785,7 +785,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default - No secondary sources.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondarySources?: ISource[];
+  readonly secondarySources?: ISource[] | undefined;
 
   /**
    * The secondary artifacts for the Project.
@@ -794,7 +794,7 @@ export interface ProjectProps extends CommonProjectProps {
    * @default - No secondary artifacts.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
-  readonly secondaryArtifacts?: IArtifacts[];
+  readonly secondaryArtifacts?: IArtifacts[] | undefined;
 }
 
 /**
@@ -1055,7 +1055,7 @@ export class Project extends ProjectBase {
   /**
    * The IAM role for this project.
    */
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
 
   /**
    * The ARN of the project.
@@ -1666,7 +1666,7 @@ export interface BuildEnvironment {
    *
    * @default LinuxBuildImage.STANDARD_7_0
    */
-  readonly buildImage?: IBuildImage;
+  readonly buildImage?: IBuildImage | undefined;
 
   /**
    * The type of compute to use for this build.
@@ -1674,7 +1674,7 @@ export interface BuildEnvironment {
    *
    * @default taken from `#buildImage#defaultComputeType`
    */
-  readonly computeType?: ComputeType;
+  readonly computeType?: ComputeType | undefined;
 
   /**
    * The Docker server configuration CodeBuild use to build your Docker image.
@@ -1683,7 +1683,7 @@ export interface BuildEnvironment {
    * from the VPC configured in the project. They should allow ingress on port 9876.
    * @default - Doesn't use remote docker server
    */
-  readonly dockerServer?: DockerServerOptions;
+  readonly dockerServer?: DockerServerOptions | undefined;
 
   /**
    * Fleet resource for a reserved capacity CodeBuild project.
@@ -1696,7 +1696,7 @@ export interface BuildEnvironment {
    * @default - No fleet will be attached to the project, which will remain on-demand.
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
-  readonly fleet?: IFleet;
+  readonly fleet?: IFleet | undefined;
 
   /**
    * Indicates how the project builds Docker images. Specify true to enable
@@ -1708,19 +1708,19 @@ export interface BuildEnvironment {
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * The location of the PEM-encoded certificate for the build project
    *
    * @default - No external certificate is added to the project
    */
-  readonly certificate?: BuildEnvironmentCertificate;
+  readonly certificate?: BuildEnvironmentCertificate | undefined;
 
   /**
    * The environment variables that your builds can use.
    */
-  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
+  readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable } | undefined;
 }
 
 /**
@@ -1740,7 +1740,7 @@ export interface DockerServerOptions {
    * from the VPC configured in the project. They should allow ingress on port 9876.
    * @default - no security group
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 }
 
 /**
@@ -1772,21 +1772,21 @@ export interface IBuildImage {
    *
    * @default ImagePullPrincipalType.SERVICE_ROLE
    */
-  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
 
   /**
    * The secretsManagerCredentials for access to a private registry.
    *
    * @default no credentials will be used
    */
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
 
   /**
    * An optional ECR repository that the image is hosted in.
    *
    * @default no repository
    */
-  readonly repository?: ecr.IRepository;
+  readonly repository?: ecr.IRepository | undefined;
 
   /**
    * Allows the image a chance to validate whether the passed configuration is correct.
@@ -1830,7 +1830,7 @@ export interface DockerImageOptions {
    *
    * @default no credentials will be used (we assume the repository is public)
    */
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
 }
 
 /**
@@ -1839,9 +1839,9 @@ export interface DockerImageOptions {
  */
 interface LinuxBuildImageProps {
   readonly imageId: string;
-  readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  readonly repository?: ecr.IRepository;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  readonly repository?: ecr.IRepository | undefined;
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
@@ -2054,9 +2054,9 @@ export class LinuxBuildImage implements IBuildImage {
   public readonly type = EnvironmentType.LINUX_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.SMALL;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  public readonly repository?: ecr.IRepository;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  public readonly repository?: ecr.IRepository | undefined;
 
   private constructor(props: LinuxBuildImageProps) {
     this.imageId = props.imageId;
@@ -2111,10 +2111,10 @@ export enum WindowsImageType {
  */
 interface WindowsBuildImageProps {
   readonly imageId: string;
-  readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  readonly repository?: ecr.IRepository;
-  readonly imageType?: WindowsImageType;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  readonly repository?: ecr.IRepository | undefined;
+  readonly imageType?: WindowsImageType | undefined;
 }
 
 /**
@@ -2255,9 +2255,9 @@ export class WindowsBuildImage implements IBuildImage {
   public readonly type: string;
   public readonly defaultComputeType = ComputeType.MEDIUM;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  public readonly repository?: ecr.IRepository;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  public readonly repository?: ecr.IRepository | undefined;
 
   private constructor(props: WindowsBuildImageProps) {
     this.type = (props.imageType ?? WindowsImageType.STANDARD).toString();
@@ -2318,9 +2318,9 @@ export class WindowsBuildImage implements IBuildImage {
  */
 interface MacBuildImageProps {
   readonly imageId: string;
-  readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  readonly repository?: ecr.IRepository;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  readonly repository?: ecr.IRepository | undefined;
 }
 
 /**
@@ -2391,9 +2391,9 @@ export class MacBuildImage implements IBuildImage {
   public readonly type = EnvironmentType.MAC_ARM as string;
   public readonly defaultComputeType = ComputeType.MEDIUM;
   public readonly imageId: string;
-  public readonly imagePullPrincipalType?: ImagePullPrincipalType;
-  public readonly secretsManagerCredentials?: secretsmanager.ISecret;
-  public readonly repository?: ecr.IRepository;
+  public readonly imagePullPrincipalType?: ImagePullPrincipalType | undefined;
+  public readonly secretsManagerCredentials?: secretsmanager.ISecret | undefined;
+  public readonly repository?: ecr.IRepository | undefined;
 
   private constructor(props: MacBuildImageProps) {
     this.imageId = props.imageId;
@@ -2427,7 +2427,7 @@ export interface BuildEnvironmentVariable {
    * The type of environment variable.
    * @default PlainText
    */
-  readonly type?: BuildEnvironmentVariableType;
+  readonly type?: BuildEnvironmentVariableType | undefined;
 
   /**
    * The value of the environment variable.

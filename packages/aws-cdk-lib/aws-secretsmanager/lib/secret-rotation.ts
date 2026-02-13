@@ -15,7 +15,7 @@ export interface SecretRotationApplicationOptions {
    *
    * @default false
    */
-  readonly isMultiUser?: boolean;
+  readonly isMultiUser?: boolean | undefined;
 }
 
 /**
@@ -123,7 +123,7 @@ export class SecretRotationApplication {
   /**
    * Whether the rotation application uses the mutli user scheme
    */
-  public readonly isMultiUser?: boolean;
+  public readonly isMultiUser?: boolean | undefined;
 
   /**
    * The application name of the rotation application
@@ -203,7 +203,7 @@ export interface SecretRotationProps {
    *
    * @default - single user rotation scheme
    */
-  readonly masterSecret?: ISecret;
+  readonly masterSecret?: ISecret | undefined;
 
   /**
    * Specifies the number of days after the previous rotation before
@@ -211,7 +211,7 @@ export interface SecretRotationProps {
    *
    * @default Duration.days(30)
    */
-  readonly automaticallyAfter?: Duration;
+  readonly automaticallyAfter?: Duration | undefined;
 
   /**
    * The serverless application for the rotation.
@@ -228,7 +228,7 @@ export interface SecretRotationProps {
    *
    * @default - the Vpc default strategy if not specified.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * The target service or database
@@ -240,14 +240,14 @@ export interface SecretRotationProps {
    *
    * @default - a new security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Characters which should not appear in the generated password
    *
    * @default - no additional characters are explicitly excluded
    */
-  readonly excludeCharacters?: string;
+  readonly excludeCharacters?: string | undefined;
 
   /**
    * The VPC interface endpoint to use for the Secrets Manager API
@@ -259,7 +259,7 @@ export interface SecretRotationProps {
    *
    * @default https://secretsmanager.<region>.amazonaws.com
    */
-  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint | undefined;
 
   /**
    * Specifies whether to rotate the secret immediately or wait until the next
@@ -267,7 +267,7 @@ export interface SecretRotationProps {
    *
    * @default true
    */
-  readonly rotateImmediatelyOnUpdate?: boolean;
+  readonly rotateImmediatelyOnUpdate?: boolean | undefined;
 }
 
 /**

@@ -48,7 +48,7 @@ export interface VirtualServiceProps {
    * Example value: `service.domain.local`
    * @default - A name is automatically generated
    */
-  readonly virtualServiceName?: string;
+  readonly virtualServiceName?: string | undefined;
 
   /**
    * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
@@ -182,14 +182,14 @@ export interface VirtualServiceProviderConfig {
    *
    * @default - none
    */
-  readonly virtualNodeProvider?: CfnVirtualService.VirtualNodeServiceProviderProperty;
+  readonly virtualNodeProvider?: CfnVirtualService.VirtualNodeServiceProviderProperty | undefined;
 
   /**
    * Virtual Router based provider
    *
    * @default - none
    */
-  readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty;
+  readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty | undefined;
 
   /**
    * Mesh the Provider is using
@@ -232,8 +232,8 @@ export abstract class VirtualServiceProvider {
 }
 
 class VirtualServiceProviderImpl extends VirtualServiceProvider {
-  private readonly virtualNode?: IVirtualNode;
-  private readonly virtualRouter?: IVirtualRouter;
+  private readonly virtualNode?: IVirtualNode | undefined;
+  private readonly virtualRouter?: IVirtualRouter | undefined;
   private readonly mesh: IMesh;
 
   constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {

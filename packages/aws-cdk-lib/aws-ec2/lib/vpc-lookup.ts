@@ -12,7 +12,7 @@ export interface VpcLookupOptions {
    *
    * @default Don't filter on vpcId
    */
-  readonly vpcId?: string;
+  readonly vpcId?: string | undefined;
 
   /**
    * The name of the VPC
@@ -21,7 +21,7 @@ export interface VpcLookupOptions {
    *
    * @default Don't filter on vpcName
    */
-  readonly vpcName?: string;
+  readonly vpcName?: string | undefined;
 
   /**
    * Tags on the VPC
@@ -30,14 +30,14 @@ export interface VpcLookupOptions {
    *
    * @default Don't filter on tags
    */
-  readonly tags?: {[key: string]: string};
+  readonly tags?: {[key: string]: string} | undefined;
 
   /**
    * Whether to match the default VPC
    *
    * @default Don't care whether we return the default VPC
    */
-  readonly isDefault?: boolean;
+  readonly isDefault?: boolean | undefined;
 
   /**
    * Optional tag for subnet group name.
@@ -47,14 +47,14 @@ export interface VpcLookupOptions {
    *
    * @default aws-cdk:subnet-name
    */
-  readonly subnetGroupNameTag?: string;
+  readonly subnetGroupNameTag?: string | undefined;
 
   /**
    * Optional to override inferred region
    *
    * @default Current stack's environment region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Whether to look up whether a VPN Gateway is attached to the looked up VPC.
@@ -67,12 +67,12 @@ export interface VpcLookupOptions {
    *
    * @default true
    */
-  readonly returnVpnGateways?: boolean;
+  readonly returnVpnGateways?: boolean | undefined;
 
   /**
    * The ID of the AWS account that owns the VPC
    *
    * @default the account id of the parent stack
    */
-  readonly ownerAccountId?: string;
+  readonly ownerAccountId?: string | undefined;
 }

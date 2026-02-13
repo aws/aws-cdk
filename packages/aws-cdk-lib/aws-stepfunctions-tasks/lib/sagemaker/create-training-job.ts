@@ -23,7 +23,7 @@ interface SageMakerCreateTrainingJobOptions {
    *
    * @default - a role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Identifies the training algorithm to use.
@@ -35,7 +35,7 @@ interface SageMakerCreateTrainingJobOptions {
    *
    * @default false
    */
-  readonly enableNetworkIsolation?: boolean;
+  readonly enableNetworkIsolation?: boolean | undefined;
 
   /**
    * Algorithm-specific parameters that influence the quality of the model. Set hyperparameters before you start the learning process.
@@ -44,21 +44,21 @@ interface SageMakerCreateTrainingJobOptions {
    *
    * @default - No hyperparameters
    */
-  readonly hyperparameters?: { [key: string]: any };
+  readonly hyperparameters?: { [key: string]: any } | undefined;
 
   /**
    *  Describes the various datasets (e.g. train, validation, test) and the Amazon S3 location where stored.
    *
    * @default - No inputDataConfig
    */
-  readonly inputDataConfig?: Channel[];
+  readonly inputDataConfig?: Channel[] | undefined;
 
   /**
    * Tags to be applied to the train job.
    *
    * @default - No tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 
   /**
    * Identifies the Amazon S3 location where you want Amazon SageMaker to save the results of model training.
@@ -70,28 +70,28 @@ interface SageMakerCreateTrainingJobOptions {
    *
    * @default - 1 instance of EC2 `M4.XLarge` with `10GB` volume
    */
-  readonly resourceConfig?: ResourceConfig;
+  readonly resourceConfig?: ResourceConfig | undefined;
 
   /**
    * Sets a time limit for training.
    *
    * @default - max runtime of 1 hour
    */
-  readonly stoppingCondition?: StoppingCondition;
+  readonly stoppingCondition?: StoppingCondition | undefined;
 
   /**
    * Specifies the VPC that you want your training job to connect to.
    *
    * @default - No VPC
    */
-  readonly vpcConfig?: VpcConfig;
+  readonly vpcConfig?: VpcConfig | undefined;
 
   /**
    * Environment variables to set in the Docker container.
    *
    * @default - No environment variables
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -146,8 +146,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
    */
   public readonly connections: ec2.Connections = new ec2.Connections();
 
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   /**
    * The Algorithm Specification
@@ -157,7 +157,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   /**
    * The Input Data Config.
    */
-  private readonly inputDataConfig?: Channel[];
+  private readonly inputDataConfig?: Channel[] | undefined;
 
   /**
    * The resource config for the task.
@@ -169,10 +169,10 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
    */
   private readonly stoppingCondition: StoppingCondition;
 
-  private readonly vpc?: ec2.IVpc;
+  private readonly vpc?: ec2.IVpc | undefined;
   private securityGroup?: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
-  private readonly subnets?: string[];
+  private readonly subnets?: string[] | undefined;
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role?: iam.IRole;
   private _grantPrincipal?: iam.IPrincipal;

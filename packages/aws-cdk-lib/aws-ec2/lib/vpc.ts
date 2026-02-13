@@ -173,7 +173,7 @@ export interface IVpc extends IResource, IVPCRef {
   /**
    * Identifier for the VPN gateway
    */
-  readonly vpnGatewayId?: string;
+  readonly vpnGatewayId?: string | undefined;
 
   /**
    * Dependable that can be depended upon to force internet connectivity established on the VPC
@@ -357,14 +357,14 @@ export interface SubnetSelection {
    *
    * @default SubnetType.PRIVATE_WITH_EGRESS (or ISOLATED or PUBLIC if there are no PRIVATE_WITH_EGRESS subnets)
    */
-  readonly subnetType?: SubnetType;
+  readonly subnetType?: SubnetType | undefined;
 
   /**
    * Select subnets only in the given AZs.
    *
    * @default no filtering on AZs is done
    */
-  readonly availabilityZones?: string[];
+  readonly availabilityZones?: string[] | undefined;
 
   /**
    * Select the subnet group with the given name
@@ -382,7 +382,7 @@ export interface SubnetSelection {
    *
    * @default - Selection by type instead of by name
    */
-  readonly subnetGroupName?: string;
+  readonly subnetGroupName?: string | undefined;
 
   /**
    * Alias for `subnetGroupName`
@@ -393,21 +393,21 @@ export interface SubnetSelection {
    *
    * @deprecated Use `subnetGroupName` instead
    */
-  readonly subnetName?: string;
+  readonly subnetName?: string | undefined;
 
   /**
    * If true, return at most one subnet per AZ
    *
    * @default false
    */
-  readonly onePerAz?: boolean;
+  readonly onePerAz?: boolean | undefined;
 
   /**
    * List of provided subnet filters.
    *
    * @default - none
    */
-  readonly subnetFilters?: SubnetFilter[];
+  readonly subnetFilters?: SubnetFilter[] | undefined;
 
   /**
    * Explicitly select individual subnets
@@ -420,7 +420,7 @@ export interface SubnetSelection {
    *
    * @default - Use all subnets in a selected group (all private subnets by default)
    */
-  readonly subnets?: ISubnet[];
+  readonly subnets?: ISubnet[] | undefined;
 }
 
 /**
@@ -461,7 +461,7 @@ export interface SelectedSubnets {
    *
    * @default false
    */
-  readonly isPendingLookup?: boolean;
+  readonly isPendingLookup?: boolean | undefined;
 }
 
 /**
@@ -776,7 +776,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the CIDR from the VPC will fail
    */
-  readonly vpcCidrBlock?: string;
+  readonly vpcCidrBlock?: string | undefined;
 
   /**
    * List of availability zones for the subnets in this VPC.
@@ -790,7 +790,7 @@ export interface VpcAttributes {
    *
    * @default - The VPC does not have any public subnets
    */
-  readonly publicSubnetIds?: string[];
+  readonly publicSubnetIds?: string[] | undefined;
 
   /**
    * List of names for the public subnets
@@ -799,7 +799,7 @@ export interface VpcAttributes {
    *
    * @default - All public subnets will have the name `Public`
    */
-  readonly publicSubnetNames?: string[];
+  readonly publicSubnetNames?: string[] | undefined;
 
   /**
    * List of IDs of route tables for the public subnets.
@@ -808,7 +808,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the route table ID of any public subnet will fail
    */
-  readonly publicSubnetRouteTableIds?: string[];
+  readonly publicSubnetRouteTableIds?: string[] | undefined;
 
   /**
    * List of IPv4 CIDR blocks for the public subnets.
@@ -817,7 +817,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the IPv4 CIDR block of any public subnet will fail
    */
-  readonly publicSubnetIpv4CidrBlocks?: string[];
+  readonly publicSubnetIpv4CidrBlocks?: string[] | undefined;
 
   /**
    * List of private subnet IDs
@@ -826,7 +826,7 @@ export interface VpcAttributes {
    *
    * @default - The VPC does not have any private subnets
    */
-  readonly privateSubnetIds?: string[];
+  readonly privateSubnetIds?: string[] | undefined;
 
   /**
    * List of names for the private subnets
@@ -835,7 +835,7 @@ export interface VpcAttributes {
    *
    * @default - All private subnets will have the name `Private`
    */
-  readonly privateSubnetNames?: string[];
+  readonly privateSubnetNames?: string[] | undefined;
 
   /**
    * List of IDs of route tables for the private subnets.
@@ -844,7 +844,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the route table ID of any private subnet will fail
    */
-  readonly privateSubnetRouteTableIds?: string[];
+  readonly privateSubnetRouteTableIds?: string[] | undefined;
 
   /**
    * List of IPv4 CIDR blocks for the private subnets.
@@ -853,7 +853,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the IPv4 CIDR block of any private subnet will fail
    */
-  readonly privateSubnetIpv4CidrBlocks?: string[];
+  readonly privateSubnetIpv4CidrBlocks?: string[] | undefined;
 
   /**
    * List of isolated subnet IDs
@@ -862,7 +862,7 @@ export interface VpcAttributes {
    *
    * @default - The VPC does not have any isolated subnets
    */
-  readonly isolatedSubnetIds?: string[];
+  readonly isolatedSubnetIds?: string[] | undefined;
 
   /**
    * List of names for the isolated subnets
@@ -871,7 +871,7 @@ export interface VpcAttributes {
    *
    * @default - All isolated subnets will have the name `Isolated`
    */
-  readonly isolatedSubnetNames?: string[];
+  readonly isolatedSubnetNames?: string[] | undefined;
 
   /**
    * List of IDs of route tables for the isolated subnets.
@@ -880,7 +880,7 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the route table ID of any isolated subnet will fail
    */
-  readonly isolatedSubnetRouteTableIds?: string[];
+  readonly isolatedSubnetRouteTableIds?: string[] | undefined;
 
   /**
    * List of IPv4 CIDR blocks for the isolated subnets.
@@ -889,19 +889,19 @@ export interface VpcAttributes {
    *
    * @default - Retrieving the IPv4 CIDR block of any isolated subnet will fail
    */
-  readonly isolatedSubnetIpv4CidrBlocks?: string[];
+  readonly isolatedSubnetIpv4CidrBlocks?: string[] | undefined;
 
   /**
    * VPN gateway's identifier
    */
-  readonly vpnGatewayId?: string;
+  readonly vpnGatewayId?: string | undefined;
 
   /**
    * The region the VPC is in
    *
    * @default - The region of the stack where the VPC belongs to
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 export interface SubnetAttributes {
@@ -911,21 +911,21 @@ export interface SubnetAttributes {
    *
    * @default - No AZ information, cannot use AZ selection features
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * The IPv4 CIDR block associated with the subnet
    *
    * @default - No CIDR information, cannot use CIDR filter features
    */
-  readonly ipv4CidrBlock?: string;
+  readonly ipv4CidrBlock?: string | undefined;
 
   /**
    * The ID of the route table for this particular subnet
    *
    * @default - No route table information, cannot create VPC endpoints
    */
-  readonly routeTableId?: string;
+  readonly routeTableId?: string | undefined;
 
   /**
    * The subnetId for this particular subnet
@@ -949,7 +949,7 @@ export interface VpcProps {
    *
    * @default IpProtocol.IPV4_ONLY
    */
-  readonly ipProtocol?: IpProtocol;
+  readonly ipProtocol?: IpProtocol | undefined;
 
   /**
    * The Provider to use to allocate IPv4 Space to your VPC.
@@ -960,7 +960,7 @@ export interface VpcProps {
    *
    * @default ec2.IpAddresses.cidr
    */
-  readonly ipAddresses?: IIpAddresses;
+  readonly ipAddresses?: IIpAddresses | undefined;
 
   /**
    * The CIDR range to use for the VPC, e.g. '10.0.0.0/16'.
@@ -972,7 +972,7 @@ export interface VpcProps {
    *
    * @deprecated Use ipAddresses instead
    */
-  readonly cidr?: string;
+  readonly cidr?: string | undefined;
 
   /**
    * Indicates whether the instances launched in the VPC get public DNS hostnames.
@@ -982,7 +982,7 @@ export interface VpcProps {
    *
    * @default true
    */
-  readonly enableDnsHostnames?: boolean;
+  readonly enableDnsHostnames?: boolean | undefined;
 
   /**
    * Indicates whether the DNS resolution is supported for the VPC.
@@ -995,7 +995,7 @@ export interface VpcProps {
    *
    * @default true
    */
-  readonly enableDnsSupport?: boolean;
+  readonly enableDnsSupport?: boolean | undefined;
 
   /**
    * The default tenancy of instances launched into the VPC.
@@ -1007,7 +1007,7 @@ export interface VpcProps {
    *
    * @default DefaultInstanceTenancy.Default (shared) tenancy
    */
-  readonly defaultInstanceTenancy?: DefaultInstanceTenancy;
+  readonly defaultInstanceTenancy?: DefaultInstanceTenancy | undefined;
 
   /**
    * Define the maximum number of AZs to use in this region
@@ -1028,7 +1028,7 @@ export interface VpcProps {
    *
    * @default 3
    */
-  readonly maxAzs?: number;
+  readonly maxAzs?: number | undefined;
 
   /**
    * Define the number of AZs to reserve.
@@ -1038,7 +1038,7 @@ export interface VpcProps {
    *
    * @default 0
    */
-  readonly reservedAzs?: number;
+  readonly reservedAzs?: number | undefined;
 
   /**
    * Availability zones this VPC spans.
@@ -1047,7 +1047,7 @@ export interface VpcProps {
    *
    * @default - a subset of AZs of the stack
    */
-  readonly availabilityZones?: string[];
+  readonly availabilityZones?: string[] | undefined;
 
   /**
    * The number of NAT Gateways/Instances to create.
@@ -1061,7 +1061,7 @@ export interface VpcProps {
    *
    * @default - One NAT gateway/instance per Availability Zone
    */
-  readonly natGateways?: number;
+  readonly natGateways?: number | undefined;
 
   /**
    * Configures the subnets which will have NAT Gateways/Instances
@@ -1073,7 +1073,7 @@ export interface VpcProps {
    *
    * @default - All public subnets.
    */
-  readonly natGatewaySubnets?: SubnetSelection;
+  readonly natGatewaySubnets?: SubnetSelection | undefined;
 
   /**
    * What type of NAT provider to use
@@ -1084,7 +1084,7 @@ export interface VpcProps {
    * @default NatProvider.gateway()
    *
    */
-  readonly natGatewayProvider?: NatProvider;
+  readonly natGatewayProvider?: NatProvider | undefined;
 
   /**
    * Configure the subnets to build for each AZ
@@ -1120,28 +1120,28 @@ export interface VpcProps {
    * @default - The VPC CIDR will be evenly divided between 1 public and 1
    * private subnet per AZ.
    */
-  readonly subnetConfiguration?: SubnetConfiguration[];
+  readonly subnetConfiguration?: SubnetConfiguration[] | undefined;
 
   /**
    * Indicates whether a VPN gateway should be created and attached to this VPC.
    *
    * @default - true when vpnGatewayAsn or vpnConnections is specified
    */
-  readonly vpnGateway?: boolean;
+  readonly vpnGateway?: boolean | undefined;
 
   /**
    * The private Autonomous System Number (ASN) for the VPN gateway.
    *
    * @default - Amazon default ASN.
    */
-  readonly vpnGatewayAsn?: number;
+  readonly vpnGatewayAsn?: number | undefined;
 
   /**
    * VPN connections to this VPC.
    *
    * @default - No connections.
    */
-  readonly vpnConnections?: { [id: string]: VpnConnectionOptions };
+  readonly vpnConnections?: { [id: string]: VpnConnectionOptions } | undefined;
 
   /**
    * Where to propagate VPN routes.
@@ -1150,21 +1150,21 @@ export interface VpcProps {
    * private subnets exists, isolated subnets are used. If no isolated subnets
    * exists, public subnets are used.
    */
-  readonly vpnRoutePropagation?: SubnetSelection[];
+  readonly vpnRoutePropagation?: SubnetSelection[] | undefined;
 
   /**
    * Gateway endpoints to add to this VPC.
    *
    * @default - None.
    */
-  readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions };
+  readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions } | undefined;
 
   /**
    * Flow logs to add to this VPC.
    *
    * @default - No flow logs.
    */
-  readonly flowLogs?: { [id: string]: FlowLogOptions };
+  readonly flowLogs?: { [id: string]: FlowLogOptions } | undefined;
 
   /**
    * The VPC name.
@@ -1173,7 +1173,7 @@ export interface VpcProps {
    *
    * @default this.node.path
    */
-  readonly vpcName?: string;
+  readonly vpcName?: string | undefined;
 
   /**
    * If set to true then the default inbound & outbound rules will be removed
@@ -1181,14 +1181,14 @@ export interface VpcProps {
    *
    * @default true if '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup' is enabled, false otherwise
    */
-  readonly restrictDefaultSecurityGroup?: boolean;
+  readonly restrictDefaultSecurityGroup?: boolean | undefined;
 
   /**
    * If set to false then disable the creation of the default internet gateway
    *
    * @default true
    */
-  readonly createInternetGateway?: boolean;
+  readonly createInternetGateway?: boolean | undefined;
 
   /**
    * The Provider to use to allocate IPv6 Space to your VPC.
@@ -1199,7 +1199,7 @@ export interface VpcProps {
    *
    * @default Ipv6Addresses.amazonProvided
    */
-  readonly ipv6Addresses?: IIpv6Addresses;
+  readonly ipv6Addresses?: IIpv6Addresses | undefined;
 }
 
 /**
@@ -1239,7 +1239,7 @@ export interface SubnetConfiguration {
    *
    * @default - Available IP space is evenly divided across subnets.
    */
-  readonly cidrMask?: number;
+  readonly cidrMask?: number | undefined;
 
   /**
    * The type of Subnet to configure.
@@ -1267,7 +1267,7 @@ export interface SubnetConfiguration {
    *
    * @default false
    */
-  readonly reserved?: boolean;
+  readonly reserved?: boolean | undefined;
 
   /**
    * Controls if a public IPv4 address is associated to an instance at launch
@@ -1276,7 +1276,7 @@ export interface SubnetConfiguration {
    *
    * @default true in Subnet.Public of IPV4_ONLY VPCs, false otherwise
    */
-  readonly mapPublicIpOnLaunch?: boolean;
+  readonly mapPublicIpOnLaunch?: boolean | undefined;
 
   /**
    * This property is specific to dual stack VPCs.
@@ -1287,7 +1287,7 @@ export interface SubnetConfiguration {
    *
    * @default true
    */
-  readonly ipv6AssignAddressOnCreation?: boolean;
+  readonly ipv6AssignAddressOnCreation?: boolean | undefined;
 }
 
 /**
@@ -1503,7 +1503,7 @@ export class Vpc extends VpcBase {
    * Internet Gateway for the VPC. Note that in case the VPC is configured only
    * with ISOLATED subnets, this attribute will be `undefined`.
    */
-  public readonly internetGatewayId?: string;
+  public readonly internetGatewayId?: string | undefined;
 
   public readonly internetConnectivityEstablished: IDependable;
 
@@ -1544,19 +1544,19 @@ export class Vpc extends VpcBase {
   /**
    * The provider of IPv6 addresses.
    */
-  private readonly ipv6Addresses?: IIpv6Addresses;
+  private readonly ipv6Addresses?: IIpv6Addresses | undefined;
 
   /**
    * The IPv6 CIDR block CFN resource.
    *
    * Needed to create a dependency for the subnets.
    */
-  private readonly ipv6CidrBlock?: CfnVPCCidrBlock;
+  private readonly ipv6CidrBlock?: CfnVPCCidrBlock | undefined;
 
   /**
    * The IPv6 CIDR block string representation.
    */
-  private readonly ipv6SelectedCidr?: string;
+  private readonly ipv6SelectedCidr?: string | undefined;
 
   /**
    * Subnet configurations for this VPC
@@ -2061,7 +2061,7 @@ export interface SubnetProps {
    *
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
-  readonly mapPublicIpOnLaunch?: boolean;
+  readonly mapPublicIpOnLaunch?: boolean | undefined;
 
   /**
    * The IPv6 CIDR block.
@@ -2070,7 +2070,7 @@ export interface SubnetProps {
    *
    * @default - no IPv6 CIDR block.
    */
-  readonly ipv6CidrBlock?: string;
+  readonly ipv6CidrBlock?: string | undefined;
 
   /**
    * Indicates whether a network interface created in this subnet receives an IPv6 address.
@@ -2079,7 +2079,7 @@ export interface SubnetProps {
    *
    * @default false
    */
-  readonly assignIpv6AddressOnCreation?: boolean;
+  readonly assignIpv6AddressOnCreation?: boolean | undefined;
 }
 
 /**
@@ -2352,14 +2352,14 @@ export interface AddRouteOptions {
    *
    * @default '0.0.0.0/0'
    */
-  readonly destinationCidrBlock?: string;
+  readonly destinationCidrBlock?: string | undefined;
 
   /**
    * IPv6 range this route applies to
    *
    * @default - Uses IPv6
    */
-  readonly destinationIpv6CidrBlock?: string;
+  readonly destinationIpv6CidrBlock?: string | undefined;
 
   /**
    * What type of router to route this traffic to
@@ -2381,7 +2381,7 @@ export interface AddRouteOptions {
    *
    * @default false
    */
-  readonly enablesInternetConnectivity?: boolean;
+  readonly enablesInternetConnectivity?: boolean | undefined;
 }
 
 /**
@@ -2716,8 +2716,8 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
-  private readonly _availabilityZone?: string;
-  private readonly _ipv4CidrBlock?: string;
+  private readonly _availabilityZone?: string | undefined;
+  private readonly _ipv4CidrBlock?: string | undefined;
 
   constructor(scope: Construct, id: string, attrs: SubnetAttributes) {
     super(scope, id);

@@ -19,14 +19,14 @@ export interface ApiDestinationProps {
    * The name for the API destination.
    * @default - A unique name will be generated
    */
-  readonly apiDestinationName?: string;
+  readonly apiDestinationName?: string | undefined;
 
   /**
    * A description for the API destination.
    *
    * @default - none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The ARN of the connection to use for the API destination
@@ -43,14 +43,14 @@ export interface ApiDestinationProps {
    *
    * @default HttpMethod.POST
    */
-  readonly httpMethod?: HttpMethod;
+  readonly httpMethod?: HttpMethod | undefined;
 
   /**
    * The maximum number of requests per second to send to the HTTP invocation endpoint.
    *
    * @default - Not rate limited
    */
-  readonly rateLimitPerSecond?: number;
+  readonly rateLimitPerSecond?: number | undefined;
 }
 
 /**
@@ -75,7 +75,7 @@ export interface IApiDestination extends IResource, IApiDestinationRef {
    * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridge.html#amazoneventbridge-resources-for-iam-policies
    * @attribute
    */
-  readonly apiDestinationArnForPolicy?: string;
+  readonly apiDestinationArnForPolicy?: string | undefined;
 }
 
 /**
@@ -95,7 +95,7 @@ export interface ApiDestinationAttributes {
    *
    * @default undefined - Imported API destination does not have ARN in resource format
    */
-  readonly apiDestinationArnForPolicy?: string;
+  readonly apiDestinationArnForPolicy?: string | undefined;
 }
 
 /**

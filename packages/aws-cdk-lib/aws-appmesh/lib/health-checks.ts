@@ -12,28 +12,28 @@ interface HealthCheckCommonOptions {
    *
    * @default 2
    */
-  readonly healthyThreshold?: number;
+  readonly healthyThreshold?: number | undefined;
 
   /**
    * The time period between each health check execution.
    *
    * @default Duration.seconds(5)
    */
-  readonly interval?: cdk.Duration;
+  readonly interval?: cdk.Duration | undefined;
 
   /**
    * The amount of time to wait when receiving a response from the health check.
    *
    * @default Duration.seconds(2)
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 
   /**
    * The number of consecutive failed health checks that must occur before declaring a listener unhealthy.
    *
    * @default - 2
    */
-  readonly unhealthyThreshold?: number;
+  readonly unhealthyThreshold?: number | undefined;
 }
 
 /**
@@ -45,7 +45,7 @@ export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
    *
    * @default /
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 }
 
 /**
@@ -67,14 +67,14 @@ export interface HealthCheckConfig {
    *
    * @default - no health checks
    */
-  readonly virtualNodeHealthCheck?: CfnVirtualNode.HealthCheckProperty;
+  readonly virtualNodeHealthCheck?: CfnVirtualNode.HealthCheckProperty | undefined;
 
   /**
    * VirtualGateway CFN configuration for Health Checks
    *
    * @default - no health checks
    */
-  readonly virtualGatewayHealthCheck?: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty;
+  readonly virtualGatewayHealthCheck?: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty | undefined;
 }
 
 /**
@@ -86,7 +86,7 @@ export interface HealthCheckBindOptions {
    *
    * @default - no default port is provided
    */
-  readonly defaultPort?: number;
+  readonly defaultPort?: number | undefined;
 }
 
 /**

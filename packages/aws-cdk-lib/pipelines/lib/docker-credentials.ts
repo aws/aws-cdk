@@ -69,22 +69,22 @@ export interface ExternalDockerCredentialOptions {
    * The name of the JSON field of the secret which contains the user/login name.
    * @default 'username'
    */
-  readonly secretUsernameField?: string;
+  readonly secretUsernameField?: string | undefined;
   /**
    * The name of the JSON field of the secret which contains the secret/password.
    * @default 'secret'
    */
-  readonly secretPasswordField?: string;
+  readonly secretPasswordField?: string | undefined;
   /**
    * An IAM role to assume prior to accessing the secret.
    * @default - none. The current execution role will be used.
    */
-  readonly assumeRole?: iam.IRole;
+  readonly assumeRole?: iam.IRole | undefined;
   /**
    * Defines which stages of the pipeline should be granted access to these credentials.
    * @default - all relevant stages (synth, self-update, asset publishing) are granted access.
    */
-  readonly usages?: DockerCredentialUsage[];
+  readonly usages?: DockerCredentialUsage[] | undefined;
 }
 
 /** Options for defining access for a Docker Credential composed of ECR repos */
@@ -93,12 +93,12 @@ export interface EcrDockerCredentialOptions {
    * An IAM role to assume prior to accessing the secret.
    * @default - none. The current execution role will be used.
    */
-  readonly assumeRole?: iam.IRole;
+  readonly assumeRole?: iam.IRole | undefined;
   /**
    * Defines which stages of the pipeline should be granted access to these credentials.
    * @default - all relevant stages (synth, self-update, asset publishing) are granted access.
    */
-  readonly usages?: DockerCredentialUsage[];
+  readonly usages?: DockerCredentialUsage[] | undefined;
 }
 
 /** Defines which stages of a pipeline require the specified credentials */
@@ -183,11 +183,11 @@ class EcrDockerCredential extends DockerCredential {
 
 /** Format for the CDK assets config. See the cdk-assets `DockerDomainCredentialSource` */
 interface DockerCredentialCredentialSource {
-  readonly secretsManagerSecretId?: string;
-  readonly secretsUsernameField?: string;
-  readonly secretsPasswordField?: string;
-  readonly ecrRepository?: boolean;
-  readonly assumeRoleArn?: string;
+  readonly secretsManagerSecretId?: string | undefined;
+  readonly secretsUsernameField?: string | undefined;
+  readonly secretsPasswordField?: string | undefined;
+  readonly ecrRepository?: boolean | undefined;
+  readonly assumeRoleArn?: string | undefined;
 }
 
 /**

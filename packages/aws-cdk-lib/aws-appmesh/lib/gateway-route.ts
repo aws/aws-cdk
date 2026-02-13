@@ -43,7 +43,7 @@ export interface GatewayRouteBaseProps {
    *
    * @default - an automatically generated name
    */
-  readonly gatewayRouteName?: string;
+  readonly gatewayRouteName?: string | undefined;
 
   /**
    * What protocol the route uses

@@ -12,14 +12,14 @@ export interface LinuxParametersProps {
    *
    * @default false
    */
-  readonly initProcessEnabled?: boolean;
+  readonly initProcessEnabled?: boolean | undefined;
 
   /**
    * The value for the size of the /dev/shm volume.
    *
    * @default No shared memory.
    */
-  readonly sharedMemorySize?: number;
+  readonly sharedMemorySize?: number | undefined;
 
   /**
    * The total amount of swap memory a container can use. This parameter
@@ -30,7 +30,7 @@ export interface LinuxParametersProps {
    *
    * @default No swap.
    */
-  readonly maxSwap?: cdk.Size;
+  readonly maxSwap?: cdk.Size | undefined;
 
   /**
    * This allows you to tune a container's memory swappiness behavior. This parameter
@@ -45,7 +45,7 @@ export interface LinuxParametersProps {
    *
    * @default 60
    */
-  readonly swappiness?: number;
+  readonly swappiness?: number | undefined;
 }
 
 /**
@@ -55,22 +55,22 @@ export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */
-  private readonly initProcessEnabled?: boolean;
+  private readonly initProcessEnabled?: boolean | undefined;
 
   /**
    * The shared memory size (in MiB). Not valid for Fargate launch type
    */
-  private readonly sharedMemorySize?: number;
+  private readonly sharedMemorySize?: number | undefined;
 
   /**
    * The max swap memory
    */
-  private readonly maxSwap?: cdk.Size;
+  private readonly maxSwap?: cdk.Size | undefined;
 
   /**
    * The swappiness behavior
    */
-  private readonly swappiness?: number;
+  private readonly swappiness?: number | undefined;
 
   /**
    * Capabilities to be added
@@ -184,7 +184,7 @@ export interface Device {
    *
    * @default Same path as the host
    */
-  readonly containerPath?: string;
+  readonly containerPath?: string | undefined;
 
   /**
    * The path for the device on the host container instance.
@@ -197,7 +197,7 @@ export interface Device {
    *
    * @default Readonly
    */
-  readonly permissions?: DevicePermission[];
+  readonly permissions?: DevicePermission[] | undefined;
 }
 
 function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
@@ -226,7 +226,7 @@ export interface Tmpfs {
    * The list of tmpfs volume mount options. For more information, see
    * [TmpfsMountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
    */
-  readonly mountOptions?: TmpfsMountOption[];
+  readonly mountOptions?: TmpfsMountOption[] | undefined;
 }
 
 function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {

@@ -31,7 +31,7 @@ export interface RevocationContent {
    *
    * @default RevocationType.CRL
    */
-  readonly revocationType?: RevocationType;
+  readonly revocationType?: RevocationType | undefined;
 
   /**
    * The Amazon S3 bucket for the revocation file
@@ -48,7 +48,7 @@ export interface RevocationContent {
    *
    * @default - latest version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**

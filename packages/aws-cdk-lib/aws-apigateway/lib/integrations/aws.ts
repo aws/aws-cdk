@@ -13,7 +13,7 @@ export interface AwsIntegrationProps {
    *
    * @default false
    */
-  readonly proxy?: boolean;
+  readonly proxy?: boolean | undefined;
 
   /**
    * The name of the integrated AWS service (e.g. `s3`)
@@ -24,7 +24,7 @@ export interface AwsIntegrationProps {
    * A designated subdomain supported by certain AWS service for fast
    * host-name lookup.
    */
-  readonly subdomain?: string;
+  readonly subdomain?: string | undefined;
 
   /**
    * The path to use for path-base APIs.
@@ -34,7 +34,7 @@ export interface AwsIntegrationProps {
    *
    * Mutually exclusive with the `action` options.
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The AWS action to perform in the integration.
@@ -43,7 +43,7 @@ export interface AwsIntegrationProps {
    *
    * Mutually exclusive with `path`.
    */
-  readonly action?: string;
+  readonly action?: string | undefined;
 
   /**
    * Parameters for the action.
@@ -51,26 +51,26 @@ export interface AwsIntegrationProps {
    * `action` must be set, and `path` must be undefined.
    * The action params will be URL encoded.
    */
-  readonly actionParameters?: { [key: string]: string };
+  readonly actionParameters?: { [key: string]: string } | undefined;
 
   /**
    * The integration's HTTP method type.
    *
    * @default POST
    */
-  readonly integrationHttpMethod?: string;
+  readonly integrationHttpMethod?: string | undefined;
 
   /**
    * Integration options, such as content handling, request/response mapping, etc.
    */
-  readonly options?: IntegrationOptions;
+  readonly options?: IntegrationOptions | undefined;
 
   /**
    * The region of the integrated AWS service.
    *
    * @default - same region as the stack
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**

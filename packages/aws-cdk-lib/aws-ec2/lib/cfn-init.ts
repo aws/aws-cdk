@@ -380,7 +380,7 @@ export interface AttachInitOptions {
    *
    * @default false
    */
-  readonly includeUrl?: boolean;
+  readonly includeUrl?: boolean | undefined;
 
   /**
    * Include --role argument when running cfn-init and cfn-signal commands
@@ -389,7 +389,7 @@ export interface AttachInitOptions {
    *
    * @default false
    */
-  readonly includeRole?: boolean;
+  readonly includeRole?: boolean | undefined;
 
   /**
    * OS Platform the init config will be used for
@@ -406,7 +406,7 @@ export interface AttachInitOptions {
    *
    * @default ['default']
    */
-  readonly configSets?: string[];
+  readonly configSets?: string[] | undefined;
 
   /**
    * Whether to embed a hash into the userData
@@ -420,7 +420,7 @@ export interface AttachInitOptions {
    *
    * @default true
    */
-  readonly embedFingerprint?: boolean;
+  readonly embedFingerprint?: boolean | undefined;
 
   /**
    * Print the results of running cfn-init to the Instance System Log
@@ -435,7 +435,7 @@ export interface AttachInitOptions {
    *
    * @default true
    */
-  readonly printLog?: boolean;
+  readonly printLog?: boolean | undefined;
 
   /**
    * Don't fail the instance creation when cfn-init fails
@@ -445,7 +445,7 @@ export interface AttachInitOptions {
    *
    * @default false
    */
-  readonly ignoreFailures?: boolean;
+  readonly ignoreFailures?: boolean | undefined;
 
   /**
    * When provided, signals this resource instead of the attached resource
@@ -454,5 +454,5 @@ export interface AttachInitOptions {
    *
    * @default - if this property is undefined cfn-signal signals the attached resource
    */
-  readonly signalResource?: CfnResource;
+  readonly signalResource?: CfnResource | undefined;
 }

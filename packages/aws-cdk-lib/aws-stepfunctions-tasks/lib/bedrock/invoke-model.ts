@@ -22,7 +22,7 @@ export interface BedrockInvokeModelInputProps {
    *
    * @default - Input data is retrieved from the `body` field
    */
-  readonly s3Location?: s3.Location;
+  readonly s3Location?: s3.Location | undefined;
 
   /**
    * The source location where the API response is written.
@@ -31,7 +31,7 @@ export interface BedrockInvokeModelInputProps {
    *
    * @default - The API response body is returned in the result.
    */
-  readonly s3InputUri?: string;
+  readonly s3InputUri?: string | undefined;
 }
 
 /**
@@ -49,7 +49,7 @@ export interface BedrockInvokeModelOutputProps {
    *
    * @default - Response body is returned in the task result
    */
-  readonly s3Location?: s3.Location;
+  readonly s3Location?: s3.Location | undefined;
 
   /**
    * The destination location where the API response is written.
@@ -58,7 +58,7 @@ export interface BedrockInvokeModelOutputProps {
    *
    * @default - The API response body is returned in the result.
    */
-  readonly s3OutputUri?: string;
+  readonly s3OutputUri?: string | undefined;
 }
 
 interface BedrockInvokeModelOptions {
@@ -87,7 +87,7 @@ interface BedrockInvokeModelOptions {
    *
    * @default - Input data is retrieved from the location specified in the `input` field
    */
-  readonly body?: sfn.TaskInput;
+  readonly body?: sfn.TaskInput | undefined;
 
   /**
    * The desired MIME type of the inference body in the response.
@@ -95,7 +95,7 @@ interface BedrockInvokeModelOptions {
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html
    * @default 'application/json'
    */
-  readonly accept?: string;
+  readonly accept?: string | undefined;
 
   /**
    * The MIME type of the input data in the request.
@@ -104,14 +104,14 @@ interface BedrockInvokeModelOptions {
    * @default 'application/json'
    * @deprecated This property does not require configuration because the only acceptable value is 'application/json'.
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
 
   /**
    * The source location to retrieve the input data from.
    *
    * @default - Input data is retrieved from the `body` field
    */
-  readonly input?: BedrockInvokeModelInputProps;
+  readonly input?: BedrockInvokeModelInputProps | undefined;
 
   /**
    * The destination location where the API response is written.
@@ -121,21 +121,21 @@ interface BedrockInvokeModelOptions {
    *
    * @default - The API response body is returned in the result.
    */
-  readonly output?: BedrockInvokeModelOutputProps;
+  readonly output?: BedrockInvokeModelOutputProps | undefined;
 
   /**
    * The guardrail is applied to the invocation
    *
    * @default - No guardrail is applied to the invocation.
    */
-  readonly guardrail?: Guardrail;
+  readonly guardrail?: Guardrail | undefined;
 
   /**
    * Specifies whether to enable or disable the Bedrock trace.
    *
    * @default - Trace is not enabled for the invocation.
    */
-  readonly traceEnabled?: boolean;
+  readonly traceEnabled?: boolean | undefined;
 }
 
 /**
@@ -180,7 +180,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
   protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private readonly modelOutput?: BedrockInvokeModelOutputProps;
+  private readonly modelOutput?: BedrockInvokeModelOutputProps | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: BedrockInvokeModelProps) {
     super(scope, id, props);

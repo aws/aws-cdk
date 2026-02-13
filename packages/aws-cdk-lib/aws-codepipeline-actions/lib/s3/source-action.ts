@@ -66,7 +66,7 @@ export interface S3SourceActionProps extends codepipeline.CommonAwsActionProps {
    * @default S3Trigger.POLL
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
    */
-  readonly trigger?: S3Trigger;
+  readonly trigger?: S3Trigger | undefined;
 
   /**
    * The Amazon S3 bucket that stores the source code.

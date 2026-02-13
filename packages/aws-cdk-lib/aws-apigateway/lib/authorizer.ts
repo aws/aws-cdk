@@ -46,5 +46,5 @@ export interface IAuthorizer {
   /**
    * The authorization type of this authorizer.
    */
-  readonly authorizationType?: AuthorizationType;
+  readonly authorizationType?: AuthorizationType | undefined;
 }

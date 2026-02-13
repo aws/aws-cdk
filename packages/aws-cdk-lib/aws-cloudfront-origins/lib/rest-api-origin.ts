@@ -16,7 +16,7 @@ export interface RestApiOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(30)
    */
-  readonly readTimeout?: cdk.Duration;
+  readonly readTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
@@ -27,7 +27,7 @@ export interface RestApiOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(5)
    */
-  readonly keepaliveTimeout?: cdk.Duration;
+  readonly keepaliveTimeout?: cdk.Duration | undefined;
 }
 
 /**

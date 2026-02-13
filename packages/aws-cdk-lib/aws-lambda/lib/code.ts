@@ -231,25 +231,25 @@ export interface CodeConfig {
    * The location of the code in S3 (mutually exclusive with `inlineCode` and `image`).
    * @default - code is not an s3 location
    */
-  readonly s3Location?: s3.Location;
+  readonly s3Location?: s3.Location | undefined;
 
   /**
    * Inline code (mutually exclusive with `s3Location` and `image`).
    * @default - code is not inline code
    */
-  readonly inlineCode?: string;
+  readonly inlineCode?: string | undefined;
 
   /**
    * Docker image configuration (mutually exclusive with `s3Location` and `inlineCode`).
    * @default - code is not an ECR container image
    */
-  readonly image?: CodeImageConfig;
+  readonly image?: CodeImageConfig | undefined;
 
   /**
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKeyArn?: string;
+  readonly sourceKMSKeyArn?: string | undefined;
 }
 
 /**
@@ -267,7 +267,7 @@ export interface CodeImageConfig {
    * @see https://docs.docker.com/engine/reference/builder/#cmd
    * @default - use the CMD specified in the docker image or Dockerfile.
    */
-  readonly cmd?: string[];
+  readonly cmd?: string[] | undefined;
 
   /**
    * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
@@ -276,7 +276,7 @@ export interface CodeImageConfig {
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
-  readonly entrypoint?: string[];
+  readonly entrypoint?: string[] | undefined;
 
   /**
    * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
@@ -284,7 +284,7 @@ export interface CodeImageConfig {
    * @see https://docs.docker.com/engine/reference/builder/#workdir
    * @default - use the WORKDIR in the docker image or Dockerfile.
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 }
 
 /**
@@ -422,7 +422,7 @@ export interface ResourceBindOptions {
    * @see https://github.com/aws/aws-cdk/issues/1432
    * @default Code
    */
-  readonly resourceProperty?: string;
+  readonly resourceProperty?: string | undefined;
 }
 
 /**
@@ -436,7 +436,7 @@ export interface CfnParametersCodeProps {
    *
    * @default a new parameter will be created
    */
-  readonly bucketNameParam?: cdk.CfnParameter;
+  readonly bucketNameParam?: cdk.CfnParameter | undefined;
 
   /**
    * The CloudFormation parameter that represents the path inside the S3 Bucket
@@ -445,12 +445,12 @@ export interface CfnParametersCodeProps {
    *
    * @default a new parameter will be created
    */
-  readonly objectKeyParam?: cdk.CfnParameter;
+  readonly objectKeyParam?: cdk.CfnParameter | undefined;
   /**
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: IKeyRef;
+  readonly sourceKMSKey?: IKeyRef | undefined;
 }
 
 /**
@@ -541,7 +541,7 @@ export interface EcrImageCodeProps {
    * @see https://docs.docker.com/engine/reference/builder/#cmd
    * @default - use the CMD specified in the docker image or Dockerfile.
    */
-  readonly cmd?: string[];
+  readonly cmd?: string[] | undefined;
 
   /**
    * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
@@ -550,7 +550,7 @@ export interface EcrImageCodeProps {
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
-  readonly entrypoint?: string[];
+  readonly entrypoint?: string[] | undefined;
 
   /**
    * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
@@ -558,20 +558,20 @@ export interface EcrImageCodeProps {
    * @see https://docs.docker.com/engine/reference/builder/#workdir
    * @default - use the WORKDIR in the docker image or Dockerfile.
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 
   /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
    * @deprecated use `tagOrDigest`
    */
-  readonly tag?: string;
+  readonly tag?: string | undefined;
 
   /**
    * The image tag or digest to use when pulling the image from ECR (digests must start with `sha256:`).
    * @default 'latest'
    */
-  readonly tagOrDigest?: string;
+  readonly tagOrDigest?: string | undefined;
 
 }
 
@@ -609,7 +609,7 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @see https://docs.docker.com/engine/reference/builder/#cmd
    * @default - use the CMD specified in the docker image or Dockerfile.
    */
-  readonly cmd?: string[];
+  readonly cmd?: string[] | undefined;
 
   /**
    * Specify or override the ENTRYPOINT on the specified Docker image or Dockerfile.
@@ -618,7 +618,7 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
-  readonly entrypoint?: string[];
+  readonly entrypoint?: string[] | undefined;
 
   /**
    * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
@@ -626,7 +626,7 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @see https://docs.docker.com/engine/reference/builder/#workdir
    * @default - use the WORKDIR in the docker image or Dockerfile.
    */
-  readonly workingDirectory?: string;
+  readonly workingDirectory?: string | undefined;
 }
 
 /**
@@ -685,7 +685,7 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    *
    * @default /asset
    */
-  readonly imagePath?: string;
+  readonly imagePath?: string | undefined;
 
   /**
    * The path on the local filesystem where the asset will be copied
@@ -693,7 +693,7 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    *
    * @default - a unique temporary directory in the system temp directory
    */
-  readonly outputPath?: string;
+  readonly outputPath?: string | undefined;
 }
 
 /**
@@ -705,7 +705,7 @@ export interface CustomCommandOptions extends s3_assets.AssetOptions {
    *
    * @default: see `child_process.SpawnSyncOptions` (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
    */
-  readonly commandOptions?: { [options: string]: any };
+  readonly commandOptions?: { [options: string]: any } | undefined;
 }
 
 /**
@@ -715,10 +715,10 @@ export interface BucketOptions {
   /**
    * Optional S3 object version
    */
-  readonly objectVersion?: string;
+  readonly objectVersion?: string | undefined;
   /**
    * The ARN of the KMS key used to encrypt the handler code.
    * @default - the default server-side encryption with Amazon S3 managed keys(SSE-S3) key will be used.
    */
-  readonly sourceKMSKey?: IKeyRef;
+  readonly sourceKMSKey?: IKeyRef | undefined;
 }

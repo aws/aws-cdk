@@ -40,7 +40,7 @@ export interface PolicyProps {
    * @default - Uses the logical ID of the policy resource, which is ensured
    * to be unique within the stack.
    */
-  readonly policyName?: string;
+  readonly policyName?: string | undefined;
 
   /**
    * Users to attach this policy to.
@@ -48,7 +48,7 @@ export interface PolicyProps {
    *
    * @default - No users.
    */
-  readonly users?: IUser[];
+  readonly users?: IUser[] | undefined;
 
   /**
    * Roles to attach this policy to.
@@ -56,7 +56,7 @@ export interface PolicyProps {
    *
    * @default - No roles.
    */
-  readonly roles?: IRole[];
+  readonly roles?: IRole[] | undefined;
 
   /**
    * Groups to attach this policy to.
@@ -64,7 +64,7 @@ export interface PolicyProps {
    *
    * @default - No groups.
    */
-  readonly groups?: IGroup[];
+  readonly groups?: IGroup[] | undefined;
 
   /**
    * Initial set of permissions to add to this policy document.
@@ -72,7 +72,7 @@ export interface PolicyProps {
    *
    * @default - No statements.
    */
-  readonly statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[] | undefined;
 
   /**
    * Force creation of an `AWS::IAM::Policy`
@@ -89,7 +89,7 @@ export interface PolicyProps {
    *
    * @default false
    */
-  readonly force?: boolean;
+  readonly force?: boolean | undefined;
 
   /**
    * Initial PolicyDocument to use for this Policy. If omited, any
@@ -98,7 +98,7 @@ export interface PolicyProps {
    *
    * @default - An empty policy.
    */
-  readonly document?: PolicyDocument;
+  readonly document?: PolicyDocument | undefined;
 }
 
 /**
@@ -294,7 +294,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
 
 class PolicyGrantPrincipal implements IPrincipal {
   public readonly policyFragment: PrincipalPolicyFragment;
-  public readonly principalAccount?: string;
+  public readonly principalAccount?: string | undefined;
   public readonly grantPrincipal: IPrincipal = this;
 
   constructor(private _policy: Policy) {

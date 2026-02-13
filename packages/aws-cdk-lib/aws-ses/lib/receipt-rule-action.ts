@@ -59,7 +59,7 @@ export interface BounceActionConfig {
    *
    * @default - No status code.
    */
-  readonly statusCode?: string;
+  readonly statusCode?: string | undefined;
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to
    * notify when the bounce action is taken.
@@ -68,7 +68,7 @@ export interface BounceActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -88,7 +88,7 @@ export interface LambdaActionConfig {
    *
    * @default 'Event'
    */
-  readonly invocationType?: string;
+  readonly invocationType?: string | undefined;
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to
    * notify when the Lambda action is executed.
@@ -97,7 +97,7 @@ export interface LambdaActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -118,7 +118,7 @@ export interface S3ActionConfig {
    *
    * @default - Emails are not encrypted.
    */
-  readonly kmsKeyArn?: string;
+  readonly kmsKeyArn?: string | undefined;
   /**
    * The key prefix of the Amazon S3 bucket.
    *
@@ -126,7 +126,7 @@ export interface S3ActionConfig {
    *
    * @default - No prefix.
    */
-  readonly objectKeyPrefix?: string;
+  readonly objectKeyPrefix?: string | undefined;
   /**
    * The ARN of the Amazon SNS topic to notify when the message is saved to the Amazon S3 bucket.
    *
@@ -134,7 +134,7 @@ export interface S3ActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -148,7 +148,7 @@ export interface SNSActionConfig {
    *
    * @default 'UTF-8'
    */
-  readonly encoding?: string;
+  readonly encoding?: string | undefined;
   /**
    * The Amazon Resource Name (ARN) of the Amazon SNS topic to notify.
    *
@@ -156,7 +156,7 @@ export interface SNSActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -176,7 +176,7 @@ export interface StopActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -196,7 +196,7 @@ export interface WorkmailActionConfig {
    *
    * @default - No notification is sent to SNS.
    */
-  readonly topicArn?: string;
+  readonly topicArn?: string | undefined;
 }
 
 /**
@@ -206,39 +206,39 @@ export interface ReceiptRuleActionConfig {
   /**
    * Adds a header to the received email.
    */
-  readonly addHeaderAction?: AddHeaderActionConfig;
+  readonly addHeaderAction?: AddHeaderActionConfig | undefined;
 
   /**
    * Rejects the received email by returning a bounce response to the sender and,
    * optionally, publishes a notification to Amazon SNS.
    */
-  readonly bounceAction?: BounceActionConfig;
+  readonly bounceAction?: BounceActionConfig | undefined;
 
   /**
    * Calls an AWS Lambda function, and optionally, publishes a notification to
    * Amazon SNS.
    */
-  readonly lambdaAction?: LambdaActionConfig;
+  readonly lambdaAction?: LambdaActionConfig | undefined;
 
   /**
    * Saves the received message to an Amazon S3 bucket and, optionally, publishes
    * a notification to Amazon SNS.
    */
-  readonly s3Action?: S3ActionConfig;
+  readonly s3Action?: S3ActionConfig | undefined;
 
   /**
    * Publishes the email content within a notification to Amazon SNS.
    */
-  readonly snsAction?: SNSActionConfig;
+  readonly snsAction?: SNSActionConfig | undefined;
 
   /**
    * Terminates the evaluation of the receipt rule set and optionally publishes a
    * notification to Amazon SNS.
    */
-  readonly stopAction?: StopActionConfig;
+  readonly stopAction?: StopActionConfig | undefined;
 
   /**
    * Calls Amazon WorkMail and, optionally, publishes a notification to Amazon SNS.
    */
-  readonly workmailAction?: WorkmailActionConfig;
+  readonly workmailAction?: WorkmailActionConfig | undefined;
 }

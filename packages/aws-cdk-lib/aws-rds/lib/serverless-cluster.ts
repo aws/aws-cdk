@@ -72,7 +72,7 @@ interface ServerlessClusterNewProps {
    *
    * @default - A name is automatically generated.
    */
-  readonly clusterIdentifier?: string;
+  readonly clusterIdentifier?: string | undefined;
 
   /**
    * The number of days during which automatic DB snapshots are retained.
@@ -81,21 +81,21 @@ interface ServerlessClusterNewProps {
    *
    * @default Duration.days(1)
    */
-  readonly backupRetention?: Duration;
+  readonly backupRetention?: Duration | undefined;
 
   /**
    * Name of a database which is automatically created inside the cluster
    *
    * @default - Database is not created in cluster.
    */
-  readonly defaultDatabaseName?: string;
+  readonly defaultDatabaseName?: string | undefined;
 
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
    * @default - true if removalPolicy is RETAIN, false otherwise
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * Whether to enable the Data API.
@@ -104,14 +104,14 @@ interface ServerlessClusterNewProps {
    *
    * @default false
    */
-  readonly enableDataApi?: boolean;
+  readonly enableDataApi?: boolean | undefined;
 
   /**
    * The VPC that this Aurora Serverless v1 Cluster has been created in.
    *
    * @default - the default VPC in the account and region will be used
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Where to place the instances within the VPC.
@@ -119,7 +119,7 @@ interface ServerlessClusterNewProps {
    *
    * @default - the VPC default strategy if not specified.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Scaling configuration of an Aurora Serverless database cluster.
@@ -128,7 +128,7 @@ interface ServerlessClusterNewProps {
    *   minimum capacity: 2 ACU
    *   maximum capacity: 16 ACU
    */
-  readonly scaling?: ServerlessScalingOptions;
+  readonly scaling?: ServerlessScalingOptions | undefined;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -136,7 +136,7 @@ interface ServerlessClusterNewProps {
    *
    * @default - RemovalPolicy.SNAPSHOT (remove the cluster and instances, but retain a snapshot of the data)
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Security group.
@@ -144,14 +144,14 @@ interface ServerlessClusterNewProps {
    * @default - a new security group is created if `vpc` was provided.
    *   If the `vpc` property was not provided, no VPC security groups will be associated with the DB cluster.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Additional parameters to pass to the database engine
    *
    * @default - no parameter group.
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 
   /**
    * Existing subnet group for the cluster.
@@ -159,14 +159,14 @@ interface ServerlessClusterNewProps {
    * @default - a new subnet group is created if `vpc` was provided.
    *   If the `vpc` property was not provided, no subnet group will be associated with the DB cluster
    */
-  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef | undefined;
 
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - true
    */
-  readonly copyTagsToSnapshot?: boolean;
+  readonly copyTagsToSnapshot?: boolean | undefined;
 }
 
 /**
@@ -184,35 +184,35 @@ export interface ServerlessClusterAttributes {
    *
    * @default - none
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The security groups of the database cluster
    *
    * @default - no security groups
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Cluster endpoint address
    *
    * @default - no endpoint address
    */
-  readonly clusterEndpointAddress?: string;
+  readonly clusterEndpointAddress?: string | undefined;
 
   /**
    * Reader endpoint address
    *
    * @default - no reader address
    */
-  readonly readerEndpointAddress?: string;
+  readonly readerEndpointAddress?: string | undefined;
 
   /**
    * The secret attached to the database cluster
    *
    * @default - no secret
    */
-  readonly secret?: secretsmanager.ISecret;
+  readonly secret?: secretsmanager.ISecret | undefined;
 }
 
 /**
@@ -278,14 +278,14 @@ export interface ServerlessScalingOptions {
    *
    * @default - determined by Aurora based on database engine
    */
-  readonly minCapacity?: AuroraCapacityUnit;
+  readonly minCapacity?: AuroraCapacityUnit | undefined;
 
   /**
    * The maximum capacity for an Aurora Serverless database cluster.
    *
    * @default - determined by Aurora based on database engine
    */
-  readonly maxCapacity?: AuroraCapacityUnit;
+  readonly maxCapacity?: AuroraCapacityUnit | undefined;
 
   /**
    * The time before an Aurora Serverless database cluster is paused.
@@ -300,7 +300,7 @@ export interface ServerlessScalingOptions {
    *
    * @default - automatic pause enabled after 5 minutes
    */
-  readonly autoPause?: Duration;
+  readonly autoPause?: Duration | undefined;
 
   /**
    * The amount of time that Aurora Serverless v1 tries to find a scaling point to perform
@@ -317,7 +317,7 @@ export interface ServerlessScalingOptions {
    *
    * @default - TimeoutAction.ROLLBACK_CAPACITY_CHANGE
    */
-  readonly timeoutAction?: TimeoutAction;
+  readonly timeoutAction?: TimeoutAction | undefined;
 }
 
 /**
@@ -347,7 +347,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
   /**
    * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret | undefined;
 
   protected abstract enableDataApi?: boolean;
 
@@ -536,14 +536,14 @@ export interface ServerlessClusterProps extends ServerlessClusterNewProps {
    *
    * @default - A username of 'admin' and SecretsManager-generated password
    */
-  readonly credentials?: Credentials;
+  readonly credentials?: Credentials | undefined;
 
   /**
    * The KMS key for storage encryption.
    *
    * @default - the default master key will be used for storage encryption
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKey | undefined;
 }
 
 /**
@@ -572,10 +572,10 @@ export class ServerlessCluster extends ServerlessClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
 
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
-  private readonly vpc?: ec2.IVpc;
-  private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly vpc?: ec2.IVpc | undefined;
+  private readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -679,12 +679,12 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
 
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   protected readonly enableDataApi = true;
 
-  private readonly _clusterEndpoint?: Endpoint;
-  private readonly _clusterReadEndpoint?: Endpoint;
+  private readonly _clusterEndpoint?: Endpoint | undefined;
+  private readonly _clusterReadEndpoint?: Endpoint | undefined;
 
   constructor(scope: Construct, id: string, attrs: ServerlessClusterAttributes) {
     super(scope, id);
@@ -739,7 +739,7 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNew
    *
    * @default - The existing username and password from the snapshot will be used.
    */
-  readonly credentials?: SnapshotCredentials;
+  readonly credentials?: SnapshotCredentials | undefined;
 }
 
 /**
@@ -757,7 +757,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
     super(scope, id, props);

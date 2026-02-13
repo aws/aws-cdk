@@ -26,7 +26,7 @@ export interface CallApiGatewayRestApiEndpointOptions {
    *
    * @default - Uses the Region of the stack containing the `api`.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**
@@ -137,7 +137,7 @@ export class CallApiGatewayRestApiEndpoint extends CallApiGatewayEndpointBase {
 
   protected readonly apiEndpoint: string;
   protected readonly arnForExecuteApi: string;
-  protected readonly stageName?: string;
+  protected readonly stageName?: string | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: CallApiGatewayRestApiEndpointProps) {
     super(scope, id, props);

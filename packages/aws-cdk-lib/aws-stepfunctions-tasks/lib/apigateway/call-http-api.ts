@@ -24,7 +24,7 @@ export interface CallApiGatewayHttpApiEndpointOptions {
    * Name of the stage where the API is deployed to in API Gateway
    * @default '$default'
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
 
   protected readonly apiEndpoint: string;
   protected readonly arnForExecuteApi: string;
-  protected readonly stageName?: string;
+  protected readonly stageName?: string | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: CallApiGatewayHttpApiEndpointProps) {
     super(scope, id, props);

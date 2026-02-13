@@ -16,7 +16,7 @@ export interface BatchContainerOverrides {
    *
    * @default - No command overrides
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to send to the container.
@@ -26,7 +26,7 @@ export interface BatchContainerOverrides {
    *
    * @default - No environment overrides
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The instance type to use for a multi-node parallel job.
@@ -34,14 +34,14 @@ export interface BatchContainerOverrides {
    *
    * @default - No instance type overrides
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * Memory reserved for the job.
    *
    * @default - No memory overrides. The memory supplied in the job definition will be used.
    */
-  readonly memory?: Size;
+  readonly memory?: Size | undefined;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -51,7 +51,7 @@ export interface BatchContainerOverrides {
    *
    * @default - No GPU reservation
    */
-  readonly gpuCount?: number;
+  readonly gpuCount?: number | undefined;
 
   /**
    * The number of vCPUs to reserve for the container.
@@ -59,7 +59,7 @@ export interface BatchContainerOverrides {
    *
    * @default - No vCPUs overrides
    */
-  readonly vcpus?: number;
+  readonly vcpus?: number | undefined;
 }
 
 /**
@@ -71,14 +71,14 @@ export interface BatchJobDependency {
    *
    * @default - No jobId
    */
-  readonly jobId?: string;
+  readonly jobId?: string | undefined;
 
   /**
    * The type of the job dependency.
    *
    * @default - No type
    */
-  readonly type?: string;
+  readonly type?: string | undefined;
 }
 
 interface BatchSubmitJobOptions {
@@ -106,7 +106,7 @@ interface BatchSubmitJobOptions {
    *
    * @default - No array size
    */
-  readonly arraySize?: number;
+  readonly arraySize?: number | undefined;
 
   /**
    * A list of container overrides in JSON format that specify the name of a container
@@ -116,7 +116,7 @@ interface BatchSubmitJobOptions {
    *
    * @default - No container overrides
    */
-  readonly containerOverrides?: BatchContainerOverrides;
+  readonly containerOverrides?: BatchContainerOverrides | undefined;
 
   /**
    * A list of dependencies for the job.
@@ -126,14 +126,14 @@ interface BatchSubmitJobOptions {
    *
    * @default - No dependencies
    */
-  readonly dependsOn?: BatchJobDependency[];
+  readonly dependsOn?: BatchJobDependency[] | undefined;
 
   /**
    * The payload to be passed as parameters to the batch job
    *
    * @default - No parameters are passed
    */
-  readonly payload?: sfn.TaskInput;
+  readonly payload?: sfn.TaskInput | undefined;
 
   /**
    * The number of times to move a job to the RUNNABLE status.
@@ -143,14 +143,14 @@ interface BatchSubmitJobOptions {
    *
    * @default 1
    */
-  readonly attempts?: number;
+  readonly attempts?: number | undefined;
 
   /**
    * The tags applied to the job request.
    *
    * @default {} - no tags
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -197,8 +197,8 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

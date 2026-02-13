@@ -35,7 +35,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
    *
    * @default - optimal instance, selected by Batch
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * The index of the main node in this job.
@@ -43,7 +43,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
    *
    * @default 0
    */
-  readonly mainNode?: number;
+  readonly mainNode?: number | undefined;
 
   /**
    * Whether to propagate tags from the JobDefinition
@@ -51,7 +51,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
    *
    * @default false
    */
-  readonly propagateTags?: boolean;
+  readonly propagateTags?: boolean | undefined;
 
   /**
    * Add a container to this multinode job
@@ -93,7 +93,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    *
    * @default - optimal instance, selected by Batch
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * The containers that this multinode job will run.
@@ -102,7 +102,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    *
    * @default none
    */
-  readonly containers?: MultiNodeContainer[];
+  readonly containers?: MultiNodeContainer[] | undefined;
 
   /**
    * The index of the main node in this job.
@@ -110,7 +110,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    *
    * @default 0
    */
-  readonly mainNode?: number;
+  readonly mainNode?: number | undefined;
 
   /**
    * Whether to propagate tags from the JobDefinition
@@ -118,7 +118,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    *
    * @default false
    */
-  readonly propagateTags?: boolean;
+  readonly propagateTags?: boolean | undefined;
 }
 
 /**
@@ -148,8 +148,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   }
 
   public readonly containers: MultiNodeContainer[];
-  public readonly mainNode?: number;
-  public readonly propagateTags?: boolean;
+  public readonly mainNode?: number | undefined;
+  public readonly propagateTags?: boolean | undefined;
 
   private readonly resource: CfnJobDefinition;
 
@@ -167,7 +167,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     return this.getResourceNameAttribute(this.resource.ref);
   }
 
-  private readonly _instanceType?: ec2.InstanceType;
+  private readonly _instanceType?: ec2.InstanceType | undefined;
 
   constructor(scope: Construct, id: string, props?: MultiNodeJobDefinitionProps) {
     super(scope, id, props);

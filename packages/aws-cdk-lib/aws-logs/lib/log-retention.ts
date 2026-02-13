@@ -20,7 +20,7 @@ export interface LogRetentionProps {
    * The region where the log group should be created
    * @default - same region as the stack
    */
-  readonly logGroupRegion?: string;
+  readonly logGroupRegion?: string | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -32,20 +32,20 @@ export interface LogRetentionProps {
    *
    * @default - A new role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Retry options for all AWS API calls.
    *
    * @default - AWS SDK default retry options
    */
-  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions | undefined;
 
   /**
    * The removalPolicy for the log group when the stack is deleted
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 }
 
 /**
@@ -57,14 +57,14 @@ export interface LogRetentionRetryOptions {
    *
    * @default 5
    */
-  readonly maxRetries?: number;
+  readonly maxRetries?: number | undefined;
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
    * @deprecated Unused since the upgrade to AWS SDK v3, which uses a different retry strategy
    * @default - none, not used anymore
    */
-  readonly base?: cdk.Duration;
+  readonly base?: cdk.Duration | undefined;
 }
 
 /**

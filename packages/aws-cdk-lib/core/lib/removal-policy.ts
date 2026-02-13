@@ -73,11 +73,11 @@ export interface RemovalPolicyOptions {
    * @default - Default value is resource specific. To determine the default value for a resource,
    * please consult that specific resource's documentation.
    */
-  readonly default?: RemovalPolicy;
+  readonly default?: RemovalPolicy | undefined;
 
   /**
    * Apply the same deletion policy to the resource's "UpdateReplacePolicy"
    * @default true
    */
-  readonly applyToUpdateReplacePolicy?: boolean;
+  readonly applyToUpdateReplacePolicy?: boolean | undefined;
 }

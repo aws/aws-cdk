@@ -33,7 +33,7 @@ export interface SageMakerStartPipelineExecutionProps extends ScheduleTargetBase
    *
    * @default - no pipeline parameter list
    */
-  readonly pipelineParameterList?: SageMakerPipelineParameter[];
+  readonly pipelineParameterList?: SageMakerPipelineParameter[] | undefined;
 }
 
 /**

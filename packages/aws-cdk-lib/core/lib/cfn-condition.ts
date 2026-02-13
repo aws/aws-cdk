@@ -8,7 +8,7 @@ export interface CfnConditionProps {
    *
    * @default - None.
    */
-  readonly expression?: ICfnConditionExpression;
+  readonly expression?: ICfnConditionExpression | undefined;
 }
 
 /**

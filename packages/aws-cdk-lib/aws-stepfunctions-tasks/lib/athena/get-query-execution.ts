@@ -57,8 +57,8 @@ export class AthenaGetQueryExecution extends sfn.TaskStateBase {
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

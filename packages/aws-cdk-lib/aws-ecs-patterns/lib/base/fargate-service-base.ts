@@ -8,7 +8,7 @@ export interface FargateServiceBaseProps {
    *
    * @default - none
    */
-  readonly taskDefinition?: FargateTaskDefinition;
+  readonly taskDefinition?: FargateTaskDefinition | undefined;
 
   /**
    * The number of cpu units used by the task.
@@ -33,7 +33,7 @@ export interface FargateServiceBaseProps {
    *
    * @default 256
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -59,7 +59,7 @@ export interface FargateServiceBaseProps {
    *
    * @default 512
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
@@ -70,7 +70,7 @@ export interface FargateServiceBaseProps {
    *
    * @default Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
-  readonly ephemeralStorageGiB?: number;
+  readonly ephemeralStorageGiB?: number | undefined;
 
   /**
    * The platform version on which to run your service.
@@ -81,12 +81,12 @@ export interface FargateServiceBaseProps {
    *
    * @default Latest
    */
-  readonly platformVersion?: FargatePlatformVersion;
+  readonly platformVersion?: FargatePlatformVersion | undefined;
 
   /**
    * The runtime platform of the task definition
    *
    * @default - If the property is undefined, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
-  readonly runtimePlatform?: RuntimePlatform;
+  readonly runtimePlatform?: RuntimePlatform | undefined;
 }

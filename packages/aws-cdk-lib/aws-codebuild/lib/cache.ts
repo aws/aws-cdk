@@ -7,7 +7,7 @@ export interface BucketCacheOptions {
   /**
    * The prefix to use to store the cache in the bucket
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * Defines the scope of the cache.
@@ -17,7 +17,7 @@ export interface BucketCacheOptions {
    *
    * @default undefined - No cache namespace, which means that the cache is not shared across multiple projects.
    */
-  readonly cacheNamespace?: string;
+  readonly cacheNamespace?: string | undefined;
 }
 
 /**

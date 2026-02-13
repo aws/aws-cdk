@@ -46,7 +46,7 @@ export interface StageProps {
    *
    * @default - The environments should be configured on the `Stack`s.
    */
-  readonly env?: Environment;
+  readonly env?: Environment | undefined;
 
   /**
    * The output directory into which to emit synthesized artifacts.
@@ -59,14 +59,14 @@ export interface StageProps {
    * directory to the outdir of the app. For apps, if outdir is not specified, a
    * temporary directory will be created.
    */
-  readonly outdir?: string;
+  readonly outdir?: string | undefined;
 
   /**
    * Name of this stage.
    *
    * @default - Derived from the id.
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 
   /**
    * Options for applying a permissions boundary to all IAM Roles
@@ -88,7 +88,7 @@ export interface StageProps {
    *
    * @default - no permissions boundary is applied
    */
-  readonly permissionsBoundary?: PermissionsBoundary;
+  readonly permissionsBoundary?: PermissionsBoundary | undefined;
 
   /**
    * Validation plugins to run during synthesis. If any plugin reports any violation,
@@ -96,13 +96,13 @@ export interface StageProps {
    *
    * @default - no validation plugins are used
    */
-  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[] | undefined;
 
   /**
    * A list of IPropertyInjector attached to this Stage.
    * @default - no PropertyInjectors
    */
-  readonly propertyInjectors?: IPropertyInjector[];
+  readonly propertyInjectors?: IPropertyInjector[] | undefined;
 }
 
 /**
@@ -138,13 +138,13 @@ export class Stage extends Construct {
    * The default region for all resources defined within this stage.
    *
    */
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   /**
    * The default account for all resources defined within this stage.
    *
    */
-  public readonly account?: string;
+  public readonly account?: string | undefined;
 
   /**
    * The cloud assembly builder that is being used for this App
@@ -164,7 +164,7 @@ export class Stage extends Construct {
    * The parent stage or `undefined` if this is the app.
    * *
    */
-  public readonly parentStage?: Stage;
+  public readonly parentStage?: Stage | undefined;
 
   /**
    * The cached assembly if it was already built
@@ -325,14 +325,14 @@ export interface StageSynthesisOptions {
    * Should we skip construct validation.
    * @default - false
    */
-  readonly skipValidation?: boolean;
+  readonly skipValidation?: boolean | undefined;
 
   /**
    * Whether the stack should be validated after synthesis to check for error metadata
    *
    * @default - false
    */
-  readonly validateOnSynthesis?: boolean;
+  readonly validateOnSynthesis?: boolean | undefined;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.
@@ -340,14 +340,14 @@ export interface StageSynthesisOptions {
    * Do not use in production.
    * @default false
    */
-  readonly force?: boolean;
+  readonly force?: boolean | undefined;
 
   /**
    * Whether or not to throw a warning instead of an error if the construct tree has
    * been mutated since the last synth.
    * @default true
    */
-  readonly errorOnDuplicateSynth?: boolean;
+  readonly errorOnDuplicateSynth?: boolean | undefined;
 
   /**
    * Whether or not run the stabilization loop while invoking Aspects.
@@ -358,5 +358,5 @@ export interface StageSynthesisOptions {
    * an Aspect will not inherit their parent aspects.
    * @default false
    */
-  readonly aspectStabilization?: boolean;
+  readonly aspectStabilization?: boolean | undefined;
 }

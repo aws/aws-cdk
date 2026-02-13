@@ -18,14 +18,14 @@ export interface ConnectionProps {
    *
    * @default - A name is automatically generated
    */
-  readonly connectionName?: string;
+  readonly connectionName?: string | undefined;
 
   /**
    * The name of the connection.
    *
    * @default - none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The authorization type for the connection.
@@ -37,21 +37,21 @@ export interface ConnectionProps {
    *
    * @default - No additional parameters
    */
-  readonly bodyParameters?: Record<string, HttpParameter>;
+  readonly bodyParameters?: Record<string, HttpParameter> | undefined;
 
   /**
    * Additional string parameters to add to the invocation headers
    *
    * @default - No additional parameters
    */
-  readonly headerParameters?: Record<string, HttpParameter>;
+  readonly headerParameters?: Record<string, HttpParameter> | undefined;
 
   /**
    * Additional string parameters to add to the invocation query strings
    *
    * @default - No additional parameters
    */
-  readonly queryStringParameters?: Record<string, HttpParameter>;
+  readonly queryStringParameters?: Record<string, HttpParameter> | undefined;
 }
 
 /**
@@ -171,21 +171,21 @@ export interface OAuthAuthorizationProps {
    *
    * @default - No additional parameters
    */
-  readonly bodyParameters?: Record<string, HttpParameter>;
+  readonly bodyParameters?: Record<string, HttpParameter> | undefined;
 
   /**
    * Additional string parameters to add to the OAuth request header
    *
    * @default - No additional parameters
    */
-  readonly headerParameters?: Record<string, HttpParameter>;
+  readonly headerParameters?: Record<string, HttpParameter> | undefined;
 
   /**
    * Additional string parameters to add to the OAuth request query string
    *
    * @default - No additional parameters
    */
-  readonly queryStringParameters?: Record<string, HttpParameter>;
+  readonly queryStringParameters?: Record<string, HttpParameter> | undefined;
 }
 
 /**

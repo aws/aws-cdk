@@ -34,7 +34,7 @@ export interface BackupPlanProps {
    *
    * @default - A CDK generated name
    */
-  readonly backupPlanName?: string;
+  readonly backupPlanName?: string | undefined;
 
   /**
    * The backup vault where backups are stored
@@ -42,7 +42,7 @@ export interface BackupPlanProps {
    * @default - use the vault defined at the rule level. If not defined a new
    * common vault for the plan will be created
    */
-  readonly backupVault?: IBackupVaultRef;
+  readonly backupVault?: IBackupVaultRef | undefined;
 
   /**
    * Rules for the backup plan. Use `addRule()` to add rules after
@@ -50,7 +50,7 @@ export interface BackupPlanProps {
    *
    * @default - use `addRule()` to add rules
    */
-  readonly backupPlanRules?: BackupPlanRule[];
+  readonly backupPlanRules?: BackupPlanRule[] | undefined;
 
   /**
    * Enable Windows VSS backup.
@@ -59,7 +59,7 @@ export interface BackupPlanProps {
    *
    * @default false
    */
-  readonly windowsVss?: boolean;
+  readonly windowsVss?: boolean | undefined;
 }
 
 /**

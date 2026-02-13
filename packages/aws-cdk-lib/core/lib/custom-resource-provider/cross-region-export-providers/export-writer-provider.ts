@@ -22,7 +22,7 @@ export interface ExportWriterProps {
    *
    * @default - the stack region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**

@@ -55,7 +55,7 @@ export interface MessageAttribute {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
    * @default determined by type inspection if possible, fallback is String
    */
-  readonly dataType?: MessageAttributeDataType;
+  readonly dataType?: MessageAttributeDataType | undefined;
 }
 
 interface SnsPublishOptions {
@@ -82,7 +82,7 @@ interface SnsPublishOptions {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html
    * @default {}
    */
-  readonly messageAttributes?: { [key: string]: MessageAttribute };
+  readonly messageAttributes?: { [key: string]: MessageAttribute } | undefined;
 
   /**
    * Send different messages for each transport protocol.
@@ -98,7 +98,7 @@ interface SnsPublishOptions {
    * @see https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_RequestParameters
    * @default false
    */
-  readonly messagePerSubscriptionType?: boolean;
+  readonly messagePerSubscriptionType?: boolean | undefined;
 
   /**
    * Used as the "Subject" line when the message is delivered to email endpoints.
@@ -107,7 +107,7 @@ interface SnsPublishOptions {
    *
    * @default - No subject
    */
-  readonly subject?: string;
+  readonly subject?: string | undefined;
 
   /**
    * This parameter applies only to FIFO topics.
@@ -119,7 +119,7 @@ interface SnsPublishOptions {
    *
    * @default - Not used for standard topics, required for FIFO topics.
    */
-  readonly messageGroupId?: string;
+  readonly messageGroupId?: string | undefined;
 
   /**
    * This parameter applies only to FIFO topics.
@@ -133,7 +133,7 @@ interface SnsPublishOptions {
    *
    * @default - Not used for standard topics, required for FIFO topics with ContentBasedDeduplication disabled.
    */
-  readonly messageDeduplicationId?: string;
+  readonly messageDeduplicationId?: string | undefined;
 }
 
 /**

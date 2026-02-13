@@ -12,21 +12,21 @@ export interface DataProcessorProps {
    *s
    * @default Duration.minutes(1)
    */
-  readonly bufferInterval?: Duration;
+  readonly bufferInterval?: Duration | undefined;
 
   /**
    * The amount of incoming data Amazon Data Firehose will buffer before calling the processor.
    *
    * @default Size.mebibytes(3)
    */
-  readonly bufferSize?: Size;
+  readonly bufferSize?: Size | undefined;
 
   /**
    * The number of times Amazon Data Firehose will retry the processor invocation after a failure due to network timeout or invocation limits.
    *
    * @default 3
    */
-  readonly retries?: number;
+  readonly retries?: number | undefined;
 }
 
 /**
@@ -69,7 +69,7 @@ export interface DataProcessorConfig {
    *
    * @default - No processor parameters
    */
-  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[];
+  readonly parameters?: CfnDeliveryStream.ProcessorParameterProperty[] | undefined;
 }
 
 /**

@@ -25,7 +25,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default StateMachineType.STANDARD
    */
-  readonly mapExecutionType?: StateMachineType;
+  readonly mapExecutionType?: StateMachineType | undefined;
 
   /**
    * ItemReader
@@ -34,7 +34,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default - No itemReader
    */
-  readonly itemReader?: IItemReader;
+  readonly itemReader?: IItemReader | undefined;
 
   /**
    * ToleratedFailurePercentage
@@ -43,7 +43,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default - No toleratedFailurePercentage
    */
-  readonly toleratedFailurePercentage?: number;
+  readonly toleratedFailurePercentage?: number | undefined;
 
   /**
    * ToleratedFailureCount
@@ -52,7 +52,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default - No toleratedFailureCount
    */
-  readonly toleratedFailureCount?: number;
+  readonly toleratedFailureCount?: number | undefined;
 
   /**
    * Label
@@ -61,7 +61,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default - No label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Configuration for S3 location in which to save Map Run results
@@ -69,7 +69,7 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    * @deprecated Use {@link resultWriterV2}
    * @default - No resultWriter
    */
-  readonly resultWriter?: ResultWriter;
+  readonly resultWriter?: ResultWriter | undefined;
 
   /**
    * Configuration for S3 location in which to save Map Run results
@@ -78,14 +78,14 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
    *
    * @default - No resultWriterV2
    */
-  readonly resultWriterV2?: ResultWriterV2;
+  readonly resultWriterV2?: ResultWriterV2 | undefined;
 
   /**
    * Specifies to process a group of items in a single child workflow execution
    *
    * @default - No itemBatcher
    */
-  readonly itemBatcher?: ItemBatcher;
+  readonly itemBatcher?: ItemBatcher | undefined;
 }
 
 interface DistributedMapJsonPathOptions extends MapBaseJsonPathOptions {
@@ -96,7 +96,7 @@ interface DistributedMapJsonPathOptions extends MapBaseJsonPathOptions {
    *
    * @default - No toleratedFailurePercentagePath
    */
-  readonly toleratedFailurePercentagePath?: string;
+  readonly toleratedFailurePercentagePath?: string | undefined;
 
   /**
    * ToleratedFailureCountPath
@@ -105,7 +105,7 @@ interface DistributedMapJsonPathOptions extends MapBaseJsonPathOptions {
    *
    * @default - No toleratedFailureCountPath
    */
-  readonly toleratedFailureCountPath?: string;
+  readonly toleratedFailureCountPath?: string | undefined;
 }
 
 /**
@@ -179,16 +179,16 @@ export class DistributedMap extends MapBase implements INextable {
     return x !== null && typeof (x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
   }
 
-  private readonly mapExecutionType?: StateMachineType;
-  private readonly itemReader?: IItemReader;
-  private readonly toleratedFailurePercentage?: number;
-  private readonly toleratedFailurePercentagePath?: string;
-  private readonly toleratedFailureCount?: number;
-  private readonly toleratedFailureCountPath?: string;
-  private readonly label?: string;
-  private readonly resultWriter?: ResultWriter;
-  private readonly resultWriterV2?: ResultWriterV2;
-  private readonly itemBatcher?: ItemBatcher;
+  private readonly mapExecutionType?: StateMachineType | undefined;
+  private readonly itemReader?: IItemReader | undefined;
+  private readonly toleratedFailurePercentage?: number | undefined;
+  private readonly toleratedFailurePercentagePath?: string | undefined;
+  private readonly toleratedFailureCount?: number | undefined;
+  private readonly toleratedFailureCountPath?: string | undefined;
+  private readonly label?: string | undefined;
+  private readonly resultWriter?: ResultWriter | undefined;
+  private readonly resultWriterV2?: ResultWriterV2 | undefined;
+  private readonly itemBatcher?: ItemBatcher | undefined;
 
   constructor(scope: Construct, id: string, props: DistributedMapProps = {}) {
     super(scope, id, props);

@@ -18,21 +18,21 @@ export interface StateBaseProps {
    *
    * @default - JSONPath
    */
-  readonly queryLanguage?: QueryLanguage;
+  readonly queryLanguage?: QueryLanguage | undefined;
 
   /**
    * Optional name for this state
    *
    * @default - The construct ID will be used as state name
    */
-  readonly stateName?: string;
+  readonly stateName?: string | undefined;
 
   /**
    * A comment describing this state
    *
    * @default No comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 }
 
 /**
@@ -47,7 +47,7 @@ export interface JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly inputPath?: string;
+  readonly inputPath?: string | undefined;
 
   /**
    * JSONPath expression to select part of the state to be the output to this state.
@@ -57,7 +57,7 @@ export interface JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly outputPath?: string;
+  readonly outputPath?: string | undefined;
 }
 
 interface JsonPathStateOptions extends JsonPathCommonOptions {
@@ -69,7 +69,7 @@ interface JsonPathStateOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -83,7 +83,7 @@ interface JsonPathStateOptions extends JsonPathCommonOptions {
    *
    * @default - None
    */
-  readonly resultSelector?: { [key: string]: any };
+  readonly resultSelector?: { [key: string]: any } | undefined;
 
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -93,7 +93,7 @@ interface JsonPathStateOptions extends JsonPathCommonOptions {
    *
    * @default No parameters
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -112,7 +112,7 @@ export interface JsonataCommonOptions {
    *
    * @default - $states.result or $states.errorOutput
    */
-  readonly outputs?: any;
+  readonly outputs?: any | undefined;
 }
 
 /**
@@ -127,7 +127,7 @@ export interface JsonataStateOptions extends JsonataCommonOptions {
    *
    * @default - No arguments
    */
-  readonly arguments?: any;
+  readonly arguments?: any | undefined;
 }
 
 /**
@@ -143,7 +143,7 @@ export interface AssignableStateOptions {
    *
    * @default - Not assign variables
    */
-  readonly assign?: { [name: string]: any };
+  readonly assign?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -245,18 +245,18 @@ export abstract class State extends Construct implements IChainable {
   // features are shared by a couple of states, and it becomes cumbersome to
   // slice it out across all states. This is not great design, but it is
   // pragmatic!
-  protected readonly stateName?: string;
-  protected readonly comment?: string;
-  protected readonly inputPath?: string;
-  protected readonly parameters?: object;
-  protected readonly outputPath?: string;
-  protected readonly resultPath?: string;
-  protected readonly resultSelector?: object;
+  protected readonly stateName?: string | undefined;
+  protected readonly comment?: string | undefined;
+  protected readonly inputPath?: string | undefined;
+  protected readonly parameters?: object | undefined;
+  protected readonly outputPath?: string | undefined;
+  protected readonly resultPath?: string | undefined;
+  protected readonly resultSelector?: object | undefined;
   protected readonly branches: StateGraph[] = [];
-  protected readonly queryLanguage?: QueryLanguage;
-  protected readonly outputs?: object;
-  protected readonly arguments?: object;
-  protected readonly assign?: object;
+  protected readonly queryLanguage?: QueryLanguage | undefined;
+  protected readonly outputs?: object | undefined;
+  protected readonly arguments?: object | undefined;
+  protected readonly assign?: object | undefined;
   protected iteration?: StateGraph;
   protected processorMode?: ProcessorMode = ProcessorMode.INLINE;
   protected processor?: StateGraph;
@@ -653,7 +653,7 @@ export interface FindStateOptions {
    *
    * @default false
    */
-  readonly includeErrorHandlers?: boolean;
+  readonly includeErrorHandlers?: boolean | undefined;
 }
 
 /**
@@ -680,7 +680,7 @@ export interface ChoiceTransitionOptions extends AssignableStateOptions {
    *
    * @default No comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * This option for JSONata only. When you use JSONPath, then the state ignores this property.
@@ -695,7 +695,7 @@ export interface ChoiceTransitionOptions extends AssignableStateOptions {
    *
    * @default - $states.result or $states.errorOutput
    */
-  readonly outputs?: any;
+  readonly outputs?: any | undefined;
 }
 
 /**

@@ -20,7 +20,7 @@ export interface RedshiftQueryProps {
    *
    * @default - No Database user is specified
    */
-  readonly dbUser?: string;
+  readonly dbUser?: string | undefined;
 
   /**
    * The secret containing the password for the database user. This is required when authenticating via Secrets Manager.
@@ -28,7 +28,7 @@ export interface RedshiftQueryProps {
    *
    * @default - No secret is specified
    */
-  readonly secret?: secretsmanager.ISecret;
+  readonly secret?: secretsmanager.ISecret | undefined;
 
   /**
    * The SQL queries to be executed. Each query is run sequentially within a single transaction; the next query in the array will only execute after the previous one has successfully completed.
@@ -45,35 +45,35 @@ export interface RedshiftQueryProps {
    *
    * @default - No statement name is specified
    */
-  readonly statementName?: string;
+  readonly statementName?: string | undefined;
 
   /**
    * Should an event be sent back to Event Bridge when the SQL statement is executed.
    *
    * @default false
    */
-  readonly sendEventBridgeEvent?: boolean;
+  readonly sendEventBridgeEvent?: boolean | undefined;
 
   /**
    * The queue to be used as dead letter queue.
    *
    * @default - No dead letter queue is specified
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 
   /**
    * The IAM role to be used to execute the SQL statement.
    *
    * @default - a new role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The input to the state machine execution
    *
    * @default - the entire EventBridge event
    */
-  readonly input?: events.RuleTargetInput;
+  readonly input?: events.RuleTargetInput | undefined;
 }
 
 /**

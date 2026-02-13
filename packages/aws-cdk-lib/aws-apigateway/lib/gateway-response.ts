@@ -43,19 +43,19 @@ export interface GatewayResponseOptions {
    * Http status code for response.
    * @default - standard http status code for the response type.
    */
-  readonly statusCode?: string;
+  readonly statusCode?: string | undefined;
 
   /**
    * Custom headers parameters for response.
    * @default - no headers
    */
-  readonly responseHeaders?: { [key: string]: string };
+  readonly responseHeaders?: { [key: string]: string } | undefined;
 
   /**
    * Custom templates to get mapped as response.
    * @default - Response from api will be returned without applying any transformation.
    */
-  readonly templates?: { [key: string]: string };
+  readonly templates?: { [key: string]: string } | undefined;
 
 }
 

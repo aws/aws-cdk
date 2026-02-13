@@ -34,7 +34,7 @@ export interface BaseDeploymentConfigOptions {
    * The physical, human-readable name of the Deployment Configuration.
    * @default - automatically generated name
    */
-  readonly deploymentConfigName?: string;
+  readonly deploymentConfigName?: string | undefined;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface ZonalConfig {
    *
    * @default - CodeDeploy starts deploying to the next Availability Zone immediately
    */
-  readonly monitorDuration?: Duration;
+  readonly monitorDuration?: Duration | undefined;
 
   /**
    * The period of time that CodeDeploy must wait after completing a deployment to the first Availability Zone.
@@ -81,7 +81,7 @@ export interface ZonalConfig {
    *
    * @default - the same value as `monitorDuration`
    */
-  readonly firstZoneMonitorDuration?: Duration;
+  readonly firstZoneMonitorDuration?: Duration | undefined;
 
   /**
    * The number or percentage of instances that must remain available per Availability Zone during a deployment.
@@ -91,7 +91,7 @@ export interface ZonalConfig {
    *
    * @default - 0 percent
    */
-  readonly minimumHealthyHostsPerZone?: MinimumHealthyHostsPerZone;
+  readonly minimumHealthyHostsPerZone?: MinimumHealthyHostsPerZone | undefined;
 }
 
 /**
@@ -104,20 +104,20 @@ export interface BaseDeploymentConfigProps extends BaseDeploymentConfigOptions {
    *
    * @default ComputePlatform.Server
    */
-  readonly computePlatform?: ComputePlatform;
+  readonly computePlatform?: ComputePlatform | undefined;
 
   /**
    * The configuration that specifies how traffic is shifted during a deployment.
    * Only applicable to ECS and Lambda deployments, and must not be specified for Server deployments.
    * @default None
    */
-  readonly trafficRouting?: TrafficRouting;
+  readonly trafficRouting?: TrafficRouting | undefined;
 
   /**
    * Minimum number of healthy hosts.
    * @default None
    */
-  readonly minimumHealthyHosts?: MinimumHealthyHosts;
+  readonly minimumHealthyHosts?: MinimumHealthyHosts | undefined;
 
   /**
    * Configure CodeDeploy to deploy your application to one Availability Zone at a time within an AWS Region.
@@ -126,7 +126,7 @@ export interface BaseDeploymentConfigProps extends BaseDeploymentConfigOptions {
    *
    * @default - deploy your application to a random selection of hosts across a Region
    */
-  readonly zonalConfig?: ZonalConfig;
+  readonly zonalConfig?: ZonalConfig | undefined;
 }
 
 /**

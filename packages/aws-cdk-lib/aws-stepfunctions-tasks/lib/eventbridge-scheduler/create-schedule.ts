@@ -32,21 +32,21 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default ActionAfterCompletion.NONE
    */
-  readonly actionAfterCompletion?: ActionAfterCompletion;
+  readonly actionAfterCompletion?: ActionAfterCompletion | undefined;
 
   /**
    * Unique, case-sensitive identifier to ensure the idempotency of the request.
    *
    * @default - Automatically generated
    */
-  readonly clientToken?: string;
+  readonly clientToken?: string | undefined;
 
   /**
    * The description for the schedule.
    *
    * @default - No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
@@ -55,7 +55,7 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default - No end date
    */
-  readonly endDate?: Date;
+  readonly endDate?: Date | undefined;
 
   /**
    * The maximum time window during which a schedule can be invoked.
@@ -65,14 +65,14 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default - Flexible time window is not enabled.
    */
-  readonly flexibleTimeWindow?: Duration;
+  readonly flexibleTimeWindow?: Duration | undefined;
 
   /**
    * The name of the schedule group to associate with this schedule.
    *
    * @default - The default schedule group is used.
    */
-  readonly groupName?: string;
+  readonly groupName?: string | undefined;
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt payload.
@@ -81,7 +81,7 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default - Use automatically generated KMS key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The schedule that defines when the schedule will trigger.
@@ -95,7 +95,7 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default - UTC
    */
-  readonly timezone?: string;
+  readonly timezone?: string | undefined;
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
@@ -104,14 +104,14 @@ interface EventBridgeSchedulerCreateScheduleTaskOptions {
    *
    * @default - No start date
    */
-  readonly startDate?: Date;
+  readonly startDate?: Date | undefined;
 
   /**
    * Specifies whether the schedule is enabled or disabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The schedule's target.
@@ -159,21 +159,21 @@ export interface EventBridgeSchedulerTargetProps {
    *
    * @default - EventBridge Scheduler delivers a default notification to the target
    */
-  readonly input?: string;
+  readonly input?: string | undefined;
 
   /**
    * The retry policy settings
    *
    * @default - Do not retry
    */
-  readonly retryPolicy?: RetryPolicy;
+  readonly retryPolicy?: RetryPolicy | undefined;
 
   /**
    * Dead letter queue for failed events
    *
    * @default - No dead letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 }
 
 /**
@@ -289,8 +289,8 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

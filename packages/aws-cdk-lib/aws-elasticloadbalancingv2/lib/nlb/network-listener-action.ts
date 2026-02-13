@@ -134,7 +134,7 @@ export interface NetworkForwardOptions {
    *
    * @default - No stickiness
    */
-  readonly stickinessDuration?: Duration;
+  readonly stickinessDuration?: Duration | undefined;
 }
 
 /**
@@ -153,7 +153,7 @@ export interface NetworkWeightedTargetGroup {
    *
    * @default 1
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 }
 
 /**

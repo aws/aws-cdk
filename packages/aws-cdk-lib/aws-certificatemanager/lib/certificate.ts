@@ -55,7 +55,7 @@ export interface CertificateProps {
    *
    * @default - No additional FQDNs will be included as alternative domain names.
    */
-  readonly subjectAlternativeNames?: string[];
+  readonly subjectAlternativeNames?: string[] | undefined;
 
   /**
    * What validation domain to use for every requested domain.
@@ -65,7 +65,7 @@ export interface CertificateProps {
    * @default - Apex domain is used for every domain that's not overridden.
    * @deprecated use `validation` instead.
    */
-  readonly validationDomains?: {[domainName: string]: string};
+  readonly validationDomains?: {[domainName: string]: string} | undefined;
 
   /**
    * Validation method used to assert domain ownership
@@ -73,14 +73,14 @@ export interface CertificateProps {
    * @default ValidationMethod.EMAIL
    * @deprecated use `validation` instead.
    */
-  readonly validationMethod?: ValidationMethod;
+  readonly validationMethod?: ValidationMethod | undefined;
 
   /**
    * How to validate this certificate
    *
    * @default CertificateValidation.fromEmail()
    */
-  readonly validation?: CertificateValidation;
+  readonly validation?: CertificateValidation | undefined;
 
   /**
    * Enable or disable export of this certificate.
@@ -90,7 +90,7 @@ export interface CertificateProps {
    *
    * @default false
    */
-  readonly allowExport?: boolean;
+  readonly allowExport?: boolean | undefined;
 
   /**
    * Enable or disable transparency logging for this certificate
@@ -105,7 +105,7 @@ export interface CertificateProps {
    *
    * @default true
    */
-  readonly transparencyLoggingEnabled?: boolean;
+  readonly transparencyLoggingEnabled?: boolean | undefined;
 
   /**
    * The Certificate name.
@@ -114,7 +114,7 @@ export interface CertificateProps {
    *
    * @default the full, absolute path of this construct
    */
-  readonly certificateName?: string;
+  readonly certificateName?: string | undefined;
 
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
@@ -123,7 +123,7 @@ export interface CertificateProps {
    *
    * @default KeyAlgorithm.RSA_2048
    */
-  readonly keyAlgorithm?: KeyAlgorithm;
+  readonly keyAlgorithm?: KeyAlgorithm | undefined;
 }
 
 /**
@@ -187,28 +187,28 @@ export interface CertificationValidationProps {
    *
    * @default ValidationMethod.EMAIL
    */
-  readonly method?: ValidationMethod;
+  readonly method?: ValidationMethod | undefined;
 
   /**
    * Hosted zone to use for DNS validation
    *
    * @default - use email validation
    */
-  readonly hostedZone?: route53.IHostedZone;
+  readonly hostedZone?: route53.IHostedZone | undefined;
 
   /**
    * A map of hosted zones to use for DNS validation
    *
    * @default - use `hostedZone`
    */
-  readonly hostedZones?: { [domainName: string]: route53.IHostedZone };
+  readonly hostedZones?: { [domainName: string]: route53.IHostedZone } | undefined;
 
   /**
    * Validation domains to use for email validation
    *
    * @default - Apex domain
    */
-  readonly validationDomains?: { [domainName: string]: string };
+  readonly validationDomains?: { [domainName: string]: string } | undefined;
 }
 
 /**

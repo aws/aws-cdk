@@ -14,7 +14,7 @@ export interface LambdaFunctionProps extends TargetBaseProps {
    *
    * @default the entire EventBridge event
    */
-  readonly event?: events.RuleTargetInput;
+  readonly event?: events.RuleTargetInput | undefined;
 }
 
 /**

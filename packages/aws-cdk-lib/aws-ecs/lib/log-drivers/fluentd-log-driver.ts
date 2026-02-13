@@ -19,7 +19,7 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    *
    * @default - address not set.
    */
-  readonly address?: string;
+  readonly address?: string | undefined;
 
   /**
    * Docker connects to Fluentd in the background. Messages are buffered until
@@ -28,7 +28,7 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    * @default - false
    * @deprecated use `async` instead
    */
-  readonly asyncConnect?: boolean;
+  readonly asyncConnect?: boolean | undefined;
 
   /**
    * Docker connects to Fluentd in the background. Messages are buffered until
@@ -36,35 +36,35 @@ export interface FluentdLogDriverProps extends BaseLogDriverProps {
    *
    * @default - false
    */
-  readonly async?: boolean;
+  readonly async?: boolean | undefined;
 
   /**
    * The amount of data to buffer before flushing to disk.
    *
    * @default - The amount of RAM available to the container.
    */
-  readonly bufferLimit?: number;
+  readonly bufferLimit?: number | undefined;
 
   /**
    * How long to wait between retries.
    *
    * @default - 1 second
    */
-  readonly retryWait?: Duration;
+  readonly retryWait?: Duration | undefined;
 
   /**
    * The maximum number of retries.
    *
    * @default - 4294967295 (2**32 - 1).
    */
-  readonly maxRetries?: number;
+  readonly maxRetries?: number | undefined;
 
   /**
    * Generates event logs in nanosecond resolution.
    *
    * @default - false
    */
-  readonly subSecondPrecision?: boolean;
+  readonly subSecondPrecision?: boolean | undefined;
 }
 
 /**

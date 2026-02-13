@@ -12,7 +12,7 @@ export interface IMetric {
    * @default - None
    * @deprecated - use warningsV2
    */
-  readonly warnings?: string[];
+  readonly warnings?: string[] | undefined;
 
   /**
    * Any warnings related to this metric
@@ -21,7 +21,7 @@ export interface IMetric {
    *
    * @default - None
    */
-  readonly warningsV2?: { [id: string]: string };
+  readonly warningsV2?: { [id: string]: string } | undefined;
 
   /**
    * Inspect the details of the metric object
@@ -242,21 +242,21 @@ export interface MetricConfig {
    *
    * @default - None
    */
-  readonly metricStat?: MetricStatConfig;
+  readonly metricStat?: MetricStatConfig | undefined;
 
   /**
    * In case the metric is a math expression, the details of the math expression
    *
    * @default - None
    */
-  readonly mathExpression?: MetricExpressionConfig;
+  readonly mathExpression?: MetricExpressionConfig | undefined;
 
   /**
    * In case the metric is a search expression, the details of the search expression
    *
    * @default - None
    */
-  readonly searchExpression?: MetricExpressionConfig;
+  readonly searchExpression?: MetricExpressionConfig | undefined;
 
   /**
    * Additional properties which will be rendered if the metric is used in a dashboard
@@ -266,7 +266,7 @@ export interface MetricConfig {
    *
    * @default - None
    */
-  readonly renderingProperties?: Record<string, unknown>;
+  readonly renderingProperties?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -281,7 +281,7 @@ export interface MetricStatConfig {
    *
    * @default []
    */
-  readonly dimensions?: Dimension[];
+  readonly dimensions?: Dimension[] | undefined;
 
   /**
    * Namespace of the metric
@@ -315,35 +315,35 @@ export interface MetricStatConfig {
    *
    * @default - Refer to all metric datums
    */
-  readonly unitFilter?: Unit;
+  readonly unitFilter?: Unit | undefined;
 
   /**
    * Region which this metric comes from.
    *
    * @default Deployment region.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Account which this metric comes from.
    *
    * @default Deployment account.
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * Region set directly on the metric, not inherited from the attached stack.
    *
    * @default No override.
    */
-  readonly regionOverride?: string;
+  readonly regionOverride?: string | undefined;
 
   /**
    * Account set directly on the metric, not inherited from the attached stack.
    *
    * @default No override.
    */
-  readonly accountOverride?: string;
+  readonly accountOverride?: string | undefined;
 }
 
 /**
@@ -370,14 +370,14 @@ export interface MetricExpressionConfig {
    *
    * @default - Deployment account.
    */
-  readonly searchAccount?: string;
+  readonly searchAccount?: string | undefined;
 
   /**
    * Region to evaluate search expressions within.
    *
    * @default - Deployment region.
    */
-  readonly searchRegion?: string;
+  readonly searchRegion?: string | undefined;
 }
 
 /**
@@ -389,7 +389,7 @@ export interface MetricAlarmConfig {
   /**
    * The dimensions to apply to the alarm
    */
-  readonly dimensions?: Dimension[];
+  readonly dimensions?: Dimension[] | undefined;
 
   /**
    * Namespace of the metric
@@ -409,17 +409,17 @@ export interface MetricAlarmConfig {
   /**
    * Simple aggregation function to use
    */
-  readonly statistic?: Statistic;
+  readonly statistic?: Statistic | undefined;
 
   /**
    * Percentile aggregation function to use
    */
-  readonly extendedStatistic?: string;
+  readonly extendedStatistic?: string | undefined;
 
   /**
    * The unit of the alarm
    */
-  readonly unit?: Unit;
+  readonly unit?: Unit | undefined;
 }
 
 /**
@@ -431,7 +431,7 @@ export interface MetricGraphConfig {
   /**
    * The dimensions to apply to the alarm
    */
-  readonly dimensions?: Dimension[];
+  readonly dimensions?: Dimension[] | undefined;
 
   /**
    * Namespace of the metric
@@ -460,28 +460,28 @@ export interface MetricGraphConfig {
    *
    * @deprecated Use `label` in `renderingProperties`
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Color for the graph line
    *
    * @deprecated Use `color` in `renderingProperties`
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * Aggregation function to use (can be either simple or a percentile)
    *
    * @deprecated Use `stat` in `renderingProperties`
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * The unit of the alarm
    *
    * @deprecated not used in dashboard widgets
    */
-  readonly unit?: Unit;
+  readonly unit?: Unit | undefined;
 }
 
 /**
@@ -498,16 +498,16 @@ export interface MetricRenderingProperties {
   /**
    * Label for the metric
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
    * The `Color` class has a set of standard colors that can be used here.
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * Aggregation function to use (can be either simple or a percentile)
    */
-  readonly stat?: string;
+  readonly stat?: string | undefined;
 }

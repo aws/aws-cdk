@@ -30,14 +30,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - Determined from port if known
    */
-  readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol | undefined;
 
   /**
    * The protocol version to use
    *
    * @default ApplicationProtocolVersion.HTTP1
    */
-  readonly protocolVersion?: ApplicationProtocolVersion;
+  readonly protocolVersion?: ApplicationProtocolVersion | undefined;
 
   /**
    * The port on which the target receives traffic.
@@ -46,7 +46,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - Determined from protocol if known
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -56,7 +56,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default 0
    */
-  readonly slowStart?: Duration;
+  readonly slowStart?: Duration | undefined;
 
   /**
    * The stickiness cookie expiration period.
@@ -68,7 +68,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - Stickiness is disabled
    */
-  readonly stickinessCookieDuration?: Duration;
+  readonly stickinessCookieDuration?: Duration | undefined;
 
   /**
    * The name of an application-based stickiness cookie.
@@ -82,14 +82,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
-  readonly stickinessCookieName?: string;
+  readonly stickinessCookieName?: string | undefined;
 
   /**
    * The load balancing algorithm to select targets for routing requests.
    *
    * @default TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN
    */
-  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType | undefined;
 
   /**
    * The targets to add to this target group.
@@ -100,7 +100,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @default - No targets.
    */
-  readonly targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[] | undefined;
 
   /**
    * Indicates whether anomaly mitigation is enabled.
@@ -111,7 +111,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
    */
-  readonly enableAnomalyMitigation?: boolean;
+  readonly enableAnomalyMitigation?: boolean | undefined;
 
   /**
    * Indicates whether the target group supports multi-value headers.
@@ -125,7 +125,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-attributes
    */
-  readonly multiValueHeadersEnabled?: boolean;
+  readonly multiValueHeadersEnabled?: boolean | undefined;
 }
 
 /**
@@ -335,8 +335,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   private readonly connectableMembers: ConnectableMember[];
   private readonly listeners: IApplicationListener[];
-  private readonly protocol?: ApplicationProtocol;
-  private readonly port?: number;
+  private readonly protocol?: ApplicationProtocol | undefined;
+  private readonly port?: number | undefined;
   private _metrics?: IApplicationTargetGroupMetrics;
 
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
@@ -691,7 +691,7 @@ export interface IApplicationTargetGroup extends ITargetGroup {
  * An imported application target group
  */
 class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements IApplicationTargetGroup {
-  private readonly _metrics?: IApplicationTargetGroupMetrics;
+  private readonly _metrics?: IApplicationTargetGroupMetrics | undefined;
 
   public constructor(scope: Construct, id: string, props: TargetGroupAttributes) {
     super(scope, id, props);

@@ -16,35 +16,35 @@ export interface InstanceEngineBindOptions {
    *
    * @default - none (it's an optional field)
    */
-  readonly domain?: string;
+  readonly domain?: string | undefined;
 
   /**
    * The timezone of the database, set by the customer.
    *
    * @default - none (it's an optional field)
    */
-  readonly timezone?: string;
+  readonly timezone?: string | undefined;
 
   /**
    * The role used for S3 importing.
    *
    * @default - none
    */
-  readonly s3ImportRole?: iam.IRoleRef;
+  readonly s3ImportRole?: iam.IRoleRef | undefined;
 
   /**
    * The role used for S3 exporting.
    *
    * @default - none
    */
-  readonly s3ExportRole?: iam.IRoleRef;
+  readonly s3ExportRole?: iam.IRoleRef | undefined;
 
   /**
    * The option group of the database
    *
    * @default - none
    */
-  readonly optionGroup?: IOptionGroup;
+  readonly optionGroup?: IOptionGroup | undefined;
 }
 
 /**
@@ -58,14 +58,14 @@ export interface InstanceEngineConfig {
    *
    * @default - no features
    */
-  readonly features?: InstanceEngineFeatures;
+  readonly features?: InstanceEngineFeatures | undefined;
 
   /**
    * Option group of the database.
    *
    * @default - none
    */
-  readonly optionGroup?: IOptionGroup;
+  readonly optionGroup?: IOptionGroup | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface InstanceEngineFeatures {
    *
    * @default - no s3Import feature name
    */
-  readonly s3Import?: string;
+  readonly s3Import?: string | undefined;
 
   /**
    * Feature name for the DB instance that the IAM role to export to S3 bucket is to be
@@ -86,7 +86,7 @@ export interface InstanceEngineFeatures {
    *
    * @default - no s3Export feature name
    */
-  readonly s3Export?: string;
+  readonly s3Export?: string | undefined;
 }
 
 /**
@@ -104,7 +104,7 @@ export interface IInstanceEngine extends IEngine {
    *
    * @default false
    */
-  readonly supportsReadReplicaBackups?: boolean;
+  readonly supportsReadReplicaBackups?: boolean | undefined;
 
   /**
    * Method called when the engine is used to create a new instance.
@@ -116,22 +116,22 @@ interface InstanceEngineBaseProps {
   readonly engineType: string;
   readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  readonly version?: EngineVersion;
-  readonly parameterGroupFamily?: string;
-  readonly engineFamily?: string;
-  readonly features?: InstanceEngineFeatures;
+  readonly version?: EngineVersion | undefined;
+  readonly parameterGroupFamily?: string | undefined;
+  readonly engineFamily?: string | undefined;
+  readonly features?: InstanceEngineFeatures | undefined;
 }
 
 abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly engineType: string;
-  public readonly engineVersion?: EngineVersion;
-  public readonly parameterGroupFamily?: string;
+  public readonly engineVersion?: EngineVersion | undefined;
+  public readonly parameterGroupFamily?: string | undefined;
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-  public readonly engineFamily?: string;
-  public readonly supportsReadReplicaBackups?: boolean;
+  public readonly engineFamily?: string | undefined;
+  public readonly supportsReadReplicaBackups?: boolean | undefined;
 
-  private readonly features?: InstanceEngineFeatures;
+  private readonly features?: InstanceEngineFeatures | undefined;
 
   constructor(props: InstanceEngineBaseProps) {
     this.engineType = props.engineType;
@@ -1161,14 +1161,14 @@ export interface PostgresEngineFeatures {
    *
    * @default false
    */
-  readonly s3Import?: boolean;
+  readonly s3Import?: boolean | undefined;
 
   /**
    * Whether this version of the Postgres engine supports the S3 data export feature.
    *
    * @default false
    */
-  readonly s3Export?: boolean;
+  readonly s3Export?: boolean | undefined;
 }
 
 /**
@@ -2599,7 +2599,7 @@ export class OracleEngineVersion {
 
 interface OracleInstanceEngineBaseProps {
   readonly engineType: string;
-  readonly version?: EngineVersion;
+  readonly version?: EngineVersion | undefined;
 }
 
 abstract class OracleInstanceEngineBase extends InstanceEngineBase {
@@ -3158,7 +3158,7 @@ interface SqlServerInstanceEngineProps {
 
 interface SqlServerInstanceEngineBaseProps {
   readonly engineType: string;
-  readonly version?: SqlServerEngineVersion;
+  readonly version?: SqlServerEngineVersion | undefined;
 }
 
 abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {

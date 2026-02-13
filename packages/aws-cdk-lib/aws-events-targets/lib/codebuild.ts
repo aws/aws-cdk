@@ -15,7 +15,7 @@ export interface CodeBuildProjectProps extends TargetBaseProps {
    *
    * @default - a new role will be created
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 
   /**
    * The event to send to CodeBuild
@@ -24,7 +24,7 @@ export interface CodeBuildProjectProps extends TargetBaseProps {
    *
    * @default - the entire EventBridge event
    */
-  readonly event?: events.RuleTargetInput;
+  readonly event?: events.RuleTargetInput | undefined;
 }
 
 /**

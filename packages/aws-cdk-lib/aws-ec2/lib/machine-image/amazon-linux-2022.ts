@@ -46,7 +46,7 @@ export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageS
    *
    * @default AmazonLinux2022Kernel.DEFAULT
    */
-  readonly kernel?: AmazonLinux2022Kernel;
+  readonly kernel?: AmazonLinux2022Kernel | undefined;
 }
 
 /**

@@ -14,26 +14,26 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
-  readonly notificationTopic?: sns.ITopic;
+  readonly notificationTopic?: sns.ITopic | undefined;
 
   /**
    * A list of email addresses to subscribe to notifications when this Action is pending approval.
    * If this has been provided, but not `notificationTopic`,
    * a new Topic will be created.
    */
-  readonly notifyEmails?: string[];
+  readonly notifyEmails?: string[] | undefined;
 
   /**
    * Any additional information that you want to include in the notification email message.
    */
-  readonly additionalInformation?: string;
+  readonly additionalInformation?: string | undefined;
 
   /**
    * URL you want to provide to the reviewer as part of the approval request.
    *
    * @default - the approval request will not have an external link
    */
-  readonly externalEntityLink?: string;
+  readonly externalEntityLink?: string | undefined;
 
   /**
    * A timeout duration.
@@ -43,7 +43,7 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
    * @default - 10080 minutes (7 days)
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 }
 
 /**

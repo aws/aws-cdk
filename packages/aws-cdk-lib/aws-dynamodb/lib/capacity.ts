@@ -30,7 +30,7 @@ export interface AutoscaledCapacityOptions {
    *
    * @default 1
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 
   /**
    * The ratio of consumed capacity units to provisioned capacity units.
@@ -40,7 +40,7 @@ export interface AutoscaledCapacityOptions {
    *
    * @default 70
    */
-  readonly targetUtilizationPercent?: number;
+  readonly targetUtilizationPercent?: number | undefined;
 
   /**
    * If you want to switch a table's billing mode from on-demand to provisioned or
@@ -49,7 +49,7 @@ export interface AutoscaledCapacityOptions {
    *
    * @default no seed capacity
    */
-  readonly seedCapacity?: number;
+  readonly seedCapacity?: number | undefined;
 }
 
 /**

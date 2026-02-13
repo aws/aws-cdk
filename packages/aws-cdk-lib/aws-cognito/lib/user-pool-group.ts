@@ -28,14 +28,14 @@ export interface UserPoolGroupOptions {
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The name of the group. Must be unique.
    *
    * @default - auto generate a name
    */
-  readonly groupName?: string;
+  readonly groupName?: string | undefined;
 
   /**
    * A non-negative integer value that specifies the precedence of this group relative to the other groups
@@ -52,14 +52,14 @@ export interface UserPoolGroupOptions {
    *
    * @default - null
    */
-  readonly precedence?: number;
+  readonly precedence?: number | undefined;
 
   /**
    * The role for the group.
    *
    * @default - no description
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRoleRef | undefined;
 }
 
 /**

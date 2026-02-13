@@ -23,31 +23,31 @@ export interface AuthFlow {
    * Enable admin based user password authentication flow
    * @default false
    */
-  readonly adminUserPassword?: boolean;
+  readonly adminUserPassword?: boolean | undefined;
 
   /**
    * Enable custom authentication flow
    * @default false
    */
-  readonly custom?: boolean;
+  readonly custom?: boolean | undefined;
 
   /**
    * Enable auth using username & password
    * @default false
    */
-  readonly userPassword?: boolean;
+  readonly userPassword?: boolean | undefined;
 
   /**
    * Enable SRP based authentication
    * @default false
    */
-  readonly userSrp?: boolean;
+  readonly userSrp?: boolean | undefined;
 
   /**
    * Enable Choice-based authentication
    * @default false
    */
-  readonly user?: boolean;
+  readonly user?: boolean | undefined;
 }
 
 /**
@@ -60,26 +60,26 @@ export interface OAuthSettings {
    * @see - the 'Allowed OAuth Flows' section at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
    * @default {authorizationCodeGrant:true,implicitCodeGrant:true}
    */
-  readonly flows?: OAuthFlows;
+  readonly flows?: OAuthFlows | undefined;
 
   /**
    * List of allowed redirect URLs for the identity providers.
    * @default - ['https://example.com'] if either authorizationCodeGrant or implicitCodeGrant flows are enabled, no callback URLs otherwise.
    */
-  readonly callbackUrls?: string[];
+  readonly callbackUrls?: string[] | undefined;
 
   /**
    * List of allowed logout URLs for the identity providers.
    * @default - no logout URLs
    */
-  readonly logoutUrls?: string[];
+  readonly logoutUrls?: string[] | undefined;
 
   /**
    * OAuth scopes that are allowed with this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
    * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
    */
-  readonly scopes?: OAuthScope[];
+  readonly scopes?: OAuthScope[] | undefined;
 
   /**
    * The default redirect URI.
@@ -98,7 +98,7 @@ export interface OAuthSettings {
    *
    * @default - no default redirect URI
    */
-  readonly defaultRedirectUri?: string;
+  readonly defaultRedirectUri?: string | undefined;
 }
 
 /**
@@ -110,20 +110,20 @@ export interface OAuthFlows {
    * Initiate an authorization code grant flow, which provides an authorization code as the response.
    * @default false
    */
-  readonly authorizationCodeGrant?: boolean;
+  readonly authorizationCodeGrant?: boolean | undefined;
 
   /**
    * The client should get the access token and ID token directly.
    * @default false
    */
-  readonly implicitCodeGrant?: boolean;
+  readonly implicitCodeGrant?: boolean | undefined;
 
   /**
    * Client should get the access token and ID token from the token endpoint
    * using a combination of client and client_secret.
    * @default false
    */
-  readonly clientCredentials?: boolean;
+  readonly clientCredentials?: boolean | undefined;
 }
 
 /**
@@ -244,33 +244,33 @@ export interface UserPoolClientOptions {
    * Name of the application client
    * @default - cloudformation generated name
    */
-  readonly userPoolClientName?: string;
+  readonly userPoolClientName?: string | undefined;
 
   /**
    * Whether to generate a client secret
    * @default false
    */
-  readonly generateSecret?: boolean;
+  readonly generateSecret?: boolean | undefined;
 
   /**
    * The set of OAuth authentication flows to enable on the client
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html
    * @default - If you don't specify a value, your user client supports ALLOW_REFRESH_TOKEN_AUTH, ALLOW_USER_SRP_AUTH, and ALLOW_CUSTOM_AUTH.
    */
-  readonly authFlows?: AuthFlow;
+  readonly authFlows?: AuthFlow | undefined;
 
   /**
    * Turns off all OAuth interactions for this client.
    * @default false
    */
-  readonly disableOAuth?: boolean;
+  readonly disableOAuth?: boolean | undefined;
 
   /**
    * OAuth settings for this client to interact with the app.
    * An error is thrown when this is specified and `disableOAuth` is set.
    * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
-  readonly oAuth?: OAuthSettings;
+  readonly oAuth?: OAuthSettings | undefined;
 
   /**
    * Cognito creates a session token for each API request in an authentication flow.
@@ -279,7 +279,7 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-authsessionvalidity
    * @default - Duration.minutes(3)
    */
-  readonly authSessionValidity?: Duration;
+  readonly authSessionValidity?: Duration | undefined;
 
   /**
    * Whether Cognito returns a UserNotFoundException exception when the
@@ -288,7 +288,7 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
    * @default false
    */
-  readonly preventUserExistenceErrors?: boolean;
+  readonly preventUserExistenceErrors?: boolean | undefined;
 
   /**
    * The list of identity providers that users should be able to use to sign in using this client.
@@ -297,7 +297,7 @@ export interface UserPoolClientOptions {
    * identity providers are imported, either specify this option explicitly or ensure that the identity providers are
    * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
    */
-  readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
+  readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[] | undefined;
 
   /**
    * Validity of the ID token.
@@ -305,7 +305,7 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-id-token
    * @default Duration.minutes(60)
    */
-  readonly idTokenValidity?: Duration;
+  readonly idTokenValidity?: Duration | undefined;
 
   /**
    * Validity of the refresh token.
@@ -313,7 +313,7 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-refresh-token
    * @default Duration.days(30)
    */
-  readonly refreshTokenValidity?: Duration;
+  readonly refreshTokenValidity?: Duration | undefined;
 
   /**
    * Validity of the access token.
@@ -321,7 +321,7 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-access-token
    * @default Duration.minutes(60)
    */
-  readonly accessTokenValidity?: Duration;
+  readonly accessTokenValidity?: Duration | undefined;
 
   /**
    * Enables refresh token rotation when set.
@@ -329,28 +329,28 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-using-the-refresh-token.html#using-the-refresh-token-rotation
    * @default - undefined (refresh token rotation is disabled)
    */
-  readonly refreshTokenRotationGracePeriod?: Duration;
+  readonly refreshTokenRotationGracePeriod?: Duration | undefined;
 
   /**
    * The set of attributes this client will be able to read.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    * @default - all standard and custom attributes
    */
-  readonly readAttributes?: ClientAttributes;
+  readonly readAttributes?: ClientAttributes | undefined;
 
   /**
    * The set of attributes this client will be able to write.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    * @default - all standard and custom attributes
    */
-  readonly writeAttributes?: ClientAttributes;
+  readonly writeAttributes?: ClientAttributes | undefined;
 
   /**
    * Enable token revocation for this client.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html#enable-token-revocation
    * @default true for new user pool clients
    */
-  readonly enableTokenRevocation?: boolean;
+  readonly enableTokenRevocation?: boolean | undefined;
 
   /**
    * Enable the propagation of additional user context data.
@@ -358,13 +358,13 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint
    * @default false for new user pool clients
    */
-  readonly enablePropagateAdditionalUserContextData?: boolean;
+  readonly enablePropagateAdditionalUserContextData?: boolean | undefined;
 
   /**
    * The analytics configuration for this client.
    * @default - no analytics configuration
    */
-  readonly analytics?: AnalyticsConfiguration;
+  readonly analytics?: AnalyticsConfiguration | undefined;
 }
 
 /**
@@ -391,31 +391,31 @@ export interface AnalyticsConfiguration {
    * The endpoint ID is information about the destination for push notifications.
    * @default - no configuration, you need to specify either `application` or all of `applicationId`, `externalId`, and `role`.
    */
-  readonly application?: CfnApp;
+  readonly application?: CfnApp | undefined;
 
   /**
    * Your Amazon Pinpoint project ID.
    * @default - no configuration, you need to specify either this property along with `externalId` and `role` or `application`.
    */
-  readonly applicationId?: string;
+  readonly applicationId?: string | undefined;
 
   /**
    * The external ID of the role that Amazon Cognito assumes to send analytics data to Amazon Pinpoint. More info here: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
    * @default - no configuration, you need to specify either this property along with `applicationId` and `role` or `application`.
    */
-  readonly externalId?: string;
+  readonly externalId?: string | undefined;
 
   /**
    * The IAM role that has the permissions required for Amazon Cognito to publish events to Amazon Pinpoint analytics.
    * @default - no configuration, you need to specify either this property along with `applicationId` and `externalId` or `application`.
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRoleRef | undefined;
 
   /**
    * If `true`, Amazon Cognito includes user data in the events that it publishes to Amazon Pinpoint analytics.
    * @default - false
    */
-  readonly shareUserData?: boolean;
+  readonly shareUserData?: boolean | undefined;
 }
 
 /**
@@ -477,7 +477,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
    * The OAuth flows enabled for this client.
    */
   public readonly oAuthFlows: OAuthFlows;
-  private readonly _userPoolClientName?: string;
+  private readonly _userPoolClientName?: string | undefined;
 
   public get userPoolClientRef(): UserPoolClientReference {
     return {

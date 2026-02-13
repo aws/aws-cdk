@@ -44,7 +44,7 @@ export interface ManagedPolicyProps {
    *
    * @default - A name is automatically generated.
    */
-  readonly managedPolicyName?: string;
+  readonly managedPolicyName?: string | undefined;
 
   /**
    * A description of the managed policy. Typically used to store information about the
@@ -53,7 +53,7 @@ export interface ManagedPolicyProps {
    *
    * @default - empty
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The path for the policy. This parameter allows (through its regex pattern) a string of characters
@@ -65,7 +65,7 @@ export interface ManagedPolicyProps {
    *
    * @default - "/"
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * Users to attach this policy to.
@@ -73,7 +73,7 @@ export interface ManagedPolicyProps {
    *
    * @default - No users.
    */
-  readonly users?: IUser[];
+  readonly users?: IUser[] | undefined;
 
   /**
    * Roles to attach this policy to.
@@ -81,7 +81,7 @@ export interface ManagedPolicyProps {
    *
    * @default - No roles.
    */
-  readonly roles?: IRole[];
+  readonly roles?: IRole[] | undefined;
 
   /**
    * Groups to attach this policy to.
@@ -89,7 +89,7 @@ export interface ManagedPolicyProps {
    *
    * @default - No groups.
    */
-  readonly groups?: IGroupRef[];
+  readonly groups?: IGroupRef[] | undefined;
 
   /**
    * Initial set of permissions to add to this policy document.
@@ -97,7 +97,7 @@ export interface ManagedPolicyProps {
    *
    * @default - No statements.
    */
-  readonly statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[] | undefined;
 
   /**
    * Initial PolicyDocument to use for this ManagedPolicy. If omited, any
@@ -106,7 +106,7 @@ export interface ManagedPolicyProps {
    *
    * @default - An empty policy.
    */
-  readonly document?: PolicyDocument;
+  readonly document?: PolicyDocument | undefined;
 }
 
 /**
@@ -207,7 +207,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   /**
    * The CfnManagedPolicy resource
    */
-  private readonly _resource?: CfnManagedPolicy;
+  private readonly _resource?: CfnManagedPolicy | undefined;
 
   /**
    * Returns the ARN of this managed policy.
@@ -270,7 +270,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   private readonly roles = new Array<IRoleRef>();
   private readonly users = new Array<IUserRef>();
   private readonly groups = new Array<IGroupRef>();
-  private readonly _precreatedPolicy?: IManagedPolicy;
+  private readonly _precreatedPolicy?: IManagedPolicy | undefined;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {
     super(scope, id, {
@@ -386,7 +386,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
 class ManagedPolicyGrantPrincipal implements IPrincipal {
   public readonly policyFragment: PrincipalPolicyFragment;
-  public readonly principalAccount?: string;
+  public readonly principalAccount?: string | undefined;
   public readonly grantPrincipal: IPrincipal = this;
 
   constructor(private _managedPolicy: ManagedPolicy) {

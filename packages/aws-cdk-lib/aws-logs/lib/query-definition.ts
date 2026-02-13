@@ -14,7 +14,7 @@ export interface QueryStringProps {
    *
    * @default - no fields in QueryString
    */
-  readonly fields?: string[];
+  readonly fields?: string[] | undefined;
 
   /**
    * A single statement for parsing data from a log field and creating ephemeral fields that can
@@ -23,7 +23,7 @@ export interface QueryStringProps {
    * @deprecated Use `parseStatements` instead
    * @default - no parse in QueryString
    */
-  readonly parse?: string;
+  readonly parse?: string | undefined;
 
   /**
    * An array of one or more statements for parsing data from a log field and creating ephemeral
@@ -34,7 +34,7 @@ export interface QueryStringProps {
    *
    * @default - no parse in QueryString
    */
-  readonly parseStatements?: string[];
+  readonly parseStatements?: string[] | undefined;
 
   /**
    * A single statement for filtering the results of a query based on a boolean expression.
@@ -42,7 +42,7 @@ export interface QueryStringProps {
    * @deprecated Use `filterStatements` instead
    * @default - no filter in QueryString
    */
-  readonly filter?: string;
+  readonly filter?: string | undefined;
 
   /**
    * An array of one or more statements for filtering the results of a query based on a boolean
@@ -52,7 +52,7 @@ export interface QueryStringProps {
    *
    * @default - no filter in QueryString
    */
-  readonly filterStatements?: string[];
+  readonly filterStatements?: string[] | undefined;
 
   /**
    * A single statement for using log field values to calculate aggregate statistics.
@@ -60,7 +60,7 @@ export interface QueryStringProps {
    * @deprecated Use `statsStatements` instead
    * @default - no stats in QueryString
    */
-  readonly stats?: string;
+  readonly stats?: string | undefined;
 
   /**
    * An array of one or more statements for calculating aggregate statistics.
@@ -71,46 +71,46 @@ export interface QueryStringProps {
    *
    * @default - no stats in QueryString
    */
-  readonly statsStatements?: string[];
+  readonly statsStatements?: string[] | undefined;
 
   /**
    * Sorts the retrieved log events.
    *
    * @default - no sort in QueryString
    */
-  readonly sort?: string;
+  readonly sort?: string | undefined;
 
   /**
    * Specifies the number of log events returned by the query.
    *
    * @default - no limit in QueryString
    */
-  readonly limit?: Number;
+  readonly limit?: Number | undefined;
 
   /**
    * Specifies which fields to display in the query results.
    *
    * @default - no display in QueryString
    */
-  readonly display?: string;
+  readonly display?: string | undefined;
 }
 
 /**
  * Define a QueryString
  */
 export class QueryString {
-  private readonly fields?: string[];
+  private readonly fields?: string[] | undefined;
   private readonly parse: string[];
   private readonly filter: string[];
   private readonly stats: string[];
-  private readonly sort?: string;
-  private readonly limit?: Number;
-  private readonly display?: string;
+  private readonly sort?: string | undefined;
+  private readonly limit?: Number | undefined;
+  private readonly display?: string | undefined;
 
   /**
    * Length of statsStatements
    */
-  public readonly statsStatementsLength?: number;
+  public readonly statsStatementsLength?: number | undefined;
   /**
    * If the props for the query string have both stats and statsStatements
    */
@@ -216,7 +216,7 @@ export interface QueryDefinitionProps {
    *
    * @default - no specified log groups
    */
-  readonly logGroups?: ILogGroupRef[];
+  readonly logGroups?: ILogGroupRef[] | undefined;
 }
 
 /**

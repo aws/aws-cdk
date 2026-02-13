@@ -92,42 +92,42 @@ export interface FunctionUrlCorsOptions {
    *
    * @default false
    */
-  readonly allowCredentials?: boolean;
+  readonly allowCredentials?: boolean | undefined;
 
   /**
    * Headers that are specified in the Access-Control-Request-Headers header.
    *
    * @default - No headers allowed.
    */
-  readonly allowedHeaders?: string[];
+  readonly allowedHeaders?: string[] | undefined;
 
   /**
    * An HTTP method that you allow the origin to execute.
    *
    * @default - [HttpMethod.ALL]
    */
-  readonly allowedMethods?: HttpMethod[];
+  readonly allowedMethods?: HttpMethod[] | undefined;
 
   /**
    * One or more origins you want customers to be able to access the bucket from.
    *
    * @default - No origins allowed.
    */
-  readonly allowedOrigins?: string[];
+  readonly allowedOrigins?: string[] | undefined;
 
   /**
    * One or more headers in the response that you want customers to be able to access from their applications.
    *
    * @default - No headers exposed.
    */
-  readonly exposedHeaders?: string[];
+  readonly exposedHeaders?: string[] | undefined;
 
   /**
    * The time in seconds that your browser is to cache the preflight response for the specified resource.
    *
    * @default - Browser default of 5 seconds.
    */
-  readonly maxAge?: Duration;
+  readonly maxAge?: Duration | undefined;
 }
 
 /**
@@ -170,21 +170,21 @@ export interface FunctionUrlOptions {
    *
    * @default FunctionUrlAuthType.AWS_IAM
    */
-  readonly authType?: FunctionUrlAuthType;
+  readonly authType?: FunctionUrlAuthType | undefined;
 
   /**
    * The cross-origin resource sharing (CORS) settings for your function URL.
    *
    * @default - No CORS configuration.
    */
-  readonly cors?: FunctionUrlCorsOptions;
+  readonly cors?: FunctionUrlCorsOptions | undefined;
 
   /**
    * The type of invocation mode that your Lambda function uses.
    *
    * @default InvokeMode.BUFFERED
    */
-  readonly invokeMode?: InvokeMode;
+  readonly invokeMode?: InvokeMode | undefined;
 }
 
 /**

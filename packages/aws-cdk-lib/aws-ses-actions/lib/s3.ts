@@ -20,21 +20,21 @@ export interface S3Props {
    *
    * @default no encryption
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The key prefix of the S3 bucket.
    *
    * @default no prefix
    */
-  readonly objectKeyPrefix?: string;
+  readonly objectKeyPrefix?: string | undefined;
 
   /**
    * The SNS topic to notify when the S3 action is taken.
    *
    * @default no notification
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ITopic | undefined;
 }
 
 /**

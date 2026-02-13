@@ -106,7 +106,7 @@ export interface FunctionAttributes {
    * The Runtime of the function.
    * @default FunctionRuntime.JS_1_0
    */
-  readonly functionRuntime?: string;
+  readonly functionRuntime?: string | undefined;
 
 }
 
@@ -118,13 +118,13 @@ export interface FunctionProps {
    * A name to identify the function.
    * @default - generated from the `id`
    */
-  readonly functionName?: string;
+  readonly functionName?: string | undefined;
 
   /**
    * A comment to describe the function.
    * @default - same as `functionName`
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The source code of the function.
@@ -135,7 +135,7 @@ export interface FunctionProps {
    * The runtime environment for the function.
    * @default FunctionRuntime.JS_1_0 (unless `keyValueStore` is specified, then `FunctionRuntime.JS_2_0`)
    */
-  readonly runtime?: FunctionRuntime;
+  readonly runtime?: FunctionRuntime | undefined;
 
   /**
    * The Key Value Store to associate with this function.
@@ -145,14 +145,14 @@ export interface FunctionProps {
    *
    * @default - no key value store is associated
    */
-  readonly keyValueStore?: IKeyValueStoreRef;
+  readonly keyValueStore?: IKeyValueStoreRef | undefined;
 
   /**
    * A flag that determines whether to automatically publish the function to the LIVE stage when it’s created.
    *
    * @default - true
    */
-  readonly autoPublish?: boolean;
+  readonly autoPublish?: boolean | undefined;
 }
 
 /**

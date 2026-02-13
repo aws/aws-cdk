@@ -35,14 +35,14 @@ export interface BaseApplicationListenerProps {
    *
    * @default - Determined from port if known.
    */
-  readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol | undefined;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default - Determined from protocol if known.
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The certificates to use on this listener
@@ -50,21 +50,21 @@ export interface BaseApplicationListenerProps {
    * @default - No certificates.
    * @deprecated Use the `certificates` property instead
    */
-  readonly certificateArns?: string[];
+  readonly certificateArns?: string[] | undefined;
 
   /**
    * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */
-  readonly certificates?: IListenerCertificate[];
+  readonly certificates?: IListenerCertificate[] | undefined;
 
   /**
    * The security policy that defines which ciphers and protocols are supported.
    *
    * @default - The current predefined security policy.
    */
-  readonly sslPolicy?: SslPolicy;
+  readonly sslPolicy?: SslPolicy | undefined;
 
   /**
    * Default target groups to load balance to
@@ -77,7 +77,7 @@ export interface BaseApplicationListenerProps {
    *
    * @default - None.
    */
-  readonly defaultTargetGroups?: IApplicationTargetGroup[];
+  readonly defaultTargetGroups?: IApplicationTargetGroup[] | undefined;
 
   /**
    * Default action to take for requests to this listener
@@ -91,7 +91,7 @@ export interface BaseApplicationListenerProps {
    *
    * @default - None.
    */
-  readonly defaultAction?: ListenerAction;
+  readonly defaultAction?: ListenerAction | undefined;
 
   /**
    * Allow anyone to connect to the load balancer on the listener port
@@ -106,7 +106,7 @@ export interface BaseApplicationListenerProps {
    *
    * @default true
    */
-  readonly open?: boolean;
+  readonly open?: boolean | undefined;
 
   /**
    * The mutual authentication configuration information
@@ -115,7 +115,7 @@ export interface BaseApplicationListenerProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/mutual-authentication.html
    */
-  readonly mutualAuthentication?: MutualAuthentication;
+  readonly mutualAuthentication?: MutualAuthentication | undefined;
 }
 
 /**
@@ -128,7 +128,7 @@ export interface MutualAuthentication {
    *
    * @default MutualAuthenticationMode.OFF
    */
-  readonly mutualAuthenticationMode?: MutualAuthenticationMode;
+  readonly mutualAuthenticationMode?: MutualAuthenticationMode | undefined;
 
   /**
    * The trust store
@@ -137,7 +137,7 @@ export interface MutualAuthentication {
    *
    * @default - no trust store
    */
-  readonly trustStore?: aws_elasticloadbalancingv2.ITrustStoreRef;
+  readonly trustStore?: aws_elasticloadbalancingv2.ITrustStoreRef | undefined;
 
   /**
    * Indicates whether expired client certificates are ignored
@@ -146,14 +146,14 @@ export interface MutualAuthentication {
    *
    * @default false
    */
-  readonly ignoreClientCertificateExpiry?: boolean;
+  readonly ignoreClientCertificateExpiry?: boolean | undefined;
 
   /**
    * Indicates whether trust store CA names are advertised
    *
    * @default false
    */
-  readonly advertiseTrustStoreCaNames?: boolean;
+  readonly advertiseTrustStoreCaNames?: boolean | undefined;
 }
 
 /**
@@ -194,13 +194,13 @@ export interface ApplicationListenerLookupOptions extends BaseListenerLookupOpti
    * ARN of the listener to look up
    * @default - does not filter by listener arn
    */
-  readonly listenerArn?: string;
+  readonly listenerArn?: string | undefined;
 
   /**
    * Filter listeners by listener protocol
    * @default - does not filter by listener protocol
    */
-  readonly listenerProtocol?: ApplicationProtocol;
+  readonly listenerProtocol?: ApplicationProtocol | undefined;
 }
 
 /**
@@ -691,7 +691,7 @@ export interface ApplicationListenerAttributes {
   /**
    * The default port on which this listener is listening
    */
-  readonly defaultPort?: number;
+  readonly defaultPort?: number | undefined;
 
   /**
    * Whether the imported security group allows all outbound traffic or not when
@@ -703,7 +703,7 @@ export interface ApplicationListenerAttributes {
    *
    * @deprecated use `securityGroup` instead
    */
-  readonly securityGroupAllowsAllOutbound?: boolean;
+  readonly securityGroupAllowsAllOutbound?: boolean | undefined;
 }
 
 abstract class ExternalApplicationListener extends Resource implements IApplicationListener {
@@ -898,7 +898,7 @@ export interface AddRuleProps {
    *
    * @default Target groups are used as defaults
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 
   /**
    * Rule applies if matches the conditions.
@@ -907,7 +907,7 @@ export interface AddRuleProps {
    *
    * @default - No conditions.
    */
-  readonly conditions?: ListenerCondition[];
+  readonly conditions?: ListenerCondition[] | undefined;
 
   /**
    * Rule applies if the requested host matches the indicated host
@@ -921,7 +921,7 @@ export interface AddRuleProps {
    * @default No host condition
    * @deprecated Use `conditions` instead.
    */
-  readonly hostHeader?: string;
+  readonly hostHeader?: string | undefined;
 
   /**
    * Rule applies if the requested path matches the given path pattern
@@ -934,7 +934,7 @@ export interface AddRuleProps {
    * @default No path condition
    * @deprecated Use `conditions` instead.
    */
-  readonly pathPattern?: string;
+  readonly pathPattern?: string | undefined;
 
   /**
    * Rule applies if the requested path matches any of the given patterns.
@@ -947,7 +947,7 @@ export interface AddRuleProps {
    * @default - No path condition.
    * @deprecated Use `conditions` instead.
    */
-  readonly pathPatterns?: string[];
+  readonly pathPatterns?: string[] | undefined;
 }
 
 /**
@@ -980,7 +980,7 @@ export interface AddApplicationActionProps extends AddRuleProps {
    *
    * @default - use standard logicalId with the `Rule` suffix
    */
-  readonly removeSuffix?: boolean;
+  readonly removeSuffix?: boolean | undefined;
 }
 
 /**
@@ -992,21 +992,21 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Determined from port if known
    */
-  readonly protocol?: ApplicationProtocol;
+  readonly protocol?: ApplicationProtocol | undefined;
 
   /**
    * The protocol version to use
    *
    * @default ApplicationProtocolVersion.HTTP1
    */
-  readonly protocolVersion?: ApplicationProtocolVersion;
+  readonly protocolVersion?: ApplicationProtocolVersion | undefined;
 
   /**
    * The port on which the listener listens for requests.
    *
    * @default Determined from protocol if known
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The time period during which the load balancer sends a newly registered
@@ -1016,7 +1016,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default 0
    */
-  readonly slowStart?: Duration;
+  readonly slowStart?: Duration | undefined;
 
   /**
    * The stickiness cookie expiration period.
@@ -1028,7 +1028,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Stickiness disabled
    */
-  readonly stickinessCookieDuration?: Duration;
+  readonly stickinessCookieDuration?: Duration | undefined;
 
   /**
    * The name of an application-based stickiness cookie.
@@ -1042,7 +1042,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
-  readonly stickinessCookieName?: string;
+  readonly stickinessCookieName?: string | undefined;
 
   /**
    * The targets to add to this target group.
@@ -1050,7 +1050,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
    * target. All target must be of the same type.
    */
-  readonly targets?: IApplicationLoadBalancerTarget[];
+  readonly targets?: IApplicationLoadBalancerTarget[] | undefined;
 
   /**
    * The name of the target group.
@@ -1061,7 +1061,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Automatically generated
    */
-  readonly targetGroupName?: string;
+  readonly targetGroupName?: string | undefined;
 
   /**
    * The amount of time for Elastic Load Balancing to wait before deregistering a target.
@@ -1070,7 +1070,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly deregistrationDelay?: Duration;
+  readonly deregistrationDelay?: Duration | undefined;
 
   /**
    * Health check configuration
@@ -1078,14 +1078,14 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default - The default value for each property in this configuration varies depending on the target.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-targetgroup.html#aws-resource-elasticloadbalancingv2-targetgroup-properties
    */
-  readonly healthCheck?: HealthCheck;
+  readonly healthCheck?: HealthCheck | undefined;
 
   /**
    * The load balancing algorithm to select targets for routing requests.
    *
    * @default round_robin.
    */
-  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType | undefined;
 
   /**
    * Indicates whether anomaly mitigation is enabled.
@@ -1096,7 +1096,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
    */
-  readonly enableAnomalyMitigation?: boolean;
+  readonly enableAnomalyMitigation?: boolean | undefined;
 }
 
 /**

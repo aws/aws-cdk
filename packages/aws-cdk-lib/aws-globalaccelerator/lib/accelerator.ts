@@ -32,21 +32,21 @@ export interface IAccelerator extends cdk.IResource, IAcceleratorRef {
    *
    * @attribute
    */
-  readonly dualStackDnsName?: string;
+  readonly dualStackDnsName?: string | undefined;
 
   /**
    * The array of IPv4 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
    *
    * @attribute
    */
-  readonly ipv4Addresses?: string[];
+  readonly ipv4Addresses?: string[] | undefined;
 
   /**
    * The array of IPv6 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
    *
    * @attribute
    */
-  readonly ipv6Addresses?: string[];
+  readonly ipv6Addresses?: string[] | undefined;
 }
 
 /**
@@ -58,14 +58,14 @@ export interface AcceleratorProps {
    *
    * @default - resource ID
    */
-  readonly acceleratorName?: string;
+  readonly acceleratorName?: string | undefined;
 
   /**
    * Indicates whether the accelerator is enabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * IP addresses associated with the accelerator.
@@ -83,7 +83,7 @@ export interface AcceleratorProps {
    *
    * @default - undefined. IP addresses will be from Amazon's pool of IP addresses.
    */
-  readonly ipAddresses?: string[];
+  readonly ipAddresses?: string[] | undefined;
 
   /**
    * The IP address type that an accelerator supports.
@@ -92,7 +92,7 @@ export interface AcceleratorProps {
    *
    * @default - "IPV4"
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 }
 
 /**
@@ -114,21 +114,21 @@ export interface AcceleratorAttributes {
    *
    * @default - undefined
    */
-  readonly dualStackDnsName?: string;
+  readonly dualStackDnsName?: string | undefined;
 
   /**
    * The array of IPv4 addresses in the IP address set
    *
    * @default - undefined
    */
-  readonly ipv4Addresses?: string[];
+  readonly ipv4Addresses?: string[] | undefined;
 
   /**
    * The array of IPv6 addresses in the IP address set
    *
    * @default - undefined
    */
-  readonly ipv6Addresses?: string[];
+  readonly ipv6Addresses?: string[] | undefined;
 }
 
 /**
@@ -188,17 +188,17 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    * The DNS name that points to the dual-stack accelerator's four static IP addresses:
    * two IPv4 addresses and two IPv6 addresses.
    */
-  public readonly dualStackDnsName?: string;
+  public readonly dualStackDnsName?: string | undefined;
 
   /**
    * The array of IPv4 addresses in the IP address set
    */
-  public readonly ipv4Addresses?: string[];
+  public readonly ipv4Addresses?: string[] | undefined;
 
   /**
    * The array of IPv6 addresses in the IP address set
    */
-  public readonly ipv6Addresses?: string[];
+  public readonly ipv6Addresses?: string[] | undefined;
 
   public get acceleratorRef(): ga.AcceleratorReference {
     return {

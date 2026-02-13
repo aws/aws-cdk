@@ -14,14 +14,14 @@ export interface PolicyDocumentProps {
    *
    * @default false
    */
-  readonly assignSids?: boolean;
+  readonly assignSids?: boolean | undefined;
 
   /**
    * Initial statements to add to the policy document
    *
    * @default - No statements
    */
-  readonly statements?: PolicyStatement[];
+  readonly statements?: PolicyStatement[] | undefined;
 
   /**
    * Try to minimize the policy by merging statements
@@ -39,7 +39,7 @@ export interface PolicyDocumentProps {
    *
    * @default - false, unless the feature flag `@aws-cdk/aws-iam:minimizePolicies` is set
    */
-  readonly minimize?: boolean;
+  readonly minimize?: boolean | undefined;
 }
 
 /**
@@ -64,7 +64,7 @@ export class PolicyDocument implements cdk.IResolvable {
   public readonly creationStack: string[];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
-  private readonly minimize?: boolean;
+  private readonly minimize?: boolean | undefined;
 
   constructor(props: PolicyDocumentProps = {}) {
     this.creationStack = cdk.captureStackTrace();

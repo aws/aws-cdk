@@ -140,7 +140,7 @@ export interface AddToPrincipalPolicyResult {
    *
    * @default - Required if `statementAdded` is true.
    */
-  readonly policyDependable?: IDependable;
+  readonly policyDependable?: IDependable | undefined;
 }
 
 /**
@@ -520,14 +520,14 @@ export interface ServicePrincipalOpts {
    *
    * @default - the resolving Stack's region.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Additional conditions to add to the Service Principal
    *
    * @default - No conditions
    */
-  readonly conditions?: { [key: string]: any };
+  readonly conditions?: { [key: string]: any } | undefined;
 }
 
 /**

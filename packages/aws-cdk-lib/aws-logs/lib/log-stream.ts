@@ -48,7 +48,7 @@ export interface LogStreamProps {
    *
    * @default Automatically generated
    */
-  readonly logStreamName?: string;
+  readonly logStreamName?: string | undefined;
 
   /**
    * Determine what happens when the log stream resource is removed from the
@@ -62,7 +62,7 @@ export interface LogStreamProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

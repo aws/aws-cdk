@@ -52,8 +52,8 @@ export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
     });
   }
 
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: EmrSetClusterTerminationProtectionProps) {
     super(scope, id, props);

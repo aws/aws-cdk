@@ -124,7 +124,7 @@ abstract class KeyBase extends Resource implements IKey {
    * If specified, addToResourcePolicy can be used to edit this policy.
    * Otherwise this method will no-op.
    */
-  protected abstract readonly policy?: iam.PolicyDocument;
+  protected abstract readonly policy?: iam.PolicyDocument | undefined;
 
   /**
    * Optional property to control trusting account identities.
@@ -436,7 +436,7 @@ export interface KeyProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Initial alias to add to the key
@@ -445,28 +445,28 @@ export interface KeyProps {
    *
    * @default - No alias is added for the key.
    */
-  readonly alias?: string;
+  readonly alias?: string | undefined;
 
   /**
    * Indicates whether AWS KMS rotates the key.
    *
    * @default false
    */
-  readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean | undefined;
 
   /**
    * The period between each automatic rotation.
    *
    * @default - set by CFN to 365 days.
    */
-  readonly rotationPeriod?: Duration;
+  readonly rotationPeriod?: Duration | undefined;
 
   /**
    * Indicates whether the key is available for use.
    *
    * @default - Key is enabled.
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The cryptographic configuration of the key. The valid value depends on usage of the key.
@@ -476,7 +476,7 @@ export interface KeyProps {
    *
    * @default KeySpec.SYMMETRIC_DEFAULT
    */
-  readonly keySpec?: KeySpec;
+  readonly keySpec?: KeySpec | undefined;
 
   /**
    * The cryptographic operations for which the key can be used.
@@ -486,7 +486,7 @@ export interface KeyProps {
    *
    * @default KeyUsage.ENCRYPT_DECRYPT
    */
-  readonly keyUsage?: KeyUsage;
+  readonly keyUsage?: KeyUsage | undefined;
 
   /**
    * Creates a multi-Region primary key that you can replicate in other AWS Regions.
@@ -500,7 +500,7 @@ export interface KeyProps {
    * @default false
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html
    */
-  readonly multiRegion?: boolean;
+  readonly multiRegion?: boolean | undefined;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -512,7 +512,7 @@ export interface KeyProps {
    * @default - A policy document with permissions for the account root to
    * administer the key will be created.
    */
-  readonly policy?: iam.PolicyDocument;
+  readonly policy?: iam.PolicyDocument | undefined;
 
   /**
    * A list of principals to add as key administrators to the key policy.
@@ -524,7 +524,7 @@ export interface KeyProps {
    *
    * @default []
    */
-  readonly admins?: iam.IPrincipal[];
+  readonly admins?: iam.IPrincipal[] | undefined;
 
   /**
    * Whether the encryption key should be retained when it is removed from the Stack. This is useful when one wants to
@@ -532,7 +532,7 @@ export interface KeyProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Whether the key usage can be granted by IAM policies
@@ -549,7 +549,7 @@ export interface KeyProps {
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
    * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
    */
-  readonly trustAccountIdentities?: boolean;
+  readonly trustAccountIdentities?: boolean | undefined;
 
   /**
    * Specifies the number of days in the waiting period before
@@ -565,7 +565,7 @@ export interface KeyProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays
    * @default - 30 days
    */
-  readonly pendingWindow?: Duration;
+  readonly pendingWindow?: Duration | undefined;
 }
 
 /**
@@ -748,9 +748,9 @@ export class Key extends KeyBase {
 
   public readonly keyArn: string;
   public readonly keyId: string;
-  protected readonly policy?: iam.PolicyDocument;
+  protected readonly policy?: iam.PolicyDocument | undefined;
   protected readonly trustAccountIdentities: boolean;
-  private readonly enableKeyRotation?: boolean;
+  private readonly enableKeyRotation?: boolean | undefined;
 
   /**
    * Collection of grant methods for a Key

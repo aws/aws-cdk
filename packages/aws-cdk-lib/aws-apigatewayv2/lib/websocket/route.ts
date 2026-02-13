@@ -41,13 +41,13 @@ export interface WebSocketRouteOptions {
    *
    * @default - No Authorizer
    */
-  readonly authorizer?: IWebSocketRouteAuthorizer;
+  readonly authorizer?: IWebSocketRouteAuthorizer | undefined;
 
   /**
    * Should the route send a response to the client
    * @default false
    */
-  readonly returnResponse?: boolean;
+  readonly returnResponse?: boolean | undefined;
 
 }
 
@@ -69,7 +69,7 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
    * Whether the route requires an API Key to be provided
    * @default false
    */
-  readonly apiKeyRequired?: boolean;
+  readonly apiKeyRequired?: boolean | undefined;
 }
 
 /**
@@ -90,7 +90,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   /**
    * Integration response ID
    */
-  public readonly integrationResponseId?: string;
+  public readonly integrationResponseId?: string | undefined;
 
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);

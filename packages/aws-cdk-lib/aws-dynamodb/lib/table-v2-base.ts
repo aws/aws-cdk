@@ -20,7 +20,7 @@ export interface ITableV2 extends ITable {
    *
    * @attribute
    */
-  readonly tableId?: string;
+  readonly tableId?: string | undefined;
 
   /**
    * Grants for this table
@@ -51,14 +51,14 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * @attribute
    */
-  public abstract readonly tableStreamArn?: string;
+  public abstract readonly tableStreamArn?: string | undefined;
 
   /**
    * The ID of the table.
    *
    * @attribute
    */
-  public abstract readonly tableId?: string;
+  public abstract readonly tableId?: string | undefined;
 
   /**
    * Grants for this table.
@@ -68,7 +68,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   /**
    * The KMS encryption key for the table.
    */
-  public abstract readonly encryptionKey?: IKey;
+  public abstract readonly encryptionKey?: IKey | undefined;
 
   /**
    * The resource policy for the table

@@ -85,35 +85,35 @@ export interface CronOptions {
    *
    * @default - Every minute
    */
-  readonly minute?: string;
+  readonly minute?: string | undefined;
 
   /**
    * The hour to run this rule at
    *
    * @default - Every hour
    */
-  readonly hour?: string;
+  readonly hour?: string | undefined;
 
   /**
    * The day of the month to run this rule at
    *
    * @default - Every day of the month
    */
-  readonly day?: string;
+  readonly day?: string | undefined;
 
   /**
    * The month to run this rule at
    *
    * @default - Every month
    */
-  readonly month?: string;
+  readonly month?: string | undefined;
 
   /**
    * The day of the week to run this rule at
    *
    * @default - Any day of the week
    */
-  readonly weekDay?: string;
+  readonly weekDay?: string | undefined;
 }
 
 function fallback(x: string | undefined, def: string): string {

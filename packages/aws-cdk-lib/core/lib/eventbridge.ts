@@ -7,7 +7,7 @@ export interface AWSEventMetadataProps {
    *
    * @default - No filtering on version
    */
-  readonly version?: string[];
+  readonly version?: string[] | undefined;
 
   /**
    * This JSON array contains ARNs that identify resources that are involved
@@ -21,12 +21,12 @@ export interface AWSEventMetadataProps {
    *
    * @default - No filtering on resource
    */
-  readonly resources?: string[];
+  readonly resources?: string[] | undefined;
 
   /**
    * Identifies the AWS region where the event originated.
    *
    * @default - No filtering on region
    */
-  readonly region?: string[];
+  readonly region?: string[] | undefined;
 }

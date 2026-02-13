@@ -50,14 +50,14 @@ export interface VirtualRouterBaseProps {
    *
    * @default - A listener on HTTP port 8080
    */
-  readonly listeners?: VirtualRouterListener[];
+  readonly listeners?: VirtualRouterListener[] | undefined;
 
   /**
    * The name of the VirtualRouter
    *
    * @default - A name is automatically determined
    */
-  readonly virtualRouterName?: string;
+  readonly virtualRouterName?: string | undefined;
 }
 
 abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {

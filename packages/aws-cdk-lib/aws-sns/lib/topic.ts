@@ -23,7 +23,7 @@ export interface TopicProps {
    *
    * @default None
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 
   /**
    * A name for the topic.
@@ -34,28 +34,28 @@ export interface TopicProps {
    *
    * @default Generated name
    */
-  readonly topicName?: string;
+  readonly topicName?: string | undefined;
 
   /**
    * A KMS Key, either managed by this CDK app, or imported.
    *
    * @default None
    */
-  readonly masterKey?: IKey;
+  readonly masterKey?: IKey | undefined;
 
   /**
    * Enables content-based deduplication for FIFO topics.
    *
    * @default None
    */
-  readonly contentBasedDeduplication?: boolean;
+  readonly contentBasedDeduplication?: boolean | undefined;
 
   /**
    * Set to true to create a FIFO topic.
    *
    * @default None
    */
-  readonly fifo?: boolean;
+  readonly fifo?: boolean | undefined;
 
   /**
    * The list of delivery status logging configurations for the topic.
@@ -64,7 +64,7 @@ export interface TopicProps {
    *
    * @default None
    */
-  readonly loggingConfigs?: LoggingConfig[];
+  readonly loggingConfigs?: LoggingConfig[] | undefined;
 
   /**
    * The number of days Amazon SNS retains messages.
@@ -75,7 +75,7 @@ export interface TopicProps {
    *
    * @default - do not archive messages
    */
-  readonly messageRetentionPeriodInDays?: number;
+  readonly messageRetentionPeriodInDays?: number | undefined;
 
   /**
    * Adds a statement to enforce encryption of data in transit when publishing to the topic.
@@ -84,7 +84,7 @@ export interface TopicProps {
    *
    * @default false
    */
-  readonly enforceSSL?: boolean;
+  readonly enforceSSL?: boolean | undefined;
 
   /**
    * The signature version corresponds to the hashing algorithm used while creating the signature of the notifications,
@@ -94,7 +94,7 @@ export interface TopicProps {
    *
    * @default 1
    */
-  readonly signatureVersion?: string;
+  readonly signatureVersion?: string | undefined;
 
   /**
    * Tracing mode of an Amazon SNS topic.
@@ -103,7 +103,7 @@ export interface TopicProps {
    *
    * @default TracingConfig.PASS_THROUGH
    */
-  readonly tracingConfig?: TracingConfig;
+  readonly tracingConfig?: TracingConfig | undefined;
 
   /**
    * Specifies the throughput quota and deduplication behavior to apply for the FIFO topic.
@@ -112,7 +112,7 @@ export interface TopicProps {
    *
    * @default undefined - SNS default setting is FifoThroughputScope.TOPIC
    */
-  readonly fifoThroughputScope?: FifoThroughputScope;
+  readonly fifoThroughputScope?: FifoThroughputScope | undefined;
 }
 
 /**
@@ -150,14 +150,14 @@ export interface LoggingConfig {
    *
    * @default None
    */
-  readonly failureFeedbackRole?: IRoleRef;
+  readonly failureFeedbackRole?: IRoleRef | undefined;
 
   /**
    * The IAM role to be used when logging successful message deliveries in Amazon CloudWatch.
    *
    * @default None
    */
-  readonly successFeedbackRole?: IRoleRef;
+  readonly successFeedbackRole?: IRoleRef | undefined;
 
   /**
    * The percentage of successful message deliveries to be logged in Amazon CloudWatch.
@@ -166,7 +166,7 @@ export interface LoggingConfig {
    *
    * @default None
    */
-  readonly successFeedbackSampleRate?: number;
+  readonly successFeedbackSampleRate?: number | undefined;
 }
 
 /**
@@ -228,7 +228,7 @@ export interface TopicAttributes {
    *
    * @default - None
    */
-  readonly keyArn?: string;
+  readonly keyArn?: string | undefined;
 
   /**
    * Whether content-based deduplication is enabled.
@@ -236,7 +236,7 @@ export interface TopicAttributes {
    *
    * @default false
    */
-  readonly contentBasedDeduplication?: boolean;
+  readonly contentBasedDeduplication?: boolean | undefined;
 }
 
 /**
@@ -303,7 +303,7 @@ export class Topic extends TopicBase {
   public get topicName(): string {
     return this.getResourceNameAttribute(this._resource.attrTopicName);
   }
-  public readonly masterKey?: IKey;
+  public readonly masterKey?: IKey | undefined;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 

@@ -280,7 +280,7 @@ export interface ReverseOptions {
    *
    * @default true
    */
-  readonly failConcat?: boolean;
+  readonly failConcat?: boolean | undefined;
 }
 
 /**
@@ -306,14 +306,14 @@ export interface ResolveOptions {
    * Whether the resolution is being executed during the prepare phase or not.
    * @default false
    */
-  readonly preparing?: boolean;
+  readonly preparing?: boolean | undefined;
 
   /**
    * Whether to remove undefined elements from arrays and objects when resolving.
    *
    * @default true
    */
-  readonly removeEmpty?: boolean;
+  readonly removeEmpty?: boolean | undefined;
 }
 
 /**
@@ -323,7 +323,7 @@ export interface EncodingOptions {
   /**
    * A hint for the Token's purpose when stringifying it
    */
-  readonly displayHint?: string;
+  readonly displayHint?: string | undefined;
 }
 
 export function isResolvableObject(x: any): x is IResolvable {

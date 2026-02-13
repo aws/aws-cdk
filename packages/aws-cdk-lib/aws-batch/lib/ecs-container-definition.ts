@@ -25,13 +25,13 @@ export interface SecretVersionInfo {
    *
    * @default - use default version id
    */
-  readonly versionId?: string;
+  readonly versionId?: string | undefined;
   /**
    * version stage of the secret
    *
    * @default - use default version stage
    */
-  readonly versionStage?: string;
+  readonly versionStage?: string | undefined;
 }
 
 /**
@@ -94,7 +94,7 @@ export abstract class Secret {
   /**
    * Whether this secret uses a specific JSON field
    */
-  public abstract readonly hasField?: boolean;
+  public abstract readonly hasField?: boolean | undefined;
 
   /**
    * Grants reading the secret to a principal
@@ -122,7 +122,7 @@ export interface EcsVolumeOptions {
    *
    * @default false
    */
-  readonly readonly?: boolean;
+  readonly readonly?: boolean | undefined;
 }
 
 /**
@@ -162,7 +162,7 @@ export abstract class EcsVolume {
    *
    * @default false
    */
-  public readonly readonly?: boolean;
+  public readonly readonly?: boolean | undefined;
 
   constructor(options: EcsVolumeOptions) {
     this.name = options.name;
@@ -188,7 +188,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default - root of the EFS File System
    */
-  readonly rootDirectory?: string;
+  readonly rootDirectory?: string | undefined;
 
   /**
    * Enables encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server
@@ -197,7 +197,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default false
    */
-  readonly enableTransitEncryption?: boolean;
+  readonly enableTransitEncryption?: boolean | undefined;
 
   /**
    * The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server.
@@ -207,7 +207,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default - chosen by the EFS Mount Helper
    */
-  readonly transitEncryptionPort?: number;
+  readonly transitEncryptionPort?: number | undefined;
 
   /**
    * The Amazon EFS access point ID to use.
@@ -219,7 +219,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default - no accessPointId
    */
-  readonly accessPointId?: string;
+  readonly accessPointId?: string | undefined;
 
   /**
    * Whether or not to use the AWS Batch job IAM role defined in a job definition when mounting the Amazon EFS file system.
@@ -229,7 +229,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default false
    */
-  readonly useJobRole?: boolean;
+  readonly useJobRole?: boolean | undefined;
 }
 
 /**
@@ -267,7 +267,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default - root of the EFS File System
    */
-  public readonly rootDirectory?: string;
+  public readonly rootDirectory?: string | undefined;
 
   /**
    * Enables encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server
@@ -276,7 +276,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default false
    */
-  public readonly enableTransitEncryption?: boolean;
+  public readonly enableTransitEncryption?: boolean | undefined;
 
   /**
    * The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server.
@@ -286,7 +286,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default - chosen by the EFS Mount Helper
    */
-  public readonly transitEncryptionPort?: number;
+  public readonly transitEncryptionPort?: number | undefined;
 
   /**
    * The Amazon EFS access point ID to use.
@@ -298,7 +298,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default - no accessPointId
    */
-  public readonly accessPointId?: string;
+  public readonly accessPointId?: string | undefined;
 
   /**
    * Whether or not to use the AWS Batch job IAM role defined in a job definition when mounting the Amazon EFS file system.
@@ -308,7 +308,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default false
    */
-  public readonly useJobRole?: boolean;
+  public readonly useJobRole?: boolean | undefined;
 
   constructor(options: EfsVolumeOptions) {
     super(options);
@@ -338,7 +338,7 @@ export interface HostVolumeOptions extends EcsVolumeOptions {
    * @default - Docker will choose the host path.
    * The data may not persist after the containers that use it stop running.
    */
-  readonly hostPath?: string;
+  readonly hostPath?: string | undefined;
 }
 
 /**
@@ -357,7 +357,7 @@ export class HostVolume extends EcsVolume {
   /**
    * The path on the host machine this container will have access to
    */
-  public readonly hostPath?: string;
+  public readonly hostPath?: string | undefined;
 
   constructor(options: HostVolumeOptions) {
     super(options);
@@ -399,7 +399,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @see https://docs.docker.com/engine/reference/builder/#cmd
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to pass to a container.
@@ -408,7 +408,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default - no environment variables
    */
-  readonly environment?: { [key:string]: string };
+  readonly environment?: { [key:string]: string } | undefined;
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -424,26 +424,26 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
    */
-  readonly jobRole?: iam.IRole;
+  readonly jobRole?: iam.IRole | undefined;
 
   /**
    * Linux-specific modifications that are applied to the container, such as details for device mappings.
    *
    * @default none
    */
-  readonly linuxParameters?: LinuxParameters;
+  readonly linuxParameters?: LinuxParameters | undefined;
 
   /**
    * The configuration of the log driver
    */
-  readonly logDriverConfig?: ecs.LogDriverConfig;
+  readonly logDriverConfig?: ecs.LogDriverConfig | undefined;
 
   /**
    * Gives the container readonly access to its root filesystem.
    *
    * @default false
    */
-  readonly readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean | undefined;
 
   /**
    * A map from environment variable names to the secrets for the container. Allows your job definitions
@@ -453,14 +453,14 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string]: Secret };
+  readonly secrets?: { [envVarName: string]: Secret } | undefined;
 
   /**
    * The user name to use inside the container
    *
    * @default - no user
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * The volumes to mount to this container. Automatically added to the job definition.
@@ -474,7 +474,7 @@ export interface IEcsContainerDefinition extends IConstruct {
    *
    * @default undefined - AWS Batch default is false
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 
   /**
    * Renders this container to CloudFormation
@@ -519,7 +519,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no command
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to pass to a container.
@@ -528,7 +528,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no environment variables
    */
-  readonly environment?: { [key:string]: string };
+  readonly environment?: { [key:string]: string } | undefined;
 
   /**
    * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
@@ -537,7 +537,7 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - a Role will be created
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The role that the container can assume.
@@ -546,28 +546,28 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no job role
    */
-  readonly jobRole?: iam.IRole;
+  readonly jobRole?: iam.IRole | undefined;
 
   /**
    * Linux-specific modifications that are applied to the container, such as details for device mappings.
    *
    * @default none
    */
-  readonly linuxParameters?: LinuxParameters;
+  readonly linuxParameters?: LinuxParameters | undefined;
 
   /**
    * The loging configuration for this Job
    *
    * @default - the log configuration of the Docker daemon
    */
-  readonly logging?: ecs.LogDriver;
+  readonly logging?: ecs.LogDriver | undefined;
 
   /**
    * Gives the container readonly access to its root filesystem.
    *
    * @default false
    */
-  readonly readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean | undefined;
 
   /**
    * A map from environment variable names to the secrets for the container. Allows your job definitions
@@ -577,21 +577,21 @@ export interface EcsContainerDefinitionProps {
    *
    * @default - no secrets
    */
-  readonly secrets?: { [envVarName: string]: Secret };
+  readonly secrets?: { [envVarName: string]: Secret } | undefined;
 
   /**
    * The user name to use inside the container
    *
    * @default - no user
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * The volumes to mount to this container. Automatically added to the job definition.
    *
    * @default - no volumes
    */
-  readonly volumes?: EcsVolume[];
+  readonly volumes?: EcsVolume[] | undefined;
 
   /**
    * Determines whether execute command functionality is turned on for this task.
@@ -605,7 +605,7 @@ export interface EcsContainerDefinitionProps {
    * @default undefined - AWS Batch default is false
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html
    */
-  readonly enableExecuteCommand?: boolean;
+  readonly enableExecuteCommand?: boolean | undefined;
 }
 
 /**
@@ -615,17 +615,17 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly image: ecs.ContainerImage;
   public readonly cpu: number;
   public readonly memory: Size;
-  public readonly command?: string[];
-  public readonly environment?: { [key:string]: string };
+  public readonly command?: string[] | undefined;
+  public readonly environment?: { [key:string]: string } | undefined;
   public readonly executionRole: iam.IRole;
-  public readonly jobRole?: iam.IRole;
-  public readonly linuxParameters?: LinuxParameters;
-  public readonly logDriverConfig?: ecs.LogDriverConfig;
-  public readonly readonlyRootFilesystem?: boolean;
-  public readonly secrets?: { [envVarName: string]: Secret };
-  public readonly user?: string;
+  public readonly jobRole?: iam.IRole | undefined;
+  public readonly linuxParameters?: LinuxParameters | undefined;
+  public readonly logDriverConfig?: ecs.LogDriverConfig | undefined;
+  public readonly readonlyRootFilesystem?: boolean | undefined;
+  public readonly secrets?: { [envVarName: string]: Secret } | undefined;
+  public readonly user?: string | undefined;
   public readonly volumes: EcsVolume[];
-  public readonly enableExecuteCommand?: boolean;
+  public readonly enableExecuteCommand?: boolean | undefined;
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -930,7 +930,7 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * Limits to set for the user this docker container will run as
@@ -944,7 +944,7 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
    *
    * @default - no gpus
    */
-  readonly gpu?: number;
+  readonly gpu?: number | undefined;
 
   /**
    * Add a ulimit to this container
@@ -961,14 +961,14 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * Limits to set for the user this docker container will run as
    *
    * @default - no ulimits
    */
-  readonly ulimits?: Ulimit[];
+  readonly ulimits?: Ulimit[] | undefined;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -977,7 +977,7 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
    *
    * @default - no gpus
    */
-  readonly gpu?: number;
+  readonly gpu?: number | undefined;
 }
 
 /**
@@ -990,9 +990,9 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsEc2ContainerDefinition';
 
-  public readonly privileged?: boolean;
+  public readonly privileged?: boolean | undefined;
   public readonly ulimits: Ulimit[];
-  public readonly gpu?: number;
+  public readonly gpu?: number | undefined;
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
@@ -1061,35 +1061,35 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * Which version of Fargate to use when running this container
    *
    * @default LATEST
    */
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion | undefined;
 
   /**
    * The size for ephemeral storage.
    *
    * @default - 20 GiB
    */
-  readonly ephemeralStorageSize?: Size;
+  readonly ephemeralStorageSize?: Size | undefined;
 
   /**
    * The vCPU architecture of Fargate Runtime.
    *
    * @default - X86_64
    */
-  readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
+  readonly fargateCpuArchitecture?: ecs.CpuArchitecture | undefined;
 
   /**
    * The operating system for the compute environment.
    *
    * @default - LINUX
    */
-  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
+  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily | undefined;
 }
 
 /**
@@ -1105,35 +1105,35 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    *
    * @default false
    */
-  readonly assignPublicIp?: boolean;
+  readonly assignPublicIp?: boolean | undefined;
 
   /**
    * Which version of Fargate to use when running this container
    *
    * @default LATEST
    */
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion | undefined;
 
   /**
    * The size for ephemeral storage.
    *
    * @default - 20 GiB
    */
-  readonly ephemeralStorageSize?: Size;
+  readonly ephemeralStorageSize?: Size | undefined;
 
   /**
    * The vCPU architecture of Fargate Runtime.
    *
    * @default - X86_64
    */
-  readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
+  readonly fargateCpuArchitecture?: ecs.CpuArchitecture | undefined;
 
   /**
    * The operating system for the compute environment.
    *
    * @default - LINUX
    */
-  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
+  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily | undefined;
 }
 
 /**
@@ -1146,11 +1146,11 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EcsFargateContainerDefinition';
 
-  public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
-  public readonly assignPublicIp?: boolean;
-  public readonly ephemeralStorageSize?: Size;
-  public readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
-  public readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
+  public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion | undefined;
+  public readonly assignPublicIp?: boolean | undefined;
+  public readonly ephemeralStorageSize?: Size | undefined;
+  public readonly fargateCpuArchitecture?: ecs.CpuArchitecture | undefined;
+  public readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily | undefined;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);

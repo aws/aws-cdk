@@ -57,7 +57,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    *
    * @default "master"
    */
-  readonly branch?: string;
+  readonly branch?: string | undefined;
 
   /**
    * A GitHub OAuth token to use for authentication.
@@ -91,7 +91,7 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    *
    * @default GitHubTrigger.WEBHOOK
    */
-  readonly trigger?: GitHubTrigger;
+  readonly trigger?: GitHubTrigger | undefined;
 }
 
 /**

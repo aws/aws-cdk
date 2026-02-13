@@ -34,7 +34,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - A CloudFormation generated name.
    */
-  readonly receiptRuleSetName?: string;
+  readonly receiptRuleSetName?: string | undefined;
 
   /**
    * The list of rules to add to this rule set. Rules are added in the same
@@ -42,7 +42,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - No rules are added to the rule set.
    */
-  readonly rules?: ReceiptRuleOptions[];
+  readonly rules?: ReceiptRuleOptions[] | undefined;
 
   /**
    * Whether to add a first rule to stop processing messages
@@ -50,7 +50,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default false
    */
-  readonly dropSpam?: boolean;
+  readonly dropSpam?: boolean | undefined;
 }
 
 /**

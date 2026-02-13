@@ -31,7 +31,7 @@ export interface ThrottlePolicy {
    *
    * @default - no throttling
    */
-  readonly maxReceivesPerSecond?: number;
+  readonly maxReceivesPerSecond?: number | undefined;
 }
 
 /**
@@ -43,7 +43,7 @@ export interface RequestPolicy {
    *
    * @default - text/plain; charset=UTF-8
    */
-  readonly headerContentType?: string;
+  readonly headerContentType?: string | undefined;
 }
 
 /**
@@ -55,48 +55,48 @@ export interface HealthyRetryPolicy {
    *
    * @default - 20 seconds
    */
-  readonly minDelayTarget?: Duration;
+  readonly minDelayTarget?: Duration | undefined;
   /**
    * The maximum delay for a retry.  Must be at least `minDelayTarget` less than 3,600 seconds, and correspond to a whole number of seconds,
    *
    * @default - 20 seconds
    */
-  readonly maxDelayTarget?: Duration;
+  readonly maxDelayTarget?: Duration | undefined;
 
   /**
    * The total number of retries, including immediate, pre-backoff, backoff, and post-backoff retries.  Must be greater than or equal to zero and not exceed 100.
    *
    * @default 3
    */
-  readonly numRetries?: number;
+  readonly numRetries?: number | undefined;
 
   /**
    * The number of retries to be done immediately, with no delay between them.  Must be zero or greater.
    *
    * @default 0
    */
-  readonly numNoDelayRetries?: number;
+  readonly numNoDelayRetries?: number | undefined;
 
   /**
    * The number of retries in the pre-backoff phase, with the specified minimum delay between them.  Must be zero or greater
    *
    * @default 0
    */
-  readonly numMinDelayRetries?: number;
+  readonly numMinDelayRetries?: number | undefined;
 
   /**
    * The number of retries in the post-backoff phase, with the maximum delay between them.  Must be zero or greater
    *
    * @default 0
    */
-  readonly numMaxDelayRetries?: number;
+  readonly numMaxDelayRetries?: number | undefined;
 
   /**
    * The model for backoff between retries.
    *
    * @default - linear
    */
-  readonly backoffFunction?: BackoffFunction;
+  readonly backoffFunction?: BackoffFunction | undefined;
 }
 
 /**
@@ -109,19 +109,19 @@ export interface DeliveryPolicy {
    *
    * @default - Amazon SNS attempts up to three retries with a delay between failed attempts set at 20 seconds
    */
-  readonly healthyRetryPolicy?: HealthyRetryPolicy;
+  readonly healthyRetryPolicy?: HealthyRetryPolicy | undefined;
 
   /**
    * The throttling policy of the delivery of SNS messages to HTTP/S endpoints.
    *
    * @default - No throttling
    */
-  readonly throttlePolicy?: ThrottlePolicy;
+  readonly throttlePolicy?: ThrottlePolicy | undefined;
 
   /**
    * The request of the content sent in AWS SNS HTTP/S requests.
    *
    * @default - The content type is set to 'text/plain; charset=UTF-8'
    */
-  readonly requestPolicy?: RequestPolicy;
+  readonly requestPolicy?: RequestPolicy | undefined;
 }

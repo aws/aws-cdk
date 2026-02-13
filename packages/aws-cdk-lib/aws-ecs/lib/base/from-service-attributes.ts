@@ -19,14 +19,14 @@ export interface ServiceAttributes {
    *
    * @default - either this, or `serviceName`, is required
    */
-  readonly serviceArn?: string;
+  readonly serviceArn?: string | undefined;
 
   /**
    * The name of the service.
    *
    * @default - either this, or `serviceArn`, is required
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 }
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {

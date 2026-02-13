@@ -45,7 +45,7 @@ export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageS
    *
    * @default AmazonLinux2023Kernel.DEFAULT
    */
-  readonly kernel?: AmazonLinux2023Kernel;
+  readonly kernel?: AmazonLinux2023Kernel | undefined;
 }
 
 /**

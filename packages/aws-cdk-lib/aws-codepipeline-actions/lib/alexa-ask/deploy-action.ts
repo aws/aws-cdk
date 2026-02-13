@@ -35,7 +35,7 @@ export interface AlexaSkillDeployActionProps extends codepipeline.CommonActionPr
   /**
    * An optional artifact containing overrides for the skill manifest
    */
-  readonly parameterOverridesArtifact?: codepipeline.Artifact;
+  readonly parameterOverridesArtifact?: codepipeline.Artifact | undefined;
 }
 
 /**

@@ -119,7 +119,7 @@ export interface AfterwardsOptions {
    *
    * @default false
    */
-  readonly includeErrorHandlers?: boolean;
+  readonly includeErrorHandlers?: boolean | undefined;
 
   /**
    * Whether to include the default/otherwise transition for the current Choice state
@@ -129,7 +129,7 @@ export interface AfterwardsOptions {
    *
    * @default false
    */
-  readonly includeOtherwise?: boolean;
+  readonly includeOtherwise?: boolean | undefined;
 }
 
 /**

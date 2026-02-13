@@ -11,7 +11,7 @@ export interface IEndpoint {
    *
    * If the region cannot be determined, `undefined` is returned
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Render the endpoint to an endpoint configuration
@@ -37,7 +37,7 @@ export interface RawEndpointProps {
    *
    * @default 128
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * Forward the client IP address
@@ -52,14 +52,14 @@ export interface RawEndpointProps {
    *
    * @default true if possible and available
    */
-  readonly preserveClientIp?: boolean;
+  readonly preserveClientIp?: boolean | undefined;
 
   /**
    * The region where this endpoint is located
    *
    * @default - Unknown what region this endpoint is located
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**
@@ -70,7 +70,7 @@ export interface RawEndpointProps {
  * endpoint type that does not have an appropriate class in that package yet.
  */
 export class RawEndpoint implements IEndpoint {
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   constructor(private readonly props: RawEndpointProps) {
     this.region = props.region;

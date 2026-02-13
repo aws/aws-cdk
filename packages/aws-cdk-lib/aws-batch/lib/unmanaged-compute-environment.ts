@@ -20,7 +20,7 @@ export interface IUnmanagedComputeEnvironment extends IComputeEnvironment {
    * **If this parameter is not provided on a fairshare queue, no capacity is reserved**;
    * that is, the `FairshareSchedulingPolicy` is ignored.
    */
-  readonly unmanagedvCPUs?: number;
+  readonly unmanagedvCPUs?: number | undefined;
 }
 
 /**
@@ -37,7 +37,7 @@ export interface UnmanagedComputeEnvironmentProps extends ComputeEnvironmentProp
    *
    * @default 0
    */
-  readonly unmanagedvCpus?: number;
+  readonly unmanagedvCpus?: number | undefined;
 }
 
 /**

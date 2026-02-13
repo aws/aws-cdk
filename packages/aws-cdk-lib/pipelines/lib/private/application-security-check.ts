@@ -163,7 +163,7 @@ export class ApplicationSecurityCheck extends Construct {
 interface ifElseOptions {
   readonly condition: string;
   readonly thenStatements: string[];
-  readonly elseStatements?: string[];
+  readonly elseStatements?: string[] | undefined;
 }
 
 const ifElse = ({ condition, thenStatements, elseStatements }: ifElseOptions): string => {

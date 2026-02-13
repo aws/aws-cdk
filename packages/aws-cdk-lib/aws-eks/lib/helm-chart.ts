@@ -16,25 +16,25 @@ export interface HelmChartOptions {
    *
    * @default - No chart name. Implies `chartAsset` is used.
    */
-  readonly chart?: string;
+  readonly chart?: string | undefined;
 
   /**
    * The name of the release.
    * @default - If no release name is given, it will use the last 53 characters of the node's unique id.
    */
-  readonly release?: string;
+  readonly release?: string | undefined;
 
   /**
    * The chart version to install.
    * @default - If this is not specified, the latest version is installed
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 
   /**
    * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
-  readonly repository?: string;
+  readonly repository?: string | undefined;
 
   /**
    * The chart in the form of an asset.
@@ -42,13 +42,13 @@ export interface HelmChartOptions {
    *
    * @default - No chart asset. Implies `chart` is used.
    */
-  readonly chartAsset?: Asset;
+  readonly chartAsset?: Asset | undefined;
 
   /**
    * The Kubernetes namespace scope of the requests.
    * @default default
    */
-  readonly namespace?: string;
+  readonly namespace?: string | undefined;
 
   /**
    * The values to be used by the chart.
@@ -59,39 +59,39 @@ export interface HelmChartOptions {
    * }
    * @default - No values are provided to the chart.
    */
-  readonly values?: {[key: string]: any};
+  readonly values?: {[key: string]: any} | undefined;
 
   /**
    * Whether or not Helm should wait until all Pods, PVCs, Services, and minimum number of Pods of a
    * Deployment, StatefulSet, or ReplicaSet are in a ready state before marking the release as successful.
    * @default - Helm will not wait before marking release as successful
    */
-  readonly wait?: boolean;
+  readonly wait?: boolean | undefined;
 
   /**
    * Amount of time to wait for any individual Kubernetes operation. Maximum 15 minutes.
    * @default Duration.minutes(5)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Whether or not Helm should treat this operation as atomic; if set, upgrade process rolls back changes
    * made in case of failed upgrade. The --wait flag will be set automatically if --atomic is used.
    * @default false
    */
-  readonly atomic?: boolean;
+  readonly atomic?: boolean | undefined;
 
   /**
    * create namespace if not exist
    * @default true
    */
-  readonly createNamespace?: boolean;
+  readonly createNamespace?: boolean | undefined;
 
   /**
    * if set, no CRDs will be installed
    * @default - CRDs are installed if not already present
    */
-  readonly skipCrds?: boolean;
+  readonly skipCrds?: boolean | undefined;
 
   /**
    * The removal policy applied to the custom resource that manages the Helm chart.
@@ -105,7 +105,7 @@ export interface HelmChartOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -130,11 +130,11 @@ export class HelmChart extends Construct {
    * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
-  public readonly chart?: string;
-  public readonly repository?: string;
-  public readonly version?: string;
-  public readonly chartAsset?: Asset;
-  public readonly atomic?: boolean;
+  public readonly chart?: string | undefined;
+  public readonly repository?: string | undefined;
+  public readonly version?: string | undefined;
+  public readonly chartAsset?: Asset | undefined;
+  public readonly atomic?: boolean | undefined;
 
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);

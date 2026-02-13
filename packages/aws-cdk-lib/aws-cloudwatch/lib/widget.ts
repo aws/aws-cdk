@@ -24,12 +24,12 @@ export interface IWidget {
    * Any warnings that are produced as a result of putting together this widget
    * @deprecated - use warningsV2
    */
-  readonly warnings?: string[];
+  readonly warnings?: string[] | undefined;
 
   /**
    * Any warnings that are produced as a result of putting together this widget
    */
-  readonly warningsV2?: { [id: string]: string };
+  readonly warningsV2?: { [id: string]: string } | undefined;
 
   /**
    * Place the widget at a given position

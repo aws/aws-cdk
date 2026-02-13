@@ -21,7 +21,7 @@ export interface SqsSendMessageProps extends ScheduleTargetBaseProps {
    *
    * @default - no message group ID
    */
-  readonly messageGroupId?: string;
+  readonly messageGroupId?: string | undefined;
 }
 
 /**

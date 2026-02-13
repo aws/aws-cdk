@@ -24,13 +24,13 @@ export interface ReplicaProviderProps {
    *
    * @default Duration.minutes(30)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
   /**
    * Disable logging for provider
    *
    * @default true
    */
-  readonly disableLogging?: boolean;
+  readonly disableLogging?: boolean | undefined;
 }
 
 export class ReplicaProvider extends NestedStack {

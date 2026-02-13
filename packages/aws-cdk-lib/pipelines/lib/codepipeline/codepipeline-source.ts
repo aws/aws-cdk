@@ -219,7 +219,7 @@ export interface GitHubSourceOptions {
    *
    * @default - SecretValue.secretsManager('github-token')
    */
-  readonly authentication?: SecretValue;
+  readonly authentication?: SecretValue | undefined;
 
   /**
    * How AWS CodePipeline should be triggered
@@ -233,14 +233,14 @@ export interface GitHubSourceOptions {
    *
    * @default GitHubTrigger.WEBHOOK
    */
-  readonly trigger?: GitHubTrigger;
+  readonly trigger?: GitHubTrigger | undefined;
 
   /**
    * The action name used for this source in the CodePipeline
    *
    * @default - The repository string
    */
-  readonly actionName?: string;
+  readonly actionName?: string | undefined;
 }
 
 /**
@@ -291,14 +291,14 @@ export interface S3SourceOptions {
    * @default S3Trigger.POLL
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/log-s3-data-events.html
    */
-  readonly trigger?: S3Trigger;
+  readonly trigger?: S3Trigger | undefined;
 
   /**
    * The action name used for this source in the CodePipeline
    *
    * @default - The bucket name
    */
-  readonly actionName?: string;
+  readonly actionName?: string | undefined;
 
   /**
    * The role that will be assumed by the pipeline prior to executing
@@ -306,7 +306,7 @@ export interface S3SourceOptions {
    *
    * @default - a new role will be generated
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 class S3Source extends CodePipelineSource {
@@ -340,14 +340,14 @@ export interface ECRSourceOptions {
    *
    * @default latest
    */
-  readonly imageTag?: string;
+  readonly imageTag?: string | undefined;
 
   /**
    * The action name used for this source in the CodePipeline
    *
    * @default - The repository name
    */
-  readonly actionName?: string;
+  readonly actionName?: string | undefined;
 }
 
 class ECRSource extends CodePipelineSource {
@@ -396,7 +396,7 @@ export interface ConnectionSourceOptions {
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#action-reference-CodestarConnectionSource-config
    */
-  readonly codeBuildCloneOutput?: boolean;
+  readonly codeBuildCloneOutput?: boolean | undefined;
 
   /**
    * Controls automatically starting your pipeline when a new commit
@@ -406,14 +406,14 @@ export interface ConnectionSourceOptions {
    * @default true
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
-  readonly triggerOnPush?: boolean;
+  readonly triggerOnPush?: boolean | undefined;
 
   /**
    * The action name used for this source in the CodePipeline
    *
    * @default - The repository string
    */
-  readonly actionName?: string;
+  readonly actionName?: string | undefined;
 }
 
 class CodeStarConnectionSource extends CodePipelineSource {
@@ -477,7 +477,7 @@ export interface CodeCommitSourceOptions {
    *
    * @default CodeCommitTrigger.EVENTS
    */
-  readonly trigger?: CodeCommitTrigger;
+  readonly trigger?: CodeCommitTrigger | undefined;
 
   /**
    * Role to be used by on commit event rule.
@@ -485,7 +485,7 @@ export interface CodeCommitSourceOptions {
    *
    * @default a new role will be created.
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 
   /**
    * If this is set, the next CodeBuild job clones the repository (instead of CodePipeline downloading the files).
@@ -498,14 +498,14 @@ export interface CodeCommitSourceOptions {
    * @default false
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
-  readonly codeBuildCloneOutput?: boolean;
+  readonly codeBuildCloneOutput?: boolean | undefined;
 
   /**
    * The action name used for this source in the CodePipeline
    *
    * @default - The repository name
    */
-  readonly actionName?: string;
+  readonly actionName?: string | undefined;
 }
 
 class CodeCommitSource extends CodePipelineSource {

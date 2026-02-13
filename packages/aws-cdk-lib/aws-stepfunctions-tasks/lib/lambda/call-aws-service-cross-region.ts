@@ -27,7 +27,7 @@ interface CallAwsServiceCrossRegionOptions {
    *
    * @default - no parameters
    */
-  readonly parameters?: { [key: string]: any };
+  readonly parameters?: { [key: string]: any } | undefined;
 
   /**
    * The resources for the IAM statement that will be added to the Lambda
@@ -46,7 +46,7 @@ interface CallAwsServiceCrossRegionOptions {
    *
    * @default - service:action
    */
-  readonly iamAction?: string;
+  readonly iamAction?: string | undefined;
 
   /**
    * Additional IAM statements that will be added to the state machine
@@ -58,7 +58,7 @@ interface CallAwsServiceCrossRegionOptions {
    *
    * @default - no additional statements are added
    */
-  readonly additionalIamStatements?: iam.PolicyStatement[];
+  readonly additionalIamStatements?: iam.PolicyStatement[] | undefined;
 
   /**
    * The AWS region to call this AWS API for.
@@ -71,7 +71,7 @@ interface CallAwsServiceCrossRegionOptions {
    *
    * @default Do not override API endpoint.
    */
-  readonly endpoint?: string;
+  readonly endpoint?: string | undefined;
 
   /**
    * Whether to retry on the backend Lambda service exceptions.
@@ -85,7 +85,7 @@ interface CallAwsServiceCrossRegionOptions {
    *
    * @default true
    */
-  readonly retryOnServiceExceptions?: boolean;
+  readonly retryOnServiceExceptions?: boolean | undefined;
 }
 
 /**
@@ -131,8 +131,8 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
       queryLanguage: sfn.QueryLanguage.JSONATA,
     });
   }
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
   protected readonly lambdaFunction: IFunction;
 
   private readonly integrationPattern: sfn.IntegrationPattern | undefined;

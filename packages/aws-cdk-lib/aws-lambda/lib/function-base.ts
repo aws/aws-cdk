@@ -43,7 +43,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * The IAM role associated with this function.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -72,7 +72,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * The tenancy configuration for this function.
    */
-  readonly tenancyConfig?: TenancyConfig;
+  readonly tenancyConfig?: TenancyConfig | undefined;
 
   /**
    * The system architectures compatible with this lambda function.
@@ -198,7 +198,7 @@ export interface FunctionAttributes {
    *
    * If the role is not specified, any role-related operations will no-op.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Id of the security group of this Lambda, if in a VPC.
@@ -208,7 +208,7 @@ export interface FunctionAttributes {
    *
    * @deprecated use `securityGroup` instead
    */
-  readonly securityGroupId?: string;
+  readonly securityGroupId?: string | undefined;
 
   /**
    * The security group of this Lambda, if in a VPC.
@@ -216,7 +216,7 @@ export interface FunctionAttributes {
    * This needs to be given in order to support allowing connections
    * to this Lambda.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Setting this property informs the CDK that the imported function is in the same environment as the stack.
@@ -229,7 +229,7 @@ export interface FunctionAttributes {
    * @default - depends: true, if the Stack is configured with an explicit `env` (account and region) and the account is the same as this function.
    * For environment-agnostic stacks this will default to `false`.
    */
-  readonly sameEnvironment?: boolean;
+  readonly sameEnvironment?: boolean | undefined;
 
   /**
    * Setting this property informs the CDK that the imported function ALREADY HAS the necessary permissions
@@ -243,19 +243,19 @@ export interface FunctionAttributes {
    *
    * @default false
    */
-  readonly skipPermissions?: boolean;
+  readonly skipPermissions?: boolean | undefined;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    * @default - Architecture.X86_64
    */
-  readonly architecture?: Architecture;
+  readonly architecture?: Architecture | undefined;
 
   /**
    * The tenancy configuration of this Lambda Function.
    * @default - Tenant isolation is not enabled
    */
-  readonly tenancyConfig?: TenancyConfig;
+  readonly tenancyConfig?: TenancyConfig | undefined;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -279,7 +279,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    *
    * Undefined if the function was imported without a role.
    */
-  public abstract readonly role?: iam.IRole;
+  public abstract readonly role?: iam.IRole | undefined;
 
   /**
    * The construct node where permissions are attached.
@@ -294,7 +294,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * The tenancy configuration for this function.
    */
-  public abstract readonly tenancyConfig?: TenancyConfig;
+  public abstract readonly tenancyConfig?: TenancyConfig | undefined;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -316,7 +316,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * on the imported lambda outside CDK.
    * @internal
    */
-  protected readonly _skipPermissions?: boolean;
+  protected readonly _skipPermissions?: boolean | undefined;
 
   /**
    * Actual connections object for this Lambda

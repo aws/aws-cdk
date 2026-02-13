@@ -21,7 +21,7 @@ export interface OriginAccessIdentityProps {
    *
    * @default "Allows CloudFront to reach the bucket"
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 }
 
 /**

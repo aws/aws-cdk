@@ -41,8 +41,8 @@ export interface IReportGroup extends cdk.IResource, IReportGroupRef {
 abstract class ReportGroupBase extends cdk.Resource implements IReportGroup {
   public abstract readonly reportGroupArn: string;
   public abstract readonly reportGroupName: string;
-  protected abstract readonly exportBucket?: s3.IBucket;
-  protected abstract readonly type?: ReportGroupType;
+  protected abstract readonly exportBucket?: s3.IBucket | undefined;
+  protected abstract readonly type?: ReportGroupType | undefined;
 
   public get reportGroupRef(): ReportGroupReference {
     return {
@@ -96,14 +96,14 @@ export interface ReportGroupProps {
    *
    * @default - CloudFormation-generated name
    */
-  readonly reportGroupName?: string;
+  readonly reportGroupName?: string | undefined;
 
   /**
    * An optional S3 bucket to export the reports to.
    *
    * @default - the reports will not be exported
    */
-  readonly exportBucket?: s3.IBucket;
+  readonly exportBucket?: s3.IBucket | undefined;
 
   /**
    * Whether to output the report files into the export bucket as-is,
@@ -112,7 +112,7 @@ export interface ReportGroupProps {
    *
    * @default - false (the files will not be ZIPped)
    */
-  readonly zipExport?: boolean;
+  readonly zipExport?: boolean | undefined;
 
   /**
    * What to do when this resource is deleted from a stack.
@@ -121,7 +121,7 @@ export interface ReportGroupProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 
   /**
    * The type of report group. This can be one of the following values:
@@ -131,14 +131,14 @@ export interface ReportGroupProps {
    *
    * @default TEST
    */
-  readonly type?: ReportGroupType;
+  readonly type?: ReportGroupType | undefined;
 
   /**
    * If true, deleting the report group force deletes the contents of the report group. If false, the report group must be empty before attempting to delete it.
    *
    * @default false
    */
-  readonly deleteReports?: boolean;
+  readonly deleteReports?: boolean | undefined;
 }
 
 /**
@@ -171,8 +171,8 @@ export class ReportGroup extends ReportGroupBase {
       reportGroupArnComponents(this.physicalName));
   }
 
-  protected readonly exportBucket?: s3.IBucket;
-  protected readonly type?: ReportGroupType;
+  protected readonly exportBucket?: s3.IBucket | undefined;
+  protected readonly type?: ReportGroupType | undefined;
   private readonly resource: CfnReportGroup;
 
   constructor(scope: Construct, id: string, props: ReportGroupProps = {}) {

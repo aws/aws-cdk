@@ -64,12 +64,12 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default true
    */
-  readonly extract?: boolean;
+  readonly extract?: boolean | undefined;
 
   /**
    * The key of the target object. This is required if extract is false.
    */
-  readonly objectKey?: string;
+  readonly objectKey?: string | undefined;
 
   /**
    * The input Artifact to deploy to Amazon S3.
@@ -87,7 +87,7 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - the original object ACL
    */
-  readonly accessControl?: s3.BucketAccessControl;
+  readonly accessControl?: s3.BucketAccessControl | undefined;
 
   /**
    * The caching behavior for requests/responses for objects in the bucket.
@@ -96,14 +96,14 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    *
    * @default - none, decided by the HTTP client
    */
-  readonly cacheControl?: CacheControl[];
+  readonly cacheControl?: CacheControl[] | undefined;
 
   /**
    * The AWS KMS encryption key for the host bucket.
    * The encryptionKey parameter encrypts uploaded artifacts with the provided AWS KMS key.
    * @default - none
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 }
 
 /**

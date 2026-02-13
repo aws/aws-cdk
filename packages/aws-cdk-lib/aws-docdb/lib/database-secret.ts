@@ -20,28 +20,28 @@ export interface DatabaseSecretProps {
    *
    * @default default master key
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: IKey | undefined;
 
   /**
    * The physical name of the secret
    *
    * @default Secretsmanager will generate a physical name for the secret
    */
-  readonly secretName?: string;
+  readonly secretName?: string | undefined;
 
   /**
    * The master secret which will be used to rotate this secret.
    *
    * @default - no master secret information will be included
    */
-  readonly masterSecret?: ISecret;
+  readonly masterSecret?: ISecret | undefined;
 
   /**
    * Characters to not include in the generated password.
    *
    * @default "\"@/"
    */
-  readonly excludeCharacters?: string;
+  readonly excludeCharacters?: string | undefined;
 }
 
 /**

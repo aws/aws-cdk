@@ -266,7 +266,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - No minimum or maximum limits
    */
-  readonly acceleratorCountMin?: number;
+  readonly acceleratorCountMin?: number | undefined;
 
   /**
    * The maximum number of accelerators (GPUs, FPGAs, or AWS Inferentia chips) for an instance type.
@@ -275,7 +275,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - No minimum or maximum limits
    */
-  readonly acceleratorCountMax?: number;
+  readonly acceleratorCountMax?: number | undefined;
 
   /**
    * Indicates whether instance types must have accelerators by specific manufacturers.
@@ -287,7 +287,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any manufacturer
    */
-  readonly acceleratorManufacturers?: AcceleratorManufacturer[];
+  readonly acceleratorManufacturers?: AcceleratorManufacturer[] | undefined;
 
   /**
    * Lists the accelerators that must be on an instance type.
@@ -302,21 +302,21 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any accelerator
    */
-  readonly acceleratorNames?: AcceleratorName[];
+  readonly acceleratorNames?: AcceleratorName[] | undefined;
 
   /**
    * The minimum total memory size for the accelerators on an instance type, in MiB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly acceleratorTotalMemoryMin?: Size;
+  readonly acceleratorTotalMemoryMin?: Size | undefined;
 
   /**
    * The maximum total memory size for the accelerators on an instance type, in MiB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly acceleratorTotalMemoryMax?: Size;
+  readonly acceleratorTotalMemoryMax?: Size | undefined;
 
   /**
    * Lists the accelerator types that must be on an instance type.
@@ -327,7 +327,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any accelerator type
    */
-  readonly acceleratorTypes?: AcceleratorType[];
+  readonly acceleratorTypes?: AcceleratorType[] | undefined;
 
   /**
    * The instance types to apply your specified attributes against. All other instance types are ignored, even if they match your specified attributes.
@@ -340,35 +340,35 @@ export interface InstanceRequirementsConfig {
    *
    * @default - All instance types
    */
-  readonly allowedInstanceTypes?: string[];
+  readonly allowedInstanceTypes?: string[] | undefined;
 
   /**
    * Indicates whether bare metal instance types are included, excluded, or required.
    *
    * @default - excluded
    */
-  readonly bareMetal?: BareMetal;
+  readonly bareMetal?: BareMetal | undefined;
 
   /**
    * The minimum baseline bandwidth performance for an instance type, in Mbps. For more information, see Amazon EBS–optimized instances in the Amazon EC2 User Guide.
    *
    * @default - No minimum or maximum limits
    */
-  readonly baselineEbsBandwidthMbpsMin?: number;
+  readonly baselineEbsBandwidthMbpsMin?: number | undefined;
 
   /**
    * The maximum baseline bandwidth performance for an instance type, in Mbps. For more information, see Amazon EBS–optimized instances in the Amazon EC2 User Guide.
    *
    * @default - No minimum or maximum limits
    */
-  readonly baselineEbsBandwidthMbpsMax?: number;
+  readonly baselineEbsBandwidthMbpsMax?: number | undefined;
 
   /**
    * Indicates whether burstable performance instance types are included, excluded, or required. For more information, see Burstable performance instances in the Amazon EC2 User Guide.
    *
    * @default - excluded
    */
-  readonly burstablePerformance?: BurstablePerformance;
+  readonly burstablePerformance?: BurstablePerformance | undefined;
 
   /**
    * Lists which specific CPU manufacturers to include.
@@ -382,7 +382,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any manufacturer
    */
-  readonly cpuManufacturers?: CpuManufacturer[];
+  readonly cpuManufacturers?: CpuManufacturer[] | undefined;
 
   /**
    * The instance types to exclude. You can use strings with one or more wild cards, represented by an asterisk (*), to exclude an instance family, type, size, or generation. The following are examples: m5.8xlarge, c5*.*, m5a.*, r*, *3*.
@@ -393,7 +393,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - No excluded instance types
    */
-  readonly excludedInstanceTypes?: string[];
+  readonly excludedInstanceTypes?: string[] | undefined;
 
   /**
    * Indicates whether current or previous generation instance types are included.
@@ -403,14 +403,14 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any current or previous generation
    */
-  readonly instanceGenerations?: InstanceGeneration[];
+  readonly instanceGenerations?: InstanceGeneration[] | undefined;
 
   /**
    * Indicates whether instance types with instance store volumes are included, excluded, or required. For more information, see Amazon EC2 instance store in the Amazon EC2 User Guide.
    *
    * @default - included
    */
-  readonly localStorage?: LocalStorage;
+  readonly localStorage?: LocalStorage | undefined;
 
   /**
    * Indicates the type of local storage that is required.
@@ -420,7 +420,7 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Any local storage type
    */
-  readonly localStorageTypes?: LocalStorageType[];
+  readonly localStorageTypes?: LocalStorageType[] | undefined;
 
   /**
    * [Price protection] The price protection threshold for Spot Instances, as a percentage of an identified On-Demand price. The identified On-Demand price is the price of the lowest priced current generation C, M, or R instance type with your specified attributes. If no current generation C, M, or R instance type matches your attributes, then the identified price is from either the lowest priced current generation instance types or, failing that, the lowest priced previous generation instance types that match your attributes. When Amazon EC2 Auto Scaling selects instance types with your attributes, we will exclude instance types whose price exceeds your specified threshold.
@@ -433,21 +433,21 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Automatic optimal price protection
    */
-  readonly maxSpotPriceAsPercentageOfOptimalOnDemandPrice?: number;
+  readonly maxSpotPriceAsPercentageOfOptimalOnDemandPrice?: number | undefined;
 
   /**
    * The minimum amount of memory per vCPU for an instance type, in GiB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly memoryPerVCpuMin?: Size;
+  readonly memoryPerVCpuMin?: Size | undefined;
 
   /**
    * The maximum amount of memory per vCPU for an instance type, in GiB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly memoryPerVCpuMax?: Size;
+  readonly memoryPerVCpuMax?: Size | undefined;
 
   /**
    * The minimum instance memory size for an instance type, in MiB.
@@ -461,35 +461,35 @@ export interface InstanceRequirementsConfig {
    *
    * @default - No maximum limit
    */
-  readonly memoryMax?: Size;
+  readonly memoryMax?: Size | undefined;
 
   /**
    * The minimum amount of network bandwidth, in gigabits per second (Gbps).
    *
    * @default - No minimum or maximum limits
    */
-  readonly networkBandwidthGbpsMin?: number;
+  readonly networkBandwidthGbpsMin?: number | undefined;
 
   /**
    * The maximum amount of network bandwidth, in gigabits per second (Gbps).
    *
    * @default - No minimum or maximum limits
    */
-  readonly networkBandwidthGbpsMax?: number;
+  readonly networkBandwidthGbpsMax?: number | undefined;
 
   /**
    * The minimum number of network interfaces for an instance type.
    *
    * @default - No minimum or maximum limits
    */
-  readonly networkInterfaceCountMin?: number;
+  readonly networkInterfaceCountMin?: number | undefined;
 
   /**
    * The maximum number of network interfaces for an instance type.
    *
    * @default - No minimum or maximum limits
    */
-  readonly networkInterfaceCountMax?: number;
+  readonly networkInterfaceCountMax?: number | undefined;
 
   /**
    * [Price protection] The price protection threshold for On-Demand Instances, as a percentage higher than an identified On-Demand price. The identified On-Demand price is the price of the lowest priced current generation C, M, or R instance type with your specified attributes. If no current generation C, M, or R instance type matches your attributes, then the identified price is from either the lowest priced current generation instance types or, failing that, the lowest priced previous generation instance types that match your attributes. When Amazon EC2 Auto Scaling selects instance types with your attributes, we will exclude instance types whose price exceeds your specified threshold.
@@ -502,14 +502,14 @@ export interface InstanceRequirementsConfig {
    *
    * @default - 20
    */
-  readonly onDemandMaxPricePercentageOverLowestPrice?: number;
+  readonly onDemandMaxPricePercentageOverLowestPrice?: number | undefined;
 
   /**
    * Indicates whether instance types must provide On-Demand Instance hibernation support.
    *
    * @default - false
    */
-  readonly requireHibernateSupport?: boolean;
+  readonly requireHibernateSupport?: boolean | undefined;
 
   /**
    * [Price protection] The price protection threshold for Spot Instances, as a percentage higher than an identified Spot price. The identified Spot price is the price of the lowest priced current generation C, M, or R instance type with your specified attributes. If no current generation C, M, or R instance type matches your attributes, then the identified price is from either the lowest priced current generation instance types or, failing that, the lowest priced previous generation instance types that match your attributes. When Amazon EC2 Auto Scaling selects instance types with your attributes, we will exclude instance types whose price exceeds your specified threshold.
@@ -522,21 +522,21 @@ export interface InstanceRequirementsConfig {
    *
    * @default - Automatic optimal price protection
    */
-  readonly spotMaxPricePercentageOverLowestPrice?: number;
+  readonly spotMaxPricePercentageOverLowestPrice?: number | undefined;
 
   /**
    * The minimum total local storage size for an instance type, in GB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly totalLocalStorageGBMin?: number;
+  readonly totalLocalStorageGBMin?: number | undefined;
 
   /**
    * The maximum total local storage size for an instance type, in GB.
    *
    * @default - No minimum or maximum limits
    */
-  readonly totalLocalStorageGBMax?: number;
+  readonly totalLocalStorageGBMax?: number | undefined;
 
   /**
    * The minimum number of vCPUs for an instance type.
@@ -550,5 +550,5 @@ export interface InstanceRequirementsConfig {
    *
    * @default - No maximum limit
    */
-  readonly vCpuCountMax?: number;
+  readonly vCpuCountMax?: number | undefined;
 }

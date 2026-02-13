@@ -28,7 +28,7 @@ export interface BackupProps {
    * time for each AWS Region. To see the time blocks available, see
    * https://docs.aws.amazon.com/documentdb/latest/developerguide/backup-restore.db-cluster-snapshots.html#backup-restore.backup-window
    */
-  readonly preferredWindow?: string;
+  readonly preferredWindow?: string | undefined;
 }
 
 /**
@@ -46,27 +46,27 @@ export interface Login {
    *
    * @default a Secrets Manager generated password
    */
-  readonly password?: SecretValue;
+  readonly password?: SecretValue | undefined;
   /**
    * KMS encryption key to encrypt the generated secret.
    *
    * @default default master key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * Specifies characters to not include in generated passwords.
    *
    * @default "\"@/"
    */
-  readonly excludeCharacters?: string;
+  readonly excludeCharacters?: string | undefined;
 
   /**
    * The physical name of the secret, that will be generated.
    *
    * @default Secretsmanager will generate a physical name for the secret
    */
-  readonly secretName?: string;
+  readonly secretName?: string | undefined;
 }
 
 /**
@@ -97,5 +97,5 @@ export interface RotationMultiUserOptions {
    *
    * @default Duration.days(30)
    */
-  readonly automaticallyAfter?: Duration;
+  readonly automaticallyAfter?: Duration | undefined;
 }

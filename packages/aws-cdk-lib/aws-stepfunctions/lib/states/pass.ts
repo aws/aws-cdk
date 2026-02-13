@@ -62,7 +62,7 @@ interface PassJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default No injected result
    */
-  readonly result?: Result;
+  readonly result?: Result | undefined;
 
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -72,7 +72,7 @@ interface PassJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -82,7 +82,7 @@ interface PassJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default No parameters
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 }
 
 /**
@@ -127,7 +127,7 @@ export class Pass extends State implements INextable {
   }
   public readonly endStates: INextable[];
 
-  private readonly result?: Result;
+  private readonly result?: Result | undefined;
 
   constructor(scope: Construct, id: string, props: PassProps = {}) {
     super(scope, id, props);

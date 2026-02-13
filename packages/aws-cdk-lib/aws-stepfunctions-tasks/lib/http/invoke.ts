@@ -89,7 +89,7 @@ interface HttpInvokeOptions {
    *
    * @default - No body is sent with the request.
    */
-  readonly body?: sfn.TaskInput;
+  readonly body?: sfn.TaskInput | undefined;
 
   /**
    * The headers to send to the HTTP endpoint.
@@ -98,13 +98,13 @@ interface HttpInvokeOptions {
    *
    * @default - No additional headers are added to the request.
    */
-  readonly headers?: sfn.TaskInput;
+  readonly headers?: sfn.TaskInput | undefined;
 
   /**
    * The query string parameters to send to the HTTP endpoint.
    * @default - No query string parameters are sent in the request.
    */
-  readonly queryStringParameters?: sfn.TaskInput;
+  readonly queryStringParameters?: sfn.TaskInput | undefined;
 
   /**
    * Determines whether to apply URL encoding to the request body, and which array encoding format to use.
@@ -115,7 +115,7 @@ interface HttpInvokeOptions {
    *
    * @default - URLEncodingFormat.NONE
    */
-  readonly urlEncodingFormat?: URLEncodingFormat;
+  readonly urlEncodingFormat?: URLEncodingFormat | undefined;
 }
 
 /**
@@ -154,8 +154,8 @@ export class HttpInvoke extends sfn.TaskStateBase {
     });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: HttpInvokeProps) {
     super(scope, id, props);

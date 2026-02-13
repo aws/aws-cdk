@@ -26,7 +26,7 @@ export interface MaxThroughputProps {
    * no maximum throughput limit will be put in place for read requests.
    * This property is only applicable for tables using on-demand mode.
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
 
   /**
    * The max write request units.
@@ -34,7 +34,7 @@ export interface MaxThroughputProps {
    * no maximum throughput limit will be put in place for write requests.
    * This property is only applicable for tables using on-demand mode.
    */
-  readonly maxWriteRequestUnits?: number;
+  readonly maxWriteRequestUnits?: number | undefined;
 }
 
 /**

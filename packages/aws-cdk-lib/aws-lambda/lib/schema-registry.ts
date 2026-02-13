@@ -166,7 +166,7 @@ export interface KafkaSchemaRegistryConfig {
    *
    * @default - none
    */
-  readonly accessConfigs?: KafkaSchemaRegistryAccessConfig[];
+  readonly accessConfigs?: KafkaSchemaRegistryAccessConfig[] | undefined;
   /**
    * An array of schema validation configuration objects, which tell Lambda the message attributes you want to validate and filter using your schema registry.
    *

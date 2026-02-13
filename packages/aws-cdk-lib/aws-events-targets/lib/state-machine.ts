@@ -13,14 +13,14 @@ export interface SfnStateMachineProps extends TargetBaseProps {
    *
    * @default the entire EventBridge event
    */
-  readonly input?: events.RuleTargetInput;
+  readonly input?: events.RuleTargetInput | undefined;
 
   /**
    * The IAM role to be assumed to execute the State Machine
    *
    * @default - a new role will be created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

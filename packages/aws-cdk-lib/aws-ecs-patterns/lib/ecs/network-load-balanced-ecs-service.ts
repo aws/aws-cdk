@@ -17,7 +17,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default - none
    */
-  readonly taskDefinition?: Ec2TaskDefinition;
+  readonly taskDefinition?: Ec2TaskDefinition | undefined;
 
   /**
    * The number of cpu units used by the task.
@@ -38,7 +38,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default none
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
   /**
    * The hard limit (in MiB) of memory to present to the container.
    *
@@ -49,7 +49,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default - No memory limit.
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -63,7 +63,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default - No memory reserved.
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number | undefined;
 
   /**
    * The placement constraints to use for tasks in the service. For more information, see
@@ -71,7 +71,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default - No constraints.
    */
-  readonly placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[] | undefined;
 
   /**
    * The placement strategies to use for tasks in the service. For more information, see
@@ -79,7 +79,7 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    *
    * @default - No strategies.
    */
-  readonly placementStrategies?: PlacementStrategy[];
+  readonly placementStrategies?: PlacementStrategy[] | undefined;
 }
 
 /**

@@ -44,14 +44,14 @@ export interface ResolveChangeContextOptions {
    *
    * @default - Unchanged
    */
-  readonly allowIntrinsicKeys?: boolean;
+  readonly allowIntrinsicKeys?: boolean | undefined;
 
   /**
    * Whether to remove undefined elements from arrays and objects when resolving.
    *
    * @default - Unchanged
    */
-  readonly removeEmpty?: boolean;
+  readonly removeEmpty?: boolean | undefined;
 }
 
 /**
@@ -72,7 +72,7 @@ export interface IResolvable {
   /**
    * The type that this token will likely resolve to.
    */
-  readonly typeHint?: ResolutionTypeHint;
+  readonly typeHint?: ResolutionTypeHint | undefined;
 
   /**
    * Produce the Token's value at resolution time

@@ -12,24 +12,24 @@ import { CustomResource, Token, Stack, Lazy, ValidationError } from '../../core'
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
   readonly roleArn: string;
-  readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
-  readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
+  readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty> | undefined;
+  readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty | undefined;
   readonly name: string;
-  readonly version?: string;
+  readonly version?: string | undefined;
   readonly endpointPrivateAccess: boolean;
   readonly endpointPublicAccess: boolean;
-  readonly publicAccessCidrs?: string[];
+  readonly publicAccessCidrs?: string[] | undefined;
   readonly vpc: ec2.IVpc;
-  readonly environment?: { [key: string]: string };
-  readonly subnets?: ec2.ISubnet[];
-  readonly secretsEncryptionKey?: kms.IKeyRef;
-  readonly onEventLayer?: lambda.ILayerVersion;
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
-  readonly tags?: { [key: string]: string };
-  readonly logging?: { [key: string]: [ { [key: string]: any } ] };
-  readonly accessconfig?: CfnCluster.AccessConfigProperty;
-  readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty;
-  readonly bootstrapSelfManagedAddons?: boolean;
+  readonly environment?: { [key: string]: string } | undefined;
+  readonly subnets?: ec2.ISubnet[] | undefined;
+  readonly secretsEncryptionKey?: kms.IKeyRef | undefined;
+  readonly onEventLayer?: lambda.ILayerVersion | undefined;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
+  readonly tags?: { [key: string]: string } | undefined;
+  readonly logging?: { [key: string]: [ { [key: string]: any } ] } | undefined;
+  readonly accessconfig?: CfnCluster.AccessConfigProperty | undefined;
+  readonly remoteNetworkConfig?: CfnCluster.RemoteNetworkConfigProperty | undefined;
+  readonly bootstrapSelfManagedAddons?: boolean | undefined;
 }
 
 /**

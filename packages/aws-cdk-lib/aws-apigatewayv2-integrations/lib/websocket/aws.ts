@@ -31,14 +31,14 @@ export interface WebSocketAwsIntegrationProps {
    * @default - The response payload will be passed through from the integration response to
    * the route response or method response without modification.
    */
-  readonly contentHandling?: ContentHandling;
+  readonly contentHandling?: ContentHandling | undefined;
 
   /**
    * Specifies the credentials role required for the integration.
    *
    * @default - No credential role provided.
    */
-  readonly credentialsRole?: IRole;
+  readonly credentialsRole?: IRole | undefined;
 
   /**
    * The request parameters that API Gateway sends with the backend request.
@@ -47,7 +47,7 @@ export interface WebSocketAwsIntegrationProps {
    *
    * @default - No request parameter provided to the integration.
    */
-  readonly requestParameters?: { [dest: string]: string };
+  readonly requestParameters?: { [dest: string]: string } | undefined;
 
   /**
    * A map of Apache Velocity templates that are applied on the request
@@ -59,14 +59,14 @@ export interface WebSocketAwsIntegrationProps {
    *
    * @default - No request template provided to the integration.
    */
-  readonly requestTemplates?: { [contentType: string]: string };
+  readonly requestTemplates?: { [contentType: string]: string } | undefined;
 
   /**
    * The template selection expression for the integration.
    *
    * @default - No template selection expression provided.
    */
-  readonly templateSelectionExpression?: string;
+  readonly templateSelectionExpression?: string | undefined;
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
@@ -74,7 +74,7 @@ export interface WebSocketAwsIntegrationProps {
    *
    * @default Duration.seconds(29)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Specifies the pass-through behavior for incoming requests based on the
@@ -85,7 +85,7 @@ export interface WebSocketAwsIntegrationProps {
    *
    * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: PassthroughBehavior;
+  readonly passthroughBehavior?: PassthroughBehavior | undefined;
 }
 
 /**

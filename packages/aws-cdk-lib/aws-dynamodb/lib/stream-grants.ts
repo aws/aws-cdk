@@ -24,7 +24,7 @@ export interface StreamGrantsProps {
    *
    * @default - No key
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 }
 
 /**
@@ -33,7 +33,7 @@ export interface StreamGrantsProps {
 export class StreamGrants {
   private readonly table: ITableRef;
   private readonly tableStreamArn: string;
-  private readonly encryptionKey?: kms.IKey;
+  private readonly encryptionKey?: kms.IKey | undefined;
 
   constructor(props: StreamGrantsProps) {
     this.table = props.table;

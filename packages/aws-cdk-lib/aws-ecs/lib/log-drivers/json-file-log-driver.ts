@@ -18,7 +18,7 @@ export interface JsonFileLogDriverProps extends BaseLogDriverProps {
    *
    * @default - -1 (unlimited)
    */
-  readonly maxSize?: string;
+  readonly maxSize?: string | undefined;
 
   /**
    * The maximum number of log files that can be present. If rolling the logs creates
@@ -27,14 +27,14 @@ export interface JsonFileLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 1
    */
-  readonly maxFile?: number;
+  readonly maxFile?: number | undefined;
 
   /**
    * Toggles compression for rotated logs.
    *
    * @default - false
    */
-  readonly compress?: boolean;
+  readonly compress?: boolean | undefined;
 }
 
 /**

@@ -19,7 +19,7 @@ export interface RepositoryImageProps {
    * The secret to expose to the container that contains the credentials for the image repository.
    * The supported value is the full ARN of an AWS Secrets Manager secret.
    */
-  readonly credentials?: secretsmanager.ISecret;
+  readonly credentials?: secretsmanager.ISecret | undefined;
 }
 
 /**

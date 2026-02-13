@@ -30,7 +30,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default - No condition expression
    */
-  readonly conditionExpression?: string;
+  readonly conditionExpression?: string | undefined;
 
   /**
    * One or more substitution tokens for attribute names in an expression
@@ -39,7 +39,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default - No expression attribute names
    */
-  readonly expressionAttributeNames?: { [key: string]: string };
+  readonly expressionAttributeNames?: { [key: string]: string } | undefined;
 
   /**
    * One or more values that can be substituted in an expression.
@@ -48,7 +48,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default - No expression attribute values
    */
-  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue };
+  readonly expressionAttributeValues?: { [key: string]: DynamoAttributeValue } | undefined;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
@@ -57,7 +57,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity | undefined;
 
   /**
    * Determines whether item collection metrics are returned.
@@ -67,7 +67,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default DynamoItemCollectionMetrics.NONE
    */
-  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics;
+  readonly returnItemCollectionMetrics?: DynamoItemCollectionMetrics | undefined;
 
   /**
    * Use ReturnValues if you want to get the item attributes as they appeared before they were deleted.
@@ -76,7 +76,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default DynamoReturnValues.NONE
    */
-  readonly returnValues?: DynamoReturnValues;
+  readonly returnValues?: DynamoReturnValues | undefined;
 
   /**
    * An expression that defines one or more attributes to be updated,
@@ -86,7 +86,7 @@ interface DynamoUpdateItemOptions {
    *
    * @default - No update expression
    */
-  readonly updateExpression?: string;
+  readonly updateExpression?: string | undefined;
 }
 
 /**
@@ -122,8 +122,8 @@ export class DynamoUpdateItem extends sfn.TaskStateBase {
     return new DynamoUpdateItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: DynamoUpdateItemProps) {
     super(scope, id, props);

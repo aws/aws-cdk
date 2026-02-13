@@ -26,7 +26,7 @@ export interface InspectorScanActionBaseProps extends codepipeline.CommonAwsActi
    *
    * @default - no threshold
    */
-  readonly criticalThreshold?: number;
+  readonly criticalThreshold?: number | undefined;
 
   /**
    * The number of high severity vulnerabilities found in your source
@@ -34,7 +34,7 @@ export interface InspectorScanActionBaseProps extends codepipeline.CommonAwsActi
    *
    * @default - no threshold
    */
-  readonly highThreshold?: number;
+  readonly highThreshold?: number | undefined;
 
   /**
    * The number of medium severity vulnerabilities found in your source
@@ -42,7 +42,7 @@ export interface InspectorScanActionBaseProps extends codepipeline.CommonAwsActi
    *
    * @default - no threshold
    */
-  readonly mediumThreshold?: number;
+  readonly mediumThreshold?: number | undefined;
 
   /**
    * The number of low severity vulnerabilities found in your source
@@ -50,7 +50,7 @@ export interface InspectorScanActionBaseProps extends codepipeline.CommonAwsActi
    *
    * @default - no threshold
    */
-  readonly lowThreshold?: number;
+  readonly lowThreshold?: number | undefined;
 
   /**
    * Vulnerability details of your source in the form of a Software Bill of Materials (SBOM) file.

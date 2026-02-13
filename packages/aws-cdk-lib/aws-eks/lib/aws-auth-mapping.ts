@@ -7,7 +7,7 @@ export interface AwsAuthMapping {
    *
    * @default - By default, the user name is the ARN of the IAM role.
    */
-  readonly username?: string;
+  readonly username?: string | undefined;
 
   /**
    * A list of groups within Kubernetes to which the role is mapped.

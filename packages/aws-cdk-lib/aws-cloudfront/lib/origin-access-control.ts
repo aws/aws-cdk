@@ -26,13 +26,13 @@ export interface OriginAccessControlBaseProps {
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
   /**
    * A name to identify the origin access control, with a maximum length of 64 characters.
    *
    * @default - a generated name
    */
-  readonly originAccessControlName?: string;
+  readonly originAccessControlName?: string | undefined;
   /**
    * Specifies which requests CloudFront signs and the signing protocol.
    *
@@ -40,7 +40,7 @@ export interface OriginAccessControlBaseProps {
    *
    * @default SIGV4_ALWAYS
    */
-  readonly signing?: Signing;
+  readonly signing?: Signing | undefined;
 }
 
 /**

@@ -15,7 +15,7 @@ export interface InvokeFunctionProps {
    *
    * @default - The JSON data indicated by the task's InputPath is used as payload
    */
-  readonly payload?: { [key: string]: any };
+  readonly payload?: { [key: string]: any } | undefined;
 }
 
 /**

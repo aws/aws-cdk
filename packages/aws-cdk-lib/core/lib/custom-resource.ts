@@ -84,7 +84,7 @@ export interface CustomResourceProps {
    *
    * @default Duration.seconds(3600)
    */
-  readonly serviceTimeout?: Duration;
+  readonly serviceTimeout?: Duration | undefined;
 
   /**
    * Properties to pass to the Lambda
@@ -95,7 +95,7 @@ export interface CustomResourceProps {
    *
    * @default - No properties.
    */
-  readonly properties?: { [key: string]: any };
+  readonly properties?: { [key: string]: any } | undefined;
 
   /**
    * For custom resources, you can specify AWS::CloudFormation::CustomResource
@@ -117,21 +117,21 @@ export interface CustomResourceProps {
    *
    * @default - AWS::CloudFormation::CustomResource
    */
-  readonly resourceType?: string;
+  readonly resourceType?: string | undefined;
 
   /**
    * The policy to apply when this resource is removed from the application.
    *
    * @default cdk.RemovalPolicy.Destroy
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Convert all property keys to pascal case.
    *
    * @default false
    */
-  readonly pascalCaseProperties?: boolean;
+  readonly pascalCaseProperties?: boolean | undefined;
 }
 
 /**

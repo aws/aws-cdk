@@ -183,16 +183,16 @@ export class RuleScope {
   }
 
   /** Resource types that will trigger evaluation of a rule */
-  public readonly resourceTypes?: ResourceType[];
+  public readonly resourceTypes?: ResourceType[] | undefined;
 
   /** ID of the only AWS resource that will trigger evaluation of a rule */
-  public readonly resourceId?: string;
+  public readonly resourceId?: string | undefined;
 
   /** tag key applied to resources that will trigger evaluation of a rule  */
-  public readonly key?: string;
+  public readonly key?: string | undefined;
 
   /** tag value applied to resources that will trigger evaluation of a rule */
-  public readonly value?: string;
+  public readonly value?: string | undefined;
 
   private constructor(resourceId?: string, resourceTypes?: ResourceType[], tagKey?: string, tagValue?: string) {
     this.resourceTypes = resourceTypes;
@@ -242,42 +242,42 @@ export interface RuleProps {
    *
    * @default - CloudFormation generated name
    */
-  readonly configRuleName?: string;
+  readonly configRuleName?: string | undefined;
 
   /**
    * A description about this AWS Config rule.
    *
    * @default - No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Input parameter values that are passed to the AWS Config rule.
    *
    * @default - No input parameters
    */
-  readonly inputParameters?: { [key: string]: any };
+  readonly inputParameters?: { [key: string]: any } | undefined;
 
   /**
    * The maximum frequency at which the AWS Config rule runs evaluations.
    *
    * @default MaximumExecutionFrequency.TWENTY_FOUR_HOURS
    */
-  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency | undefined;
 
   /**
    * Defines which resources trigger an evaluation for an AWS Config rule.
    *
    * @default - evaluations for the rule are triggered when any resource in the recording group changes.
    */
-  readonly ruleScope?: RuleScope;
+  readonly ruleScope?: RuleScope | undefined;
 
   /**
    * The modes the AWS Config rule can be evaluated in. The valid values are distinct objects.
    *
    * @default - Detective evaluation mode only
    */
-  readonly evaluationModes?: EvaluationMode;
+  readonly evaluationModes?: EvaluationMode | undefined;
 }
 
 /**
@@ -396,7 +396,7 @@ interface SourceDetail {
   /**
    * The frequency at which you want AWS Config to run evaluations for a custom rule with a periodic trigger.
    */
-  readonly maximumExecutionFrequency?: MaximumExecutionFrequency;
+  readonly maximumExecutionFrequency?: MaximumExecutionFrequency | undefined;
   /**
    * The type of notification that triggers AWS Config to run an evaluation for a rule.
    */
@@ -417,14 +417,14 @@ export interface CustomRuleProps extends RuleProps {
    *
    * @default false
    */
-  readonly configurationChanges?: boolean;
+  readonly configurationChanges?: boolean | undefined;
 
   /**
    * Whether to run the rule on a fixed frequency.
    *
    * @default false
    */
-  readonly periodic?: boolean;
+  readonly periodic?: boolean | undefined;
 }
 /**
  * A new custom rule.
@@ -544,7 +544,7 @@ export interface CustomPolicyProps extends RuleProps {
    *
    * @default false
    */
-  readonly enableDebugLog?: boolean;
+  readonly enableDebugLog?: boolean | undefined;
 }
 
 /**
