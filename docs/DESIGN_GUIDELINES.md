@@ -1340,6 +1340,47 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 }
 ```
 
+#### Traits
+
+To enable grant methods to work with L1 constructs, the CDK uses factory interfaces that wrap L1 resources into objects 
+exposing higher-level interfaces:
+
+- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy 
+manipulation.
+- `IEncryptedResourceFactory` wraps an L1 into an object implementing `IEncryptedResource`, enabling KMS key grants.
+
+`IResourceWithPolicyV2` and `IEncryptedResource` are collectively called "traits". For now, these are the only two 
+traits we have, but we might add more in the future if we find other common patterns in L1 resources that can be 
+abstracted through this mechanism.
+
+The CDK provides default implementations for common L1 resources, but it's also possible to register custom factories
+for any CloudFormation resource type:
+
+```ts nofixture
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { Construct, IConstruct } from 'constructs';
+
+declare const scope: Construct;
+class MyFactory implements IResourcePolicyFactory {
+  forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return {
+      env: resource.env,
+      addToResourcePolicy(statement: PolicyStatement) {
+        // custom implementation to add the statement to the resource policy
+        return { statementAdded: true, policyDependable: resource };
+      }
+    }
+  }
+}
+
+// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type', 
+// it will be able to use MyFactory to attempt to add statements to its resource policy.
+ResourceWithPolicies.register(scope, 'AWS::Some::Type', new MyFactory());
+```
+
+#### Auto-generation and manual implementation
+
 The `TopicGrants` class, and many others, are generated automatically from the `grants.json`
 file present at the root of each individual module (`packages/aws-sns` for SNS constructs and
 so on). The `grants.json` file has the following general structure:
@@ -1375,10 +1416,16 @@ where:
 * `docSummary` - the public documentation for the method.
 * `arnFormat` - In some cases, the policy applies to a specific ARN patterns, rather than just the ARN of the resource.
 
-In some cases, however, it might not be possible to specify the grant details using the `grants.json`
-file. This is usually the case when grants require additional logic, such as checking whether the
-resource is owned or unowned, or when the grant needs to modify the resource policy of the resource
-(if it has one). In these cases, you can implement the grants class manually.
+Code generated from the `grants.json` file will have a very basic logic: it will try to add the given statement to the
+principal's policy. If `hasResourcePolicy` is true, it will also attempt to add the statement to the resource policy.
+This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if 
+there is a `IResourcePolicyFactory` registered for its type (see previous section). If `keyActions` are specified in the
+JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements 
+the `iam.IEncryptedResource` interface (or, similarly to resource policies, if there is a `IEncryptedResourceFactory`
+registered for it).
+
+If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling 
+additional parameters, you will need to implement the Grants class manually.
 
 Historically, grant methods were implemented directly on the resource construct interface (e.g.
 `sns.ITopic.grantPublish(principal)`). For backward compatibility reasons, these methods are still
