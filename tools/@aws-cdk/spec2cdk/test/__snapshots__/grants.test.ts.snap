@@ -4,6 +4,7 @@ exports[`generates grants for methods with and without key actions 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as sns from "./sns.generated";
 import * as iam from "aws-cdk-lib/aws-iam";
+import * as cdk from "aws-cdk-lib";
 
 /**
  * Properties for TopicGrants
@@ -57,22 +58,31 @@ export class TopicGrants {
   }
 
   /**
-   * Grants publish permissions
+   * Grant the given identity custom permissions
    */
-  public publish(grantee: iam.IGrantable): iam.Grant {
-    const actions = ["sns:Publish"];
+  public actions(grantee: iam.IGrantable, actions: Array<string>, options: cdk.EncryptedPermissionsOptions): iam.Grant {
     const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
       actions: actions,
       grantee: grantee,
-      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
+      resourceArns: (options.resourceArns ?? [sns.CfnTopic.arnForTopic(this.resource)]),
       resource: this.policyResource
     }) : iam.Grant.addToPrincipal({
       actions: actions,
       grantee: grantee,
-      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
+      resourceArns: (options.resourceArns ?? [sns.CfnTopic.arnForTopic(this.resource)])
     }));
-    this.encryptedResource?.grantOnKey(grantee, "kms:Decrypt", "kms:GenerateDataKey*");
+    if ((options.keyActions && (options.keyActions.length > 0))) this.encryptedResource?.grantOnKey(grantee, ...options.keyActions);
     return result;
+  }
+
+  /**
+   * Grants publish permissions
+   */
+  public publish(grantee: iam.IGrantable): iam.Grant {
+    const actions = ["sns:Publish"];
+    return this.actions(grantee, actions, {
+      keyActions: ["kms:Decrypt","kms:GenerateDataKey*"]
+    });
   }
 
   /**
@@ -80,17 +90,7 @@ export class TopicGrants {
    */
   public subscribe(grantee: iam.IGrantable): iam.Grant {
     const actions = ["sns:Subscribe"];
-    const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
-      actions: actions,
-      grantee: grantee,
-      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
-      resource: this.policyResource
-    }) : iam.Grant.addToPrincipal({
-      actions: actions,
-      grantee: grantee,
-      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
-    }));
-    return result;
+    return this.actions(grantee, actions, {});
   }
 }"
 `;
