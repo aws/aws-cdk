@@ -77,10 +77,12 @@ export class MetadataExtractionProcessor implements IDataProcessor {
   constructor(private readonly options: MetadataExtractionProcessorOptions, private readonly keys: string[]) {}
 
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
+    // CFN validation message: "class com.amazonaws.services.firehose.internal.model.MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled."
     if (!options.dynamicPartitioningEnabled) {
-      throw new ValidationError('MetadataExtractionProcessor needs dynamic partitioning.', scope);
+      throw new ValidationError('MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled.', scope);
     }
 
+    // CFN validation message: "MetaDataExtraction JQ Query can't contain keys that are not present in the S3 Prefix expression"
     const re = /!\{partitionKeyFromQuery:([^{}]+)\}/g;
     const usedKeys = new Set<string>();
     let match;

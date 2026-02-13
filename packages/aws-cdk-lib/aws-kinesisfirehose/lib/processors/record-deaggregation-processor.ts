@@ -56,10 +56,14 @@ export class RecordDeAggregationProcessor implements IDataProcessor {
 
   constructor(private readonly options: RecordDeAggregationProcessorOptions) {}
 
-  bind(scope: Construct, _options: DataProcessorBindOptions): DataProcessorConfig {
+  bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [
       { parameterName: 'SubRecordType', parameterValue: this.options.subRecordType },
     ];
+    // CFN validation message: "class com.amazonaws.services.firehose.internal.model.RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled."
+    if (!options.dynamicPartitioningEnabled) {
+      throw new ValidationError('RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled.', scope);
+    }
     if (this.options.subRecordType === SubRecordType.DELIMITED) {
       if (!this.options.delimiter) {
         throw new ValidationError('The delimiter must be specified when subRecordType is DELIMITED.', scope);

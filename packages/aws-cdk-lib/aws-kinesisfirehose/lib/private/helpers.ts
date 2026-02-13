@@ -12,6 +12,9 @@ import type { ILoggingConfig } from '../logging-config';
 import type { DataProcessorBindOptions, IDataProcessor } from '../processor';
 import type { DynamicPartitioningProps } from '../s3-bucket';
 
+export const PARTKEY_QUERY = 'partitionKeyFromQuery';
+export const PARTKEY_LAMBDA = 'partitionKeyFromLambda';
+
 export interface DestinationLoggingProps {
   /**
    * Configuration that determines whether to log errors during data transformation or delivery failures,
@@ -141,20 +144,25 @@ export function createProcessingConfig(
   if (options.dynamicPartitioningEnabled) {
     const withLambda = processorTypes.has('Lambda');
     const withInline = processorTypes.has('MetadataExtraction');
+    // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
     if (!options.prefix) {
       throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify dataOutputPrefix.', scope);
     }
+    // CFN validation message: "Processing Configuration is not enabled when DataPartitioning is enabled"
     if (!withLambda && !withInline) {
-      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor, MetadataExtractionProcessor, or both.', scope);
+      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor or MetadataExtractionProcessor, or both.', scope);
     }
-    if (withLambda && !withInline && !options.prefix.includes('!{partitionKeyFromLambda:')) {
-      throw new cdk.ValidationError('When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{partitionKeyFromLambda:keyID}.', scope);
+    // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
+    if (withLambda && !withInline && !options.prefix.includes(`!{${PARTKEY_LAMBDA}:`)) {
+      throw new cdk.ValidationError(`When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{${PARTKEY_LAMBDA}:keyID}.`, scope);
     }
-    if (!withLambda && options.prefix.includes('!{partitionKeyFromLambda:')) {
-      throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.', scope);
+    // CFN validation message: "Lambda should be present when S3 Prefix contains keys from partitionKeyFromLambda namespace"
+    if (!withLambda && options.prefix.includes(`!{${PARTKEY_LAMBDA}:`)) {
+      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTKEY_LAMBDA}:keyID} when LambdaFunctionProcessor is not specified.`, scope);
     }
-    if (!withInline && options.prefix.includes('!{partitionKeyFromQuery:')) {
-      throw new cdk.ValidationError('The dataOutputPrefix cannot contain !{partitionKeyFromQuery:keyID} when MetadataExtractionProcessor is not specified.', scope);
+    // CFN validation message: "MetadataExtraction processor should be present when S3 Prefix has partitionKeyFromQuery namespace"
+    if (!withInline && options.prefix.includes(`!{${PARTKEY_QUERY}:`)) {
+      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTKEY_QUERY}:keyID} when MetadataExtractionProcessor is not specified.`, scope);
     }
   }
 

@@ -1131,7 +1131,19 @@ describe('S3 destination', () => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: destination,
         });
-      }).toThrow('MetadataExtractionProcessor needs dynamic partitioning.');
+      }).toThrow('MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled.');
+    });
+
+    it('throws RecordDeAggregationProcessor without dynamic partitioning', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: false },
+        processors: [firehose.RecordDeAggregationProcessor.json()],
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled.');
     });
 
     it('configures dynamic partitioning with retry options', () => {
