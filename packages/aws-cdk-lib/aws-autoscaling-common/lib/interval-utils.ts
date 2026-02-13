@@ -1,4 +1,4 @@
-import { ScalingInterval } from './types';
+import type { ScalingInterval } from './types';
 import { UnscopedValidationError } from '../../core';
 
 export interface CompleteScalingInterval {

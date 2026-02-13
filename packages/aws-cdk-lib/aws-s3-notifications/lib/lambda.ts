@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { CfnResource, Names, Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**

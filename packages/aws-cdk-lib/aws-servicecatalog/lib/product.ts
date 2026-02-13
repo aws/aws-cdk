@@ -1,19 +1,21 @@
-import { Construct } from 'constructs';
-import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage } from './common';
+import type { Construct } from 'constructs';
+import type { CloudFormationTemplate } from './cloudformation-template';
+import type { MessageLanguage } from './common';
 import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
-import { TagOptions } from './tag-options';
-import { IBucket } from '../../aws-s3';
-import { ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
+import type { TagOptions } from './tag-options';
+import type { IBucket } from '../../aws-s3';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { CloudFormationProductReference, ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
  */
-export interface IProduct extends IResource {
+export interface IProduct extends IResource, ICloudFormationProductRef {
   /**
    * The ARN of the product.
    * @attribute
@@ -44,6 +46,12 @@ abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
   public abstract readonly assetBuckets: IBucket[];
+
+  public get cloudFormationProductRef(): CloudFormationProductReference {
+    return {
+      cloudFormationProductId: this.productId,
+    };
+  }
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, this.productId, tagOptions);

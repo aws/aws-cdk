@@ -1,11 +1,11 @@
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
 import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 // This object maps Kubernetes version strings to their corresponding

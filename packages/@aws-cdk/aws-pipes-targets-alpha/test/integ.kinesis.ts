@@ -1,4 +1,5 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { KinesisTarget } from '../lib/kinesis';

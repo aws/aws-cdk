@@ -1,13 +1,14 @@
-import { Names, Stack, Tags } from 'aws-cdk-lib/core';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
 import { ConstructSelector, Mixins } from '../../core';
-import { BucketPolicyStatementsMixins } from '../../mixins/private/s3';
 import * as xray from '../aws-xray/policy';
+import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -56,6 +57,18 @@ export enum S3LogsDeliveryPermissionsVersion {
 }
 
 /**
+ * Properties for S3 logs destination configuration.
+ */
+export interface IS3LogsDestinationProps {
+  /**
+   * KMS key to use for encrypting logs in the S3 bucket.
+   *
+   * @default - No encryption key is configured
+   */
+  readonly encryptionKey?: IKeyRef;
+}
+
+/**
  * Props for S3LogsDelivery
  */
 export interface S3LogsDeliveryProps {
@@ -66,6 +79,13 @@ export interface S3LogsDeliveryProps {
    * @default "V2"
    */
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
+  /**
+   * KMS key to use for encrypting logs in the S3 bucket.
+   * When provided, grants the logs delivery service permissions to use the key.
+   *
+   * @default - No encryption key is configured
+   */
+  readonly kmsKey?: IKeyRef;
 }
 
 /**
@@ -74,6 +94,7 @@ export interface S3LogsDeliveryProps {
 export class S3LogsDelivery implements ILogsDelivery {
   private readonly bucket: s3.IBucketRef;
   private readonly permissions: S3LogsDeliveryPermissionsVersion;
+  private readonly kmsKey: IKeyRef | undefined;
 
   /**
    * Creates a new S3 Bucket delivery.
@@ -81,6 +102,7 @@ export class S3LogsDelivery implements ILogsDelivery {
   constructor(bucket: s3.IBucketRef, props: S3LogsDeliveryProps = {}) {
     this.bucket = bucket;
     this.permissions = props.permissionsVersion ?? S3LogsDeliveryPermissionsVersion.V2;
+    this.kmsKey = props.kmsKey;
   }
 
   /**
@@ -94,6 +116,11 @@ export class S3LogsDelivery implements ILogsDelivery {
 
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const deliverySourceRef = deliverySource.deliverySourceRef;
+
+    const kmsKey = this.findEncryptionKey();
+    if (kmsKey) {
+      this.addToEncryptionKeyPolicy(kmsKey);
+    }
 
     const deliveryDestination = new logs.CfnDeliveryDestination(container, 'Dest', {
       destinationResourceArn: this.bucket.bucketRef.bucketArn,
@@ -179,7 +206,48 @@ export class S3LogsDelivery implements ILogsDelivery {
     }
 
     Mixins.of(policy, ConstructSelector.onlyItself())
-      .apply(new BucketPolicyStatementsMixins(statements));
+      .apply(new BucketPolicyStatementsMixin(statements));
+  }
+
+  private findEncryptionKey(): CfnKey | undefined {
+    if (this.kmsKey) {
+      return tryFindKmsKeyConstruct(this.kmsKey);
+    }
+    return tryFindKmsKeyforBucket(this.bucket);
+  }
+
+  private addToEncryptionKeyPolicy(key: CfnKey) {
+    const existingKeyPolicy = key.keyPolicy;
+    const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
+    const sid = 'AWS CDK: Allow Logs Delivery to use the key';
+    const keyStatement = new PolicyStatement({
+      sid,
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+      resources: ['*'],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': [key.env.account],
+        },
+        ArnLike: {
+          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
+        },
+      },
+    });
+    if (!existingKeyPolicy) {
+      key.keyPolicy = new PolicyDocument({
+        statements: [keyStatement],
+      });
+      return;
+    }
+    // Check if a statement with this SID already exists
+    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
+    if (hasDuplicateSid) {
+      return;
+    }
+
+    existingKeyPolicy.addStatements(keyStatement);
   }
 }
 
@@ -403,6 +471,43 @@ export class XRayLogsDelivery implements ILogsDelivery {
         },
       },
     }));
+  }
+}
+
+/**
+ * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
+ */
+export class DestinationLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new Destination delivery.
+   */
+  private readonly destination: logs.IDeliveryDestinationRef;
+  constructor(destination: logs.IDeliveryDestinationRef) {
+    this.destination = destination;
+  }
+
+  /**
+   * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   */
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
+    const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination',
+      this.destination.deliveryDestinationRef.deliveryDestinationName);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
   }
 }
 

@@ -1819,6 +1819,28 @@ describe('node group', () => {
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', { maxUnavailablePercentage: 101 })).toThrow(/maxUnavailablePercentage must be between 1 and 100/);
   });
+
+  test('supports custom removal policy', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EKS::Nodegroup', {
+      DeletionPolicy: 'Retain',
+    });
+  });
 });
 
 describe('isGpuInstanceType', () => {
@@ -1839,6 +1861,12 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.G3S, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G5G, ec2.InstanceSize.XLARGE),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN1N, ec2.InstanceSize.XLARGE32),
+      ec2.InstanceType.of(ec2.InstanceClass.TRN2, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5E, ec2.InstanceSize.XLARGE48),
+      ec2.InstanceType.of(ec2.InstanceClass.P5EN, ec2.InstanceSize.XLARGE48),
     ];
     gpuInstanceTypes.forEach(instanceType => {
       expect(isGpuInstanceType(instanceType)).toBe(true);

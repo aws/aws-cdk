@@ -1,7 +1,9 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
-import { IInferenceProfile, InferenceProfileType } from './inference-profile';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileType } from './inference-profile';
 
 /**
  * Error thrown when cross-region inference profile validation fails.
@@ -218,6 +220,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * For cross-region inference profiles, this method grants permissions to:
    * - Invoke the model in all regions where the inference profile can route requests
    * - Use the inference profile itself
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
@@ -239,6 +242,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    *
    * Note: This does not grant permissions to use the underlying model directly.
    * For comprehensive permissions, use grantInvoke() instead.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

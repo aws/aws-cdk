@@ -1,4 +1,4 @@
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { ActionGroupSchema } from './schema-base';
 import * as validation from './validation-helpers';
 

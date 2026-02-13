@@ -1,3 +1,12 @@
+/**
+ * This test requires environment variables for a real Route53 hosted zone:
+ * - HOSTED_ZONE_ID / CDK_INTEG_HOSTED_ZONE_ID
+ * - HOSTED_ZONE_NAME / CDK_INTEG_HOSTED_ZONE_NAME
+ * - DOMAIN_NAME / CDK_INTEG_DOMAIN_NAME
+ *
+ * The ACM certificate is validated via DNS against the hosted zone,
+ * so you must own the domain.
+ */
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as cdk from 'aws-cdk-lib';

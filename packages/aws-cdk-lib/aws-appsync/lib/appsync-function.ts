@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
-import { Code } from './code';
-import { BaseDataSource, LambdaDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
-import { MappingTemplate } from './mapping-template';
-import { FunctionRuntime } from './runtime';
-import { Resource, IResource, Lazy, Fn, ValidationError } from '../../core';
+import type { Code } from './code';
+import type { BaseDataSource } from './data-source';
+import { LambdaDataSource } from './data-source';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { MappingTemplate } from './mapping-template';
+import type { FunctionRuntime } from './runtime';
+import type { IResource } from '../../core';
+import { Resource, Lazy, Fn, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IFunctionConfigurationRef, FunctionConfigurationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * the base properties for AppSync Functions
@@ -91,7 +94,7 @@ export interface AppsyncFunctionAttributes {
 /**
  * Interface for AppSync Functions
  */
-export interface IAppsyncFunction extends IResource {
+export interface IAppsyncFunction extends IResource, IFunctionConfigurationRef {
   /**
    * the name of this AppSync Function
    *
@@ -129,6 +132,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       public readonly functionArn = attrs.functionArn;
       constructor(s: Construct, i: string) {
         super(s, i);
+      }
+      public get functionConfigurationRef(): FunctionConfigurationReference {
+        return {
+          functionArn: this.functionArn,
+        };
       }
     }
     return new Import(scope, id);
@@ -200,5 +208,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     this.function.addDependency(this.dataSource.ds);
     props.api.addSchemaDependency(this.function);
+  }
+
+  public get functionConfigurationRef(): FunctionConfigurationReference {
+    return {
+      functionArn: this.functionArn,
+    };
   }
 }
