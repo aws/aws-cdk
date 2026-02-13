@@ -1,29 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b": {
-      "source": {
-        "path": "asset.1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.bundle",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region-07367361": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1bf478116a59c3d8e069e12fe42948c11b5d5233fca90d2f2b3ec9fcd695025b.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "0ab857b8d002401c2ef2a36a98f15a4a3597a4a4ebffff8dbf41b7c7ef30c598": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "displayName": "VersionScalingConfigAllFieldsTestDefaultTestDeployAssertA35D59D9 Template",
       "source": {
         "path": "VersionScalingConfigAllFieldsTestDefaultTestDeployAssertA35D59D9.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a12b1555": {
+        "current_account-current_region-d8d86b35": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0ab857b8d002401c2ef2a36a98f15a4a3597a4a4ebffff8dbf41b7c7ef30c598.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

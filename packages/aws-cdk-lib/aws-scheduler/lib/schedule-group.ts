@@ -266,6 +266,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant list and get schedule permissions for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.readSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantReadSchedules(identity: iam.IGrantable) {
@@ -274,6 +277,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant create and update schedule permissions for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.writeSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
@@ -282,6 +288,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.deleteSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {
