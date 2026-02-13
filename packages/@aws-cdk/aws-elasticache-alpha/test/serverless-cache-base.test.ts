@@ -3,7 +3,8 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Alarm, ComparisonOperator } from 'aws-cdk-lib/aws-cloudwatch';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { ServerlessCache } from '../lib';
+import { ServerlessCache, ServerlessCacheGrants } from '../lib';
+import { CfnServerlessCache } from "aws-cdk-lib/aws-elasticache";
 
 describe('serverless cache base', () => {
   describe('metrics', () => {
@@ -166,6 +167,27 @@ describe('serverless cache base', () => {
               Effect: 'Allow',
               Action: 'elasticache:Connect',
               Resource: { 'Fn::GetAtt': ['Cache18F6EE16', 'ARN'] },
+            },
+          ]),
+        },
+      });
+    });
+
+    test('grant adds custom IAM permissions to L1', () => {
+      const cfnCache = new CfnServerlessCache(stack, 'CfnCache', {
+        serverlessCacheName: 'MyCache',
+        engine: 'redis',
+      });
+      ServerlessCacheGrants.fromServerlessCache(cfnCache).actions(role, ['elasticache:Connect']);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            {
+              Effect: 'Allow',
+              Action: 'elasticache:Connect',
+              Resource: { 'Fn::GetAtt': ['CfnCache', 'ARN'] },
             },
           ]),
         },

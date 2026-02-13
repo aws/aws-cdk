@@ -245,7 +245,7 @@ export class GrantsModule extends Module {
       } else {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
         new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
-        new ExternalModule('aws-cdk-lib').import(this, 'cdk');
+        new ExternalModule('aws-cdk-lib/core').import(this, 'cdk');
       }
     }
   }
@@ -297,6 +297,7 @@ export class GrantsModule extends Module {
     const optionsParameter = method.addParameter({
       name: 'options',
       type: isEncrypted ? CDK_CORE.type('EncryptedPermissionsOptions') : CDK_CORE.type('PermissionsOptions'),
+      default: expr.object({}),
     });
 
     const commonStatementProps: Record<string, Expression> = {
