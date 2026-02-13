@@ -1163,6 +1163,16 @@ export enum TagMutability {
    * allow image tags to be overwritten while allowing you to define some filters for tags that should remain unchanged.
    */
   MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  IMMUTABLE_WITH_EXCLUSION = 'IMMUTABLE_WITH_EXCLUSION',
+
+  /**
+   * PLACEHOLDER_COMMENT_TO_BE_FILLED_OUT
+   */
+  MUTABLE_WITH_EXCLUSION = 'MUTABLE_WITH_EXCLUSION',
 }
 
 /**
