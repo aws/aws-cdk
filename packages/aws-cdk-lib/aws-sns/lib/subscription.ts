@@ -166,7 +166,9 @@ export class Subscription extends Resource {
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy,
-      filterPolicyScope: this.filterPolicyWithMessageBody ? 'MessageBody' : undefined,
+      filterPolicyScope: this.filterPolicyWithMessageBody
+        ? 'MessageBody'
+        : (this.filterPolicy ? 'MessageAttributes' : undefined),
       region: props.region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
       subscriptionRoleArn: props.subscriptionRoleArn,
