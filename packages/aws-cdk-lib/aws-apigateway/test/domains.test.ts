@@ -1,7 +1,8 @@
 import { Match, Template } from '../../assertions';
+import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
 import { Bucket } from '../../aws-s3';
-import { Stack } from '../../core';
+import { Fn, Stack } from '../../core';
 import * as apigw from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -109,6 +110,225 @@ describe('domains', () => {
     });
   });
 
+  test('accepts TLS 1.3 security policies', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'tls13-domain', {
+      domainName: 'tls13.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'tls13.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
+      'EndpointAccessMode': 'STRICT',
+    });
+  });
+
+  test('allows TLS 1.3 for multi-level base paths', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // WHEN - Should not throw error
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        mapping: api,
+        basePath: 'v1/users',
+      });
+    }).not.toThrow();
+  });
+
+  test('allows multi-level base paths without security policy (defaults to TLS 1.2)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    // WHEN - Should not throw error, default is TLS 1.2
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        mapping: api,
+        basePath: 'v1/users',
+      });
+    }).not.toThrow();
+  });
+
+  test('accepts TLS 1.3 with post-quantum cryptography security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'pq-domain', {
+      domainName: 'pq.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'pq.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+      'EndpointAccessMode': 'STRICT',
+    });
+  });
+
+  test('accepts endpointAccessMode property', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'tls13-strict-domain', {
+      domainName: 'strict.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'strict.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_1_3_2025_09',
+      'EndpointAccessMode': 'STRICT',
+    });
+  });
+
+  test('throws if enhanced security policy is used without endpointAccessMode STRICT', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        // Missing endpointAccessMode: STRICT
+      });
+    }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
+  });
+
+  test('throws if mTLS is used with enhanced security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'mtls.example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        mtls: {
+          bucket,
+          key: 'someca.pem',
+        },
+      });
+    }).toThrow(/Mutual TLS \(mTLS\) cannot be enabled on a domain name that uses an enhanced security policy/);
+  });
+
+  test('allows mTLS with legacy security policy TLS_1_2', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN - Should not throw error
+    new apigw.DomainName(stack, 'domain', {
+      domainName: 'mtls.example.com',
+      certificate: cert,
+      securityPolicy: apigw.SecurityPolicy.TLS_1_2,
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'mtls.example.com',
+      'SecurityPolicy': 'TLS_1_2',
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem' },
+    });
+  });
+
+  test('throws if regional-only security policy is used with EDGE endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.EDGE,
+        securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      });
+    }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is not supported for edge-optimized endpoints/);
+  });
+
+  test('throws if edge-only security policy is used with REGIONAL endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.REGIONAL,
+        securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      });
+    }).toThrow(/Security policy SecurityPolicy_TLS13_2025_EDGE is only supported for edge-optimized endpoints/);
+  });
+
+  test('allows TLS 1.3 edge policy with EDGE endpoint', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // WHEN
+    new apigw.DomainName(stack, 'domain', {
+      domainName: 'edge.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.EDGE,
+      securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      'DomainName': 'edge.example.com',
+      'SecurityPolicy': 'SecurityPolicy_TLS13_2025_EDGE',
+      'EndpointAccessMode': 'STRICT',
+      'EndpointConfiguration': { 'Types': ['EDGE'] },
+    });
+  });
+
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
     // GIVEN
     const stack = new Stack();
@@ -186,7 +406,7 @@ describe('domains', () => {
       }).toThrow(/multi-level basePath is only supported when endpointType is EndpointType.REGIONAL/);
     });
 
-    test('throws if securityPolicy is not TLS_1_2', () => {
+    test('throws if securityPolicy is TLS_1_0', () => {
       // GIVEN
       const stack = new Stack();
       const api = new apigw.RestApi(stack, 'api');
@@ -201,7 +421,7 @@ describe('domains', () => {
           basePath: 'v1/api',
           securityPolicy: apigw.SecurityPolicy.TLS_1_0,
         });
-      }).toThrow(/securityPolicy must be set to TLS_1_2 if multi-level basePath is provided/);
+      }).toThrow(/securityPolicy must be TLS 1.2 or higher for multi-level basePath/);
     });
 
     test('can use addApiMapping', () => {
@@ -734,6 +954,165 @@ describe('domains', () => {
       'Stage': {
         'Ref': 'specRestApiWithStageDeploymentStageprod2D3037ED',
       },
+    });
+  });
+
+  test('throws if HTTP API is mapped to domain with enhanced security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new apigwv2.HttpApi(stack, 'http-api');
+
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'foo.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      domain.addApiMapping(httpApi.defaultStage! as any, {
+        basePath: 'v1/my-api',
+      });
+    }).toThrow(/HTTP APIs cannot be mapped to domain names with enhanced security policies/);
+  });
+
+  test('allows REST API to be mapped with enhanced security policy and multi-level base path', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigw.RestApi(stack, 'api');
+    api.root.addMethod('GET');
+
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'foo.com',
+      certificate: acm.Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+    });
+
+    // WHEN - should not throw
+    expect(() => {
+      domain.addApiMapping(api.deploymentStage, {
+        basePath: 'v1/my-api',
+      });
+    }).not.toThrow();
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+      'ApiMappingKey': 'v1/my-api',
+    });
+  });
+
+  describe('token handling', () => {
+    test('allows token-based endpointAccessMode with enhanced security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointAccessMode (e.g., from CfnParameter)
+      const tokenValue = Fn.ref('AccessModeParameter');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: tokenValue as any,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based securityPolicy with endpointAccessMode', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for securityPolicy (e.g., from CfnParameter)
+      const tokenValue = Fn.ref('SecurityPolicyParameter');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          securityPolicy: tokenValue as any,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based endpointType with security policy validation', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointType (e.g., from cross-stack reference)
+      const tokenValue = Fn.importValue('EndpointTypeExport');
+
+      // THEN - should not throw during synthesis
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          endpointType: tokenValue as any,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('allows token-based endpointType with edge-only security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN - using a token for endpointType with edge-only policy
+      const tokenValue = Fn.ref('EndpointTypeParameter');
+
+      // THEN - should not throw during synthesis (validation deferred to CloudFormation)
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'token.example.com',
+          certificate: cert,
+          endpointType: tokenValue as any,
+          securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).not.toThrow();
+    });
+
+    test('still validates non-token endpointAccessMode with enhanced security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN/THEN - non-token values should still be validated
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'example.com',
+          certificate: cert,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: apigw.EndpointAccessMode.STANDARD, // Wrong value
+        });
+      }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
+    });
+
+    test('still validates non-token endpointType with incompatible security policy', () => {
+      // GIVEN
+      const stack = new Stack();
+      const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+      // WHEN/THEN - non-token values should still be validated
+      expect(() => {
+        new apigw.DomainName(stack, 'domain', {
+          domainName: 'example.com',
+          certificate: cert,
+          endpointType: apigw.EndpointType.EDGE,
+          securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09, // Regional-only policy
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+      }).toThrow(/Security policy SecurityPolicy_TLS13_1_3_2025_09 is not supported for edge-optimized endpoints/);
     });
   });
 });

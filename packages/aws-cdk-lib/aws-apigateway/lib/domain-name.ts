@@ -41,6 +41,69 @@ export enum SecurityPolicy {
 
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
+
+  /**
+   * Cipher suite TLS 1.3 for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_3_2025_09 = 'SecurityPolicy_TLS13_1_3_2025_09',
+
+  /**
+   * Cipher suite TLS 1.3 (FIPS compliant) for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_3_FIPS_2025_09 = 'SecurityPolicy_TLS13_1_3_FIPS_2025_09',
+
+  /**
+   * Cipher suite TLS 1.3 and TLS 1.2 with post-quantum cryptography for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_2_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PQ_2025_09',
+
+  /**
+   * Cipher suite TLS 1.3 and TLS 1.2 with Perfect Forward Secrecy and post-quantum cryptography for regional/private endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_1_2_PFS_PQ_2025_09 = 'SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09',
+
+  /**
+   * Cipher suite TLS 1.3 for edge-optimized endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS13_2025_EDGE = 'SecurityPolicy_TLS13_2025_EDGE',
+
+  /**
+   * Cipher suite TLS 1.2 with Perfect Forward Secrecy for edge-optimized endpoints
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS12_PFS_2025_EDGE = 'SecurityPolicy_TLS12_PFS_2025_EDGE',
+
+  /**
+   * Cipher suite TLS 1.2 for edge-optimized endpoints (legacy)
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+   */
+  TLS12_2018_EDGE = 'SecurityPolicy_TLS12_2018_EDGE',
+}
+
+/**
+ * The endpoint access mode for the domain name.
+ *
+ * When using enhanced security policies (those starting with `SecurityPolicy_`),
+ * you must set the endpoint access mode to `STRICT`.
+ *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+ */
+export enum EndpointAccessMode {
+  /**
+   * Strict mode - required for enhanced security policies.
+   * Only accepts connections from clients using the specified security policy.
+   */
+  STRICT = 'STRICT',
+
+  /**
+   * Standard mode - default for legacy security policies (TLS_1_0, TLS_1_2).
+   */
+  STANDARD = 'STANDARD',
 }
 
 export interface DomainNameOptions {
@@ -68,6 +131,17 @@ export interface DomainNameOptions {
    * @default SecurityPolicy.TLS_1_2
    */
   readonly securityPolicy?: SecurityPolicy;
+
+  /**
+   * The endpoint access mode for this domain name.
+   *
+   * When using enhanced security policies (those starting with `SecurityPolicy_`),
+   * you must set this to `STRICT`.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+   * @default - No endpoint access mode is configured. For enhanced security policies, you must explicitly set this to STRICT.
+   */
+  readonly endpointAccessMode?: EndpointAccessMode;
 
   /**
    * The mutual TLS authentication configuration for a custom domain name.
@@ -170,6 +244,33 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(`Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
     }
 
+    // Validate mTLS is not used with enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    if (props.mtls && this.isEnhancedSecurityPolicy(props.securityPolicy)) {
+      throw new ValidationError(
+        'Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+        this,
+      );
+    }
+
+    // Validate endpointAccessMode is STRICT for enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+    if (this.isEnhancedSecurityPolicy(props.securityPolicy) &&
+        !Token.isUnresolved(props.endpointAccessMode) &&
+        props.endpointAccessMode !== EndpointAccessMode.STRICT) {
+      throw new ValidationError(
+        'Enhanced security policies require endpointAccessMode to be set to STRICT. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
+        this,
+      );
+    }
+
+    // Validate security policy matches endpoint type
+    // Regional-only policies cannot be used with EDGE endpoints and vice versa
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
+    this.validateSecurityPolicyEndpointType(props.securityPolicy, this.endpointType);
+
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
@@ -178,6 +279,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
+      endpointAccessMode: props.endpointAccessMode,
     });
 
     this.domainName = resource.ref;
@@ -208,8 +310,15 @@ export class DomainName extends Resource implements IDomainName {
       if (this.endpointType === EndpointType.EDGE) {
         throw new ValidationError('multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
       }
-      if (this.securityPolicy && this.securityPolicy !== SecurityPolicy.TLS_1_2) {
-        throw new ValidationError('securityPolicy must be set to TLS_1_2 if multi-level basePath is provided', this);
+      // Multi-level API mappings (using ApiGatewayV2::ApiMapping) require TLS 1.2 or higher security policy.
+      // TLS 1.0 does not support multi-level base path mappings.
+      // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
+      if (this.securityPolicy && !Token.isUnresolved(this.securityPolicy) && this.securityPolicy === SecurityPolicy.TLS_1_0) {
+        throw new ValidationError(
+          'securityPolicy must be TLS 1.2 or higher for multi-level basePath. ' +
+          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html',
+          this,
+        );
       }
       return true;
     }
@@ -254,9 +363,16 @@ export class DomainName extends Resource implements IDomainName {
    *
    * This uses the ApiMapping from ApiGatewayV2 which supports multi-level paths, but
    * also only supports:
-   * - SecurityPolicy.TLS_1_2
+   * - SecurityPolicy TLS 1.2 or higher (TLS 1.0 is not supported)
    * - EndpointType.REGIONAL
+   * - Not supported with enhanced security policies (SecurityPolicy_*) for HTTP APIs
    *
+   * Note: HTTP API detection relies on the isHttpStage property from IHttpStageRef.
+   * For custom stage implementations or imported stages that don't expose this property,
+   * validation is skipped and invalid configurations will be caught at CloudFormation
+   * deployment time.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
    * @param targetStage the target API stage.
    * @param options Options for mapping to a stage
    */
@@ -266,6 +382,25 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     this.validateBasePath(options.basePath);
+
+    // HTTP APIs cannot be mapped to domain names with enhanced security policies
+    // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations
+    if (this.isEnhancedSecurityPolicy(this.securityPolicy)) {
+      // HTTP API stages expose isHttpStage=true to indicate their type.
+      // If this property is absent (e.g., custom stage implementations or imported stages),
+      // validation is skipped and invalid configurations will fail at CloudFormation deployment time.
+      const isHttpStage = (targetStage as any).isHttpStage === true;
+      if (isHttpStage) {
+        throw new ValidationError(
+          'HTTP APIs cannot be mapped to domain names with enhanced security policies. ' +
+          'HTTP APIs only support legacy security policies (TLS_1_0, TLS_1_2). ' +
+          'Use a REST API for enhanced security policy support. ' +
+          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html#apigateway-custom-domain-tls-version-considerations',
+          this,
+        );
+      }
+    }
+
     this.basePaths.add(options.basePath);
     const id = `Map:${options.basePath ?? 'none'}=>${Names.nodeUniqueId(targetStage.node)}`;
     new apigwv2.CfnApiMapping(this, id, {
@@ -282,6 +417,66 @@ export class DomainName extends Resource implements IDomainName {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
+  }
+
+  /**
+   * Checks if the given security policy is an enhanced security policy.
+   * Enhanced security policies start with 'SecurityPolicy_' prefix.
+   *
+   * Note: When the security policy is a CDK token (e.g., CfnParameter, cross-stack reference),
+   * this method returns false to defer validation to CloudFormation deployment time.
+   */
+  private isEnhancedSecurityPolicy(policy?: SecurityPolicy): boolean {
+    if (!policy || Token.isUnresolved(policy)) {
+      return false;
+    }
+    return policy.startsWith('SecurityPolicy_');
+  }
+
+  /**
+   * Validates that the security policy is compatible with the endpoint type.
+   * Some policies are only supported for specific endpoint types.
+   *
+   * Note: When either the security policy or endpoint type is a CDK token,
+   * validation is deferred to CloudFormation deployment time.
+   */
+  private validateSecurityPolicyEndpointType(policy?: SecurityPolicy, endpointType?: EndpointType): void {
+    if (!policy || Token.isUnresolved(policy) || !endpointType || Token.isUnresolved(endpointType)) {
+      return;
+    }
+
+    // Policies that only support non-edge (regional/private) endpoints
+    const nonEdgeOnlyPolicies = [
+      SecurityPolicy.TLS13_1_3_2025_09,
+      SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+      SecurityPolicy.TLS13_1_2_PQ_2025_09,
+      SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+    ];
+
+    // Policies that only support edge endpoints
+    const edgeOnlyPolicies = [
+      SecurityPolicy.TLS13_2025_EDGE,
+      SecurityPolicy.TLS12_PFS_2025_EDGE,
+      SecurityPolicy.TLS12_2018_EDGE,
+    ];
+
+    if (endpointType === EndpointType.EDGE && nonEdgeOnlyPolicies.includes(policy)) {
+      throw new ValidationError(
+        `Security policy ${policy} is not supported for edge-optimized endpoints. ` +
+        'Use a security policy that supports edge-optimized endpoints. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+        this,
+      );
+    }
+
+    if (endpointType !== EndpointType.EDGE && edgeOnlyPolicies.includes(policy)) {
+      throw new ValidationError(
+        `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
+        'Use a policy that supports non-edge endpoints. ' +
+        'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
+        this,
+      );
+    }
   }
 }
 
