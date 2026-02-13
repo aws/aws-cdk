@@ -8,6 +8,7 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
@@ -45,6 +46,13 @@ const toolSchema1 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction1.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-static',
@@ -52,6 +60,9 @@ const lambdaTarget = agentcore.GatewayTarget.forLambda(stack, 'LambdaTarget', {
   lambdaFunction: lambdaFunction1,
   toolSchema: toolSchema1,
 });
+
+// Ensure Gateway role and its policies are created before the target
+lambdaTarget.node.addDependency(gateway.role);
 
 // ===== Test 2: GatewayTarget.forOpenApi() Static Method =====
 // NOTE: OpenAPI targets are NOT included in this integration test because they require
@@ -93,6 +104,13 @@ const toolSchema2 = agentcore.ToolSchema.fromInline([
   },
 ]);
 
+// Workaround for IAM eventual consistency issue (see https://github.com/aws/aws-cdk/issues/36826)
+// Add resource-based policy before creating the target to avoid dry run Lambda invocation failure
+lambdaFunction2.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
 const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget', {
   gateway: gateway,
   gatewayTargetName: 'lambda-via-constructor',
@@ -102,6 +120,9 @@ const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget'
     toolSchema2,
   ),
 });
+
+// Ensure Gateway role and its policies are created before the target
+constructorTarget.node.addDependency(gateway.role);
 
 // ===== Outputs =====
 new cdk.CfnOutput(stack, 'GatewayId', {

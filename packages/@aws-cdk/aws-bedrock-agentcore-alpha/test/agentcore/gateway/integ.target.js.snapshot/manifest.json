@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd200c18ad6b22267cf184c156924cc9863ace4d242ca19fae82637b249554ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90d448ac56e4108fcd0c64ae663069a6cf49fb726d972f802e9ef5533e4e27c9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -277,6 +277,12 @@
             "data": "Lambda1LogGroup0E97D0DB"
           }
         ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda1/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda1BedrockAgentCoreInvokeC2F4838A"
+          }
+        ],
         "/BedrockAgentCoreTargetIntegTest/LambdaTarget": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -352,6 +358,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Lambda2LogGroup4F31598F"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda2/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda2BedrockAgentCoreInvoke0E55EE25"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/ConstructorTarget": [
