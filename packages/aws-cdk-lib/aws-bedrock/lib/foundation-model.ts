@@ -332,6 +332,9 @@ export class FoundationModelIdentifier {
   /** Base model "deepseek.v3-v1:0" */
   public static readonly DEEP_SEEK_V3_V1_0 = new FoundationModelIdentifier('deepseek.v3-v1:0');
 
+  /** Base model "deepseek.v3.2". */
+  public static readonly DEEP_SEEK_V3_2 = new FoundationModelIdentifier('deepseek.v3.2');
+
   /** Base model "openai.gpt-oss-120b-1:0". */
   public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
 
