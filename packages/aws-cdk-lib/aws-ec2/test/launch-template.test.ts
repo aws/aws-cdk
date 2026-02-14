@@ -19,6 +19,8 @@ import type { BlockDevice } from '../lib';
 import {
   AmazonLinuxImage,
   BlockDeviceVolume,
+  CapacityReservation,
+  CapacityReservationPreference,
   CpuCredits,
   EbsDeviceVolumeType,
   InstanceInitiatedShutdownBehavior,
@@ -1245,6 +1247,103 @@ describe('LaunchTemplate metadataOptions', () => {
           HttpTokens: 'required',
         },
       },
+    });
+  });
+});
+describe('LaunchTemplate Capacity Reservation', () => {
+  let app: App;
+  let stack: Stack;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app);
+  });
+
+  test.each([
+    [CapacityReservationPreference.OPEN, 'open'],
+    [CapacityReservationPreference.NONE, 'none'],
+    [CapacityReservationPreference.CAPACITY_RESERVATIONS_ONLY, 'capacity-reservations-only'],
+  ])('given capacityReservationPreference %p', (given: CapacityReservationPreference, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservationPreference: given,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationPreference: expected,
+        },
+      },
+    });
+  });
+
+  test('given capacityReservation with ID', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservation: CapacityReservation.fromId('cr-1234567890abcdef0'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationTarget: {
+            CapacityReservationId: 'cr-1234567890abcdef0',
+          },
+        },
+      },
+    });
+  });
+
+  test('given capacityReservation with resource group ARN', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservation: CapacityReservation.fromResourceGroupArn('arn:aws:resource-groups:us-west-2:123456789012:group/my-group'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationTarget: {
+            CapacityReservationResourceGroupArn: 'arn:aws:resource-groups:us-west-2:123456789012:group/my-group',
+          },
+        },
+      },
+    });
+  });
+
+  test('given both capacityReservation and preference', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      capacityReservation: CapacityReservation.fromId('cr-1234567890abcdef0'),
+      capacityReservationPreference: CapacityReservationPreference.OPEN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CapacityReservationSpecification: {
+          CapacityReservationPreference: 'open',
+          CapacityReservationTarget: {
+            CapacityReservationId: 'cr-1234567890abcdef0',
+          },
+        },
+      },
+    });
+  });
+
+  test('capacityReservationSpecification is omitted when not specified', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {});
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: Match.not(Match.objectLike({
+        CapacityReservationSpecification: Match.anyValue(),
+      })),
     });
   });
 });
