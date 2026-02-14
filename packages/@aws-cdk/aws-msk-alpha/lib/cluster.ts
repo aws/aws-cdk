@@ -684,7 +684,7 @@ export class Cluster extends ClusterBase {
       this.saslScramAuthenticationKey.addToResourcePolicy(
         new iam.PolicyStatement({
           sid:
-            'Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager',
+            'AllowAccountSecretsManagerKMSOperations',
           principals: [new iam.AnyPrincipal()],
           actions: [
             'kms:Encrypt',

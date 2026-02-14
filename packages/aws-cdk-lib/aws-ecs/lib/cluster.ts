@@ -377,14 +377,14 @@ export class Cluster extends Resource implements ICluster {
     };
 
     key.addToResourcePolicy(new PolicyStatement({
-      sid: 'Allow generate data key access for Fargate tasks.',
+      sid: 'AllowGenerateDataKeyAccessForFargateTasks',
       principals: [new ServicePrincipal('fargate.amazonaws.com')],
       resources: ['*'],
       actions: ['kms:GenerateDataKeyWithoutPlaintext'],
       conditions: clusterConditions,
     }));
     key.addToResourcePolicy(new PolicyStatement({
-      sid: 'Allow grant creation permission for Fargate tasks.',
+      sid: 'AllowGrantCreationPermissionForFargateTasks',
       principals: [new ServicePrincipal('fargate.amazonaws.com')],
       resources: ['*'],
       actions: ['kms:CreateGrant'],
