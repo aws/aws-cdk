@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import * as codecommit from '../../../aws-codecommit';
+import type { Construct } from 'constructs';
+import type * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
-import { EventPattern, IRuleTarget } from '../../../aws-events';
+import type { EventPattern, IRuleTarget } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { FeatureFlags, Names, Stack, Token, TokenComparison, UnscopedValidationError } from '../../../core';

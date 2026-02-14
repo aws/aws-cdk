@@ -5,8 +5,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from 'aws-cdk-lib';
-import { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
+import type { TreeInspector } from 'aws-cdk-lib';
+import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack } from 'aws-cdk-lib';
+import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
@@ -206,13 +207,13 @@ describe('tree metadata', () => {
     // GIVEN
     const buildStart = Date.now();
     const addedNodes = recurseBuild(app, 4, 4);
-    // eslint-disable-next-line no-console
+
     console.log('Built tree in', Date.now() - buildStart, 'ms');
 
     // WHEN
     const synthStart = Date.now();
     const assembly = app.synth();
-    // eslint-disable-next-line no-console
+
     console.log('Synthed tree in', Date.now() - synthStart, 'ms');
     try {
       const treeArtifact = assembly.tree();

@@ -1,11 +1,13 @@
 import * as crypto from 'crypto';
-import { Construct } from 'constructs';
-import { InitElement } from './cfn-init-elements';
+import type { Construct } from 'constructs';
+import type { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
-import { UserData } from './user-data';
+import type { InitBindOptions, InitElementConfig } from './private/cfn-init-internal';
+import { InitElementType, InitPlatform } from './private/cfn-init-internal';
+import type { UserData } from './user-data';
 import * as iam from '../../aws-iam';
-import { Aws, CfnResource, UnscopedValidationError, ValidationError } from '../../core';
+import type { CfnResource } from '../../core';
+import { Aws, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * A CloudFormation-init configuration
@@ -302,7 +304,7 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
   if (src == null) { return target; }
 
   for (const [key, value] of Object.entries(src)) {
-    if (key === '__proto__' || key === 'constructor') {
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
       continue;
     }
 

@@ -1,9 +1,9 @@
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import * as crypto from 'crypto';
-import { ActionGroupExecutor } from './api-executor';
-import { ApiSchema } from './api-schema';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { ActionGroupExecutor } from './api-executor';
+import type { ApiSchema } from './api-schema';
+import type { FunctionSchema } from './function-schema';
 import { ValidationError } from './validation-helpers';
-import { FunctionSchema } from './function-schema';
 
 /******************************************************************************
  *                           Signatures

@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnDistribution, IOrigin, OriginBase, OriginBindConfig, OriginBindOptions, OriginProps, OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import type { Construct } from 'constructs';
+import type { CfnDistribution, IOrigin, OriginBindConfig, OriginBindOptions, OriginProps } from 'aws-cdk-lib/aws-cloudfront';
+import { OriginBase, OriginProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
 /** Used for testing common Origin functionality */
 export class TestOrigin extends OriginBase {
@@ -11,7 +12,7 @@ export class TestOrigin extends OriginBase {
 
 export class TestOriginGroup implements IOrigin {
   constructor(private readonly primaryDomainName: string, private readonly secondaryDomainName: string) { }
-  /* eslint-disable @cdklabs/no-core-construct */
+
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const primaryOrigin = new TestOrigin(this.primaryDomainName);
     const secondaryOrigin = new TestOrigin(this.secondaryDomainName);

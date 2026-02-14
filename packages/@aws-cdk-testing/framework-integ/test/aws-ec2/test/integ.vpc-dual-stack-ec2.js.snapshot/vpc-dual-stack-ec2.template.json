@@ -505,16 +505,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Ip6VpcDualStackcloudwatchLogsIAMRoleC4808C35",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"

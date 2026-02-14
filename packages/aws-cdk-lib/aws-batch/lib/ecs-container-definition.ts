@@ -1,14 +1,17 @@
-import { Construct, IConstruct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
-import { LinuxParameters } from './linux-parameters';
-import * as ecs from '../../aws-ecs';
-import { IFileSystem } from '../../aws-efs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { CfnJobDefinition } from './batch.generated';
+import type { LinuxParameters } from './linux-parameters';
+import type * as ecs from '../../aws-ecs';
+import type { IFileSystem } from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
-import * as secretsmanager from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
-import { Lazy, PhysicalName, Size, ValidationError } from '../../core';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type * as ssm from '../../aws-ssm';
+import type { Size } from '../../core';
+import { Lazy, PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -95,6 +98,7 @@ export abstract class Secret {
 
   /**
    * Grants reading the secret to a principal
+   * [disable-awslint:no-grants]
    */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
@@ -174,7 +178,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
   /**
    * The EFS File System that supports this volume
    */
-  readonly fileSystem: IFileSystem;
+  readonly fileSystem: IFileSystemRef;
 
   /**
    * The directory within the Amazon EFS file system to mount as the root directory inside the host.
@@ -239,10 +243,21 @@ export class EfsVolume extends EcsVolume {
     return x !== null && typeof(x) === 'object' && EFS_VOLUME_SYMBOL in x;
   }
 
+  private readonly _fileSystem: IFileSystemRef;
+
   /**
    * The EFS File System that supports this volume
    */
-  public readonly fileSystem: IFileSystem;
+  public get fileSystem(): IFileSystem {
+    return toIFileSystem(this._fileSystem);
+  }
+
+  /**
+   * @internal
+   */
+  public get _fileSystemRef(): IFileSystemRef {
+    return this._fileSystem;
+  }
 
   /**
    * The directory within the Amazon EFS file system to mount as the root directory inside the host.
@@ -298,7 +313,7 @@ export class EfsVolume extends EcsVolume {
   constructor(options: EfsVolumeOptions) {
     super(options);
 
-    this.fileSystem = options.fileSystem;
+    this._fileSystem = options.fileSystem;
     this.rootDirectory = options.rootDirectory;
     this.enableTransitEncryption = options.enableTransitEncryption;
     this.transitEncryptionPort = options.transitEncryptionPort;
@@ -700,7 +715,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               return {
                 name: volume.name,
                 efsVolumeConfiguration: {
-                  fileSystemId: volume.fileSystem.fileSystemId,
+                  fileSystemId: volume._fileSystemRef.fileSystemRef.fileSystemId,
                   rootDirectory: volume.rootDirectory,
                   transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
                   transitEncryptionPort: volume.transitEncryptionPort,
@@ -1203,4 +1218,11 @@ function createExecutionRole(scope: Construct, id: string, logging: boolean): ia
   }
 
   return execRole;
+}
+
+function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
+  if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
+    throw new UnscopedValidationError(`'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+  }
+  return fileSystem as IFileSystem;
 }

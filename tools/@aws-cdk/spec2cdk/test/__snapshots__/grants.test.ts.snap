@@ -1,0 +1,96 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`generates grants for methods with and without key actions 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as sns from "./sns.generated";
+import * as iam from "aws-cdk-lib/aws-iam";
+
+/**
+ * Properties for TopicGrants
+ */
+interface TopicGrantsProps {
+  /**
+   * The resource on which actions will be allowed
+   */
+  readonly resource: sns.ITopicRef;
+
+  /**
+   * The resource with policy on which actions will be allowed
+   *
+   * @default - No resource policy is created
+   */
+  readonly policyResource?: iam.IResourceWithPolicyV2;
+
+  /**
+   * The encrypted resource on which actions will be allowed
+   *
+   * @default - No permission is added to the KMS key, even if it exists
+   */
+  readonly encryptedResource?: iam.IEncryptedResource;
+}
+
+/**
+ * Collection of grant methods for a ITopicRef
+ */
+export class TopicGrants {
+  /**
+   * Creates grants for TopicGrants
+   */
+  public static fromTopic(resource: sns.ITopicRef): TopicGrants {
+    return new TopicGrants({
+      resource: resource,
+      encryptedResource: iam.EncryptedResources.of(resource),
+      policyResource: iam.ResourceWithPolicies.of(resource)
+    });
+  }
+
+  protected readonly resource: sns.ITopicRef;
+
+  protected readonly encryptedResource?: iam.IEncryptedResource;
+
+  protected readonly policyResource?: iam.IResourceWithPolicyV2;
+
+  private constructor(props: TopicGrantsProps) {
+    this.resource = props.resource;
+    this.encryptedResource = props.encryptedResource;
+    this.policyResource = props.policyResource;
+  }
+
+  /**
+   * Grants publish permissions
+   */
+  public publish(grantee: iam.IGrantable): iam.Grant {
+    const actions = ["sns:Publish"];
+    const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      actions: actions,
+      grantee: grantee,
+      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
+      resource: this.policyResource
+    }) : iam.Grant.addToPrincipal({
+      actions: actions,
+      grantee: grantee,
+      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
+    }));
+    this.encryptedResource?.grantOnKey(grantee, "kms:Decrypt", "kms:GenerateDataKey*");
+    return result;
+  }
+
+  /**
+   * Grants subscribe permissions
+   */
+  public subscribe(grantee: iam.IGrantable): iam.Grant {
+    const actions = ["sns:Subscribe"];
+    const result = (this.policyResource ? iam.Grant.addToPrincipalOrResource({
+      actions: actions,
+      grantee: grantee,
+      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)],
+      resource: this.policyResource
+    }) : iam.Grant.addToPrincipal({
+      actions: actions,
+      grantee: grantee,
+      resourceArns: [sns.CfnTopic.arnForTopic(this.resource)]
+    }));
+    return result;
+  }
+}"
+`;

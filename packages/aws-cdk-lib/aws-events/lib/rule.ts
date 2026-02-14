@@ -1,14 +1,18 @@
-import { Node, Construct } from 'constructs';
-import { IEventBus } from './event-bus';
-import { EventPattern } from './event-pattern';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IEventBusRef, RuleReference } from './events.generated';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
-import { EventCommonOptions } from './on-event-options';
-import { IRule } from './rule-ref';
+import type { EventCommonOptions } from './on-event-options';
+import type { IRule } from './rule-ref';
 import { Schedule } from './schedule';
-import { IRuleTarget } from './target';
+import type { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern } from './util';
-import { IRole, IRoleRef, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
+import type { IRole, IRoleRef } from '../../aws-iam';
+import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { App, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -53,7 +57,7 @@ export interface RuleProps extends EventCommonOptions {
    *
    * @default - The default event bus.
    */
-  readonly eventBus?: IEventBus;
+  readonly eventBus?: IEventBusRef;
 
   /**
    * The role that is used for target invocation.
@@ -87,14 +91,42 @@ export class Rule extends Resource implements IRule {
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
       public ruleName = parts.resourceName || '';
+
+      public get ruleRef(): RuleReference {
+        return {
+          ruleArn: this.ruleArn,
+        };
+      }
     }
     return new Import(scope, id, {
       environmentFromArn: eventRuleArn,
     });
   }
 
-  public readonly ruleArn: string;
-  public readonly ruleName: string;
+  /**
+   * The CfnRule resource
+   */
+  private readonly _resource: CfnRule;
+
+  @memoizedGetter
+  public get ruleArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'events',
+      resource: 'rule',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get ruleName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
+  public get ruleRef(): RuleReference {
+    return {
+      ruleArn: this.ruleArn,
+    };
+  }
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
   private readonly eventPattern: EventPattern = { };
@@ -121,23 +153,16 @@ export class Rule extends Resource implements IRule {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule?._bind(this);
 
-    const resource = new CfnRule(this, 'Resource', {
+    this._resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
-      eventBusName: props.eventBus && props.eventBus.eventBusName,
+      eventBusName: props.eventBus && props.eventBus.eventBusRef.eventBusName,
       roleArn: props.role?.roleRef.roleArn,
     });
-
-    this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'events',
-      resource: 'rule',
-      resourceName: this.physicalName,
-    });
-    this.ruleName = this.getResourceNameAttribute(resource.ref);
 
     this.addEventPattern(props.eventPattern);
 
@@ -222,7 +247,7 @@ export class Rule extends Resource implements IRule {
         // and trigger on it there (there will be issues with construct references, for example). Especially
         // in the case of scheduled events, we will just trigger both rules in parallel in both environments.
         //
-        // A better solution would be to have the source rule add a unique token to the the event,
+        // A better solution would be to have the source rule add a unique token to the event,
         // and have the mirror rule trigger on that token only (thereby properly separating triggering, which
         // happens in the source env; and activating, which happens in the target env).
         //

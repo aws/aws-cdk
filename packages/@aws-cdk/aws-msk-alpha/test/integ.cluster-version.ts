@@ -1,9 +1,10 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import type { Construct } from 'constructs';
 import * as msk from '../lib/index';
 import { KafkaVersion } from '../lib/index';
-import { Construct } from 'constructs';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const versions: KafkaVersion[] = [
   KafkaVersion.V3_4_0,

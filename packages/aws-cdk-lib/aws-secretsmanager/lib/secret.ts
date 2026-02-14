@@ -1,20 +1,23 @@
-import { IConstruct, Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
-import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
+import type { RotationScheduleOptions } from './rotation-schedule';
+import { RotationSchedule } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Fn, IResolveContext, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import type { IResolveContext, IResource, ResourceProps, SecretsManagerSecretOptions } from '../../core';
+import { ArnFormat, FeatureFlags, Fn, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import type { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
 
 const SECRET_SYMBOL = Symbol.for('@aws-cdk/secretsmanager.Secret');
 
 /**
  * A secret in AWS Secrets Manager.
  */
-export interface ISecret extends IResource {
+export interface ISecret extends IResource, ISecretRef {
   /**
    * The customer-managed encryption key that is used to encrypt this secret, if any. When not specified, the default
    * KMS key for the account and region is being used.
@@ -96,6 +99,16 @@ export interface ISecret extends IResource {
    * @returns An attached secret
    */
   attach(target: ISecretAttachmentTarget): ISecret;
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options?: SecretsManagerSecretOptions): string;
 }
 
 /**
@@ -361,8 +374,29 @@ abstract class SecretBase extends Resource implements ISecret {
     this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
+  public get secretRef(): SecretReference {
+    return {
+      secretId: this.secretArn,
+    };
+  }
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load this
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param options Options
+   */
+  cfnDynamicReferenceKey(options: SecretsManagerSecretOptions = {}): string {
+    return SecretValue.cfnDynamicReferenceKey(this.secretArn, options);
+  }
+
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
@@ -397,6 +431,9 @@ abstract class SecretBase extends Resource implements ISecret {
     return result;
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
     const result = iam.Grant.addToPrincipalOrResource({
@@ -668,6 +705,8 @@ export class Secret extends SecretBase {
       default: RemovalPolicy.DESTROY,
     });
 
+    // Implementation too finicky to move to getter
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',
@@ -831,7 +870,7 @@ export interface SecretTargetAttachmentProps extends AttachedSecretOptions {
   readonly secret: ISecret;
 }
 
-export interface ISecretTargetAttachment extends ISecret {
+export interface ISecretTargetAttachment extends ISecret, ISecretTargetAttachmentRef {
   /**
    * Same as `secretArn`
    *
@@ -855,6 +894,12 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
       public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
       protected readonly autoCreatePolicy = false;
+
+      public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
+        return {
+          secretId: this.secretTargetAttachmentSecretArn,
+        };
+      }
     }
 
     return new Import(scope, id);
@@ -891,6 +936,12 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
+  }
+
+  public get secretTargetAttachmentRef(): SecretTargetAttachmentReference {
+    return {
+      secretId: this.secretTargetAttachmentSecretArn,
+    };
   }
 
   /**

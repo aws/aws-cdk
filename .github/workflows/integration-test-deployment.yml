@@ -25,6 +25,7 @@ concurrency:
 jobs:
   integration_test_deployment:
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
+    timeout-minutes: 7200 # Maximum limit for self-hosted runners, job can still be limited by our runner timeout (which is set at 36 hours).
     environment: deployment-integ-test # Do not change or remove this without discussing with Appsec
     if: contains(github.event.pull_request.labels.*.name, 'pr/needs-integration-tests-deployment')
     name: 'Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)'
@@ -34,32 +35,13 @@ jobs:
 
     steps:
       - name: Checkout HEAD
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
-      
-      - name: Assume Atmosphere Role
-        id: creds
-        run: |
-          # Assume role and capture the JSON output
-          CREDS=$(aws sts assume-role \
-          --role-arn ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }} \
-          --role-session-name run-tests@aws-cdk-deployment-integ)
-          # Parse the JSON output and set environment variables
-          AWS_ACCESS_KEY_ID=$(echo $CREDS | jq -r '.Credentials.AccessKeyId')
-          AWS_SECRET_ACCESS_KEY=$(echo $CREDS | jq -r '.Credentials.SecretAccessKey')
-          AWS_SESSION_TOKEN=$(echo $CREDS | jq -r '.Credentials.SessionToken')
-          echo "::add-mask::$AWS_ACCESS_KEY_ID"
-          echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
-          echo "::add-mask::$AWS_SESSION_TOKEN"
-          
-          echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $GITHUB_ENV
-          echo "AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN" >> $GITHUB_ENV
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "yarn"
@@ -71,7 +53,7 @@ jobs:
 
       - name: Load Docker images
         id: docker-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: |
             ~/.docker-images.tar
@@ -82,7 +64,7 @@ jobs:
         run: docker image load --input ~/.docker-images.tar
 
       - name: Cache build artifacts
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.s3buildcache
@@ -95,19 +77,22 @@ jobs:
           sudo sysctl -w vm.max_map_count=2251954
         
       - name: Install dependencies for Integration Tests
-        run: yarn install 
+        run: yarn install --frozen-lockfile
       
       - name: Build deployment-integ
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
         
-      - name: Build Integration Tests
-        run: npx lerna run build --scope=@aws-cdk-testing/framework-integ 
+      # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
+      - name: Build Integration Test packages 
+        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL}}
+          CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
+          CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           
@@ -117,7 +102,7 @@ jobs:
 
       - name: Cache Docker images
         if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: |
             ~/.docker-images.tar

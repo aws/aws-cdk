@@ -1,19 +1,21 @@
-import { Construct } from 'constructs';
-import { IConfigurationSet } from './configuration-set';
+import type { Construct } from 'constructs';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
-import { Grant, IGrantable } from '../../aws-iam';
-import { IPublicHostedZone } from '../../aws-route53';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An email identity
  */
-export interface IEmailIdentity extends IResource {
+export interface IEmailIdentity extends IResource, IEmailIdentityRef {
   /**
    * The name of the email identity
    *
@@ -60,7 +62,7 @@ export interface EmailIdentityProps {
    *
    * @default - do not use a specific configuration set
    */
-  readonly configurationSet?: IConfigurationSet;
+  readonly configurationSet?: IConfigurationSetRef;
 
   /**
    * Whether the messages that are sent from the identity are signed using DKIM
@@ -353,8 +355,16 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    */
   public abstract readonly emailIdentityArn: string;
 
+  public get emailIdentityRef(): EmailIdentityReference {
+    return {
+      emailIdentity: this.emailIdentityName,
+    };
+  }
+
   /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow
@@ -365,7 +375,6 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
       grantee,
       actions,
       resourceArns,
-      scope: this,
     });
   }
 
@@ -373,6 +382,8 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
    * Permits an IAM principal the send email action.
    *
    * Actions: SendEmail, SendRawEmail.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -495,7 +506,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const identity = new CfnEmailIdentity(this, 'Resource', {
       emailIdentity: props.identity.value,
       configurationSetAttributes: undefinedIfNoKeys({
-        configurationSetName: props.configurationSet?.configurationSetName,
+        configurationSetName: props.configurationSet?.configurationSetRef.configurationSetName,
       }),
       dkimAttributes: undefinedIfNoKeys({
         signingEnabled: props.dkimSigning,

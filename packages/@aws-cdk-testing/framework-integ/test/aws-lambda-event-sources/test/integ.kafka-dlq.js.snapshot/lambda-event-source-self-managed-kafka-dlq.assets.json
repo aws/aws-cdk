@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "457d39b8f4743fd62862658c4f58c720dc89747080bbaf6c68a824ea08e5e731": {
+      "displayName": "lambda-event-source-self-managed-kafka-dlq Template",
+      "source": {
+        "path": "lambda-event-source-self-managed-kafka-dlq.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-01826928": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "457d39b8f4743fd62862658c4f58c720dc89747080bbaf6c68a824ea08e5e731.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

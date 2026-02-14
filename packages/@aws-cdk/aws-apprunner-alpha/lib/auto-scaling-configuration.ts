@@ -1,8 +1,8 @@
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
+import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * Properties of the App Runner Auto Scaling Configuration.

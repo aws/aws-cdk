@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
     "declarationMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
+    "inlineSourceMap": false,
     "alwaysStrict": true,
     "declaration": true,
     "incremental": true,
@@ -26,7 +25,8 @@
     "target": "es2022",
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
-    "esModuleInterop": false
+    "esModuleInterop": false,
+    "isolatedModules": true
   },
   "include": [
     "**/*.ts"

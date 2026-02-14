@@ -1,31 +1,42 @@
-import { Construct } from 'constructs';
-import { ApiDefinition } from './api-definition';
-import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
+import type { Construct } from 'constructs';
+import type { ApiDefinition } from './api-definition';
+import type { ApiKeyOptions, IApiKey } from './api-key';
+import { ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
-import { CfnAccount, CfnRestApi, IRestApiRef, RestApiReference } from './apigateway.generated';
-import { CorsOptions } from './cors';
+import type { IRestApiRef, RestApiReference } from './apigateway.generated';
+import { CfnAccount, CfnRestApi } from './apigateway.generated';
+import type { CorsOptions } from './cors';
 import { Deployment } from './deployment';
-import { DomainName, DomainNameOptions } from './domain-name';
-import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
-import { Integration } from './integration';
-import { Method, MethodOptions } from './method';
-import { Model, ModelOptions } from './model';
-import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
-import { IResource, ResourceBase, ResourceOptions } from './resource';
-import { Stage, StageOptions } from './stage';
-import { UsagePlan, UsagePlanProps } from './usage-plan';
+import type { DomainNameOptions } from './domain-name';
+import { DomainName } from './domain-name';
+import type { GatewayResponseOptions } from './gateway-response';
+import { GatewayResponse } from './gateway-response';
+import type { Integration } from './integration';
+import type { Method, MethodOptions } from './method';
+import type { ModelOptions } from './model';
+import { Model } from './model';
+import type { RequestValidatorOptions } from './requestvalidator';
+import { RequestValidator } from './requestvalidator';
+import type { IResource, ResourceOptions } from './resource';
+import { ResourceBase } from './resource';
+import type { StageOptions } from './stage';
+import { Stage } from './stage';
+import type { UsagePlanProps } from './usage-plan';
+import { UsagePlan } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import type {
+  IResource as IResourceBase,
+  Size,
+} from '../../core';
 import {
   ArnFormat,
   CfnOutput,
   FeatureFlags,
-  IResource as IResourceBase,
   Lazy,
   RemovalPolicy,
   Resource,
-  Size,
   Stack,
   Token,
 } from '../../core';
@@ -299,6 +310,14 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api.html
    */
   readonly apiDefinition: ApiDefinition;
+
+  /**
+   * The list of binary media mime-types that are supported by the SpecRestApi
+   * resource, such as "image/png" or "application/octet-stream"
+   *
+   * @default - SpecRestApi supports only UTF-8-encoded text payloads.
+   */
+  readonly binaryMediaTypes?: string[];
 
   /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
@@ -802,6 +821,7 @@ export class SpecRestApi extends RestApiBase {
       policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
+      binaryMediaTypes: props.binaryMediaTypes,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),

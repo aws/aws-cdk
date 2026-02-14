@@ -1,0 +1,21 @@
+#
+#####################################
+##      DOCUMENTDB GUARD RULES      ##
+#####################################
+# Rule: DOCUMENTDB_ENCRYPTION_ENABLED
+# Service: Amazon DocumentDB
+# Coverage: Cluster Encryption
+
+let documentdb_clusters = Resources.*[
+  Type == 'AWS::DocDB::DBCluster'
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "DOCUMENTDB_ENCRYPTION_ENABLED"
+]
+
+# DocumentDB cluster encryption must be enabled
+rule DOCUMENTDB_ENCRYPTION_ENABLED when %documentdb_clusters !empty {
+    %documentdb_clusters {
+        Properties.StorageEncrypted exists
+        Properties.StorageEncrypted == true
+    }
+}

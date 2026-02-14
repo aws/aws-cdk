@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
+import type { Construct } from 'constructs';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import {
-  BaseTargetGroupProps, HealthCheck, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+import type { ITargetGroupRef } from '../elasticloadbalancingv2.generated';
+import type { INetworkListenerRef } from './network-listener';
+import type {
+  BaseTargetGroupProps, HealthCheck, ITargetGroup, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupImportProps,
 } from '../shared/base-target-group';
+import { loadBalancerNameFromListenerArn, TargetGroupBase } from '../shared/base-target-group';
 import { Protocol } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { parseLoadBalancerFullName, parseTargetGroupFullName, validateNetworkProtocol } from '../shared/util';
@@ -154,7 +156,8 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return NetworkTargetGroup.fromTargetGroupAttributes(scope, id, props);
   }
 
-  private readonly listeners: INetworkListener[];
+  public readonly isNetworkTargetGroup = true;
+  private readonly listeners: INetworkListenerRef[];
   private _metrics?: INetworkTargetGroupMetrics;
 
   constructor(scope: Construct, id: string, props: NetworkTargetGroupProps) {
@@ -203,7 +206,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    *
    * Don't call this directly. It will be called by listeners.
    */
-  public registerListener(listener: INetworkListener) {
+  public registerListener(listener: INetworkListenerRef) {
     this.loadBalancerAttachedDependencies.add(listener);
     this.listeners.push(listener);
   }
@@ -235,7 +238,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     if (this.listeners.length === 0) {
       throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
-    return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
+    return loadBalancerNameFromListenerArn(this.listeners[0].listenerRef.listenerArn);
   }
 
   protected validateTargetGroup(): string[] {
@@ -294,9 +297,22 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 }
 
 /**
+ * Indicates that this resource can be referenced as an NLB TargetGroup
+ */
+export interface INetworkTargetGroupRef extends ITargetGroupRef {
+  /**
+   * Indicates that this is a Network Target Group
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isNetworkTargetGroup: boolean;
+}
+
+/**
  * A network target group
  */
-export interface INetworkTargetGroup extends ITargetGroup {
+export interface INetworkTargetGroup extends ITargetGroup, INetworkTargetGroupRef {
   /**
    * All metrics available for this target group.
    */
@@ -307,7 +323,7 @@ export interface INetworkTargetGroup extends ITargetGroup {
    *
    * Don't call this directly. It will be called by listeners.
    */
-  registerListener(listener: INetworkListener): void;
+  registerListener(listener: INetworkListenerRef): void;
 
   /**
    * Add a load balancing target to this target group
@@ -319,6 +335,7 @@ export interface INetworkTargetGroup extends ITargetGroup {
  * An imported network target group
  */
 class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INetworkTargetGroup {
+  public readonly isNetworkTargetGroup = true;
   private readonly _metrics?: INetworkTargetGroupMetrics;
 
   public constructor(scope: Construct, id: string, props: TargetGroupImportProps) {
@@ -339,7 +356,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
     return this._metrics;
   }
 
-  public registerListener(_listener: INetworkListener) {
+  public registerListener(_listener: INetworkListenerRef) {
     // Nothing to do, we know nothing of our members
   }
 

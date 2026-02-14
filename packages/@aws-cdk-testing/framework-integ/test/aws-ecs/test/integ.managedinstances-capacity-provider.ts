@@ -7,8 +7,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App({
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new cdk.Stack(app, 'integ-managedinstances-capacity-provider');
@@ -51,6 +49,7 @@ const fmiSecurityGroup = new ec2.SecurityGroup(stack, 'ManagedInstancesSecurityG
 // Create MI Capacity Provider
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'ManagedInstancesCapacityProvider', {
   infrastructureRole: infrastructureRole,
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   ec2InstanceProfile: instanceProfile,
   subnets: vpc.privateSubnets,
   securityGroups: [fmiSecurityGroup],
@@ -109,7 +108,6 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 
 new integ.IntegTest(app, 'ManagedInstancesCapacityProviders', {
   testCases: [stack],
-  regions: ['us-west-2'],
 });
 
 app.synth();

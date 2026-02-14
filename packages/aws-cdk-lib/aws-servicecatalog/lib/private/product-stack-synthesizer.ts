@@ -1,4 +1,5 @@
-import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
+import type { CfnBucket, IBucket } from '../../../aws-s3';
+import { Bucket } from '../../../aws-s3';
 import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { UnscopedValidationError } from '../../../core';

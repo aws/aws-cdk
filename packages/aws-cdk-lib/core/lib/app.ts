@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
-import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import { IReusableStackSynthesizer } from './stack-synthesizers';
+import type { ICustomSynthesis } from './private/synthesis';
+import { addCustomSynthesis } from './private/synthesis';
+import type { IPropertyInjector } from './prop-injectors';
+import { PropertyInjectors } from './prop-injectors';
+import type { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
-import { IPolicyValidationPluginBeta1 } from './validation/validation';
+import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -151,6 +153,15 @@ export interface AppProps {
  * @see https://docs.aws.amazon.com/cdk/latest/guide/apps.html
  */
 export class App extends Stage {
+  /**
+   * Return the app that is the root of the construct tree, if available.
+   *
+   */
+  public static of(construct: IConstruct): Stage | undefined {
+    const root = construct.node.root;
+    return App.isApp(root) ? root : undefined;
+  }
+
   /**
    * Checks if an object is an instance of the `App` class.
    * @returns `true` if `obj` is an `App`.

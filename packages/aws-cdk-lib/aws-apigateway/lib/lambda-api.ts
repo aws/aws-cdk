@@ -1,10 +1,12 @@
 // import * as cdk from '../../core';
-import { Construct } from 'constructs';
-import { LambdaIntegration, LambdaIntegrationOptions } from './integrations';
-import { Method } from './method';
-import { ProxyResource, Resource } from './resource';
-import { RestApi, RestApiProps } from './restapi';
-import * as lambda from '../../aws-lambda';
+import type { Construct } from 'constructs';
+import type { LambdaIntegrationOptions } from './integrations';
+import { LambdaIntegration } from './integrations';
+import type { Method } from './method';
+import type { ProxyResource, Resource } from './resource';
+import type { RestApiProps } from './restapi';
+import { RestApi } from './restapi';
+import type * as lambda from '../../aws-lambda';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

@@ -1,20 +1,21 @@
-import * as acmpca from 'aws-cdk-lib/aws-acmpca';
+import type * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as logs from 'aws-cdk-lib/aws-logs';
+import { CfnCluster } from 'aws-cdk-lib/aws-msk';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
 import { FeatureFlags } from 'aws-cdk-lib/core';
-import * as cr from 'aws-cdk-lib/custom-resources';
-import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
-import * as constructs from 'constructs';
-import { addressOf } from 'constructs/lib/private/uniqueid';
-import { KafkaVersion } from './';
-import { CfnCluster } from 'aws-cdk-lib/aws-msk';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
+import type * as constructs from 'constructs';
+import { addressOf } from 'constructs/lib/private/uniqueid';
+import type { KafkaVersion } from './';
 
 /**
  * Represents a MSK Cluster
@@ -97,6 +98,15 @@ export interface ClusterProps {
    * @default kafka.m5.large
    */
   readonly instanceType?: ec2.InstanceType;
+
+  /**
+   * The broker type for the cluster.
+   * When set to EXPRESS, the cluster will be created with Express Brokers.
+   * When this is set to EXPRESS, instanceType must also be specified.
+   *
+   * @default BrokerType.STANDARD
+   */
+  readonly brokerType?: BrokerType;
 
   /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
@@ -197,6 +207,21 @@ export enum StorageMode {
    * Tiered storage mode utilizes EBS storage and Tiered storage.
    */
   TIERED = 'TIERED',
+}
+
+/**
+ * The broker type for the cluster.
+ */
+export enum BrokerType {
+  /**
+   * Standard brokers provide high-availability guarantees.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Express brokers are a low-cost option for development, testing, and workloads that don't require the high availability guarantees of standard MSK cluster.
+   */
+  EXPRESS = 'EXPRESS',
 }
 
 /**
@@ -458,10 +483,9 @@ export class Cluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public readonly clusterArn: string;
-  public readonly clusterName: string;
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
+  private resource: CfnCluster;
   private _clusterDescription?: cr.AwsCustomResource;
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
@@ -502,8 +526,37 @@ export class Cluster extends ClusterBase {
       throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
     }
 
+    const isExpress = props.brokerType === BrokerType.EXPRESS;
+
+    if (isExpress) {
+      // Validate Kafka version compatibility
+      // express broker documentation for supported versions https://docs.aws.amazon.com/msk/latest/developerguide/msk-broker-types-express.html#msk-broker-types-express-notes
+      const supportedVersions = ['3.6', '3.8', '3.9'];
+      const kafkaVersionString = props.kafkaVersion.version;
+      const isCompatibleVersion = supportedVersions.some(version => kafkaVersionString.includes(version));
+      if (!isCompatibleVersion) {
+        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka ${supportedVersions.join(', ')}, got ${kafkaVersionString}`, this);
+      }
+
+      if (!props.instanceType) {
+        throw new core.ValidationError('`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.ebsStorageInfo) {
+        throw new core.ValidationError('`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.storageMode) {
+        throw new core.ValidationError('`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (props.logging) {
+        throw new core.ValidationError('`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+      }
+      if (subnetSelection.subnets.length < 3) {
+        throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
+      }
+    }
+
     const instanceType = props.instanceType
-      ? this.mskInstanceType(props.instanceType)
+      ? this.mskInstanceType(props.instanceType, isExpress)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
@@ -598,7 +651,7 @@ export class Cluster extends ClusterBase {
         },
       }));
     }
-    const loggingInfo = {
+    const loggingInfo = isExpress ? undefined : {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
@@ -678,7 +731,7 @@ export class Cluster extends ClusterBase {
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
         ),
-        storageInfo: {
+        storageInfo: isExpress ? undefined : {
           ebsStorageInfo: {
             volumeSize: volumeSize,
           },
@@ -691,23 +744,33 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
-      storageMode: props.storageMode,
+      storageMode: isExpress ? undefined : props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication,
     });
 
-    this.clusterName = this.getResourceNameAttribute(
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
-    );
-    this.clusterArn = resource.ref;
+    this.resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.RETAIN,
     });
   }
 
-  private mskInstanceType(instanceType: ec2.InstanceType): string {
-    return `kafka.${instanceType.toString()}`;
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(
+      core.Fn.select(1, core.Fn.split('/', this.resource.ref)),
+    );
+  }
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.resource.ref;
+  }
+
+  private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {
+    const prefix = express ? 'express.' : 'kafka.';
+    return `${prefix}${instanceType.toString()}`;
   }
 
   /**

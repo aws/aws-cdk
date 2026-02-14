@@ -1,11 +1,15 @@
-import { Construct, Node } from 'constructs';
-import {
-  CfnResponseHeadersPolicy,
+import type { Construct } from 'constructs';
+import type {
   IResponseHeadersPolicyRef,
   ResponseHeadersPolicyReference,
 } from './cloudfront.generated';
-import { Duration, Names, Resource, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import {
+  CfnResponseHeadersPolicy,
+} from './cloudfront.generated';
+import type { Duration } from '../../core';
+import { Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -109,15 +113,14 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   }
 
   private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
-    return new class implements IResponseHeadersPolicy {
-      public get node(): Node {
-        throw new UnscopedValidationError('The result of fromManagedResponseHeadersPolicy can not be used in this API');
-      }
-
+    return new class extends DetachedConstruct implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
       public readonly responseHeadersPolicyRef = {
         responseHeadersPolicyId: managedResponseHeadersPolicyId,
       };
+      constructor() {
+        super('The result of fromManagedResponseHeadersPolicy can not be used in this API');
+      }
     };
   }
 

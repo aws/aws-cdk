@@ -186,7 +186,7 @@
      ]
     },
     "Name": "next",
-    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
+    "RuntimeVersion": "syn-nodejs-puppeteer-13.0",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
@@ -503,7 +503,7 @@
      ]
     },
     "Name": "cdksyntheticscaeae9a3",
-    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
+    "RuntimeVersion": "syn-nodejs-puppeteer-13.0",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
@@ -625,7 +625,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a73ebb32184d4a847fd87c0def742ac63ae3716c77d7d75f37ffe720d056adc6.zip"
+     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
     },
     "Handler": "index.handler",
     "Role": {

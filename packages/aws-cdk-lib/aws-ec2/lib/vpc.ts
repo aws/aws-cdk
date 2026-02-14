@@ -1,5 +1,12 @@
-import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
-import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, Dependable, DependencyGroup, Node } from 'constructs';
+import type { ClientVpnEndpointOptions } from './client-vpn-endpoint';
+import { ClientVpnEndpoint } from './client-vpn-endpoint';
+import type {
+  CfnVPCCidrBlock,
+  ISubnetRef,
+  IVPCRef, SubnetReference, VPCReference,
+} from './ec2.generated';
 import {
   CfnEgressOnlyInternetGateway,
   CfnEIP,
@@ -10,22 +17,22 @@ import {
   CfnSubnet,
   CfnSubnetRouteTableAssociation,
   CfnVPC,
-  CfnVPCCidrBlock,
   CfnVPCGatewayAttachment,
   CfnVPNGatewayRoutePropagation,
-  ISubnetRef,
-  IVPCRef, SubnetReference, VPCReference,
 } from './ec2.generated';
-import {
+import type {
   AllocatedSubnet,
   IIpAddresses,
   IIpv6Addresses,
-  IpAddresses,
-  Ipv6Addresses,
   RequestedSubnet,
 } from './ip-addresses';
+import {
+  IpAddresses,
+  Ipv6Addresses,
+} from './ip-addresses';
 import { NatProvider } from './nat';
-import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
+import type { INetworkAcl } from './network-acl';
+import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
 import {
   allRouteTableIds,
@@ -35,17 +42,22 @@ import {
   subnetGroupNameFromConstructId,
   subnetId,
 } from './util';
+import type {
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpointOptions,
+} from './vpc-endpoint';
 import {
   GatewayVpcEndpoint,
   GatewayVpcEndpointAwsService,
-  GatewayVpcEndpointOptions,
   InterfaceVpcEndpoint,
-  InterfaceVpcEndpointOptions,
 } from './vpc-endpoint';
-import { FlowLog, FlowLogOptions, FlowLogResourceType } from './vpc-flow-logs';
-import { VpcLookupOptions } from './vpc-lookup';
-import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnectionType, VpnGateway } from './vpn';
+import type { FlowLogOptions } from './vpc-flow-logs';
+import { FlowLog, FlowLogResourceType } from './vpc-flow-logs';
+import type { VpcLookupOptions } from './vpc-lookup';
+import type { EnableVpnGatewayOptions, VpnConnectionOptions } from './vpn';
+import { VpnConnection, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
+import type { IResource } from '../../core';
 import {
   Annotations,
   Arn,
@@ -53,7 +65,6 @@ import {
   CustomResource,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   Names,
   Resource,
@@ -2426,6 +2437,11 @@ export enum RouterType {
    * VPC Endpoint for gateway load balancers
    */
   VPC_ENDPOINT = 'VpcEndpoint',
+
+  /**
+   * AWS Network Manager Core Network
+   */
+  CORE_NETWORK = 'CoreNetwork',
 }
 
 function routerTypeToPropName(routerType: RouterType) {
@@ -2440,6 +2456,7 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
+    [RouterType.CORE_NETWORK]: 'coreNetworkArn',
   })[routerType];
 }
 
@@ -2561,11 +2578,9 @@ class ImportedVpc extends VpcBase {
       }
     }
 
-    /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, props.publicSubnetIpv4CidrBlocks, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds', 'publicSubnetIpv4CidrBlocks');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, props.privateSubnetIpv4CidrBlocks, SubnetType.PRIVATE_WITH_EGRESS, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds', 'privateSubnetIpv4CidrBlocks');
     const iso = new ImportSubnetGroup(props.isolatedSubnetIds, props.isolatedSubnetNames, props.isolatedSubnetRouteTableIds, props.isolatedSubnetIpv4CidrBlocks, SubnetType.PRIVATE_ISOLATED, this.availabilityZones, 'isolatedSubnetIds', 'isolatedSubnetNames', 'isolatedSubnetRouteTableIds', 'isolatedSubnetIpv4CidrBlocks');
-    /* eslint-enable max-len */
 
     this.publicSubnets = pub.import(this);
     this.privateSubnets = priv.import(this);
@@ -2727,7 +2742,7 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
       const ref = Token.isUnresolved(attrs.subnetId) || Token.isUnresolved([attrs.subnetId])
         ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
-      // eslint-disable-next-line max-len
+
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:noSubnetRouteTableId', `No routeTableId was provided to the subnet ${ref}. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171)`);
     }
 
@@ -2748,7 +2763,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get availabilityZone(): string {
     if (!this._availabilityZone) {
-      // eslint-disable-next-line max-len
       throw new ValidationError('You cannot reference a Subnet\'s availability zone if it was not supplied. Add the availabilityZone when importing using Subnet.fromSubnetAttributes()', this);
     }
     return this._availabilityZone;
@@ -2793,12 +2807,10 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   const count = requestedCount !== undefined ? Math.min(requestedCount, azCount) : (hasPrivateSubnets ? azCount : 0);
 
   if (count === 0 && hasPrivateSubnets && !hasCustomEgress) {
-    // eslint-disable-next-line max-len
     throw new UnscopedValidationError('If you do not want NAT gateways (natGateways=0), make sure you don\'t configure any PRIVATE(_WITH_NAT) subnets in \'subnetConfiguration\' (make them PUBLIC or ISOLATED instead)');
   }
 
   if (count > 0 && !hasPublicSubnets) {
-    // eslint-disable-next-line max-len
     throw new UnscopedValidationError(`If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 

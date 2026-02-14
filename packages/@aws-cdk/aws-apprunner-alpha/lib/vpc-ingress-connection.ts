@@ -1,10 +1,10 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IService } from './service';
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IService } from './service';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection

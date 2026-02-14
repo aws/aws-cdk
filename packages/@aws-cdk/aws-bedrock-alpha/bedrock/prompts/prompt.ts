@@ -1,14 +1,15 @@
-import { Arn, ArnFormat, IResource, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 // Internal Libs
-import { IPromptVariant } from './prompt-variant';
+import type { IPromptVariant } from './prompt-variant';
 import { PromptVersion } from './prompt-version';
 import * as validation from '../agents/validation-helpers';
 
@@ -66,6 +67,7 @@ export abstract class PromptBase extends Resource implements IPrompt {
 
   /**
    * Grant the given identity permissions to get the prompt.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @default - Default grant configuration:
@@ -78,7 +80,6 @@ export abstract class PromptBase extends Resource implements IPrompt {
       grantee,
       resourceArns: [this.promptArn],
       actions: ['bedrock:GetPrompt'],
-      scope: this,
     });
   }
 }
