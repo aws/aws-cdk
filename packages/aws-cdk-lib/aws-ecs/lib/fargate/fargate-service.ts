@@ -195,7 +195,9 @@ export class FargateService extends BaseService implements IFargateService {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
       platformVersion: props.platformVersion,
-      availabilityZoneRebalancing: props.availabilityZoneRebalancing,
+      availabilityZoneRebalancing: props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED
+        ? props.availabilityZoneRebalancing
+        : undefined,
     }, props.taskDefinition);
 
     // Enhanced CDK Analytics Telemetry
