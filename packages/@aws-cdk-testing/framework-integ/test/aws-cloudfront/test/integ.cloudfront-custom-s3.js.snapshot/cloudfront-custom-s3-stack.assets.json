@@ -1,15 +1,30 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "cloudfront-custom-s3-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "97632664aa7ad261dd6ea9951ae9805ad2871293f5f9640aecf99e925bd48229": {
+      "displayName": "cloudfront-custom-s3-stack Template",
       "source": {
         "path": "cloudfront-custom-s3-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-847629ea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1.json",
+          "objectKey": "97632664aa7ad261dd6ea9951ae9805ad2871293f5f9640aecf99e925bd48229.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

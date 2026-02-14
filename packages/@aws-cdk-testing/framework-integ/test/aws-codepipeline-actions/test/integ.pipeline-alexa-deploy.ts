@@ -1,12 +1,12 @@
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
@@ -48,6 +48,10 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     sourceStage,
     deployStage,
   ],
+});
+
+new IntegTest(app, 'integ.pipeline-alexa-deploy', {
+  testCases: [stack],
 });
 
 app.synth();

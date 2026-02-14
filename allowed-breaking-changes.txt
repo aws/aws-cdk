@@ -8,6 +8,9 @@ change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 # of the `properties` field is already unreliable for exhaustive checking.
 weakened:aws-cdk-lib.cloud_assembly_schema.ArtifactManifest
 
+# Manifest class became abstract in cloud-assembly-schema v50+
+made-abstract:aws-cdk-lib.cloud_assembly_schema.Manifest
+
 # Adding any new context queries will add to the ContextQueryProperties type,
 # which changes the signature of MissingContext.
 weakened:@aws-cdk/cloud-assembly-schema.MissingContext
