@@ -37,10 +37,16 @@ const bucket = new s3.Bucket(stack, 'DeliveryBucket', {
   encryptionKey: key,
 });
 
+const deliveryDestination = new logs.CfnDeliveryDestination(stack, 'DeliveryDestination', {
+  name: 'my-log-group-destination',
+  destinationResourceArn: logGroup.logGroupArn,
+  deliveryDestinationType: 'CWL',
+});
+
 // Setup error logs delivery to Cloudwatch
 eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup));
-// Setup info logs delivery to Cloudwatch
-eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toLogGroup(logGroup));
+// Setup info logs delivery to Cloudwatch via manually created delivery destination
+eventBus.with(CfnEventBusLogsMixin.INFO_LOGS.toDestination(deliveryDestination));
 // Setup error logs delivery to S3
 eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toS3(bucket));
 // Setup info logs delivery to S3
