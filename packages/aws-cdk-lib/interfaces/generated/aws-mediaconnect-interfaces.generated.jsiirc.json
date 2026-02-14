@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.mediaconnect"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.MediaConnect"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_mediaconnect"
+    }
+  }
+}

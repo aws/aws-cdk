@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.applicationsignals"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ApplicationSignals"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_applicationsignals"
+    }
+  }
+}

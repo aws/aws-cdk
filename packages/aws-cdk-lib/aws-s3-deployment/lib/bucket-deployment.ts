@@ -404,7 +404,14 @@ export class BucketDeployment extends Construct {
       ? `${this.normalizePrefix(props.destinationKeyPrefix)}*`
       : '*';
 
-    this.destinationBucket.grantReadWrite(handler, objectPattern);
+    const prune = props.prune ?? true;
+    if (prune) {
+      this.destinationBucket.grantReadWrite(handler);
+      this.destinationBucket.grantDelete(handler);
+    } else {
+      this.destinationBucket.grantReadWrite(handler, objectPattern);
+    }
+
     if (props.accessControl) {
       this.destinationBucket.grantPutAcl(handler, objectPattern);
     }
@@ -654,7 +661,7 @@ export class BucketDeployment extends Construct {
    * @param prefix prefix string
    * @returns normalized prefix string
    */
-  normalizePrefix(prefix?: string): string {
+  private normalizePrefix(prefix?: string): string {
     if (!prefix) return '';
     let normalized = prefix;
     while (normalized.startsWith('/')) {

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.ivs"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Ivs"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_ivs"
+    }
+  }
+}

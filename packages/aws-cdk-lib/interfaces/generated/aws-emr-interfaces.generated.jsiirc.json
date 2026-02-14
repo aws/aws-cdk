@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.emr"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.EMR"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_emr"
+    }
+  }
+}

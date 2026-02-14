@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.mediaconvert"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.MediaConvert"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_mediaconvert"
+    }
+  }
+}

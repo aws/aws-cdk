@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.networkmanager"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.NetworkManager"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_networkmanager"
+    }
+  }
+}

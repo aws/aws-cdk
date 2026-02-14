@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.codeartifact"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CodeArtifact"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_codeartifact"
+    }
+  }
+}

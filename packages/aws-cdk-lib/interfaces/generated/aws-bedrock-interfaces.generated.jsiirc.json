@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.bedrock"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Bedrock"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_bedrock"
+    }
+  }
+}
