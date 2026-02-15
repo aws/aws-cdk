@@ -65,6 +65,16 @@ assertionStack.addDependency(thirdStack);
 const test = new integ.IntegTest(app, 'ImportedRoleTest', {
   testCases: [roleStack, thirdStack],
   assertionStack,
+  cdkCommandOptions: {
+    destroy: {
+      // integ-iam-imported-role-3 exports roleToBeImported's Ref, which is consumed by
+      // ImportedRoleTestAssertions. CloudFormation cannot delete the export while the
+      // assertion stack still references it, so the destroy phase always fails with:
+      //   "Cannot delete export integ-iam-imported-role-3:ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6
+      //    as it is in use by ImportedRoleTestAssertions."
+      expectError: true,
+    },
+  },
 });
 
 test.assertions
