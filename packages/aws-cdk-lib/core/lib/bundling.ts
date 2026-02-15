@@ -362,6 +362,7 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...(options.cacheDisabled ? ['--no-cache'] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
       path,
     ];
 
@@ -591,6 +592,19 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build contexts to pass to the `docker build` command.
+   *
+   * Build contexts can be used to specify additional directories or images
+   * to use during the build. Each entry specifies a named build context
+   * and its source (a directory path, a URL, or a docker image).
+   *
+   * @see https://docs.docker.com/build/building/context/#additional-build-contexts
+   *
+   * @default - no additional build contexts
+   */
+  readonly buildContexts?: { [key: string]: string };
 
   /**
    * Name of the Dockerfile, must relative to the docker build path.
