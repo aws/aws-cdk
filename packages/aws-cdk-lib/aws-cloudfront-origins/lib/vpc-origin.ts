@@ -36,6 +36,16 @@ export interface VpcOriginProps extends cloudfront.OriginProps {
    * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
+
+  /**
+   * The AWS account ID of the owner of the VPC origin.
+   *
+   * Specify this property when using a cross-account VPC origin, where the VPC origin
+   * resource exists in a different AWS account than the CloudFront distribution.
+   *
+   * @default - same account as the distribution
+   */
+  readonly ownerAccountId?: string;
 }
 
 /**
@@ -83,6 +93,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
+    validateOwnerAccountId('ownerAccountId', props.ownerAccountId);
   }
 
   protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty | undefined {
@@ -93,6 +104,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
       vpcOriginId: this.vpcOrigin.vpcOriginId,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      ownerAccountId: this.props.ownerAccountId,
     };
   }
 }
@@ -126,5 +138,19 @@ class VpcOriginWithEndpoint extends VpcOrigin {
       originSslProtocols: this.props.originSslProtocols,
     });
     return super.bind(_scope, options);
+  }
+}
+
+/**
+ * Regex to validate a 12-digit AWS account ID.
+ */
+const AWS_ACCOUNT_ID_REGEX = /^\d{12}$/;
+
+function validateOwnerAccountId(name: string, accountId?: string): void {
+  if (accountId === undefined || cdk.Token.isUnresolved(accountId)) {
+    return;
+  }
+  if (!AWS_ACCOUNT_ID_REGEX.test(accountId)) {
+    throw new cdk.UnscopedValidationError(`${name}: Must be a 12-digit AWS account ID, got '${accountId}'.`);
   }
 }
