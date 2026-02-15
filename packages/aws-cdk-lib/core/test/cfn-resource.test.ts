@@ -45,6 +45,60 @@ describe('cfn resource', () => {
         },
       });
     });
+
+    test('renders "Properties" for resource with Fn::Transform as an override', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {
+          FakeProperty: 'Foo',
+        },
+      });
+
+      resource.addOverride('Properties.Fn::Transform', {
+        Name: 'FakeTransform',
+      });
+
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            'FakeProperty': 'Foo',
+            'Fn::Transform': {
+              Name: 'FakeTransform',
+            },
+          },
+        },
+      });
+    });
+
+    test('renders "Properties" for resource with Fn::Transform as a property', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'TestStack');
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {
+          'Fn::Transform': {
+            Name: 'FakeTransform',
+          },
+        },
+      });
+
+      resource.addOverride('Properties.FakeProperty', 'Foo');
+
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            'FakeProperty': 'Foo',
+            'Fn::Transform': {
+              Name: 'FakeTransform',
+            },
+          },
+        },
+      });
+    });
   });
 
   describe('snapshot removal policy', () => {
