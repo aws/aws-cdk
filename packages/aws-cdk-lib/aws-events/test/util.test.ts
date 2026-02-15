@@ -1,4 +1,4 @@
-import { mergeEventPattern } from '../lib/util';
+import { mergeEventPattern, renderEventPattern } from '../lib/util';
 
 describe('util', () => {
   describe('mergeEventPattern', () => {
@@ -86,6 +86,32 @@ describe('util', () => {
         'detail-type': ['AWS API Call via CloudTrail'],
         'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
       });
+    });
+  });
+
+  describe('renderEventPattern', () => {
+    test('throws on empty source array', () => {
+      expect(() => renderEventPattern({ source: [] }))
+        .toThrow(/Invalid event pattern field 'source': empty arrays are not allowed/);
+    });
+
+    test('throws on empty detailType array and error message uses detail-type', () => {
+      expect(() => renderEventPattern({ detailType: [] }))
+        .toThrow(/Invalid event pattern field 'detail-type': empty arrays are not allowed/);
+    });
+
+    test('does not throw on non-empty arrays', () => {
+      expect(renderEventPattern({ source: ['aws.source'] }))
+        .toEqual({ source: ['aws.source'] });
+    });
+
+    test('returns undefined for empty object', () => {
+      expect(renderEventPattern({})).toBeUndefined();
+    });
+
+    test('does not throw on detail object with arrays', () => {
+      expect(renderEventPattern({ detail: { foo: ['bar'] } }))
+        .toEqual({ detail: { foo: ['bar'] } });
     });
   });
 });
