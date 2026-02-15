@@ -1369,6 +1369,17 @@ export interface CrossAccountZoneDelegationRecordProps {
   readonly delegationRole: iam.IRoleRef;
 
   /**
+   * An optional intermediate role to assume before assuming the delegation role.
+   *
+   * If provided, the handler will first assume this role, then use those credentials
+   * to assume the delegation role. This enables chained role assumption for scenarios
+   * such as cross-organization delegation or complex account hierarchies.
+   *
+   * @default - no intermediate role, directly assume the delegation role
+   */
+  readonly intermediateRole?: iam.IRoleRef;
+
+  /**
    * The resource record cache time to live (TTL).
    *
    * @default Duration.days(2)
@@ -1413,10 +1424,12 @@ export class CrossAccountZoneDelegationRecord extends Construct {
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
 
+    // When intermediate role is provided, only grant permission to assume it.
+    // When no intermediate role is provided, only grant permission to directly assume the delegation role.
     const addToPrinciplePolicyResult = role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['sts:AssumeRole'],
-      resources: [props.delegationRole.roleRef.roleArn],
+      resources: [props.intermediateRole?.roleRef.roleArn ?? props.delegationRole.roleRef.roleArn],
     }));
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
@@ -1425,6 +1438,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       removalPolicy: props.removalPolicy,
       properties: {
         AssumeRoleArn: props.delegationRole.roleRef.roleArn,
+        IntermediateRoleArn: props.intermediateRole?.roleRef.roleArn,
         ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,
