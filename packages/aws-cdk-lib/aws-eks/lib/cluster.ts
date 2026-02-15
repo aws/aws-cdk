@@ -1280,6 +1280,18 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param options options for adding auto scaling groups, like customizing the bootstrap script
    */
   public connectAutoScalingGroupCapacity(autoScalingGroup: autoscaling.AutoScalingGroup, options: AutoScalingGroupOptions) {
+    const cfnAsg = autoScalingGroup.node.tryFindChild('ASG') as autoscaling.CfnAutoScalingGroup;
+    if (cfnAsg.mixedInstancesPolicy !== undefined) {
+      if (options.bootstrapEnabled !== false) {
+        throw new ValidationError('Setting \'bootstrapEnabled\' must be set to false when \'mixedInstancesPolicy\' is set', this);
+      }
+      if (options.machineImageType !== undefined) {
+        throw new ValidationError('Setting \'mixedInstancesPolicy\' must not bet set when \'machineImageType\' is set', this);
+      }
+    } else {
+    // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
+      autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
+    }
     // self rules
     autoScalingGroup.connections.allowInternally(ec2.Port.allTraffic());
 
@@ -1294,9 +1306,6 @@ abstract class ClusterBase extends Resource implements ICluster {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allTcp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
-
-    // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
-    autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
 
     const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
@@ -2056,37 +2065,63 @@ export class Cluster extends ClusterBase {
    */
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
-    if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new ValidationError('bootstrapOptions is not supported for Bottlerocket', this);
+    if (options.mixedInstancesPolicy !== undefined) {
+      if (options.instanceType !== undefined) {
+        throw new ValidationError('Setting \'mixedInstancesPolicy\' must not bet set when \'instanceType\' is set', this);
+      }
+      if (options.bootstrapEnabled !== undefined) {
+        throw new ValidationError('Setting \'mixedInstancesPolicy\' must not bet set when \'bootstrapEnabled\' is set', this);
+      }
+      if (options.machineImageType !== undefined) {
+        throw new ValidationError('Setting \'mixedInstancesPolicy\' must not bet set when \'machineImageType\' is set', this);
+      }
+      const asg = new autoscaling.AutoScalingGroup(this, id, {
+        ...options,
+        vpc: this.vpc,
+      });
+
+      this.connectAutoScalingGroupCapacity(asg, {
+        mapRole: options.mapRole,
+        bootstrapEnabled: false,
+        machineImageType: options.machineImageType,
+        spotInterruptHandler: options.spotInterruptHandler,
+      });
+      return asg;
+    } else if (options.instanceType !== undefined) {
+      if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
+        throw new ValidationError('bootstrapOptions is not supported for Bottlerocket', this);
+      }
+      const asg = new autoscaling.AutoScalingGroup(this, id, {
+        ...options,
+        vpc: this.vpc,
+        machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
+          new BottleRocketImage({
+            kubernetesVersion: this.version.version,
+          }) :
+          new EksOptimizedImage({
+            nodeType: nodeTypeForInstanceType(options.instanceType),
+            cpuArch: cpuArchForInstanceType(options.instanceType),
+            kubernetesVersion: this.version.version,
+          }),
+      });
+
+      this.connectAutoScalingGroupCapacity(asg, {
+        mapRole: options.mapRole,
+        bootstrapOptions: options.bootstrapOptions,
+        bootstrapEnabled: options.bootstrapEnabled,
+        machineImageType: options.machineImageType,
+        spotInterruptHandler: options.spotInterruptHandler,
+      });
+
+      if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
+        nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM) {
+        this.addNeuronDevicePlugin();
+      }
+
+      return asg;
+    } else {
+      throw new ValidationError('One of \'mixedInstancesPolicy\' or \'instanceType\' must be set', this);
     }
-    const asg = new autoscaling.AutoScalingGroup(this, id, {
-      ...options,
-      vpc: this.vpc,
-      machineImage: options.machineImageType === MachineImageType.BOTTLEROCKET ?
-        new BottleRocketImage({
-          kubernetesVersion: this.version.version,
-        }) :
-        new EksOptimizedImage({
-          nodeType: nodeTypeForInstanceType(options.instanceType),
-          cpuArch: cpuArchForInstanceType(options.instanceType),
-          kubernetesVersion: this.version.version,
-        }),
-    });
-
-    this.connectAutoScalingGroupCapacity(asg, {
-      mapRole: options.mapRole,
-      bootstrapOptions: options.bootstrapOptions,
-      bootstrapEnabled: options.bootstrapEnabled,
-      machineImageType: options.machineImageType,
-      spotInterruptHandler: options.spotInterruptHandler,
-    });
-
-    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
-      nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM) {
-      this.addNeuronDevicePlugin();
-    }
-
-    return asg;
   }
 
   /**
@@ -2474,8 +2509,12 @@ export class Cluster extends ClusterBase {
 export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoScalingGroupProps {
   /**
    * Instance type of the instances to start
+   *
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
+   *
+   * @default - None.
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * Will automatically update the aws-auth ConfigMap to map the IAM instance
@@ -2495,6 +2534,8 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * If you wish to provide a custom user data script, set this to `false` and
    * manually invoke `autoscalingGroup.addUserData()`.
    *
+   * this property must be explicitly set to false if `launchTemplate` or `mixedInstancesPolicy` are specified
+   *
    * @default true
    */
   readonly bootstrapEnabled?: boolean;
@@ -2509,6 +2550,8 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
   /**
    * Machine image type
    *
+   * this property has no effect if `launchTemplate` or `mixedInstancesPolicy` are specified
+   *
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
@@ -2520,6 +2563,17 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default true
    */
   readonly spotInterruptHandler?: boolean;
+
+  /**
+   * Mixed Instances Policy to use.
+   *
+   * Launch configuration related settings and instanceType  must not be specified when a
+   * MixedInstancesPolicy is specified.
+   *
+   * @default - Do not provide any MixedInstancesPolicy
+   */
+  readonly mixedInstancesPolicy?: autoscaling.MixedInstancesPolicy;
+
 }
 
 /**
