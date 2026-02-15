@@ -29,6 +29,11 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
 
 attributeGroup.associateWith(application);
 
+// Demonstrate attributes property access
+new cdk.CfnOutput(stack, 'AttributeGroupAttributes', {
+  value: JSON.stringify(attributeGroup.attributes),
+});
+
 const myRole = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });

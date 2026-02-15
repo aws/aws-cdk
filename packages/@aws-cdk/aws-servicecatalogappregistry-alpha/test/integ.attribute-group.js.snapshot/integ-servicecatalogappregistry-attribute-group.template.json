@@ -184,5 +184,10 @@
     }
    ]
   }
+ },
+ "Outputs": {
+  "AttributeGroupAttributes": {
+   "Value": "{\"stage\":\"alpha\",\"teamMembers\":[\"markI\",\"markII\",\"markIII\"],\"plannedRoadMap\":{\"alpha\":\"time1\",\"beta\":\"time2\"}}"
+  }
  }
 }

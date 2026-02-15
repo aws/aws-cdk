@@ -29,6 +29,12 @@ export interface IAttributeGroup extends cdk.IResource {
   readonly attributeGroupId: string;
 
   /**
+   * The attributes of the attribute group.
+   * @attribute
+   */
+  readonly attributes: { [key: string]: any };
+
+  /**
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
    *
    * @param id The construct name for the share.
@@ -68,6 +74,7 @@ export interface AttributeGroupProps {
 abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGroup {
   public abstract readonly attributeGroupArn: string;
   public abstract readonly attributeGroupId: string;
+  public abstract readonly attributes: { [key: string]: any };
   private readonly associatedApplications: Set<string> = new Set();
 
   public associateWith(application: IApplication): void {
@@ -140,6 +147,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
     class Import extends AttributeGroupBase {
       public readonly attributeGroupArn = attributeGroupArn;
       public readonly attributeGroupId = attributeGroupId!;
+      public readonly attributes = {};
 
       protected generateUniqueHash(resourceAddress: string): string {
         return hashValues(this.attributeGroupArn, resourceAddress);
@@ -153,6 +161,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
   public readonly attributeGroupArn: string;
   public readonly attributeGroupId: string;
+  public readonly attributes: { [key: string]: any };
   private readonly nodeAddress: string;
 
   constructor(scope: Construct, id: string, props: AttributeGroupProps) {
@@ -170,6 +179,7 @@ export class AttributeGroup extends AttributeGroupBase implements IAttributeGrou
 
     this.attributeGroupArn = attributeGroup.attrArn;
     this.attributeGroupId = attributeGroup.attrId;
+    this.attributes = props.attributes;
     this.nodeAddress = cdk.Names.nodeUniqueId(attributeGroup.node);
   }
 
