@@ -23,7 +23,13 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
+    const layerArns = properties.Layers || [];
+    const relevantLayers = fn._layers.filter(layer => {
+      const resolvedLayerArn = stack.resolve(layer.layerVersionArn);
+      return layerArns.some((arn: any) => JSON.stringify(arn) === JSON.stringify(resolvedLayerArn));
+    });
+
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(relevantLayers);
   }
 
   return md5hash(stringifiedConfig + additional);
@@ -103,7 +109,7 @@ function filterUsefulKeys(properties: any, fn: LambdaFunction) {
 }
 
 function calculateLayersHash(layers: ILayerVersion[]): string {
-  const layerConfig: {[key: string]: any } = {};
+  const layerConfig: { [key: string]: any } = {};
   for (const layer of layers) {
     const stack = Stack.of(layer);
     const layerResource = layer.node.defaultChild as CfnResource;
