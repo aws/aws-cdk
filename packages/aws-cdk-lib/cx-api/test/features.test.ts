@@ -52,6 +52,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.USE_CDK_MANAGED_LAMBDA_LOGGROUP]: false,
     [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
     [feats.ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: false,
+    [feats.AUTOMATIC_L1_TRAITS]: true,
 
   });
 });

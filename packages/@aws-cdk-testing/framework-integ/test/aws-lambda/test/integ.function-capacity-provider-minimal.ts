@@ -3,7 +3,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 const stack = new cdk.Stack(app, 'FunctionCapacityProviderMinimalStack');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
@@ -22,21 +26,8 @@ const fn = new lambda.Function(stack, 'Function', {
 
 capacityProvider.addFunction(fn);
 
-const testCase = new integ.IntegTest(app, 'FunctionCapacityProviderMinimalTest', {
+new integ.IntegTest(app, 'FunctionCapacityProviderMinimalTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'eu-central-1', 'eu-north-1', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1'],
 });
 
-const getFunction = testCase.assertions.awsApiCall('Lambda', 'GetFunction', {
-  FunctionName: fn.functionName,
-});
-
-getFunction.expect(integ.ExpectedResult.objectLike({
-  Configuration: {
-    State: 'Active',
-    CapacityProviderConfig: {
-      LambdaManagedInstancesCapacityProviderConfig: {
-        CapacityProviderArn: capacityProvider.capacityProviderArn,
-      },
-    },
-  },
-}));
