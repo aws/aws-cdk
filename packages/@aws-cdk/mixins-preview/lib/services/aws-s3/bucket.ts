@@ -94,3 +94,35 @@ export class BucketVersioning implements IMixin {
     }
   }
 }
+
+/**
+ * S3-specific mixin for blocking public-access.
+ * @mixin true
+ */
+export class BucketBlockPublicAccess implements IMixin {
+  private readonly configOptions: s3.BlockPublicAccessOptions;
+
+  constructor(publicAccessConfig: s3.BlockPublicAccess = s3.BlockPublicAccess.BLOCK_ALL) {
+    this.configOptions = {
+      blockPublicAcls: publicAccessConfig.blockPublicAcls,
+      blockPublicPolicy: publicAccessConfig.blockPublicPolicy,
+      ignorePublicAcls: publicAccessConfig.ignorePublicAcls,
+      restrictPublicBuckets: publicAccessConfig.restrictPublicBuckets,
+    };
+  }
+
+  supports(construct: IConstruct): construct is s3.CfnBucket {
+    return s3.CfnBucket.isCfnBucket(construct);
+  }
+
+  applyTo(construct: IConstruct): void {
+    if (!this.supports(construct)) return;
+
+    construct.publicAccessBlockConfiguration = {
+      blockPublicAcls: this.configOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: this.configOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: this.configOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: this.configOptions.restrictPublicBuckets ?? true,
+    };
+  }
+}
