@@ -271,7 +271,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Listener protocol for this listener.
    */
-  private readonly protocol: ApplicationProtocol;
+  public readonly protocol: ApplicationProtocol;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
