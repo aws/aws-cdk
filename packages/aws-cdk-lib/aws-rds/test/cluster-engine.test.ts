@@ -145,7 +145,7 @@ describe('cluster engine', () => {
     const engine_ver = DatabaseClusterEngine.aurora({ version });
 
     // THEN
-    expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql5.6');
+    expect(engine_ver.parameterGroupFamily).toEqual('aurora5.6');
   });
 
   test.each([
