@@ -71,16 +71,15 @@ const folderAsset = new Canary(stack, 'FolderAsset', {
 const zipAsset = new Canary(stack, 'ZipAsset', {
   test: Test.custom({
     handler: 'canary.handler',
-    code: Code.fromAsset(path.join(__dirname, 'canary.zip')),
+    code: Code.fromAsset(path.join(__dirname, 'canary.zip'), {
+      deployTime: true,
+    }),
   }),
-  artifactsBucketLifecycleRules: [
-    {
-      expiration: cdk.Duration.days(30),
-    },
-  ],
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
 });
+
+zipAsset.node.addDependency(bucket);
 
 const kebabToPascal = (text:string) => text.replace(/(^\w|[-./]\w)/g, (v) => v.replace(/[-./]/, '').toUpperCase());
 const createCanaryByRuntimes = (runtime: Runtime, handler?: string) =>
@@ -106,6 +105,9 @@ const playwright10 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT
 const playwright10_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0, 'playwright/canary.handler');
 const playwright20 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0);
 const playwright20_with_handler_name = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0, 'playwright/canary.handler');
+const playwright30 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_3_0);
+const playwright40 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_4_0);
+const playwright50 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_5_0);
 
 const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
 const selenium30 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0);
@@ -136,6 +138,9 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   playwright10_with_handler_name,
   playwright20,
   playwright20_with_handler_name,
+  playwright30,
+  playwright40,
+  playwright50,
   selenium21,
   selenium30,
   selenium40,
