@@ -7,17 +7,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
-/**********************************************************************************************************************
- *
- *    Warning! This test case can not be deployed!
- *
- *    Save yourself some time and move on.
- *    The latest given reason is:
- *    - 2023-08-30: Required cert files are missing, when re-instated failing because certs are expired
- *                  Generating to cert files will likely resolve this, @mrgrain
- *
- *********************************************************************************************************************/
-
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
