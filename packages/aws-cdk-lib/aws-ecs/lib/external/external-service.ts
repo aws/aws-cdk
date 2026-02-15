@@ -10,8 +10,8 @@ import type { AssociateCloudMapServiceOptions, BaseServiceOptions, CloudMapOptio
 import { BaseService, DeploymentControllerType, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
 import type { ScalableTaskCount } from '../base/scalable-task-count';
-import type { LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
-import { Compatibility } from '../base/task-definition';
+import type { ITaskDefinition, LoadBalancerTargetOptions } from '../base/task-definition';
+import { Compatibility, TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
 
@@ -22,9 +22,16 @@ export interface ExternalServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
+   * You can use either an owned TaskDefinition (created in this stack) or an imported one
+   * (using `TaskDefinition.fromTaskDefinitionArn()`).
+   *
+   * Note: When using imported task definitions, EXTERNAL (ECS Anywhere) compatibility
+   * cannot be verified automatically. Ensure the task definition is configured for
+   * ECS Anywhere.
+   *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
@@ -132,8 +139,10 @@ export class ExternalService extends BaseService implements IExternalService {
       throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', scope);
     }
 
-    if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
-      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster', scope);
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
+        throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster', scope);
+      }
     }
 
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
@@ -167,9 +176,21 @@ export class ExternalService extends BaseService implements IExternalService {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+    if (TaskDefinition.isTaskDefinition(this.taskDefinition)) {
+      this.node.addValidation({
+        validate: () => !(this.taskDefinition as TaskDefinition).defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
+      });
+    } else {
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. EXTERNAL (ECS Anywhere) compatibility cannot be verified. ' +
+        'Ensure the task definition is configured for ECS Anywhere.',
+      );
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Container configuration validations will be skipped.',
+      );
+    }
 
     this.node.addValidation({
       validate: () => this.networkConfiguration !== undefined ? ['Network configurations not supported for an external service'] : [],

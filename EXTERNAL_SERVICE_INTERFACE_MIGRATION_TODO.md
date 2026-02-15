@@ -22,18 +22,23 @@ ExternalServiceでインポートされたTaskDefinitionを使用できるよう
 ### Task 1.1: ExternalServicePropsのtaskDefinition型を変更
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/external/external-service.ts`
 
-- [ ] importステートメントを確認・追加
+- [x] importステートメントを確認・追加
 ```typescript
 import type { ITaskDefinition, TaskDefinition } from '../base/task-definition';
 ```
 
-- [ ] `ExternalServiceProps`インターフェースを修正
+- [x] `ExternalServiceProps`インターフェースを修正
 ```typescript
 export interface ExternalServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
-   * You can use either an owned TaskDefinition or an imported one.
+   * You can use either an owned TaskDefinition (created in this stack) or an imported one
+   * (using `TaskDefinition.fromTaskDefinitionArn()`).
+   *
+   * Note: When using imported task definitions, EXTERNAL (ECS Anywhere) compatibility
+   * cannot be verified automatically. Ensure the task definition is configured for
+   * ECS Anywhere.
    *
    * [disable-awslint:ref-via-interface]
    */
@@ -44,7 +49,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
 ```
 
 **検証:**
-- [ ] ビルドが通ること
+- [x] ビルドが通ること
 
 ---
 
@@ -53,7 +58,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
 ### Task 2.1: 初期バリデーションの条件付き化
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/external/external-service.ts`
 
-- [ ] compatibilityチェックを条件付きに変更
+- [x] compatibilityチェックを条件付きに変更
 ```typescript
 constructor(scope: Construct, id: string, props: ExternalServiceProps) {
   if (props.daemon) {
@@ -78,13 +83,8 @@ constructor(scope: Construct, id: string, props: ExternalServiceProps) {
     if (props.taskDefinition.compatibility !== Compatibility.EXTERNAL) {
       throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with ECS Anywhere cluster', scope);
     }
-  } else {
-    // インポートされたタスク定義の場合は警告
-    Annotations.of(scope).addInfo(
-      'Using an imported TaskDefinition. EXTERNAL compatibility cannot be verified. ' +
-      'Ensure the task definition is configured for ECS Anywhere (EXTERNAL launch type).'
-    );
   }
+  // インポートされたタスク定義の場合の情報メッセージはsuper()後に追加
 
   // ExternalService固有の制限チェック（変更なし）
   if (props.cluster.defaultCloudMapNamespace !== undefined) {
@@ -111,19 +111,23 @@ constructor(scope: Construct, id: string, props: ExternalServiceProps) {
 ### Task 2.2: defaultContainerバリデーションの条件付き化
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/external/external-service.ts`
 
-- [ ] defaultContainerバリデーションを条件付きに変更
+- [x] defaultContainerバリデーションを条件付きに変更
 ```typescript
 // コンストラクタの最後の方
-if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+if (TaskDefinition.isTaskDefinition(this.taskDefinition)) {
   this.node.addValidation({
-    validate: () => !this.taskDefinition.defaultContainer
+    validate: () => !(this.taskDefinition as TaskDefinition).defaultContainer
       ? ['A TaskDefinition must have at least one essential container']
       : [],
   });
 } else {
   // インポートされたタスク定義の場合は情報メッセージを追加
   Annotations.of(this).addInfo(
-    'Using an imported TaskDefinition. Container configuration validations will be skipped.'
+    'Using an imported TaskDefinition. EXTERNAL (ECS Anywhere) compatibility cannot be verified. ' +
+    'Ensure the task definition is configured for ECS Anywhere.',
+  );
+  Annotations.of(this).addInfo(
+    'Using an imported TaskDefinition. Container configuration validations will be skipped.',
   );
 }
 
@@ -136,8 +140,8 @@ this.node.addValidation({
 ```
 
 **検証:**
-- [ ] ビルドが通ること
-- [ ] 既存のテストが通ること
+- [x] ビルドが通ること
+- [x] 既存のテストが通ること
 
 ---
 
@@ -146,7 +150,7 @@ this.node.addValidation({
 ### Task 3.1: ExternalServiceのテスト追加
 **File:** `packages/aws-cdk-lib/aws-ecs/test/external/external-service.test.ts`
 
-- [ ] インポートされたTaskDefinitionでExternalServiceを作成するテストを追加
+- [x] インポートされたTaskDefinitionでExternalServiceを作成するテストを追加
 ```typescript
 test('can create ExternalService with imported TaskDefinition', () => {
   // GIVEN
@@ -175,7 +179,7 @@ test('can create ExternalService with imported TaskDefinition', () => {
 });
 ```
 
-- [ ] EXTERNAL互換性チェックがスキップされることを確認
+- [x] EXTERNAL互換性チェックがスキップされることを確認
 ```typescript
 test('skips EXTERNAL compatibility validation for imported TaskDefinition', () => {
   // GIVEN
@@ -203,7 +207,7 @@ test('skips EXTERNAL compatibility validation for imported TaskDefinition', () =
 });
 ```
 
-- [ ] defaultContainerバリデーションがスキップされることを確認
+- [x] defaultContainerバリデーションがスキップされることを確認
 ```typescript
 test('skips defaultContainer validation for imported TaskDefinition', () => {
   // GIVEN
@@ -231,7 +235,7 @@ test('skips defaultContainer validation for imported TaskDefinition', () => {
 });
 ```
 
-- [ ] daemon modeとの組み合わせテスト
+- [x] daemon modeとの組み合わせテスト
 ```typescript
 test('can create ExternalService with daemon mode and imported TaskDefinition', () => {
   // GIVEN
@@ -260,89 +264,33 @@ test('can create ExternalService with daemon mode and imported TaskDefinition', 
 });
 ```
 
-- [ ] ExternalService固有の制限が引き続き機能することを確認
+- [x] ExternalService固有の制限が引き続き機能することを確認
 ```typescript
 test('load balancer target still throws error with imported TaskDefinition', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-  const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
-    stack,
-    'ImportedTaskDef',
-    'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1'
-  );
-
-  const service = new ecs.ExternalService(stack, 'Service', {
-    cluster,
-    taskDefinition: taskDef,
-  });
-
-  // WHEN/THEN
+  // ...
   expect(() => {
-    service.loadBalancerTarget({
-      containerName: 'web',
-      containerPort: 80,
-    });
+    service.loadBalancerTarget({ containerName: 'web', containerPort: 80 });
   }).toThrow(/External service cannot be attached as load balancer targets/);
 });
 
 test('auto scaling still throws error with imported TaskDefinition', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-  const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
-    stack,
-    'ImportedTaskDef',
-    'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1'
-  );
-
-  const service = new ecs.ExternalService(stack, 'Service', {
-    cluster,
-    taskDefinition: taskDef,
-  });
-
-  // WHEN/THEN
+  // ...
   expect(() => {
-    service.autoScaleTaskCount({
-      minCapacity: 1,
-      maxCapacity: 10,
-    });
+    service.autoScaleTaskCount({ minCapacity: 1, maxCapacity: 10 });
   }).toThrow(/Autoscaling not supported for external service/);
 });
 
 test('cloud map still throws error with imported TaskDefinition', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc');
-  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-  const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
-    stack,
-    'ImportedTaskDef',
-    'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1'
-  );
-
-  const service = new ecs.ExternalService(stack, 'Service', {
-    cluster,
-    taskDefinition: taskDef,
-  });
-
-  // WHEN/THEN
+  // ...
   expect(() => {
-    service.enableCloudMap({
-      name: 'myApp',
-    });
+    service.enableCloudMap({ name: 'myApp' });
   }).toThrow(/Cloud map integration not supported for an external service/);
 });
 ```
 
 **検証:**
-- [ ] すべてのテストが通ること
-- [ ] カバレッジが適切であること
+- [x] すべてのテストが通ること
+- [x] カバレッジが適切であること
 
 ---
 
@@ -354,7 +302,7 @@ test('cloud map still throws error with imported TaskDefinition', () => {
 > 既存の `integ.daemon-service.ts` と同様に通常の ECS クラスターを使用して検証する。
 > ECS Anywhere 外部インフラは不要。
 
-- [ ] インポートされたタスク定義を使用する基本的なインテグレーションテストを作成
+- [x] インポートされたタスク定義を使用する基本的なインテグレーションテストを作成
 ```typescript
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -401,7 +349,7 @@ integTest.assertions.awsApiCall('ECS', 'describeServices', {
 );
 ```
 
-- [ ] daemon mode との組み合わせテストを追加
+- [x] daemon mode との組み合わせテストを追加
 ```typescript
 const daemonService = new ecs.ExternalService(stack, 'DaemonService', {
   cluster,
@@ -430,7 +378,7 @@ integTest.assertions.awsApiCall('ECS', 'describeServices', {
 ### Task 5.1: READMEの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/README.md`
 
-- [ ] ExternalServiceでインポートされたタスク定義の使用例を追加
+- [x] ExternalServiceでインポートされたタスク定義の使用例を追加
 ```markdown
 ### Using Imported Task Definitions with External Service (ECS Anywhere)
 
@@ -461,7 +409,7 @@ const service = new ecs.ExternalService(this, 'Service', {
 ### Task 5.2: APIドキュメントの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/external/external-service.ts`
 
-- [ ] `ExternalServiceProps.taskDefinition`のドキュメントを更新
+- [x] `ExternalServiceProps.taskDefinition`のドキュメントを更新
 ```typescript
 /**
  * The task definition to use for tasks in the service.
@@ -479,8 +427,8 @@ readonly taskDefinition: ITaskDefinition;
 ```
 
 **検証:**
-- [ ] ドキュメントがビルドできること
-- [ ] 説明が明確であること
+- [x] ドキュメントがビルドできること
+- [x] 説明が明確であること
 
 ---
 
@@ -488,7 +436,7 @@ readonly taskDefinition: ITaskDefinition;
 
 ### Task 6.1: ビルドとテスト
 - [ ] `yarn build`が成功すること
-- [ ] `yarn test`が成功すること（aws-ecs関連）
+- [x] `yarn test`が成功すること（aws-ecs関連）
 - [ ] Lintエラーがないこと
 
 ### Task 6.2: 手動検証
@@ -498,8 +446,8 @@ readonly taskDefinition: ITaskDefinition;
 - [ ] External service固有の制限が引き続き機能すること
 
 ### Task 6.3: 後方互換性確認
-- [ ] 既存のExternalServiceコードが変更なしで動作すること
-- [ ] 既存のテストがすべて通ること
+- [x] 既存のExternalServiceコードが変更なしで動作すること
+- [x] 既存のテストがすべて通ること
 
 ---
 

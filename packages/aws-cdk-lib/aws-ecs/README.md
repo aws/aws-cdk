@@ -1194,6 +1194,20 @@ const ec2Service = new ecs.Ec2Service(this, 'Ec2Service', {
     ecs.PlacementStrategy.spreadAcrossInstances(),
   ],
 });
+
+// Import an existing External (ECS Anywhere) task definition by ARN
+const importedExternalTaskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+  this,
+  'ImportedExternalTaskDef',
+  'arn:aws:ecs:us-east-1:123456789012:task-definition/my-external-task:1',
+);
+
+const externalService = new ecs.ExternalService(this, 'ExternalService', {
+  cluster,
+  taskDefinition: importedExternalTaskDef,
+  // daemon scheduling strategy is supported with imported task definitions
+  daemon: true,
+});
 ```
 
 **Limitations when using imported task definitions:**
@@ -1214,6 +1228,9 @@ because container and IAM information is not accessible at synthesis time:
   cannot be determined automatically. If networking properties (`vpcSubnets`,
   `securityGroups`, `assignPublicIp`) are provided, `awsvpc` mode is assumed.
   Otherwise, Bridge/Host mode is assumed.
+- **ECS Anywhere compatibility** (External only): `EXTERNAL` launch type compatibility
+  cannot be verified automatically. Ensure the task definition is configured for
+  ECS Anywhere.
 
 For full functionality, define task definitions within the same CDK stack using
 `FargateTaskDefinition`, `Ec2TaskDefinition`, or `ExternalTaskDefinition`.
