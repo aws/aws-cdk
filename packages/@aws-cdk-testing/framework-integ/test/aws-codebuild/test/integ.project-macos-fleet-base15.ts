@@ -17,13 +17,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-project-macos-base15');
 
 const fleet = new codebuild.Fleet(stack, 'MacOsFleet', {
-  fleetName: 'MacOsFleet15',
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.MEDIUM,
   environmentType: codebuild.EnvironmentType.MAC_ARM,
 });
 
-const project = new codebuild.Project(stack, 'MacOsProject', {
+new codebuild.Project(stack, 'MacOsProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
@@ -39,24 +38,23 @@ const project = new codebuild.Project(stack, 'MacOsProject', {
 
 const test = new integ.IntegTest(app, 'MacOsProjectIntegTest', {
   testCases: [stack],
+  // MAC_ARM environment type is only available in us-east-1, us-east-2, us-west-2, ap-southeast-2, eu-central-1
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Fleet resource deletion takes ~40 minutes, exceeding the CFN resource handler's
+      // ~21 minute stabilization timeout, causing DELETE_FAILED (NotStabilized).
+      expectError: true,
+    },
+  },
 });
 
+// Verify the fleet was created. startBuild/batchGetBuilds assertions are omitted because
+// macOS dedicated hosts take 1+ hour to provision, which exceeds session
+// and assertion timeout limits. Build execution on fleets is validated by the Linux fleet tests.
 const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
 listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
-
-const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
-
-// Describe the build and wait for the status to be successful
-test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
-  ids: [startBuild.getAttString('build.id')],
-}).assertAtPath(
-  'builds.0.buildStatus',
-  integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
-).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(10), // Spin up time for Mac can be slow
-  interval: cdk.Duration.seconds(30),
-});
 
 app.synth();

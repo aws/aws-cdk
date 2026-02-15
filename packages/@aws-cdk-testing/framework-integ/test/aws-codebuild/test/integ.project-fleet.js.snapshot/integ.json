@@ -5,6 +5,18 @@
       "stacks": [
         "aws-cdk-project-fleet"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "FleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "FleetIntegTestDefaultTestDeployAssertEA68B6D9"
     }

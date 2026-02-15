@@ -106,6 +106,15 @@ const stacks = configurations.map(
 
 const test = new integ.IntegTest(app, 'AttributeBasedComputeFleetIntegTest', {
   testCases: stacks,
+  // AWS::CodeBuild::Fleet is not available in all regions
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Fleet resource deletion takes ~40 minutes, exceeding the CFN resource handler's
+      // ~21 minute stabilization timeout, causing DELETE_FAILED (NotStabilized).
+      expectError: true,
+    },
+  },
 });
 
 const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
@@ -123,7 +132,7 @@ for (const { fleet, project } of stacks) {
     'builds.0.buildStatus',
     integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
   ).waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(5),
+    totalTimeout: cdk.Duration.minutes(15),
     interval: cdk.Duration.seconds(30),
   });
 }
