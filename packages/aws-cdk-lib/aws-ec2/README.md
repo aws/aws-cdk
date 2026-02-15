@@ -1228,6 +1228,18 @@ Note: The domain name must be owned (registered through Route53) by the account 
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
 
+#### Importing an existing VPC endpoint service
+
+If you have an existing VPC endpoint service that you want to import into your CDK application, you can use the `fromVpcEndpointServiceId` method:
+
+```ts
+const importedEndpointService = ec2.VpcEndpointService.fromVpcEndpointServiceId(
+  this,
+  'ImportedEndpointService', 
+  'vpce-svc-123456789abcdef01'
+);
+```
+
 ### Client VPN endpoint
 
 AWS Client VPN is a managed client-based VPN service that enables you to securely access your AWS
