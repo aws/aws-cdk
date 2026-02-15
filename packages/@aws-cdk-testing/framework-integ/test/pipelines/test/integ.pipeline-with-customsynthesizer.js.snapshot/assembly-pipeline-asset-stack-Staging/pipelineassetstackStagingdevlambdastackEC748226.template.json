@@ -36,7 +36,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-dev-assets-${AWS::AccountId}-us-east-1"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
      "S3Key": "a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e.zip"
     },
@@ -52,40 +52,25 @@
    "DependsOn": [
     "LambdaFNServiceRole1CCEDDD9"
    ]
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/dev/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Rules": {
-  "CheckBootstrapVersion": {
-   "Assertions": [
-    {
-     "Assert": {
-      "Fn::Not": [
+  },
+  "LambdaFNLogGroup6B0836D2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
        {
-        "Fn::Contains": [
-         [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5"
-         ],
-         {
-          "Ref": "BootstrapVersion"
-         }
-        ]
+        "Ref": "LambdaFNC3761C8C"
        }
       ]
-     },
-     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-    }
-   ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  }
 }

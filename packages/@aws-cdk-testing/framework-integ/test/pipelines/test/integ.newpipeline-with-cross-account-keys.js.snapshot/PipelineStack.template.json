@@ -1,5 +1,147 @@
 {
  "Resources": {
+  "SourceBucketDDD2130A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceBucketPolicy703DFBF9": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "SourceBucketDDD2130A"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SourceBucketDDD2130A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceBucketDDD2130A",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SourceBucketAutoDeleteObjectsCustomResourceC68FC040": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "SourceBucketDDD2130A"
+    }
+   },
+   "DependsOn": [
+    "SourceBucketPolicy703DFBF9"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "SourceBucketDDD2130A"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
   "PipelineArtifactsBucketEncryptionKeyF5BF0670": {
    "Type": "AWS::KMS::Key",
    "Properties": {
@@ -299,6 +441,12 @@
          ]
         },
         {
+         "Fn::GetAtt": [
+          "PipelineSourceS3CodePipelineActionRole83895A58",
+          "Arn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -366,23 +514,30 @@
        {
         "ActionTypeId": {
          "Category": "Source",
-         "Owner": "ThirdParty",
-         "Provider": "GitHub",
+         "Owner": "AWS",
+         "Provider": "S3",
          "Version": "1"
         },
         "Configuration": {
-         "Owner": "tkglaser",
-         "Repo": "cdk-pipelines-demo",
-         "Branch": "main",
-         "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
-         "PollForSourceChanges": false
+         "S3Bucket": {
+          "Ref": "SourceBucketDDD2130A"
+         },
+         "S3ObjectKey": "key"
         },
-        "Name": "tkglaser_cdk-pipelines-demo",
+        "Name": {
+         "Ref": "SourceBucketDDD2130A"
+        },
         "OutputArtifacts": [
          {
-          "Name": "tkglaser_cdk_pipelines_demo_Source"
+          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_Source"
          }
         ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "PipelineSourceS3CodePipelineActionRole83895A58",
+          "Arn"
+         ]
+        },
         "RunOrder": 1
        }
       ],
@@ -405,7 +560,7 @@
         },
         "InputArtifacts": [
          {
-          "Name": "tkglaser_cdk_pipelines_demo_Source"
+          "Name": "c82506a27b454f271b71bfc81dcc633cd314f52071_Source"
          }
         ],
         "Name": "Synth",
@@ -1963,25 +2118,121 @@
     "PipelineRoleB27FAA37"
    ]
   },
-  "PipelineSourcetkglasercdkpipelinesdemoWebhookResource54EE51BE": {
-   "Type": "AWS::CodePipeline::Webhook",
+  "PipelineSourceS3CodePipelineActionRole83895A58": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "Authentication": "GITHUB_HMAC",
-    "AuthenticationConfiguration": {
-     "SecretToken": "{{resolve:secretsmanager:github-token:SecretString:::}}"
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PipelineRoleB27FAA37",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineSourceS3CodePipelineActionRoleDefaultPolicyB176A07F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "SourceBucketDDD2130A",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "SourceBucketDDD2130A",
+             "Arn"
+            ]
+           },
+           "/key"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineArtifactsBucketAEA9A052",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineArtifactsBucketAEA9A052",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
     },
-    "Filters": [
+    "PolicyName": "PipelineSourceS3CodePipelineActionRoleDefaultPolicyB176A07F",
+    "Roles": [
      {
-      "JsonPath": "$.ref",
-      "MatchEquals": "refs/heads/{Branch}"
+      "Ref": "PipelineSourceS3CodePipelineActionRole83895A58"
      }
-    ],
-    "RegisterWithThirdParty": true,
-    "TargetAction": "tkglaser_cdk-pipelines-demo",
-    "TargetPipeline": {
-     "Ref": "Pipeline9850B417"
-    },
-    "TargetPipelineVersion": 1
+    ]
    }
   },
   "PipelineBuildSynthCdkBuildProjectRole231EEA2A": {

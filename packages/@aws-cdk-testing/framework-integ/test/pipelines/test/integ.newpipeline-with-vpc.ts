@@ -1,14 +1,14 @@
-
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import type { StackProps, StageProps } from 'aws-cdk-lib';
-import { App, Stack, Stage } from 'aws-cdk-lib';
+import { App, Stack, Stage, RemovalPolicy } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE } from 'aws-cdk-lib/cx-api';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,10 +16,15 @@ class PipelineStack extends Stack {
 
     const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
 
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       codeBuildDefaults: { vpc },
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('aws/aws-cdk', 'v2-main'),
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
         commands: [
           'npm ci',
           'npm run build',
@@ -56,5 +61,10 @@ const app = new App({
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
   },
 });
-new PipelineStack(app, 'PipelineStack');
+const stack = new PipelineStack(app, 'PipelineStack');
+
+new IntegTest(app, 'NewPipelineWithVpcTest', {
+  testCases: [stack],
+});
+
 app.synth();
