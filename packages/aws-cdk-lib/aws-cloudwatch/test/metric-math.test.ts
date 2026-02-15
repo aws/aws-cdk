@@ -459,6 +459,29 @@ describe('Metric Math', () => {
       ]);
     });
 
+    test('Multiple MathExpressions appear before their constituent metrics', () => {
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a',
+            usingMetrics: { a },
+          }),
+          new MathExpression({
+            expression: 'b',
+            usingMetrics: { b },
+          }),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'a', label: 'a' }],
+        [{ expression: 'b', label: 'b' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+    });
+
     test('can use percentiles in expression metrics in graphs', () => {
       // GIVEN
       const graph = new GraphWidget({
@@ -498,8 +521,8 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         [{ label: 'a + 1', expression: 'a + 1' }],
-        ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
       ]);
     });
 
