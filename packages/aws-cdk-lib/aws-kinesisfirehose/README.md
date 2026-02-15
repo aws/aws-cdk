@@ -125,6 +125,152 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+### Apache Iceberg Tables
+
+Amazon Data Firehose supports delivering data to Apache Iceberg Tables stored in AWS Glue Data Catalog.
+
+Basic configuration with Glue Catalog:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+    },
+    destinationTableConfigurations: [
+      {
+        databaseName: 'my_database',
+        tableName: 'my_table',
+      },
+    ],
+  }),
+});
+```
+
+You can also specify a warehouse location instead of (or in addition to) a catalog ARN:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      warehouseLocation: 's3://my-warehouse/path',
+    },
+    destinationTableConfigurations: [
+      {
+        databaseName: 'my_database',
+        tableName: 'my_table',
+      },
+    ],
+  }),
+});
+```
+
+Configure unique keys for update and delete operations:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+    },
+    destinationTableConfigurations: [
+      {
+        databaseName: 'my_database',
+        tableName: 'my_table',
+        uniqueKeys: ['id', 'timestamp'],
+      },
+    ],
+  }),
+});
+```
+
+Enable append-only mode for higher throughput when you only need insert operations:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+    },
+    appendOnly: true,
+  }),
+});
+```
+
+Configure buffering and retry settings:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+    },
+    bufferingInterval: Duration.minutes(5),
+    bufferingSize: Size.mebibytes(8),
+    retryDuration: Duration.hours(2),
+  }),
+});
+```
+
+Enable schema evolution and automatic table creation (preview features):
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+      warehouseLocation: 's3://my-warehouse/path',
+    },
+    schemaEvolutionEnabled: true,
+    tableCreationEnabled: true,
+  }),
+});
+```
+
+Configure partition specifications for automatic table creation:
+
+```ts
+declare const bucket: s3.Bucket;
+
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: new firehose.IcebergDestination(bucket, {
+    catalogConfiguration: {
+      catalogArn: 'arn:aws:glue:us-east-1:123456789012:catalog',
+      warehouseLocation: 's3://my-warehouse/path',
+    },
+    destinationTableConfigurations: [
+      {
+        databaseName: 'my_database',
+        tableName: 'my_table',
+        partitionSpec: {
+          identity: [
+            { sourceName: 'year' },
+            { sourceName: 'month' },
+            { sourceName: 'day' },
+          ],
+        },
+      },
+    ],
+    tableCreationEnabled: true,
+  }),
+});
+```
+
+See: [Amazon Data Firehose Data Delivery to Apache Iceberg Tables](https://docs.aws.amazon.com/firehose/latest/dev/apache-iceberg-destination.html)
+in the *Amazon Data Firehose Developer Guide*.
+
 ## Data Format Conversion
 
 Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
@@ -216,7 +362,7 @@ const outputFormat = new firehose.OrcOutputFormat({
   dictionaryKeyThreshold: 0.7,
   enablePadding: true,
   paddingTolerance: 0.2,
-  rowIndexStride: 9000,
+  rowIndexStride: 900,
   stripeSize: Size.mebibytes(32),
 })
 ```

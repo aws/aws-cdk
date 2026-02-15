@@ -9,6 +9,7 @@ export * from './processors/cloudwatch-log-processor';
 export * from './processors/append-delimiter-to-record-processor';
 export * from './common';
 export * from './s3-bucket';
+export * from './iceberg-destination';
 export * from './logging-config';
 export * from './record-format';
 
