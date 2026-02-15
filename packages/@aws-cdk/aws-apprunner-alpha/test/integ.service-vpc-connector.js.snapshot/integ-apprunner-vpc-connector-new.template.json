@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -18,9 +18,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -42,23 +39,26 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -75,12 +75,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -102,19 +102,19 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
     },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -126,9 +126,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -150,23 +147,26 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -183,12 +183,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -210,19 +210,19 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
     },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PublicSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -234,9 +234,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -258,23 +255,26 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet1"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -291,21 +291,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -327,23 +324,26 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc/PrivateSubnet2"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -360,12 +360,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-apprunner/Vpc"
+      "Value": "integ-apprunner-vpc-connector-new/Vpc"
      }
     ]
    }
@@ -383,18 +383,18 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
   "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-apprunner/SecurityGroup",
+    "GroupDescription": "integ-apprunner-vpc-connector-new/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -410,14 +410,6 @@
   "VpcConnectorE3A78531": {
    "Type": "AWS::AppRunner::VpcConnector",
    "Properties": {
-    "Subnets": [
-     {
-      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-     },
-     {
-      "Ref": "VpcPublicSubnet2Subnet691E08A3"
-     }
-    ],
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
@@ -426,29 +418,44 @@
       ]
      }
     ],
+    "Subnets": [
+     {
+      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+     },
+     {
+      "Ref": "VpcPublicSubnet2Subnet691E08A3"
+     }
+    ],
     "VpcConnectorName": "MyVpcConnector"
    }
   },
-  "Service6DF16DDFB": {
+  "ServiceInstanceRoleDFA90CEC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "tasks.apprunner.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ServiceDBC79909": {
    "Type": "AWS::AppRunner::Service",
    "Properties": {
-    "SourceConfiguration": {
-     "AuthenticationConfiguration": {},
-     "ImageRepository": {
-      "ImageConfiguration": {
-       "Port": "8000"
-      },
-      "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
-      "ImageRepositoryType": "ECR_PUBLIC"
-     }
-    },
     "InstanceConfiguration": {
-      "InstanceRoleArn": {
-        "Fn::GetAtt": [
-          "Service6InstanceRole7220D460",
-          "Arn"
-        ]
-      }
+     "InstanceRoleArn": {
+      "Fn::GetAtt": [
+       "ServiceInstanceRoleDFA90CEC",
+       "Arn"
+      ]
+     }
     },
     "NetworkConfiguration": {
      "EgressConfiguration": {
@@ -460,12 +467,7 @@
        ]
       }
      }
-    }
-   }
-  },
-  "Service7E1F980B2": {
-   "Type": "AWS::AppRunner::Service",
-   "Properties": {
+    },
     "SourceConfiguration": {
      "AuthenticationConfiguration": {},
      "ImageRepository": {
@@ -475,65 +477,12 @@
       "ImageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
       "ImageRepositoryType": "ECR_PUBLIC"
      }
-    },
-    "InstanceConfiguration": {
-      "InstanceRoleArn": {
-        "Fn::GetAtt": [
-          "Service7InstanceRoleFD40F312",
-          "Arn"
-        ]
-      }
-    },
-    "NetworkConfiguration": {
-     "EgressConfiguration": {
-      "EgressType": "VPC",
-      "VpcConnectorArn": {
-       "Fn::GetAtt": [
-        "VpcConnectorE3A78531",
-        "VpcConnectorArn"
-       ]
-      }
-     }
     }
    }
-  },
-  "Service6InstanceRole7220D460": {
-    "Type": "AWS::IAM::Role",
-    "Properties": {
-     "AssumeRolePolicyDocument": {
-      "Statement": [
-       {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-         "Service": "tasks.apprunner.amazonaws.com"
-        }
-       }
-      ],
-      "Version": "2012-10-17"
-     }
-    }
-   },
-   "Service7InstanceRoleFD40F312": {
-    "Type": "AWS::IAM::Role",
-    "Properties": {
-     "AssumeRolePolicyDocument": {
-      "Statement": [
-       {
-        "Action": "sts:AssumeRole",
-        "Effect": "Allow",
-        "Principal": {
-         "Service": "tasks.apprunner.amazonaws.com"
-        }
-       }
-      ],
-      "Version": "2012-10-17"
-     }
-    }
-   }
+  }
  },
  "Outputs": {
-  "URL6": {
+  "ServiceURL": {
    "Value": {
     "Fn::Join": [
      "",
@@ -541,23 +490,7 @@
       "https://",
       {
        "Fn::GetAtt": [
-        "Service6DF16DDFB",
-        "ServiceUrl"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "URL7": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Fn::GetAtt": [
-        "Service7E1F980B2",
+        "ServiceDBC79909",
         "ServiceUrl"
        ]
       }

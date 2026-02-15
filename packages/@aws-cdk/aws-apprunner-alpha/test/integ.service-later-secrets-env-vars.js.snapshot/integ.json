@@ -1,12 +1,26 @@
 {
-  "version": "30.1.0",
+  "version": "50.0.0",
   "testCases": {
     "AppRunnerLaterSecretsEnvVars/DefaultTest": {
       "stacks": [
         "integ-apprunner-later-secrets-env-vars"
       ],
+      "regions": [
+        "ap-northeast-1",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "eu-central-1",
+        "eu-west-1",
+        "eu-west-2",
+        "eu-west-3",
+        "us-east-1",
+        "us-east-2",
+        "us-west-2"
+      ],
       "assertionStack": "AppRunnerLaterSecretsEnvVars/DefaultTest/DeployAssert",
       "assertionStackName": "AppRunnerLaterSecretsEnvVarsDefaultTestDeployAssert07867A67"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }
