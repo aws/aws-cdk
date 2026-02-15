@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
-
+import type { EgressRuleConfig, IngressRuleConfig } from '../../aws-ec2';
 import type { CfnResource } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import type { EndpointGroup } from '../lib';
@@ -74,11 +74,11 @@ export class AcceleratorSecurityGroupPeer implements ec2.IPeer {
   private constructor(private readonly securityGroupId: string) {
   }
 
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 }
