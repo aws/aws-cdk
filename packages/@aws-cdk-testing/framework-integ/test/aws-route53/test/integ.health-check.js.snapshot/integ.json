@@ -6,6 +6,9 @@
       "stacks": [
         "aws-cdk-route53-health-check"
       ],
+      "regions": [
+        "us-east-1"
+      ],
       "diffAssets": true,
       "assertionStack": "integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
