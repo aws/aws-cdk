@@ -176,7 +176,7 @@ export class CustomResource extends Resource {
       const serviceTimeoutSeconds = props.serviceTimeout.toSeconds();
 
       if (serviceTimeoutSeconds < 1 || serviceTimeoutSeconds > 3600) {
-        throw new ValidationError(`serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`, this);
+        throw new ValidationError('ServicetimeoutEither3600Seconds', `serviceTimeout must either be between 1 and 3600 seconds, got ${serviceTimeoutSeconds}`, this);
       }
     }
 
@@ -261,16 +261,16 @@ function renderResourceType(scope: Construct, resourceType?: string) {
   }
 
   if (!resourceType.startsWith('Custom::')) {
-    throw new ValidationError(`Custom resource type must begin with "Custom::" (${resourceType})`, scope);
+    throw new ValidationError('CustomResourceTypeBegin', `Custom resource type must begin with "Custom::" (${resourceType})`, scope);
   }
 
   if (resourceType.length > 60) {
-    throw new ValidationError(`Custom resource type length > 60 (${resourceType})`, scope);
+    throw new ValidationError('CustomResourceTypeLength', `Custom resource type length > 60 (${resourceType})`, scope);
   }
 
   const typeName = resourceType.slice(resourceType.indexOf('::') + 2);
   if (!/^[a-z0-9_@-]+$/i.test(typeName)) {
-    throw new ValidationError(`Custom resource type name can only include alphanumeric characters and _@- (${typeName})`, scope);
+    throw new ValidationError('CustomResourceTypeName', `Custom resource type name can only include alphanumeric characters and _@- (${typeName})`, scope);
   }
 
   return resourceType;

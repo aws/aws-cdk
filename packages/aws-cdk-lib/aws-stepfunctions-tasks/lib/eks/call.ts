@@ -101,13 +101,13 @@ export class EksCall extends sfn.TaskStateBase {
     try {
       this.clusterEndpoint = this.props.cluster.clusterEndpoint;
     } catch {
-      throw new ValidationError('The "clusterEndpoint" property must be specified when using an imported Cluster.', this);
+      throw new ValidationError('ClusterendpointPropertySpecifiedImported', 'The "clusterEndpoint" property must be specified when using an imported Cluster.', this);
     }
 
     try {
       this.clusterCertificateAuthorityData = this.props.cluster.clusterCertificateAuthorityData;
     } catch {
-      throw new ValidationError('The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.', this);
+      throw new ValidationError('ClustercertificateauthoritydataPropertySpecifiedImported', 'The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.', this);
     }
   }
 

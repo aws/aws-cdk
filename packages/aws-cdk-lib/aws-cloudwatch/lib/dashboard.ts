@@ -137,7 +137,7 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new ValidationError([
+        throw new ValidationError('ValueDashboardnameFieldDashboardname', [
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '), this);
@@ -145,11 +145,11 @@ export class Dashboard extends Resource {
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new ValidationError('both properties defaultInterval and start cannot be set at once', this);
+      throw new ValidationError('PropertiesDefaultintervalStartOnce', 'both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new ValidationError('If you specify a value for end, you must also specify a value for start.', this);
+      throw new ValidationError('SpecifyValueEndAlso', 'If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {

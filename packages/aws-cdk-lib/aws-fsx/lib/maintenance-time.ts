@@ -99,10 +99,10 @@ export class LustreMaintenanceTime {
    */
   private validate(hour: number, minute: number) {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new UnscopedValidationError('Maintenance time hour must be an integer between 0 and 23');
+      throw new UnscopedValidationError('MaintenanceTimeHourInteger', 'Maintenance time hour must be an integer between 0 and 23');
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new UnscopedValidationError('Maintenance time minute must be an integer between 0 and 59');
+      throw new UnscopedValidationError('MaintenanceTimeMinuteInteger', 'Maintenance time minute must be an integer between 0 and 59');
     }
   }
 }

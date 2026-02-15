@@ -211,7 +211,7 @@ export class Function extends Resource implements IFunction {
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
-      throw new ValidationError(`Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
+      throw new ValidationError('KeyValueStoresAssociated', `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

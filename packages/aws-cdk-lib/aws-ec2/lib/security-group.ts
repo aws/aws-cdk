@@ -463,7 +463,7 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
     if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
-      throw new ValidationError('All arguments to look up a security group must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookSecurityGroup', 'All arguments to look up a security group must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
@@ -626,7 +626,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new ValidationError('Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
+      throw new ValidationError('AddTrafficEgressRule', 'Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
     }
 
     this.addDirectEgressRule(rule);

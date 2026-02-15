@@ -334,17 +334,17 @@ export class BucketDeployment extends Construct {
 
     if (props.distributionPaths) {
       if (!props.distribution) {
-        throw new ValidationError('Distribution must be specified if distribution paths are specified', this);
+        throw new ValidationError('DistributionSpecifiedDistributionPaths', 'Distribution must be specified if distribution paths are specified', this);
       }
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
         if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
-          throw new ValidationError('Distribution paths must start with "/"', this);
+          throw new ValidationError('DistributionPathsStart', 'Distribution paths must start with "/"', this);
         }
       }
     }
 
     if (props.useEfs && !props.vpc) {
-      throw new ValidationError('Vpc must be specified if useEfs is set', this);
+      throw new ValidationError('VpcSpecifiedUseefs', 'Vpc must be specified if useEfs is set', this);
     }
 
     this.destinationBucket = props.destinationBucket;
@@ -407,7 +407,7 @@ export class BucketDeployment extends Construct {
     });
 
     const handlerRole = handler.role;
-    if (!handlerRole) { throw new ValidationError('lambda.SingletonFunction should have created a Role', this); }
+    if (!handlerRole) { throw new ValidationError('LambdaSingletonfunctionCreatedRole', 'lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
     this.sources = props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole }));
@@ -499,7 +499,7 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new ValidationError('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
+      throw new ValidationError('BucketdeploymentConstructRequiresDestinationkeyprefix', 'The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
     }
 
     /*
@@ -610,7 +610,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (memoryLimit) {
       if (cdk.Token.isUnresolved(memoryLimit)) {
-        throw new ValidationError("Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
+        throw new ValidationError('TokensSpecifyingMemorylimitSince', "Can't use tokens when specifying 'memoryLimit' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${memoryLimit.toString()}MiB`;
@@ -621,7 +621,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (ephemeralStorageSize) {
       if (ephemeralStorageSize.isUnresolved()) {
-        throw new ValidationError("Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
+        throw new ValidationError('TokensSpecifyingEphemeralstoragesizeSince', "Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;
@@ -714,7 +714,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
     if (!fs.existsSync(props.source)) {
-      throw new ValidationError(`No file found at 'source' path ${props.source}`, scope);
+      throw new ValidationError('FileFoundSourcePath', `No file found at 'source' path ${props.source}`, scope);
     }
     // Makes substitutions on the file
     let fileData = fs.readFileSync(props.source, 'utf-8');

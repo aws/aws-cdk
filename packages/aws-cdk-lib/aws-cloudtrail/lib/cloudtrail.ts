@@ -354,7 +354,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new ValidationError('Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
+      throw new ValidationError('KmskeyEncryptionkeySpecifiedEncryptionkey', 'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
     }
 
     if (props.insightTypes) {
@@ -412,11 +412,11 @@ export class Trail extends Resource {
   @MethodMetadata()
   public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
     if (dataResourceValues.length > 250) {
-      throw new ValidationError('A maximum of 250 data elements can be in one event selector', this);
+      throw new ValidationError('Maximum250DataElements', 'A maximum of 250 data elements can be in one event selector', this);
     }
 
     if (this.eventSelectors.length > 5) {
-      throw new ValidationError('A maximum of 5 event selectors are supported per trail.', this);
+      throw new ValidationError('MaximumEventSelectorsSupported', 'A maximum of 5 event selectors are supported per trail.', this);
     }
 
     let includeAllManagementEvents;

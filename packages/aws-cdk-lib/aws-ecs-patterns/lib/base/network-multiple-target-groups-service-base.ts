@@ -386,7 +386,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
         return listener;
       }
     }
-    throw new ValidationError(`Listener ${name} is not defined. Did you define listener with name ${name}?`, this);
+    throw new ValidationError('ListenerNameDefinedDefine', `Listener ${name} is not defined. Did you define listener with name ${name}?`, this);
   }
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: NetworkTargetProps[]): NetworkTargetGroup {
@@ -403,7 +403,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
       this.targetGroups.push(targetGroup);
     }
     if (this.targetGroups.length === 0) {
-      throw new ValidationError('At least one target group should be specified.', this);
+      throw new ValidationError('LeastOneTargetGroup', 'At least one target group should be specified.', this);
     }
     return this.targetGroups[0];
   }
@@ -429,20 +429,20 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
 
   private validateInput(props: NetworkMultipleTargetGroupsServiceBaseProps) {
     if (props.cluster && props.vpc) {
-      throw new ValidationError('You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError('SpecifyEitherVpcCluster', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
 
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new ValidationError('You must specify a desiredCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredcountGreater', 'You must specify a desiredCount greater than 0', this);
     }
 
     if (props.loadBalancers) {
       if (props.loadBalancers.length === 0) {
-        throw new ValidationError('At least one load balancer must be specified', this);
+        throw new ValidationError('LeastOneLoadBalancer', 'At least one load balancer must be specified', this);
       }
       for (const lbProps of props.loadBalancers) {
         if (lbProps.listeners.length === 0) {
-          throw new ValidationError('At least one listener must be specified', this);
+          throw new ValidationError('LeastOneListenerSpecified', 'At least one listener must be specified', this);
         }
       }
     }
@@ -467,7 +467,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   private createDomainName(loadBalancer: NetworkLoadBalancer, name?: string, zone?: IHostedZone) {
     if (typeof name !== 'undefined') {
       if (typeof zone === 'undefined') {
-        throw new ValidationError('A Route53 hosted domain zone name is required to configure the specified domain name', this);
+        throw new ValidationError('Route53HostedDomainZone', 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       new ARecord(this, `DNS${loadBalancer.node.id}`, {

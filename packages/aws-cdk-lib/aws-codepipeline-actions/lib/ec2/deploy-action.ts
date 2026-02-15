@@ -128,7 +128,7 @@ class Ec2DeploySpecificationsInline extends Ec2DeploySpecifications {
 
   bind(scope: Construct) {
     if (!Token.isUnresolved(this.props.targetDirectory) && !this.props.targetDirectory.startsWith('/')) {
-      throw new ValidationError('The targetDirectory must be an absolute path.', scope);
+      throw new ValidationError('TargetdirectoryAbsolutePath', 'The targetDirectory must be an absolute path.', scope);
     }
 
     return {
@@ -150,7 +150,7 @@ export abstract class Ec2MaxInstances {
    */
   public static targets(targets: number): Ec2MaxInstances {
     if (!Token.isUnresolved(targets) && !(targets >= 1 && Number.isInteger(targets))) {
-      throw new UnscopedValidationError(`targets must be a positive integer. got ${targets}`);
+      throw new UnscopedValidationError('TargetsPositiveIntegerGot', `targets must be a positive integer. got ${targets}`);
     }
     return { value: Tokenization.stringifyNumber(targets) };
   }
@@ -162,7 +162,7 @@ export abstract class Ec2MaxInstances {
    */
   public static percentage(percentage: number): Ec2MaxInstances {
     if (!Token.isUnresolved(percentage) && !(percentage >= 1 && percentage <= 100 && Number.isInteger(percentage))) {
-      throw new UnscopedValidationError(`percentage must be a positive integer between 1 and 100. got ${percentage}`);
+      throw new UnscopedValidationError('PercentagePositiveInteger100', `percentage must be a positive integer between 1 and 100. got ${percentage}`);
     }
     return { value: `${Tokenization.stringifyNumber(percentage)}%` };
   }
@@ -187,7 +187,7 @@ export class Ec2DeployAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     if (Token.isUnresolved(this.props.instanceTagKey)) {
-      throw new ValidationError('The instanceTagKey must be a non-empty concrete value.', scope);
+      throw new ValidationError('InstancetagkeyNonEmptyConcrete', 'The instanceTagKey must be a non-empty concrete value.', scope);
     }
 
     // Permissions based on CodePipeline documentation:

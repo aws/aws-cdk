@@ -301,7 +301,7 @@ export class Pipe extends PipeBase {
 
     if (props.kmsKey) {
       if (!props.pipeName) {
-        throw new ValidationError('`pipeName` is required when specifying a `kmsKey` prop.', this);
+        throw new ValidationError('PipenameRequiredSpecifyingKmskey', '`pipeName` is required when specifying a `kmsKey` prop.', this);
       }
       // Add permissions to the KMS key
       // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe

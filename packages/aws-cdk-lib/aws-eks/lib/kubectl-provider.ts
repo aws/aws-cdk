@@ -138,11 +138,11 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const cluster = props.cluster;
 
     if (!cluster.kubectlRole) {
-      throw new ValidationError('"kubectlRole" is not defined, cannot issue kubectl commands against this cluster', this);
+      throw new ValidationError('KubectlroleDefinedIssueKubectl', '"kubectlRole" is not defined, cannot issue kubectl commands against this cluster', this);
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
-      throw new ValidationError('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
+      throw new ValidationError('KubectlsecuritygroupRequiredKubectlsubnetsSpecified', '"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
     }
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;

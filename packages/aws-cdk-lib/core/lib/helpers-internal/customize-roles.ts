@@ -412,7 +412,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addRole(rolePath: string, options: RoleReportOptions): void {
     if (this.roleReport.hasOwnProperty(rolePath)) {
-      throw new ValidationError(`IAM Policy Report already has an entry for role: ${rolePath}`, this);
+      throw new ValidationError('IamPolicyReportAlready', `IAM Policy Report already has an entry for role: ${rolePath}`, this);
     }
     this.roleReport[rolePath] = options;
   }
@@ -425,7 +425,7 @@ export class PolicySynthesizer extends Construct {
    */
   public addManagedPolicy(policyPath: string, options: ManagedPolicyReportOptions): void {
     if (this.managedPolicyReport.hasOwnProperty(policyPath)) {
-      throw new ValidationError(`IAM Policy Report already has an entry for managed policy: ${policyPath}`, this);
+      throw new ValidationError('IamPolicyReportAlready', `IAM Policy Report already has an entry for managed policy: ${policyPath}`, this);
     }
 
     this.managedPolicyReport[policyPath] = options;

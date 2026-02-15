@@ -180,10 +180,10 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     if (this.props.workerConfiguration) {
       const workerConfiguration = this.props.workerConfiguration;
       if (workerConfiguration?.workerTypeV2 && workerConfiguration.workerType) {
-        throw new ValidationError('You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.', this);
+        throw new ValidationError('WorkertypeWorkertypev2PropertiesWorkerconfiguration', 'You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.', this);
       }
       if (!workerConfiguration.workerTypeV2 && !workerConfiguration.workerType) {
-        throw new ValidationError('You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.', this);
+        throw new ValidationError('EitherWorkertypeWorkertypev2Property', 'You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.', this);
       }
     }
     const workerType = this.props.workerConfiguration?.workerType ?? this.props.workerConfiguration?.workerTypeV2?.name;

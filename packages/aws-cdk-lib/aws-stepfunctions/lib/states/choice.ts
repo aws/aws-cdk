@@ -84,7 +84,7 @@ export class Choice extends State {
   public afterwards(options: AfterwardsOptions = {}): Chain {
     const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
     if (options.includeOtherwise && this.defaultChoice) {
-      throw new UnscopedValidationError(`'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
+      throw new UnscopedValidationError('IncludeotherwiseChoiceStateStateid', `'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
     }
     if (options.includeOtherwise) {
       endStates.push(new DefaultAsNext(this));

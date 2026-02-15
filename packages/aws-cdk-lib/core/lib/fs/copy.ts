@@ -14,7 +14,7 @@ export function copyDirectory(srcDir: string, destDir: string, options: CopyOpti
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, rootDir);
 
   if (!fs.statSync(srcDir).isDirectory()) {
-    throw new UnscopedValidationError(`${srcDir} is not a directory`);
+    throw new UnscopedValidationError('SrcdirDirectory', `${srcDir} is not a directory`);
   }
 
   const files = fs.readdirSync(srcDir);

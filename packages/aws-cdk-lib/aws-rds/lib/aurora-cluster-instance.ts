@@ -518,7 +518,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
-      throw new ValidationError('promotionTier must be between 0-15', this);
+      throw new ValidationError('Promotiontier', 'promotionTier must be between 0-15', this);
     }
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);
@@ -541,7 +541,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new ValidationError('`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
+      throw new ValidationError('EnableperformanceinsightsDisabledPerformanceinsightretentionPerformanceinsightencryptionkey', '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
 
     this.performanceInsightsEnabled = enablePerformanceInsights;

@@ -140,14 +140,14 @@ export class CfnInclude extends core.CfnElement {
 
     for (const logicalId of this.dehydratedResources) {
       if (!Object.keys(this.template.Resources).includes(logicalId)) {
-        throw new core.ValidationError(`Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`, this);
+        throw new core.ValidationError('LogicalLogicalidSpecifiedDehydratedresources', `Logical ID '${logicalId}' was specified in 'dehydratedResources', but does not belong to a resource in the template.`, this);
       }
     }
 
     // check if all user specified parameter values exist in the template
     for (const logicalId of Object.keys(this.parametersToReplace)) {
       if (!(logicalId in (this.template.Parameters || {}))) {
-        throw new core.ValidationError(`Parameter with logical ID '${logicalId}' was not found in the template`, this);
+        throw new core.ValidationError('ParameterLogicalLogicalidFound', `Parameter with logical ID '${logicalId}' was not found in the template`, this);
       }
     }
 
@@ -182,7 +182,7 @@ export class CfnInclude extends core.CfnElement {
     // verify that all nestedStacks have been instantiated
     for (const nestedStackId of Object.keys(props.loadNestedStacks || {})) {
       if (!(nestedStackId in this.resources)) {
-        throw new core.ValidationError(`Nested Stack with logical ID '${nestedStackId}' was not found in the template`, this);
+        throw new core.ValidationError('NestedStackLogicalNestedstackid', `Nested Stack with logical ID '${nestedStackId}' was not found in the template`, this);
       }
     }
 
@@ -217,7 +217,7 @@ export class CfnInclude extends core.CfnElement {
   public getResource(logicalId: string): core.CfnResource {
     const ret = this.resources[logicalId];
     if (!ret) {
-      throw new core.ValidationError(`Resource with logical ID '${logicalId}' was not found in the template`, this);
+      throw new core.ValidationError('ResourceLogicalLogicalidFound', `Resource with logical ID '${logicalId}' was not found in the template`, this);
     }
     return ret;
   }
@@ -235,7 +235,7 @@ export class CfnInclude extends core.CfnElement {
   public getCondition(conditionName: string): core.CfnCondition {
     const ret = this.conditions[conditionName];
     if (!ret) {
-      throw new core.ValidationError(`Condition with name '${conditionName}' was not found in the template`, this);
+      throw new core.ValidationError('ConditionNameConditionnameFound', `Condition with name '${conditionName}' was not found in the template`, this);
     }
     return ret;
   }
@@ -253,7 +253,7 @@ export class CfnInclude extends core.CfnElement {
   public getParameter(parameterName: string): core.CfnParameter {
     const ret = this.parameters[parameterName];
     if (!ret) {
-      throw new core.ValidationError(`Parameter with name '${parameterName}' was not found in the template`, this);
+      throw new core.ValidationError('ParameterNameParameternameFound', `Parameter with name '${parameterName}' was not found in the template`, this);
     }
     return ret;
   }
@@ -270,7 +270,7 @@ export class CfnInclude extends core.CfnElement {
   public getMapping(mappingName: string): core.CfnMapping {
     const ret = this.mappings[mappingName];
     if (!ret) {
-      throw new core.ValidationError(`Mapping with name '${mappingName}' was not found in the template`, this);
+      throw new core.ValidationError('MappingNameMappingnameFound', `Mapping with name '${mappingName}' was not found in the template`, this);
     }
     return ret;
   }
@@ -288,7 +288,7 @@ export class CfnInclude extends core.CfnElement {
   public getOutput(logicalId: string): core.CfnOutput {
     const ret = this.outputs[logicalId];
     if (!ret) {
-      throw new core.ValidationError(`Output with logical ID '${logicalId}' was not found in the template`, this);
+      throw new core.ValidationError('OutputLogicalLogicalidFound', `Output with logical ID '${logicalId}' was not found in the template`, this);
     }
     return ret;
   }
@@ -306,7 +306,7 @@ export class CfnInclude extends core.CfnElement {
   public getRule(ruleName: string): core.CfnRule {
     const ret = this.rules[ruleName];
     if (!ret) {
-      throw new core.ValidationError(`Rule with name '${ruleName}' was not found in the template`, this);
+      throw new core.ValidationError('RuleNameRulenameFound', `Rule with name '${ruleName}' was not found in the template`, this);
     }
     return ret;
   }
@@ -324,7 +324,7 @@ export class CfnInclude extends core.CfnElement {
   public getHook(hookLogicalId: string): core.CfnHook {
     const ret = this.hooks[hookLogicalId];
     if (!ret) {
-      throw new core.ValidationError(`Hook with logical ID '${hookLogicalId}' was not found in the template`, this);
+      throw new core.ValidationError('HookLogicalHooklogicalidFound', `Hook with logical ID '${hookLogicalId}' was not found in the template`, this);
     }
     return ret;
   }
@@ -340,11 +340,11 @@ export class CfnInclude extends core.CfnElement {
   public getNestedStack(logicalId: string): IncludedNestedStack {
     if (!this.nestedStacks[logicalId]) {
       if (!this.template.Resources[logicalId]) {
-        throw new core.ValidationError(`Nested Stack with logical ID '${logicalId}' was not found in the template`, this);
+        throw new core.ValidationError('NestedStackLogicalLogicalid', `Nested Stack with logical ID '${logicalId}' was not found in the template`, this);
       } else if (this.template.Resources[logicalId].Type !== 'AWS::CloudFormation::Stack') {
-        throw new core.ValidationError(`Resource with logical ID '${logicalId}' is not a CloudFormation Stack`, this);
+        throw new core.ValidationError('ResourceLogicalLogicalidCloudformation', `Resource with logical ID '${logicalId}' is not a CloudFormation Stack`, this);
       } else {
-        throw new core.ValidationError(`Nested Stack '${logicalId}' was not included in the parent template. ` +
+        throw new core.ValidationError('NestedStackLogicalidIncluded', `Nested Stack '${logicalId}' was not included in the parent template. ` +
           'To retrieve an included nested stack, it must be specified either in the `loadNestedStacks` property, or through the `loadNestedStack` method', this);
       }
     }
@@ -364,11 +364,11 @@ export class CfnInclude extends core.CfnElement {
    */
   public loadNestedStack(logicalId: string, nestedStackProps: CfnIncludeProps): IncludedNestedStack {
     if (logicalId in this.nestedStacks) {
-      throw new core.ValidationError(`Nested Stack '${logicalId}' was already included in its parent template`, this);
+      throw new core.ValidationError('NestedStackLogicalidAlready', `Nested Stack '${logicalId}' was already included in its parent template`, this);
     }
     const cfnStack = this.resources[logicalId];
     if (!cfnStack) {
-      throw new core.ValidationError(`Nested Stack with logical ID '${logicalId}' was not found in the template`, this);
+      throw new core.ValidationError('NestedStackLogicalLogicalid', `Nested Stack with logical ID '${logicalId}' was not found in the template`, this);
     }
     if (cfnStack instanceof core.CfnStack) {
       // delete the old CfnStack child - one will be created by the NestedStack object
@@ -381,7 +381,7 @@ export class CfnInclude extends core.CfnElement {
       this.getOrCreateResource(logicalId);
       return this.nestedStacks[logicalId];
     } else {
-      throw new core.ValidationError(`Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`, this);
+      throw new core.ValidationError('NestedStackLogicalLogicalid', `Nested Stack with logical ID '${logicalId}' is not an AWS::CloudFormation::Stack resource`, this);
     }
   }
 
@@ -432,10 +432,10 @@ export class CfnInclude extends core.CfnElement {
     const self = this;
     const cfnParser = new cfn_parse.CfnParser({
       finder: {
-        findCondition() { throw new core.ValidationError('Referring to Conditions in Mapping definitions is not allowed', self); },
-        findMapping() { throw new core.ValidationError('Referring to other Mappings in Mapping definitions is not allowed', self); },
-        findRefTarget() { throw new core.ValidationError('Using Ref expressions in Mapping definitions is not allowed', self); },
-        findResource() { throw new core.ValidationError('Using GetAtt expressions in Mapping definitions is not allowed', self); },
+        findCondition() { throw new core.ValidationError('ReferringConditionsMappingDefinitions', 'Referring to Conditions in Mapping definitions is not allowed', self); },
+        findMapping() { throw new core.ValidationError('ReferringOtherMappingsMapping', 'Referring to other Mappings in Mapping definitions is not allowed', self); },
+        findRefTarget() { throw new core.ValidationError('RefExpressionsMappingDefinitions', 'Using Ref expressions in Mapping definitions is not allowed', self); },
+        findResource() { throw new core.ValidationError('GetattExpressionsMappingDefinitions', 'Using GetAtt expressions in Mapping definitions is not allowed', self); },
       },
       parameters: {},
     });
@@ -454,10 +454,10 @@ export class CfnInclude extends core.CfnElement {
     const self = this;
     const expression = new cfn_parse.CfnParser({
       finder: {
-        findResource() { throw new core.ValidationError('Using GetAtt expressions in Parameter definitions is not allowed', self); },
-        findRefTarget() { throw new core.ValidationError('Using Ref expressions in Parameter definitions is not allowed', self); },
-        findCondition() { throw new core.ValidationError('Referring to Conditions in Parameter definitions is not allowed', self); },
-        findMapping() { throw new core.ValidationError('Referring to Mappings in Parameter definitions is not allowed', self); },
+        findResource() { throw new core.ValidationError('GetattExpressionsParameterDefinitions', 'Using GetAtt expressions in Parameter definitions is not allowed', self); },
+        findRefTarget() { throw new core.ValidationError('RefExpressionsParameterDefinitions', 'Using Ref expressions in Parameter definitions is not allowed', self); },
+        findCondition() { throw new core.ValidationError('ReferringConditionsParameterDefinitions', 'Referring to Conditions in Parameter definitions is not allowed', self); },
+        findMapping() { throw new core.ValidationError('ReferringMappingsParameterDefinitions', 'Referring to Mappings in Parameter definitions is not allowed', self); },
       },
       parameters: {},
     }).parseValue(this.template.Parameters[logicalId]);
@@ -487,7 +487,7 @@ export class CfnInclude extends core.CfnElement {
           // only parameters can be referenced in Rules
           return self.parameters[refTarget];
         },
-        findResource() { throw new core.ValidationError('Using GetAtt expressions in Rule definitions is not allowed', self); },
+        findResource() { throw new core.ValidationError('GetattExpressionsRuleDefinitions', 'Using GetAtt expressions in Rule definitions is not allowed', self); },
         findCondition(conditionName: string): core.CfnCondition | undefined {
           return self.conditions[conditionName];
         },
@@ -577,7 +577,7 @@ export class CfnInclude extends core.CfnElement {
           return self.getCondition(outputAttributes.Condition);
         }
 
-        throw new core.ValidationError(`Output with name '${logicalId}' refers to a Condition with name ` +
+        throw new core.ValidationError('OutputNameLogicalidRefers', `Output with name '${logicalId}' refers to a Condition with name ` +
           `'${outputAttributes.Condition}' which was not found in this template`, this);
       })(),
     });
@@ -594,7 +594,7 @@ export class CfnInclude extends core.CfnElement {
     const self = this;
     const cfnParser = new cfn_parse.CfnParser({
       finder: {
-        findResource() { throw new core.ValidationError('Using GetAtt in Condition definitions is not allowed', self); },
+        findResource() { throw new core.ValidationError('GetattConditionDefinitionsAllowed', 'Using GetAtt in Condition definitions is not allowed', self); },
         findRefTarget(elementName: string): core.CfnElement | undefined {
           // only Parameters can be referenced in the 'Conditions' section
           return self.parameters[elementName];
@@ -628,7 +628,7 @@ export class CfnInclude extends core.CfnElement {
     cycleChain = cycleChain.concat([logicalId]);
     if (cycleChain.length !== new Set(cycleChain).size) {
       if (!this.allowCyclicalReferences) {
-        throw new core.ValidationError(`Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`, this);
+        throw new core.ValidationError('FoundCycleResourcesTemplate', `Found a cycle between resources in the template: ${cycleChain.join(' depends on ')}`, this);
       }
       // only allow one placeholder per logical id
       if (this.logicalIdToPlaceholderMap.get(logicalId)) {
@@ -685,7 +685,7 @@ export class CfnInclude extends core.CfnElement {
     const resourceAttributes: any = this.template.Resources[logicalId];
     let l1Instance: core.CfnResource;
     if (this.nestedStacksToInclude[logicalId] && this.dehydratedResources.includes(logicalId)) {
-      throw new core.ValidationError(`nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`, this);
+      throw new core.ValidationError('NestedStackLogicalidMarked', `nested stack '${logicalId}' was marked as dehydrated - nested stacks cannot be dehydrated`, this);
     } else if (this.nestedStacksToInclude[logicalId]) {
       l1Instance = this.createNestedStack(logicalId, cfnParser);
     } else if (this.dehydratedResources.includes(logicalId)) {
@@ -760,13 +760,13 @@ export class CfnInclude extends core.CfnElement {
     const nestedStackAttributes = templateResources[nestedStackId] || {};
 
     if (nestedStackAttributes.Type !== 'AWS::CloudFormation::Stack') {
-      throw new core.ValidationError(`Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`, this);
+      throw new core.ValidationError('NestedStackLogicalNestedstackid', `Nested Stack with logical ID '${nestedStackId}' is not an AWS::CloudFormation::Stack resource`, this);
     }
     if (nestedStackAttributes.CreationPolicy) {
-      throw new core.ValidationError('CreationPolicy is not supported by the AWS::CloudFormation::Stack resource', this);
+      throw new core.ValidationError('CreationpolicySupportedAwsCloudformation', 'CreationPolicy is not supported by the AWS::CloudFormation::Stack resource', this);
     }
     if (nestedStackAttributes.UpdatePolicy) {
-      throw new core.ValidationError('UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource', this);
+      throw new core.ValidationError('UpdatepolicySupportedAwsCloudformation', 'UpdatePolicy is not supported by the AWS::CloudFormation::Stack resource', this);
     }
 
     const nestedStackProps = cfnParser.parseValue(nestedStackAttributes.Properties);

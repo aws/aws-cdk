@@ -58,7 +58,7 @@ export class Chain implements IChainable {
    */
   public next(next: IChainable): Chain {
     if (this.endStates.length === 0) {
-      throw new UnscopedValidationError(`Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`);
+      throw new UnscopedValidationError('AddChainLastState', `Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`);
     }
 
     for (const endState of this.endStates) {

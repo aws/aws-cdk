@@ -139,10 +139,10 @@ export class Domain extends Resource {
 
     const domainName = props.domainName || id;
     if (!Token.isUnresolved(domainName) && domainName.length > 255) {
-      throw new ValidationError(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
+      throw new ValidationError('DomainName255Characters', `Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
     }
     if (!Token.isUnresolved(domainName) && !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
-      throw new ValidationError(`Domain name must be a valid hostname, got: ${domainName}.`, this);
+      throw new ValidationError('DomainNameValidHostname', `Domain name must be a valid hostname, got: ${domainName}.`, this);
     }
 
     const domain = new CfnDomain(this, 'Resource', {

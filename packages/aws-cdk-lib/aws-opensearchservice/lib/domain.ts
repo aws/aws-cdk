@@ -1524,7 +1524,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       props.zoneAwareness?.availabilityZoneCount ?? 2;
 
     if (![2, 3].includes(availabilityZoneCount)) {
-      throw new ValidationError('Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3', this);
+      throw new ValidationError('InvalidZoneAwarenessConfiguration', 'Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3', this);
     }
 
     const zoneAwarenessEnabled =
@@ -1556,28 +1556,28 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       !skipZoneAwarenessCheck &&
       new Set(subnets.map((subnet) => subnet.availabilityZone)).size < availabilityZoneCount
     ) {
-      throw new ValidationError('When providing vpc options you need to provide a subnet for each AZ you are using', this);
+      throw new ValidationError('ProvidingVpcOptionsNeed', 'When providing vpc options you need to provide a subnet for each AZ you are using', this);
     }
 
     if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.search')))) {
-      throw new ValidationError('Master, data and UltraWarm node instance types must end with ".search".', this);
+      throw new ValidationError('MasterDataUltrawarmNode', 'Master, data and UltraWarm node instance types must end with ".search".', this);
     }
 
     if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
-      throw new ValidationError('UltraWarm node instance type must start with "ultrawarm".', this);
+      throw new ValidationError('UltrawarmNodeInstanceType', 'UltraWarm node instance type must start with "ultrawarm".', this);
     }
 
     const unsignedBasicAuthEnabled = props.useUnsignedBasicAuth ?? false;
 
     if (unsignedBasicAuthEnabled) {
       if (props.enforceHttps == false) {
-        throw new ValidationError('You cannot disable HTTPS and use unsigned basic auth', this);
+        throw new ValidationError('DisableHttpsUnsignedBasic', 'You cannot disable HTTPS and use unsigned basic auth', this);
       }
       if (props.nodeToNodeEncryption == false) {
-        throw new ValidationError('You cannot disable node to node encryption and use unsigned basic auth', this);
+        throw new ValidationError('DisableNodeNodeEncryption', 'You cannot disable node to node encryption and use unsigned basic auth', this);
       }
       if (props.encryptionAtRest?.enabled == false) {
-        throw new ValidationError('You cannot disable encryption at rest and use unsigned basic auth', this);
+        throw new ValidationError('DisableEncryptionRestUnsigned', 'You cannot disable encryption at rest and use unsigned basic auth', this);
       }
     }
 
@@ -1596,7 +1596,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       : masterUserNameProps;
 
     if (masterUserArn != null && masterUserName != null) {
-      throw new ValidationError('Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.', this);
+      throw new ValidationError('InvalidFineGrainedAccess', 'Invalid fine grained access control settings. Only provide one of master user ARN or master user name. Not both.', this);
     }
 
     const advancedSecurityEnabled = (masterUserArn ?? masterUserName) != null;
@@ -1650,41 +1650,41 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           7.7,
         ].includes(versionNum)
       ) {
-        throw new ValidationError(`Unknown Elasticsearch version: ${versionNum}`, this);
+        throw new ValidationError('UnknownElasticsearchVersionVersionnum', `Unknown Elasticsearch version: ${versionNum}`, this);
       }
 
       if (versionNum < 5.1) {
         if (props.logging?.appLogEnabled) {
-          throw new ValidationError('Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('ErrorLogsPublishingRequires', 'Error logs publishing requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
         }
         if (props.encryptionAtRest?.enabled) {
-          throw new ValidationError('Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('EncryptionDataRestRequires', 'Encryption of data at rest requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
         }
         if (props.cognitoDashboardsAuth != null) {
-          throw new ValidationError('Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('CognitoAuthenticationOpensearchDashboards', 'Cognito authentication for OpenSearch Dashboards requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
         }
         if (isSomeInstanceType('c5', 'i3', 'm5', 'r5')) {
-          throw new ValidationError('C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('InstanceTypesRequireElasticsearch', 'C5, I3, M5, and R5 instance types require Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.', this);
         }
       }
 
       if (versionNum < 6.0) {
         if (props.nodeToNodeEncryption) {
-          throw new ValidationError('Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('NodeNodeEncryptionRequires', 'Node-to-node encryption requires Elasticsearch version 6.0 or later or OpenSearch version 1.0 or later.', this);
         }
       }
 
       if (versionNum < 6.7) {
         if (unsignedBasicAuthEnabled) {
-          throw new ValidationError('Using unsigned basic auth requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('UnsignedBasicAuthRequires', 'Using unsigned basic auth requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.', this);
         }
         if (advancedSecurityEnabled) {
-          throw new ValidationError('Fine-grained access control requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.', this);
+          throw new ValidationError('FineGrainedAccessControl', 'Fine-grained access control requires Elasticsearch version 6.7 or later or OpenSearch version 1.0 or later.', this);
         }
       }
 
       if (versionNum < 6.8 && warmEnabled) {
-        throw new ValidationError('UltraWarm requires Elasticsearch version 6.8 or later or OpenSearch version 1.0 or later.', this);
+        throw new ValidationError('UltrawarmRequiresElasticsearchVersion', 'UltraWarm requires Elasticsearch version 6.8 or later or OpenSearch version 1.0 or later.', this);
       }
     }
 
@@ -1719,26 +1719,26 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (isSomeInstanceType(...unSupportEbsInstanceType) && ebsEnabled) {
-      throw new ValidationError(`${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`, this);
+      throw new ValidationError('FormatinstancetypeslistUnsupportebsinstancetypeInstanceTypes', `${formatInstanceTypesList(unSupportEbsInstanceType, 'and')} instance types do not support EBS storage volumes.`, this);
     }
 
     if (isSomeInstanceType('m3', 'r3', 't2') && encryptionAtRestEnabled) {
-      throw new ValidationError(`${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`, this);
+      throw new ValidationError('FormatinstancetypeslistUnsupportencryptionatrestinstancetypeInstanceTypes', `${formatInstanceTypesList(unSupportEncryptionAtRestInstanceType, 'and')} instance types do not support encryption of data at rest.`, this);
     }
 
     if (isInstanceType('t2.micro') && !(isElasticsearchVersion && versionNum <= 2.3)) {
-      throw new ValidationError('The t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3.', this);
+      throw new ValidationError('MicroSearchInstanceType', 'The t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3.', this);
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
-      throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
+      throw new ValidationError('FormatinstancetypeslistUnsupportultrawarminstancetypeInstanceTypes', `${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
     // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
-      throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
+      throw new ValidationError('EbsVolumesRequiredInstance', `EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }
 
     // Only for a valid ebs volume configuration, per
@@ -1747,7 +1747,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       // Check if iops or throughput if general purpose is configured
       if (volumeType == ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD || volumeType == ec2.EbsDeviceVolumeType.STANDARD) {
         if (props.ebs?.iops !== undefined || props.ebs?.throughput !== undefined) {
-          throw new ValidationError('General Purpose EBS volumes can not be used with Iops or Throughput configuration', this);
+          throw new ValidationError('GeneralPurposeEbsVolumes', 'General Purpose EBS volumes can not be used with Iops or Throughput configuration', this);
         }
       }
 
@@ -1758,8 +1758,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         ].includes(volumeType) &&
         !props.ebs?.iops
       ) {
-        throw new ValidationError(
-          '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.', this,
+        throw new ValidationError('IopsSpecifiedVolumetypeProvisioned', '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`.', this,
         );
       }
       if (props.ebs?.iops) {
@@ -1770,8 +1769,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
             ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
           ].includes(volumeType)
         ) {
-          throw new ValidationError(
-            '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.', this,
+          throw new ValidationError('IopsSpecifiedVolumetypeProvisioned', '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.', this,
           );
         }
 
@@ -1783,7 +1781,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         maximumRatios[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
         const maximumRatio = maximumRatios[volumeType];
         if (props.ebs?.volumeSize && (props.ebs?.iops > maximumRatio * props.ebs?.volumeSize)) {
-          throw new ValidationError(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
+          throw new ValidationError('VolumetypeVolumesIopsMaximum', `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
         }
 
         const maximumThroughputRatios: { [key: string]: number } = {};
@@ -1792,7 +1790,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         if (props.ebs?.throughput && props.ebs?.iops) {
           const iopsRatio = (props.ebs?.throughput / props.ebs?.iops);
           if (iopsRatio > maximumThroughputRatio) {
-            throw new ValidationError(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`, this);
+            throw new ValidationError('ThroughputMibpsIopsRatio', `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops.`, this);
           }
         }
       }
@@ -1801,13 +1799,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         const throughputRange = { Min: 125, Max: 1000 };
         const { Min, Max } = throughputRange;
         if (volumeType != ec2.EbsDeviceVolumeType.GP3) {
-          throw new ValidationError(
-            '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`', this,
+          throw new ValidationError('ThroughputPropertyRequiresVolumetype', '`throughput` property requires volumeType: `EbsDeviceVolumeType.GP3`', this,
           );
         }
         if (props.ebs?.throughput < Min || props.ebs?.throughput > Max) {
-          throw new ValidationError(
-            `throughput property takes a minimum of ${Min} and a maximum of ${Max}.`, this,
+          throw new ValidationError('ThroughputPropertyTakesMinimum', `throughput property takes a minimum of ${Min} and a maximum of ${Max}.`, this,
           );
         }
       }
@@ -1817,30 +1813,30 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // and enforced HTTPS.
     if (advancedSecurityEnabled) {
       if (!nodeToNodeEncryptionEnabled) {
-        throw new ValidationError('Node-to-node encryption is required when fine-grained access control is enabled.', this);
+        throw new ValidationError('NodeNodeEncryptionRequired', 'Node-to-node encryption is required when fine-grained access control is enabled.', this);
       }
       if (!encryptionAtRestEnabled) {
-        throw new ValidationError('Encryption-at-rest is required when fine-grained access control is enabled.', this);
+        throw new ValidationError('EncryptionRestRequiredFine', 'Encryption-at-rest is required when fine-grained access control is enabled.', this);
       }
       if (!enforceHttps) {
-        throw new ValidationError('Enforce HTTPS is required when fine-grained access control is enabled.', this);
+        throw new ValidationError('EnforceHttpsRequiredFine', 'Enforce HTTPS is required when fine-grained access control is enabled.', this);
       }
     }
 
     // Validate fine grained access control enabled for audit logs, per
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
-      throw new ValidationError('Fine-grained access control is required when audit logs publishing is enabled.', this);
+      throw new ValidationError('FineGrainedAccessControl', 'Fine-grained access control is required when audit logs publishing is enabled.', this);
     }
 
     // Validate UltraWarm requirement for dedicated master nodes, per
     // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ultrawarm.html
     if (warmEnabled && !dedicatedMasterEnabled) {
-      throw new ValidationError('Dedicated master node is required when UltraWarm storage is enabled.', this);
+      throw new ValidationError('DedicatedMasterNodeRequired', 'Dedicated master node is required when UltraWarm storage is enabled.', this);
     }
 
     if (props.coldStorageEnabled && !warmEnabled) {
-      throw new ValidationError('You must enable UltraWarm storage to enable cold storage.', this);
+      throw new ValidationError('EnableUltrawarmStorageEnable', 'You must enable UltraWarm storage to enable cold storage.', this);
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
@@ -1962,7 +1958,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     if (isSomeInstanceType('t3') && multiAzWithStandbyEnabled) {
-      throw new ValidationError('T3 instance type does not support Multi-AZ with standby feature.', this);
+      throw new ValidationError('InstanceTypeSupportMulti', 'T3 instance type does not support Multi-AZ with standby feature.', this);
     }
 
     const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
@@ -1974,7 +1970,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       props.fineGrainedAccessControl?.samlAuthenticationOptions !== undefined;
     if (samlAuthenticationEnabled) {
       if (!advancedSecurityEnabled) {
-        throw new ValidationError('SAML authentication requires fine-grained access control to be enabled.', this);
+        throw new ValidationError('SamlAuthenticationRequiresFine', 'SAML authentication requires fine-grained access control to be enabled.', this);
       }
       this.validateSamlAuthenticationOptions(props.fineGrainedAccessControl?.samlAuthenticationOptions);
     }
@@ -1985,10 +1981,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       if (coordinatorConfig?.enabled) {
         const coordinatorType = initializeInstanceType(defaultCoordinatorInstanceType, coordinatorConfig.type);
         if (!cdk.Token.isUnresolved(coordinatorType) && !coordinatorType.endsWith('.search')) {
-          throw new ValidationError('Coordinator node instance type must end with ".search".', this);
+          throw new ValidationError('CoordinatorNodeInstanceType', 'Coordinator node instance type must end with ".search".', this);
         }
         if (coordinatorConfig.count !== undefined && coordinatorConfig.count < 1) {
-          throw new ValidationError('Coordinator node count must be at least 1.', this);
+          throw new ValidationError('CoordinatorNodeCountLeast', 'Coordinator node count must be at least 1.', this);
         }
       }
     }
@@ -2113,13 +2109,13 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       if (!cdk.Token.isUnresolved(props.domainName)) {
         // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
         if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
-          throw new ValidationError(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`, this);
+          throw new ValidationError('InvalidDomainnamePropsDomainname', `Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`, this);
         }
         if (props.domainName.length < 3 || props.domainName.length > 28) {
-          throw new ValidationError(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`, this);
+          throw new ValidationError('InvalidDomainnamePropsDomainname', `Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`, this);
         }
         if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
-          throw new ValidationError(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`, this);
+          throw new ValidationError('InvalidDomainnamePropsDomainname', `Invalid domainName '${props.domainName}'. It must start with a lowercase letter`, this);
         }
       }
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
@@ -2153,10 +2149,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   private validateWindowStartTime(windowStartTime?: WindowStartTime) {
     if (!windowStartTime) return;
     if (windowStartTime.hours < 0 || windowStartTime.hours > 23) {
-      throw new ValidationError(`Hours must be a value between 0 and 23, but got ${windowStartTime.hours}.`, this);
+      throw new ValidationError('HoursValueGotWindowstarttime', `Hours must be a value between 0 and 23, but got ${windowStartTime.hours}.`, this);
     }
     if (windowStartTime.minutes < 0 || windowStartTime.minutes > 59) {
-      throw new ValidationError(`Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`, this);
+      throw new ValidationError('MinutesValueGotWindowstarttime', `Minutes must be a value between 0 and 59, but got ${windowStartTime.minutes}.`, this);
     }
   }
 
@@ -2166,31 +2162,31 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   private validateSamlAuthenticationOptions(samlAuthenticationOptions?: SAMLOptionsProperty) {
     if (!samlAuthenticationOptions) {
-      throw new ValidationError('You need to specify at least an Entity ID and Metadata content for the SAML configuration', this);
+      throw new ValidationError('NeedSpecifyLeastEntity', 'You need to specify at least an Entity ID and Metadata content for the SAML configuration', this);
     }
     if (samlAuthenticationOptions.idpEntityId.length < 8 || samlAuthenticationOptions.idpEntityId.length > 512) {
-      throw new ValidationError(`SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`, this);
+      throw new ValidationError('SamlIdentityProviderEntity', `SAML identity provider entity ID must be between 8 and 512 characters long, received ${samlAuthenticationOptions.idpEntityId.length}.`, this);
     }
     if (samlAuthenticationOptions.idpMetadataContent.length < 1 || samlAuthenticationOptions.idpMetadataContent.length > 1048576) {
-      throw new ValidationError(`SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`, this);
+      throw new ValidationError('SamlIdentityProviderMetadata', `SAML identity provider metadata content must be between 1 and 1048576 characters long, received ${samlAuthenticationOptions.idpMetadataContent.length}.`, this);
     }
     if (
       samlAuthenticationOptions.masterUserName &&
       (samlAuthenticationOptions.masterUserName.length < 1 || samlAuthenticationOptions.masterUserName.length > 64)
     ) {
-      throw new ValidationError(`SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`, this);
+      throw new ValidationError('SamlMasterUsernameCharacters', `SAML master username must be between 1 and 64 characters long, received ${samlAuthenticationOptions.masterUserName.length}.`, this);
     }
     if (
       samlAuthenticationOptions.masterBackendRole &&
       (samlAuthenticationOptions.masterBackendRole.length < 1 || samlAuthenticationOptions.masterBackendRole.length > 256)
     ) {
-      throw new ValidationError(`SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`, this);
+      throw new ValidationError('SamlBackendRole256', `SAML backend role must be between 1 and 256 characters long, received ${samlAuthenticationOptions.masterBackendRole.length}.`, this);
     }
     if (
       samlAuthenticationOptions.sessionTimeoutMinutes &&
       (samlAuthenticationOptions.sessionTimeoutMinutes < 1 || samlAuthenticationOptions.sessionTimeoutMinutes > 1440)
     ) {
-      throw new ValidationError(`SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`, this);
+      throw new ValidationError('SamlSessionTimeoutValue', `SAML session timeout must be a value between 1 and 1440, received ${samlAuthenticationOptions.sessionTimeoutMinutes}.`, this);
     }
   }
 
@@ -2200,7 +2196,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC", this);
+      throw new ValidationError('ConnectionsAvailableVpcEnabled', "Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC", this);
     }
     return this._connections;
   }
@@ -2307,7 +2303,7 @@ function parseVersion(scope: Construct, version: EngineVersion): { versionNum: n
   const firstDot = versionStr.indexOf('.');
 
   if (firstDot < 1) {
-    throw new ValidationError(`Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`, scope);
+    throw new ValidationError('InvalidEngineVersionVersionstr', `Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`, scope);
   }
 
   const secondDot = versionStr.indexOf('.', firstDot + 1);
@@ -2319,7 +2315,7 @@ function parseVersion(scope: Construct, version: EngineVersion): { versionNum: n
       return { versionNum: parseFloat(versionStr.substring(0, secondDot)), isElasticsearchVersion };
     }
   } catch {
-    throw new ValidationError(`Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`, scope);
+    throw new ValidationError('InvalidEngineVersionVersionstr', `Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`, scope);
   }
 }
 

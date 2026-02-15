@@ -265,11 +265,11 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     addConstructMetadata(this, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
-      throw new ValidationError('Either `integrationSubtype` or `integrationUri` must be specified.', scope);
+      throw new ValidationError('EitherIntegrationsubtypeIntegrationuriSpecified', 'Either `integrationSubtype` or `integrationUri` must be specified.', scope);
     }
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
+      throw new ValidationError('IntegrationTimeoutMillisecondsSeconds', 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -343,7 +343,7 @@ export abstract class HttpRouteIntegration {
    */
   public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
-      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
+      throw new ValidationError('SingleIntegrationAssociatedMultiple', 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {

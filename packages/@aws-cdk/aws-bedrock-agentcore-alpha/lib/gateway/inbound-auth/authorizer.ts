@@ -182,7 +182,7 @@ export abstract class GatewayAuthorizer {
   public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizerConfig {
     // At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer
     if (!configuration.allowedAudience && !configuration.allowedClients && !configuration.allowedScopes && !configuration.customClaims) {
-      throw new ValidationError('At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer');
+      throw new ValidationError('LeastOneAllowedaudienceAllowedclients', 'At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer');
     }
     return new CustomJwtAuthorizer(configuration);
   }

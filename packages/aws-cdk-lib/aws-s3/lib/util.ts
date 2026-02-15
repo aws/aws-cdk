@@ -20,7 +20,7 @@ export function parseBucketArn(construct: IConstruct, props: BucketAttributes): 
     });
   }
 
-  throw new ValidationError('Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed', construct);
+  throw new ValidationError('DetermineBucketArnLeast', 'Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed', construct);
 }
 
 export function parseBucketName(construct: IConstruct, props: BucketAttributes): string | undefined {

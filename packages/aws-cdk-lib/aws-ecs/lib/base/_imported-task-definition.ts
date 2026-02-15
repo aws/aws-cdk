@@ -95,7 +95,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get networkMode(): NetworkMode {
     if (this._networkMode == undefined) {
-      throw new ValidationError('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+      throw new ValidationError('OperationRequiresNetworkmodeImportedtaskdefinition', 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._networkMode;
@@ -104,7 +104,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get taskRole(): IRole {
     if (this._taskRole == undefined) {
-      throw new ValidationError('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      throw new ValidationError('OperationRequiresTaskroleImportedtaskdefinition', 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._taskRole;

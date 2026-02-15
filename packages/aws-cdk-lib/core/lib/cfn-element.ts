@@ -84,7 +84,7 @@ export abstract class CfnElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
-      throw new ValidationError(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
+      throw new ValidationError('LogicalidResourcePathNode', `The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
         'Make sure you are calling "overrideLogicalId" before Stack.exportValue', this);
     } else {
       this._logicalIdOverride = newLogicalId;

@@ -386,7 +386,7 @@ export class JsonPath {
   public static jsonToString(value: any): string {
     const path = jsonPathFromAny(value);
     if (!path) {
-      throw new UnscopedValidationError('Argument to JsonPath.jsonToString() must be a JsonPath object');
+      throw new UnscopedValidationError('ArgumentJsonpathJsontostringJsonpath', 'Argument to JsonPath.jsonToString() must be a JsonPath object');
     }
 
     return new JsonPathToken(`States.JsonToString(${path})`).toString();
@@ -571,7 +571,7 @@ function validateJsonPath(path: string) {
   ) {
     const lastItem = intrinsicFunctionFullNames.pop();
     const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
-    throw new UnscopedValidationError(`JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
+    throw new UnscopedValidationError('JsonPathValuesExactly', `JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
   }
 }
 
@@ -579,12 +579,12 @@ function validateDataPath(path: string) {
   if (path !== '$'
     && !path.startsWith('$[')
     && !path.startsWith('$')) {
-    throw new UnscopedValidationError("Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
+    throw new UnscopedValidationError('DataJsonPathValues', "Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
   }
 }
 
 function validateContextPath(path: string) {
   if (path !== '$$' && !path.startsWith('$$.')) {
-    throw new UnscopedValidationError("Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
+    throw new UnscopedValidationError('ContextJsonPathValues', "Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
   }
 }

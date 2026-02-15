@@ -161,12 +161,12 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
 
   private validateProductionVariants() {
     if (this.props.productionVariants.length < 1 || this.props.productionVariants.length > 10) {
-      throw new ValidationError('Must specify from 1 to 10 production variants per endpoint configuration', this);
+      throw new ValidationError('SpecifyProductionVariantsPer', 'Must specify from 1 to 10 production variants per endpoint configuration', this);
     }
     this.props.productionVariants.forEach((variant) => {
-      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new ValidationError('Must define at least one instance', this);
+      if (variant.initialInstanceCount && variant.initialInstanceCount < 1) throw new ValidationError('DefineLeastOneInstance', 'Must define at least one instance', this);
       if ( variant.initialVariantWeight && variant.initialVariantWeight <= 0) {
-        throw new ValidationError('InitialVariantWeight has minimum value of 0', this);
+        throw new ValidationError('InitialvariantweightMinimumValue', 'InitialVariantWeight has minimum value of 0', this);
       }
     });
   }

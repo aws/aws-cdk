@@ -23,10 +23,10 @@ function makePolicy(arn: string): IManagedPolicy {
       };
     },
     get node(): Node {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      throw new UnscopedValidationError('ResultFromawsmanagedpolicynameUsedApi', 'The result of fromAwsManagedPolicyName can not be used in this API');
     },
     get env(): cdk.ResourceEnvironment {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
+      throw new UnscopedValidationError('ResultFromawsmanagedpolicynameUsedApi', 'The result of fromAwsManagedPolicyName can not be used in this API');
     },
   };
 }

@@ -108,7 +108,7 @@ abstract class RuleBase extends Resource implements IRule {
   public get configRuleRef(): ConfigRuleReference {
     const self = this;
     return {
-      get configRuleArn(): string { throw new ValidationError('Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
+      get configRuleArn(): string { throw new ValidationError('ArnConfigruleCreatedWithout', 'Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
       configRuleName: this.configRuleName,
     };
   }
@@ -455,7 +455,7 @@ export class CustomRule extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
-      throw new ValidationError('At least one of `configurationChanges` or `periodic` must be set to true.', this);
+      throw new ValidationError('LeastOneConfigurationchangesPeriodic', 'At least one of `configurationChanges` or `periodic` must be set to true.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -579,10 +579,10 @@ export class CustomPolicy extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new ValidationError('Policy Text cannot be empty.', this);
+      throw new ValidationError('PolicyTextEmpty', 'Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new ValidationError('Policy Text is limited to 10,000 characters or less.', this);
+      throw new ValidationError('PolicyTextLimited000', 'Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];

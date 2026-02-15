@@ -132,7 +132,7 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
-          throw new ValidationError('To use a Source.bucket(), context must be provided', scope);
+          throw new ValidationError('SourceBucketContextProvided', 'To use a Source.bucket(), context must be provided', scope);
         }
 
         bucket.grantRead(context.handlerRole);
@@ -153,7 +153,7 @@ export class Source {
     return {
       bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig {
         if (!context) {
-          throw new ValidationError('To use a Source.asset(), context must be provided', scope);
+          throw new ValidationError('SourceAssetContextProvided', 'To use a Source.asset(), context must be provided', scope);
         }
 
         let id = 1;
@@ -165,7 +165,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new ValidationError('Asset path must be either a .zip file or a directory', scope);
+          throw new ValidationError('AssetPathEitherZip', 'Asset path must be either a .zip file or a directory', scope);
         }
         asset.grantRead(context.handlerRole);
 

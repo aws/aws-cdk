@@ -13,19 +13,20 @@ import { Stack, Token, UnscopedValidationError } from '../../core';
  */
 export function validateZoneName(zoneName: string) {
   if (zoneName.length > 255) {
-    throw new ValidationError('zone name cannot be more than 255 bytes long');
+    throw new ValidationError('ZoneName255Bytes', 'zone name cannot be more than 255 bytes long');
   }
   if (zoneName.split('.').find(label => label.length > 63)) {
-    throw new ValidationError('zone name labels cannot be more than 63 bytes long');
+    throw new ValidationError('ZoneNameLabelsBytes', 'zone name labels cannot be more than 63 bytes long');
   }
   if (!zoneName.match(/^[a-z0-9!"#$%&'()*+,/:;<=>?@[\\\]^_`{|}~.-]+$/i)) {
-    throw new ValidationError('zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
+    throw new ValidationError('ZoneNamesContain', 'zone names can only contain a-z, 0-9, -, ! " # $ % & \' ( ) * + , - / : ; < = > ? @ [ \ ] ^ _ ` { | } ~ .');
   }
 }
 
 class ValidationError extends Error {
-  constructor(message: string) {
+  constructor(name: string, message: string) {
     super(message);
+    this.name = name;
   }
 }
 
@@ -93,8 +94,7 @@ function octalEncodeDelegatedZoneName(delegatedZoneName: string): string {
 
 function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: string) {
   if (delegatedZoneName.endsWith('.')) {
-    throw new UnscopedValidationError(
-      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot have a trailing period`,
+    throw new UnscopedValidationError('ErrorWhileValidatingDelegate', `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot have a trailing period`,
     );
   }
 
@@ -106,15 +106,13 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
     validateZoneName(delegatedZoneName);
   } catch (error) {
     if (error instanceof ValidationError) {
-      throw new UnscopedValidationError(
-        `Error while validating delegated zone name '${delegatedZoneName}': ${error.message}`,
+      throw new UnscopedValidationError('ErrorWhileValidatingDelegated', `Error while validating delegated zone name '${delegatedZoneName}': ${error.message}`,
       );
     }
   }
 
   if (delegatedZoneName.toLowerCase() !== delegatedZoneName) {
-    throw new UnscopedValidationError(
-      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
+    throw new UnscopedValidationError('ErrorWhileValidatingDelegate', `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot contain uppercase characters`,
     );
   }
 
@@ -125,14 +123,12 @@ function validateDelegatedZoneName(parentZoneName: string, delegatedZoneName: st
   const parentZoneNameNoTrailingDot = stripTrailingDot(parentZoneName);
 
   if (!delegatedZoneName.endsWith(parentZoneNameNoTrailingDot)) {
-    throw new UnscopedValidationError(
-      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
+    throw new UnscopedValidationError('ErrorWhileValidatingDelegate', `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name must be suffixed by parent zone name`,
     );
   }
 
   if (delegatedZoneName === parentZoneNameNoTrailingDot) {
-    throw new UnscopedValidationError(
-      `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
+    throw new UnscopedValidationError('ErrorWhileValidatingDelegate', `Error while validating delegate zone name '${delegatedZoneName}': delegated zone name cannot be the same as the parent zone name`,
     );
   }
 }

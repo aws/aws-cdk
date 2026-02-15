@@ -90,7 +90,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     if (props.vpc === undefined) {
-      throw new ValidationError('VPC must be specified for PrivateDNSNamespaces', this);
+      throw new ValidationError('VpcSpecifiedPrivatednsnamespaces', 'VPC must be specified for PrivateDNSNamespaces', this);
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {

@@ -26,7 +26,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.fn)) {
-      throw new ValidationError('The supplied lambda Function object must be an instance of Construct', topic);
+      throw new ValidationError('SuppliedLambdaFunctionObject', 'The supplied lambda Function object must be an instance of Construct', topic);
     }
 
     this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {

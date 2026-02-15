@@ -102,11 +102,11 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new ValidationError('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
+      throw new ValidationError('TaskTokenRequiredInput', 'Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
     }
 
     if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
-      throw new ValidationError('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
+      throw new ValidationError('EnableAssociatewithparentBecauseInput', 'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();

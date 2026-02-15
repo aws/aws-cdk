@@ -29,7 +29,7 @@ export interface AgentPromptVariantProps extends CommonPromptVariantProps {
  */
 export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromptVariant {
   if (!props.promptText || props.promptText.trim() === '') {
-    throw new ValidationError('promptText cannot be empty');
+    throw new ValidationError('PrompttextEmpty', 'promptText cannot be empty');
   }
 
   return {

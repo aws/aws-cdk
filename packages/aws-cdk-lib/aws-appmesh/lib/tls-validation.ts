@@ -101,7 +101,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
    */
   public get certificateAuthorities(): acmpca.ICertificateAuthority[] {
     if (this._certificateAuthorities.some((x) => !('certificateAuthorityArn' in x))) {
-      throw new UnscopedValidationError('Not all elements of \'certificateAuthorities\' parameter implement ICertificateAuthority');
+      throw new UnscopedValidationError('ElementsCertificateauthoritiesParameterImplement', 'Not all elements of \'certificateAuthorities\' parameter implement ICertificateAuthority');
     }
 
     return this._certificateAuthorities as acmpca.ICertificateAuthority[] ;
@@ -109,7 +109,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
 
   public bind(scope: Construct): TlsValidationTrustConfig {
     if (this.certificateAuthorities.length === 0) {
-      throw new ValidationError('you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy', scope);
+      throw new ValidationError('ProvideLeastOneCertificate', 'you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy', scope);
     } else {
       return {
         tlsValidationTrust: {

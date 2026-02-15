@@ -434,11 +434,11 @@ export class AmazonManagedImage {
     image: string,
   ) {
     if (cdk.Token.isUnresolved(opts.imageArchitecture)) {
-      throw new cdk.ValidationError(`architecture cannot be a token for ${image}`, scope);
+      throw new cdk.ValidationError('ArchitectureTokenImage', `architecture cannot be a token for ${image}`, scope);
     }
 
     if (cdk.Token.isUnresolved(opts.imageType)) {
-      throw new cdk.ValidationError(`type cannot be a token for ${image}`, scope);
+      throw new cdk.ValidationError('TypeTokenImage', `type cannot be a token for ${image}`, scope);
     }
   }
 
@@ -454,8 +454,7 @@ export class AmazonManagedImage {
     const imageName = config.supportedCombinations[key];
 
     if (!imageName) {
-      throw new cdk.ValidationError(
-        `architecture ${opts.imageArchitecture} with type ${opts.imageType} is not a supported architecture and type for ${config.image}`,
+      throw new cdk.ValidationError('ArchitectureOptsImagearchitectureType', `architecture ${opts.imageArchitecture} with type ${opts.imageType} is not a supported architecture and type for ${config.image}`,
         scope,
       );
     }

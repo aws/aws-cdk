@@ -69,11 +69,11 @@ export class WarmPool extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
-      throw new ValidationError('\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
+      throw new ValidationError('MaxgrouppreparedcapacityParameterGreaterEqual', '\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
     }
 
     if (props.minSize && props.minSize < 0) {
-      throw new ValidationError('\'minSize\' parameter should be greater than or equal to 0', this);
+      throw new ValidationError('MinsizeParameterGreaterEqual', '\'minSize\' parameter should be greater than or equal to 0', this);
     }
 
     new CfnWarmPool(this, 'Resource', {

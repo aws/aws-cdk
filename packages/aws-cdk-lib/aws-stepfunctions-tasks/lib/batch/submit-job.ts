@@ -211,19 +211,19 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
       if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
-        throw new ValidationError(`arraySize must be between 2 and 10,000. Received ${arraySize}.`, this);
+        throw new ValidationError('Arraysize000ReceivedArraysize', `arraySize must be between 2 and 10,000. Received ${arraySize}.`, this);
       }
     });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
-      throw new ValidationError(`dependencies must be 20 or less. Received ${props.dependsOn.length}.`, this);
+      throw new ValidationError('DependenciesReceivedPropsDependson', `dependencies must be 20 or less. Received ${props.dependsOn.length}.`, this);
     }
 
     // validate attempts
     withResolved(props.attempts, (attempts) => {
       if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
-        throw new ValidationError(`attempts must be between 1 and 10. Received ${attempts}.`, this);
+        throw new ValidationError('AttemptsReceivedAttempts', `attempts must be between 1 and 10. Received ${attempts}.`, this);
       }
     });
 
@@ -233,7 +233,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
       props.taskTimeout?.seconds, (timeout, taskTimeout) => {
         const definedTimeout = timeout ?? taskTimeout;
         if (definedTimeout && definedTimeout < 60) {
-          throw new ValidationError(`attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`, this);
+          throw new ValidationError('AttemptDurationGreaterSeconds', `attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`, this);
         }
       });
 
@@ -242,8 +242,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     if (props.containerOverrides?.environment) {
       Object.keys(props.containerOverrides.environment).forEach(key => {
         if (key.match(/^AWS_BATCH/)) {
-          throw new ValidationError(
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`, this,
+          throw new ValidationError('InvalidEnvironmentVariableName', `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`, this,
           );
         }
       });
@@ -383,14 +382,14 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     if (tags === undefined) return;
     const tagEntries = Object.entries(tags);
     if (tagEntries.length > 50) {
-      throw new ValidationError(`Maximum tag number of entries is 50. Received ${tagEntries.length}.`, this);
+      throw new ValidationError('MaximumTagNumberEntries', `Maximum tag number of entries is 50. Received ${tagEntries.length}.`, this);
     }
     for (const [key, value] of tagEntries) {
       if (key.length < 1 || key.length > 128) {
-        throw new ValidationError(`Tag key size must be between 1 and 128, but got ${key.length}.`, this);
+        throw new ValidationError('TagKeySize128', `Tag key size must be between 1 and 128, but got ${key.length}.`, this);
       }
       if (value.length > 256) {
-        throw new ValidationError(`Tag value maximum size is 256, but got ${value.length}.`, this);
+        throw new ValidationError('TagValueMaximumSize', `Tag value maximum size is 256, but got ${value.length}.`, this);
       }
     }
   }

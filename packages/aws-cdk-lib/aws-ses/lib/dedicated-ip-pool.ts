@@ -101,7 +101,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     addConstructMetadata(this, props);
 
     if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
-      throw new ValidationError(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
+      throw new ValidationError('InvalidDedicatedippoolnamePropsDedicatedippoolname', `Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
     }
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {

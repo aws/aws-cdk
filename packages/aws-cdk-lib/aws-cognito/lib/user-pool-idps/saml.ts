@@ -175,7 +175,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   private validateName(name?: string) {
     if (name && !Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-      throw new ValidationError(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
+      throw new ValidationError('ExpectedProviderNameCharacters', `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
     }
   }
 }

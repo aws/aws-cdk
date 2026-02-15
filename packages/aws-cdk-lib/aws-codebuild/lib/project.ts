@@ -290,7 +290,7 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project', this);
+      throw new ValidationError('VpcAssociatedProjectsSecurity', 'Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project', this);
     }
     return this._connections;
   }
@@ -906,7 +906,7 @@ export class Project extends ProjectBase {
         const fragments = Tokenization.reverseString(cfnEnvVariable.value);
         for (const token of fragments.tokens) {
           if (token instanceof SecretValue) {
-            throw new UnscopedValidationError(`Plaintext environment variable '${name}' contains a secret value! ` +
+            throw new UnscopedValidationError('PlaintextEnvironmentVariableName', `Plaintext environment variable '${name}' contains a secret value! ` +
               'This means the value of this variable will be visible in plain text in the AWS Console. ' +
               "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
               "If you'd like to continue with having this secret in the plaintext environment variables, " +
@@ -940,7 +940,7 @@ export class Project extends ProjectBase {
           if (envVariableValue.startsWith('arn:')) {
             const parsedArn = stack.splitArn(envVariableValue, ArnFormat.COLON_RESOURCE_NAME);
             if (!parsedArn.resourceName) {
-              throw new UnscopedValidationError('SecretManager ARN is missing the name of the secret: ' + envVariableValue);
+              throw new UnscopedValidationError('SecretmanagerArnMissingName', 'SecretManager ARN is missing the name of the secret: ' + envVariableValue);
             }
 
             // the value of the property can be a complex string, separated by ':';
@@ -1107,7 +1107,7 @@ export class Project extends ProjectBase {
     this.source = props.source || new NoSource();
     const sourceConfig = this.source.bind(this, this);
     if (props.badge && !this.source.badgeSupported) {
-      throw new ValidationError(`Badge is not supported for source type ${this.source.type}`, this);
+      throw new ValidationError('BadgeSupportedSourceType', `Badge is not supported for source type ${this.source.type}`, this);
     }
 
     const artifacts = props.artifacts
@@ -1126,7 +1126,7 @@ export class Project extends ProjectBase {
     const environmentVariables = props.environmentVariables || {};
     const buildSpec = props.buildSpec;
     if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
-      throw new ValidationError("If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
+      throw new ValidationError('ProjectSourceNosourceNeed', "If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
     }
 
     this._secondarySources = [];
@@ -1149,7 +1149,7 @@ export class Project extends ProjectBase {
 
     if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
-        throw new ValidationError(`autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
+        throw new ValidationError('AutoretrylimitValueGotProps', `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
       }
     }
 
@@ -1277,7 +1277,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
-      throw new ValidationError('The identifier attribute is mandatory for secondary sources', this);
+      throw new ValidationError('IdentifierAttributeMandatorySecondary', 'The identifier attribute is mandatory for secondary sources', this);
     }
     const secondarySourceConfig = secondarySource.bind(this, this);
     this._secondarySources.push(secondarySourceConfig.sourceProperty);
@@ -1309,7 +1309,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new ValidationError('The identifier attribute is mandatory for secondary artifacts', this);
+      throw new ValidationError('IdentifierAttributeMandatorySecondary', 'The identifier attribute is mandatory for secondary artifacts', this);
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -1397,7 +1397,7 @@ export class Project extends ProjectBase {
     errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
 
     if (errors.length > 0) {
-      throw new ValidationError('Invalid CodeBuild environment: ' + errors.join('\n'), this);
+      throw new ValidationError('InvalidCodebuildEnvironment', 'Invalid CodeBuild environment: ' + errors.join('\n'), this);
     }
 
     const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
@@ -1478,7 +1478,7 @@ export class Project extends ProjectBase {
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
     if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
-      throw new ValidationError(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
+      throw new ValidationError('EnvironmentTypeFleetFleet', `The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
     }
 
     return { fleetArn: fleet.fleetArn };
@@ -1492,7 +1492,7 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new ValidationError('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
+      throw new ValidationError('ConfigureSecuritygroupAllowalloutboundWithout', 'Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
     }
 
     if (!props.vpc) { return undefined; }
@@ -1507,7 +1507,7 @@ export class Project extends ProjectBase {
     }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new ValidationError('Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
+      throw new ValidationError('ConfigureAllowalloutboundDirectlySupplied', 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1553,7 +1553,7 @@ export class Project extends ProjectBase {
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
-        throw new ValidationError('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
+        throw new ValidationError('SpecifyingLoggroupRequiredCloudwatch', 'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1629,7 +1629,7 @@ export class Project extends ProjectBase {
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
-      throw new ValidationError('Both source and artifacts must be set to CodePipeline', this);
+      throw new ValidationError('SourceArtifactsCodepipeline', 'Both source and artifacts must be set to CodePipeline', this);
     }
   }
 

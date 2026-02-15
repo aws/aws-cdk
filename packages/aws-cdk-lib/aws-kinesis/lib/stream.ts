@@ -934,7 +934,7 @@ export class Stream extends StreamBase {
     const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
-      throw new ValidationError(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
+      throw new ValidationError('StreammodeStreammodeProvisionedDefault', `streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
     }
     if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
@@ -943,7 +943,7 @@ export class Stream extends StreamBase {
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
-        throw new ValidationError(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
+        throw new ValidationError('Retentionperiod8760HoursReceived', `retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
       }
     }
 
@@ -951,12 +951,12 @@ export class Stream extends StreamBase {
 
     if (props.shardLevelMetrics) {
       if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
-        throw new ValidationError('`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
+        throw new ValidationError('ShardlevelmetricsIncludeShardlevelmetricsTogether', '`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
       }
       // Check for duplicate items in shardLevelMetrics
       const uniqueMetrics = new Set(props.shardLevelMetrics);
       if (uniqueMetrics.size !== props.shardLevelMetrics.length) {
-        throw new ValidationError('shardLevelMetrics cannot contain duplicate items.', this);
+        throw new ValidationError('ShardlevelmetricsContainDuplicateItems', 'shardLevelMetrics cannot contain duplicate items.', this);
       }
     }
 
@@ -1013,7 +1013,7 @@ export class Stream extends StreamBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
+      throw new ValidationError('EncryptionkeySpecifiedEncryptionKms', `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
@@ -1037,7 +1037,7 @@ export class Stream extends StreamBase {
       return { encryptionKey, streamEncryption };
     }
 
-    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError('UnexpectedEncryptiontypeEncryptiontype', `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 }
 

@@ -94,7 +94,7 @@ export class PasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (props.passwords.length < 1 || props.passwords.length > 2) {
-      throw new ValidationError('Password authentication requires 1-2 passwords.', this);
+      throw new ValidationError('PasswordAuthenticationRequiresPasswords', 'Password authentication requires 1-2 passwords.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

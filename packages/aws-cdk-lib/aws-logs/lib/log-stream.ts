@@ -83,7 +83,7 @@ export class LogStream extends Resource implements ILogStream {
       public get logStreamRef() {
         return {
           get logGroupName(): string {
-            throw new UnscopedValidationError('Cannot access logGroupName on a LogStream obtained from fromLogStreamName. Use LogStream.fromLogStreamAttributes() instead.');
+            throw new UnscopedValidationError('AccessLoggroupnameLogstreamObtained', 'Cannot access logGroupName on a LogStream obtained from fromLogStreamName. Use LogStream.fromLogStreamAttributes() instead.');
           },
           logStreamName: this.logStreamName,
         };

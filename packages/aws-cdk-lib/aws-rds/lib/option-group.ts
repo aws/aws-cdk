@@ -147,7 +147,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
-      throw new ValidationError("OptionGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError('OptiongroupUsedEngineDoesn', "OptionGroup cannot be used with an engine that doesn't specify a version", this);
     }
 
     props.configurations.forEach(config => this.addConfiguration(config));
@@ -169,7 +169,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     if (configuration.port) {
       if (!configuration.vpc) {
-        throw new ValidationError('`port` and `vpc` must be specified together.', this);
+        throw new ValidationError('PortVpcSpecifiedTogether', '`port` and `vpc` must be specified together.', this);
       }
 
       const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0

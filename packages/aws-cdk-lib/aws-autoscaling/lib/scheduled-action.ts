@@ -108,7 +108,7 @@ export class ScheduledAction extends Resource {
     addConstructMetadata(this, props);
 
     if (props.minCapacity === undefined && props.maxCapacity === undefined && props.desiredCapacity === undefined) {
-      throw new ValidationError('At least one of minCapacity, maxCapacity, or desiredCapacity is required', this);
+      throw new ValidationError('LeastOneMincapacityMaxcapacity', 'At least one of minCapacity, maxCapacity, or desiredCapacity is required', this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

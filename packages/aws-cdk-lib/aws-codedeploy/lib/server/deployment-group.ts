@@ -117,7 +117,7 @@ export class InstanceTagSet {
 
   constructor(...instanceTagGroups: InstanceTagGroup[]) {
     if (instanceTagGroups.length > 3) {
-      throw new cdk.UnscopedValidationError(`An instance tag set can have a maximum of 3 instance tag groups, but ${instanceTagGroups.length} were provided`);
+      throw new cdk.UnscopedValidationError('InstanceTagMaximumInstance', `An instance tag set can have a maximum of 3 instance tag groups, but ${instanceTagGroups.length} were provided`);
     }
     this._instanceTagGroups = instanceTagGroups;
   }
@@ -317,7 +317,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
 
     if (this.loadBalancers && this.loadBalancers.length === 0) {
-      throw new cdk.ValidationError('loadBalancers must be a non-empty array', this);
+      throw new cdk.ValidationError('LoadbalancersNonEmptyArray', 'loadBalancers must be a non-empty array', this);
     }
 
     for (const asg of this._autoScalingGroups) {
@@ -524,7 +524,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
               });
             }
           } else {
-            throw new cdk.ValidationError('Cannot specify both an empty key and no values for an instance tag filter', this);
+            throw new cdk.ValidationError('SpecifyEmptyKeyValues', 'Cannot specify both an empty key and no values for an instance tag filter', this);
           }
         }
       }

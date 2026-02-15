@@ -28,11 +28,11 @@ export class AddHeader implements ses.IReceiptRuleAction {
 
   constructor(props: AddHeaderProps) {
     if (!/^[a-zA-Z0-9-]{1,50}$/.test(props.name)) {
-      throw new UnscopedValidationError('Header `name` must be between 1 and 50 characters, inclusive, and consist of alphanumeric (a-z, A-Z, 0-9) characters and dashes only.');
+      throw new UnscopedValidationError('HeaderNameCharactersInclusive', 'Header `name` must be between 1 and 50 characters, inclusive, and consist of alphanumeric (a-z, A-Z, 0-9) characters and dashes only.');
     }
 
     if (!/^[^\n\r]{0,2047}$/.test(props.value)) {
-      throw new UnscopedValidationError('Header `value` must be less than 2048 characters, and must not contain newline characters ("\r" or "\n").');
+      throw new UnscopedValidationError('HeaderValue2048Characters', 'Header `value` must be less than 2048 characters, and must not contain newline characters ("\r" or "\n").');
     }
 
     this.name = props.name;

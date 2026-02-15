@@ -133,7 +133,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
     // only add every image (identified by source hash) once for each stack that uses it.
     if (!this.addedImageAssets.has(assetId)) {
       if (!asset.directoryName) {
-        throw new UnscopedValidationError(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new UnscopedValidationError('LegacystacksynthesizerSupportTypeFile', `LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
       }
 
       const metadata: cxschema.ContainerImageAssetMetadataEntry = {
@@ -172,7 +172,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
       params = new FileAssetParameters(this.assetParameters, asset.sourceHash);
 
       if (!asset.fileName || !asset.packaging) {
-        throw new UnscopedValidationError(`LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
+        throw new UnscopedValidationError('LegacystacksynthesizerSupportTypeFile', `LegacyStackSynthesizer does not support this type of file asset: ${JSON.stringify(asset)}`);
       }
 
       const metadata: cxschema.FileAssetMetadataEntry = {

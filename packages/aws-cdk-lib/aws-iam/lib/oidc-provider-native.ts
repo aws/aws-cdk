@@ -207,40 +207,39 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
 
     if (!Token.isUnresolved(props.url)) {
       if (!props.url.startsWith('https://')) {
-        throw new ValidationError(
-          'The URL of the identity provider must start with https://', scope,
+        throw new ValidationError('UrlIdentityProviderStart', 'The URL of the identity provider must start with https://', scope,
         );
       }
 
       // maximum length of url is 255 characters
       if (props.url.length > 255) {
-        throw new ValidationError('The maximum length allowed for url is 255 characters', scope);
+        throw new ValidationError('MaximumLengthAllowedUrl', 'The maximum length allowed for url is 255 characters', scope);
       }
     }
 
     // clientids cannot be more than 100
     if (props.clientIds && props.clientIds.length > 100) {
-      throw new ValidationError('The maximum number of clients that can be registered is 100', scope);
+      throw new ValidationError('MaximumNumberClientsRegistered', 'The maximum number of clients that can be registered is 100', scope);
     }
 
     // clientId max length is 255
     if (props.clientIds?.some((clientId) => !Token.isUnresolved(clientId) && clientId.length > 255)) {
-      throw new ValidationError('The maximum length of a client ID is 255 characters', scope);
+      throw new ValidationError('MaximumLengthClient255', 'The maximum length of a client ID is 255 characters', scope);
     }
 
     // thumbprints[] is optional, but if provided, must be 5 or less
     if (props.thumbprints && props.thumbprints.length > 5) {
-      throw new ValidationError('The maximum number of thumbprints is 5', scope);
+      throw new ValidationError('MaximumNumberThumbprints', 'The maximum number of thumbprints is 5', scope);
     }
 
     // thumbprint length is 40
     if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && thumbprint.length !== 40)) {
-      throw new ValidationError('The length of a thumbprint must be 40 characters', scope);
+      throw new ValidationError('LengthThumbprintCharacters', 'The length of a thumbprint must be 40 characters', scope);
     }
 
     // thumbprint must be hex
     if (props.thumbprints?.some((thumbprint) => !Token.isUnresolved(thumbprint) && !/^[0-9a-fA-F]+$/.test(thumbprint))) {
-      throw new ValidationError('All thumbprints must be in hexadecimal format', scope);
+      throw new ValidationError('ThumbprintsHexadecimalFormat', 'All thumbprints must be in hexadecimal format', scope);
     }
 
     this.resource = new CfnOIDCProvider(this, 'Resource', {

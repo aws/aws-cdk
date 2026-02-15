@@ -200,7 +200,7 @@ export class Branch extends Resource implements IBranch {
       const isSSR = isServerSideRendered(platform);
 
       if (props.computeRole && !isSSR) {
-        throw new ValidationError('`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+        throw new ValidationError('ComputeroleSpecifiedBranchesApps', '`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
       }
     }
 

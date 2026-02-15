@@ -112,7 +112,7 @@ export class LinuxParameters extends Construct {
       props.sharedMemorySize !== undefined &&
       (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
     ) {
-      throw new ValidationError(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`, this);
+      throw new ValidationError('SharedmemorysizeIntegerGreaterReceived', `sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`, this);
     }
 
     if (
@@ -120,7 +120,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new ValidationError(`swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
+      throw new ValidationError('SwappinessInteger100Received', `swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
     }
   }
 

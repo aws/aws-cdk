@@ -109,7 +109,7 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
     function validateNoToken<A extends keyof CliCredentialsStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new UnscopedValidationError(`CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new UnscopedValidationError('ClicredentialsstacksynthesizerPropertyKeyContain', `CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,

@@ -56,7 +56,7 @@ export class EventBridgePutEvents extends ScheduleTargetBase implements ISchedul
   ) {
     super(props, entry.eventBus.eventBusArn);
     if (this.props.input) {
-      throw new UnscopedValidationError('ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
+      throw new UnscopedValidationError('ScheduletargetbasepropsInputSupportedEventbridgeputevents', 'ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
     }
   }
 

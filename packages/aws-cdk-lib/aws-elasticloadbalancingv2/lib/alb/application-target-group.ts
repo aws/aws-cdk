@@ -372,12 +372,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.slowStart !== undefined) {
         // 0 is allowed and disables slow start
         if ((props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) || props.slowStart.toSeconds() > 900) {
-          throw new ValidationError('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.', this);
+          throw new ValidationError('SlowStartDurationValue', 'Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.', this);
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
 
         if (isWeightedRandomAlgorithm) {
-          throw new ValidationError('The weighted random routing algorithm can not be used with slow start mode.', this);
+          throw new ValidationError('WeightedRandomRoutingAlgorithm', 'The weighted random routing algorithm can not be used with slow start mode.', this);
         }
       }
 
@@ -395,7 +395,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         if (this.targetType === TargetType.LAMBDA) {
           this.setAttribute('lambda.multi_value_headers.enabled', 'true');
         } else {
-          throw new ValidationError('multiValueHeadersEnabled is only supported for Lambda targets.', this);
+          throw new ValidationError('MultivalueheadersenabledSupportedLambdaTargets', 'multiValueHeadersEnabled is only supported for Lambda targets.', this);
         }
       }
 
@@ -403,7 +403,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
       if (props.enableAnomalyMitigation !== undefined) {
         if (props.enableAnomalyMitigation && !isWeightedRandomAlgorithm) {
-          throw new ValidationError('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.', this);
+          throw new ValidationError('AnomalyMitigationAvailableLoadbalancingalgorithmtype', 'Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.', this);
         }
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
@@ -441,14 +441,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
     if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
-      throw new ValidationError('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).', this);
+      throw new ValidationError('StickinessCookieDurationValue', 'Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).', this);
     }
     if (cookieName !== undefined) {
       if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
-        throw new ValidationError('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.', this);
+        throw new ValidationError('AppCookieNamesStart', 'App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.', this);
       }
       if (cookieName === '') {
-        throw new ValidationError('App cookie name cannot be an empty string.', this);
+        throw new ValidationError('AppCookieNameEmpty', 'App cookie name cannot be an empty string.', this);
       }
     }
     this.setAttribute('stickiness.enabled', 'true');
@@ -498,7 +498,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
+      throw new ValidationError('TargetgroupNeedsAttachedLoadbalancer', 'The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerArn);
   }
@@ -716,15 +716,14 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
       const result = target.attachToApplicationTargetGroup(this);
 
       if (result.targetJson !== undefined) {
-        throw new ValidationError('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
+        throw new ValidationError('AddNonSelfRegistering', 'Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
       }
     }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
     if (!this._metrics) {
-      throw new ValidationError(
-        'The imported ApplicationTargetGroup needs the associated ApplicationBalancer to be able to provide metrics. ' +
+      throw new ValidationError('ImportedApplicationtargetgroupNeedsAssociated', 'The imported ApplicationTargetGroup needs the associated ApplicationBalancer to be able to provide metrics. ' +
         'Please specify the ARN value when importing it.', this);
     }
     return this._metrics;

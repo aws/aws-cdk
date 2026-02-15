@@ -134,11 +134,11 @@ export class LogQueryWidget extends ConcreteWidget {
     this.props = props;
 
     if (props.logGroupNames.length === 0) {
-      throw new cdk.UnscopedValidationError('Specify at least one log group name.');
+      throw new cdk.UnscopedValidationError('SpecifyLeastOneLog', 'Specify at least one log group name.');
     }
 
     if (!!props.queryString === !!props.queryLines) {
-      throw new cdk.UnscopedValidationError('Specify exactly one of \'queryString\' and \'queryLines\'');
+      throw new cdk.UnscopedValidationError('SpecifyExactlyOneQuerystring', 'Specify exactly one of \'queryString\' and \'queryLines\'');
     }
   }
   public toJson(): any[] {

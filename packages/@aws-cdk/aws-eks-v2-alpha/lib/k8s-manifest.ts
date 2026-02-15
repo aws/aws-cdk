@@ -140,7 +140,7 @@ export class KubernetesManifest extends Construct {
     const stack = Stack.of(this);
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new ValidationError('Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError('KubectlProviderDefinedCluster', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const prune = props.prune ?? props.cluster.prune;

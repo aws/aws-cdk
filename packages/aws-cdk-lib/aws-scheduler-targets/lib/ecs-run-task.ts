@@ -217,14 +217,14 @@ export class EcsRunFargateTask extends EcsRunTask {
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     if (!this.props.taskDefinition.isFargateCompatible) {
-      throw new ValidationError('TaskDefinition is not compatible with Fargate launch type.', _schedule);
+      throw new ValidationError('TaskdefinitionCompatibleFargateLaunch', 'TaskDefinition is not compatible with Fargate launch type.', _schedule);
     }
 
     const subnetSelection = this.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
     // Throw an error if assignPublicIp is true and the subnet type is not public
     if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
-      throw new ValidationError('assignPublicIp should be set to true only for public subnets', _schedule);
+      throw new ValidationError('AssignpublicipTruePublicSubnets', 'assignPublicIp should be set to true only for public subnets', _schedule);
     }
 
     const assignPublicIp = this.assignPublicIp !== undefined
@@ -278,7 +278,7 @@ export class EcsRunEc2Task extends EcsRunTask {
 
   protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
     if (this.props.taskDefinition.compatibility === ecs.Compatibility.FARGATE) {
-      throw new ValidationError('TaskDefinition is not compatible with EC2 launch type', _schedule);
+      throw new ValidationError('TaskdefinitionCompatibleEc2Launch', 'TaskDefinition is not compatible with EC2 launch type', _schedule);
     }
 
     // Only one of capacityProviderStrategy or launchType can be set
@@ -290,7 +290,7 @@ export class EcsRunEc2Task extends EcsRunTask {
     // Security groups are only configurable with the "awsvpc" network mode.
     // See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-networkConfiguration
     if (!taskDefinitionUsesAwsVpc && (this.props.securityGroups || this.props.vpcSubnets)) {
-      throw new ValidationError('Security groups and subnets can only be used with awsvpc network mode', _schedule);
+      throw new ValidationError('SecurityGroupsSubnetsUsed', 'Security groups and subnets can only be used with awsvpc network mode', _schedule);
     }
 
     const subnetSelection =

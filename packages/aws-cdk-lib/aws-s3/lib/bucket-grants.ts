@@ -109,7 +109,7 @@ export class BucketGrants {
    */
   public publicAccess(keyPrefix = '*', ...allowedActions: string[]) {
     if (this.bucket.disallowPublicAccess) {
-      throw new ValidationError("Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
+      throw new ValidationError('GrantPublicAccessBlockpublicpolicy', "Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
@@ -188,7 +188,7 @@ export class BucketGrants {
    */
   public replicationPermission(identity: IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
-      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this.bucket);
+      throw new ValidationError('LeastOneDestinationBucket', 'At least one destination bucket must be specified in the destinations array', this.bucket);
     }
 
     // add permissions to the role

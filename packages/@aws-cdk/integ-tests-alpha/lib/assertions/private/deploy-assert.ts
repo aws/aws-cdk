@@ -45,7 +45,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     const scopes = Node.of(Node.of(construct).root).findAll();
     const deployAssert = scopes.find(s => DeployAssert.isDeployAssert(s));
     if (!deployAssert) {
-      throw new UnscopedValidationError('No DeployAssert construct found in scopes');
+      throw new UnscopedValidationError('DeployassertConstructFoundScopes', 'No DeployAssert construct found in scopes');
     }
     return deployAssert as DeployAssert;
   }

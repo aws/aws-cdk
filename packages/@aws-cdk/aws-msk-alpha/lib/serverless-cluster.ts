@@ -93,7 +93,7 @@ export class ServerlessCluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     if (props.vpcConfigs.length < 1 || props.vpcConfigs.length > 5) {
-      throw new ValidationError(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
+      throw new ValidationError('VpcconfigsContainConfigurationsGot', `\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
     }
 
     const vpcConfigs = props.vpcConfigs.map((vpcConfig, index) => this._renderVpcConfig(vpcConfig, index));
@@ -140,14 +140,14 @@ export class ServerlessCluster extends ClusterBase {
     const subnetSelection = vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets);
 
     if (subnetSelection.subnets.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
+      throw new ValidationError('ClusterRequiresLeastSubnets', `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
     }
 
     let securityGroups: ec2.ISecurityGroup[] = [];
 
     if (vpcConfig.securityGroups) {
       if (vpcConfig.securityGroups.length < 1 || vpcConfig.securityGroups.length > 5) {
-        throw new ValidationError(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
+        throw new ValidationError('SecuritygroupsContainElementsGot', `\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
       }
       securityGroups = vpcConfig.securityGroups;
     } else {

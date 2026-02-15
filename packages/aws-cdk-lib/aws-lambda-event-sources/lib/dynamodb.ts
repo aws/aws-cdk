@@ -20,13 +20,13 @@ export class DynamoEventSource extends StreamEventSource {
     if (this.props.batchSize !== undefined
       && !Token.isUnresolved(this.props.batchSize)
       && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-      throw new ValidationError(`Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`, table);
+      throw new ValidationError('MaximumBatchSize10000', `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`, table);
     }
   }
 
   public bind(target: lambda.IFunction) {
     if (!this.table.tableStreamArn) {
-      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.table.node.path}`, this.table);
+      throw new ValidationError('DynamodbStreamsEnabledTable', `DynamoDB Streams must be enabled on the table ${this.table.node.path}`, this.table);
     }
 
     const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${Names.nodeUniqueId(this.table.node)}`,
@@ -47,7 +47,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new ValidationError('DynamoEventSource is not yet bound to an event source mapping', this.table);
+      throw new ValidationError('DynamoeventsourceYetBoundEvent', 'DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingId;
   }
@@ -57,7 +57,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new ValidationError('DynamoEventSource is not yet bound to an event source mapping', this.table);
+      throw new ValidationError('DynamoeventsourceYetBoundEvent', 'DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingArn;
   }

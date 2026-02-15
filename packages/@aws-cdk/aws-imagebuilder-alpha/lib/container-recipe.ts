@@ -432,8 +432,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
     attrs: ContainerRecipeAttributes,
   ): IContainerRecipe {
     if (!attrs.containerRecipeArn && !attrs.containerRecipeName) {
-      throw new cdk.ValidationError(
-        'either either containerRecipeArn or containerRecipeName must be provided to import a container recipe',
+      throw new cdk.ValidationError('EitherEitherContainerrecipearnContainerrecipename', 'either either containerRecipeArn or containerRecipeName must be provided to import a container recipe',
         scope,
       );
     }
@@ -635,25 +634,23 @@ export class ContainerRecipe extends ContainerRecipeBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError(
-        `the containerRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
+      throw new cdk.ValidationError('ContainerrecipenameLonger128Characters', `the containerRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the containerRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ContainerrecipenameContainSpacesGot', `the containerRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError(
-        `the containerRecipeName cannot contain underscores, got: '${this.physicalName}'`,
+      throw new cdk.ValidationError('ContainerrecipenameContainUnderscoresGot', `the containerRecipeName cannot contain underscores, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the containerRecipeName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ContainerrecipenameLowercaseGotPhysicalname', `the containerRecipeName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

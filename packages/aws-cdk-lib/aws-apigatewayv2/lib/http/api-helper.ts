@@ -28,7 +28,7 @@ export class HttpApiHelper {
    */
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new ValidationError(`Path must start with '/': ${path}`, this.httpApi);
+      throw new ValidationError('PathStartPath', `Path must start with '/': ${path}`, this.httpApi);
     }
 
     if (method && method.toUpperCase() === 'ANY') {

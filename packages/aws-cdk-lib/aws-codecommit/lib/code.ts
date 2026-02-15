@@ -29,7 +29,7 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isDirectory()) {
-      throw new UnscopedValidationError(`'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath }')`);
+      throw new UnscopedValidationError('DirectorypathNeedsPathDirectory', `'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath }')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -45,7 +45,7 @@ export abstract class Code {
 
     const statResult = fs.statSync(resolvedPath);
     if (!statResult || !statResult.isFile()) {
-      throw new UnscopedValidationError(`'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath }')`);
+      throw new UnscopedValidationError('FilepathNeedsPathZip', `'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath }')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -89,7 +89,7 @@ class AssetCode extends Code {
 
   public bind(scope: Construct): CodeConfig {
     if (!this.asset.isZipArchive) {
-      throw new ValidationError('Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )', scope);
+      throw new ValidationError('AssetZipFileDirectory', 'Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )', scope);
     }
 
     return {

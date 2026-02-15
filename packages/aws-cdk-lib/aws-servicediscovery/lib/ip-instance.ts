@@ -89,25 +89,25 @@ export class IpInstance extends InstanceBase {
     const dnsRecordType = props.service.dnsRecordType;
 
     if (dnsRecordType === DnsRecordType.CNAME) {
-      throw new ValidationError('Service must support `A`, `AAAA` or `SRV` records to register this instance type.', this);
+      throw new ValidationError('ServiceSupportAaaaSrv', 'Service must support `A`, `AAAA` or `SRV` records to register this instance type.', this);
     }
     if (dnsRecordType === DnsRecordType.SRV) {
       if (!props.port) {
-        throw new ValidationError('A `port` must be specified for a service using a `SRV` record.', this);
+        throw new ValidationError('PortSpecifiedServiceSrv', 'A `port` must be specified for a service using a `SRV` record.', this);
       }
 
       if (!props.ipv4 && !props.ipv6) {
-        throw new ValidationError('At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record.', this);
+        throw new ValidationError('LeastIpv4Ipv6Specified', 'At least `ipv4` or `ipv6` must be specified for a service using a `SRV` record.', this);
       }
     }
 
     if (!props.ipv4 && (dnsRecordType === DnsRecordType.A || dnsRecordType === DnsRecordType.A_AAAA)) {
-      throw new ValidationError('An `ipv4` must be specified for a service using a `A` record.', this);
+      throw new ValidationError('Ipv4SpecifiedServiceRecord', 'An `ipv4` must be specified for a service using a `A` record.', this);
     }
 
     if (!props.ipv6 &&
       (dnsRecordType === DnsRecordType.AAAA || dnsRecordType === DnsRecordType.A_AAAA)) {
-      throw new ValidationError('An `ipv6` must be specified for a service using a `AAAA` record.', this);
+      throw new ValidationError('Ipv6SpecifiedServiceAaaa', 'An `ipv6` must be specified for a service using a `AAAA` record.', this);
     }
 
     const port = props.port || 80;

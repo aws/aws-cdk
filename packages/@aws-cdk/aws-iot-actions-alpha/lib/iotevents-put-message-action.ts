@@ -51,7 +51,7 @@ export class IotEventsPutMessageAction implements iot.IAction {
     this.role = props.role;
 
     if (this.batchMode && this.messageId) {
-      throw new UnscopedValidationError('messageId is not allowed when batchMode is true');
+      throw new UnscopedValidationError('MessageidAllowedBatchmodeTrue', 'messageId is not allowed when batchMode is true');
     }
   }
 

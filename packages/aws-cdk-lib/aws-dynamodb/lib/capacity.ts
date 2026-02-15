@@ -72,7 +72,7 @@ export abstract class Capacity {
       }
 
       public _renderWriteCapacity() {
-        throw new UnscopedValidationError(`You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`);
+        throw new UnscopedValidationError('ConfigureWritecapacityCapacitymodeFixed', `You cannot configure 'writeCapacity' with ${CapacityMode.FIXED} capacity mode`);
       }
     }) (CapacityMode.FIXED);
   }
@@ -89,15 +89,15 @@ export abstract class Capacity {
         super(mode);
 
         if ((options.minCapacity ?? 1) > options.maxCapacity) {
-          throw new UnscopedValidationError('`minCapacity` must be less than or equal to `maxCapacity`');
+          throw new UnscopedValidationError('MincapacityEqualMaxcapacity', '`minCapacity` must be less than or equal to `maxCapacity`');
         }
 
         if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
-          throw new UnscopedValidationError('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
+          throw new UnscopedValidationError('TargetutilizationpercentGreater', '`targetUtilizationPercent` cannot be less than 20 or greater than 90');
         }
 
         if (options.seedCapacity !== undefined && (options.seedCapacity < 1)) {
-          throw new UnscopedValidationError(`'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`);
+          throw new UnscopedValidationError('SeedcapacityReceivedOptionsSeedcapacity', `'seedCapacity' cannot be less than 1 - received ${options.seedCapacity}`);
         }
       }
 

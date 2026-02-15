@@ -140,14 +140,14 @@ export class CompositeAlarm extends AlarmBase {
     addConstructMetadata(this, props);
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
-      throw new ValidationError('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
+      throw new ValidationError('AlarmRuleExpressionGreater', 'Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
     }
 
     let extensionPeriod = props.actionsSuppressorExtensionPeriod;
     let waitPeriod = props.actionsSuppressorWaitPeriod;
     if (props.actionsSuppressor === undefined) {
       if (extensionPeriod !== undefined || waitPeriod !== undefined) {
-        throw new ValidationError('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
+        throw new ValidationError('ActionssuppressorExtensionWaitPeriods', 'ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
       }
     } else {
       extensionPeriod = extensionPeriod ?? Duration.minutes(1);

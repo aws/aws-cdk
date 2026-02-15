@@ -155,17 +155,17 @@ export class FargateService extends BaseService implements IFargateService {
    */
   constructor(scope: Construct, id: string, props: FargateServiceProps) {
     if (!props.taskDefinition.isFargateCompatible && !props.taskDefinition.isManagedInstancesCompatible) {
-      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate or Managed Instances', scope);
+      throw new ValidationError('SuppliedTaskdefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with Fargate or Managed Instances', scope);
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new ValidationError('Only one of SecurityGroup or SecurityGroups can be populated.', scope);
+      throw new ValidationError('OneSecuritygroupSecuritygroupsPopulated', 'Only one of SecurityGroup or SecurityGroups can be populated.', scope);
     }
 
     if (props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED &&
       !cdk.Token.isUnresolved(props.maxHealthyPercent) &&
       props.maxHealthyPercent === 100) {
-      throw new ValidationError('AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100', scope);
+      throw new ValidationError('AvailabilityzonerebalancingEnabledRequiresMaxhealthypercent', 'AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100', scope);
     }
 
     // Platform versions not supporting referencesSecretJsonField, ephemeralStorageGiB, or pidMode on a task definition
@@ -178,11 +178,11 @@ export class FargateService extends BaseService implements IFargateService {
     const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
     if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
-      throw new ValidationError(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      throw new ValidationError('EphemeralstoragegibFeatureRequiresPlatform', `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
     }
 
     if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
-      throw new ValidationError(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      throw new ValidationError('PidmodeFeatureRequiresPlatform', `The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
     }
 
     super(scope, id, {
@@ -236,7 +236,7 @@ export class FargateService extends BaseService implements IFargateService {
   @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
-      throw new ValidationError('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
+      throw new ValidationError('AvailabilityzonerebalancingEnabledDisallowsService', 'AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
     }
     super.attachToClassicLB(loadBalancer);
   }

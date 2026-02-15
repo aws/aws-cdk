@@ -138,7 +138,7 @@ export class S3ApiDefinition extends ApiDefinition {
     super();
 
     if (!bucket.bucketRef.bucketName) {
-      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
+      throw new ValidationError('BucketnameUndefinedProvidedBucket', 'bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketRef.bucketName;
@@ -163,11 +163,11 @@ export class InlineApiDefinition extends ApiDefinition {
     super();
 
     if (typeof(definition) !== 'object') {
-      throw new UnscopedValidationError('definition should be of type object');
+      throw new UnscopedValidationError('DefinitionTypeObject', 'definition should be of type object');
     }
 
     if (Object.keys(definition).length === 0) {
-      throw new UnscopedValidationError('JSON definition cannot be empty');
+      throw new UnscopedValidationError('JsonDefinitionEmpty', 'JSON definition cannot be empty');
     }
   }
 
@@ -198,7 +198,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (this.asset.isZipArchive) {
-      throw new ValidationError(`Asset cannot be a .zip file or a directory (${this.path})`, scope);
+      throw new ValidationError('AssetZipFileDirectory', `Asset cannot be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -215,7 +215,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (!this.asset) {
-      throw new ValidationError('bindToResource() must be called after bind()', scope);
+      throw new ValidationError('BindtoresourceCalledAfterBind', 'bindToResource() must be called after bind()', scope);
     }
 
     const child = Node.of(restApi).defaultChild as CfnRestApi;

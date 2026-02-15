@@ -243,8 +243,7 @@ export class Service extends ServiceBase {
     const discoveryType = props.discoveryType || defaultDiscoveryType(props.namespace);
 
     if (namespaceType == NamespaceType.HTTP && discoveryType == DiscoveryType.DNS_AND_API) {
-      throw new ValidationError(
-        'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.', this,
+      throw new ValidationError('SpecifyDiscoverytypeDnsApi', 'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.', this,
       );
     }
 
@@ -253,22 +252,21 @@ export class Service extends ServiceBase {
       discoveryType === DiscoveryType.API &&
       (props.routingPolicy || props.dnsRecordType)
     ) {
-      throw new ValidationError(
-        'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.', this,
+      throw new ValidationError('SpecifyRoutingpolicyDnsrecordHttp', 'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.', this,
       );
     }
 
     if (props.healthCheck && props.customHealthCheck) {
-      throw new ValidationError('Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.', this);
+      throw new ValidationError('SpecifyHealthcheckconfigHealthcheckcustomconfig', 'Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.', this);
     }
 
     if (namespaceType === NamespaceType.DNS_PRIVATE && props.healthCheck) {
-      throw new ValidationError('Cannot specify `healthCheckConfig` for a Private DNS namespace.', this);
+      throw new ValidationError('SpecifyHealthcheckconfigPrivateDns', 'Cannot specify `healthCheckConfig` for a Private DNS namespace.', this);
     }
 
     if (props.routingPolicy === RoutingPolicy.MULTIVALUE
         && props.dnsRecordType === DnsRecordType.CNAME) {
-      throw new ValidationError('Cannot use `CNAME` record when routing policy is `Multivalue`.', this);
+      throw new ValidationError('CnameRecordRoutingPolicy', 'Cannot use `CNAME` record when routing policy is `Multivalue`.', this);
     }
 
     // Additional validation for eventual attachment of LBs
@@ -277,13 +275,13 @@ export class Service extends ServiceBase {
     // routingPolicy anyway, so might as well do the validation as well.
     if (props.routingPolicy === RoutingPolicy.MULTIVALUE
         && props.loadBalancer) {
-      throw new ValidationError('Cannot register loadbalancers when routing policy is `Multivalue`.', this);
+      throw new ValidationError('RegisterLoadbalancersRoutingPolicy', 'Cannot register loadbalancers when routing policy is `Multivalue`.', this);
     }
 
     if (props.healthCheck
         && props.healthCheck.type === HealthCheckType.TCP
         && props.healthCheck.resourcePath) {
-      throw new ValidationError('Cannot specify `resourcePath` when using a `TCP` health check.', this);
+      throw new ValidationError('SpecifyResourcepathTcpHealth', 'Cannot specify `resourcePath` when using a `TCP` health check.', this);
     }
 
     // Set defaults where necessary
@@ -297,7 +295,7 @@ export class Service extends ServiceBase {
       && (!(dnsRecordType === DnsRecordType.A
         || dnsRecordType === DnsRecordType.AAAA
         || dnsRecordType === DnsRecordType.A_AAAA))) {
-      throw new ValidationError('Must support `A` or `AAAA` records to register loadbalancers.', this);
+      throw new ValidationError('SupportAaaaRecordsRegister', 'Must support `A` or `AAAA` records to register loadbalancers.', this);
     }
 
     const dnsConfig: CfnService.DnsConfigProperty | undefined =

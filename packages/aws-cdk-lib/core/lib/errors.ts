@@ -193,8 +193,8 @@ export class ValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string, scope: IConstruct) {
-    super(msg, scope);
+  constructor(name: string, msg: string, scope: IConstruct) {
+    super(msg, scope, name);
     Object.setPrototypeOf(this, ValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
@@ -215,8 +215,8 @@ export class UnscopedValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, ValidationError.name);
+  constructor(name: string, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }

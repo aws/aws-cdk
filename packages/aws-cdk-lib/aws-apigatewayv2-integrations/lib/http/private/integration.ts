@@ -54,7 +54,7 @@ export abstract class HttpPrivateIntegration extends HttpRouteIntegration {
     let vpcLink = configOptions.vpcLink;
     if (!vpcLink) {
       if (!configOptions.vpc) {
-        throw new ValidationError('One of vpcLink or vpc should be provided for private integration', bindOptions.scope);
+        throw new ValidationError('OneVpclinkVpcProvided', 'One of vpcLink or vpc should be provided for private integration', bindOptions.scope);
       }
 
       vpcLink = bindOptions.route.httpApi.addVpcLink({ vpc: configOptions.vpc });

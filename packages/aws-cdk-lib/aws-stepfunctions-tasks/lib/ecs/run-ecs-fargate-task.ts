@@ -49,11 +49,11 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
 export class RunEcsFargateTask extends EcsRunTaskBase {
   constructor(props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
-      throw new UnscopedValidationError('Supplied TaskDefinition is not configured for compatibility with Fargate');
+      throw new UnscopedValidationError('SuppliedTaskdefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
     if (!props.taskDefinition.defaultContainer) {
-      throw new UnscopedValidationError('A TaskDefinition must have at least one essential container');
+      throw new UnscopedValidationError('TaskdefinitionLeastOneEssential', 'A TaskDefinition must have at least one essential container');
     }
 
     super({

@@ -32,7 +32,7 @@ export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {
-        throw new ValidationError('Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.', this);
+        throw new ValidationError('TaskTokenRequiredHeaders', 'Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.', this);
       }
     }
   }

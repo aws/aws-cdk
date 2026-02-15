@@ -221,8 +221,7 @@ export class Alarm extends AlarmBase {
     let thresholdMetricId: string | undefined; // For anomaly detection
     if (isAnomalyDetection) {
       if (!isAnomalyDetectionMetric(props.metric)) {
-        throw new ValidationError(
-          `Anomaly detection operator ${comparisonOperator} requires an ANOMALY_DETECTION_BAND() metric. Use the construct AnomalyDetectionAlarm or wrap your metric in an ANOMALY_DETECTION_BAND expression.`,
+        throw new ValidationError('AnomalyDetectionOperatorComparisonoperator', `Anomaly detection operator ${comparisonOperator} requires an ANOMALY_DETECTION_BAND() metric. Use the construct AnomalyDetectionAlarm or wrap your metric in an ANOMALY_DETECTION_BAND expression.`,
           this,
         );
       }
@@ -238,15 +237,14 @@ export class Alarm extends AlarmBase {
       // thresholdMetricId will be assigned below (only becomes available after rendering)
     } else {
       if (isAnomalyDetectionMetric(props.metric)) {
-        throw new ValidationError(
-          `Fixed threshold operator ${props.comparisonOperator} can not be used with an ANOMALY_DETECTION_BAND() math expression; use an anomaly threshold operator instead.`,
+        throw new ValidationError('FixedThresholdOperatorProps', `Fixed threshold operator ${props.comparisonOperator} can not be used with an ANOMALY_DETECTION_BAND() math expression; use an anomaly threshold operator instead.`,
           this,
         );
       }
 
       // For standard alarms, we need a threshold
       if (props.threshold === undefined) {
-        throw new ValidationError('threshold must be specified for standard alarms', this);
+        throw new ValidationError('ThresholdSpecifiedStandardAlarms', 'threshold must be specified for standard alarms', this);
       }
 
       threshold = props.threshold;
@@ -388,7 +386,7 @@ export class Alarm extends AlarmBase {
       // Check per-instance metric
       const metricConfig = this.metric.toMetricConfig();
       if (metricConfig.metricStat?.dimensions?.length != 1 || !metricConfig.metricStat?.dimensions?.some(dimension => dimension.name === 'InstanceId')) {
-        throw new ValidationError(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`, this);
+        throw new ValidationError('Ec2AlarmActionsRequires', `EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`, this);
       }
     }
     return actionArn;
@@ -543,7 +541,7 @@ export class Alarm extends AlarmBase {
                 };
               },
               withSearchExpression: (_searchExpr, _conf) => {
-                throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
+                throw new ValidationError('SearchExpressionsSupportedCloudwatch', 'Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
               },
             });
           }),
@@ -556,7 +554,7 @@ export class Alarm extends AlarmBase {
         return { props, primaryId };
       },
       withSearchExpression: () => {
-        throw new ValidationError('Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
+        throw new ValidationError('SearchExpressionsSupportedCloudwatch', 'Search expressions are not supported in CloudWatch Alarms. Use search expressions only in dashboard graphs.', this);
       },
     });
   }
@@ -568,7 +566,7 @@ export class Alarm extends AlarmBase {
     const stack = Stack.of(this);
 
     if (definitelyDifferent(stat.region, stack.region)) {
-      throw new ValidationError(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`, this);
+      throw new ValidationError('CreateAlarmRegionStack', `Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`, this);
     }
   }
 
@@ -578,7 +576,7 @@ export class Alarm extends AlarmBase {
    */
   private validateMetricExpression(expr: MetricExpressionConfig) {
     if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
-      throw new ValidationError('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion', this);
+      throw new ValidationError('CreateAlarmBasedMathexpression', 'Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion', this);
     }
   }
 
@@ -660,7 +658,7 @@ export class AnomalyDetectionAlarm extends Alarm {
     addConstructMetadata(this, props);
 
     if (props.comparisonOperator && !isAnomalyDetectionOperator(props.comparisonOperator)) {
-      throw new ValidationError(`Must use one of the anomaly detection operators, got ${props.comparisonOperator}`, this);
+      throw new ValidationError('OneAnomalyDetectionOperators', `Must use one of the anomaly detection operators, got ${props.comparisonOperator}`, this);
     }
   }
 }
@@ -717,7 +715,7 @@ function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
 function assertSubmetricsCount(scope: Construct, expr: MetricExpressionConfig) {
   if (Object.keys(expr.usingMetrics).length > 10) {
     // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarms-on-metric-math-expressions
-    throw new ValidationError('Alarms on math expressions cannot contain more than 10 individual metrics', scope);
+    throw new ValidationError('AlarmsMathExpressionsContain', 'Alarms on math expressions cannot contain more than 10 individual metrics', scope);
   }
 }
 

@@ -173,7 +173,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new UnscopedValidationError(`${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError('ScopeNodePathText', `${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);

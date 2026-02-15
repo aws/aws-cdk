@@ -332,7 +332,7 @@ export class Portfolio extends PortfolioBase {
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
-      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
+      throw new ValidationError('MissingRequiredPortfolioPortfolio', 'Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
     }
 
     class Import extends PortfolioBase {

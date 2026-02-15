@@ -167,10 +167,10 @@ const BITS32 = Math.pow(2, 32);
  */
 export function createTokenDouble(x: number) {
   if (Math.floor(x) !== x || x < 0) {
-    throw new UnscopedValidationError('Can only encode positive integers');
+    throw new UnscopedValidationError('EncodePositiveIntegers', 'Can only encode positive integers');
   }
   if (x > MAX_ENCODABLE_INTEGER) {
-    throw new UnscopedValidationError(`Got an index too large to encode: ${x}`);
+    throw new UnscopedValidationError('GotIndexTooLarge', `Got an index too large to encode: ${x}`);
   }
 
   const buf = new ArrayBuffer(8);

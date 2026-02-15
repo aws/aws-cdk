@@ -645,7 +645,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     if ('grant' in this._retrievalRole) {
       return this._retrievalRole as iam.IRole;
     }
-    throw new ValidationError(`Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
+    throw new ValidationError('RetrievalRoleImplementIrole', `Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
   }
 
   private getRetrievalRole(): iam.Role | undefined {

@@ -792,7 +792,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError(lengthErrors.join('\n'));
+      throw new ValidationError('ValidationError', lengthErrors.join('\n'));
     }
 
     const patternErrors = validateFieldPattern(
@@ -803,7 +803,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError('ValidationError', patternErrors.join('\n'));
     }
   }
 
@@ -827,7 +827,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError('ValidationError', errors.join('\n'));
     }
   }
 
@@ -940,15 +940,13 @@ export class Gateway extends GatewayBase {
 
     if (interceptionPoint === InterceptionPoint.REQUEST) {
       if (this.requestInterceptorConfig) {
-        throw new ValidationError(
-          'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+        throw new ValidationError('GatewayAlreadyRequestInterceptor', 'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
         );
       }
       this.requestInterceptorConfig = interceptor.bind(this, this);
     } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
       if (this.responseInterceptorConfig) {
-        throw new ValidationError(
-          'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+        throw new ValidationError('GatewayAlreadyResponseInterceptor', 'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
         );
       }
       this.responseInterceptorConfig = interceptor.bind(this, this);
@@ -964,14 +962,12 @@ export class Gateway extends GatewayBase {
     const responseCount = interceptors.filter(i => i.interceptionPoint === InterceptionPoint.RESPONSE).length;
 
     if (requestCount > 1) {
-      throw new ValidationError(
-        `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+      throw new ValidationError('GatewayMostOneRequest', `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
       );
     }
 
     if (responseCount > 1) {
-      throw new ValidationError(
-        `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
+      throw new ValidationError('GatewayMostOneResponse', `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
       );
     }
 

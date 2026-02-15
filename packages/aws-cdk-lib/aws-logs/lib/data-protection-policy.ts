@@ -11,7 +11,7 @@ export class DataProtectionPolicy {
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new UnscopedValidationError('DataIdentifier cannot be empty');
+      throw new UnscopedValidationError('DataidentifierEmpty', 'DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }

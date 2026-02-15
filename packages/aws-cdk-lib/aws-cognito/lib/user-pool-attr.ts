@@ -243,10 +243,10 @@ export class StringAttribute implements ICustomAttribute {
 
   constructor(props: StringAttributeProps = {}) {
     if (props.minLen && !Token.isUnresolved(props.minLen) && props.minLen < 0) {
-      throw new UnscopedValidationError(`minLen cannot be less than 0 (value: ${props.minLen}).`);
+      throw new UnscopedValidationError('MinlenValuePropsMinlen', `minLen cannot be less than 0 (value: ${props.minLen}).`);
     }
     if (props.maxLen && !Token.isUnresolved(props.maxLen) && props.maxLen > 2048) {
-      throw new UnscopedValidationError(`maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
+      throw new UnscopedValidationError('MaxlenGreater2048Value', `maxLen cannot be greater than 2048 (value: ${props.maxLen}).`);
     }
     this.minLen = props?.minLen;
     this.maxLen = props?.maxLen;

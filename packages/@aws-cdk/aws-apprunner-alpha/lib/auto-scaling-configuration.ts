@@ -123,7 +123,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const resourceParts = cdk.Fn.split('/', autoScalingConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new cdk.UnscopedValidationError(`Unexpected ARN format: ${autoScalingConfigurationArn}.`);
+      throw new cdk.UnscopedValidationError('UnexpectedArnFormatAutoscalingconfigurationarn', `Unexpected ARN format: ${autoScalingConfigurationArn}.`);
     }
 
     const autoScalingConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -180,14 +180,12 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
   private validateAutoScalingConfiguration(props: AutoScalingConfigurationProps) {
     if (props.autoScalingConfigurationName !== undefined && !cdk.Token.isUnresolved(props.autoScalingConfigurationName)) {
       if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
-        throw new cdk.ValidationError(
-          `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`, this,
+        throw new cdk.ValidationError('AutoscalingconfigurationnameCharactersGotProps', `\`autoScalingConfigurationName\` must be between 4 and 32 characters, got: ${props.autoScalingConfigurationName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.autoScalingConfigurationName)) {
-        throw new cdk.ValidationError(
-          `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`, this,
+        throw new cdk.ValidationError('AutoscalingconfigurationnameStartAlphanumericCharacter', `\`autoScalingConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.autoScalingConfigurationName}.`, this,
         );
       }
     }
@@ -197,19 +195,19 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     const isMaxConcurrencyDefined = typeof props.maxConcurrency === 'number';
 
     if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
-      throw new cdk.ValidationError(`minSize must be between 1 and 25, got ${props.minSize}.`, this);
+      throw new cdk.ValidationError('MinsizeGotPropsMinsize', `minSize must be between 1 and 25, got ${props.minSize}.`, this);
     }
 
     if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
-      throw new cdk.ValidationError(`maxSize must be between 1 and 25, got ${props.maxSize}.`, this);
+      throw new cdk.ValidationError('MaxsizeGotPropsMaxsize', `maxSize must be between 1 and 25, got ${props.maxSize}.`, this);
     }
 
     if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
-      throw new cdk.ValidationError('maxSize must be greater than minSize.', this);
+      throw new cdk.ValidationError('MaxsizeGreaterMinsize', 'maxSize must be greater than minSize.', this);
     }
 
     if (isMaxConcurrencyDefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
-      throw new cdk.ValidationError(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`, this);
+      throw new cdk.ValidationError('Maxconcurrency200GotProps', `maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}.`, this);
     }
   }
 }

@@ -40,7 +40,7 @@ export class MetricFilter extends Resource {
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new ValidationError(`MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
+      throw new ValidationError('MetricfilterSupportsMaximumDimensions', `MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
     }
 
     // It looks odd to map this object to a singleton list, but that's how

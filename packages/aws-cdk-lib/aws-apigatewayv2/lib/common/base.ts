@@ -59,7 +59,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     if (this._apiMapping) {
-      throw new UnscopedValidationError('Only one ApiMapping allowed per Stage');
+      throw new UnscopedValidationError('OneApimappingAllowedPer', 'Only one ApiMapping allowed per Stage');
     }
     this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
@@ -83,7 +83,7 @@ export abstract class StageBase extends Resource implements IStage {
       !Token.isUnresolved(format.toString()) &&
       !/\$context\.(?:requestId|extendedRequestId)\b/.test(format.toString())
     ) {
-      throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+      throw new ValidationError('AccessLogIncludeEither', 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
     }
 
     return {

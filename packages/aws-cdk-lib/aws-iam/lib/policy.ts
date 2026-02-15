@@ -122,7 +122,7 @@ export class Policy extends Resource implements IPolicy, IGrantable {
       public readonly policyName = policyName;
 
       public get policyRef(): PolicyReference {
-        throw new ValidationError('Cannot use a Policy.fromPolicyName() here.', this);
+        throw new ValidationError('PolicyFrompolicynameHere', 'Cannot use a Policy.fromPolicyName() here.', this);
       }
     }
 
@@ -304,7 +304,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // cf. https://github.com/aws/aws-cdk/issues/32980
     const arn = Lazy.string({
       produce: () => {
-        throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', _policy);
+        throw new ValidationError('GrantOperationNeedsAdd', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', _policy);
       },
     });
     this.policyFragment = new ArnPrincipal(arn).policyFragment;
@@ -315,7 +315,7 @@ class PolicyGrantPrincipal implements IPrincipal {
     // This property is referenced to add policy statements as a trust policy.
     // We should fail because a policy cannot be used as a principal of a policy document.
     // cf. https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html#Principal_specifying
-    throw new ValidationError('This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', this._policy);
+    throw new ValidationError('GrantOperationNeedsAdd', 'This grant operation needs to add a resource policy so needs access to a principal. Grant permissions to a Role or User, instead of a Policy.', this._policy);
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {

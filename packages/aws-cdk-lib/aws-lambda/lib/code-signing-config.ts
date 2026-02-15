@@ -92,7 +92,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   public static fromCodeSigningConfigArn(scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
     const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!codeSigningProfileId) {
-      throw new ValidationError(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`, scope);
+      throw new ValidationError('CodeSigningConfigArn', `Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`, scope);
     }
     const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {

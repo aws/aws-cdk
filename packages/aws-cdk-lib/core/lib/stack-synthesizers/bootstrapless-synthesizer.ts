@@ -62,11 +62,11 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
   }
 
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
-    throw new UnscopedValidationError('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError('AddAssetsStackUses', 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    throw new UnscopedValidationError('Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
+    throw new UnscopedValidationError('AddAssetsStackUses', 'Cannot add assets to a Stack that uses the BootstraplessSynthesizer');
   }
 
   public synthesize(session: ISynthesisSession): void {

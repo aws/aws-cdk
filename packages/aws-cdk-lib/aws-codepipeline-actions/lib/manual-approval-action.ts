@@ -68,7 +68,7 @@ export class ManualApprovalAction extends Action {
     });
 
     if (props.timeout && (props.timeout.toMinutes() < 5 || props.timeout.toMinutes() > 86400)) {
-      throw new UnscopedValidationError(`timeout must be between 5 minutes and 86400 minutes (60 days), got ${props.timeout.toMinutes()} minutes`);
+      throw new UnscopedValidationError('TimeoutMinutes86400Minutes', `timeout must be between 5 minutes and 86400 minutes (60 days), got ${props.timeout.toMinutes()} minutes`);
     }
 
     this.props = props;
@@ -90,7 +90,7 @@ export class ManualApprovalAction extends Action {
    */
   public grantManualApproval(grantable: iam.IGrantable): void {
     if (!this.stage) {
-      throw new UnscopedValidationError('Cannot grant permissions before binding action to a stage');
+      throw new UnscopedValidationError('GrantPermissionsBeforeBinding', 'Cannot grant permissions before binding action to a stage');
     }
     grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['codepipeline:ListPipelines'],

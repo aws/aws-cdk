@@ -125,7 +125,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
         return {
           domain: userPoolDomainName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolDomainRef is not available on imported UserPoolDomain.');
+            throw new UnscopedValidationError('UserpooldomainrefAvailableImportedUserpooldomain', 'userPoolDomainRef is not available on imported UserPoolDomain.');
           },
         };
       }
@@ -156,13 +156,13 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this._userPool = props.userPool;
 
     if (!!props.customDomain === !!props.cognitoDomain) {
-      throw new ValidationError('One of, and only one of, cognitoDomain or customDomain must be specified', this);
+      throw new ValidationError('OneOneCognitodomainCustomdomain', 'One of, and only one of, cognitoDomain or customDomain must be specified', this);
     }
 
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
-      throw new ValidationError('domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
+      throw new ValidationError('DomainprefixCognitodomainContainLowercase', 'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -245,7 +245,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else if (client.oAuthFlows.implicitCodeGrant) {
       responseType = 'token';
     } else {
-      throw new ValidationError('signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
+      throw new ValidationError('SigninurlSupportedClientsWithout', 'signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
     }
     const path = options.signInPath ?? '/login';
     return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;

@@ -239,7 +239,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
-        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+        throw new UnscopedValidationError('MetricsconfigContainLeastOne', 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
       }
     }
   }
@@ -314,7 +314,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaeventsourceYetBoundEvent', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -324,7 +324,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaeventsourceYetBoundEvent', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -362,26 +362,26 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new UnscopedValidationError('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError('SecuritygroupProvidingVpc', 'securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new UnscopedValidationError('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError('VpcsubnetsProvidingVpc', 'vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new UnscopedValidationError('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError('SecretKafkaBrokersAccessed', 'secret must be set if Kafka brokers accessed over Internet');
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingpositiontimestampProvidedStartingpositionTimestamp', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingpositiontimestampUsedStartingpositionTimestamp', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
-        throw new UnscopedValidationError('MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+        throw new UnscopedValidationError('MetricsconfigContainLeastOne', 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
       }
     }
 
@@ -389,7 +389,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new ValidationError('Function is not a construct. Unexpected error.', target); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError('FunctionConstructUnexpectedError', 'Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({

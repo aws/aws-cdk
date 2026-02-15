@@ -10,7 +10,7 @@ export function calculateRetryPolicy(scope: IConstruct, props: { totalTimeout?: 
   const maxAttempts = totalTimeout.toSeconds() / interval.toSeconds();
 
   if (Math.round(maxAttempts) !== maxAttempts) {
-    throw new ValidationError(`Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`, scope);
+    throw new ValidationError('DetermineRetryCountSince', `Cannot determine retry count since totalTimeout=${totalTimeout.toSeconds()}s is not integrally dividable by queryInterval=${interval.toSeconds()}s`, scope);
   }
 
   return {

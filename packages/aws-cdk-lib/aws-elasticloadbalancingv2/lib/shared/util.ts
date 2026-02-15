@@ -26,7 +26,7 @@ export function defaultPortForProtocol(proto: ApplicationProtocol): number {
     case ApplicationProtocol.HTTP: return 80;
     case ApplicationProtocol.HTTPS: return 443;
     default:
-      throw new UnscopedValidationError(`Unrecognized protocol: ${proto}`);
+      throw new UnscopedValidationError('UnrecognizedProtocolProto', `Unrecognized protocol: ${proto}`);
   }
 }
 
@@ -46,7 +46,7 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
       return ApplicationProtocol.HTTPS;
 
     default:
-      throw new UnscopedValidationError(`Don't know default protocol for port: ${port}; please supply a protocol`);
+      throw new UnscopedValidationError('DonKnowDefaultProtocol', `Don't know default protocol for port: ${port}; please supply a protocol`);
   }
 }
 
@@ -80,7 +80,7 @@ export function validateNetworkProtocol(protocol: Protocol) {
   const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];
 
   if (NLB_PROTOCOLS.indexOf(protocol) === -1) {
-    throw new UnscopedValidationError(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
+    throw new UnscopedValidationError('ProtocolOneNlbProtocols', `The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
   }
 }
 
@@ -106,7 +106,7 @@ export function parseLoadBalancerFullName(arn: string): string {
     const arnComponents = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = arnComponents.resourceName;
     if (!resourceName) {
-      throw new UnscopedValidationError(`Provided ARN does not belong to a load balancer: ${arn}`);
+      throw new UnscopedValidationError('ProvidedArnBelongLoad', `Provided ARN does not belong to a load balancer: ${arn}`);
     }
     return resourceName;
   }
@@ -125,7 +125,7 @@ export function parseTargetGroupFullName(arn: string): string {
   const arnComponents = Arn.split(arn, ArnFormat.NO_RESOURCE_NAME);
   const resource = arnComponents.resource;
   if (!resource) {
-    throw new UnscopedValidationError(`Provided ARN does not belong to a target group: ${arn}`);
+    throw new UnscopedValidationError('ProvidedArnBelongTarget', `Provided ARN does not belong to a target group: ${arn}`);
   }
   return resource;
 }

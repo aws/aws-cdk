@@ -862,7 +862,7 @@ export class ParserProcessor implements IProcessor {
 
       case ParserProcessorType.GROK:
         if (!props.grokOptions || !props.grokOptions.match) {
-          throw new UnscopedValidationError('Match pattern is required for Grok parser');
+          throw new UnscopedValidationError('MatchPatternRequiredGrok', 'Match pattern is required for Grok parser');
         }
         // Apply default values for Grok options
         this.grokOptions = {
@@ -873,7 +873,7 @@ export class ParserProcessor implements IProcessor {
 
       case ParserProcessorType.OCSF:
         if (!props.parseToOCSFOptions) {
-          throw new UnscopedValidationError('parseToOCSFOptions must be provided for type OCSF');
+          throw new UnscopedValidationError('ParsetoocsfoptionsProvidedTypeOcsf', 'parseToOCSFOptions must be provided for type OCSF');
         }
         this.parseToOCSFOptions = {
           source: '@message',
@@ -882,7 +882,7 @@ export class ParserProcessor implements IProcessor {
         break;
 
       default:
-        throw new UnscopedValidationError(`Unsupported parser processor type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedParserProcessorType', `Unsupported parser processor type: ${this.type}`);
     }
   }
 
@@ -903,7 +903,7 @@ export class ParserProcessor implements IProcessor {
       case ParserProcessorType.OCSF:
         return { parseToOcsf: this.parseToOCSFOptions };
       default:
-        throw new UnscopedValidationError(`Unsupported parser processor type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedParserProcessorType', `Unsupported parser processor type: ${this.type}`);
     }
   }
 }
@@ -935,7 +935,7 @@ export class VendedLogParser implements IProcessor {
       case VendedLogType.POSTGRES:
         return { parsePostgres: { } };
       default:
-        throw new UnscopedValidationError(`Unsupported vended log type: ${this.logType}`);
+        throw new UnscopedValidationError('UnsupportedVendedLogType', `Unsupported vended log type: ${this.logType}`);
     }
   }
 }
@@ -962,41 +962,41 @@ export class StringMutatorProcessor implements IProcessor {
     switch (this.type) {
       case StringMutatorType.LOWER_CASE:
         if (!props.lowerCaseKeys || props.lowerCaseKeys.length === 0) {
-          throw new UnscopedValidationError('lowerCaseKeys must be provided for LOWER_CASE string mutator');
+          throw new UnscopedValidationError('LowercasekeysProvidedLowerCase', 'lowerCaseKeys must be provided for LOWER_CASE string mutator');
         }
         this.lowerCaseKeys = props.lowerCaseKeys;
         break;
 
       case StringMutatorType.UPPER_CASE:
         if (!props.upperCaseKeys || props.upperCaseKeys.length === 0) {
-          throw new UnscopedValidationError('upperCaseKeys must be provided for UPPER_CASE string mutator');
+          throw new UnscopedValidationError('UppercasekeysProvidedUpperCase', 'upperCaseKeys must be provided for UPPER_CASE string mutator');
         }
         this.upperCaseKeys = props.upperCaseKeys;
         break;
 
       case StringMutatorType.TRIM:
         if (!props.trimKeys || props.trimKeys.length === 0) {
-          throw new UnscopedValidationError('trimKeys must be provided for TRIM string mutator');
+          throw new UnscopedValidationError('TrimkeysProvidedTrimString', 'trimKeys must be provided for TRIM string mutator');
         }
         this.trimKeys = props.trimKeys;
         break;
 
       case StringMutatorType.SPLIT:
         if (!props.splitOptions || !props.splitOptions.entries || props.splitOptions.entries.length === 0) {
-          throw new UnscopedValidationError('splitOptions must be provided for SPLIT string mutator');
+          throw new UnscopedValidationError('SplitoptionsProvidedSplitString', 'splitOptions must be provided for SPLIT string mutator');
         }
         this.splitOptions = props.splitOptions;
         break;
 
       case StringMutatorType.SUBSTITUTE:
         if (!props.substituteOptions || !props.substituteOptions.entries || props.substituteOptions.entries.length === 0) {
-          throw new UnscopedValidationError('substituteOptions must be provided for SUBSTITUTE string mutator');
+          throw new UnscopedValidationError('SubstituteoptionsProvidedSubstituteString', 'substituteOptions must be provided for SUBSTITUTE string mutator');
         }
         this.substituteOptions = props.substituteOptions;
         break;
 
       default:
-        throw new UnscopedValidationError(`Unsupported string mutator type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedStringMutatorType', `Unsupported string mutator type: ${this.type}`);
     }
   }
 
@@ -1017,7 +1017,7 @@ export class StringMutatorProcessor implements IProcessor {
       case StringMutatorType.SUBSTITUTE:
         return { substituteString: this.substituteOptions };
       default:
-        throw new UnscopedValidationError(`Unsupported string mutator type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedStringMutatorType', `Unsupported string mutator type: ${this.type}`);
     }
   }
 }
@@ -1046,7 +1046,7 @@ export class JsonMutatorProcessor implements IProcessor {
     switch (this.type) {
       case JsonMutatorType.ADD_KEYS:
         if (!props.addKeysOptions || !props.addKeysOptions.entries || props.addKeysOptions.entries.length === 0) {
-          throw new UnscopedValidationError('addKeysOptions must be provided for ADD_KEYS JSON mutator');
+          throw new UnscopedValidationError('AddkeysoptionsProvidedAddKeys', 'addKeysOptions must be provided for ADD_KEYS JSON mutator');
         }
         this.addKeysOptions = {
           entries: props.addKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1055,14 +1055,14 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.DELETE_KEYS:
         if (!props.deleteKeysOptions || !props.deleteKeysOptions.withKeys || props.deleteKeysOptions.withKeys.length === 0) {
-          throw new UnscopedValidationError('deleteKeys must be provided for DELETE_KEYS JSON mutator');
+          throw new UnscopedValidationError('DeletekeysProvidedDeleteKeys', 'deleteKeys must be provided for DELETE_KEYS JSON mutator');
         }
         this.deleteKeysOptions = props.deleteKeysOptions;
         break;
 
       case JsonMutatorType.MOVE_KEYS:
         if (!props.moveKeysOptions || !props.moveKeysOptions.entries || props.moveKeysOptions.entries.length === 0) {
-          throw new UnscopedValidationError('moveKeysOptions must be provided for MOVE_KEYS JSON mutator');
+          throw new UnscopedValidationError('MovekeysoptionsProvidedMoveKeys', 'moveKeysOptions must be provided for MOVE_KEYS JSON mutator');
         }
         this.moveKeysOptions = {
           entries: props.moveKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1071,7 +1071,7 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.RENAME_KEYS:
         if (!props.renameKeysOptions || !props.renameKeysOptions.entries || props.renameKeysOptions.entries.length === 0) {
-          throw new UnscopedValidationError('renameKeysOptions must be provided for RENAME_KEYS JSON mutator');
+          throw new UnscopedValidationError('RenamekeysoptionsProvidedRenameKeys', 'renameKeysOptions must be provided for RENAME_KEYS JSON mutator');
         }
         this.renameKeysOptions = {
           entries: props.renameKeysOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1080,7 +1080,7 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.COPY_VALUE:
         if (!props.copyValueOptions || !props.copyValueOptions.entries || props.copyValueOptions.entries.length === 0) {
-          throw new UnscopedValidationError('copyValueOptions must be provided for COPY_VALUE JSON mutator');
+          throw new UnscopedValidationError('CopyvalueoptionsProvidedCopyValue', 'copyValueOptions must be provided for COPY_VALUE JSON mutator');
         }
         this.copyValueOptions = {
           entries: props.copyValueOptions.entries.map(entry => { return { overwriteIfExists: false, ...entry }; }),
@@ -1089,10 +1089,10 @@ export class JsonMutatorProcessor implements IProcessor {
 
       case JsonMutatorType.LIST_TO_MAP:
         if (!props.listToMapOptions || !props.listToMapOptions.source || !props.listToMapOptions.key) {
-          throw new UnscopedValidationError('listToMapOptions with source and key must be provided for LIST_TO_MAP JSON mutator');
+          throw new UnscopedValidationError('ListtomapoptionsSourceKeyProvided', 'listToMapOptions with source and key must be provided for LIST_TO_MAP JSON mutator');
         }
         if (props.listToMapOptions.flatten && !props.listToMapOptions.flattenedElement) {
-          throw new UnscopedValidationError('listToMapOptions flattenedElement must be provided when flatten is true for LIST_TO_MAP JSON mutator');
+          throw new UnscopedValidationError('ListtomapoptionsFlattenedelementProvidedFlatten', 'listToMapOptions flattenedElement must be provided when flatten is true for LIST_TO_MAP JSON mutator');
         }
         this.listToMapOptions = {
           flatten: false,
@@ -1101,7 +1101,7 @@ export class JsonMutatorProcessor implements IProcessor {
         break;
 
       default:
-        throw new UnscopedValidationError(`Unsupported JSON mutator type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedJsonMutatorType', `Unsupported JSON mutator type: ${this.type}`);
     }
   }
 
@@ -1124,7 +1124,7 @@ export class JsonMutatorProcessor implements IProcessor {
       case JsonMutatorType.LIST_TO_MAP:
         return { listToMap: this.listToMapOptions };
       default:
-        throw new UnscopedValidationError(`Unsupported JSON mutator type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedJsonMutatorType', `Unsupported JSON mutator type: ${this.type}`);
     }
   }
 }
@@ -1145,7 +1145,7 @@ export class DataConverterProcessor implements IProcessor {
     switch (this.type) {
       case DataConverterType.TYPE_CONVERTER:
         if (!props.typeConverterOptions || !props.typeConverterOptions.entries || props.typeConverterOptions.entries.length === 0) {
-          throw new UnscopedValidationError('typeConverterOptions must be provided for TYPE_CONVERTER data converter');
+          throw new UnscopedValidationError('TypeconverteroptionsProvidedTypeConverter', 'typeConverterOptions must be provided for TYPE_CONVERTER data converter');
         }
         this.typeConverterOptions = props.typeConverterOptions;
         break;
@@ -1153,7 +1153,7 @@ export class DataConverterProcessor implements IProcessor {
       case DataConverterType.DATETIME_CONVERTER:
         if (!props.dateTimeConverterOptions || !props.dateTimeConverterOptions.source ||
             !props.dateTimeConverterOptions.target || !props.dateTimeConverterOptions.matchPatterns) {
-          throw new UnscopedValidationError('dateTimeConverterOptions with source, target and matchPatterns must be provided for DATETIME_CONVERTER data converter');
+          throw new UnscopedValidationError('DatetimeconverteroptionsSourceTargetMatchpatterns', 'dateTimeConverterOptions with source, target and matchPatterns must be provided for DATETIME_CONVERTER data converter');
         }
         this.dateTimeConverterOptions = {
           targetFormat: "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -1164,7 +1164,7 @@ export class DataConverterProcessor implements IProcessor {
         break;
 
       default:
-        throw new UnscopedValidationError(`Unsupported data converter type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedDataConverterType', `Unsupported data converter type: ${this.type}`);
     }
   }
 
@@ -1179,7 +1179,7 @@ export class DataConverterProcessor implements IProcessor {
       case DataConverterType.DATETIME_CONVERTER:
         return { dateTimeConverter: this.dateTimeConverterOptions };
       default:
-        throw new UnscopedValidationError(`Unsupported data converter type: ${this.type}`);
+        throw new UnscopedValidationError('UnsupportedDataConverterType', `Unsupported data converter type: ${this.type}`);
     }
   }
 }
@@ -1226,11 +1226,11 @@ export class Transformer extends Resource {
 
     // Validate the number of processors is between 1 and 20 inclusive
     if (processors.length === 0) {
-      throw new ValidationError('At least one processor is required in a transformer', this);
+      throw new ValidationError('LeastOneProcessorRequired', 'At least one processor is required in a transformer', this);
     }
 
     if (processors.length > 20) {
-      throw new ValidationError('A transformer cannot have more than 20 processors', this);
+      throw new ValidationError('TransformerProcessors', 'A transformer cannot have more than 20 processors', this);
     }
   }
   /**
@@ -1244,7 +1244,7 @@ export class Transformer extends Resource {
     }
     // Validate first processor is a parser
     if (! (processors.at(0) instanceof ParserProcessor || processors.at(0) instanceof VendedLogParser)) {
-      throw new ValidationError('First processor in a transformer must be a parser', this);
+      throw new ValidationError('FirstProcessorTransformerParser', 'First processor in a transformer must be a parser', this);
     }
 
     // Identify parser-type processors (instances of ParserProcessor or VendedLogParser)
@@ -1258,12 +1258,12 @@ export class Transformer extends Resource {
 
     // Validate no more than 5 parser processors
     if (parserProcessors.length > 5) {
-      throw new ValidationError('A transformer cannot have more than 5 parser-type processors', this);
+      throw new ValidationError('TransformerParserTypeProcessors', 'A transformer cannot have more than 5 parser-type processors', this);
     }
 
     // Validate at most one vended parser processor exists
     if (vendedProcessors.length > 1) {
-      throw new ValidationError('Only one vended log parser is allowed in a transformer', this);
+      throw new ValidationError('OneVendedLogParser', 'Only one vended log parser is allowed in a transformer', this);
     }
 
     // Check if any vended log parser exists
@@ -1271,7 +1271,7 @@ export class Transformer extends Resource {
 
     // If a vended log parser exists, ensure it's the first processor
     if (vendedLogParserIndex > 0) {
-      throw new ValidationError('AWS vended log parser must be the first processor in a transformer', this);
+      throw new ValidationError('AwsVendedLogParser', 'AWS vended log parser must be the first processor in a transformer', this);
     }
   }
   /**
@@ -1289,7 +1289,7 @@ export class Transformer extends Resource {
       p => p instanceof ParserProcessor && (p as ParserProcessor).type === ParserProcessorType.GROK,
     );
     if (grokProcessors.length > 1) {
-      throw new ValidationError('Only one grok processor is allowed in a transformer', this);
+      throw new ValidationError('OneGrokProcessorAllowed', 'Only one grok processor is allowed in a transformer', this);
     }
 
     // Count occurrences of addKeys processors
@@ -1297,7 +1297,7 @@ export class Transformer extends Resource {
       p => p instanceof JsonMutatorProcessor && (p as JsonMutatorProcessor).type === JsonMutatorType.ADD_KEYS,
     );
     if (addKeysProcessors.length > 1) {
-      throw new ValidationError('Only one addKeys processor is allowed in a transformer', this);
+      throw new ValidationError('OneAddkeysProcessorAllowed', 'Only one addKeys processor is allowed in a transformer', this);
     }
 
     // Count occurrences of copyValue processors
@@ -1305,7 +1305,7 @@ export class Transformer extends Resource {
       p => p instanceof JsonMutatorProcessor && (p as JsonMutatorProcessor).type === JsonMutatorType.COPY_VALUE,
     );
     if (copyValueProcessors.length > 1) {
-      throw new ValidationError('Only one copyValue processor is allowed in a transformer', this);
+      throw new ValidationError('OneCopyvalueProcessorAllowed', 'Only one copyValue processor is allowed in a transformer', this);
     }
 
     // Count occurrences of copyValue processors
@@ -1313,12 +1313,12 @@ export class Transformer extends Resource {
       p => p instanceof ParserProcessor && (p as ParserProcessor).type === ParserProcessorType.OCSF,
     );
     if (parseToOcsfProcessors.length > 1) {
-      throw new ValidationError('Only one parseToOCSF processor is allowed in a transformer', this);
+      throw new ValidationError('OneParsetoocsfProcessorAllowed', 'Only one parseToOCSF processor is allowed in a transformer', this);
     }
     if (parseToOcsfProcessors.length > 0) {
       const parseToOcsfIndex = processors.findIndex(p => p instanceof ParserProcessor && (p as ParserProcessor).type === ParserProcessorType.OCSF);
       if (parseToOcsfIndex != 0 ) {
-        throw new ValidationError('parseToOCSF processor must be the first processor in a transformer', this);
+        throw new ValidationError('ParsetoocsfProcessorFirstProcessor', 'parseToOCSF processor must be the first processor in a transformer', this);
       }
     }
   }

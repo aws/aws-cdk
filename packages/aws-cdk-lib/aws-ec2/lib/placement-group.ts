@@ -201,7 +201,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
 
     if (this.partitions && this.strategy) {
       if (this.strategy !== PlacementGroupStrategy.PARTITION) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
+        throw new ValidationError('PlacementgroupSpecifyPartitionsPartition', `PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
       }
     } else if (this.partitions && !this.strategy) {
       this.strategy = PlacementGroupStrategy.PARTITION;
@@ -212,7 +212,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
         this.strategy = PlacementGroupStrategy.SPREAD;
       }
       if (this.strategy !== PlacementGroupStrategy.SPREAD) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
+        throw new ValidationError('PlacementgroupSpecifySpreadlevelSpread', `PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
       }
     }
 

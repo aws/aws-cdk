@@ -104,10 +104,9 @@ export class AssetImportSource extends ImportSource {
         ...this.options,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new ValidationError(
-        `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
+      throw new ValidationError('AssetAlreadyAssociatedAnother', `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
           'Create a new ImportSource instance for every stack.',
-        scope,
+      scope,
       );
     }
 
@@ -147,10 +146,9 @@ export class InlineImportSource extends ImportSource {
         deployTime: true,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new ValidationError(
-        `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
+      throw new ValidationError('AssetAlreadyAssociatedAnother', `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
         'Create a new ImportSource instance for every stack.',
-        scope,
+      scope,
       );
     }
 
@@ -232,7 +230,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   public static fromKeyValueStoreArn(scope: Construct, id: string, keyValueStoreArn: string): IKeyValueStore {
     const storeId = Arn.split(keyValueStoreArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!storeId) {
-      throw new ValidationError(`Invalid Key Value Store Arn: '${keyValueStoreArn}'`, scope);
+      throw new ValidationError('InvalidKeyValueStore', `Invalid Key Value Store Arn: '${keyValueStoreArn}'`, scope);
     }
     return new class Import extends Resource implements IKeyValueStore {
       readonly keyValueStoreArn: string = keyValueStoreArn;
@@ -248,7 +246,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
       }
 
       public get keyValueStoreStatus(): string {
-        throw new ValidationError('Status is not available for imported Key Value Store', scope);
+        throw new ValidationError('StatusAvailableImportedKey', 'Status is not available for imported Key Value Store', scope);
       }
     };
   }

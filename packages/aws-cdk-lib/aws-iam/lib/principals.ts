@@ -359,7 +359,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       // if either the existing condition or the new one contain unresolved
       // tokens, fail the merge. this is as far as we go at this point.
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
-        throw new UnscopedValidationError(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+        throw new UnscopedValidationError('MultipleOperatorConditionsMerged', `multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
 
       validateConditionObject(existing);
@@ -484,7 +484,7 @@ export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
-      throw new UnscopedValidationError('accountId should be of type string');
+      throw new UnscopedValidationError('AccountidTypeString', 'accountId should be of type string');
     }
     this.principalAccount = accountId;
   }
@@ -622,7 +622,7 @@ export class OrganizationPrincipal extends PrincipalBase {
     // We can only validate if it's a literal string (not a token)
     if (!cdk.Token.isUnresolved(organizationId)) {
       if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
-        throw new UnscopedValidationError(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+        throw new UnscopedValidationError('ExpectedOrganizationMatchRegex', `Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
       }
     }
   }
@@ -879,7 +879,7 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new UnscopedValidationError('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+      throw new UnscopedValidationError('CompositeprincipalsConstructedLeastPrincipal', 'CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);
@@ -908,8 +908,7 @@ export class CompositePrincipal extends PrincipalBase {
     for (const p of this._principals) {
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
-        throw new UnscopedValidationError(
-          'Components of a CompositePrincipal must not have conditions. ' +
+        throw new UnscopedValidationError('ComponentsCompositeprincipalConditions', 'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
     }
@@ -1027,6 +1026,6 @@ class ServicePrincipalToken implements cdk.IResolvable {
  */
 export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
   if (!x || typeof x !== 'object' || Array.isArray(x)) {
-    throw new UnscopedValidationError('A Condition should be represented as a map of operator to value');
+    throw new UnscopedValidationError('ConditionRepresentedMapOperator', 'A Condition should be represented as a map of operator to value');
   }
 }

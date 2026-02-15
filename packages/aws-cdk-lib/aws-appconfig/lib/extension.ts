@@ -408,12 +408,12 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new ValidationError(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
+      throw new ValidationError('MissingRequiredExtensionidExtensionversionnumber', `Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new ValidationError('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
+      throw new ValidationError('MissingRequiredParametersExtension', 'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
     }
 
     const extensionId = resourceName[0];

@@ -66,12 +66,12 @@ export class PublishToTopic implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new ValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`, topic);
+      throw new ValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SNS.`, topic);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new ValidationError('Task Token is missing in message (pass JsonPath.taskToken somewhere in message)', topic);
+        throw new ValidationError('TaskTokenMissingMessage', 'Task Token is missing in message (pass JsonPath.taskToken somewhere in message)', topic);
       }
     }
   }

@@ -91,7 +91,7 @@ function filterUsefulKeys(properties: any, fn: LambdaFunction) {
     .filter(([k, v]) => v != null && !Object.keys(versionProps).includes(k))
     .map(([k, _]) => k);
   if (unclassified.length > 0) {
-    throw new ValidationError(`The following properties are not recognized as version properties: [${unclassified}].`
+    throw new ValidationError('FollowingPropertiesRecognizedVersion', `The following properties are not recognized as version properties: [${unclassified}].`
       + ' See the README of the aws-lambda module to learn more about this and to fix it.', fn);
   }
   const notLocked = Object.entries(versionProps).filter(([_, v]) => !v).map(([k, _]) => k);
@@ -209,7 +209,7 @@ function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
   const resources = template.Resources;
   const resourceKeys = Object.keys(resources);
   if (resourceKeys.length !== 1) {
-    throw new ValidationError(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`, res);
+    throw new ValidationError('ExpectedOneRenderedCloudformation', `Expected one rendered CloudFormation resource but found ${resourceKeys.length}`, res);
   }
   const logicalId = resourceKeys[0];
   return { properties: resources[logicalId].Properties, template, logicalId };

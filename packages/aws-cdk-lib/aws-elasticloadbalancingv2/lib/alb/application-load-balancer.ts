@@ -208,13 +208,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       !Token.isUnresolved(minimumCapacityUnit) &&
       (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100)
     ) {
-      throw new ValidationError(`'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
+      throw new ValidationError('MinimumcapacityunitPositiveIntegerGreater', `'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
     }
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
     if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
-      throw new ValidationError('dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
+      throw new ValidationError('DualStackWithoutPublic', 'dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
     }
 
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -238,18 +238,18 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
       if (clientKeepAliveInMillis < 1000) {
-        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`, this);
+        throw new ValidationError('Clientkeepalive604800SecondsGot', `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`, this);
       }
 
       const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
       if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
-        throw new ValidationError(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`, this);
+        throw new ValidationError('Clientkeepalive604800SecondsGot', `\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`, this);
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
     }
 
     if (props.crossZoneEnabled === false) {
-      throw new ValidationError('crossZoneEnabled cannot be false with Application Load Balancers.', this);
+      throw new ValidationError('CrosszoneenabledFalseApplicationLoad', 'crossZoneEnabled cannot be false with Application Load Balancers.', this);
     }
   }
 
@@ -299,7 +299,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      */
 
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError('EncryptionKeyDetectedBucket', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -360,7 +360,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
      */
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError('EncryptionKeyDetectedBucket', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -1291,13 +1291,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
 
-    throw new ValidationError(`'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError('LoadbalancercanonicalhostedzoneidProvidedConstructingApplication', `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
 
-    throw new ValidationError(`'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError('LoadbalancerdnsnameProvidedConstructingApplication', `'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 }
 

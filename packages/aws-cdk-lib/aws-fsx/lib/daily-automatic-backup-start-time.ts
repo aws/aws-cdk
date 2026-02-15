@@ -61,10 +61,10 @@ export class DailyAutomaticBackupStartTime {
    */
   private validate(hour: number, minute: number) {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new UnscopedValidationError(`dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
+      throw new UnscopedValidationError('DailyautomaticbackupstarttimeHourIntegerReceived', `dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new UnscopedValidationError(`dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
+      throw new UnscopedValidationError('DailyautomaticbackupstarttimeMinuteIntegerReceived', `dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
     }
   }
 }

@@ -103,7 +103,7 @@ export class StepScalingAction extends Construct {
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new ValidationError('At least one of lowerBound or upperBound is required', this);
+      throw new ValidationError('LeastOneLowerboundUpperbound', 'At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,

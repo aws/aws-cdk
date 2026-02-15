@@ -138,19 +138,19 @@ class HealthCheckImpl extends HealthCheck {
     private readonly path?: string) {
     super();
     if (healthyThreshold < 2 || healthyThreshold > 10) {
-      throw new cdk.UnscopedValidationError('healthyThreshold must be between 2 and 10');
+      throw new cdk.UnscopedValidationError('Healthythreshold', 'healthyThreshold must be between 2 and 10');
     }
 
     if (unhealthyThreshold < 2 || unhealthyThreshold > 10) {
-      throw new cdk.UnscopedValidationError('unhealthyThreshold must be between 2 and 10');
+      throw new cdk.UnscopedValidationError('Unhealthythreshold', 'unhealthyThreshold must be between 2 and 10');
     }
 
     if (interval.toMilliseconds() < 5000 || interval.toMilliseconds() > 300_000) {
-      throw new cdk.UnscopedValidationError('interval must be between 5 seconds and 300 seconds');
+      throw new cdk.UnscopedValidationError('IntervalSeconds300Seconds', 'interval must be between 5 seconds and 300 seconds');
     }
 
     if (timeout.toMilliseconds() < 2000 || timeout.toMilliseconds() > 60_000) {
-      throw new cdk.UnscopedValidationError('timeout must be between 2 seconds and 60 seconds');
+      throw new cdk.UnscopedValidationError('TimeoutSecondsSeconds', 'timeout must be between 2 seconds and 60 seconds');
     }
 
     // Default to / for HTTP Health Checks

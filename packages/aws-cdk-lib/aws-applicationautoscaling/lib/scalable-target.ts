@@ -111,7 +111,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
 
       public get scalableTargetRef(): ScalableTargetReference {
-        throw new ValidationError('Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
+        throw new ValidationError('AccessScalabletargetrefScalabletargetImported', 'Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
       }
     }
     return new Import(scope, id);
@@ -171,19 +171,19 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
     withResolved(props.maxCapacity, max => {
       if (max < 0) {
-        throw new ValidationError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
+        throw new ValidationError('MaxcapacityNegativeGotProps', `maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, min => {
       if (min < 0) {
-        throw new ValidationError(`minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
+        throw new ValidationError('MincapacityNegativeGotProps', `minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
       if (max < min) {
-        throw new ValidationError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
+        throw new ValidationError('MincapacityPropsMincapacityLower', `minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
       }
     });
 
@@ -221,7 +221,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   @MethodMetadata()
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new ValidationError(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
+      throw new ValidationError('SupplyLeastOneMincapacity', `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

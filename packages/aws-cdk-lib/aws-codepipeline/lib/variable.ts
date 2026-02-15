@@ -54,10 +54,10 @@ export class Variable {
       && !Token.isUnresolved(this.defaultValue)
       && (this.defaultValue.length < 1 || this.defaultValue.length > 1000)
     ) {
-      throw new UnscopedValidationError(`Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
+      throw new UnscopedValidationError('DefaultValueVariableVariablename', `Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
     }
     if (this.description !== undefined && !Token.isUnresolved(this.description) && this.description.length > 200) {
-      throw new UnscopedValidationError(`Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
+      throw new UnscopedValidationError('DescriptionVariableVariablenameGreater', `Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
     }
   }
 

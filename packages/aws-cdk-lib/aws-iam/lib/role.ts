@@ -296,7 +296,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
     if (Token.isUnresolved(options.roleName)) {
-      throw new ValidationError('All arguments to look up a role must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookRoleConcrete', 'All arguments to look up a role must be concrete (no Tokens)', scope);
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -366,7 +366,7 @@ export class Role extends Resource implements IRole {
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
-      throw new ValidationError('\'addGrantsToResources\' can only be passed if \'mutable: false\'', scope);
+      throw new ValidationError('AddgrantstoresourcesPassedMutableFalse', '\'addGrantsToResources\' can only be passed if \'mutable: false\'', scope);
     }
 
     const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
@@ -482,7 +482,7 @@ export class Role extends Resource implements IRole {
       return this._precreatedRole.roleArn;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access roleArn when synthesis is prevented', this);
+      throw new ValidationError('AccessRolearnSynthesisPrevented', 'Cannot access roleArn when synthesis is prevented', this);
     }
     return this.getResourceArnAttribute(this._resource.attrArn, {
       region: '', // IAM is global in each partition
@@ -502,7 +502,7 @@ export class Role extends Resource implements IRole {
       return this._precreatedRole.roleName;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access roleName when synthesis is prevented', this);
+      throw new ValidationError('AccessRolenameSynthesisPrevented', 'Cannot access roleName when synthesis is prevented', this);
     }
     return this.getResourceNameAttribute(this._resource.ref);
   }
@@ -542,7 +542,7 @@ export class Role extends Resource implements IRole {
     addConstructMetadata(this, props);
 
     if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
-      throw new ValidationError('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.', this);
+      throw new ValidationError('InvalidRolenameNameString', 'Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.', this);
     }
 
     const externalIds = props.externalIds || [];
@@ -560,7 +560,7 @@ export class Role extends Resource implements IRole {
     const description = (props.description && props.description?.length > 0) ? props.description : undefined;
 
     if (description && description.length > 1000) {
-      throw new ValidationError('Role description must be no longer than 1000 characters.', this);
+      throw new ValidationError('RoleDescriptionLonger1000', 'Role description must be no longer than 1000 characters.', this);
     }
 
     validateRolePath(this, props.path);
@@ -739,7 +739,7 @@ export class Role extends Resource implements IRole {
    */
   public get roleId(): string {
     if (!this._roleId) {
-      throw new ValidationError('"roleId" is not available on precreated roles', this);
+      throw new ValidationError('RoleidAvailablePrecreatedRoles', '"roleId" is not available on precreated roles', this);
     }
     return this._roleId;
   }
@@ -903,10 +903,9 @@ function validateRolePath(scope: Construct, path?: string) {
   const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
 
   if (path.length == 0 || path.length > 512) {
-    throw new ValidationError(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
+    throw new ValidationError('RolePath512Characters', `Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
   } else if (!validRolePath.test(path)) {
-    throw new ValidationError(
-      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+    throw new ValidationError('RolePathEitherSlash', 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
       + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`, scope);
   }
 }
@@ -917,7 +916,7 @@ function validateMaxSessionDuration(scope: Construct, duration?: number) {
   }
 
   if (duration < 3600 || duration > 43200) {
-    throw new ValidationError(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`, scope);
+    throw new ValidationError('MaxsessiondurationDuration3600sec1hr', `maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`, scope);
   }
 }
 

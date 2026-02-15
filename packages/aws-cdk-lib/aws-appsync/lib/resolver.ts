@@ -111,25 +111,25 @@ export class Resolver extends Construct {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('Code is required when specifying a runtime', scope);
+      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError('MappingTemplatesUsedAlongside', 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (pipelineConfig && props.dataSource) {
-      throw new ValidationError(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
+      throw new ValidationError('PipelineResolverDataSource', `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
     }
 
     if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
-      throw new ValidationError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
+      throw new ValidationError('CachingConfigTtl3600', `Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
     }
 
     if (props.cachingConfig?.cachingKeys) {
       if (props.cachingConfig.cachingKeys.find(cachingKey =>
         !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
-        throw new ValidationError(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
+        throw new ValidationError('CachingConfigKeysBegin', `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
       }
     }
 

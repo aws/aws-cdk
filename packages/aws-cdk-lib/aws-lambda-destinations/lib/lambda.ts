@@ -50,7 +50,7 @@ export class LambdaDestination implements lambda.IDestination {
     // Otherwise add rule to extract the response payload and use EventBridge
     // as destination
     if (!options) { // `options` added to bind() as optionnal to avoid breaking change
-      throw new ValidationError('Options must be defined when using `responseOnly`.', scope);
+      throw new ValidationError('OptionsDefinedResponseonly', 'Options must be defined when using `responseOnly`.', scope);
     }
 
     // Match invocation result of the source function (`fn`) and use it

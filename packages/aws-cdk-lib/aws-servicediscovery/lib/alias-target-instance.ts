@@ -55,7 +55,7 @@ export class AliasTargetInstance extends InstanceBase {
     addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
-      throw new ValidationError('Namespace associated with Service must be a DNS Namespace.', this);
+      throw new ValidationError('NamespaceAssociatedServiceDns', 'Namespace associated with Service must be a DNS Namespace.', this);
     }
 
     // Should already be enforced when creating service, but validates if service is not instantiated with #createService
@@ -63,11 +63,11 @@ export class AliasTargetInstance extends InstanceBase {
     if (dnsRecordType !== DnsRecordType.A
       && dnsRecordType !== DnsRecordType.AAAA
       && dnsRecordType !== DnsRecordType.A_AAAA) {
-      throw new ValidationError('Service must use `A` or `AAAA` records to register an AliasRecordTarget.', this);
+      throw new ValidationError('ServiceAaaaRecordsRegister', 'Service must use `A` or `AAAA` records to register an AliasRecordTarget.', this);
     }
 
     if (props.service.routingPolicy !== RoutingPolicy.WEIGHTED) {
-      throw new ValidationError('Service must use `WEIGHTED` routing policy.', this);
+      throw new ValidationError('ServiceWeightedRoutingPolicy', 'Service must use `WEIGHTED` routing policy.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

@@ -24,7 +24,7 @@ export class CloudWatchLogProcessor implements IDataProcessor {
 
   constructor(options: CloudWatchLogProcessorOptions) {
     if (!options.dataMessageExtraction) {
-      throw new UnscopedValidationError('dataMessageExtraction must be true.');
+      throw new UnscopedValidationError('DatamessageextractionTrue', 'dataMessageExtraction must be true.');
     }
   }
 

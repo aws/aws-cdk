@@ -13,6 +13,6 @@ export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefi
     case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
     case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
     default:
-      throw new UnscopedValidationError(`unknown follow mode: ${follow}`);
+      throw new UnscopedValidationError('UnknownFollowModeFollow', `unknown follow mode: ${follow}`);
   }
 }

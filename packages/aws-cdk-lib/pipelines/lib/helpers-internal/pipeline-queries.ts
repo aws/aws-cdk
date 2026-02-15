@@ -49,7 +49,7 @@ export class PipelineQueries {
       }
     }
 
-    throw new ValidationError(`Stack '${outputReference.stackDescription}' (producing output '${outputReference.outputName}') is not in the pipeline; call 'addStage()' to add the stack's Stage to the pipeline`, this.pipeline);
+    throw new ValidationError('StackOutputreferenceStackdescriptionProducing', `Stack '${outputReference.stackDescription}' (producing output '${outputReference.outputName}') is not in the pipeline; call 'addStage()' to add the stack's Stage to the pipeline`, this.pipeline);
   }
 
   /**

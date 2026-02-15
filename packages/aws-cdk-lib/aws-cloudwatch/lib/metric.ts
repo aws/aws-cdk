@@ -410,7 +410,7 @@ export class Metric implements IMetric {
   public static anomalyDetectionFor(props: AnomalyDetectionMetricOptions): MathExpression {
     // Validate stdDevs
     if (props.stdDevs !== undefined && props.stdDevs <= 0) {
-      throw new cdk.UnscopedValidationError('stdDevs must be greater than 0');
+      throw new cdk.UnscopedValidationError('StddevsGreater', 'stdDevs must be greater than 0');
     }
 
     // Create the anomaly detection band expression
@@ -483,7 +483,7 @@ export class Metric implements IMetric {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
-      throw new cdk.UnscopedValidationError(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
+      throw new cdk.UnscopedValidationError('PeriodMultipleSecondsReceived', `'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
 
     this.warnings = undefined;
@@ -630,7 +630,7 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError('MathExpressionSupportedHere', 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     const parsed = parseStatistic(metricConfig.metricStat.statistic);
@@ -659,7 +659,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError('MathExpressionSupportedHere', 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -731,19 +731,19 @@ export class Metric implements IMetric {
 
     var dimsArray = Object.keys(dims);
     if (dimsArray?.length > 30) {
-      throw new cdk.UnscopedValidationError(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
+      throw new cdk.UnscopedValidationError('MaximumNumberDimensionsReceived', `The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
     dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
-        throw new cdk.UnscopedValidationError(`Dimension value of '${dims[key]}' is invalid for key: ${key}`);
+        throw new cdk.UnscopedValidationError('DimensionValueDimsKey', `Dimension value of '${dims[key]}' is invalid for key: ${key}`);
       }
       if (key.length < 1 || key.length > 255) {
-        throw new cdk.UnscopedValidationError(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+        throw new cdk.UnscopedValidationError('DimensionNameLeast255', `Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
       }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new cdk.UnscopedValidationError(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+        throw new cdk.UnscopedValidationError('DimensionValueLeast255', `Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
       }
     });
 
@@ -754,7 +754,7 @@ export class Metric implements IMetric {
 function asString(x?: unknown): string | undefined {
   if (x === undefined) { return undefined; }
   if (typeof x !== 'string') {
-    throw new cdk.UnscopedValidationError(`Expected string, got ${x}`);
+    throw new cdk.UnscopedValidationError('ExpectedStringGot', `Expected string, got ${x}`);
   }
   return x;
 }
@@ -841,7 +841,7 @@ export class MathExpression implements IMetric {
 
     const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !cdk.Token.isUnresolved(x) && !validVariableName(x));
     if (invalidVariableNames.length > 0) {
-      throw new cdk.UnscopedValidationError(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+      throw new cdk.UnscopedValidationError('InvalidVariableNamesExpression', `Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
     this.validateNoIdConflicts();
@@ -901,14 +901,14 @@ export class MathExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError('MathExpressionSupportedHere', 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError('MathExpressionSupportedHere', 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
@@ -967,7 +967,7 @@ export class MathExpression implements IMetric {
           for (const [id, subMetric] of Object.entries(mathExpr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
-              throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+              throw new cdk.UnscopedValidationError('UsedTwoMetricsExpression', `The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
             }
             seen.set(id, subMetric);
             visit(subMetric);
@@ -976,7 +976,7 @@ export class MathExpression implements IMetric {
         withSearchExpression(searchExpr) {
           // search expression should not contain anything inside  `usingMetric
           if (Object.entries(searchExpr.usingMetrics).length > 0) {
-            throw new cdk.UnscopedValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
+            throw new cdk.UnscopedValidationError('SearchExpressionSearchexprExpression', `Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
           }
         },
       });
@@ -1092,14 +1092,14 @@ export class SearchExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms.');
+    throw new cdk.UnscopedValidationError('SearchExpressionSupportedCloudwatch', 'Using a search expression is not supported in CloudWatch Alarms.');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError('`toGraphConfig()` is deprecated, use `toMetricConfig()`');
+    throw new cdk.UnscopedValidationError('TographconfigDeprecatedTometricconfig', '`toGraphConfig()` is deprecated, use `toMetricConfig()`');
   }
 
   public toMetricConfig(): MetricConfig {
@@ -1222,7 +1222,7 @@ function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric;
     return { metric: metric.with({ period }), overridden };
   }
 
-  throw new cdk.UnscopedValidationError(`Metric object should also implement 'with': ${metric}`);
+  throw new cdk.UnscopedValidationError('MetricObjectAlsoImplement', `Metric object should also implement 'with': ${metric}`);
 }
 
 /**

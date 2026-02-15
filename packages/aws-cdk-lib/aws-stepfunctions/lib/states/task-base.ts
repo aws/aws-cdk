@@ -324,7 +324,7 @@ export abstract class TaskStateBase extends State implements INextable {
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
-      throw new cdk.UnscopedValidationError('Task does not expose metrics. Use the \'metric()\' function to add metrics.');
+      throw new cdk.UnscopedValidationError('TaskExposeMetricsMetric', 'Task does not expose metrics. Use the \'metric()\' function to add metrics.');
     }
     return this.metric(prefix + suffix, props);
   }

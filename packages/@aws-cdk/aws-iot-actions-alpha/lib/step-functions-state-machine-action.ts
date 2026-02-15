@@ -44,7 +44,7 @@ export class StepFunctionsStateMachineAction implements iot.IAction {
     const stateMachineName = Stack.of(this.stateMachine).splitArn(this.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
 
     if (!stateMachineName) {
-      throw new ValidationError(`No state machine name found in ARN: '${this.stateMachine.stateMachineArn}'`, rule);
+      throw new ValidationError('StateMachineNameFound', `No state machine name found in ARN: '${this.stateMachine.stateMachineArn}'`, rule);
     }
 
     role.addToPrincipalPolicy(new iam.PolicyStatement({

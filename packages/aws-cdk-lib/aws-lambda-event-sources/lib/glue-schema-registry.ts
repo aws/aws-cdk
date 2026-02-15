@@ -58,14 +58,14 @@ export class GlueSchemaRegistry implements ISchemaRegistry {
     if (props.schemaRegistryArn) {
       const glueRegistryMatch = props.schemaRegistryArn?.match(GLUE_SCHEMA_REGISTRY_ARN_REGEX);
       if (!glueRegistryMatch) {
-        throw new ValidationError(`schemaRegistryArn ${this.props.schemaRegistryArn} must match ${GLUE_SCHEMA_REGISTRY_ARN_REGEX}`, _target);
+        throw new ValidationError('SchemaregistryarnPropsSchemaregistryarnMatch', `schemaRegistryArn ${this.props.schemaRegistryArn} must match ${GLUE_SCHEMA_REGISTRY_ARN_REGEX}`, _target);
       }
       return {
         arn: props.schemaRegistryArn,
         name: glueRegistryMatch[1],
       };
     }
-    throw new ValidationError('one of schemaRegistryArn or schemaRegistry must be passed', _target);
+    throw new ValidationError('OneSchemaregistryarnSchemaregistryPassed', 'one of schemaRegistryArn or schemaRegistry must be passed', _target);
   }
 
   private getSchemaRegistryPolicies(glueRegistryArn: string, glueRegistryName: string) {

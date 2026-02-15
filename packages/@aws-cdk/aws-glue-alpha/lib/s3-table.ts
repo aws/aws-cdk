@@ -158,7 +158,7 @@ export class S3Table extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError(`Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError('DuplicateStorageParameterKey', `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
@@ -278,7 +278,7 @@ function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
-    throw new UnscopedValidationError('you can not specify encryption settings if you also provide a bucket');
+    throw new UnscopedValidationError('SpecifyEncryptionSettingsAlso', 'you can not specify encryption settings if you also provide a bucket');
   }
 
   const encryption = props.encryption || TableEncryption.S3_MANAGED;

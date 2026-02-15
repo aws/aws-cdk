@@ -231,7 +231,7 @@ export class User extends Resource implements IIdentity, IUser {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        throw new ValidationError('Cannot add managed policy to imported User', this);
+        throw new ValidationError('AddManagedPolicyImported', 'Cannot add managed policy to imported User', this);
       }
 
       public get userRef(): UserReference {
@@ -382,7 +382,7 @@ export class User extends Resource implements IIdentity, IUser {
     }
 
     if (props.passwordResetRequired) {
-      throw new ValidationError('Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
+      throw new ValidationError('PasswordresetrequiredWithoutSpecifyingInitialpassword', 'Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
     }
 
     return undefined; // no console access

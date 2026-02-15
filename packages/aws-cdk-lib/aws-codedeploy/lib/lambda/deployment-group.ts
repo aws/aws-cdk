@@ -243,7 +243,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
-      throw new cdk.ValidationError('A pre-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError('PreHookFunctionAlready', 'A pre-hook function is already defined for this deployment group', this);
     }
     this.preHook = preHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.preHook);
@@ -258,7 +258,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
-      throw new cdk.ValidationError('A post-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError('PostHookFunctionAlready', 'A post-hook function is already defined for this deployment group', this);
     }
     this.postHook = postHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.postHook);

@@ -8,7 +8,7 @@ import { UnscopedValidationError } from '../../core';
  */
 export class InvalidCidrRangeError extends UnscopedValidationError {
   constructor(cidr: string) {
-    super(cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.');
+    super('InvalidCidrRange', cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.');
     // The following line is required for type checking of custom errors, and must be called right after super()
     // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
     Object.setPrototypeOf(this, InvalidCidrRangeError.prototype);
@@ -53,7 +53,7 @@ export class NetworkUtils {
    */
   public static ipToNum(ipAddress: string): number {
     if (!this.validIp(ipAddress)) {
-      throw new UnscopedValidationError(`${ipAddress} is not valid`);
+      throw new UnscopedValidationError('IpaddressValid', `${ipAddress} is not valid`);
     }
 
     return ipAddress
@@ -88,7 +88,7 @@ export class NetworkUtils {
     }
     const ipAddress: string = address.join('.');
     if ( !this.validIp(ipAddress) ) {
-      throw new UnscopedValidationError(`${ipAddress} is not a valid IP Address`);
+      throw new UnscopedValidationError('IpaddressValidAddress', `${ipAddress} is not a valid IP Address`);
     }
     return ipAddress;
   }
@@ -201,7 +201,7 @@ export class NetworkBuilder {
     }
     const maxIp = this.nextAvailableIp + (CidrBlock.calculateNetsize(mask) * count);
     if (this.networkCidr.maxAddress() < maxIp - 1) {
-      throw new UnscopedValidationError(`${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
+      throw new UnscopedValidationError('CountMaskExceedsRemaining', `${count} of /${mask} exceeds remaining space of ${this.networkCidr.cidr}`);
     }
     const subnets: CidrBlock[] = [];
     for (let i = 0; i < count; i ++) {

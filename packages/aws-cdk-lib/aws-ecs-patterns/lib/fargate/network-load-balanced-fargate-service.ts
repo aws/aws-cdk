@@ -64,7 +64,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify either a taskDefinition or an image, not both.', this);
+      throw new ValidationError('SpecifyEitherTaskdefinitionImage', 'You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -95,7 +95,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;

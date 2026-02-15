@@ -386,7 +386,7 @@ export class Prompt extends PromptBase implements IPrompt {
    */
   private validatePromptDefault(props: PromptProps) {
     if (props.defaultVariant && !props.variants?.includes(props.defaultVariant)) {
-      throw new ValidationError('The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
+      throw new ValidationError('DefaultvariantNeedsIncludedVariants', 'The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
     }
   }
 

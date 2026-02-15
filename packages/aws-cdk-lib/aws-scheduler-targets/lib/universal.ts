@@ -82,13 +82,13 @@ export class Universal extends ScheduleTargetBase implements IScheduleTarget {
     const action = props.action;
 
     if (!Token.isUnresolved(service) && service !== service.toLowerCase()) {
-      throw new UnscopedValidationError(`API service must be lowercase, got: ${service}`);
+      throw new UnscopedValidationError('ApiServiceLowercaseGot', `API service must be lowercase, got: ${service}`);
     }
     if (!Token.isUnresolved(action) && !action.startsWith(action[0]?.toLowerCase())) {
-      throw new UnscopedValidationError(`API action must be camelCase, got: ${action}`);
+      throw new UnscopedValidationError('ApiActionCamelcaseGot', `API action must be camelCase, got: ${action}`);
     }
     if (!Token.isUnresolved(action) && NOT_SUPPORTED_ACTION_PREFIX.some(prefix => action.startsWith(prefix))) {
-      throw new UnscopedValidationError(`Read-only API action is not supported by EventBridge Scheduler: ${service}:${action}`);
+      throw new UnscopedValidationError('ReadApiActionSupported', `Read-only API action is not supported by EventBridge Scheduler: ${service}:${action}`);
     }
 
     const arn = `arn:${Aws.PARTITION}:scheduler:::aws-sdk:${service}:${action}`;

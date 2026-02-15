@@ -256,7 +256,7 @@ class GitHubSource extends CodePipelineSource {
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
-      throw new UnscopedValidationError(`GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
+      throw new UnscopedValidationError('GithubRepositoryNameResolved', `GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
     this.repo = parts[1];
@@ -424,7 +424,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     super(repoString);
 
     if (!this.isValidRepoString(repoString)) {
-      throw new UnscopedValidationError(`CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
+      throw new UnscopedValidationError('CodestarRepositoryNameResolved', `CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
     }
 
     const parts = repoString.split('/');

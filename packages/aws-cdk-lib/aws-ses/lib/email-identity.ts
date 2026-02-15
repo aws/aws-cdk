@@ -427,7 +427,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
+      throw new ValidationError('InvalidEmailIdentityArn', `Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;

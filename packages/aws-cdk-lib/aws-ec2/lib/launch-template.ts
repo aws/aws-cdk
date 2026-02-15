@@ -524,7 +524,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new ValidationError('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
+      throw new ValidationError('LaunchtemplateFromlaunchtemplateattributesRequiresExactly', 'LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
     }
 
     class Import extends Resource implements ILaunchTemplate {
@@ -534,7 +534,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
       public get launchTemplateRef(): LaunchTemplateReference {
         if (!this.launchTemplateId) {
-          throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
+          throw new ValidationError('LaunchtemplateidLaunchtemplateFromlaunchtemplateattributesOrder', 'You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
         }
 
         return {
@@ -646,11 +646,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('You cannot provide both an instanceProfile and a role', this);
+      throw new ValidationError('ProvideInstanceprofileRole', 'You cannot provide both an instanceProfile and a role', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError('SpecifyKeynameKeypairPrefer', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // use provided instance profile or create one if a role was provided
@@ -687,7 +687,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
-      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+      throw new ValidationError('PropsKeypairTypeKeys', `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
@@ -781,7 +781,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       : undefined;
 
     if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
-      throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
+      throw new ValidationError('VersiondescriptionEqual255Characters', `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
     }
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
@@ -914,7 +914,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
+      throw new ValidationError('LaunchtemplateAddedSecuritygroupAnother', 'LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -926,7 +926,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
+      throw new ValidationError('LaunchtemplateUsedIconnectableSecuritygroup', 'LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
     }
     return this._connections;
   }
@@ -938,7 +938,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new ValidationError('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
+      throw new ValidationError('LaunchtemplateUsedIgrantableRole', 'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
     }
     return this._grantPrincipal;
   }

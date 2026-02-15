@@ -77,11 +77,11 @@ export class Duration {
   public static parse(duration: string): Duration {
     const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)\.?(\d{1,3})?S)?)?$/);
     if (!matches) {
-      throw new UnscopedValidationError(`Not a valid ISO duration: ${duration}`);
+      throw new UnscopedValidationError('ValidIsoDurationDuration', `Not a valid ISO duration: ${duration}`);
     }
     const [, days, hours, minutes, seconds, milliseconds] = matches;
     if (!days && !hours && !minutes && !seconds && !milliseconds) {
-      throw new UnscopedValidationError(`Not a valid ISO duration: ${duration}`);
+      throw new UnscopedValidationError('ValidIsoDurationDuration', `Not a valid ISO duration: ${duration}`);
     }
     const millis = milliseconds ? milliseconds.padEnd(3, '0') : '';
     return Duration.millis(
@@ -103,7 +103,7 @@ export class Duration {
 
   private constructor(amount: number, unit: TimeUnit) {
     if (!Token.isUnresolved(amount) && amount < 0) {
-      throw new UnscopedValidationError(`Duration amounts cannot be negative. Received: ${amount}`);
+      throw new UnscopedValidationError('DurationAmountsNegativeReceived', `Duration amounts cannot be negative. Received: ${amount}`);
     }
 
     this.amount = amount;
@@ -325,16 +325,16 @@ class TimeUnit {
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
   if (fromUnit.inMillis === toUnit.inMillis) {
     if (integral && !Token.isUnresolved(amount) && !Number.isInteger(amount)) {
-      throw new UnscopedValidationError(`${amount} must be a whole number of ${toUnit}.`);
+      throw new UnscopedValidationError('AmountWholeNumberTounit', `${amount} must be a whole number of ${toUnit}.`);
     }
     return amount;
   }
   if (Token.isUnresolved(amount)) {
-    throw new UnscopedValidationError(`Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
+    throw new UnscopedValidationError('DurationSpecifiedDurationTounit', `Duration must be specified as 'Duration.${toUnit}()' here since its value comes from a token and cannot be converted (got Duration.${fromUnit})`);
   }
   const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
-    throw new UnscopedValidationError(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+    throw new UnscopedValidationError('AmountFromunitConvertedInto', `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }
   return value;
 }

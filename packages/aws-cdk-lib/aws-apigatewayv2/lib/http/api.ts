@@ -399,7 +399,7 @@ export class HttpApi extends HttpApiBase {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('apiEndpoint is not configured on the imported HttpApi.', scope);
+          throw new ValidationError('ApiendpointConfiguredImportedHttpapi', 'apiEndpoint is not configured on the imported HttpApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -454,7 +454,7 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new ValidationError("CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
+        throw new ValidationError('CorsPreflightAllowcredentialsSupported', "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
       }
       const {
         allowCredentials,
@@ -515,7 +515,7 @@ export class HttpApi extends HttpApiBase {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new ValidationError('defaultDomainMapping not supported with createDefaultStage disabled', scope);
+      throw new ValidationError('DefaultdomainmappingSupportedCreatedefaultstageDisabled', 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
     }
   }
 
@@ -524,7 +524,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new ValidationError('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
+      throw new ValidationError('ApiendpointAccessibleDisableexecuteapiendpointTrue', 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
     }
     return this._apiEndpoint;
   }
@@ -577,5 +577,5 @@ export function toIHttpApi(x: IHttpApiRef): IHttpApi {
   if (!!ret.addVpcLink && 'apiEndpoint' in ret && 'apiId' in ret && !!ret.arnForExecuteApi && !!ret.metricClientError) {
     return ret;
   }
-  throw new UnscopedValidationError(`Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
+  throw new UnscopedValidationError('InputHttpapiConstructorName', `Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
 }

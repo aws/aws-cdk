@@ -459,10 +459,10 @@ export class StateMachine extends StateMachineBase {
     addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
-      throw new ValidationError('Cannot specify definition and definitionBody at the same time', this);
+      throw new ValidationError('SpecifyDefinitionDefinitionbodySame', 'Cannot specify definition and definitionBody at the same time', this);
     }
     if (!props.definition && !props.definitionBody) {
-      throw new ValidationError('You need to specify either definition or definitionBody', this);
+      throw new ValidationError('NeedSpecifyEitherDefinition', 'You need to specify either definition or definitionBody', this);
     }
 
     if (props.stateMachineName !== undefined) {
@@ -573,18 +573,18 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new ValidationError(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
+        throw new ValidationError('StateMachineNameCharacters', `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new ValidationError(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
+        throw new ValidationError('StateMachineNameMatch', `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
       }
     }
   }
 
   private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
-      throw new ValidationError('Logs destination is required when level is not OFF.', this);
+      throw new ValidationError('LogsDestinationRequiredLevel', 'Logs destination is required when level is not OFF.', this);
     }
   }
 

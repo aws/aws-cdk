@@ -266,7 +266,7 @@ export class VirtualNode extends VirtualNodeBase {
   @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new cdk.ValidationError('Service discovery information is required for a VirtualNode with a listener.', this);
+      throw new cdk.ValidationError('ServiceDiscoveryInformationRequired', 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
     this.listeners.push(listener.bind(this));
   }

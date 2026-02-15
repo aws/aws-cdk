@@ -97,7 +97,7 @@ export class RayJob extends Job {
     };
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new ValidationError('Ray jobs only support Z.2X worker type', this);
+      throw new ValidationError('RayJobsSupportWorker', 'Ray jobs only support Z.2X worker type', this);
     }
 
     this.resource = new CfnJob(this, 'Resource', {

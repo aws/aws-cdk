@@ -69,7 +69,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {
-      throw new ValidationError('You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.', this);
+      throw new ValidationError('SpecifyEitherScheduledfargatetaskdefinitionoptionsScheduledfargatetaskoptions', 'You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.', this);
     } else if (props.scheduledFargateTaskDefinitionOptions) {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
@@ -88,7 +88,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskdefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
 
     if (props.taskDefinition) {

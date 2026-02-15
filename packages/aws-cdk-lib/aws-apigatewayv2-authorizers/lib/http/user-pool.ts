@@ -61,8 +61,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new UnscopedValidationError(
-        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      throw new UnscopedValidationError('AccessAuthorizeridUntilAuthorizer', 'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }
     return this.authorizer.authorizerId;

@@ -176,15 +176,15 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('Code is required when specifying a runtime', scope);
+      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError('MappingTemplatesUsedAlongside', 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new ValidationError('maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
+      throw new ValidationError('MaxbatchsizeDataSourceType', 'maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
     }
 
     const code = props.code?.bind(this);

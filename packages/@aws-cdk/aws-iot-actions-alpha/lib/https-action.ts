@@ -126,20 +126,20 @@ export class HttpsAction implements iot.IAction {
     if (this.batchConfig.maxBatchOpenDuration) {
       const ms = this.batchConfig.maxBatchOpenDuration.toMilliseconds();
       if (ms < Duration.millis(5).toMilliseconds() || ms > Duration.millis(200).toMilliseconds()) {
-        throw new UnscopedValidationError(`maxBatchOpenDuration must be between 5 ms and 200 ms, got ${ms} ms`);
+        throw new UnscopedValidationError('Maxbatchopenduration200Got', `maxBatchOpenDuration must be between 5 ms and 200 ms, got ${ms} ms`);
       }
     }
 
     if (this.batchConfig.maxBatchSize) {
       if (this.batchConfig.maxBatchSize < 2 || this.batchConfig.maxBatchSize > 10) {
-        throw new UnscopedValidationError(`maxBatchSize must be between 2 and 10, got ${this.batchConfig.maxBatchSize}`);
+        throw new UnscopedValidationError('MaxbatchsizeGotBatchconfigMaxbatchsize', `maxBatchSize must be between 2 and 10, got ${this.batchConfig.maxBatchSize}`);
       }
     }
 
     if (this.batchConfig.maxBatchSizeBytes) {
       const bytes = this.batchConfig.maxBatchSizeBytes.toBytes();
       if (bytes < Size.bytes(100).toBytes() || bytes > Size.kibibytes(128).toBytes()) {
-        throw new UnscopedValidationError(`maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${bytes} bytes`);
+        throw new UnscopedValidationError('Maxbatchsizebytes100Bytes128', `maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${bytes} bytes`);
       }
     }
   }

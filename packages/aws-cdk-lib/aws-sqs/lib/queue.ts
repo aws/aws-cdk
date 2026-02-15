@@ -336,10 +336,10 @@ export class Queue extends QueueBase {
         } else {
           if (typeof attrs.fifo !== 'undefined') {
             if (attrs.fifo && !queueName.endsWith('.fifo')) {
-              throw new ValidationError("FIFO queue names must end in '.fifo'", this);
+              throw new ValidationError('FifoQueueNamesEnd', "FIFO queue names must end in '.fifo'", this);
             }
             if (!attrs.fifo && queueName.endsWith('.fifo')) {
-              throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
+              throw new ValidationError('NonFifoQueueName', "Non-FIFO queue name may not end in '.fifo'", this);
             }
           }
           return queueName.endsWith('.fifo') ? true : false;
@@ -462,7 +462,7 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new ValidationError("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
+        throw new ValidationError('EncryptionmasterkeySupportedEncryptionType', "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
@@ -523,7 +523,7 @@ export class Queue extends QueueBase {
         };
       }
 
-      throw new ValidationError(`Unexpected 'encryptionType': ${encryption}`, this);
+      throw new ValidationError('UnexpectedEncryptiontypeEncryption', `Unexpected 'encryptionType': ${encryption}`, this);
     }
 
     // Enforce encryption of data in transit
@@ -547,23 +547,23 @@ export class Queue extends QueueBase {
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
       if (fifoQueue && !queueName.endsWith('.fifo')) {
-        throw new ValidationError("FIFO queue names must end in '.fifo'", this);
+        throw new ValidationError('FifoQueueNamesEnd', "FIFO queue names must end in '.fifo'", this);
       }
       if (!fifoQueue && queueName.endsWith('.fifo')) {
-        throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
+        throw new ValidationError('NonFifoQueueName', "Non-FIFO queue name may not end in '.fifo'", this);
       }
     }
 
     if (props.contentBasedDeduplication && !fifoQueue) {
-      throw new ValidationError('Content-based deduplication can only be defined for FIFO queues', this);
+      throw new ValidationError('ContentBasedDeduplicationDefined', 'Content-based deduplication can only be defined for FIFO queues', this);
     }
 
     if (props.deduplicationScope && !fifoQueue) {
-      throw new ValidationError('Deduplication scope can only be defined for FIFO queues', this);
+      throw new ValidationError('DeduplicationScopeDefinedFifo', 'Deduplication scope can only be defined for FIFO queues', this);
     }
 
     if (props.fifoThroughputLimit && !fifoQueue) {
-      throw new ValidationError('FIFO throughput limit can only be defined for FIFO queues', this);
+      throw new ValidationError('FifoThroughputLimitDefined', 'FIFO throughput limit can only be defined for FIFO queues', this);
     }
 
     return {

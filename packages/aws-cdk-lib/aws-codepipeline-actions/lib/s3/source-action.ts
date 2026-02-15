@@ -97,7 +97,7 @@ export class S3SourceAction extends Action {
     });
 
     if (props.bucketKey.length === 0) {
-      throw new UnscopedValidationError('Property bucketKey cannot be an empty string');
+      throw new UnscopedValidationError('PropertyBucketkeyEmptyString', 'Property bucketKey cannot be an empty string');
     }
 
     this.props = props;
@@ -159,7 +159,7 @@ export class S3SourceAction extends Action {
       ret = baseId + this.props.bucketKey;
       if (this.props.bucket.node.tryFindChild(ret)) {
         // this means a duplicate path for the same bucket - error out
-        throw new UnscopedValidationError(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
+        throw new UnscopedValidationError('SourceActionPathProps', `S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
       }
     }
 

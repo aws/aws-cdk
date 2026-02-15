@@ -59,6 +59,6 @@ export class QueuePolicy extends Resource {
    * @attribute
    */
   public get queuePolicyId(): string {
-    throw new ValidationError('QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
+    throw new ValidationError('QueuepolicyQueuepolicyidRemovedCloudformation', 'QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
   }
 }

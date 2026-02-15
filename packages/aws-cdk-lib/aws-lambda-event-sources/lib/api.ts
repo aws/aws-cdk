@@ -5,7 +5,7 @@ import { Names, Stack, UnscopedValidationError } from '../../core';
 export class ApiEventSource implements lambda.IEventSource {
   constructor(private readonly method: string, private readonly path: string, private readonly options?: apigw.MethodOptions) {
     if (!path.startsWith('/')) {
-      throw new UnscopedValidationError(`Path must start with "/": ${path}`);
+      throw new UnscopedValidationError('PathStartPath', `Path must start with "/": ${path}`);
     }
   }
 

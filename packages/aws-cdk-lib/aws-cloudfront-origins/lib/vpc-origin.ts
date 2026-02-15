@@ -87,7 +87,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
 
   protected renderVpcOriginConfig(): cloudfront.CfnDistribution.VpcOriginConfigProperty | undefined {
     if (!this.vpcOrigin) {
-      throw new cdk.UnscopedValidationError('VPC origin cannot be undefined.');
+      throw new cdk.UnscopedValidationError('VpcOriginUndefined', 'VPC origin cannot be undefined.');
     }
     return {
       vpcOriginId: this.vpcOrigin.vpcOriginId,
@@ -101,7 +101,7 @@ class VpcOriginWithVpcOrigin extends VpcOrigin {
   constructor(protected vpcOrigin: cloudfront.IVpcOrigin, props: VpcOriginProps = {}) {
     const domainName = props.domainName ?? vpcOrigin.domainName;
     if (!domainName) {
-      throw new cdk.UnscopedValidationError("'domainName' must be specified when no default domain name is defined.");
+      throw new cdk.UnscopedValidationError('DomainnameSpecifiedDefaultDomain', "'domainName' must be specified when no default domain name is defined.");
     }
     super(domainName, props);
   }
@@ -111,7 +111,7 @@ class VpcOriginWithEndpoint extends VpcOrigin {
   constructor(private readonly vpcOriginEndpoint: cloudfront.VpcOriginEndpoint, protected readonly props: VpcOriginWithEndpointProps = {}) {
     const domainName = props.domainName ?? vpcOriginEndpoint.domainName;
     if (!domainName) {
-      throw new cdk.UnscopedValidationError("'domainName' must be specified when no default domain name is defined.");
+      throw new cdk.UnscopedValidationError('DomainnameSpecifiedDefaultDomain', "'domainName' must be specified when no default domain name is defined.");
     }
     super(domainName, props);
   }

@@ -236,7 +236,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
    */
   public get firstLoadBalancerFullName(): string {
     if (this.listeners.length === 0) {
-      throw new ValidationError('The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
+      throw new ValidationError('TargetgroupNeedsAttachedLoadbalancer', 'The TargetGroup needs to be attached to a LoadBalancer before you can call this method', this);
     }
     return loadBalancerNameFromListenerArn(this.listeners[0].listenerRef.listenerArn);
   }
@@ -349,8 +349,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
 
   public get metrics(): INetworkTargetGroupMetrics {
     if (!this._metrics) {
-      throw new ValidationError(
-        'The imported NetworkTargetGroup needs the associated NetworkLoadBalancer to be able to provide metrics. ' +
+      throw new ValidationError('ImportedNetworktargetgroupNeedsAssociated', 'The imported NetworkTargetGroup needs the associated NetworkLoadBalancer to be able to provide metrics. ' +
         'Please specify the ARN value when importing it.', this);
     }
     return this._metrics;
@@ -364,7 +363,7 @@ class ImportedNetworkTargetGroup extends ImportedTargetGroupBase implements INet
     for (const target of targets) {
       const result = target.attachToNetworkTargetGroup(this);
       if (result.targetJson !== undefined) {
-        throw new ValidationError('Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
+        throw new ValidationError('AddNonSelfRegistering', 'Cannot add a non-self registering target to an imported TargetGroup. Create a new TargetGroup instead.', this);
       }
     }
   }

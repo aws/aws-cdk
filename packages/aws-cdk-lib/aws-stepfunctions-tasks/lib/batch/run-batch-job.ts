@@ -189,34 +189,33 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new UnscopedValidationError(
-        `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
+      throw new UnscopedValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
       );
     }
 
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
       if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
-        throw new UnscopedValidationError(`arraySize must be between 2 and 10,000. Received ${arraySize}.`);
+        throw new UnscopedValidationError('Arraysize000ReceivedArraysize', `arraySize must be between 2 and 10,000. Received ${arraySize}.`);
       }
     });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
-      throw new UnscopedValidationError(`dependencies must be 20 or less. Received ${props.dependsOn.length}.`);
+      throw new UnscopedValidationError('DependenciesReceivedPropsDependson', `dependencies must be 20 or less. Received ${props.dependsOn.length}.`);
     }
 
     // validate attempts
     withResolved(props.attempts, (attempts) => {
       if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
-        throw new UnscopedValidationError(`attempts must be between 1 and 10. Received ${attempts}.`);
+        throw new UnscopedValidationError('AttemptsReceivedAttempts', `attempts must be between 1 and 10. Received ${attempts}.`);
       }
     });
 
     // validate timeout
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
-        throw new UnscopedValidationError(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+        throw new UnscopedValidationError('TimeoutGreaterSecondsReceived', `timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
       }
     });
 
@@ -225,8 +224,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     if (props.containerOverrides?.environment) {
       Object.keys(props.containerOverrides.environment).forEach(key => {
         if (key.match(/^AWS_BATCH/)) {
-          throw new UnscopedValidationError(
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
+          throw new UnscopedValidationError('InvalidEnvironmentVariableName', `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
           );
         }
       });

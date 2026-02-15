@@ -67,7 +67,7 @@ export class HttpsRedirect extends Construct {
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new ValidationError(`The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
+        throw new ValidationError('CertificateEastRegionCertificate', `The certificate must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
     }
     const redirectCert = props.certificate ?? this.createCertificate(domainNames, props.zone);
@@ -146,10 +146,10 @@ export class HttpsRedirect extends Construct {
     const stack = Stack.of(this);
     const parent = stack.node.scope;
     if (!parent) {
-      throw new ValidationError(`Stack ${stack.stackId} must be created in the scope of an App or Stage`, this);
+      throw new ValidationError('StackStackStackidCreated', `Stack ${stack.stackId} must be created in the scope of an App or Stage`, this);
     }
     if (Token.isUnresolved(stack.region)) {
-      throw new ValidationError(`When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`, this);
+      throw new ValidationError('Route53PatternsCertificateEnabled', `When ${ROUTE53_PATTERNS_USE_CERTIFICATE} is enabled, a region must be defined on the Stack`, this);
     }
     if (stack.region !== 'us-east-1') {
       const stackId = `certificate-redirect-stack-${stack.node.addr}`;

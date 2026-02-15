@@ -93,8 +93,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
    */
   public get authorizerId(): string {
     if (!this.authorizer) {
-      throw new UnscopedValidationError(
-        'Cannot access authorizerId until authorizer is attached to a HttpRoute',
+      throw new UnscopedValidationError('AccessAuthorizeridUntilAuthorizer', 'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }
     return this.authorizer.authorizerId;
@@ -102,7 +101,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
-      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
+      throw new ValidationError('AttachSameAuthorizerMultiple', 'Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {

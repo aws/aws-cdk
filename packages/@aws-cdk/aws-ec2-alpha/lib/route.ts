@@ -464,7 +464,7 @@ export class NatGateway extends Resource implements IRouteTarget {
 
     if (this.connectivityType === NatConnectivityType.PUBLIC) {
       if (!props.vpc && !props.allocationId) {
-        throw new ValidationError('Either provide vpc or allocationId', this);
+        throw new ValidationError('EitherProvideVpcAllocationid', 'Either provide vpc or allocationId', this);
       }
     }
 
@@ -536,16 +536,16 @@ export class VPCPeeringConnection extends Resource implements IRouteTarget {
     const isCrossAccount = props.requestorVpc.ownerAccountId !== props.acceptorVpc.ownerAccountId;
 
     if (!isCrossAccount && props.peerRoleArn) {
-      throw new ValidationError('peerRoleArn is not needed for same account peering', this);
+      throw new ValidationError('PeerrolearnNeededSameAccount', 'peerRoleArn is not needed for same account peering', this);
     }
 
     if (isCrossAccount && !props.peerRoleArn) {
-      throw new ValidationError('Cross account VPC peering requires peerRoleArn', this);
+      throw new ValidationError('CrossAccountVpcPeering', 'Cross account VPC peering requires peerRoleArn', this);
     }
 
     const overlap = this.validateVpcCidrOverlap(props.requestorVpc, props.acceptorVpc);
     if (overlap) {
-      throw new ValidationError('CIDR block should not overlap with each other for establishing a peering connection', this);
+      throw new ValidationError('CidrBlockOverlapEach', 'CIDR block should not overlap with each other for establishing a peering connection', this);
     }
     if (props.vpcPeeringConnectionName) {
       Tags.of(this).add(NAME_TAG, props.vpcPeeringConnectionName);
@@ -770,11 +770,11 @@ export class Route extends Resource implements IRouteV2 {
     }
 
     if (this.target.gateway?.routerType === RouterType.EGRESS_ONLY_INTERNET_GATEWAY && isDestinationIpv4) {
-      throw new ValidationError('Egress only internet gateway does not support IPv4 routing', this);
+      throw new ValidationError('EgressInternetGatewaySupport', 'Egress only internet gateway does not support IPv4 routing', this);
     }
 
     if ((props.target.gateway && props.target.endpoint) || (!props.target.gateway && !props.target.endpoint)) {
-      throw new ValidationError('Exactly one of `gateway` or `endpoint` must be specified.', this);
+      throw new ValidationError('ExactlyOneGatewayEndpoint', 'Exactly one of `gateway` or `endpoint` must be specified.', this);
     }
     this.targetRouterType = this.target.gateway ? this.target.gateway.routerType : RouterType.VPC_ENDPOINT;
     // Gateway generates route automatically via its RouteTable, thus we don't need to generate the resource for it

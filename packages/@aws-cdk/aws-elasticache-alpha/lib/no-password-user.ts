@@ -93,7 +93,7 @@ export class NoPasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine)) {
-      throw new ValidationError(`Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
+      throw new ValidationError('EngineEngineSupportPassword', `Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

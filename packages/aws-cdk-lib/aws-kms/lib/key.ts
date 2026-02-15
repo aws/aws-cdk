@@ -181,7 +181,7 @@ abstract class KeyBase extends Resource implements IKey {
 
     if (!this.policy) {
       if (allowNoOp) { return { statementAdded: false }; }
-      throw new ValidationError(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
+      throw new ValidationError('UnableAddStatementIam', `Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
     }
 
     this.policy.addStatements(statement);
@@ -615,7 +615,7 @@ export class Key extends KeyBase {
 
     const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
-      throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
+      throw new ValidationError('KmsKeyArnFormat', `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
     }
 
     return new Import(keyResourceName, {
@@ -656,7 +656,7 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+      throw new ValidationError('ParsePolicydocumentPassedAws', 'Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
         'This makes it impossible to create a mutable IKey from that Policy. ' +
         'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
@@ -717,7 +717,7 @@ export class Key extends KeyBase {
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
-      throw new ValidationError('All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsKeyFromlookupConcrete', 'All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
@@ -815,25 +815,25 @@ export class Key extends KeyBase {
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
-      throw new ValidationError(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
+      throw new ValidationError('KeySpecKeyspecValid', `key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
     }
 
     if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on HMAC keys', this);
+      throw new ValidationError('KeyRotationEnabledHmac', 'key rotation cannot be enabled on HMAC keys', this);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on asymmetric keys', this);
+      throw new ValidationError('KeyRotationEnabledAsymmetric', 'key rotation cannot be enabled on asymmetric keys', this);
     }
 
     this.enableKeyRotation = props.enableKeyRotation;
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new ValidationError('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
+        throw new ValidationError('RotationperiodSpecifiedEnablekeyrotationDisabled', '\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new ValidationError(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
+        throw new ValidationError('RotationperiodValue2650Days', `'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -846,7 +846,7 @@ export class Key extends KeyBase {
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new ValidationError('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
+        throw new ValidationError('TrustaccountidentitiesFalseAwsCdk', '`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
       }
 
       this.trustAccountIdentities = true;
@@ -867,7 +867,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new ValidationError(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
+        throw new ValidationError('PendingwindowValueDaysReceived', `'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
       }
     }
 

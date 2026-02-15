@@ -97,7 +97,7 @@ export class RedshiftQuery implements events.IRuleTarget {
   bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
     if (this.props.sql.length < 1) {
-      throw new ValidationError('At least one SQL statement must be specified.', rule);
+      throw new ValidationError('LeastOneSqlStatement', 'At least one SQL statement must be specified.', rule);
     }
     if (this.props.sql.length === 1) {
       role.addToPrincipalPolicy(this.putEventStatement());

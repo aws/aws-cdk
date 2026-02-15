@@ -66,10 +66,10 @@ export class ResourcePolicy extends Resource {
     addConstructMetadata(this, props);
 
     if (props.stream && props.streamConsumer) {
-      throw new ValidationError('Only one of stream or streamConsumer can be set', this);
+      throw new ValidationError('OneStreamStreamconsumer', 'Only one of stream or streamConsumer can be set', this);
     }
     if (props.stream === undefined && props.streamConsumer === undefined) {
-      throw new ValidationError('One of stream or streamConsumer must be set', this);
+      throw new ValidationError('OneStreamStreamconsumer', 'One of stream or streamConsumer must be set', this);
     }
 
     this.document = props.policyDocument ?? this.document;

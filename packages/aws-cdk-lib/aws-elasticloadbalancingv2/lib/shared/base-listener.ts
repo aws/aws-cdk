@@ -84,7 +84,7 @@ export abstract class BaseListener extends Resource implements IListener {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
       || Token.isUnresolved(options.userOptions.listenerPort)) {
-      throw new ValidationError('All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookLoadBalancer', 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;

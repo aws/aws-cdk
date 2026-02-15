@@ -144,7 +144,7 @@ export function dispatchMetric<A, B, C>(metric: IMetric, fns: { withStat: (x: Me
   const typeCount = [conf.metricStat, conf.mathExpression, conf.searchExpression].map(Boolean).filter(Boolean).length;
 
   if (typeCount > 1) {
-    throw new UnscopedValidationError('Metric object must not produce more than one of \'metricStat\', \'mathExpression\', or \'searchExpression\'');
+    throw new UnscopedValidationError('MetricObjectProduceOne', 'Metric object must not produce more than one of \'metricStat\', \'mathExpression\', or \'searchExpression\'');
   }
   if (conf.metricStat) {
     return fns.withStat(conf.metricStat, conf);
@@ -153,6 +153,6 @@ export function dispatchMetric<A, B, C>(metric: IMetric, fns: { withStat: (x: Me
   } else if (conf.searchExpression) {
     return fns.withSearchExpression(conf.searchExpression, conf);
   } else {
-    throw new UnscopedValidationError('Metric object must have either \'metricStat\', \'mathExpression\', or \'searchExpression\'');
+    throw new UnscopedValidationError('MetricObjectEitherMetricstat', 'Metric object must have either \'metricStat\', \'mathExpression\', or \'searchExpression\'');
   }
 }

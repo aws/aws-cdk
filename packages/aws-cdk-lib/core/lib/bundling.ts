@@ -344,7 +344,7 @@ export class DockerImage extends BundlingDockerImage {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new UnscopedValidationError(`"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError('FileRelativeDockerBuild', `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options

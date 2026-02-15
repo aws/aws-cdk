@@ -364,7 +364,7 @@ export class Image extends ImageBase {
    */
   public static fromImageAttributes(scope: Construct, id: string, attrs: ImageAttributes): IImage {
     if (!attrs.imageArn && !attrs.imageName) {
-      throw new cdk.ValidationError('either imageArn or imageName is required', scope);
+      throw new cdk.ValidationError('EitherImagearnImagenameRequired', 'either imageArn or imageName is required', scope);
     }
 
     const imageArn =
@@ -479,7 +479,7 @@ export class Image extends ImageBase {
     } else if (recipe._isContainerRecipe()) {
       return recipe.containerRecipeVersion;
     } else {
-      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+      throw new cdk.ValidationError('RecipeEitherImageRecipe', 'recipe must either be an image recipe or container recipe', this);
     }
   }
 
@@ -496,7 +496,7 @@ export class Image extends ImageBase {
     } else if (recipe._isContainerRecipe()) {
       return this.resource.attrImageUri;
     } else {
-      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+      throw new cdk.ValidationError('RecipeEitherImageRecipe', 'recipe must either be an image recipe or container recipe', this);
     }
   }
 
@@ -513,11 +513,11 @@ export class Image extends ImageBase {
     }
 
     if (recipe._isImageRecipe() && recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
+      throw new cdk.ValidationError('RecipeIimagerecipeIcontainerrecipe', 'the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
     }
 
     if (!recipe._isImageRecipe() && !recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+      throw new cdk.ValidationError('RecipeEitherIimagerecipeIcontainerrecipe', 'the recipe must either be an IImageRecipe or IContainerRecipe', this);
     }
 
     const image = new CfnImage(this, 'Resource', {

@@ -26,7 +26,7 @@ export class LogicalIDs {
    */
   public addRename(oldId: string, newId: string) {
     if (oldId in this.renames) {
-      throw new UnscopedValidationError(`A rename has already been registered for '${oldId}'`);
+      throw new UnscopedValidationError('RenameAlreadyRegisteredOldid', `A rename has already been registered for '${oldId}'`);
     }
     this.renames[oldId] = newId;
   }
@@ -42,7 +42,7 @@ export class LogicalIDs {
 
     // If this newId has already been used, it must have been with the same oldId
     if (newId in this.reverse && this.reverse[newId] !== oldId) {
-      throw new UnscopedValidationError(`Two objects have been assigned the same Logical ID: '${this.reverse[newId]}' and '${oldId}' are now both named '${newId}'.`);
+      throw new UnscopedValidationError('TwoObjectsAssignedSame', `Two objects have been assigned the same Logical ID: '${this.reverse[newId]}' and '${oldId}' are now both named '${newId}'.`);
     }
     this.reverse[newId] = oldId;
 
@@ -65,7 +65,7 @@ export class LogicalIDs {
 
     if (keys.size !== 0) {
       const unusedRenames = Array.from(keys.values());
-      throw new UnscopedValidationError(`The following Logical IDs were attempted to be renamed, but not found: ${unusedRenames.join(', ')}`);
+      throw new UnscopedValidationError('FollowingLogicalIdsAttempted', `The following Logical IDs were attempted to be renamed, but not found: ${unusedRenames.join(', ')}`);
     }
   }
 }
@@ -77,6 +77,6 @@ const VALID_LOGICALID_REGEX = /^[A-Za-z0-9]{1,255}$/;
  */
 function validateLogicalId(logicalId: string) {
   if (!VALID_LOGICALID_REGEX.test(logicalId)) {
-    throw new UnscopedValidationError(`Logical ID must adhere to the regular expression: ${VALID_LOGICALID_REGEX.toString()}, got '${logicalId}'`);
+    throw new UnscopedValidationError('LogicalAdhereRegularExpression', `Logical ID must adhere to the regular expression: ${VALID_LOGICALID_REGEX.toString()}, got '${logicalId}'`);
   }
 }

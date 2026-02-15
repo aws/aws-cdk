@@ -99,6 +99,6 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
    */
   @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
-    throw new ValidationError('Cannot use inference accelerators on tasks that run on External service', this);
+    throw new ValidationError('InferenceAcceleratorsTasksRun', 'Cannot use inference accelerators on tasks that run on External service', this);
   }
 }

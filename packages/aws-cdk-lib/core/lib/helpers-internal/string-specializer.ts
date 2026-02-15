@@ -17,7 +17,7 @@ export class StringSpecializer {
    */
   public static validateNoTokens(s: string, what: string) {
     if (Token.isUnresolved(s)) {
-      throw new UnscopedValidationError(`${what} may not contain tokens; only the following literal placeholder strings are allowed: ` + [
+      throw new UnscopedValidationError('WhatContainTokensFollowing', `${what} may not contain tokens; only the following literal placeholder strings are allowed: ` + [
         '${Qualifier}',
         cxapi.EnvironmentPlaceholders.CURRENT_REGION,
         cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,

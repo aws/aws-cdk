@@ -53,7 +53,7 @@ export class AssociationManager {
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('MultipleTagUpdateConstraints', `Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -73,7 +73,7 @@ export class AssociationManager {
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('TopicTopicNodePath', `Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -96,7 +96,7 @@ export class AssociationManager {
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('ProvisioningRuleOptionsRule', `Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -116,7 +116,7 @@ export class AssociationManager {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a launch role has already been set.
     if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
-      throw new ValidationError(`Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('ConfigureStacksetDeploymentLaunch', `Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
 
     const constructId = this.stackSetConstraintLogicalId(association.associationKey);
@@ -136,7 +136,7 @@ export class AssociationManager {
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('ConfigureMultipleStacksetDeployment', `Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -159,7 +159,7 @@ export class AssociationManager {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
-      throw new ValidationError(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('LaunchRoleStacksetRule', `Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
 
     const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
@@ -176,7 +176,7 @@ export class AssociationManager {
       // Add dependsOn to force proper order in deployment.
       constraint.addDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError('MultipleLaunchRolesAssociation', `Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 

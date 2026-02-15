@@ -219,7 +219,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new UnscopedValidationError(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError('InvalidPrefixFormatValue', `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

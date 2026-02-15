@@ -236,17 +236,17 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new ValidationError('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
+        throw new ValidationError('QueryintervalTotaltimeoutWaiterstatemachinelogoptionsDisablewaiterstatemachinelogging', '"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
           + 'Otherwise, they have no meaning', this);
       }
     }
 
     if (props.role && (props.frameworkOnEventRole || props.frameworkCompleteAndTimeoutRole)) {
-      throw new ValidationError('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
+      throw new ValidationError('SpecifyRoleAnyFrameworkoneventrole', 'Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
     }
     if (!props.isCompleteHandler && props.frameworkCompleteAndTimeoutRole) {
-      throw new ValidationError('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
+      throw new ValidationError('SpecifyFrameworkcompleteandtimeoutroleIscompletehandlerSpecified', 'Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
     }
 
     this.onEventHandler = props.onEventHandler;

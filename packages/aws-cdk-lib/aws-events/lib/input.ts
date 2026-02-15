@@ -173,7 +173,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError('SingleKeyKeyUsed', `Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 

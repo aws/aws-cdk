@@ -698,7 +698,7 @@ export class LogGroup extends LogGroupBase {
     if (retentionInDays === Infinity || retentionInDays === RetentionDays.INFINITE) { retentionInDays = undefined; }
 
     if (retentionInDays !== undefined && !Token.isUnresolved(retentionInDays) && retentionInDays <= 0) {
-      throw new ValidationError(`retentionInDays must be positive, got ${retentionInDays}`, this);
+      throw new ValidationError('RetentionindaysPositiveGotRetentionindays', `retentionInDays must be positive, got ${retentionInDays}`, this);
     }
 
     let logGroupClass = props.logGroupClass;

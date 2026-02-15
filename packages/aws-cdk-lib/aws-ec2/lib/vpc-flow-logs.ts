@@ -476,12 +476,12 @@ class FirehoseDestination extends FlowLogDestination {
 
   public bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig {
     if (!!this.props.deliveryStreamArn === !!this.props.deliveryStream) {
-      throw new ValidationError('Specify exactly one of either deliveryStream or deliveryStreamArn.', scope);
+      throw new ValidationError('SpecifyExactlyOneEither', 'Specify exactly one of either deliveryStream or deliveryStreamArn.', scope);
     }
     if (this.props.deliveryStream) {
       const compareAccount = Token.compareStrings(this.props.deliveryStream.env.account, flowLog.env.account);
       if (compareAccount === TokenComparison.DIFFERENT && !this.props.iamRole) {
-        throw new ValidationError('The iamRole is required for cross-account log delivery.', scope);
+        throw new ValidationError('IamroleRequiredCrossAccount', 'The iamRole is required for cross-account log delivery.', scope);
       }
     }
 
@@ -954,10 +954,10 @@ export class FlowLog extends FlowLogBase {
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
-        throw new ValidationError('trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError('TraffictypeSupportedTransitGateway', 'trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
       }
       if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new ValidationError('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError('MaxaggregationintervalOneMinuteTransit', 'maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
       }
       trafficType = undefined;
     }

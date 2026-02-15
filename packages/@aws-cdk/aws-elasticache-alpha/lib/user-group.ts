@@ -94,7 +94,7 @@ export abstract class UserGroupBase extends Resource implements IUserGroup {
    * @param _user The user to add
    */
   public addUser(_user: IUser): void {
-    throw new UnscopedValidationError('Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
+    throw new UnscopedValidationError('AddUsersImportedUsergroup', 'Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
   }
 }
 
@@ -186,14 +186,14 @@ export class UserGroup extends UserGroupBase {
     const stack = Stack.of(scope);
 
     if (attrs.userGroupArn && attrs.userGroupName) {
-      throw new ValidationError('Only one of userGroupArn or userGroupName can be provided.', scope);
+      throw new ValidationError('OneUsergrouparnUsergroupnameProvided', 'Only one of userGroupArn or userGroupName can be provided.', scope);
     }
 
     if (attrs.userGroupArn) {
       userGroupArn = attrs.userGroupArn;
       const extractedUserGroupName = stack.splitArn(attrs.userGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedUserGroupName) {
-        throw new ValidationError('Unable to extract user group name from ARN.', scope);
+        throw new ValidationError('UnableExtractUserGroup', 'Unable to extract user group name from ARN.', scope);
       }
       userGroupName = extractedUserGroupName;
     } else if (attrs.userGroupName) {
@@ -204,7 +204,7 @@ export class UserGroup extends UserGroupBase {
         resourceName: attrs.userGroupName,
       });
     } else {
-      throw new ValidationError('One of userGroupName or userGroupArn is required.', scope);
+      throw new ValidationError('OneUsergroupnameUsergrouparnRequired', 'One of userGroupName or userGroupArn is required.', scope);
     }
 
     class Import extends UserGroupBase {
@@ -307,18 +307,18 @@ export class UserGroup extends UserGroupBase {
     const userNames = this._users.map(user => user.userName);
     const duplicates = userNames.filter((name, index) => userNames.indexOf(name) !== index);
     if (duplicates.length > 0) {
-      throw new ValidationError('User group cannot have users with the same user name.', this);
+      throw new ValidationError('UserGroupUsersSame', 'User group cannot have users with the same user name.', this);
     }
 
     if (this.engine === UserEngine.REDIS) {
       this._users.forEach(user => {
         if (user.engine !== UserEngine.REDIS) {
-          throw new ValidationError('Redis user group can only contain Redis users.', this);
+          throw new ValidationError('RedisUserGroupContain', 'Redis user group can only contain Redis users.', this);
         }
       });
       const hasDefaultUser = this._users.some(user => user.userName === 'default');
       if (!hasDefaultUser) {
-        throw new ValidationError('Redis user groups need to contain a user with the user name "default".', this);
+        throw new ValidationError('RedisUserGroupsNeed', 'Redis user groups need to contain a user with the user name "default".', this);
       }
     }
   }

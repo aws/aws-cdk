@@ -194,7 +194,7 @@ function resolveArray(arr: any[], handlers: FieldHandlers, visited: object[] = [
     if ((typeof value === 'string' && jsonPathString(value) !== undefined)
         || (typeof value === 'number' && jsonPathNumber(value) !== undefined)
         || (isStringArray(value) && jsonPathStringList(value) !== undefined)) {
-      throw new UnscopedValidationError('Cannot use JsonPath fields in an array, they must be used in objects');
+      throw new UnscopedValidationError('JsonpathFieldsArrayThey', 'Cannot use JsonPath fields in an array, they must be used in objects');
     }
     if (Array.isArray(value)) {
       return resolveArray(value, handlers, visited);
@@ -284,7 +284,7 @@ export function jsonPathString(x: string): string | undefined {
   const jsonPathTokens = fragments.tokens.filter(JsonPathToken.isJsonPathToken);
 
   if (jsonPathTokens.length > 0 && fragments.length > 1) {
-    throw new UnscopedValidationError(`Field references must be the entire string, cannot concatenate them (found '${x}')`);
+    throw new UnscopedValidationError('FieldReferencesEntireString', `Field references must be the entire string, cannot concatenate them (found '${x}')`);
   }
   if (jsonPathTokens.length > 0) {
     return jsonPathTokens[0].path;
@@ -336,7 +336,7 @@ export function renderInExpression(x: any): string {
   if (path) return path;
   if (typeof x === 'number') return x.toString(10);
   if (typeof x === 'string') return singleQuotestring(x);
-  throw new UnscopedValidationError('Unxexpected value.');
+  throw new UnscopedValidationError('UnxexpectedValue', 'Unxexpected value.');
 }
 
 function singleQuotestring(x: string): string {

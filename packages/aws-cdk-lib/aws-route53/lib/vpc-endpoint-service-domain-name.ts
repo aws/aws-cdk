@@ -82,7 +82,7 @@ export class VpcEndpointServiceDomainName extends Construct {
     const serviceUniqueId = Names.nodeUniqueId(props.endpointService.node);
     if (serviceUniqueId in VpcEndpointServiceDomainName.endpointServicesMap) {
       const endpoint = VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId];
-      throw new ValidationError(`Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`, this);
+      throw new ValidationError('CreateVpcendpointservicedomainnameServiceServiceuniqueid', `Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`, this);
     }
   }
 

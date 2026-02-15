@@ -27,7 +27,7 @@ export class FileSet implements IFileSetProducer {
    */
   public get producer() {
     if (!this._producer) {
-      throw new UnscopedValidationError(`FileSet '${this.id}' doesn\'t have a producer; call 'fileSet.producedBy()'`);
+      throw new UnscopedValidationError('FilesetDoesnProducerCall', `FileSet '${this.id}' doesn\'t have a producer; call 'fileSet.producedBy()'`);
     }
     return this._producer;
   }
@@ -39,7 +39,7 @@ export class FileSet implements IFileSetProducer {
    */
   public producedBy(producer?: Step) {
     if (this._producer) {
-      throw new UnscopedValidationError(`FileSet '${this.id}' already has a producer (${this._producer}) while setting producer: ${producer}`);
+      throw new UnscopedValidationError('FilesetAlreadyProducerProducer', `FileSet '${this.id}' already has a producer (${this._producer}) while setting producer: ${producer}`);
     }
     this._producer = producer;
   }

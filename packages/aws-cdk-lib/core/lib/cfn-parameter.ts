@@ -295,7 +295,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsString(): string {
     if (!isStringType(this.type) && !isNumberType(this.type)) {
-      throw new ValidationError(`Parameter type (${this.type}) is not a string or number type`, this);
+      throw new ValidationError('ParameterTypeTypeString', `Parameter type (${this.type}) is not a string or number type`, this);
     }
     return Token.asString(this.value);
   }
@@ -305,7 +305,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsList(): string[] {
     if (!isListType(this.type)) {
-      throw new ValidationError(`Parameter type (${this.type}) is not a string list type`, this);
+      throw new ValidationError('ParameterTypeTypeString', `Parameter type (${this.type}) is not a string list type`, this);
     }
     return Token.asList(this.value);
   }
@@ -315,7 +315,7 @@ export class CfnParameter extends CfnElement {
    */
   public get valueAsNumber(): number {
     if (!isNumberType(this.type)) {
-      throw new ValidationError(`Parameter type (${this.type}) is not a number type`, this);
+      throw new ValidationError('ParameterTypeTypeNumber', `Parameter type (${this.type}) is not a number type`, this);
     }
     return Token.asNumber(this.value);
   }

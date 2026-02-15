@@ -316,7 +316,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         isTemplate = entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
         assetType = AssetType.FILE;
       } else {
-        throw new UnscopedValidationError(`Unrecognized asset type: ${entry.type}`);
+        throw new UnscopedValidationError('UnrecognizedAssetTypeEntry', `Unrecognized asset type: ${entry.type}`);
       }
 
       ret.push({

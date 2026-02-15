@@ -73,11 +73,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new ValidationError('url is not available for imported stages.', scope);
+        throw new ValidationError('UrlAvailableImportedStages', 'url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new ValidationError('callback url is not available for imported stages.', scope);
+        throw new ValidationError('CallbackUrlAvailableImported', 'callback url is not available for imported stages.', scope);
       }
 
       /**

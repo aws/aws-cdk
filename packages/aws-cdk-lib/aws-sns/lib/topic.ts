@@ -272,7 +272,7 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new ValidationError('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
+      throw new ValidationError('ImportTopicContentbaseddeduplicationAvailable', 'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
     }
 
     class Import extends TopicBase {
@@ -323,20 +323,20 @@ export class Topic extends TopicBase {
     this.enforceSSL = props.enforceSSL;
 
     if (props.contentBasedDeduplication && !props.fifo) {
-      throw new ValidationError('Content based deduplication can only be enabled for FIFO SNS topics.', this);
+      throw new ValidationError('ContentBasedDeduplicationEnabled', 'Content based deduplication can only be enabled for FIFO SNS topics.', this);
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
-      throw new ValidationError('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
+      throw new ValidationError('MessageretentionperiodindaysValidFifoSns', '`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
     }
     if (props.fifoThroughputScope && !props.fifo) {
-      throw new ValidationError('`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
+      throw new ValidationError('FifothroughputscopeFifoSnsTopics', '`fifoThroughputScope` can only be set for FIFO SNS topics.', this);
     }
     if (
       props.messageRetentionPeriodInDays !== undefined
       && !Token.isUnresolved(props.messageRetentionPeriodInDays)
       && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
     ) {
-      throw new ValidationError('`messageRetentionPeriodInDays` must be an integer between 1 and 365', this);
+      throw new ValidationError('MessageretentionperiodindaysInteger365', '`messageRetentionPeriodInDays` must be an integer between 1 and 365', this);
     }
 
     if (props.loggingConfigs) {
@@ -363,11 +363,11 @@ export class Topic extends TopicBase {
       props.signatureVersion !== '1' &&
       props.signatureVersion !== '2'
     ) {
-      throw new ValidationError(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
+      throw new ValidationError('SignatureversionReceivedPropsSignatureversion', `signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
     }
 
     if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
-      throw new ValidationError(`displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
+      throw new ValidationError('DisplaynameEqual100Characters', `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -400,7 +400,7 @@ export class Topic extends TopicBase {
       if (spec.successFeedbackSampleRate !== undefined) {
         const rate = spec.successFeedbackSampleRate;
         if (!Number.isInteger(rate) || rate < 0 || rate > 100) {
-          throw new ValidationError('Success feedback sample rate must be an integer between 0 and 100', this);
+          throw new ValidationError('SuccessFeedbackSampleRate', 'Success feedback sample rate must be an integer between 0 and 100', this);
         }
       }
       return {

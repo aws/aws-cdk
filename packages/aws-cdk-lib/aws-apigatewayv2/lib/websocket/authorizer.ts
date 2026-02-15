@@ -118,7 +118,7 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     addConstructMetadata(this, props);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError('AuthorizeruriMandatoryLambdaAuthorizers', 'authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     this.apiId = props.webSocketApi.apiId;

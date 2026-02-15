@@ -27,7 +27,7 @@ export class Schedule {
    */
   public static rate(duration: Duration): Schedule {
     if (duration.toMilliseconds() < Duration.minutes(1).toMilliseconds()) {
-      throw new UnscopedValidationError('Duration cannot be less than 1 minute');
+      throw new UnscopedValidationError('DurationMinute', 'Duration cannot be less than 1 minute');
     }
 
     // maybeRate method returns the rate if the rate is whole number
@@ -45,7 +45,7 @@ export class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError('SupplyDayWeekdayMost', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = options.minute ?? '*';

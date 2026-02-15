@@ -49,11 +49,11 @@ export class UrlSubscription implements sns.ITopicSubscription {
   constructor(private readonly url: string, private readonly props: UrlSubscriptionProps = {}) {
     this.unresolvedUrl = Token.isUnresolved(url);
     if (!this.unresolvedUrl && !url.startsWith('http://') && !url.startsWith('https://')) {
-      throw new UnscopedValidationError('URL must start with either http:// or https://');
+      throw new UnscopedValidationError('UrlStartEitherHttp', 'URL must start with either http:// or https://');
     }
 
     if (this.unresolvedUrl && props.protocol === undefined) {
-      throw new UnscopedValidationError('Must provide protocol if url is unresolved');
+      throw new UnscopedValidationError('ProvideProtocolUrlUnresolved', 'Must provide protocol if url is unresolved');
     }
 
     if (this.unresolvedUrl) {

@@ -49,7 +49,7 @@ export class IdentitySource {
 
   private static toString(source: string, type: string) {
     if (!source.trim()) {
-      throw new UnscopedValidationError('IdentitySources must be a non-empty string.');
+      throw new UnscopedValidationError('IdentitysourcesNonEmptyString', 'IdentitySources must be a non-empty string.');
     }
 
     return `${type}.${source}`;

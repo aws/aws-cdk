@@ -539,7 +539,7 @@ export function validateContributorInsights(
   construct: Construct,
 ): ContributorInsightsSpecification | undefined {
   if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
-    throw new ValidationError(`\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+    throw new ValidationError('ContributorinsightsspecificationDeprecatedpropertynameContributorinsightsspecification', `\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
   }
 
   return contributorInsightsSpecification ??
@@ -579,24 +579,24 @@ type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'par
  */
 export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
   if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {
-    throw new ValidationError('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
+    throw new ValidationError('ExactlyOnePartitionkeyPartitionkeys', 'Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
   }
   if ((schema.sortKey !== undefined) && (schema.sortKeys !== undefined)) {
-    throw new ValidationError('At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
+    throw new ValidationError('MostOneSortkeySortkeys', 'At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
   }
 
   const partitionKeys = schema.partitionKeys ?? (schema.partitionKey ? [schema.partitionKey] : []);
   const sortKeys = schema.sortKeys ?? (schema.sortKey ? [schema.sortKey] : []);
 
   if (partitionKeys.length === 0) {
-    throw new ValidationError('\'partitionKeys\' must contain at least one element', scope);
+    throw new ValidationError('PartitionkeysContainLeastOne', '\'partitionKeys\' must contain at least one element', scope);
   }
 
   if (partitionKeys.length > 4) {
-    throw new ValidationError('Maximum of 4 partition keys allowed', scope);
+    throw new ValidationError('MaximumPartitionKeysAllowed', 'Maximum of 4 partition keys allowed', scope);
   }
   if (sortKeys.length > 4) {
-    throw new ValidationError('Maximum of 4 sort keys allowed', scope);
+    throw new ValidationError('MaximumSortKeysAllowed', 'Maximum of 4 sort keys allowed', scope);
   }
 
   return { partitionKeys, sortKeys };

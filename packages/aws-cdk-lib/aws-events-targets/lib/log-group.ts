@@ -121,12 +121,12 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
-      throw new ValidationError('Only one of "event" or "logEvent" can be specified', rule);
+      throw new ValidationError('OneEventLogeventSpecified', 'Only one of "event" or "logEvent" can be specified', rule);
     }
 
     this.target = this.props.event?.bind(rule);
     if (this.target?.inputPath || this.target?.input) {
-      throw new ValidationError('CloudWatchLogGroup targets does not support input or inputPath', rule);
+      throw new ValidationError('CloudwatchloggroupTargetsSupportInput', 'CloudWatchLogGroup targets does not support input or inputPath', rule);
     }
 
     rule.node.addValidation({ validate: () => this.validateInputTemplate() });

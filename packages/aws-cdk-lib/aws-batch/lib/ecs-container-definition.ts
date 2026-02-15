@@ -734,7 +734,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               };
             }
 
-            throw new ValidationError('unsupported Volume encountered', this);
+            throw new ValidationError('UnsupportedVolumeEncountered', 'unsupported Volume encountered', this);
           });
         },
       }),
@@ -1162,15 +1162,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new ValidationError('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
+      throw new ValidationError('ReadonlyRootFilesystemPossible', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
+        throw new ValidationError('EcsFargateContainerSpecifies', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
+        throw new ValidationError('EcsFargateContainerSpecifies', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }
@@ -1222,7 +1222,7 @@ function createExecutionRole(scope: Construct, id: string, logging: boolean): ia
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new UnscopedValidationError(`'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+    throw new UnscopedValidationError('FilesystemInstanceImplementIfilesystem', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
   }
   return fileSystem as IFileSystem;
 }

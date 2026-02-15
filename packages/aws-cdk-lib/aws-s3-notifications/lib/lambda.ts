@@ -17,7 +17,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     const permissionId = `AllowBucketNotificationsTo${Names.nodeUniqueId(this.fn.permissionsNode)}`;
 
     if (!(bucket instanceof Construct)) {
-      throw new ValidationError(`LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
+      throw new ValidationError('LambdadestinationFunctionNamesNodeuniqueid', `LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
         bucket construct (Bucket ${bucket.bucketRef.bucketName})`, scope);
     }
 

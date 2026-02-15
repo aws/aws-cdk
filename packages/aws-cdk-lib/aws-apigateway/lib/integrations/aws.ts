@@ -91,7 +91,7 @@ export class AwsIntegration extends Integration {
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
       uri: cdk.Lazy.string({
         produce: () => {
-          if (!this.scope) { throw new UnscopedValidationError('AwsIntegration must be used in API'); }
+          if (!this.scope) { throw new UnscopedValidationError('AwsintegrationUsedApi', 'AwsIntegration must be used in API'); }
           return cdk.Stack.of(this.scope).formatArn({
             service: 'apigateway',
             account: backend,

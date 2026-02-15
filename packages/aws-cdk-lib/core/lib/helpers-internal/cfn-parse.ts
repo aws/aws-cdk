@@ -97,7 +97,7 @@ export class FromCloudFormation {
       switch (value) {
         case 'true': return new FromCloudFormationResult(true);
         case 'false': return new FromCloudFormationResult(false);
-        default: throw new UnscopedValidationError(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
+        default: throw new UnscopedValidationError('ExpectedTrueFalseBoolean', `Expected 'true' or 'false' for boolean value, got: '${value}'`);
       }
     }
 
@@ -379,7 +379,7 @@ export class CfnParser {
     if (resourceAttributes.Condition) {
       const condition = this.finder.findCondition(resourceAttributes.Condition);
       if (!condition) {
-        throw new UnscopedValidationError(`Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
+        throw new UnscopedValidationError('ResourceLogicalidUsesCondition', `Resource '${logicalId}' uses Condition '${resourceAttributes.Condition}' that doesn't exist`);
       }
       cfnOptions.condition = condition;
     }
@@ -391,7 +391,7 @@ export class CfnParser {
     for (const dep of dependencies) {
       const depResource = this.finder.findResource(dep);
       if (!depResource) {
-        throw new UnscopedValidationError(`Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
+        throw new UnscopedValidationError('ResourceLogicalidDependsDep', `Resource '${logicalId}' depends on '${dep}' that doesn't exist`);
       }
       resource.node.addDependency(depResource);
     }
@@ -502,7 +502,7 @@ export class CfnParser {
         policy = this.parseValue(policy);
         return policy;
       } else {
-        throw new UnscopedValidationError(`Unrecognized DeletionPolicy '${policy}'`);
+        throw new UnscopedValidationError('UnrecognizedDeletionpolicyPolicy', `Unrecognized DeletionPolicy '${policy}'`);
       }
     }
   }
@@ -553,7 +553,7 @@ export class CfnParser {
         } else {
           const refElement = this.finder.findRefTarget(refTarget);
           if (!refElement) {
-            throw new UnscopedValidationError(`Element used in Ref expression with logical ID: '${refTarget}' not found`);
+            throw new UnscopedValidationError('ElementUsedRefExpression', `Element used in Ref expression with logical ID: '${refTarget}' not found`);
           }
           return CfnReference.for(refElement, 'Ref');
         }
@@ -566,7 +566,7 @@ export class CfnParser {
           // ...in which case the logical ID and the attribute name are separated with '.'
           const dotIndex = value.indexOf('.');
           if (dotIndex === -1) {
-            throw new UnscopedValidationError(`Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
+            throw new UnscopedValidationError('ShortFormGetattContain', `Short-form Fn::GetAtt must contain a '.' in its string argument, got: '${value}'`);
           }
           logicalId = value.slice(0, dotIndex);
           attributeName = value.slice(dotIndex + 1); // the +1 is to skip the actual '.'
@@ -579,7 +579,7 @@ export class CfnParser {
         }
         const target = this.finder.findResource(logicalId);
         if (!target) {
-          throw new UnscopedValidationError(`Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
+          throw new UnscopedValidationError('ResourceUsedGetattExpression', `Resource used in GetAtt expression with logical ID: '${logicalId}' not found`);
         }
         return CfnReference.for(target, attributeName, stringForm ? ReferenceRendering.GET_ATT_STRING : undefined);
       }
@@ -609,7 +609,7 @@ export class CfnParser {
         } else {
           const mapping = this.finder.findMapping(value[0]);
           if (!mapping) {
-            throw new UnscopedValidationError(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+            throw new UnscopedValidationError('MappingUsedFindinmapExpression', `Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
           }
           mappingName = mapping.logicalId;
         }
@@ -645,7 +645,7 @@ export class CfnParser {
         const value = this.parseValue(object[key]);
         const condition = this.finder.findCondition(value[0]);
         if (!condition) {
-          throw new UnscopedValidationError(`Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
+          throw new UnscopedValidationError('ConditionValueUsedExpression', `Condition '${value[0]}' used in an Fn::If expression does not exist in the template`);
         }
         return Fn.conditionIf(condition.logicalId, value[1], value[2]);
       }
@@ -683,7 +683,7 @@ export class CfnParser {
         // a reference to a Condition from another Condition
         const condition = this.finder.findCondition(object[key]);
         if (!condition) {
-          throw new UnscopedValidationError(`Referenced Condition with name '${object[key]}' was not found in the template`);
+          throw new UnscopedValidationError('ReferencedConditionNameObject', `Referenced Condition with name '${object[key]}' was not found in the template`);
         }
         return { Condition: condition.logicalId };
       }
@@ -691,7 +691,7 @@ export class CfnParser {
         if (this.options.context === CfnParsingContext.RULES) {
           return this.handleRulesIntrinsic(key, object);
         } else {
-          throw new UnscopedValidationError(`Unsupported CloudFormation function '${key}'`);
+          throw new UnscopedValidationError('UnsupportedCloudformationFunctionKey', `Unsupported CloudFormation function '${key}'`);
         }
     }
   }
@@ -701,11 +701,11 @@ export class CfnParser {
     // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
     // `parseValue`, which requires calling `isResolvableObject`.
     if (!this.stack) {
-      throw new UnscopedValidationError('cannot call this method before handleAttributes!');
+      throw new UnscopedValidationError('CallMethodBeforeHandleattributes', 'cannot call this method before handleAttributes!');
     }
     if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
       if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
-        throw new UnscopedValidationError(`Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
+        throw new UnscopedValidationError('ConvertResourceLogicalidCdk', `Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
       }
     }
   }
@@ -785,14 +785,14 @@ export class CfnParser {
       if (isRef) {
         const refElement = self.finder.findRefTarget(refTarget);
         if (!refElement) {
-          throw new UnscopedValidationError(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+          throw new UnscopedValidationError('ElementReferencedSubExpression', `Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
         }
         return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + go(rightHalf);
       } else {
         const targetId = refTarget.substring(0, dotIndex);
         const refResource = self.finder.findResource(targetId);
         if (!refResource) {
-          throw new UnscopedValidationError(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+          throw new UnscopedValidationError('ResourceReferencedSubExpression', `Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
         }
         const attribute = refTarget.substring(dotIndex + 1);
         return leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + go(rightHalf);
@@ -812,11 +812,11 @@ export class CfnParser {
         if (parameterName in this.parameters) {
           // since ValueOf returns the value of a specific attribute,
           // fail here - this substitution is not allowed
-          throw new UnscopedValidationError(`Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
+          throw new UnscopedValidationError('SubstituteParameterParameternameUsed', `Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
         }
         const param = this.finder.findRefTarget(parameterName);
         if (!param) {
-          throw new UnscopedValidationError(`Rule references parameter '${parameterName}' which was not found in the template`);
+          throw new UnscopedValidationError('RuleReferencesParameterParametername', `Rule references parameter '${parameterName}' which was not found in the template`);
         }
         // create an explicit IResolvable,
         // as Fn.valueOf() returns a string,

@@ -96,11 +96,11 @@ export class TimestampParser {
    */
   public static fromFormatString(format: string): TimestampParser {
     if (format === this.EPOCH_MILLIS.format) {
-      throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
+      throw new cdk.UnscopedValidationError('ReservedFormatStringFormat', `Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
     }
 
     if (format.trim() === '') {
-      throw new cdk.UnscopedValidationError('Format string cannot be blank or empty');
+      throw new cdk.UnscopedValidationError('FormatStringBlankEmpty', 'Format string cannot be blank or empty');
     }
 
     return new TimestampParser(format);

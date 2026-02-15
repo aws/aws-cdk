@@ -310,7 +310,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
   @MethodMetadata()
   public addListener(listener: LoadBalancerListener): ListenerPort {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
-      throw new ValidationError('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
+      throw new ValidationError('SslcertificateidDeprecatedPleaseSslcertificatearn', '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
     }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(this, listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
@@ -483,7 +483,7 @@ export class ListenerPort implements IConnectable {
 function wellKnownProtocol(scope: Construct, port: number): LoadBalancingProtocol {
   const proto = tryWellKnownProtocol(port);
   if (!proto) {
-    throw new ValidationError(`Please supply protocol to go with port ${port}`, scope);
+    throw new ValidationError('PleaseSupplyProtocolPort', `Please supply protocol to go with port ${port}`, scope);
   }
   return proto;
 }

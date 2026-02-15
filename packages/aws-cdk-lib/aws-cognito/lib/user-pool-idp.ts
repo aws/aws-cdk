@@ -30,7 +30,7 @@ export class UserPoolIdentityProvider {
         return {
           providerName: providerName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolIdentityProvider.');
+            throw new UnscopedValidationError('UserpoolidAvailableImportedUserpoolidentityprovider', 'userPoolId is not available on imported UserPoolIdentityProvider.');
           },
         };
       }

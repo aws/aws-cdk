@@ -42,7 +42,7 @@ export class PlacementStrategy {
    */
   public static spreadAcross(...fields: string[]) {
     if (fields.length === 0) {
-      throw new UnscopedValidationError('spreadAcross: give at least one field to spread by');
+      throw new UnscopedValidationError('SpreadacrossGiveLeastOne', 'spreadAcross: give at least one field to spread by');
     }
     return new PlacementStrategy(fields.map(field => ({ type: 'spread', field })));
   }
