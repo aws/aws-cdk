@@ -294,6 +294,40 @@ export interface DatabaseClusterProps {
    * @default StorageType.STANDARD
    */
   readonly storageType?: StorageType;
+
+  /**
+   * Specifies whether to manage the master user password with AWS Secrets Manager.
+   *
+   * When set to true, AWS DocumentDB will automatically generate and manage the master user password in AWS Secrets Manager.
+   * This provides enhanced security and automatic password rotation capabilities.
+   *
+   * Constraint: You can't manage the master user password with AWS Secrets Manager if `masterUser.password` is specified.
+   *
+   * @default false
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
+   * The AWS KMS key to encrypt a secret that is automatically generated and managed in AWS Secrets Manager.
+   *
+   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager for the DB cluster.
+   * If you don't specify this property, then the `aws/secretsmanager` KMS key is used to encrypt the secret.
+   *
+   * @default - default AWS managed key `aws/secretsmanager`
+   */
+  readonly masterUserSecretKmsKey?: kms.IKey;
+
+  /**
+   * Specifies whether to rotate the secret managed by AWS Secrets Manager for the master user password.
+   *
+   * This setting is valid only if the master user password is managed by Amazon DocumentDB in AWS Secrets Manager for the cluster.
+   * The secret value contains the updated password.
+   *
+   * When you rotate the master user password, the change must be applied immediately.
+   *
+   * @default false
+   */
+  readonly rotateMasterUserPassword?: boolean;
 }
 
 /**
@@ -567,9 +601,22 @@ export class DatabaseCluster extends DatabaseClusterBase {
       enableCloudwatchLogsExports.push('profiler');
     }
 
-    // Create the secret manager secret if no password is specified
+    // Validate manageMasterUserPassword constraints
+    if (props.manageMasterUserPassword && props.masterUser.password) {
+      throw new ValidationError('You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified', this);
+    }
+
+    if (props.masterUserSecretKmsKey && !props.manageMasterUserPassword) {
+      throw new ValidationError('masterUserSecretKmsKey is valid only if manageMasterUserPassword is true', this);
+    }
+
+    if (props.rotateMasterUserPassword && !props.manageMasterUserPassword) {
+      throw new ValidationError('rotateMasterUserPassword is valid only if manageMasterUserPassword is true', this);
+    }
+
+    // Create the secret manager secret if no password is specified and manageMasterUserPassword is false
     let secret: DatabaseSecret | undefined;
-    if (!props.masterUser.password) {
+    if (!props.manageMasterUserPassword && !props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
@@ -614,10 +661,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupId,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').unsafeUnwrap()
-        : props.masterUser.password!.unsafeUnwrap(), // Safe usage
+      masterUsername: props.manageMasterUserPassword ? props.masterUser.username :
+        (secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username),
+      masterUserPassword: props.manageMasterUserPassword ? undefined :
+        (secret ? secret.secretValueFromJson('password').unsafeUnwrap() : props.masterUser.password!.unsafeUnwrap()),
+      // ManageMasterUserPassword
+      manageMasterUserPassword: props.manageMasterUserPassword,
+      masterUserSecretKmsKeyId: props.masterUserSecretKmsKey?.keyArn,
+      rotateMasterUserPassword: props.rotateMasterUserPassword,
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
