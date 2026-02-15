@@ -346,9 +346,88 @@ test('cloud map still throws error with imported TaskDefinition', () => {
 
 ---
 
-## Phase 4: ドキュメントの更新
+## Phase 4: インテグレーションテストの追加
 
-### Task 4.1: READMEの更新
+### Task 4.1: インテグレーションテストの作成
+**File:** `packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.ts`
+
+> 既存の `integ.daemon-service.ts` と同様に通常の ECS クラスターを使用して検証する。
+> ECS Anywhere 外部インフラは不要。
+
+- [ ] インポートされたタスク定義を使用する基本的なインテグレーションテストを作成
+```typescript
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'ecs-external-service-imported-taskdef');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+// 同一スタック内でタスク定義を作成してARNを取得
+const ownedTaskDef = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
+ownedTaskDef.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 256,
+});
+
+// ARNでインポート
+const importedTaskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+  stack,
+  'ImportedTaskDef',
+  ownedTaskDef.taskDefinitionArn,
+);
+
+const service = new ecs.ExternalService(stack, 'Service', {
+  cluster,
+  taskDefinition: importedTaskDef,
+  desiredCount: 0,  // コスト削減のため0に設定
+});
+
+const integTest = new IntegTest(app, 'integ-ecs-external-service-imported-taskdef', {
+  testCases: [stack],
+});
+
+// サービスが正しいタスク定義ARNで作成されていることを確認
+integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterName,
+  services: [service.serviceName],
+}).assertAtPath(
+  'services.0.taskDefinition',
+  ExpectedResult.stringLikeRegexp('task-definition/'),
+);
+```
+
+- [ ] daemon mode との組み合わせテストを追加
+```typescript
+const daemonService = new ecs.ExternalService(stack, 'DaemonService', {
+  cluster,
+  taskDefinition: importedTaskDef,
+  daemon: true,
+});
+
+integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterName,
+  services: [daemonService.serviceName],
+}).assertAtPath(
+  'services.0.schedulingStrategy',
+  ExpectedResult.stringLikeRegexp('DAEMON'),
+);
+```
+
+**検証:**
+- [ ] インテグレーションテストが実行できること
+- [ ] デプロイが成功すること
+- [ ] daemon modeが正しく設定されていること
+
+---
+
+## Phase 5: ドキュメントの更新
+
+### Task 5.1: READMEの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/README.md`
 
 - [ ] ExternalServiceでインポートされたタスク定義の使用例を追加
@@ -379,7 +458,7 @@ const service = new ecs.ExternalService(this, 'Service', {
 - For full functionality, create task definitions within your CDK stack
 ```
 
-### Task 4.2: APIドキュメントの更新
+### Task 5.2: APIドキュメントの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/external/external-service.ts`
 
 - [ ] `ExternalServiceProps.taskDefinition`のドキュメントを更新
@@ -405,20 +484,20 @@ readonly taskDefinition: ITaskDefinition;
 
 ---
 
-## Phase 5: 最終検証
+## Phase 6: 最終検証
 
-### Task 5.1: ビルドとテスト
+### Task 6.1: ビルドとテスト
 - [ ] `yarn build`が成功すること
 - [ ] `yarn test`が成功すること（aws-ecs関連）
 - [ ] Lintエラーがないこと
 
-### Task 5.2: 手動検証
+### Task 6.2: 手動検証
 - [ ] 新しいTaskDefinitionでExternalServiceが作成できること
 - [ ] インポートされたTaskDefinitionでExternalServiceが作成できること
 - [ ] daemon modeが適切に動作すること
 - [ ] External service固有の制限が引き続き機能すること
 
-### Task 5.3: 後方互換性確認
+### Task 6.3: 後方互換性確認
 - [ ] 既存のExternalServiceコードが変更なしで動作すること
 - [ ] 既存のテストがすべて通ること
 
@@ -462,4 +541,4 @@ readonly taskDefinition: ITaskDefinition;
 ---
 
 **作成日:** 2026-02-13
-**最終更新:** 2026-02-13
+**最終更新:** 2026-02-15

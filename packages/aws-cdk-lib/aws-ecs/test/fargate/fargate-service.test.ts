@@ -5040,4 +5040,198 @@ describe('fargate service', () => {
       }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
     });
   });
+
+  describe('imported TaskDefinition', () => {
+    test('can create FargateService with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: 'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      });
+    });
+
+    test('skips validation for imported TaskDefinition with old platform version', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN/THEN - should not throw even for old platform version
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition: taskDef,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+        });
+      }).not.toThrow();
+    });
+
+    test('adds info annotation when using imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*imported TaskDefinition.*'));
+    });
+
+    test('throws when using CODE_DEPLOY with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN/THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition: taskDef,
+          deploymentController: {
+            type: DeploymentControllerType.CODE_DEPLOY,
+          },
+        });
+      }).toThrow(/CODE_DEPLOY deployment controller requires an owned TaskDefinition/);
+    });
+
+    test('throws when using taskDefinitionRevision with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN/THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition: taskDef,
+          taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
+        });
+      }).toThrow(/taskDefinitionRevision requires an owned TaskDefinition/);
+    });
+
+    test('adds info annotation when using Execute Command with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*Execute Command SSM permissions.*manually configured.*'));
+    });
+
+    test('throws when creating load balancer target with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      const service = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // WHEN/THEN
+      expect(() => {
+        service.loadBalancerTarget({
+          containerName: 'web',
+          containerPort: 80,
+        });
+      }).toThrow(/Cannot create load balancer target from imported TaskDefinition/);
+    });
+
+    test('throws when using Service Connect with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', {
+        vpc,
+        defaultCloudMapNamespace: { name: 'test' },
+      });
+
+      const taskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      const service = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // WHEN/THEN
+      expect(() => {
+        service.enableServiceConnect();
+      }).toThrow(/Task definition must have at least one container to enable service connect/);
+    });
+  });
 });

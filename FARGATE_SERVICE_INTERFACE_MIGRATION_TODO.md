@@ -166,6 +166,58 @@ constructor(
 import type { ITaskDefinition, TaskDefinition } from '../base/task-definition';
 ```
 
+- [ ] `taskRole` の null ガードを追加（インポートされたタスク定義では `taskRole` が undefined になりえる）
+```typescript
+// 変更前
+this.node.addDependency(this.taskDefinition.taskRole);
+
+// 変更後
+if (this.taskDefinition.taskRole) {
+  this.node.addDependency(this.taskDefinition.taskRole);
+}
+```
+
+- [ ] `CODE_DEPLOY` および `taskDefinitionRevision` での `family` アクセスにガードを追加（`family` は `ITaskDefinition` に存在しない）
+```typescript
+// 変更前
+if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+  this.resource.taskDefinition = taskDefinition.family;
+  this.node.addDependency(taskDefinition);
+} else if (props.taskDefinitionRevision) {
+  this.resource.taskDefinition = taskDefinition.family;
+  if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
+    this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
+  }
+  this.node.addDependency(taskDefinition);
+}
+
+// 変更後
+if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
+  // ✅ CODE_DEPLOY は family プロパティが必要なため Owned TaskDefinition のみサポート
+  if (!TaskDefinition.isTaskDefinition(taskDefinition)) {
+    throw new ValidationError(
+      'CODE_DEPLOY deployment controller requires an owned TaskDefinition. Cannot use imported task definitions.',
+      this
+    );
+  }
+  this.resource.taskDefinition = taskDefinition.family;
+  this.node.addDependency(taskDefinition);
+} else if (props.taskDefinitionRevision) {
+  // ✅ taskDefinitionRevision も family プロパティが必要なため Owned TaskDefinition のみサポート
+  if (!TaskDefinition.isTaskDefinition(taskDefinition)) {
+    throw new ValidationError(
+      'taskDefinitionRevision requires an owned TaskDefinition. Cannot use imported task definitions.',
+      this
+    );
+  }
+  this.resource.taskDefinition = taskDefinition.family;
+  if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
+    this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
+  }
+  this.node.addDependency(taskDefinition);
+}
+```
+
 ### Task 3.2: Execute Command関連メソッドの修正
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts`
 
@@ -504,7 +556,7 @@ test('throws error when creating load balancer target with imported TaskDefiniti
 ## Phase 5: インテグレーションテストの追加
 
 ### Task 5.1: インテグレーションテストの作成
-**File:** `packages/@aws-cdk/aws-ecs-v2-alpha/test/integ.fargate-service-imported-taskdef.ts`
+**File:** `packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.ts`
 
 - [ ] インポートされたタスク定義を使用するインテグレーションテストを作成
 ```typescript

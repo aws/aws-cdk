@@ -1158,6 +1158,47 @@ const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsServic
 const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
+### Using imported Task Definitions
+
+`FargateService`, `Ec2Service`, and `ExternalService` accept imported task definitions
+in addition to owned (created-in-stack) ones. Use this when the task definition is
+managed in a separate stack or by another tool.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+// Import an existing Fargate task definition by ARN
+const importedTaskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+  this,
+  'ImportedTaskDef',
+  'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+);
+
+// Create a service with the imported task definition
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition: importedTaskDef,
+});
+```
+
+**Limitations when using imported task definitions:**
+
+When using an imported task definition, the following features are not available
+because container and IAM information is not accessible at synthesis time:
+
+- **Service Connect**: Requires an owned task definition with named port mappings.
+- **Automatic load balancer target configuration**: `loadBalancerTarget()` and
+  `attachToApplicationTargetGroup()` require an owned task definition. Configure
+  load balancer targets manually.
+- **Execute Command IAM permissions**: SSM permissions are not automatically added
+  to the task role. Configure the task role policies manually before creating the
+  service.
+- **Advanced validations**: Platform version checks for `ephemeralStorage`,
+  `pidMode`, and container configuration are skipped.
+
+For full functionality, define task definitions within the same CDK stack using
+`FargateTaskDefinition`, `Ec2TaskDefinition`, or `ExternalTaskDefinition`.
+
 ### Availability Zone rebalancing
 
 ECS services running in AWS can be launched in multiple VPC subnets that are

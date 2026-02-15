@@ -369,9 +369,92 @@ test('can use placement strategies with imported TaskDefinition', () => {
 
 ---
 
-## Phase 5: ドキュメントの更新
+## Phase 5: インテグレーションテストの追加
 
-### Task 5.1: READMEの更新
+### Task 5.1: インテグレーションテストの作成
+**File:** `packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.ec2-service-imported-taskdef.ts`
+
+- [ ] インポートされたタスク定義を使用する基本的なインテグレーションテストを作成
+```typescript
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-ecs-integ-ec2-imported-taskdef');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+
+const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t3.micro'),
+});
+
+// 同一スタック内でタスク定義を作成してARNを取得
+const ownedTaskDef = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+ownedTaskDef.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 256,
+});
+
+// ARNでインポート
+const importedTaskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+  stack,
+  'ImportedTaskDef',
+  ownedTaskDef.taskDefinitionArn,
+);
+
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition: importedTaskDef,
+  desiredCount: 0,  // コスト削減のため0に設定
+});
+
+const integTest = new IntegTest(app, 'integ-aws-ecs-ec2-imported-taskdef', {
+  testCases: [stack],
+});
+
+// サービスが正しいタスク定義ARNで作成されていることを確認
+integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterName,
+  services: [service.serviceName],
+}).assertAtPath(
+  'services.0.taskDefinition',
+  ExpectedResult.stringLikeRegexp('task-definition/'),
+);
+```
+
+- [ ] Placement Strategyがインポートされたタスク定義でも機能することを確認するテストを追加
+```typescript
+const serviceWithPlacement = new ecs.Ec2Service(stack, 'ServiceWithPlacement', {
+  cluster,
+  taskDefinition: importedTaskDef,
+  desiredCount: 0,
+  placementStrategies: [
+    ecs.PlacementStrategy.spreadAcrossInstances(),
+  ],
+});
+
+integTest.assertions.awsApiCall('ECS', 'describeServices', {
+  cluster: cluster.clusterName,
+  services: [serviceWithPlacement.serviceName],
+}).assertAtPath(
+  'services.0.placementStrategy.0.type',
+  ExpectedResult.stringLikeRegexp('spread'),
+);
+```
+
+**検証:**
+- [ ] インテグレーションテストが実行できること
+- [ ] デプロイが成功すること
+- [ ] placement strategyが正しく設定されていること
+
+---
+
+## Phase 6: ドキュメントの更新
+
+### Task 6.1: READMEの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/README.md`
 
 - [ ] Ec2Serviceでインポートされたタスク定義の使用例を追加
@@ -406,7 +489,7 @@ const service = new ecs.Ec2Service(this, 'Service', {
 - For full functionality, create task definitions within your CDK stack
 ```
 
-### Task 5.2: APIドキュメントの更新
+### Task 6.2: APIドキュメントの更新
 **File:** `packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.ts`
 
 - [ ] `Ec2ServiceProps.taskDefinition`のドキュメントを更新
@@ -431,20 +514,20 @@ readonly taskDefinition: ITaskDefinition;
 
 ---
 
-## Phase 6: 最終検証
+## Phase 7: 最終検証
 
-### Task 6.1: ビルドとテスト
+### Task 7.1: ビルドとテスト
 - [ ] `yarn build`が成功すること
 - [ ] `yarn test`が成功すること（aws-ecs関連）
 - [ ] Lintエラーがないこと
 
-### Task 6.2: 手動検証
+### Task 7.2: 手動検証
 - [ ] 新しいTaskDefinitionでEc2Serviceが作成できること
 - [ ] インポートされたTaskDefinitionでEc2Serviceが作成できること
 - [ ] placement strategies/constraintsが適切に動作すること
 - [ ] ネットワーク設定が適切に動作すること
 
-### Task 6.3: 後方互換性確認
+### Task 7.3: 後方互換性確認
 - [ ] 既存のEc2Serviceコードが変更なしで動作すること
 - [ ] 既存のテストがすべて通ること
 
@@ -486,4 +569,4 @@ readonly taskDefinition: ITaskDefinition;
 ---
 
 **作成日:** 2026-02-13
-**最終更新:** 2026-02-13
+**最終更新:** 2026-02-15

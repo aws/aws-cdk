@@ -9,7 +9,8 @@ import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
 import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
-import type { TaskDefinition } from '../base/task-definition';
+import type { ITaskDefinition } from '../base/task-definition';
+import { TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { ServiceReference } from '../ecs.generated';
 
@@ -20,9 +21,15 @@ export interface FargateServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
+   * You can use either an owned TaskDefinition (created in this stack) or an imported one
+   * (using `FargateTaskDefinition.fromFargateTaskDefinitionArn()`).
+   *
+   * Note: Some features like Service Connect and automatic load balancer configuration
+   * require an owned TaskDefinition.
+   *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -177,12 +184,14 @@ export class FargateService extends BaseService implements IFargateService {
     ];
     const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
-    if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
-      throw new ValidationError(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
-    }
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
+        throw new ValidationError(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      }
 
-    if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
-      throw new ValidationError(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
+        throw new ValidationError(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
+      }
     }
 
     super(scope, id, {
@@ -215,15 +224,23 @@ export class FargateService extends BaseService implements IFargateService {
       this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
     }
 
-    this.node.addValidation({
-      validate: () => this.taskDefinition.referencesSecretJsonField && isUnsupportedPlatformVersion
-        ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
-        : [],
-    });
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      this.node.addValidation({
+        validate: () => (this.taskDefinition as TaskDefinition).referencesSecretJsonField && isUnsupportedPlatformVersion
+          ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
+          : [],
+      });
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+      this.node.addValidation({
+        validate: () => !(this.taskDefinition as TaskDefinition).defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
+      });
+    } else {
+      cdk.Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Some validations related to ephemeralStorage, pidMode, and container configuration will be skipped.',
+      );
+    }
   }
 
   /**
