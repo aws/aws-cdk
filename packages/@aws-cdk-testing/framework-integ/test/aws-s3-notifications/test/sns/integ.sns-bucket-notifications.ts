@@ -11,6 +11,7 @@ class MyStack extends cdk.Stack {
     const objectRemovedTopic = new sns.Topic(this, 'ObjectDeletedTopic');
     const bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     bucket.addObjectCreatedNotification(new s3n.SnsDestination(objectCreateTopic));

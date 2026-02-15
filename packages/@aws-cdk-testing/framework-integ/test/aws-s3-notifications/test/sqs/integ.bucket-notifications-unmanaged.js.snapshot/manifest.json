@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/046629648da350cd18d6adb6d705b16bcd507969ad50dc65887a8c0add97c293.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c02467463e6e38a4a549970f87b35f1e4b1d18796c0d60d2db905bc73ed3230c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -358,7 +358,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92d4d220b500d316cbe92fe0f0d1f30057604d05f4f0d7127770aeac587414a7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd79ef3d5c8a57027d163646c5122aa138a46308e1003b56c4d2ac3d000dd92a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -514,6 +514,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -532,6 +533,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -982,10 +984,21 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
