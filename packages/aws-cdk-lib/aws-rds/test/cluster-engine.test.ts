@@ -143,7 +143,7 @@ describe('cluster engine', () => {
       AuroraEngineVersion.VER_1_23_4,
     ])('cluster parameter group correctly determined for AURORA_MYSQL 1.x and given version $auroraFullVersion', (version: AuroraEngineVersion) => {
       // GIVEN
-      const engine_ver = DatabaseClusterEngine.aurora({version});
+      const engine_ver = DatabaseClusterEngine.aurora({ version });
 
       // THEN
       expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql5.6');
@@ -205,10 +205,10 @@ describe('cluster engine', () => {
       AuroraMysqlEngineVersion.VER_2_12_2,
       AuroraMysqlEngineVersion.VER_2_12_3,
       AuroraMysqlEngineVersion.VER_2_12_4,
-      AuroraMysqlEngineVersion.VER_2_12_5
+      AuroraMysqlEngineVersion.VER_2_12_5,
     ])('cluster parameter group correctly determined for AURORA_MYSQL 2.x and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
-        // GIVEN
-      const engine_ver = DatabaseClusterEngine.auroraMysql({version});
+      // GIVEN
+      const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
 
       // THEN
       expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql5.7');
@@ -250,10 +250,10 @@ describe('cluster engine', () => {
       AuroraMysqlEngineVersion.VER_3_10_3,
       AuroraMysqlEngineVersion.VER_3_11_0,
       AuroraMysqlEngineVersion.VER_3_11_1,
-      AuroraMysqlEngineVersion.VER_3_12_0
+      AuroraMysqlEngineVersion.VER_3_12_0,
     ])('cluster parameter group correctly determined for AURORA_MYSQL 3.x and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
       // GIVEN
-      const engine_ver = DatabaseClusterEngine.auroraMysql({version});
+      const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
 
       // THEN
       expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql8.0');
