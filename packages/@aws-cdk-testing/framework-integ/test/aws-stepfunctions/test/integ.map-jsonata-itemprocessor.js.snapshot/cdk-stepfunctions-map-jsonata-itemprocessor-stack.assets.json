@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "bb7baa55d9cf9717db00eaa6604f3ed0ed79f3b3a0a67d6c1147e9543a635727": {
+      "displayName": "cdk-stepfunctions-map-jsonata-itemprocessor-stack Template",
+      "source": {
+        "path": "cdk-stepfunctions-map-jsonata-itemprocessor-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-363fdec2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bb7baa55d9cf9717db00eaa6604f3ed0ed79f3b3a0a67d6c1147e9543a635727.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

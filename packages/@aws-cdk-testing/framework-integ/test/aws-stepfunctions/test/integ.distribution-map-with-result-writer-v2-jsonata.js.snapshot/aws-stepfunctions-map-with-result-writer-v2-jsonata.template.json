@@ -207,7 +207,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"QueryLanguage\":\"JSONata\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
+       "{\"StartAt\":\"DistributedMap\",\"States\":{\"DistributedMap\":{\"Type\":\"Map\",\"End\":true,\"ItemProcessor\":{\"ProcessorConfig\":{\"Mode\":\"DISTRIBUTED\",\"ExecutionType\":\"STANDARD\"},\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}},\"ItemReader\":{\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
