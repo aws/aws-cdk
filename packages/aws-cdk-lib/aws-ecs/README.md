@@ -1168,16 +1168,31 @@ managed in a separate stack or by another tool.
 declare const cluster: ecs.Cluster;
 
 // Import an existing Fargate task definition by ARN
-const importedTaskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+const importedFargateTaskDef = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
   this,
-  'ImportedTaskDef',
-  'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+  'ImportedFargateTaskDef',
+  'arn:aws:ecs:us-east-1:123456789012:task-definition/my-fargate-task:1',
 );
 
-// Create a service with the imported task definition
-const service = new ecs.FargateService(this, 'Service', {
+const fargateService = new ecs.FargateService(this, 'FargateService', {
   cluster,
-  taskDefinition: importedTaskDef,
+  taskDefinition: importedFargateTaskDef,
+});
+
+// Import an existing EC2 task definition by ARN
+const importedEc2TaskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+  this,
+  'ImportedEc2TaskDef',
+  'arn:aws:ecs:us-east-1:123456789012:task-definition/my-ec2-task:1',
+);
+
+// Placement strategies and constraints are fully supported with imported task definitions
+const ec2Service = new ecs.Ec2Service(this, 'Ec2Service', {
+  cluster,
+  taskDefinition: importedEc2TaskDef,
+  placementStrategies: [
+    ecs.PlacementStrategy.spreadAcrossInstances(),
+  ],
 });
 ```
 
@@ -1195,6 +1210,10 @@ because container and IAM information is not accessible at synthesis time:
   service.
 - **Advanced validations**: Platform version checks for `ephemeralStorage`,
   `pidMode`, and container configuration are skipped.
+- **EC2 network mode detection** (EC2 only): The `networkMode` of the task definition
+  cannot be determined automatically. If networking properties (`vpcSubnets`,
+  `securityGroups`, `assignPublicIp`) are provided, `awsvpc` mode is assumed.
+  Otherwise, Bridge/Host mode is assumed.
 
 For full functionality, define task definitions within the same CDK stack using
 `FargateTaskDefinition`, `Ec2TaskDefinition`, or `ExternalTaskDefinition`.

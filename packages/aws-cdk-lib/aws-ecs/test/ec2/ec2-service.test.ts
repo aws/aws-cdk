@@ -4614,4 +4614,192 @@ describe('ec2 service', () => {
       }).toThrow(/only specify either serviceArn or serviceName/);
     });
   });
+
+  describe('imported TaskDefinition', () => {
+    test('can create Ec2Service with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: 'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+        LaunchType: 'EC2',
+      });
+    });
+
+    test('adds info annotation when using imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*imported TaskDefinition.*EC2 compatibility.*'));
+    });
+
+    test('can use placement strategies with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        placementStrategies: [
+          PlacementStrategy.spreadAcrossInstances(),
+          PlacementStrategy.packedByCpu(),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        PlacementStrategies: [
+          { Type: 'spread', Field: 'instanceId' },
+          { Type: 'binpack', Field: 'CPU' },
+        ],
+      });
+    });
+
+    test('can use placement constraints with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        placementConstraints: [
+          PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        PlacementConstraints: [
+          { Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ t2.*' },
+        ],
+      });
+    });
+
+    test('assumes awsvpc mode and adds info annotation when networking props provided with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition: taskDef,
+        assignPublicIp: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'ENABLED',
+          },
+        },
+      });
+
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*awsvpc network mode.*'));
+    });
+
+    test('throws when using CODE_DEPLOY with imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', {
+        instanceType: new ec2.InstanceType('t2.micro'),
+      });
+
+      const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      // WHEN/THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition: taskDef,
+          deploymentController: {
+            type: DeploymentControllerType.CODE_DEPLOY,
+          },
+        });
+      }).toThrow(/CODE_DEPLOY deployment controller requires an owned TaskDefinition/);
+    });
+  });
 });

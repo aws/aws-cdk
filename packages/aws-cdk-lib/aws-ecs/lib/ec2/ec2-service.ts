@@ -8,8 +8,8 @@ import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
 import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
 import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
-import type { TaskDefinition } from '../base/task-definition';
-import { NetworkMode } from '../base/task-definition';
+import type { ITaskDefinition } from '../base/task-definition';
+import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import type { ICluster } from '../cluster';
 import type { CfnService, ServiceReference } from '../ecs.generated';
 import type { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -21,9 +21,15 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
+   * You can use either an owned TaskDefinition (created in this stack) or an imported one
+   * (using `TaskDefinition.fromTaskDefinitionArn()`).
+   *
+   * Note: When using imported task definitions, EC2 compatibility and network mode
+   * cannot be verified automatically.
+   *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -191,8 +197,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', scope);
     }
 
-    if (!props.taskDefinition.isEc2Compatible) {
-      throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with EC2', scope);
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      if (!props.taskDefinition.isEc2Compatible) {
+        throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with EC2', scope);
+      }
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
@@ -237,19 +245,35 @@ export class Ec2Service extends BaseService implements IEc2Service {
       securityGroups = props.securityGroups;
     }
 
-    if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      if (props.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
+        this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+      } else {
+        // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
+        // We have to be smart here -- by default future Security Group rules would be created
+        // in the Cluster stack. However, if the Cluster is in a different stack than us,
+        // that will lead to a cyclic reference (we point to that stack for the cluster name,
+        // but that stack will point to the ALB probably created right next to us).
+        //
+        // In that case, reference the same security groups but make sure new rules are
+        // created in the current scope (i.e., this stack)
+        validateNoNetworkingProps(scope, props);
+        this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
+      }
     } else {
-      // Either None, Bridge or Host networking. Copy SecurityGroups from ASG.
-      // We have to be smart here -- by default future Security Group rules would be created
-      // in the Cluster stack. However, if the Cluster is in a different stack than us,
-      // that will lead to a cyclic reference (we point to that stack for the cluster name,
-      // but that stack will point to the ALB probably created right next to us).
-      //
-      // In that case, reference the same security groups but make sure new rules are
-      // created in the current scope (i.e., this stack)
-      validateNoNetworkingProps(scope, props);
-      this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
+      // For imported task definitions, networkMode cannot be determined.
+      // If networking props are provided, assume awsvpc mode and configure VPC networking.
+      // Otherwise, assume Bridge/Host/None mode and copy cluster security groups.
+      if (props.vpcSubnets !== undefined || props.securityGroup !== undefined ||
+          props.securityGroups !== undefined || props.assignPublicIp) {
+        Annotations.of(this).addInfo(
+          'Using an imported TaskDefinition with networking configuration. ' +
+          'Assuming awsvpc network mode. Verify the task definition uses awsvpc mode.',
+        );
+        this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
+      } else {
+        this.connections.addSecurityGroup(...securityGroupsInThisStack(this, props.cluster.connections.securityGroups));
+      }
     }
 
     if (props.placementConstraints) {
@@ -259,9 +283,21 @@ export class Ec2Service extends BaseService implements IEc2Service {
       this.addPlacementStrategies(...props.placementStrategies);
     }
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+    if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
+      this.node.addValidation({
+        validate: () => !(this.taskDefinition as TaskDefinition).defaultContainer
+          ? ['A TaskDefinition must have at least one essential container']
+          : [],
+      });
+    } else {
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. EC2 compatibility cannot be verified. ' +
+        'Ensure the task definition is configured for EC2 launch type.',
+      );
+      Annotations.of(this).addInfo(
+        'Using an imported TaskDefinition. Container configuration validations will be skipped.',
+      );
+    }
 
     this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
 
