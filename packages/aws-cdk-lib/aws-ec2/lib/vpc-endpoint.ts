@@ -853,11 +853,32 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
       'eusc-de-east-1': ['ecr.dkr', 'ecr.api', 'execute-api', 'securityhub'],
+      'us-iso-east-1': ['application-autoscaling', 'athena', 'autoscaling', 'comprehend', 'diode-messaging',
+        'diode-messaging-proxy', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips',
+        'execute-api', 'sagemaker.api', 'sagemaker.runtime', 'sns', 'sqs', 'textract', 'textract-fips', 'transcribe',
+        'workspaces'],
+      'us-iso-west-1': ['autoscaling', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips',
+        'execute-api', 'monitoring', 'sns', 'sqs', 'workspaces'],
+      'us-isob-east-1': ['application-autoscaling', 'autoscaling', 'diode-messaging', 'diode-messaging-proxy', 'ebs',
+        'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'sagemaker.api',
+        'sagemaker.runtime', 'sns', 'sqs', 'workspaces'],
+      'us-isob-west-1': ['ecr.api', 'ecr.dkr', 'elasticfilesystem-fips', 'execute-api'],
+      'us-isof-south-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
+      'us-isof-east-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       switch (region) {
         case 'eusc-de-east-1':
           return 'eu.amazonaws';
+        case 'us-iso-east-1':
+        case 'us-iso-west-1':
+          return 'gov.ic.c2s';
+        case 'us-isob-east-1':
+        case 'us-isob-west-1':
+          return 'gov.sgov.sc2s';
+        case 'us-isof-south-1':
+        case 'us-isof-east-1':
+          return 'gov.ic.hci.csp';
         case 'cn-north-1':
         case 'cn-northwest-1':
           return 'cn.com.amazonaws';
