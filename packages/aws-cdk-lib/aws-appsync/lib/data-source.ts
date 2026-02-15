@@ -21,6 +21,21 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IGraphQLApiRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
+ * Enum for enhanced data source metrics for specified data sources
+ */
+export enum DataSourceMetricsConfig {
+  /**
+   * Enables enhanced data source metrics for specified data sources
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced data source metrics for specified data sources
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * Base properties for an AppSync datasource
  */
 export interface BaseDataSourceProps {
@@ -40,6 +55,14 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+
+  /**
+   * Whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - no metrics configration
+   */
+  readonly metricsConfig?: DataSourceMetricsConfig;
 }
 
 /**
@@ -140,6 +163,7 @@ export abstract class BaseDataSource extends Construct {
       name: supportedName,
       description: props.description,
       serviceRoleArn: this.serviceRole?.roleArn,
+      metricsConfig: props.metricsConfig,
       ...extended,
     });
     this.name = supportedName;
