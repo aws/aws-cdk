@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.appstream"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.AppStream"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_appstream"
+    }
+  }
+}

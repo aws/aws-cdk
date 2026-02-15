@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.datasync"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.DataSync"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_datasync"
+    }
+  }
+}

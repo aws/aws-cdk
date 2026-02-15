@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.gamelift"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.GameLift"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_gamelift"
+    }
+  }
+}

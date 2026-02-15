@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.efs"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.EFS"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_efs"
+    }
+  }
+}

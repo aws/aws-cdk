@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.personalize"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Personalize"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_personalize"
+    }
+  }
+}

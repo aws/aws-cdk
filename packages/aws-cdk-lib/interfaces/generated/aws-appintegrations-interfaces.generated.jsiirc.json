@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.appintegrations"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.AppIntegrations"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_appintegrations"
+    }
+  }
+}

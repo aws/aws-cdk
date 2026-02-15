@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.cloud9"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Cloud9"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_cloud9"
+    }
+  }
+}

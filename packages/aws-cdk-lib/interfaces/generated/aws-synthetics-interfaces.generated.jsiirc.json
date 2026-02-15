@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.synthetics"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Synthetics"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_synthetics"
+    }
+  }
+}

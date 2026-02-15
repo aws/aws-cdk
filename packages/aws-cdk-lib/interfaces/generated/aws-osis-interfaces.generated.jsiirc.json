@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.osis"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.OSIS"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_osis"
+    }
+  }
+}

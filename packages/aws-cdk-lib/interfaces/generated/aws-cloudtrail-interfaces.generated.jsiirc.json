@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.cloudtrail"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CloudTrail"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_cloudtrail"
+    }
+  }
+}

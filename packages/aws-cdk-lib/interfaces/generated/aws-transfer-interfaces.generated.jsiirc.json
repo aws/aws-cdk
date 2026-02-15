@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.transfer"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Transfer"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_transfer"
+    }
+  }
+}

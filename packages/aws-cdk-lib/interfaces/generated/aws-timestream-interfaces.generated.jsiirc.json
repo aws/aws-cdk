@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.timestream"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Timestream"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_timestream"
+    }
+  }
+}

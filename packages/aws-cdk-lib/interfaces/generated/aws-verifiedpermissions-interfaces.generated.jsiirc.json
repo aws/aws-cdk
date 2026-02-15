@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.verifiedpermissions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.VerifiedPermissions"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_verifiedpermissions"
+    }
+  }
+}

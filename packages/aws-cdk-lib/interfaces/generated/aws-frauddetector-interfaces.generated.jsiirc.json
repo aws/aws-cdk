@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.frauddetector"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.FraudDetector"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_frauddetector"
+    }
+  }
+}

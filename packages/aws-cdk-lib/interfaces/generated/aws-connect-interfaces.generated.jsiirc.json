@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.connect"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Connect"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_connect"
+    }
+  }
+}

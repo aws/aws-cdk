@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.iotfleetwise"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.IoTFleetWise"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_iotfleetwise"
+    }
+  }
+}

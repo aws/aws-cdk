@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.inspectorv2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.InspectorV2"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_inspectorv2"
+    }
+  }
+}

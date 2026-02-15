@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.redshiftserverless"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.RedshiftServerless"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_redshiftserverless"
+    }
+  }
+}

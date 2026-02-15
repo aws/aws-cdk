@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.redshift"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Redshift"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_redshift"
+    }
+  }
+}

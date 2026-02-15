@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.arcregionswitch"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ARCRegionSwitch"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_arcregionswitch"
+    }
+  }
+}
