@@ -900,6 +900,13 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default When the dashboard loads, the end date will be the current time.
    */
   readonly end?: string;
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
 }
 
 /**
@@ -941,6 +948,7 @@ export class SingleValueWidget extends ConcreteWidget {
         start: this.props.start,
         end: this.props.end,
         accountId: this.props.accountId,
+        liveData: this.props.liveData,
       },
     }];
   }
