@@ -2,6 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from '../lib';
 
 class EksClusterStack extends Stack {
@@ -24,6 +25,28 @@ class EksClusterStack extends Stack {
       configurationValues: {
         replicaCount: 2,
       },
+    });
+
+    // test for additional Addon parameters(namespace, podIdentityAssociations, resolveConflicts, serviceAccountRole)
+    const testRole = new iam.Role(this, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com').withSessionTags(),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEBSCSIDriverPolicy'),
+      ],
+    });
+
+    new eks.Addon(this, 'AddonPodIdentityAssociation', {
+      addonName: 'aws-ebs-csi-driver',
+      cluster,
+      preserveOnDelete: true,
+      namespace: 'kube-system',
+      podIdentityAssociations: [{
+        addonRole: testRole,
+        serviceAccount: 'ebs-csi-controller-sa',
+      }],
+      // Prioritize Pod Identity.
+      serviceAccountRole: testRole,
+      resolveConflicts: eks.ResolveConflictsType.NONE,
     });
   }
 }
