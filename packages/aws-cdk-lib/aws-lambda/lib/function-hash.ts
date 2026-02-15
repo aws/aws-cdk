@@ -23,7 +23,19 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
+    // Get layers from CloudFormation properties to ensure we only hash layers actually attached to this function
+    const functionLayers = fn._layers.filter((layer) => {
+      // Check if this layer is actually in the function's CloudFormation properties
+      const layerArns = properties.Layers || [];
+      return layerArns.some((arn: any) => {
+        const resolvedArn = stack.resolve(arn);
+        const layerArn = stack.resolve(layer.layerVersionArn);
+        return resolvedArn === layerArn ||
+               (typeof resolvedArn === 'object' && typeof layerArn === 'object' &&
+                JSON.stringify(resolvedArn) === JSON.stringify(layerArn));
+      });
+    });
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(functionLayers);
   }
 
   return md5hash(stringifiedConfig + additional);
