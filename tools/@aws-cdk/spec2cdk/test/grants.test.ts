@@ -30,7 +30,7 @@ test('generates grants for methods with and without key actions', async () => {
     },
   };
   const service = db.lookup('service', 'name', 'equals', 'aws-sns').only();
-  const module = new GrantsModule(service, db, config, 'aws-cdk-lib/aws-iam', true);
+  const module = new GrantsModule(service, db, config, 'aws-cdk-lib/aws-iam', true, 'aws-cdk-lib');
 
   const scope = new Module('@aws-cdk/aws-sns');
   const refInterface = new InterfaceType(scope, {
