@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "48.0.0",
   "testCases": {
     "BatchManagedComputeEnvironmentTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "BatchManagedComputeEnvironmentTest/DefaultTest/DeployAssert",
       "assertionStackName": "BatchManagedComputeEnvironmentTestDefaultTestDeployAssertD4528F80"
     }
-  }
+  },
+  "minimumCliVersion": "2.1027.0"
 }
