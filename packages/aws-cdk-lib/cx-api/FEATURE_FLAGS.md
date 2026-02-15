@@ -67,6 +67,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | new default |
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | fix |
 | [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | fix |
+| [@aws-cdk/core:bundlingFixDockerOwnership](#aws-cdkcorebundlingfixdockerownership) | When enabled, Docker bundling will automatically fix ownership of the output directory to the host user on Linux. | 2.238.0 | fix |
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | new default |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | new default |
 | [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | new default |
@@ -203,6 +204,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
+    "@aws-cdk/core:bundlingFixDockerOwnership": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true
   }
 }
@@ -2336,6 +2338,25 @@ When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OI
 | 2.237.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use the custom resource provider.
+
+
+### @aws-cdk/core:bundlingFixDockerOwnership
+
+*When enabled, Docker bundling will automatically fix ownership of the output directory to the host user on Linux.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, Docker bundling will ensure that the output files are owned by the host user on Linux systems. This is achieved by running `chown -R <uid>:<gid>` on the output directory.
+
+This is a feature flag because it changes the bundling command executed in the container.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag if you depend on the files being owned by the root user in the container.
 
 
 ### @aws-cdk/core:automaticL1Traits

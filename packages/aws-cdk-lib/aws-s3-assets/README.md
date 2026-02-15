@@ -158,6 +158,7 @@ const asset = new Asset(this, 'BundledAsset', {
     ],
     securityOpt: 'no-new-privileges:true', // https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt
     network: 'host', //https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network
+    fixOwnership: true, // Fixes ownership of the output directory to the host user on Linux
   },
 });
 ```
