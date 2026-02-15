@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "instance-c8a-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-c8a"
+      ],
+      "assertionStack": "instance-c8a-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancec8atestDefaultTestDeployAssertE5765BFA"
+    }
+  }
+}
