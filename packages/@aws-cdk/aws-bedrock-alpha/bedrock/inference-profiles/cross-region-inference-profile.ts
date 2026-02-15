@@ -86,6 +86,13 @@ export enum CrossRegionInferenceProfileRegion {
    * - Melbourne (`ap-southeast-4`)
    */
   AU = 'au',
+  /**
+   * Cross-region Inference Identifier for the Canada area.
+   * According to the model chosen, this might include:
+   * - Canada Central (`ca-central-1`)
+   * - Calgary (`ca-west-1)
+   */
+  CA = 'ca',
 }
 
 /**
@@ -109,6 +116,10 @@ export const REGION_TO_GEO_AREA: { [key: string]: CrossRegionInferenceProfileReg
   'ap-south-1': CrossRegionInferenceProfileRegion.APAC, // Mumbai
   'ap-southeast-1': CrossRegionInferenceProfileRegion.APAC, // Singapore
   'ap-southeast-2': CrossRegionInferenceProfileRegion.APAC, // Sydney
+
+  // Canada Regions
+  'ca-central-1': CrossRegionInferenceProfileRegion.CA, // Canada Central
+  'ca-west-1': CrossRegionInferenceProfileRegion.CA, // Calgary
 };
 
 /******************************************************************************
