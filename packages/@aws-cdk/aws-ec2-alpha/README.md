@@ -68,7 +68,67 @@ Since `VpcV2` does not create subnets automatically, users have full control ove
 ## IP Addresses Management
 
 Additional CIDRs can be added to the VPC via the `secondaryAddressBlocks` property.
-The following example illustrates the options of defining these secondary address blocks using `IPAM`:
+
+### Using CloudFormation Parameters for CIDR Blocks
+
+`VpcV2` supports using CloudFormation Parameters for CIDR blocks, enabling runtime CIDR specification. This is particularly useful for:
+
+- AWS Service Catalog deployments where CIDR blocks need to be specified at deployment time
+- Multi-tenant scenarios where each deployment requires different CIDR ranges
+- Reusable templates that can be deployed with different network configurations
+
+When using CloudFormation Parameters (or any Token-based values), subnet CIDRs must be calculated at runtime using CloudFormation intrinsic functions like `Fn::Cidr`:
+
+```ts
+const stack = new Stack();
+
+// Create a CloudFormation Parameter for the VPC CIDR
+const vpcCidr = new CfnParameter(stack, 'VpcCidr', {
+  type: 'String',
+  default: '10.0.0.0/16',
+  description: 'VPC CIDR block',
+});
+
+// Create VPC with parameter-based CIDR
+const vpc = new VpcV2(stack, 'Vpc', {
+  primaryAddressBlock: IpAddresses.ipv4(vpcCidr.valueAsString),
+  enableDnsHostnames: true,
+  enableDnsSupport: true,
+});
+
+// Create subnets using Fn::Cidr for runtime calculation
+// This calculates the first /24 subnet from the VPC CIDR at deployment time
+new SubnetV2(stack, 'PublicSubnet1', {
+  vpc,
+  availabilityZone: 'us-east-1a',
+  ipv4CidrBlock: new IpCidr(
+    Fn.select(0, Fn.cidr(vpc.vpcCidrBlock, 6, '8'))
+  ),
+  subnetType: SubnetType.PUBLIC,
+});
+
+// Second subnet - calculates the second /24 subnet
+new SubnetV2(stack, 'PublicSubnet2', {
+  vpc,
+  availabilityZone: 'us-east-1b',
+  ipv4CidrBlock: new IpCidr(
+    Fn.select(1, Fn.cidr(vpc.vpcCidrBlock, 6, '8'))
+  ),
+  subnetType: SubnetType.PUBLIC,
+});
+```
+
+In the example above:
+
+- `Fn.cidr(vpc.vpcCidrBlock, 6, 8)` divides the VPC CIDR into 6 subnets with 8 additional bits (256 IPs per subnet)
+- `Fn.select(0, ...)` picks the first calculated subnet CIDR
+- The CIDR calculation happens at CloudFormation deployment time, not at CDK synthesis time
+
+This approach maintains compatibility with all L2 constructs (Security Groups, NACLs, VPC Endpoints) while enabling flexible CIDR allocation.
+
+### Using IPAM for IP Address Management
+
+The following example illustrates the options of defining secondary address blocks using `IPAM`:
 
 Note: There’s currently an issue with IPAM pool deletion that may affect the `cdk --destroy` command. This is because IPAM takes time to detect when the IP address pool has been deallocated after the VPC is deleted. The current workaround is to wait until the IP address is fully deallocated from the pool before retrying the deletion. Below command can be used to check allocations for a pool using CLI 
 
