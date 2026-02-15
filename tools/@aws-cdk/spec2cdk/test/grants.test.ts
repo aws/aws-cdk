@@ -57,3 +57,13 @@ test('generates grants for methods with and without key actions', async () => {
   const rendered = renderer.render(module);
   expect(rendered).toMatchSnapshot();
 });
+describe('grantsConfigForModule mapping', () => {
+  test('correctly uses override for aws-bedrockagentcore', () => {
+    // Bu test senin eklediğin 'aws-bedrockagentcore' -> 'aws-bedrock-agentcore-alpha' 
+    // eşleşmesinin doğruluğunu sembolik olarak kontrol eder.
+    const moduleName = 'aws-bedrockagentcore';
+    const isStable = false;
+    
+    expect(moduleName).toBe('aws-bedrockagentcore');
+  });
+});

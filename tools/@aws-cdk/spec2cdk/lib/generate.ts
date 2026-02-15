@@ -279,11 +279,16 @@ function mergeObjects<T>(all: T, res: T) {
 }
 
 function grantsConfigForModule(moduleName: string, modulePath: string, isStable: boolean): string | undefined {
-  const grantsFileLocation = isStable ? path.join(modulePath, moduleName) : path.join(modulePath, '..', `${moduleName}-alpha`);
+  // Mapping for alpha modules with non-standard directory names
+  const grantsJsonPathOverrides: { [key: string]: string } = {
+    'aws-bedrockagentcore': 'aws-bedrock-agentcore-alpha',
+  };
+
+  const actualModuleName = grantsJsonPathOverrides[moduleName] || moduleName;
+  const grantsFileLocation = isStable ? path.join(modulePath, actualModuleName) : path.join(modulePath, '..', `${actualModuleName}-alpha`);
   const config = readGrantsConfig(grantsFileLocation);
   return config == null ? undefined : config;
 }
-
 function readGrantsConfig(dir: string): string | undefined {
   try {
     return fs.readFileSync(path.join(dir, 'grants.json'), 'utf-8');
