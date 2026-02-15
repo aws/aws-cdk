@@ -3,11 +3,11 @@
   "TestApplication2FBC585F": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Name": "TestApplication",
-    "Description": "My application description"
+    "Description": "My application description",
+    "Name": "TestApplication"
    }
   },
-  "TestApplicationResourceAssociationd232b63e52a8414E905D": {
+  "TestApplicationResourceAssociation5e10cb7be763C45F1B69": {
    "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
     "Application": {
@@ -22,7 +22,7 @@
     "ResourceType": "CFN_STACK"
    }
   },
-  "TestApplicationAttributeGroupAssociation4ba7f5842818B8EE1C6F": {
+  "TestApplicationAttributeGroupAssociation896dcf384303F8F3F18F": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
    "Properties": {
     "Application": {
@@ -58,11 +58,11 @@
       "release": "go time"
      }
     },
-    "Name": "myAnotherAttributeGroup",
-    "Description": "my another attribute group description"
+    "Description": "my another attribute group description",
+    "Name": "myAnotherAttributeGroup"
    }
   },
-  "TestApplicationAttributeGroupAssociationb6f47e836a8c4FCAC29E": {
+  "TestApplicationAttributeGroupAssociation39572060060a40747D8C": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
    "Properties": {
     "Application": {
@@ -77,43 +77,6 @@
       "Id"
      ]
     }
-   }
-  },
-  "TestApplicationMyShareIdE1044482": {
-   "Type": "AWS::RAM::ResourceShare",
-   "Properties": {
-    "Name": "MyShare",
-    "AllowExternalPrincipals": false,
-    "PermissionArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
-       ]
-      ]
-     }
-    ],
-    "Principals": [
-     {
-      "Fn::GetAtt": [
-       "MyRoleF48FFE04",
-       "Arn"
-      ]
-     }
-    ],
-    "ResourceArns": [
-     {
-      "Fn::GetAtt": [
-       "TestApplication2FBC585F",
-       "Arn"
-      ]
-     }
-    ]
    }
   },
   "TestAttributeGroupB1CB284F": {
@@ -135,40 +98,8 @@
       "release": "go time"
      }
     },
-    "Name": "myAttributeGroup",
-    "Description": "my attribute group description"
-   }
-  },
-  "MyRoleF48FFE04": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
+    "Description": "my attribute group description",
+    "Name": "myAttributeGroup"
    }
   }
  },

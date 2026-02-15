@@ -1,16 +1,4 @@
 {
- "Resources": {
-  "AppRegistryAssociation": {
-   "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
-   "Properties": {
-    "Application": "AppRegistryDisableUrlApp",
-    "Resource": {
-     "Ref": "AWS::StackId"
-    },
-    "ResourceType": "CFN_STACK"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
