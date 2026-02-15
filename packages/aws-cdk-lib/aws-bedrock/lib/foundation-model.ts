@@ -98,6 +98,12 @@ export class FoundationModelIdentifier {
   /** amazon.nova-2-multimodal-embeddings-v1:0 */
   public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
 
+  /** Base model "amazon.nova-2-lite-v1:0". */
+  public static readonly AMAZON_NOVA_2_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-2-lite-v1:0');
+
+  /** Base model "amazon.nova-2-sonic-v1:0". */
+  public static readonly AMAZON_NOVA_2_SONIC_V1_0 = new FoundationModelIdentifier('amazon.nova-2-sonic-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -326,6 +332,9 @@ export class FoundationModelIdentifier {
   /** Base model "deepseek.v3-v1:0" */
   public static readonly DEEP_SEEK_V3_V1_0 = new FoundationModelIdentifier('deepseek.v3-v1:0');
 
+  /** Base model "deepseek.v3.2". */
+  public static readonly DEEP_SEEK_V3_2 = new FoundationModelIdentifier('deepseek.v3.2');
+
   /** Base model "openai.gpt-oss-120b-1:0". */
   public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
 
@@ -446,6 +455,15 @@ export class FoundationModelIdentifier {
   /** Base Model "qwen.qwen3-32b-v1:0" */
   public static readonly QWEN_QWEN3_32B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-32b-v1:0');
 
+  /** Base Model "qwen.qwen3-coder-next" */
+  public static readonly QWEN_QWEN3_CODER_NEXT = new FoundationModelIdentifier('qwen.qwen3-coder-next');
+
+  /** Base Model "qwen.qwen3-next-80b-a3b" */
+  public static readonly QWEN_QWEN3_NEXT_80B_A3B = new FoundationModelIdentifier('qwen.qwen3-next-80b-a3b');
+
+  /** Base Model "qwen.qwen3-vl-235b-a22b" */
+  public static readonly QWEN_QWEN3_VL_235B_A22B = new FoundationModelIdentifier('qwen.qwen3-vl-235b-a22b');
+
   /** Base Model "qwen.qwen3-235b-a22b-2507-v1:0" */
   public static readonly QWEN_QWEN3_235B_A22B_2507_V1_0 = new FoundationModelIdentifier('qwen.qwen3-235b-a22b-2507-v1:0');
 
@@ -511,6 +529,36 @@ export class FoundationModelIdentifier {
 
   /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
   public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "moonshotai.kimi-k2.5". */
+  public static readonly MOONSHOT_KIMI_K2_5 = new FoundationModelIdentifier('moonshotai.kimi-k2.5');
+
+  /** Base model "moonshot.kimi-k2-thinking". */
+  public static readonly MOONSHOT_KIMI_K2_THINKING = new FoundationModelIdentifier('moonshot.kimi-k2-thinking');
+
+  /** Base model "minimax.minimax-m2". */
+  public static readonly MINIMAX_M2 = new FoundationModelIdentifier('minimax.minimax-m2');
+
+  /** Base model "minimax.minimax-m2.1". */
+  public static readonly MINIMAX_M2_1 = new FoundationModelIdentifier('minimax.minimax-m2.1');
+
+  /** Base model "openai.gpt-oss-120b-1:0". */
+  public static readonly OPENAI_GPT_OSS_120B_V1_0 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
+
+  /** Base model "openai.gpt-oss-20b-1:0". */
+  public static readonly OPENAI_GPT_OSS_20B_V1_0 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
+
+  /** Base model "openai.gpt-oss-safeguard-120b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-120b');
+
+  /** Base model "openai.gpt-oss-safeguard-20b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-20b');
+
+  /** Base model "zai.glm-4.7". */
+  public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');
+
+  /** Base model "zai.glm-4.7-flash". */
+  public static readonly ZAI_GLM_4_7_FLASH = new FoundationModelIdentifier('zai.glm-4.7-flash');
 
   /**
    * Constructor for foundation model identifier
