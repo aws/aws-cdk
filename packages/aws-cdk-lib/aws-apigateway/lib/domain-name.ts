@@ -5,6 +5,8 @@ import type { BasePathMappingOptions } from './base-path-mapping';
 import { BasePathMapping } from './base-path-mapping';
 import type { IRestApi } from './restapi';
 import { EndpointType } from './restapi';
+import type { AddRoutingRuleOptions } from './routing-rule';
+import { RoutingRule } from './routing-rule';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import type { IBucket } from '../../aws-s3';
 import type { IResource } from '../../core';
@@ -41,6 +43,31 @@ export enum SecurityPolicy {
 
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'TLS_1_2',
+}
+
+/**
+ * Routing mode for a custom domain name.
+ * Determines how API Gateway routes traffic from the domain to your APIs.
+ *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-routing-rules.html
+ */
+export enum RoutingMode {
+  /**
+   * Only base path mappings and API mappings are used. Routing rules are ignored.
+   * This is the default.
+   */
+  BASE_PATH_MAPPING_ONLY = 'BASE_PATH_MAPPING_ONLY',
+
+  /**
+   * Only routing rules are evaluated. Base path mappings and API mappings are ignored.
+   * Use addRoutingRule() to define rules. Requires REGIONAL endpoint.
+   */
+  ROUTING_RULE_ONLY = 'ROUTING_RULE_ONLY',
+
+  /**
+   * Routing rules are evaluated first; if no rule matches, API mappings are used.
+   */
+  ROUTING_RULE_THEN_API_MAPPING = 'ROUTING_RULE_THEN_API_MAPPING',
 }
 
 export interface DomainNameOptions {
@@ -83,6 +110,15 @@ export interface DomainNameOptions {
    * @default - map requests from the domain root (e.g. `example.com`).
    */
   readonly basePath?: string;
+
+  /**
+   * Routing mode for this domain. When set to ROUTING_RULE_ONLY or
+   * ROUTING_RULE_THEN_API_MAPPING, you can use addRoutingRule() to route by path/header.
+   * Routing rules are only supported for REGIONAL endpoints.
+   *
+   * @default RoutingMode.BASE_PATH_MAPPING_ONLY
+   */
+  readonly routingMode?: RoutingMode;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -156,6 +192,7 @@ export class DomainName extends Resource implements IDomainName {
   private readonly basePaths = new Set<string | undefined>();
   private readonly securityPolicy?: SecurityPolicy;
   private readonly endpointType: EndpointType;
+  private readonly routingMode: RoutingMode;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
@@ -163,8 +200,13 @@ export class DomainName extends Resource implements IDomainName {
     addConstructMetadata(this, props);
 
     this.endpointType = props.endpointType || EndpointType.REGIONAL;
+    this.routingMode = props.routingMode ?? RoutingMode.BASE_PATH_MAPPING_ONLY;
     const edge = this.endpointType === EndpointType.EDGE;
     this.securityPolicy = props.securityPolicy;
+
+    if (this.routingMode !== RoutingMode.BASE_PATH_MAPPING_ONLY && this.endpointType !== EndpointType.REGIONAL) {
+      throw new ValidationError('Routing rules are only supported for REGIONAL endpoint type', scope);
+    }
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
       throw new ValidationError(`Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
@@ -178,6 +220,7 @@ export class DomainName extends Resource implements IDomainName {
       endpointConfiguration: { types: [this.endpointType] },
       mutualTlsAuthentication: mtlsConfig,
       securityPolicy: props.securityPolicy,
+      routingMode: this.routingMode,
     });
 
     this.domainName = resource.ref;
@@ -190,6 +233,13 @@ export class DomainName extends Resource implements IDomainName {
     this.domainNameAliasHostedZoneId = edge
       ? resource.attrDistributionHostedZoneId
       : resource.attrRegionalHostedZoneId;
+
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY && props.mapping) {
+      throw new ValidationError(
+        'Cannot set "mapping" when routingMode is ROUTING_RULE_ONLY. Use addRoutingRule() instead.',
+        scope,
+      );
+    }
 
     const multiLevel = this.validateBasePath(props.basePath);
     if (props.mapping && !multiLevel) {
@@ -232,6 +282,12 @@ export class DomainName extends Resource implements IDomainName {
    */
   @MethodMetadata()
   public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY) {
+      throw new ValidationError(
+        'Cannot call addBasePathMapping when routingMode is ROUTING_RULE_ONLY. Set routingMode to BASE_PATH_MAPPING_ONLY or ROUTING_RULE_THEN_API_MAPPING.',
+        this,
+      );
+    }
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -262,6 +318,12 @@ export class DomainName extends Resource implements IDomainName {
    */
   @MethodMetadata()
   public addApiMapping(targetStage: IStageRef, options: ApiMappingOptions = {}): void {
+    if (this.routingMode === RoutingMode.ROUTING_RULE_ONLY) {
+      throw new ValidationError(
+        'Cannot call addApiMapping when routingMode is ROUTING_RULE_ONLY. Set routingMode to BASE_PATH_MAPPING_ONLY or ROUTING_RULE_THEN_API_MAPPING.',
+        this,
+      );
+    }
     if (this.basePaths.has(options.basePath)) {
       throw new ValidationError(`DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
@@ -273,6 +335,33 @@ export class DomainName extends Resource implements IDomainName {
       stage: targetStage.stageRef.stageName,
       domainName: this.domainName,
       apiMappingKey: options.basePath,
+    });
+  }
+
+  /**
+   * Adds a routing rule to this domain. Only allowed when routingMode is
+   * ROUTING_RULE_ONLY or ROUTING_RULE_THEN_API_MAPPING. Domain must be REGIONAL.
+   *
+   * @param id Unique id for the rule construct
+   * @param options Priority, conditions (base path and/or headers), and target API action
+   * @returns The RoutingRule construct
+   */
+  @MethodMetadata()
+  public addRoutingRule(id: string, options: AddRoutingRuleOptions): RoutingRule {
+    if (this.routingMode === RoutingMode.BASE_PATH_MAPPING_ONLY) {
+      throw new ValidationError(
+        'Cannot call addRoutingRule when routingMode is BASE_PATH_MAPPING_ONLY. Set routingMode to ROUTING_RULE_ONLY or ROUTING_RULE_THEN_API_MAPPING.',
+        this,
+      );
+    }
+    if (this.endpointType !== EndpointType.REGIONAL) {
+      throw new ValidationError('Routing rules are only supported for REGIONAL endpoint type', this);
+    }
+    return new RoutingRule(this, id, {
+      domainName: this,
+      priority: options.priority,
+      conditions: options.conditions,
+      action: options.action,
     });
   }
 

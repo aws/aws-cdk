@@ -706,6 +706,124 @@ describe('domains', () => {
     });
   });
 
+  test('domain with routingMode ROUTING_RULE_ONLY sets RoutingMode on CfnDomainName', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+    new apigw.DomainName(stack, 'Domain', {
+      domainName: 'api.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.REGIONAL,
+      routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::DomainName', {
+      DomainName: 'api.example.com',
+      RoutingMode: 'ROUTING_RULE_ONLY',
+    });
+  });
+
+  test('domain with routingMode BASE_PATH_MAPPING_ONLY does not allow addRoutingRule', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+    const api = new apigw.RestApi(stack, 'Api');
+    api.root.addMethod('GET');
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'api.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.REGIONAL,
+    });
+
+    expect(() => {
+      domain.addRoutingRule('Rule', {
+        priority: 100,
+        action: { restApi: api },
+      });
+    }).toThrow(/Cannot call addRoutingRule when routingMode is BASE_PATH_MAPPING_ONLY/);
+  });
+
+  test('domain with routingMode ROUTING_RULE_ONLY does not allow addBasePathMapping', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+    const api = new apigw.RestApi(stack, 'Api');
+    api.root.addMethod('GET');
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'api.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.REGIONAL,
+      routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+    });
+
+    expect(() => {
+      domain.addBasePathMapping(api, { basePath: 'api' });
+    }).toThrow(/Cannot call addBasePathMapping when routingMode is ROUTING_RULE_ONLY/);
+  });
+
+  test('domain with routingMode ROUTING_RULE_ONLY does not allow mapping in constructor', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+    const api = new apigw.RestApi(stack, 'Api');
+    api.root.addMethod('GET');
+
+    expect(() => {
+      new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.REGIONAL,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+        mapping: api,
+      });
+    }).toThrow(/Cannot set "mapping" when routingMode is ROUTING_RULE_ONLY/);
+  });
+
+  test('routing rules require REGIONAL endpoint', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+
+    expect(() => {
+      new apigw.DomainName(stack, 'Domain', {
+        domainName: 'api.example.com',
+        certificate: cert,
+        endpointType: apigw.EndpointType.EDGE,
+        routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+      });
+    }).toThrow(/Routing rules are only supported for REGIONAL endpoint type/);
+  });
+
+  test('addRoutingRule creates rule and uses domain ARN', () => {
+    const stack = new Stack();
+    const cert = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d');
+    const api = new apigw.RestApi(stack, 'Api');
+    api.root.addMethod('GET');
+    const domain = new apigw.DomainName(stack, 'Domain', {
+      domainName: 'api.example.com',
+      certificate: cert,
+      endpointType: apigw.EndpointType.REGIONAL,
+      routingMode: apigw.RoutingMode.ROUTING_RULE_ONLY,
+    });
+
+    domain.addRoutingRule('CatchAll', {
+      priority: 999999,
+      action: { restApi: api },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::RoutingRule', {
+      Priority: 999999,
+      DomainNameArn: {
+        'Fn::GetAtt': ['Domain66AC69E0', 'DomainNameArn'],
+      },
+      Conditions: [{}],
+      Actions: [
+        {
+          InvokeApi: {
+            ApiId: { Ref: 'ApiC8550315' },
+            Stage: { Ref: 'ApiDeploymentStageprod896C8101' },
+            StripBasePath: false,
+          },
+        },
+      ],
+    });
+  });
+
   test('base path mapping configures stage for SpecRestApi creation', () => {
     // GIVEN
     const stack = new Stack();
