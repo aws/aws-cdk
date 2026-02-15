@@ -72,7 +72,7 @@ test('Correctly sets readTimeout and keepaliveTimeout', () => {
 });
 
 describe('FunctionUrlOriginAccessControl', () => {
-  test('Correctly adds permission to Lambda for CloudFront', () => {
+  test('Correctly adds both InvokeFunctionUrl and InvokeFunction permissions for Dual Auth', () => {
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('exports.handler = async () => {};'),
       handler: 'index.handler',
@@ -119,8 +119,31 @@ describe('FunctionUrlOriginAccessControl', () => {
       },
     });
 
+    // Verify lambda:InvokeFunctionUrl permission is granted
     template.hasResourceProperties('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunctionUrl',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+    });
+
+    // Verify lambda:InvokeFunction permission is also granted for Dual Auth requirement
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
       FunctionName: {
         'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
       },
