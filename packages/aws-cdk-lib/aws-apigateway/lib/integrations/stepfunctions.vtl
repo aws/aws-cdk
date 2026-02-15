@@ -52,10 +52,19 @@
     
     #if ($includeAuthorizer)
         #set($inputString = "$inputString, @@authorizer@@:{")
-        #foreach($paramName in $context.authorizer.keySet())
-            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@")
-            #if($foreach.hasNext)
-                #set($inputString = "$inputString,")
+        #if ($context.authorizer.claims)
+            #foreach($paramName in $context.authorizer.claims.keySet())
+                #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.claims.get($paramName))@@")
+                #if($foreach.hasNext)
+                    #set($inputString = "$inputString,")
+                #end
+            #end
+        #else
+            #foreach($paramName in $context.authorizer.keySet())
+                #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($context.authorizer.get($paramName))@@")
+                #if($foreach.hasNext)
+                    #set($inputString = "$inputString,")
+                #end
             #end
         #end
         #set($inputString = "$inputString }")
