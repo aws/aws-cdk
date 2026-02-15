@@ -3,6 +3,8 @@ import type { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import type { IApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
+import type { ListenerTransform } from './transforms';
+import { TransformType } from './transforms';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
@@ -101,6 +103,16 @@ export interface BaseApplicationListenerRuleProps {
    * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
+
+  /**
+   * Transforms to apply to the request before routing to targets.
+   *
+   * You can add one host header rewrite transform and one URL rewrite transform per rule.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-transforms.html
+   * @default - No transforms are applied
+   */
+  readonly transforms?: ListenerTransform[];
 }
 
 /**
@@ -206,6 +218,7 @@ export class ApplicationListenerRule extends Construct {
 
   private readonly conditions: ListenerCondition[];
   private readonly legacyConditions: {[key: string]: string[]} = {};
+  private readonly transforms: ListenerTransform[];
 
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
@@ -214,6 +227,7 @@ export class ApplicationListenerRule extends Construct {
     super(scope, id);
 
     this.conditions = props.conditions || [];
+    this.transforms = props.transforms || [];
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
@@ -237,6 +251,7 @@ export class ApplicationListenerRule extends Construct {
       priority: props.priority,
       conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
       actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
+      transforms: cdk.Lazy.any({ produce: () => this.renderTransforms() }),
     });
 
     if (props.hostHeader) {
@@ -291,6 +306,13 @@ export class ApplicationListenerRule extends Construct {
    */
   public addCondition(condition: ListenerCondition) {
     this.conditions.push(condition);
+  }
+
+  /**
+   * Add a transform to this rule
+   */
+  public addTransforms(transform: ListenerTransform[]) {
+    this.transforms.push(...transform);
   }
 
   /**
@@ -384,6 +406,27 @@ export class ApplicationListenerRule extends Construct {
       ...legacyConditions,
       ...conditions,
     ];
+  }
+
+  /**
+   * Render the transforms for this rule
+   */
+  private renderTransforms(): CfnListenerRule.TransformProperty[] | undefined {
+    if (this.transforms.length === 0) {
+      return undefined;
+    }
+
+    const hostHeaderRewriteCount = this.transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
+    const urlRewriteCount = this.transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
+
+    if (hostHeaderRewriteCount > 1) {
+      throw new ValidationError('Only one host-header-rewrite transform is allowed per rule', this);
+    }
+    if (urlRewriteCount > 1) {
+      throw new ValidationError('Only one url-rewrite transform is allowed per rule', this);
+    }
+
+    return this.transforms.map(transform => transform.renderRawTransform());
   }
 }
 
