@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EcsExternalTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-external"
+      ],
+      "assertionStack": "EcsExternalTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsExternalTestDefaultTestDeployAssert9F72078B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
