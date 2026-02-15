@@ -80,6 +80,16 @@ export interface DataProcessorBindOptions {
    * The IAM role assumed by Amazon Data Firehose to write to the destination that this DataProcessor will bind to.
    */
   readonly role: iam.IRole;
+  /**
+   * Whether the dynamic partitioning is enabled.
+   * @default false
+   */
+  readonly dynamicPartitioningEnabled?: boolean;
+  /**
+   * S3 bucket prefix
+   * @default - No prefix
+   */
+  readonly prefix?: string;
 }
 
 /**

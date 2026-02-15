@@ -500,6 +500,7 @@ result that contains records in a specific format, including the following field
 - `result` -- the status of the transformation of the record: "Ok" (success), "Dropped"
   (not processed intentionally), or "ProcessingFailed" (not processed due to an error).
 - `data` -- the transformed data, Base64-encoded.
+- `metadata` -- the metadata used by dynamic partitioning.
 
 The data is buffered up to 1 minute and up to 3 MiB by default before being sent to the
 function, but can be configured using `bufferInterval` and `bufferSize`
@@ -588,6 +589,90 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 });
 ```
 
+## Dynamic Partitioning
+
+Dynamic partitioning enables you to continuously partition streaming data in Firehose by using keys within data (for example, `customer_id` or `transaction_id`) and then deliver the data grouped by these keys into corresponding Amazon S3 prefixes.
+
+For details, see [Partition streaming data in Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html).
+
+### Create partitioning keys with inline parsing
+
+To enable dynamic partitioning with inline parsing, specify `MetadataExtractionProcessor` data processor in `processors`.
+
+Only supported mechanism currently is [jq 1.6 parser](https://stedolan.github.io/jq/).
+
+The partition keys can be referred as `!{partitionKeyFromQuery:key}` in `dataOutputPrefix`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.MetadataExtractionProcessor.jq16({
+      customer_id: '.customer_id',
+      device: '.type.device',
+      year: '.event_timestamp|strftime("%Y")',
+    }),
+  ],
+  dataOutputPrefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
+});
+new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: s3Destination,
+});
+```
+
+### Create partitioning keys with an AWS Lambda function
+
+For compressed or encrypted data records, or data that is in any file format other than JSON, you can use the `LambdaFunctionDataProcessor` with your own custom code to decompress, decrypt, or transform the records in order to extract and return the data fields needed for partitioning.
+
+The lambda function must return `metadata` in your result records.
+
+The partition keys can be referred as `!{partitionKeyFromLambda:key}` in `dataOutputPrefix`.
+
+``` ts
+declare const bucket: s3.Bucket;
+declare const lambdaFunction: lambda.Function;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    new firehose.LambdaFunctionProcessor(lambdaFunction),
+  ],
+  dataOutputPrefix: '!{partitionKeyFromLambda:year}/!{partitionKeyFromLambda:device}/!{partitionKeyFromLambda:customer_id}/',
+});
+new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: s3Destination,
+});
+```
+
+### Multi record deaggregation
+
+To apply dynamic partitioning to aggregated data (for example, multiple events, logs, or records aggregated into a single PutRecord and PutRecordBatch API call), use `RecordDeAggregationProcessor`.
+
+When the input data is JSON objects on a single line with no delimiter or newline-delimited (JSONL), specify `RecordDeAggregationProcessor.json()`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.RecordDeAggregationProcessor.json(),
+  ],
+});
+```
+
+You can also specify custom delimiter using `RecordDeAggregationProcessor.delimited()`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.RecordDeAggregationProcessor.delimited('####'),
+  ],
+});
+```
+
+Record deaggregation by JSON or by delimiter is capped at 500 per record.
 
 ## Specifying an IAM role
 

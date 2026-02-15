@@ -602,7 +602,7 @@ describe('S3 destination', () => {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         }),
-      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrow('Buffering interval must be less than 900 seconds, got 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -612,14 +612,14 @@ describe('S3 destination', () => {
           bufferingSize: cdk.Size.mebibytes(0),
 
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+      })).toThrow('Buffering size must be at least 1 MiB, got 0 MiBs.');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destination: new firehose.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      })).toThrow('Buffering size must be at most 128 MiBs, got 256 MiBs.');
     });
   });
 
@@ -791,6 +791,66 @@ describe('S3 destination', () => {
           S3BackupMode: 'Enabled',
         },
       });
+    });
+  });
+
+  describe('output prefix', () => {
+    it.each(['!{', '!{blah}', '!{blah:blah}'])('throws when dataOutputPrefix contains invalid expression %s', (prefix) => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dataOutputPrefix: prefix,
+        });
+      }).toThrow('The expression must be of the form !{namespace:value} and include a valid namespace at dataOutputPrefix.');
+    });
+
+    it.each(['!{', '!{firehose}', '!{blah:blah}'])('throws when errorOutputPrefix contains invalid expression %s', (prefix) => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          errorOutputPrefix: prefix,
+        });
+      }).toThrow('The expression must be of the form !{namespace:value} and include a valid namespace at errorOutputPrefix.');
+    });
+
+    it('throws when errorOutputPrefix is empty with dataOutputPrefix expressions', () => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dataOutputPrefix: '!{timestamp:YYYY}/',
+        });
+      }).toThrow('Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
+    });
+
+    it('throws when errorOutputOrefix does not contain !{firehose:error-output-type}', () => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          errorOutputPrefix: '!{timestamp:YYYY}/',
+        });
+      }).toThrow('The errorOutputPrefix expression must include at least one instance of !{firehose:error-output-type}.');
+    });
+
+    it('throws when dataOutputPrefix contains !{firehose:error-output-type}', () => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dataOutputPrefix: '!{firehose:error-output-type}/',
+          errorOutputPrefix: 'ERROR/',
+        });
+      }).toThrow('The dataOutputPrefix cannot contain !{firehose:error-output-type}.');
+    });
+
+    it.each(['partitionKeyFromQuery', 'partitionKeyFromLambda'])('throws when errorOutputPrefix contains %s', (ns) => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          errorOutputPrefix: `!{firehose:error-output-type}/!{${ns}:foo}/`,
+        });
+      }).toThrow('You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces in errorOutputPreix.');
+    });
+
+    it.each(['partitionKeyFromQuery', 'partitionKeyFromLambda'])('throws when dataOutputPrefix contains %s without dynamic partitioning', (ns) => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dataOutputPrefix: `!{${ns}:foo}/`,
+          errorOutputPrefix: '!{firehose:error-output-type}/',
+        });
+      }).toThrow('When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither partitionKeyFromLambda nor partitionKeyFromQuery.');
     });
   });
 
@@ -972,6 +1032,396 @@ describe('S3 destination', () => {
           },
         },
       });
+    });
+  });
+
+  describe('dynamic partitioning', () => {
+    it('configures dynamic partitioning with inline parsing (JQ 1.6)', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.MetadataExtractionProcessor.jq16({
+            customer_id: '.customer_id',
+            device: '.type.device',
+            year: '.event_timestamp|strftime("%Y")',
+          }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          BufferingHints: {
+            SizeInMBs: 128,
+            IntervalInSeconds: 300,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'MetadataExtraction',
+              Parameters: [
+                { ParameterName: 'MetadataExtractionQuery', ParameterValue: '{"customer_id":.customer_id,"device":.type.device,"year":.event_timestamp|strftime("%Y")}' },
+                { ParameterName: 'JsonParsingEngine', ParameterValue: 'JQ-1.6' },
+              ],
+            }],
+          },
+          Prefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
+          ErrorOutputPrefix: '!{firehose:error-output-type}/',
+        },
+      });
+    });
+
+    it('configures dynamic partitioning with lambda', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.LambdaFunctionProcessor(lambdaFunction),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromLambda:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          BufferingHints: {
+            SizeInMBs: 128,
+            IntervalInSeconds: 300,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'Lambda',
+              Parameters: [
+                { ParameterName: 'RoleArn', ParameterValue: stack.resolve(destinationRole.roleArn) },
+                { ParameterName: 'LambdaArn', ParameterValue: stack.resolve(lambdaFunction.functionArn) },
+              ],
+            }],
+          },
+          Prefix: '!{partitionKeyFromLambda:foo}/',
+          ErrorOutputPrefix: '!{firehose:error-output-type}/',
+        },
+      });
+    });
+
+    it('throws MetadataExtractionProcessor without dynamic partitioning', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: false },
+        processors: [firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' })],
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled.');
+    });
+
+    it('throws RecordDeAggregationProcessor without dynamic partitioning', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: false },
+        processors: [firehose.RecordDeAggregationProcessor.json()],
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled.');
+    });
+
+    it('configures dynamic partitioning with retry options', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(5) },
+        processors: [firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' })],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+            RetryOptions: {
+              DurationInSeconds: 300,
+            },
+          },
+          BufferingHints: {
+            SizeInMBs: 128,
+            IntervalInSeconds: 300,
+          },
+        },
+      });
+    });
+
+    it('validates retryDuration', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true, retryDuration: cdk.Duration.minutes(121) },
+        processors: [firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' })],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('Retry duration must be less than 7200 seconds, got 7260 seconds.');
+    });
+
+    it('validates bufferingSize', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        bufferingSize: cdk.Size.mebibytes(63),
+        processors: [firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' })],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got 63 MiBs.');
+    });
+
+    it('validates bufferingInterval', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        bufferingInterval: cdk.Duration.seconds(50),
+        processors: [firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' })],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got 50 seconds.');
+    });
+
+    it('configures multi record deaggregation with JSON', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.RecordDeAggregationProcessor.json(),
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'RecordDeAggregation',
+              Parameters: [
+                { ParameterName: 'SubRecordType', ParameterValue: 'JSON' },
+              ],
+            }, {
+              Type: 'MetadataExtraction',
+            }],
+          },
+        },
+      });
+    });
+
+    it('configures multi record deaggregation with custom delimiter', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.RecordDeAggregationProcessor.delimited('####'),
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          DynamicPartitioningConfiguration: {
+            Enabled: true,
+          },
+          ProcessingConfiguration: {
+            Enabled: true,
+            Processors: [{
+              Type: 'RecordDeAggregation',
+              Parameters: [
+                { ParameterName: 'SubRecordType', ParameterValue: 'DELIMITED' },
+                { ParameterName: 'Delimiter', ParameterValue: 'IyMjIw==' },
+              ],
+            }, {
+              Type: 'MetadataExtraction',
+            }],
+          },
+        },
+      });
+    });
+
+    it('throws when multi record deaggregation delimiter is not specified', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.RecordDeAggregationProcessor({ subRecordType: firehose.SubRecordType.DELIMITED }),
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('delimiter must be specified when subRecordType is DELIMITED.');
+    });
+
+    it('throws when the JQ query is empty', () => {
+      expect(() => {
+        new firehose.S3Bucket(bucket, {
+          dynamicPartitioning: { enabled: true },
+          processors: [
+            firehose.MetadataExtractionProcessor.jq16({}),
+          ],
+          dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+          errorOutputPrefix: '!{firehose:error-output-type}/',
+        });
+      }).toThrow('The query for MetadataExtractionProcessor should not be empty.');
+    });
+
+    it('throws when the JQ query has more than 50 keys', () => {
+      expect(() => {
+        const query = Object.fromEntries(Array.from({ length: 51 }, (_, i) => [i, `${i}`]));
+        new firehose.S3Bucket(bucket, {
+          dynamicPartitioning: { enabled: true },
+          processors: [
+            firehose.MetadataExtractionProcessor.jq16(query),
+          ],
+          dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+          errorOutputPrefix: '!{firehose:error-output-type}/',
+        });
+      }).toThrow('The query for MetadataExtractionProcessor cannot exceed the limit of 50 keys.');
+    });
+
+    it('throws when dataOutputPrefix does not contain all partition keys', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo', bar: '.bar' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When dynamic partitioning via inline parsing is enabled, you must use all specified dynamic partitioning key values for partitioning your data source.');
+    });
+
+    it('throws when dataOutputPrefix contains extra partition keys', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:bar}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When dynamic partitioning via inline parsing is enabled, you must use all specified dynamic partitioning key values for partitioning your data source.');
+    });
+
+    it('throws when dataOutputPrefix does not contain partitionKeyFromLambda with only lambda processor', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.LambdaFunctionProcessor(lambdaFunction),
+        ],
+        dataOutputPrefix: 'YYYY/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{partitionKeyFromLambda:keyID}.');
+    });
+
+    it('throws when dataOutputPrefix contains partitionKeyFromLambda without lambda processor', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          firehose.MetadataExtractionProcessor.jq16({ foo: '.foo' }),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/!{partitionKeyFromLambda:bar}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('The dataOutputPrefix cannot contain !{partitionKeyFromLambda:keyID} when LambdaFunctionProcessor is not specified.');
+    });
+
+    it('throws when dataOutputPrefix contains partitionKeyFromQuery without inline parsing', () => {
+      const lambdaFunction = new lambda.Function(stack, 'DataProcessorFunction', {
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'bar',
+      });
+      const destination = new firehose.S3Bucket(bucket, {
+        dynamicPartitioning: { enabled: true },
+        processors: [
+          new firehose.LambdaFunctionProcessor(lambdaFunction),
+        ],
+        dataOutputPrefix: '!{partitionKeyFromQuery:foo}/!{partitionKeyFromLambda:bar}/',
+        errorOutputPrefix: '!{firehose:error-output-type}/',
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow('The dataOutputPrefix cannot contain !{partitionKeyFromQuery:keyID} when MetadataExtractionProcessor is not specified.');
     });
   });
 });
