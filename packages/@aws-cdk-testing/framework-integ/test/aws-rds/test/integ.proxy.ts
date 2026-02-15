@@ -1,19 +1,20 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { RemovalPolicy } from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { INTEG_TEST_LATEST_POSTGRES, INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-proxy');
 
 const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
 
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_16_3,
+    version: INTEG_TEST_LATEST_POSTGRES,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {
@@ -21,7 +22,6 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
     excludeCharacters: '"@/\\',
   }),
   vpc,
-  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 new rds.DatabaseProxy(stack, 'dbProxy', {
@@ -35,7 +35,7 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
 
 const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({
-    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+    version: INTEG_TEST_LATEST_AURORA_POSTGRES,
   }),
   instanceProps: { vpc },
 });
@@ -55,7 +55,7 @@ cluster.addProxy('Proxy2', {
 // With `writer` and `readers` properties instead of the legacy `instanceProps`
 const clusterWithWriterAndReaders = new rds.DatabaseCluster(stack, 'dbClusterWithWriterAndReaders', {
   engine: rds.DatabaseClusterEngine.auroraPostgres({
-    version: rds.AuroraPostgresEngineVersion.VER_14_5,
+    version: INTEG_TEST_LATEST_AURORA_POSTGRES,
   }),
   vpc,
   writer: rds.ClusterInstance.provisioned('writer'),

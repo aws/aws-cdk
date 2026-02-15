@@ -9,5 +9,5 @@
       "assertionStackName": "CloudWatchLogsExportsStackIntegDefaultTestDeployAssertF6E85D5D"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

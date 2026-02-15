@@ -1,10 +1,12 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-dual-integ');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-dual-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 0, restrictDefaultSecurityGroup: false });
 const ipv6 = new ec2.CfnVPCCidrBlock(stack, 'Ipv6CidrBlock', { vpcId: vpc.vpcId, amazonProvidedIpv6CidrBlock: true });
@@ -19,7 +21,7 @@ const instanceProps = {
   isFromLegacyInstanceProps: true,
 };
 new rds.DatabaseCluster(stack, 'DualstackCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   writer: rds.ClusterInstance.provisioned('Instance1', {
     ...instanceProps,
@@ -32,11 +34,10 @@ new rds.DatabaseCluster(stack, 'DualstackCluster', {
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   vpc,
   networkType: rds.NetworkType.DUAL,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   credentials: rds.Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
   vpc,
@@ -49,7 +50,6 @@ new rds.DatabaseCluster(stack, 'Ipv4Cluster', {
     }),
   ],
   networkType: rds.NetworkType.IPV4,
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new IntegTest(app, 'cluster-dual-test', {

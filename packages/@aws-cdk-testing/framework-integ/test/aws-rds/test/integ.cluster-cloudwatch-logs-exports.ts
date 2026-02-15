@@ -1,27 +1,27 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { INTEG_TEST_LATEST_AURORA_MYSQL, INTEG_TEST_LATEST_AURORA_POSTGRES } from './db-versions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'CloudWatchLogsExportsStack');
+const stack = new IntegTestBaseStack(app, 'CloudWatchLogsExportsStack');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const mysql = new rds.DatabaseCluster(stack, 'DatabaseClusterMysql', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_09_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit', 'instance', 'iam-db-auth-error'],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const postgresql = new rds.DatabaseCluster(stack, 'DatabaseClusterPostgresql', {
-  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_4 }),
+  engine: rds.DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   cloudwatchLogsExports: ['postgresql', 'iam-db-auth-error', 'instance'],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const integ = new IntegTest(app, 'CloudWatchLogsExportsStackInteg', {

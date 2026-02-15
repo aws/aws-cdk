@@ -1,16 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "files": {
-    "3bcd33e34603726e169ff4992b9678ec0884d78fef8095e40d73af38bf81fe04": {
+    "6a788ffea4523131840f0ac703ea501181a45b26719c26b37a5f76a6754120cd": {
       "displayName": "aws-cdk-rds-cluster-lookup Template",
       "source": {
         "path": "aws-cdk-rds-cluster-lookup.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-174694ab": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "3bcd33e34603726e169ff4992b9678ec0884d78fef8095e40d73af38bf81fe04.json",
+          "objectKey": "6a788ffea4523131840f0ac703ea501181a45b26719c26b37a5f76a6754120cd.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "eb8f720b5bf7255308541ac9d92dc22715c76277dd4de87b86d4e35d719a00b4": {
+      "displayName": "aws-cdk-rds-instance-create-grant Template",
+      "source": {
+        "path": "aws-cdk-rds-instance-create-grant.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c1e49230": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "eb8f720b5bf7255308541ac9d92dc22715c76277dd4de87b86d4e35d719a00b4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,13 +1,14 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_SQLSERVER } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { RemovalPolicy } from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as rds from 'aws-cdk-lib/aws-rds';
-import { LicenseModel, SqlServerEngineVersion } from 'aws-cdk-lib/aws-rds';
+import { LicenseModel } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy-sql-server', {
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-proxy-sql-server', {
   terminationProtection: false,
 });
 
@@ -15,7 +16,7 @@ const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const dbInstance = new rds.DatabaseInstance(stack, 'SqlServerDbInstance', {
   engine: rds.DatabaseInstanceEngine.sqlServerEx({
-    version: SqlServerEngineVersion.VER_15,
+    version: INTEG_TEST_LATEST_SQLSERVER,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   credentials: rds.Credentials.fromUsername('master', {
@@ -23,7 +24,6 @@ const dbInstance = new rds.DatabaseInstance(stack, 'SqlServerDbInstance', {
   }),
   vpc,
   licenseModel: LicenseModel.LICENSE_INCLUDED,
-  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const proxy = new rds.DatabaseProxy(stack, 'DbProxy', {
