@@ -1,3 +1,4 @@
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -115,13 +116,39 @@ taskDefinition.addContainer('container', {
   }],
 });
 
+// Create first deployment alarm
+const alarm1 = new cloudwatch.Alarm(stack, 'MyCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'MyCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
+// Create second deployment alarm
+const alarm2 = new cloudwatch.Alarm(stack, 'AnotherCustomAlarm', {
+  metric: new cloudwatch.Metric({
+    namespace: 'Custom',
+    metricName: 'AnotherCustomMetric',
+  }),
+  threshold: 80,
+  evaluationPeriods: 2,
+});
+
 // Create Fargate service with escape hatching for B/G deployment
 const service = new ecs.FargateService(stack, 'Service', {
   cluster,
   taskDefinition,
   securityGroups: [ecsSecurityGroup],
   deploymentStrategy: ecs.DeploymentStrategy.BLUE_GREEN,
+  deploymentAlarms: {
+    alarmNames: [alarm1.alarmName], // First deployment alarm
+  },
 });
+
+// Enable second deployment alarm
+service.enableDeploymentAlarms([alarm2.alarmName]);
 
 service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaHook, 'PreScaleUp', {
   lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
