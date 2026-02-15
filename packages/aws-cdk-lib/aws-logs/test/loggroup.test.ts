@@ -853,6 +853,76 @@ describe('log group', () => {
     });
   });
 
+  test('set data protection policy with DateOfBirth identifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-dateofbirth-policy',
+      description: 'test policy for DateOfBirth identifier',
+      identifiers: [DataIdentifier.DATEOFBIRTH],
+    });
+
+    // WHEN
+    const logGroupName = 'test-dateofbirth-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        Name: 'test-dateofbirth-policy',
+        Description: 'test policy for DateOfBirth identifier',
+        Version: '2021-06-01',
+        Statement: [
+          {
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/DateOfBirth',
+                  ],
+                ],
+              },
+            ],
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
+              },
+            },
+          },
+          {
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/DateOfBirth',
+                  ],
+                ],
+              },
+            ],
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
   test('set data protection policy with mix of managed and custom data identifiers', () => {
     // GIVEN
     const stack = new Stack();
