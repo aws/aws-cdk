@@ -58,14 +58,14 @@ export interface DatabaseClusterProps {
    *
    * @default -  the latest major version
    */
-  readonly engineVersion?: string;
+  readonly engineVersion?: string | undefined;
 
   /**
    * The port the DocumentDB cluster will listen on
    *
    * @default DatabaseCluster.DEFAULT_PORT
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * Username and password for the administrative user
@@ -80,28 +80,28 @@ export interface DatabaseClusterProps {
    * 8-hour block of time for each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/backup-restore.db-cluster-snapshots.html#backup-restore.backup-window
    */
-  readonly backup?: BackupProps;
+  readonly backup?: BackupProps | undefined;
 
   /**
    * The KMS key for storage encryption.
    *
    * @default - default master key.
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * Whether to enable storage encryption
    *
    * @default true
    */
-  readonly storageEncrypted?: boolean;
+  readonly storageEncrypted?: boolean | undefined;
 
   /**
    * An optional identifier for the cluster
    *
    * @default - A name is automatically generated.
    */
-  readonly dbClusterName?: string;
+  readonly dbClusterName?: string | undefined;
 
   /**
    * Base identifier for instances
@@ -112,7 +112,7 @@ export interface DatabaseClusterProps {
    * @default - `dbClusterName` is used with the word "Instance" appended. If `dbClusterName` is not provided, the
    * identifier is automatically generated.
    */
-  readonly instanceIdentifierBase?: string;
+  readonly instanceIdentifierBase?: string | undefined;
 
   /**
    * What type of instance to start for the replicas.
@@ -120,13 +120,13 @@ export interface DatabaseClusterProps {
    *
    * @default None
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * Number of DocDB compute instances
    * @default 1
    */
-  readonly instances?: number;
+  readonly instances?: number | undefined;
 
   /**
    * ServerlessV2 scaling configuration.
@@ -134,7 +134,7 @@ export interface DatabaseClusterProps {
    *
    * @default None
    */
-  readonly serverlessV2ScalingConfiguration?: ServerlessV2ScalingConfiguration;
+  readonly serverlessV2ScalingConfiguration?: ServerlessV2ScalingConfiguration | undefined;
 
   /**
    * The identifier of the CA certificate used for the instances.
@@ -145,7 +145,7 @@ export interface DatabaseClusterProps {
    *
    * @default - DocumentDB will choose a certificate authority
    */
-  readonly caCertificate?: CaCertificate;
+  readonly caCertificate?: CaCertificate | undefined;
 
   /**
    * What subnets to run the DocumentDB instances in.
@@ -159,21 +159,21 @@ export interface DatabaseClusterProps {
    *
    * @default private subnets
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Security group.
    *
    * @default a new security group is created.
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The DB parameter group to associate with the instance.
    *
    * @default no parameter group
    */
-  readonly parameterGroup?: IDBClusterParameterGroupRef;
+  readonly parameterGroup?: IDBClusterParameterGroupRef | undefined;
 
   /**
    * A weekly time range in which maintenance should preferably execute.
@@ -186,7 +186,7 @@ export interface DatabaseClusterProps {
    * each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
    */
-  readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string | undefined;
 
   /**
    * The removal policy to apply when the cluster and its instances are removed
@@ -201,7 +201,7 @@ export interface DatabaseClusterProps {
    *
    * @default - Retain cluster.
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Specifies whether this cluster can be deleted. If deletionProtection is
@@ -211,7 +211,7 @@ export interface DatabaseClusterProps {
    *
    * @default - false
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * Whether the profiler logs should be exported to CloudWatch.
@@ -220,7 +220,7 @@ export interface DatabaseClusterProps {
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
    * @default false
    */
-  readonly exportProfilerLogsToCloudWatch?: boolean;
+  readonly exportProfilerLogsToCloudWatch?: boolean | undefined;
 
   /**
    * Whether the audit logs should be exported to CloudWatch.
@@ -229,7 +229,7 @@ export interface DatabaseClusterProps {
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
    * @default false
    */
-  readonly exportAuditLogsToCloudWatch?: boolean;
+  readonly exportAuditLogsToCloudWatch?: boolean | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -238,7 +238,7 @@ export interface DatabaseClusterProps {
    *
    * @default - logs never expire
    */
-  readonly cloudWatchLogsRetention?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays | undefined;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -246,14 +246,14 @@ export interface DatabaseClusterProps {
    *
    * @default - a new role is created.
    */
-  readonly cloudWatchLogsRetentionRole?: IRole;
+  readonly cloudWatchLogsRetentionRole?: IRole | undefined;
 
   /**
    * A value that indicates whether to enable Performance Insights for the instances in the DB Cluster.
    *
    * @default - false
    */
-  readonly enablePerformanceInsights?: boolean;
+  readonly enablePerformanceInsights?: boolean | undefined;
 
   /**
    * The removal policy to apply to the cluster's instances.
@@ -264,7 +264,7 @@ export interface DatabaseClusterProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
    */
-  readonly instanceRemovalPolicy?: RemovalPolicy;
+  readonly instanceRemovalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The removal policy to apply to the cluster's security group.
@@ -275,14 +275,14 @@ export interface DatabaseClusterProps {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
    */
-  readonly securityGroupRemovalPolicy?: RemovalPolicy;
+  readonly securityGroupRemovalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
    * @default - false
    */
-  readonly copyTagsToSnapshot?: boolean;
+  readonly copyTagsToSnapshot?: boolean | undefined;
 
   /**
    * The storage type of the DocDB cluster.
@@ -293,7 +293,7 @@ export interface DatabaseClusterProps {
    *
    * @default StorageType.STANDARD
    */
-  readonly storageType?: StorageType;
+  readonly storageType?: StorageType | undefined;
 }
 
 /**
@@ -491,7 +491,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The secret attached to this cluster
    */
-  public readonly secret?: secretsmanager.ISecret;
+  public readonly secret?: secretsmanager.ISecret | undefined;
 
   /**
    * The underlying CloudFormation resource for a database cluster.
@@ -506,7 +506,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The subnets used by the DB subnet group.
    */
-  private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);

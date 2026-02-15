@@ -78,7 +78,7 @@ export interface RoleProps {
    *
    * @default No external ID required
    */
-  readonly externalId?: string;
+  readonly externalId?: string | undefined;
 
   /**
    * List of IDs that the role assumer needs to provide one of when assuming this role
@@ -88,7 +88,7 @@ export interface RoleProps {
    *
    * @default No external ID required
    */
-  readonly externalIds?: string[];
+  readonly externalIds?: string[] | undefined;
 
   /**
    * A list of managed policies associated with this role.
@@ -98,7 +98,7 @@ export interface RoleProps {
    *
    * @default - No managed policies.
    */
-  readonly managedPolicies?: IManagedPolicy[];
+  readonly managedPolicies?: IManagedPolicy[] | undefined;
 
   /**
    * A list of named policies to inline into this role. These policies will be
@@ -108,7 +108,7 @@ export interface RoleProps {
    *
    * @default - No policy is inlined in the Role resource.
    */
-  readonly inlinePolicies?: { [name: string]: PolicyDocument };
+  readonly inlinePolicies?: { [name: string]: PolicyDocument } | undefined;
 
   /**
    * The path associated with this role. For information about IAM paths, see
@@ -116,7 +116,7 @@ export interface RoleProps {
    *
    * @default /
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * AWS supports permissions boundaries for IAM entities (users or roles).
@@ -131,7 +131,7 @@ export interface RoleProps {
    *
    * @default - No permissions boundary.
    */
-  readonly permissionsBoundary?: IManagedPolicy;
+  readonly permissionsBoundary?: IManagedPolicy | undefined;
 
   /**
    * A name for the IAM role. For valid values, see the RoleName parameter for
@@ -148,7 +148,7 @@ export interface RoleProps {
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
    * for the role name.
    */
-  readonly roleName?: string;
+  readonly roleName?: string | undefined;
 
   /**
    * The maximum session duration that you want to set for the specified role.
@@ -169,14 +169,14 @@ export interface RoleProps {
    *
    * @default Duration.hours(1)
    */
-  readonly maxSessionDuration?: Duration;
+  readonly maxSessionDuration?: Duration | undefined;
 
   /**
    * A description of the role. It can be up to 1000 characters long.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -188,7 +188,7 @@ export interface FromRoleArnOptions {
    *
    * @default true
    */
-  readonly mutable?: boolean;
+  readonly mutable?: boolean | undefined;
 
   /**
    * For immutable roles: add grants to resources instead of dropping them
@@ -200,7 +200,7 @@ export interface FromRoleArnOptions {
    *
    * @default false
    */
-  readonly addGrantsToResources?: boolean;
+  readonly addGrantsToResources?: boolean | undefined;
 
   /**
    * Any policies created by this role will use this value as their ID, if specified.
@@ -212,7 +212,7 @@ export interface FromRoleArnOptions {
    *
    * @default 'Policy'
    */
-  readonly defaultPolicyName?: string;
+  readonly defaultPolicyName?: string | undefined;
 }
 
 /**
@@ -227,7 +227,7 @@ export interface CustomizeRolesOptions {
    *
    * @default true
    */
-  readonly preventSynthesis?: boolean;
+  readonly preventSynthesis?: boolean | undefined;
 
   /**
    * A list of precreated IAM roles to substitute for roles
@@ -255,7 +255,7 @@ export interface CustomizeRolesOptions {
    *
    * @default - there are no precreated roles. Synthesis will fail if `preventSynthesis=true`
    */
-  readonly usePrecreatedRoles?: { [constructPath: string]: string };
+  readonly usePrecreatedRoles?: { [constructPath: string]: string } | undefined;
 }
 
 /**
@@ -466,12 +466,12 @@ export class Role extends Resource implements IRole {
   /**
    * The assume role policy document associated with this role.
    */
-  public readonly assumeRolePolicy?: PolicyDocument;
+  public readonly assumeRolePolicy?: PolicyDocument | undefined;
 
   /**
    * The CfnRole resource
    */
-  private readonly _resource?: CfnRole;
+  private readonly _resource?: CfnRole | undefined;
 
   /**
    * Returns the ARN of this role.
@@ -515,7 +515,7 @@ export class Role extends Resource implements IRole {
   /**
    * Returns the permissions boundary attached to this role
    */
-  public readonly permissionsBoundary?: IManagedPolicy;
+  public readonly permissionsBoundary?: IManagedPolicy | undefined;
 
   /**
    * Collection of grant methods for a Role
@@ -529,10 +529,10 @@ export class Role extends Resource implements IRole {
   private readonly dependables = new Map<PolicyStatement, DependencyGroup>();
   private immutableRole?: IRole;
   private _didSplit = false;
-  private readonly _roleId?: string;
-  private readonly _path?: string;
+  private readonly _roleId?: string | undefined;
+  private readonly _path?: string | undefined;
 
-  private readonly _precreatedRole?: IRole;
+  private readonly _precreatedRole?: IRole | undefined;
 
   constructor(scope: Construct, id: string, props: RoleProps) {
     super(scope, id, {
@@ -935,7 +935,7 @@ export interface WithoutPolicyUpdatesOptions {
    *
    * @default false
    */
-  readonly addGrantsToResources?: boolean;
+  readonly addGrantsToResources?: boolean | undefined;
 }
 
 Object.defineProperty(Role.prototype, IAM_ROLE_SYMBOL, {

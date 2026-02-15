@@ -36,14 +36,14 @@ export interface AuthenticateCognitoActionProps {
    *
    * @default - No extra parameters
    */
-  readonly authenticationRequestExtraParams?: Record<string, string>;
+  readonly authenticationRequestExtraParams?: Record<string, string> | undefined;
 
   /**
    * The behavior if the user is not authenticated.
    *
    * @default UnauthenticatedAction.AUTHENTICATE
    */
-  readonly onUnauthenticatedRequest?: elbv2.UnauthenticatedAction;
+  readonly onUnauthenticatedRequest?: elbv2.UnauthenticatedAction | undefined;
 
   /**
    * The set of user claims to be requested from the IdP.
@@ -52,21 +52,21 @@ export interface AuthenticateCognitoActionProps {
    *
    * @default "openid"
    */
-  readonly scope?: string;
+  readonly scope?: string | undefined;
 
   /**
    * The name of the cookie used to maintain session information.
    *
    * @default "AWSELBAuthSessionCookie"
    */
-  readonly sessionCookieName?: string;
+  readonly sessionCookieName?: string | undefined;
 
   /**
    * The maximum duration of the authentication session.
    *
    * @default Duration.days(7)
    */
-  readonly sessionTimeout?: Duration;
+  readonly sessionTimeout?: Duration | undefined;
 
   /**
    * Allow HTTPS outbound traffic to communicate with the IdP.
@@ -78,7 +78,7 @@ export interface AuthenticateCognitoActionProps {
    * @default true
    * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
    */
-  readonly allowHttpsOutbound?: boolean;
+  readonly allowHttpsOutbound?: boolean | undefined;
 }
 
 /**

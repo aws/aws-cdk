@@ -14,7 +14,7 @@ export interface EventBusProps {
    *
    * @default a new role is created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The SQS queue to be used as deadLetterQueue.
@@ -26,7 +26,7 @@ export interface EventBusProps {
    *
    * @default - no dead-letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 }
 
 /**

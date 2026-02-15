@@ -400,7 +400,7 @@ interface FragmentedTreeWriterOptions {
    *
    * @default 500_000
    */
-  readonly maxNodesPerTree?: number;
+  readonly maxNodesPerTree?: number | undefined;
 }
 
 interface Tree {

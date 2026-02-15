@@ -15,7 +15,7 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
    *
    * @default none
    */
-  readonly scheduledEc2TaskDefinitionOptions?: ScheduledEc2TaskDefinitionOptions;
+  readonly scheduledEc2TaskDefinitionOptions?: ScheduledEc2TaskDefinitionOptions | undefined;
 
   /**
    * The properties to define if the construct is to create a TaskDefinition.
@@ -23,7 +23,7 @@ export interface ScheduledEc2TaskProps extends ScheduledTaskBaseProps {
    *
    * @default none
    */
-  readonly scheduledEc2TaskImageOptions?: ScheduledEc2TaskImageOptions;
+  readonly scheduledEc2TaskImageOptions?: ScheduledEc2TaskImageOptions | undefined;
 }
 
 /**
@@ -35,7 +35,7 @@ export interface ScheduledEc2TaskImageOptions extends ScheduledTaskImageProps {
    *
    * @default none
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The hard limit (in MiB) of memory to present to the container.
@@ -47,7 +47,7 @@ export interface ScheduledEc2TaskImageOptions extends ScheduledTaskImageProps {
    *
    * @default - No memory limit.
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -61,7 +61,7 @@ export interface ScheduledEc2TaskImageOptions extends ScheduledTaskImageProps {
    *
    * @default - No memory reserved.
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number | undefined;
 }
 
 /**

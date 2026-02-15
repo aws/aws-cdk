@@ -14,13 +14,13 @@ export interface TrafficRoutingConfig {
    * A configuration that shifts traffic from one version of a Lambda function or ECS task set to another in two increments.
    * @default none
    */
-  readonly timeBasedCanary?: CanaryTrafficRoutingConfig;
+  readonly timeBasedCanary?: CanaryTrafficRoutingConfig | undefined;
 
   /**
    * A configuration that shifts traffic from one version of a Lambda function or Amazon ECS task set to another in equal increments, with an equal number of minutes between each increment.
    * @default none
    */
-  readonly timeBasedLinear?: LinearTrafficRoutingConfig;
+  readonly timeBasedLinear?: LinearTrafficRoutingConfig | undefined;
 }
 
 /**

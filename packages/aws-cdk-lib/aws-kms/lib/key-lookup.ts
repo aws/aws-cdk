@@ -21,5 +21,5 @@ export interface KeyLookupOptions {
    *
    * @default false
    */
-  readonly returnDummyKeyOnMissing?: boolean;
+  readonly returnDummyKeyOnMissing?: boolean | undefined;
 }

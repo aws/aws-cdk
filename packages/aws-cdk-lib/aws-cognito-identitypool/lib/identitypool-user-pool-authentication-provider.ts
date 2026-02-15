@@ -34,14 +34,14 @@ export interface UserPoolAuthenticationProviderProps {
    * The User Pool Client for the provided User Pool
    * @default - A default user pool client will be added to User Pool
    */
-  readonly userPoolClient?: IUserPoolClientRef;
+  readonly userPoolClient?: IUserPoolClientRef | undefined;
 
   /**
    * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html
    * @default false
    */
-  readonly disableServerSideTokenCheck?: boolean;
+  readonly disableServerSideTokenCheck?: boolean | undefined;
 
 }
 

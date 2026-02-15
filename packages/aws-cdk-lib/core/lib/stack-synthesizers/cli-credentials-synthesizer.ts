@@ -25,7 +25,7 @@ export interface CliCredentialsStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
    */
-  readonly fileAssetsBucketName?: string;
+  readonly fileAssetsBucketName?: string | undefined;
 
   /**
    * Name of the ECR repository to hold Docker Image assets
@@ -38,7 +38,7 @@ export interface CliCredentialsStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME
    */
-  readonly imageAssetsRepositoryName?: string;
+  readonly imageAssetsRepositoryName?: string | undefined;
 
   /**
    * Qualifier to disambiguate multiple environments in the same account
@@ -48,14 +48,14 @@ export interface CliCredentialsStackSynthesizerProps {
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 
   /**
    * bucketPrefix to use while storing S3 Assets
    *
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
-  readonly bucketPrefix?: string;
+  readonly bucketPrefix?: string | undefined;
 
   /**
    * A prefix to use while tagging and uploading Docker images to ECR.
@@ -65,7 +65,7 @@ export interface CliCredentialsStackSynthesizerProps {
    *
    * @default - DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
    */
-  readonly dockerTagPrefix?: string;
+  readonly dockerTagPrefix?: string | undefined;
 }
 
 /**

@@ -73,7 +73,7 @@ export interface IRestApi extends IResourceBase, IRestApiRef {
    * This resource will be automatically updated every time the REST API model changes.
    * `undefined` when no deployment is configured.
    */
-  readonly latestDeployment?: Deployment;
+  readonly latestDeployment?: Deployment | undefined;
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).
@@ -126,7 +126,7 @@ export interface RestApiBaseProps {
    *
    * @default true
    */
-  readonly deploy?: boolean;
+  readonly deploy?: boolean | undefined;
 
   /**
    * Options for the API Gateway stage that will always point to the latest
@@ -135,7 +135,7 @@ export interface RestApiBaseProps {
    *
    * @default - Based on defaults of `StageOptions`.
    */
-  readonly deployOptions?: StageOptions;
+  readonly deployOptions?: StageOptions | undefined;
 
   /**
    * Retains old deployment resources when the API changes. This allows
@@ -144,14 +144,14 @@ export interface RestApiBaseProps {
    *
    * @default false
    */
-  readonly retainDeployments?: boolean;
+  readonly retainDeployments?: boolean | undefined;
 
   /**
    * A name for the API Gateway RestApi resource.
    *
    * @default - ID of the RestApi construct.
    */
-  readonly restApiName?: string;
+  readonly restApiName?: string | undefined;
 
   /**
    * Custom header parameters for the request.
@@ -159,14 +159,14 @@ export interface RestApiBaseProps {
    *
    * @default - No parameters.
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * A policy document that contains the permissions for this RestApi
    *
    * @default - No policy.
    */
-  readonly policy?: iam.PolicyDocument;
+  readonly policy?: iam.PolicyDocument | undefined;
 
   /**
    * Indicates whether to roll back the resource if a warning occurs while API
@@ -174,21 +174,21 @@ export interface RestApiBaseProps {
    *
    * @default false
    */
-  readonly failOnWarnings?: boolean;
+  readonly failOnWarnings?: boolean | undefined;
 
   /**
    * Configure a custom domain name and map it to this API.
    *
    * @default - no domain name is defined, use `addDomainName` or directly define a `DomainName`.
    */
-  readonly domainName?: DomainNameOptions;
+  readonly domainName?: DomainNameOptions | undefined;
 
   /**
    * Automatically configure an AWS CloudWatch role for API Gateway.
    *
    * @default - false if `@aws-cdk/aws-apigateway:disableCloudWatchRole` is enabled, true otherwise
    */
-  readonly cloudWatchRole?: boolean;
+  readonly cloudWatchRole?: boolean | undefined;
 
   /**
    * The removal policy applied to the AWS CloudWatch role when this resource
@@ -197,14 +197,14 @@ export interface RestApiBaseProps {
    *
    * @default - RemovalPolicy.RETAIN
    */
-  readonly cloudWatchRoleRemovalPolicy?: RemovalPolicy;
+  readonly cloudWatchRoleRemovalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Export name for the CfnOutput containing the API endpoint
    *
    * @default - when no export name is given, output will be created without export
    */
-  readonly endpointExportName?: string;
+  readonly endpointExportName?: string | undefined;
 
   /**
    * A list of the endpoint types of the API. Use this property when creating
@@ -212,7 +212,7 @@ export interface RestApiBaseProps {
    *
    * @default EndpointType.EDGE
    */
-  readonly endpointTypes?: EndpointType[];
+  readonly endpointTypes?: EndpointType[] | undefined;
 
   /**
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
@@ -220,7 +220,7 @@ export interface RestApiBaseProps {
    *
    * @default EndpointType.EDGE
    */
-  readonly endpointConfiguration?: EndpointConfiguration;
+  readonly endpointConfiguration?: EndpointConfiguration | undefined;
 
   /**
    * Specifies whether clients can invoke the API using the default execute-api
@@ -230,14 +230,14 @@ export interface RestApiBaseProps {
    *
    * @default false
    */
-  readonly disableExecuteApiEndpoint?: boolean;
+  readonly disableExecuteApiEndpoint?: boolean | undefined;
 
   /**
    * A description of the RestApi construct.
    *
    * @default - 'Automatically created by the RestApi construct'
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -258,7 +258,7 @@ export interface RestApiProps extends RestApiOptions {
    *
    * @default - RestApi supports only UTF-8-encoded text payloads.
    */
-  readonly binaryMediaTypes?: string[];
+  readonly binaryMediaTypes?: string[] | undefined;
 
   /**
    * A nullable integer that is used to enable compression (with non-negative
@@ -271,7 +271,7 @@ export interface RestApiProps extends RestApiOptions {
    * @default - Compression is disabled.
    * @deprecated - superseded by `minCompressionSize`
    */
-  readonly minimumCompressionSize?: number;
+  readonly minimumCompressionSize?: number | undefined;
 
   /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
@@ -283,14 +283,14 @@ export interface RestApiProps extends RestApiOptions {
    *
    * @default - Compression is disabled.
    */
-  readonly minCompressionSize?: Size;
+  readonly minCompressionSize?: Size | undefined;
 
   /**
    * The ID of the API Gateway RestApi resource that you want to clone.
    *
    * @default - None.
    */
-  readonly cloneFrom?: IRestApi;
+  readonly cloneFrom?: IRestApi | undefined;
 
   /**
    * The source of the API key for metering requests according to a usage
@@ -298,7 +298,7 @@ export interface RestApiProps extends RestApiOptions {
    *
    * @default - Metering is disabled.
    */
-  readonly apiKeySourceType?: ApiKeySourceType;
+  readonly apiKeySourceType?: ApiKeySourceType | undefined;
 }
 
 /**
@@ -317,7 +317,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    *
    * @default - SpecRestApi supports only UTF-8-encoded text payloads.
    */
-  readonly binaryMediaTypes?: string[];
+  readonly binaryMediaTypes?: string[] | undefined;
 
   /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
@@ -329,7 +329,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    *
    * @default - Compression is disabled.
    */
-  readonly minCompressionSize?: Size;
+  readonly minCompressionSize?: Size | undefined;
 
   /**
    * The Mode that determines how API Gateway handles resource updates.
@@ -350,7 +350,7 @@ export interface SpecRestApiProps extends RestApiBaseProps {
    *
    * @default - `merge` for REST APIs created after March 29, 2021, otherwise `overwrite`
    */
-  readonly mode?: RestApiMode;
+  readonly mode?: RestApiMode | undefined;
 }
 
 /**
@@ -876,7 +876,7 @@ export interface RestApiAttributes {
    *
    * @default - ID of the RestApi construct.
    */
-  readonly restApiName?: string;
+  readonly restApiName?: string | undefined;
 
   /**
    * The resource ID of the root resource.
@@ -1106,7 +1106,7 @@ export interface EndpointConfiguration {
    *
    * @default - no ALIASes are created for the endpoint.
    */
-  readonly vpcEndpoints?: ec2.IVpcEndpoint[];
+  readonly vpcEndpoints?: ec2.IVpcEndpoint[] | undefined;
 
   /**
    * The IP address types that can invoke the API.
@@ -1115,7 +1115,7 @@ export interface EndpointConfiguration {
    *
    * @default undefined - AWS default is DUAL_STACK for private API, IPV4 for all other APIs.
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 }
 
 /**
@@ -1179,7 +1179,7 @@ export enum RestApiMode {
 
 class RootResource extends ResourceBase {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.RootResource';
-  public readonly parentResource?: IResource;
+  public readonly parentResource?: IResource | undefined;
   public readonly api: RestApiBase;
   public readonly resourceId: string;
   public readonly path: string;
@@ -1187,7 +1187,7 @@ class RootResource extends ResourceBase {
   public readonly defaultMethodOptions?: MethodOptions | undefined;
   public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
-  private readonly _restApi?: RestApi;
+  private readonly _restApi?: RestApi | undefined;
 
   constructor(api: RestApiBase, props: ResourceOptions, resourceId: string) {
     super(api, 'Default');

@@ -13,7 +13,7 @@ interface SageMakerCreateModelOptions {
    *
    * @default - a role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
   /**
    * The name of the new model.
    */
@@ -28,21 +28,21 @@ interface SageMakerCreateModelOptions {
    *
    * @default - None
    */
-  readonly containers?: IContainerDefinition[];
+  readonly containers?: IContainerDefinition[] | undefined;
 
   /**
    * Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
    *
    * @default false
    */
-  readonly enableNetworkIsolation?: boolean;
+  readonly enableNetworkIsolation?: boolean | undefined;
 
   /**
    * The VPC that is accessible by the hosted model
    *
    * @default - None
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The subnets of the VPC to which the hosted model is connected
@@ -50,14 +50,14 @@ interface SageMakerCreateModelOptions {
    *
    * @default - Private Subnets are selected
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * Tags to be applied to the model.
    *
    * @default - No tags
    */
-  readonly tags?: sfn.TaskInput;
+  readonly tags?: sfn.TaskInput | undefined;
 }
 
 /**
@@ -125,12 +125,12 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
    */
   public readonly role: iam.IRole;
   public readonly grantPrincipal: iam.IPrincipal;
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  private readonly vpc?: ec2.IVpc;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  private readonly vpc?: ec2.IVpc | undefined;
   private securityGroup?: ec2.ISecurityGroup;
   private readonly securityGroups: ec2.ISecurityGroup[] = [];
-  private readonly subnets?: string[];
+  private readonly subnets?: string[] | undefined;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateModelProps) {

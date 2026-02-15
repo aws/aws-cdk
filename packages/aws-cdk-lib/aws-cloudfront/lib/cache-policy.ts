@@ -35,7 +35,7 @@ export interface CachePolicyProps {
    * The name must only include '-', '_', or alphanumeric characters.
    * @default - generated from the `id`
    */
-  readonly cachePolicyName?: string;
+  readonly cachePolicyName?: string | undefined;
 
   /**
    * A comment to describe the cache policy.
@@ -44,57 +44,57 @@ export interface CachePolicyProps {
    *
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * The default amount of time for objects to stay in the CloudFront cache.
    * Only used when the origin does not send Cache-Control or Expires headers with the object.
    * @default - The greater of 1 day and ``minTtl``
    */
-  readonly defaultTtl?: Duration;
+  readonly defaultTtl?: Duration | undefined;
 
   /**
    * The minimum amount of time for objects to stay in the CloudFront cache.
    * @default Duration.seconds(0)
    */
-  readonly minTtl?: Duration;
+  readonly minTtl?: Duration | undefined;
 
   /**
    * The maximum amount of time for objects to stay in the CloudFront cache.
    * CloudFront uses this value only when the origin sends Cache-Control or Expires headers with the object.
    * @default - The greater of 1 year and ``defaultTtl``
    */
-  readonly maxTtl?: Duration;
+  readonly maxTtl?: Duration | undefined;
 
   /**
    * Determines whether any cookies in viewer requests are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default CacheCookieBehavior.none()
    */
-  readonly cookieBehavior?: CacheCookieBehavior;
+  readonly cookieBehavior?: CacheCookieBehavior | undefined;
 
   /**
    * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default CacheHeaderBehavior.none()
    */
-  readonly headerBehavior?: CacheHeaderBehavior;
+  readonly headerBehavior?: CacheHeaderBehavior | undefined;
 
   /**
    * Determines whether any query strings are included in the cache key and automatically included in requests that CloudFront sends to the origin.
    * @default CacheQueryStringBehavior.none()
    */
-  readonly queryStringBehavior?: CacheQueryStringBehavior;
+  readonly queryStringBehavior?: CacheQueryStringBehavior | undefined;
 
   /**
    * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'gzip'.
    * @default false
    */
-  readonly enableAcceptEncodingGzip?: boolean;
+  readonly enableAcceptEncodingGzip?: boolean | undefined;
 
   /**
    * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'br'.
    * @default false
    */
-  readonly enableAcceptEncodingBrotli?: boolean;
+  readonly enableAcceptEncodingBrotli?: boolean | undefined;
 }
 
 /**
@@ -275,7 +275,7 @@ export class CacheCookieBehavior {
   /** The behavior of cookies: allow all, none, an allow list, or a deny list. */
   public readonly behavior: string;
   /** The cookies to allow or deny, if the behavior is an allow or deny list. */
-  public readonly cookies?: string[];
+  public readonly cookies?: string[] | undefined;
 
   private constructor(behavior: string, cookies?: string[]) {
     this.behavior = behavior;
@@ -300,7 +300,7 @@ export class CacheHeaderBehavior {
   /** If no headers will be passed, or an allow list of headers. */
   public readonly behavior: string;
   /** The headers for the allow/deny list, if applicable. */
-  public readonly headers?: string[];
+  public readonly headers?: string[] | undefined;
 
   private constructor(behavior: string, headers?: string[]) {
     this.behavior = behavior;
@@ -348,7 +348,7 @@ export class CacheQueryStringBehavior {
   /** The behavior of query strings -- allow all, none, only an allow list, or a deny list. */
   public readonly behavior: string;
   /** The query strings to allow or deny, if the behavior is an allow or deny list. */
-  public readonly queryStrings?: string[];
+  public readonly queryStrings?: string[] | undefined;
 
   private constructor(behavior: string, queryStrings?: string[]) {
     this.behavior = behavior;

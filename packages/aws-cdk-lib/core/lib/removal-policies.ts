@@ -15,14 +15,14 @@ export interface RemovalPolicyProps {
    * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket').
    * @default - apply to all resources
    */
-  readonly applyToResourceTypes?: string[];
+  readonly applyToResourceTypes?: string[] | undefined;
 
   /**
    * Exclude specific resource types from the removal policy.
    * Can be a CloudFormation resource type string (e.g., 'AWS::S3::Bucket').
    * @default - no exclusions
    */
-  readonly excludeResourceTypes?: string[];
+  readonly excludeResourceTypes?: string[] | undefined;
 
   /**
    * The priority to use when applying this policy.
@@ -36,7 +36,7 @@ export interface RemovalPolicyProps {
    *
    * @default - AspectPriority.MUTATING
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**

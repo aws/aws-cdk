@@ -75,7 +75,7 @@ export interface UserPoolDomainOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html
    * @default - not set if `cognitoDomain` is specified, otherwise, throws an error.
    */
-  readonly customDomain?: CustomDomainOptions;
+  readonly customDomain?: CustomDomainOptions | undefined;
 
   /**
    * Associate a cognito prefix domain with your user pool
@@ -83,7 +83,7 @@ export interface UserPoolDomainOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html
    * @default - not set if `customDomain` is specified, otherwise, throws an error.
    */
-  readonly cognitoDomain?: CognitoDomainOptions;
+  readonly cognitoDomain?: CognitoDomainOptions | undefined;
 
   /**
    * A version that indicates the state of managed login.
@@ -93,7 +93,7 @@ export interface UserPoolDomainOptions {
    *
    * @default undefined - Cognito default setting is ManagedLoginVersion.CLASSIC_HOSTED_UI
    */
-  readonly managedLoginVersion?: ManagedLoginVersion;
+  readonly managedLoginVersion?: ManagedLoginVersion | undefined;
 }
 
 /**
@@ -261,7 +261,7 @@ export interface BaseUrlOptions {
    *
    * @default return the standard URL
    */
-  readonly fips?: boolean;
+  readonly fips?: boolean | undefined;
 }
 
 /**
@@ -277,5 +277,5 @@ export interface SignInUrlOptions extends BaseUrlOptions {
    * The path in the URI where the sign-in page is located
    * @default '/login'
    */
-  readonly signInPath?: string;
+  readonly signInPath?: string | undefined;
 }

@@ -16,14 +16,14 @@ export interface FirehoseSubscriptionProps extends SubscriptionProps {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-large-payload-raw-message-delivery.html
    * @default false
    */
-  readonly rawMessageDelivery?: boolean;
+  readonly rawMessageDelivery?: boolean | undefined;
 
   /**
    * The role to assume to write messages to the Amazon Data Firehose delivery stream.
    *
    * @default - A new Role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

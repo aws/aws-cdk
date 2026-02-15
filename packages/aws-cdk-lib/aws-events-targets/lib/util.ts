@@ -21,7 +21,7 @@ export interface TargetBaseProps {
    *
    * @default - no dead-letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
   /**
    * The maximum age of a request that Lambda sends to a function for
    * processing.
@@ -31,7 +31,7 @@ export interface TargetBaseProps {
    *
    * @default Duration.hours(24)
    */
-  readonly maxEventAge?: Duration;
+  readonly maxEventAge?: Duration | undefined;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -41,7 +41,7 @@ export interface TargetBaseProps {
    *
    * @default 185
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 }
 
 /**

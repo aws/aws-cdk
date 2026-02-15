@@ -24,14 +24,14 @@ export interface WeightedTarget {
    *
    * @default 1
    */
-  readonly weight?: number;
+  readonly weight?: number | undefined;
 
   /**
    * The port to match from the request.
    *
    * @default - do not match on port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 }
 
 /**
@@ -43,7 +43,7 @@ export interface HttpRouteMatch {
    *
    * @default - matches requests with all paths
    */
-  readonly path?: HttpRoutePathMatch;
+  readonly path?: HttpRoutePathMatch | undefined;
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -51,21 +51,21 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly headers?: HeaderMatch[];
+  readonly headers?: HeaderMatch[] | undefined;
 
   /**
    * The HTTP client request method to match on.
    *
    * @default - do not match on request method
    */
-  readonly method?: HttpRouteMethod;
+  readonly method?: HttpRouteMethod | undefined;
 
   /**
    * The client request protocol to match on. Applicable only for HTTP2 routes.
    *
    * @default - do not match on HTTP2 request protocol
    */
-  readonly protocol?: HttpRouteProtocol;
+  readonly protocol?: HttpRouteProtocol | undefined;
 
   /**
    * The query parameters to match on.
@@ -73,14 +73,14 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on query parameters
    */
-  readonly queryParameters?: QueryParameterMatch[];
+  readonly queryParameters?: QueryParameterMatch[] | undefined;
 
   /**
    * The port to match from the request.
    *
    * @default - do not match on port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 }
 
 /**
@@ -108,7 +108,7 @@ export interface GrpcRouteMatch {
    *
    * @default - do not match on service name
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 
   /**
    * Create metadata based gRPC route match.
@@ -116,7 +116,7 @@ export interface GrpcRouteMatch {
    *
    * @default - do not match on metadata
    */
-  readonly metadata?: HeaderMatch[];
+  readonly metadata?: HeaderMatch[] | undefined;
 
   /**
    * The method name to match from the request.
@@ -124,14 +124,14 @@ export interface GrpcRouteMatch {
    *
    * @default - do not match on method name
    */
-  readonly methodName?: string;
+  readonly methodName?: string | undefined;
 
   /**
    * The port to match from the request.
    *
    * @default - do not match on port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 }
 
 /**
@@ -144,7 +144,7 @@ export interface RouteSpecOptionsBase {
    *
    * @default - no particular priority
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**
@@ -156,7 +156,7 @@ export interface HttpRouteSpecOptions extends RouteSpecOptionsBase {
    *
    * @default - matches on '/'
    */
-  readonly match?: HttpRouteMatch;
+  readonly match?: HttpRouteMatch | undefined;
 
   /**
    * List of targets that traffic is routed to when a request matches the route
@@ -168,14 +168,14 @@ export interface HttpRouteSpecOptions extends RouteSpecOptionsBase {
    *
    * @default - None
    */
-  readonly timeout?: HttpTimeout;
+  readonly timeout?: HttpTimeout | undefined;
 
   /**
    * The retry policy
    *
    * @default - no retry policy
    */
-  readonly retryPolicy?: HttpRetryPolicy;
+  readonly retryPolicy?: HttpRetryPolicy | undefined;
 }
 
 /**
@@ -188,7 +188,7 @@ export interface HttpRetryPolicy {
    *
    * @default - no retries for http events
    */
-  readonly httpRetryEvents?: HttpRetryEvent[];
+  readonly httpRetryEvents?: HttpRetryEvent[] | undefined;
 
   /**
    * The maximum number of retry attempts
@@ -208,7 +208,7 @@ export interface HttpRetryPolicy {
    *
    * @default - no retries for tcp events
    */
-  readonly tcpRetryEvents?: TcpRetryEvent[];
+  readonly tcpRetryEvents?: TcpRetryEvent[] | undefined;
 }
 
 /**
@@ -260,7 +260,7 @@ export interface TcpRouteSpecOptions extends RouteSpecOptionsBase {
    *
    * @default - None
    */
-  readonly timeout?: TcpTimeout;
+  readonly timeout?: TcpTimeout | undefined;
 }
 
 /**
@@ -277,7 +277,7 @@ export interface GrpcRouteSpecOptions extends RouteSpecOptionsBase {
    *
    * @default - None
    */
-  readonly timeout?: GrpcTimeout;
+  readonly timeout?: GrpcTimeout | undefined;
 
   /**
    * List of targets that traffic is routed to when a request matches the route
@@ -289,7 +289,7 @@ export interface GrpcRouteSpecOptions extends RouteSpecOptionsBase {
    *
    * @default - no retry policy
    */
-  readonly retryPolicy?: GrpcRetryPolicy;
+  readonly retryPolicy?: GrpcRetryPolicy | undefined;
 }
 
 /** gRPC retry policy */
@@ -300,7 +300,7 @@ export interface GrpcRetryPolicy extends HttpRetryPolicy {
    *
    * @default - no retries for gRPC events
    */
-  readonly grpcRetryEvents?: GrpcRetryEvent[];
+  readonly grpcRetryEvents?: GrpcRetryEvent[] | undefined;
 }
 
 /**
@@ -352,28 +352,28 @@ export interface RouteSpecConfig {
    *
    * @default - no http spec
    */
-  readonly httpRouteSpec?: CfnRoute.HttpRouteProperty;
+  readonly httpRouteSpec?: CfnRoute.HttpRouteProperty | undefined;
 
   /**
    * The spec for an http2 route
    *
    * @default - no http2 spec
    */
-  readonly http2RouteSpec?: CfnRoute.HttpRouteProperty;
+  readonly http2RouteSpec?: CfnRoute.HttpRouteProperty | undefined;
 
   /**
    * The spec for a grpc route
    *
    * @default - no grpc spec
    */
-  readonly grpcRouteSpec?: CfnRoute.GrpcRouteProperty;
+  readonly grpcRouteSpec?: CfnRoute.GrpcRouteProperty | undefined;
 
   /**
    * The spec for a tcp route
    *
    * @default - no tcp spec
    */
-  readonly tcpRouteSpec?: CfnRoute.TcpRouteProperty;
+  readonly tcpRouteSpec?: CfnRoute.TcpRouteProperty | undefined;
 
   /**
    * The priority for the route. When a Virtual Router has multiple routes, route match is performed in the
@@ -381,7 +381,7 @@ export interface RouteSpecConfig {
    *
    * @default - no particular priority
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**
@@ -425,17 +425,17 @@ export abstract class RouteSpec {
 }
 
 class HttpRouteSpec extends RouteSpec {
-  public readonly priority?: number;
+  public readonly priority?: number | undefined;
   public readonly protocol: Protocol;
-  public readonly match?: HttpRouteMatch;
-  public readonly timeout?: HttpTimeout;
+  public readonly match?: HttpRouteMatch | undefined;
+  public readonly timeout?: HttpTimeout | undefined;
 
   public readonly weightedTargets: WeightedTarget[];
 
   /**
    * The retry policy
    */
-  public readonly retryPolicy?: HttpRetryPolicy;
+  public readonly retryPolicy?: HttpRetryPolicy | undefined;
 
   constructor(props: HttpRouteSpecOptions, protocol: Protocol) {
     super();
@@ -498,7 +498,7 @@ class TcpRouteSpec extends RouteSpec {
   /**
    * The priority for the route.
    */
-  public readonly priority?: number;
+  public readonly priority?: number | undefined;
 
   /*
    * List of targets that traffic is routed to when a request matches the route
@@ -508,7 +508,7 @@ class TcpRouteSpec extends RouteSpec {
   /**
    * The criteria for determining a timeout configuration
    */
-  public readonly timeout?: TcpTimeout;
+  public readonly timeout?: TcpTimeout | undefined;
 
   constructor(props: TcpRouteSpecOptions) {
     super();
@@ -534,16 +534,16 @@ class GrpcRouteSpec extends RouteSpec {
   /**
    * The priority for the route.
    */
-  public readonly priority?: number;
+  public readonly priority?: number | undefined;
 
   public readonly weightedTargets: WeightedTarget[];
   public readonly match: GrpcRouteMatch;
-  public readonly timeout?: GrpcTimeout;
+  public readonly timeout?: GrpcTimeout | undefined;
 
   /**
    * The retry policy.
    */
-  public readonly retryPolicy?: GrpcRetryPolicy;
+  public readonly retryPolicy?: GrpcRetryPolicy | undefined;
 
   constructor(props: GrpcRouteSpecOptions) {
     super();

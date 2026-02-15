@@ -21,10 +21,10 @@ export const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
 
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */
 export interface DatabaseS3ImportExportProps {
-  readonly s3ImportRole?: iam.IRole;
-  readonly s3ImportBuckets?: s3.IBucket[];
-  readonly s3ExportRole?: iam.IRole;
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ImportRole?: iam.IRole | undefined;
+  readonly s3ImportBuckets?: s3.IBucket[] | undefined;
+  readonly s3ExportRole?: iam.IRole | undefined;
+  readonly s3ExportBuckets?: s3.IBucket[] | undefined;
 }
 
 /**

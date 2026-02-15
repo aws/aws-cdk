@@ -23,14 +23,14 @@ export interface ShellStepProps {
    *
    * @default - No installation commands
    */
-  readonly installCommands?: string[];
+  readonly installCommands?: string[] | undefined;
 
   /**
    * Environment variables to set
    *
    * @default - No environment variables
    */
-  readonly env?: Record<string, string>;
+  readonly env?: Record<string, string> | undefined;
 
   /**
    * Set environment variables based on Stack Outputs
@@ -42,7 +42,7 @@ export interface ShellStepProps {
    *
    * @default - No environment variables created from stack outputs
    */
-  readonly envFromCfnOutputs?: Record<string, CfnOutput>;
+  readonly envFromCfnOutputs?: Record<string, CfnOutput> | undefined;
 
   /**
    * FileSet to run these scripts on
@@ -53,7 +53,7 @@ export interface ShellStepProps {
    *
    * @default - No input specified
    */
-  readonly input?: IFileSetProducer;
+  readonly input?: IFileSetProducer | undefined;
 
   /**
    * Additional FileSets to put in other directories
@@ -78,7 +78,7 @@ export interface ShellStepProps {
    *
    * @default - No additional inputs
    */
-  readonly additionalInputs?: Record<string, IFileSetProducer>;
+  readonly additionalInputs?: Record<string, IFileSetProducer> | undefined;
 
   /**
    * The directory that will contain the primary output fileset
@@ -88,7 +88,7 @@ export interface ShellStepProps {
    *
    * @default - No primary output
    */
-  readonly primaryOutputDirectory?: string;
+  readonly primaryOutputDirectory?: string | undefined;
 }
 
 /**

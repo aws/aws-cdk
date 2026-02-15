@@ -32,7 +32,7 @@ export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * Execution role for this task definition
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * What launch types this task definition should be compatible with.
@@ -80,7 +80,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default - Automatically generated name.
    */
-  readonly family?: string;
+  readonly family?: string | undefined;
 
   /**
    * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs on your behalf.
@@ -89,21 +89,21 @@ export interface CommonTaskDefinitionProps {
    *
    * @default - An execution role will be automatically created if you use ECR images in your task definition.
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default - A task role is automatically created for you.
    */
-  readonly taskRole?: iam.IRole;
+  readonly taskRole?: iam.IRole | undefined;
 
   /**
    * The configuration details for the App Mesh proxy.
    *
    * @default - No proxy configuration.
    */
-  readonly proxyConfiguration?: ProxyConfiguration;
+  readonly proxyConfiguration?: ProxyConfiguration | undefined;
 
   /**
    * The list of volume definitions for the task. For more information, see
@@ -111,7 +111,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
-  readonly volumes?: Volume[];
+  readonly volumes?: Volume[] | undefined;
 
   /**
    * Enables fault injection and allows for fault injection requests to be accepted from the task's containers.
@@ -120,7 +120,7 @@ export interface CommonTaskDefinitionProps {
    *
    * @default undefined - ECS default setting is false
    */
-  readonly enableFaultInjection?: boolean;
+  readonly enableFaultInjection?: boolean | undefined;
 }
 
 /**
@@ -134,7 +134,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - NetworkMode.Bridge for EC2 & External tasks, AwsVpc for Fargate tasks.
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 
   /**
    * The placement constraints to use for tasks in the service.
@@ -146,7 +146,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - No placement constraints.
    */
-  readonly placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[] | undefined;
 
   /**
    * The task launch type compatibility requirement.
@@ -176,7 +176,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - CPU units are not specified.
    */
-  readonly cpu?: string;
+  readonly cpu?: string | undefined;
 
   /**
    * The amount (in MiB) of memory used by the task.
@@ -201,7 +201,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - Memory used by task is not specified.
    */
-  readonly memoryMiB?: string;
+  readonly memoryMiB?: string | undefined;
 
   /**
    * The IPC resource namespace to use for the containers in the task.
@@ -210,7 +210,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - IpcMode used by the task is not specified
    */
-  readonly ipcMode?: IpcMode;
+  readonly ipcMode?: IpcMode | undefined;
 
   /**
    * The process namespace to use for the containers in the task.
@@ -224,7 +224,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - PidMode used by the task is not specified
    */
-  readonly pidMode?: PidMode;
+  readonly pidMode?: PidMode | undefined;
 
   /**
    * The inference accelerators to use for the containers in the task.
@@ -234,7 +234,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No inference accelerators.
    * @deprecated ECS TaskDefinition's inferenceAccelerator is EOL since April 2024
    */
-  readonly inferenceAccelerators?: InferenceAccelerator[];
+  readonly inferenceAccelerators?: InferenceAccelerator[] | undefined;
 
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
@@ -243,7 +243,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
-  readonly ephemeralStorageGiB?: number;
+  readonly ephemeralStorageGiB?: number | undefined;
 
   /**
    * The operating system that your task definitions are running on.
@@ -252,7 +252,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - Undefined.
    */
-  readonly runtimePlatform?: RuntimePlatform;
+  readonly runtimePlatform?: RuntimePlatform | undefined;
 }
 
 /**
@@ -269,14 +269,14 @@ export interface CommonTaskDefinitionAttributes {
    *
    * @default Network mode cannot be provided to the imported task.
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default Permissions cannot be granted to the imported task.
    */
-  readonly taskRole?: iam.IRole;
+  readonly taskRole?: iam.IRole | undefined;
 
   /**
    * The IAM role that grants containers and Fargate agents permission to make AWS API calls on your behalf.
@@ -285,7 +285,7 @@ export interface CommonTaskDefinitionAttributes {
    *
    * @default - undefined
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 }
 
 /**
@@ -297,7 +297,7 @@ export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes
    *
    * @default Compatibility.EC2_AND_FARGATE
    */
-  readonly compatibility?: Compatibility;
+  readonly compatibility?: Compatibility | undefined;
 }
 
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
@@ -305,7 +305,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
-  public abstract readonly executionRole?: iam.IRole;
+  public abstract readonly executionRole?: iam.IRole | undefined;
 
   /**
    * A reference to this task definition.
@@ -418,7 +418,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    *
    * Only supported in Fargate platform version 1.4.0 or later.
    */
-  public readonly ephemeralStorageGiB?: number;
+  public readonly ephemeralStorageGiB?: number | undefined;
 
   /**
    * The process namespace to use for the containers in the task.
@@ -429,7 +429,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    * then runtimePlatform.operatingSystemFamily must also be specified.  For more
    * information, see [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_definition_pidmode).
    */
-  public readonly pidMode?: PidMode;
+  public readonly pidMode?: PidMode | undefined;
 
   /**
    * The container definitions.
@@ -457,9 +457,9 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private runtimePlatform?: RuntimePlatform;
 
-  private readonly _cpu?: string;
+  private readonly _cpu?: string | undefined;
 
-  private readonly _memory?: string;
+  private readonly _memory?: string | undefined;
 
   /**
    * Constructs a new instance of the TaskDefinition class.
@@ -1098,13 +1098,13 @@ export interface InferenceAccelerator {
    * The Elastic Inference accelerator device name.
    * @default - empty
    */
-  readonly deviceName?: string;
+  readonly deviceName?: string | undefined;
 
   /**
    * The Elastic Inference accelerator type to use. The allowed values are: eia2.medium, eia2.large and eia2.xlarge.
    * @default - empty
    */
-  readonly deviceType?: string;
+  readonly deviceType?: string | undefined;
 }
 
 /**
@@ -1125,7 +1125,7 @@ export interface Volume {
    * daemon assigns a host path for your data volume. However, the data is not guaranteed to persist
    * after the containers associated with it stop running.
    */
-  readonly host?: Host;
+  readonly host?: Host | undefined;
 
   /**
    * The name of the volume.
@@ -1140,7 +1140,7 @@ export interface Volume {
    *
    * @default false
    */
-  readonly configuredAtLaunch?: boolean;
+  readonly configuredAtLaunch?: boolean | undefined;
 
   /**
    * This property is specified when you are using Docker volumes.
@@ -1149,7 +1149,7 @@ export interface Volume {
    * Windows containers only support the use of the local driver.
    * To use bind mounts, specify a host instead.
    */
-  readonly dockerVolumeConfiguration?: DockerVolumeConfiguration;
+  readonly dockerVolumeConfiguration?: DockerVolumeConfiguration | undefined;
 
   /**
    * This property is specified when you are using Amazon EFS.
@@ -1162,7 +1162,7 @@ export interface Volume {
    *
    * @default No Elastic FileSystem is setup
    */
-  readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
+  readonly efsVolumeConfiguration?: EfsVolumeConfiguration | undefined;
 }
 
 /**
@@ -1176,7 +1176,7 @@ export interface Host {
    *
    * This property is not supported for tasks that use the Fargate launch type.
    */
-  readonly sourcePath?: string;
+  readonly sourcePath?: string | undefined;
 }
 
 /**
@@ -1210,21 +1210,21 @@ export interface LoadBalancerTargetOptions {
    *
    * @default - Container port of the first added port mapping.
    */
-  readonly containerPort?: number;
+  readonly containerPort?: number | undefined;
 
   /**
    * The protocol used for the port mapping. Only applicable when using application load balancers.
    *
    * @default Protocol.TCP
    */
-  readonly protocol?: Protocol;
+  readonly protocol?: Protocol | undefined;
 
   /**
    * Alternate target configuration for blue/green deployments.
    *
    * @default - No alternate target configuration
    */
-  readonly alternateTarget?: IAlternateTarget;
+  readonly alternateTarget?: IAlternateTarget | undefined;
 }
 
 /**
@@ -1237,7 +1237,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default false
    */
-  readonly autoprovision?: boolean;
+  readonly autoprovision?: boolean | undefined;
   /**
    * The Docker volume driver to use.
    */
@@ -1247,13 +1247,13 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: { [key: string]: string };
+  readonly driverOpts?: { [key: string]: string } | undefined;
   /**
    * Custom metadata to add to your Docker volume.
    *
    * @default No labels
    */
-  readonly labels?: { [key: string]: string };
+  readonly labels?: { [key: string]: string } | undefined;
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */
@@ -1272,7 +1272,7 @@ export interface AuthorizationConfig {
    *
    * @default No id
    */
-  readonly accessPointId?: string;
+  readonly accessPointId?: string | undefined;
   /**
    * Whether or not to use the Amazon ECS task IAM role defined
    * in a task definition when mounting the Amazon EFS file system.
@@ -1282,7 +1282,7 @@ export interface AuthorizationConfig {
    *
    * @default If this parameter is omitted, the default value of DISABLED is used.
    */
-  readonly iam?: string;
+  readonly iam?: string | undefined;
 }
 
 /**
@@ -1299,7 +1299,7 @@ export interface EfsVolumeConfiguration {
    *
    * @default The root of the Amazon EFS volume
    */
-  readonly rootDirectory?: string;
+  readonly rootDirectory?: string | undefined;
   /**
    * Whether or not to enable encryption for Amazon EFS data in transit between
    * the Amazon ECS host and the Amazon EFS server.
@@ -1309,20 +1309,20 @@ export interface EfsVolumeConfiguration {
    *
    * @default DISABLED
    */
-  readonly transitEncryption?: string;
+  readonly transitEncryption?: string | undefined;
   /**
    * The port to use when sending encrypted data between
    * the Amazon ECS host and the Amazon EFS server. EFS mount helper uses.
    *
    * @default Port selection strategy that the Amazon EFS mount helper uses.
    */
-  readonly transitEncryptionPort?: number;
+  readonly transitEncryptionPort?: number | undefined;
   /**
    * The authorization configuration details for the Amazon EFS file system.
    *
    * @default No configuration.
    */
-  readonly authorizationConfig?: AuthorizationConfig;
+  readonly authorizationConfig?: AuthorizationConfig | undefined;
 }
 
 /**

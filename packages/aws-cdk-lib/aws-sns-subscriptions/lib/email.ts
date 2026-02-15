@@ -11,7 +11,7 @@ export interface EmailSubscriptionProps extends SubscriptionProps {
    *
    * @default false (Message text)
    */
-  readonly json?: boolean;
+  readonly json?: boolean | undefined;
 }
 
 /**

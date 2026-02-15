@@ -26,14 +26,14 @@ export interface TaskProps {
    *
    * @default - The construct ID will be used as state name
    */
-  readonly stateName?: string;
+  readonly stateName?: string | undefined;
 
   /**
    * An optional description for this state
    *
    * @default No comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * JSONPath expression to select part of the state to be the input to this state.
@@ -43,7 +43,7 @@ export interface TaskProps {
    *
    * @default $
    */
-  readonly inputPath?: string;
+  readonly inputPath?: string | undefined;
 
   /**
    * JSONPath expression to select part of the state to be the output to this state.
@@ -53,7 +53,7 @@ export interface TaskProps {
    *
    * @default $
    */
-  readonly outputPath?: string;
+  readonly outputPath?: string | undefined;
 
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -63,7 +63,7 @@ export interface TaskProps {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * Parameters to invoke the task with
@@ -87,7 +87,7 @@ export interface TaskProps {
    *
    * @default - Use the parameters implied by the `task` property
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 
   /**
    * Maximum run time of this state
@@ -96,7 +96,7 @@ export interface TaskProps {
    *
    * @default 60
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 }
 
 /**
@@ -113,7 +113,7 @@ export interface TaskProps {
  */
 export class Task extends State implements INextable {
   public readonly endStates: INextable[];
-  private readonly timeout?: cdk.Duration;
+  private readonly timeout?: cdk.Duration | undefined;
   private readonly taskProps: StepFunctionsTaskConfig;
 
   constructor(scope: Construct, id: string, props: TaskProps) {

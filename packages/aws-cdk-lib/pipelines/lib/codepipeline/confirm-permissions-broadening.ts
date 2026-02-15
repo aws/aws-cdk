@@ -25,7 +25,7 @@ export interface PermissionsBroadeningCheckProps {
    *
    * @default - no notification
    */
-  readonly notificationTopic?: sns.ITopic;
+  readonly notificationTopic?: sns.ITopic | undefined;
 }
 
 /**

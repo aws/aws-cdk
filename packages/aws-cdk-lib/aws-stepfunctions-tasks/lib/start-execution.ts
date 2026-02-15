@@ -17,7 +17,7 @@ export interface StartExecutionProps {
    *
    * @default - No input
    */
-  readonly input?: { [key: string]: any };
+  readonly input?: { [key: string]: any } | undefined;
 
   /**
    * The name of the execution, same as that of StartExecution.
@@ -26,7 +26,7 @@ export interface StartExecutionProps {
    *
    * @default - None
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The service integration pattern indicates different ways to call StartExecution to Step Functions.
@@ -35,7 +35,7 @@ export interface StartExecutionProps {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 }
 
 /**

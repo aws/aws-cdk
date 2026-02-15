@@ -54,7 +54,7 @@ export interface MatchFailure {
    *
    * @default 1
    */
-  readonly cost?: number;
+  readonly cost?: number | undefined;
 }
 
 /**

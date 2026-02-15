@@ -24,7 +24,7 @@ export interface UserPoolIdentityProviderAmazonProps extends UserPoolIdentityPro
    * @see https://developer.amazon.com/docs/login-with-amazon/customer-profile.html
    * @default [ profile ]
    */
-  readonly scopes?: string[];
+  readonly scopes?: string[] | undefined;
 }
 
 /**

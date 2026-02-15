@@ -45,14 +45,14 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - "prod"
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 
   /**
    * The CloudWatch Logs log group or Firehose delivery stream where to write access logs.
    *
    * @default - No destination
    */
-  readonly accessLogDestination?: IAccessLogDestination;
+  readonly accessLogDestination?: IAccessLogDestination | undefined;
 
   /**
    * A single line format of access logs of data, as specified by selected $content variables.
@@ -63,27 +63,27 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - Common Log Format
    */
-  readonly accessLogFormat?: AccessLogFormat;
+  readonly accessLogFormat?: AccessLogFormat | undefined;
 
   /**
    * Specifies whether Amazon X-Ray tracing is enabled for this method.
    *
    * @default false
    */
-  readonly tracingEnabled?: boolean;
+  readonly tracingEnabled?: boolean | undefined;
 
   /**
    * Indicates whether cache clustering is enabled for the stage.
    *
    * @default - Disabled for the stage.
    */
-  readonly cacheClusterEnabled?: boolean;
+  readonly cacheClusterEnabled?: boolean | undefined;
 
   /**
    * The stage's cache cluster size.
    * @default 0.5
    */
-  readonly cacheClusterSize?: string;
+  readonly cacheClusterSize?: string | undefined;
 
   /**
    * The identifier of the client certificate that API Gateway uses to call
@@ -91,21 +91,21 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - None.
    */
-  readonly clientCertificateId?: string;
+  readonly clientCertificateId?: string | undefined;
 
   /**
    * A description of the purpose of the stage.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The version identifier of the API documentation snapshot.
    *
    * @default - No documentation version.
    */
-  readonly documentationVersion?: string;
+  readonly documentationVersion?: string | undefined;
 
   /**
    * A map that defines the stage variables. Variable names must consist of
@@ -114,7 +114,7 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - No stage variables.
    */
-  readonly variables?: { [key: string]: string };
+  readonly variables?: { [key: string]: string } | undefined;
 
   /**
    * Method deployment options for specific resources/methods. These will
@@ -126,7 +126,7 @@ export interface StageOptions extends MethodDeploymentOptions {
    *
    * @default - Common options will be used.
    */
-  readonly methodOptions?: { [path: string]: MethodDeploymentOptions };
+  readonly methodOptions?: { [path: string]: MethodDeploymentOptions } | undefined;
 }
 
 export interface StageProps extends StageOptions {
@@ -148,7 +148,7 @@ export interface MethodDeploymentOptions {
    *
    * @default false
    */
-  readonly metricsEnabled?: boolean;
+  readonly metricsEnabled?: boolean | undefined;
 
   /**
    * Specifies the logging level for this method, which effects the log
@@ -156,7 +156,7 @@ export interface MethodDeploymentOptions {
    *
    * @default - Off
    */
-  readonly loggingLevel?: MethodLoggingLevel;
+  readonly loggingLevel?: MethodLoggingLevel | undefined;
 
   /**
    * Specifies whether data trace logging is enabled for this method.
@@ -166,7 +166,7 @@ export interface MethodDeploymentOptions {
    *
    * @default false
    */
-  readonly dataTraceEnabled?: boolean;
+  readonly dataTraceEnabled?: boolean | undefined;
 
   /**
    * Specifies the throttling burst limit.
@@ -175,7 +175,7 @@ export interface MethodDeploymentOptions {
    *
    * @default - No additional restriction.
    */
-  readonly throttlingBurstLimit?: number;
+  readonly throttlingBurstLimit?: number | undefined;
 
   /**
    * Specifies the throttling rate limit.
@@ -184,7 +184,7 @@ export interface MethodDeploymentOptions {
    *
    * @default - No additional restriction.
    */
-  readonly throttlingRateLimit?: number;
+  readonly throttlingRateLimit?: number | undefined;
 
   /**
    * Specifies whether responses should be cached and returned for requests. A
@@ -192,7 +192,7 @@ export interface MethodDeploymentOptions {
    *
    * @default - Caching is Disabled.
    */
-  readonly cachingEnabled?: boolean;
+  readonly cachingEnabled?: boolean | undefined;
 
   /**
    * Specifies the time to live (TTL), in seconds, for cached responses. The
@@ -201,14 +201,14 @@ export interface MethodDeploymentOptions {
    *
    * @default Duration.minutes(5)
    */
-  readonly cacheTtl?: Duration;
+  readonly cacheTtl?: Duration | undefined;
 
   /**
    * Indicates whether the cached responses are encrypted.
    *
    * @default false
    */
-  readonly cacheDataEncrypted?: boolean;
+  readonly cacheDataEncrypted?: boolean | undefined;
 }
 
 /**

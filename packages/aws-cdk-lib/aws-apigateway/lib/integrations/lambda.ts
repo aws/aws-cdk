@@ -13,7 +13,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    *
    * @default true
    */
-  readonly proxy?: boolean;
+  readonly proxy?: boolean | undefined;
 
   /**
    * Allow invoking method from AWS Console UI (for testing purposes).
@@ -27,7 +27,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    *
    * @default true
    */
-  readonly allowTestInvoke?: boolean;
+  readonly allowTestInvoke?: boolean | undefined;
 
   /**
    * Scope the permission for invoking the AWS Lambda down to the specific method
@@ -41,7 +41,7 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
    *
    * @default true
    */
-  readonly scopePermissionToMethod?: boolean;
+  readonly scopePermissionToMethod?: boolean | undefined;
 }
 
 /**

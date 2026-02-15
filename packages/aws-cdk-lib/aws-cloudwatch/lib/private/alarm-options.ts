@@ -15,7 +15,7 @@ export interface CreateAlarmOptionsBase {
    * @default - The period from the metric
    * @deprecated Use `metric.with({ period: ... })` to encode the period into the Metric object
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * What function to use for aggregating.
@@ -34,21 +34,21 @@ export interface CreateAlarmOptionsBase {
    * @default - The statistic from the metric
    * @deprecated Use `metric.with({ statistic: ... })` to encode the period into the Metric object
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * Name of the alarm
    *
    * @default Automatically generated name
    */
-  readonly alarmName?: string;
+  readonly alarmName?: string | undefined;
 
   /**
    * Description for the alarm
    *
    * @default No description
    */
-  readonly alarmDescription?: string;
+  readonly alarmDescription?: string | undefined;
 
   /**
    * The number of periods over which data is compared to the specified threshold.
@@ -62,21 +62,21 @@ export interface CreateAlarmOptionsBase {
    *
    * @default - Not configured.
    */
-  readonly evaluateLowSampleCountPercentile?: string;
+  readonly evaluateLowSampleCountPercentile?: string | undefined;
 
   /**
    * Sets how this alarm is to handle missing data points.
    *
    * @default TreatMissingData.Missing
    */
-  readonly treatMissingData?: TreatMissingData;
+  readonly treatMissingData?: TreatMissingData | undefined;
 
   /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
    */
-  readonly actionsEnabled?: boolean;
+  readonly actionsEnabled?: boolean | undefined;
 
   /**
    * The number of datapoints that must be breaching to trigger the alarm. This is used only if you are setting an "M
@@ -87,5 +87,5 @@ export interface CreateAlarmOptionsBase {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
    */
-  readonly datapointsToAlarm?: number;
+  readonly datapointsToAlarm?: number | undefined;
 }

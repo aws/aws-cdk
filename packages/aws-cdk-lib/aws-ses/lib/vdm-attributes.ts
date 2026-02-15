@@ -27,14 +27,14 @@ export interface VdmAttributesProps {
    *
    * @default true
    */
-  readonly engagementMetrics?: boolean;
+  readonly engagementMetrics?: boolean | undefined;
 
   /**
    * Whether optimized shared delivery is enabled for your account
    *
    * @default true
    */
-  readonly optimizedSharedDelivery?: boolean;
+  readonly optimizedSharedDelivery?: boolean | undefined;
 }
 
 /**

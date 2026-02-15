@@ -25,21 +25,21 @@ export interface LayerVersionOptions {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The SPDX licence identifier or URL to the license file for this layer.
    *
    * @default - No license information will be recorded.
    */
-  readonly license?: string;
+  readonly license?: string | undefined;
 
   /**
    * The name of the layer.
    *
    * @default - A name will be generated.
    */
-  readonly layerVersionName?: string;
+  readonly layerVersionName?: string | undefined;
 
   /**
    * Whether to retain this version of the layer when a new version is added
@@ -47,7 +47,7 @@ export interface LayerVersionOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 export interface LayerVersionProps extends LayerVersionOptions {
@@ -56,13 +56,13 @@ export interface LayerVersionProps extends LayerVersionOptions {
    *
    * @default - All runtimes are supported.
    */
-  readonly compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[] | undefined;
 
   /**
    * The system architectures compatible with this layer.
    * @default [Architecture.X86_64]
    */
-  readonly compatibleArchitectures?: Architecture[];
+  readonly compatibleArchitectures?: Architecture[] | undefined;
 
   /**
    * The content of this Layer.
@@ -84,7 +84,7 @@ export interface ILayerVersion extends IResource, ILayerVersionRef {
    *
    * @default - All supported runtimes. Setting this to Runtime.ALL is equivalent to leaving it undefined.
    */
-  readonly compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[] | undefined;
 
   /**
    * Add permission for this layer version to specific entities. Usage within
@@ -105,7 +105,7 @@ export interface ILayerVersion extends IResource, ILayerVersionRef {
  */
 abstract class LayerVersionBase extends Resource implements ILayerVersion {
   public abstract readonly layerVersionArn: string;
-  public abstract readonly compatibleRuntimes?: Runtime[];
+  public abstract readonly compatibleRuntimes?: Runtime[] | undefined;
 
   public get layerVersionRef(): LayerVersionReference {
     return {
@@ -142,7 +142,7 @@ export interface LayerVersionPermission {
    *
    * Can only be specified if ``accountId`` is ``'*'``
    */
-  readonly organizationId?: string;
+  readonly organizationId?: string | undefined;
 }
 
 /**
@@ -157,7 +157,7 @@ export interface LayerVersionAttributes {
   /**
    * The list of compatible runtimes with this Layer.
    */
-  readonly compatibleRuntimes?: Runtime[];
+  readonly compatibleRuntimes?: Runtime[] | undefined;
 }
 
 /**
@@ -199,7 +199,7 @@ export class LayerVersion extends LayerVersionBase {
   }
 
   public readonly layerVersionArn: string;
-  public readonly compatibleRuntimes?: Runtime[];
+  public readonly compatibleRuntimes?: Runtime[] | undefined;
 
   constructor(scope: Construct, id: string, props: LayerVersionProps) {
     super(scope, id, {

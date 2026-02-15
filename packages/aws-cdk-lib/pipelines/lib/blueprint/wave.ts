@@ -11,14 +11,14 @@ export interface WaveProps {
    *
    * @default - No additional steps
    */
-  readonly pre?: Step[];
+  readonly pre?: Step[] | undefined;
 
   /**
    * Additional steps to run after all of the stages in the wave
    *
    * @default - No additional steps
    */
-  readonly post?: Step[];
+  readonly post?: Step[] | undefined;
 }
 
 /**
@@ -83,21 +83,21 @@ export interface AddStageOpts {
    *
    * @default - No additional steps
    */
-  readonly pre?: Step[];
+  readonly pre?: Step[] | undefined;
 
   /**
    * Additional steps to run after all of the stacks in the stage
    *
    * @default - No additional steps
    */
-  readonly post?: Step[];
+  readonly post?: Step[] | undefined;
 
   /**
    * Instructions for stack level steps
    *
    * @default - No additional instructions
    */
-  readonly stackSteps?: StackSteps[];
+  readonly stackSteps?: StackSteps[] | undefined;
 }
 
 /**
@@ -109,12 +109,12 @@ export interface WaveOptions {
    *
    * @default - No additional steps
    */
-  readonly pre?: Step[];
+  readonly pre?: Step[] | undefined;
 
   /**
    * Additional steps to run after all of the stages in the wave
    *
    * @default - No additional steps
    */
-  readonly post?: Step[];
+  readonly post?: Step[] | undefined;
 }

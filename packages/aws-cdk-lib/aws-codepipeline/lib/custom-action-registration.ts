@@ -18,7 +18,7 @@ export interface CustomActionProperty {
    *
    * @default the description will be empty
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Whether this property is a key.
@@ -26,7 +26,7 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-key
    */
-  readonly key?: boolean;
+  readonly key?: boolean | undefined;
 
   /**
    * Whether this property is queryable.
@@ -35,7 +35,7 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-queryable
    */
-  readonly queryable?: boolean;
+  readonly queryable?: boolean | undefined;
 
   /**
    * Whether this property is required.
@@ -48,7 +48,7 @@ export interface CustomActionProperty {
    *
    * @default false
    */
-  readonly secret?: boolean;
+  readonly secret?: boolean | undefined;
 
   /**
    * The type of the property,
@@ -56,7 +56,7 @@ export interface CustomActionProperty {
    *
    * @default 'String'
    */
-  readonly type?: string;
+  readonly type?: string | undefined;
 }
 
 /**
@@ -84,26 +84,26 @@ export interface CustomActionRegistrationProps {
    *
    * @default '1'
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 
   /**
    * The URL shown for the entire Action in the Pipeline UI.
    * @default none
    */
-  readonly entityUrl?: string;
+  readonly entityUrl?: string | undefined;
 
   /**
    * The URL shown for a particular execution of an Action in the Pipeline UI.
    * @default none
    */
-  readonly executionUrl?: string;
+  readonly executionUrl?: string | undefined;
 
   /**
    * The properties used for customizing the instance of your Action.
    *
    * @default []
    */
-  readonly actionProperties?: CustomActionProperty[];
+  readonly actionProperties?: CustomActionProperty[] | undefined;
 }
 
 /**

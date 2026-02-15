@@ -30,7 +30,7 @@ interface DynamoGetItemOptions {
    *
    * @default false
    */
-  readonly consistentRead?: boolean;
+  readonly consistentRead?: boolean | undefined;
 
   /**
    * One or more substitution tokens for attribute names in an expression
@@ -39,7 +39,7 @@ interface DynamoGetItemOptions {
    *
    * @default - No expression attributes
    */
-  readonly expressionAttributeNames?: { [key: string]: string };
+  readonly expressionAttributeNames?: { [key: string]: string } | undefined;
 
   /**
    * An array of DynamoProjectionExpression that identifies one or more attributes to retrieve from the table.
@@ -49,7 +49,7 @@ interface DynamoGetItemOptions {
    *
    * @default - No projection expression
    */
-  readonly projectionExpression?: DynamoProjectionExpression[];
+  readonly projectionExpression?: DynamoProjectionExpression[] | undefined;
 
   /**
    * Determines the level of detail about provisioned throughput consumption that is returned in the response
@@ -58,7 +58,7 @@ interface DynamoGetItemOptions {
    *
    * @default DynamoConsumedCapacity.NONE
    */
-  readonly returnConsumedCapacity?: DynamoConsumedCapacity;
+  readonly returnConsumedCapacity?: DynamoConsumedCapacity | undefined;
 }
 
 /**
@@ -94,8 +94,8 @@ export class DynamoGetItem extends sfn.TaskStateBase {
     return new DynamoGetItem(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
   }
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: DynamoGetItemProps) {
     super(scope, id, props);

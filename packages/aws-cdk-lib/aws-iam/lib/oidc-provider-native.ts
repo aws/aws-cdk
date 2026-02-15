@@ -51,7 +51,7 @@ export interface OidcProviderNativeProps {
    *
    * @default - A name is automatically generated.
    */
-  readonly oidcProviderName?: string;
+  readonly oidcProviderName?: string | undefined;
 
   /**
    * The URL of the identity provider. The URL must begin with https:// and
@@ -82,7 +82,7 @@ export interface OidcProviderNativeProps {
    *
    * @default - no clients are allowed
    */
-  readonly clientIds?: string[];
+  readonly clientIds?: string[] | undefined;
 
   /**
    * A list of server certificate thumbprints for the OpenID Connect (OIDC)
@@ -111,14 +111,14 @@ export interface OidcProviderNativeProps {
    * @default - no thumbprints are allowed. IAM will retrieve and use thumbprint
    * of idenity provider server cerctificate
    */
-  readonly thumbprints?: string[];
+  readonly thumbprints?: string[] | undefined;
 
   /**
    * The removal policy to apply to the OpenID Connect Provider.
    *
    * @default - RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

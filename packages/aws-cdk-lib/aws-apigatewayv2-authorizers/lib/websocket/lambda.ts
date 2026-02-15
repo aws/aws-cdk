@@ -23,7 +23,7 @@ export interface WebSocketLambdaAuthorizerProps {
    * The name of the authorizer
    * @default - same value as `id` passed in the constructor.
    */
-  readonly authorizerName?: string;
+  readonly authorizerName?: string | undefined;
 
   /**
    * The identity source for which authorization is requested.
@@ -34,7 +34,7 @@ export interface WebSocketLambdaAuthorizerProps {
    *
    * @default ['route.request.header.Authorization']
    */
-  readonly identitySource?: string[];
+  readonly identitySource?: string[] | undefined;
 }
 
 /**

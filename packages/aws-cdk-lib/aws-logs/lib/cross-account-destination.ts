@@ -18,7 +18,7 @@ export interface CrossAccountDestinationProps {
    *
    * @default Automatically generated
    */
-  readonly destinationName?: string;
+  readonly destinationName?: string | undefined;
 
   /**
    * The role to assume that grants permissions to write to 'target'.

@@ -19,7 +19,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default 80
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    *  If the service that you specify contains a template for an A record, the IPv4 address that you want AWS Cloud
@@ -27,7 +27,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default none
    */
-  readonly ipv4?: string;
+  readonly ipv4?: string | undefined;
 
   /**
    *  If the service that you specify contains a template for an AAAA record, the IPv6 address that you want AWS Cloud
@@ -35,7 +35,7 @@ export interface IpInstanceBaseProps extends BaseInstanceProps {
    *
    * @default none
    */
-  readonly ipv6?: string;
+  readonly ipv6?: string | undefined;
 }
 
 /*

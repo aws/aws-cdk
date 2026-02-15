@@ -38,7 +38,7 @@ export interface TagCondition {
    *
    * @default STRING_EQUALS
    */
-  readonly operation?: TagOperation;
+  readonly operation?: TagOperation | undefined;
 
   /**
    * The value in a key-value pair.
@@ -135,17 +135,17 @@ export class BackupResource {
   /**
    * A resource
    */
-  public readonly resource?: string;
+  public readonly resource?: string | undefined;
 
   /**
    * A condition on a tag
    */
-  public readonly tagCondition?: TagCondition;
+  public readonly tagCondition?: TagCondition | undefined;
 
   /**
    * A construct
    */
-  public readonly construct?: Construct;
+  public readonly construct?: Construct | undefined;
 
   constructor(resource?: string, tagCondition?: TagCondition, construct?: Construct) {
     this.resource = resource;

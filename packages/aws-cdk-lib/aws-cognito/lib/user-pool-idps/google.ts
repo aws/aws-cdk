@@ -22,19 +22,19 @@ export interface UserPoolIdentityProviderGoogleProps extends UserPoolIdentityPro
    * @default none
    * @deprecated use clientSecretValue instead
    */
-  readonly clientSecret?: string;
+  readonly clientSecret?: string | undefined;
   /**
    * The client secret to be accompanied with clientId for Google APIs to authenticate the client as SecretValue
    * @see https://developers.google.com/identity/sign-in/web/sign-in
    * @default none
    */
-  readonly clientSecretValue?: SecretValue;
+  readonly clientSecretValue?: SecretValue | undefined;
   /**
    * The list of Google permissions to obtain for getting access to the Google profile
    * @see https://developers.google.com/identity/sign-in/web/sign-in
    * @default [ profile ]
    */
-  readonly scopes?: string[];
+  readonly scopes?: string[] | undefined;
 }
 
 /**

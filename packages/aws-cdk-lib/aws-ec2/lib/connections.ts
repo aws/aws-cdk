@@ -39,21 +39,21 @@ export interface ConnectionsProps {
    *
    * @default Derived from securityGroup if set.
    */
-  readonly peer?: IPeer;
+  readonly peer?: IPeer | undefined;
 
   /**
    * What securityGroup(s) this object is managing connections for
    *
    * @default No security groups
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * Default port range for initiating connections to and from this object
    *
    * @default - No default port
    */
-  readonly defaultPort?: Port;
+  readonly defaultPort?: Port | undefined;
 }
 
 /**
@@ -73,7 +73,7 @@ export class Connections implements IConnectable {
   /**
    * The default port configured for this connection peer, if available
    */
-  public readonly defaultPort?: Port;
+  public readonly defaultPort?: Port | undefined;
 
   /**
    * Underlying securityGroup for this Connections object, if present

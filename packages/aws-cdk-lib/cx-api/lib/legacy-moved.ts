@@ -377,7 +377,7 @@ export declare class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * SNS Topics that will receive stack events.
    */
-  readonly notificationArns?: string[];
+  readonly notificationArns?: string[] | undefined;
   /**
    * The physical name of this stack.
    */
@@ -403,13 +403,13 @@ export declare class CloudFormationStackArtifact extends CloudArtifact {
    *
    * @default - No role is assumed (current credentials are used)
    */
-  readonly assumeRoleArn?: string;
+  readonly assumeRoleArn?: string | undefined;
   /**
    * External ID to use when assuming role for cloudformation deployments
    *
    * @default - No external ID
    */
-  readonly assumeRoleExternalId?: string;
+  readonly assumeRoleExternalId?: string | undefined;
   /**
    * Additional options to pass to STS when assuming the role for cloudformation deployments.
    *
@@ -428,41 +428,41 @@ export declare class CloudFormationStackArtifact extends CloudArtifact {
    *
    * @default - No role is passed (currently assumed role/credentials are used)
    */
-  readonly cloudFormationExecutionRoleArn?: string;
+  readonly cloudFormationExecutionRoleArn?: string | undefined;
   /**
    * The role to use to look up values from the target AWS account
    *
    * @default - No role is assumed (current credentials are used)
    */
-  readonly lookupRole?: cxschema.BootstrapRole;
+  readonly lookupRole?: cxschema.BootstrapRole | undefined;
   /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying
    */
-  readonly stackTemplateAssetObjectUrl?: string;
+  readonly stackTemplateAssetObjectUrl?: string | undefined;
   /**
    * Version of bootstrap stack required to deploy this stack
    *
    * @default - No bootstrap stack required
    */
-  readonly requiresBootstrapStackVersion?: number;
+  readonly requiresBootstrapStackVersion?: number | undefined;
   /**
    * Name of SSM parameter with bootstrap stack version
    *
    * @default - Discover SSM parameter by reading stack
    */
-  readonly bootstrapStackVersionSsmParameter?: string;
+  readonly bootstrapStackVersionSsmParameter?: string | undefined;
   /**
    * Whether termination protection is enabled for this stack.
    */
-  readonly terminationProtection?: boolean;
+  readonly terminationProtection?: boolean | undefined;
   /**
    * Whether this stack should be validated by the CLI after synthesis
    *
    * @default - false
    */
-  readonly validateOnSynth?: boolean;
+  readonly validateOnSynth?: boolean | undefined;
   private _template;
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest);
   /**
@@ -511,7 +511,7 @@ export declare class AssetManifestArtifact extends CloudArtifact {
    *
    * @default - Discover SSM parameter by reading stack
    */
-  readonly bootstrapStackVersionSsmParameter?: string;
+  readonly bootstrapStackVersionSsmParameter?: string | undefined;
   private _contents?;
   constructor(assembly: CloudAssembly, name: string, artifact: cxschema.ArtifactManifest);
   /**
@@ -689,13 +689,13 @@ export interface CloudAssemblyBuilderProps {
    *
    * @default - Same as the manifest outdir
    */
-  readonly assetOutdir?: string;
+  readonly assetOutdir?: string | undefined;
   /**
    * If this builder is for a nested assembly, the parent assembly builder
    *
    * @default - This is a root assembly
    */
-  readonly parentBuilder?: CloudAssemblyBuilder;
+  readonly parentBuilder?: CloudAssemblyBuilder | undefined;
 }
 
 export interface AssemblyBuildOptions {
@@ -705,7 +705,7 @@ export interface AssemblyBuildOptions {
    * @deprecated All template modifications that should result from this should
    * have already been inserted into the template.
    */
-  readonly runtimeInfo?: RuntimeInfo;
+  readonly runtimeInfo?: RuntimeInfo | undefined;
 }
 
 /**
@@ -863,7 +863,7 @@ export interface VpcSubnet {
    *
    * @default - CIDR information not available
    */
-  readonly cidr?: string;
+  readonly cidr?: string | undefined;
 }
 /**
  * A group of subnets returned by the VPC provider.
@@ -902,7 +902,7 @@ export interface VpcContextResponse {
    *
    * @default - CIDR information not available
    */
-  readonly vpcCidrBlock?: string;
+  readonly vpcCidrBlock?: string | undefined;
   /**
    * AZs
    */
@@ -912,59 +912,59 @@ export interface VpcContextResponse {
    *
    * Element count: #(availabilityZones) · #(publicGroups)
    */
-  readonly publicSubnetIds?: string[];
+  readonly publicSubnetIds?: string[] | undefined;
   /**
    * Name of public subnet groups
    *
    * Element count: #(publicGroups)
    */
-  readonly publicSubnetNames?: string[];
+  readonly publicSubnetNames?: string[] | undefined;
   /**
    * Route Table IDs of public subnet groups.
    *
    * Element count: #(availabilityZones) · #(publicGroups)
    */
-  readonly publicSubnetRouteTableIds?: string[];
+  readonly publicSubnetRouteTableIds?: string[] | undefined;
   /**
    * IDs of all private subnets
    *
    * Element count: #(availabilityZones) · #(privateGroups)
    */
-  readonly privateSubnetIds?: string[];
+  readonly privateSubnetIds?: string[] | undefined;
   /**
    * Name of private subnet groups
    *
    * Element count: #(privateGroups)
    */
-  readonly privateSubnetNames?: string[];
+  readonly privateSubnetNames?: string[] | undefined;
   /**
    * Route Table IDs of private subnet groups.
    *
    * Element count: #(availabilityZones) · #(privateGroups)
    */
-  readonly privateSubnetRouteTableIds?: string[];
+  readonly privateSubnetRouteTableIds?: string[] | undefined;
   /**
    * IDs of all isolated subnets
    *
    * Element count: #(availabilityZones) · #(isolatedGroups)
    */
-  readonly isolatedSubnetIds?: string[];
+  readonly isolatedSubnetIds?: string[] | undefined;
   /**
    * Name of isolated subnet groups
    *
    * Element count: #(isolatedGroups)
    */
-  readonly isolatedSubnetNames?: string[];
+  readonly isolatedSubnetNames?: string[] | undefined;
   /**
    * Route Table IDs of isolated subnet groups.
    *
    * Element count: #(availabilityZones) · #(isolatedGroups)
    */
-  readonly isolatedSubnetRouteTableIds?: string[];
+  readonly isolatedSubnetRouteTableIds?: string[] | undefined;
   /**
    * The VPN gateway ID
    */
-  readonly vpnGatewayId?: string;
+  readonly vpnGatewayId?: string | undefined;
   /**
    * The subnet groups discovered for the given VPC.
    * Unlike the above properties, this will include asymmetric subnets,
@@ -974,19 +974,19 @@ export interface VpcContextResponse {
    *
    * @default - no subnet groups will be returned unless `VpcContextQuery.returnAsymmetricSubnets` is true
    */
-  readonly subnetGroups?: VpcSubnetGroup[];
+  readonly subnetGroups?: VpcSubnetGroup[] | undefined;
   /**
    * The region in which the VPC is in.
    *
    * @default - Region of the parent stack
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
   /**
    * The ID of the AWS account that owns the VPC.
    *
    * @default the account id of the parent stack
    */
-  readonly ownerAccountId?: string;
+  readonly ownerAccountId?: string | undefined;
 }
 
 /**
@@ -1080,15 +1080,15 @@ export interface EndpointServiceAvailabilityZonesContextQuery {
   /**
    * Query account
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
   /**
    * Query region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
   /**
    * Query service name
    */
-  readonly serviceName?: string;
+  readonly serviceName?: string | undefined;
 }
 
 /**
@@ -1122,11 +1122,11 @@ export interface AwsCloudFormationStackProperties {
    * The name to use for the CloudFormation stack.
    * @default - name derived from artifact ID
    */
-  readonly stackName?: string;
+  readonly stackName?: string | undefined;
   /**
    * Whether to enable termination protection for this stack.
    *
    * @default false
    */
-  readonly terminationProtection?: boolean;
+  readonly terminationProtection?: boolean | undefined;
 }

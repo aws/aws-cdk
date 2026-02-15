@@ -21,7 +21,7 @@ export interface TaskStateBaseOptions {
    * @default - None
    * @deprecated use `taskTimeout`
    */
-  readonly timeout?: cdk.Duration;
+  readonly timeout?: cdk.Duration | undefined;
 
   /**
    * Timeout for the task
@@ -31,7 +31,7 @@ export interface TaskStateBaseOptions {
    *
    * @default - None
    */
-  readonly taskTimeout?: Timeout;
+  readonly taskTimeout?: Timeout | undefined;
 
   /**
    * Timeout for the heartbeat
@@ -39,7 +39,7 @@ export interface TaskStateBaseOptions {
    * @default - None
    * @deprecated use `heartbeatTimeout`
    */
-  readonly heartbeat?: cdk.Duration;
+  readonly heartbeat?: cdk.Duration | undefined;
 
   /**
    * Timeout for the heartbeat
@@ -49,7 +49,7 @@ export interface TaskStateBaseOptions {
    *
    * @default - None
    */
-  readonly heartbeatTimeout?: Timeout;
+  readonly heartbeatTimeout?: Timeout | undefined;
 
   /**
    * AWS Step Functions integrates with services directly in the Amazon States Language.
@@ -64,7 +64,7 @@ export interface TaskStateBaseOptions {
    *  `BatchSubmitJob`, `EmrAddStep`, `EmrCreateCluster`, `EmrTerminationCluster`, and `EmrContainersStartJobRun`.
    *
    */
-  readonly integrationPattern?: IntegrationPattern;
+  readonly integrationPattern?: IntegrationPattern | undefined;
 
   /**
    * Credentials for an IAM Role that the State Machine assumes for executing the task.
@@ -74,7 +74,7 @@ export interface TaskStateBaseOptions {
    *
    * @default - None (Task is executed using the State Machine's execution role)
    */
-  readonly credentials?: Credentials;
+  readonly credentials?: Credentials | undefined;
 }
 
 interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
@@ -86,7 +86,7 @@ interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -100,7 +100,7 @@ interface TaskStateJsonPathBaseOptions extends JsonPathCommonOptions {
    *
    * @default - None
    */
-  readonly resultSelector?: { [key: string]: any };
+  readonly resultSelector?: { [key: string]: any } | undefined;
 }
 
 /**
@@ -132,14 +132,14 @@ export interface TaskStateBaseProps extends StateBaseProps, TaskStateBaseOptions
 export abstract class TaskStateBase extends State implements INextable {
   public readonly endStates: INextable[];
 
-  protected abstract readonly taskMetrics?: TaskMetricsConfig;
-  protected abstract readonly taskPolicies?: iam.PolicyStatement[];
+  protected abstract readonly taskMetrics?: TaskMetricsConfig | undefined;
+  protected abstract readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
-  private readonly timeout?: cdk.Duration;
-  private readonly taskTimeout?: Timeout;
-  private readonly heartbeat?: cdk.Duration;
-  private readonly heartbeatTimeout?: Timeout;
-  private readonly credentials?: Credentials;
+  private readonly timeout?: cdk.Duration | undefined;
+  private readonly taskTimeout?: Timeout | undefined;
+  private readonly heartbeat?: cdk.Duration | undefined;
+  private readonly heartbeatTimeout?: Timeout | undefined;
+  private readonly credentials?: Credentials | undefined;
 
   constructor(scope: Construct, id: string, props: TaskStateBaseProps) {
     super(scope, id, props);
@@ -362,21 +362,21 @@ export interface TaskMetricsConfig {
    *
    * @default - No such metrics
    */
-  readonly metricPrefixSingular?: string;
+  readonly metricPrefixSingular?: string | undefined;
 
   /**
    * Prefix for plural metric names of activity actions
    *
    * @default - No such metrics
    */
-  readonly metricPrefixPlural?: string;
+  readonly metricPrefixPlural?: string | undefined;
 
   /**
    * The dimensions to attach to metrics
    *
    * @default - No metrics
    */
-  readonly metricDimensions?: cloudwatch.DimensionHash;
+  readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
 }
 
 /**
@@ -443,15 +443,15 @@ export abstract class Timeout {
   /**
    * Seconds for this timeout
    */
-  public abstract readonly seconds?: number;
+  public abstract readonly seconds?: number | undefined;
 
   /**
    * JSONata expression for this timeout
    */
-  public abstract readonly jsonataExpression?: string;
+  public abstract readonly jsonataExpression?: string | undefined;
 
   /**
    * Path for this timeout
    */
-  public abstract readonly path?: string;
+  public abstract readonly path?: string | undefined;
 }

@@ -17,7 +17,7 @@ export interface GitPushFilter extends GitFilter {
    *
    * @default - no tags.
    */
-  readonly tagsExcludes?: string[];
+  readonly tagsExcludes?: string[] | undefined;
 
   /**
    * The list of patterns of Git tags that, when pushed, are to be included as
@@ -30,7 +30,7 @@ export interface GitPushFilter extends GitFilter {
    *
    * @default - no tags.
    */
-  readonly tagsIncludes?: string[];
+  readonly tagsIncludes?: string[] | undefined;
 }
 
 /**
@@ -44,7 +44,7 @@ export interface GitPullRequestFilter extends GitFilter {
    *
    * @default - all events.
    */
-  readonly events?: GitPullRequestEvent[];
+  readonly events?: GitPullRequestEvent[] | undefined;
 }
 
 /**
@@ -62,7 +62,7 @@ interface GitFilter {
    *
    * @default - no branches.
    */
-  readonly branchesExcludes?: string[];
+  readonly branchesExcludes?: string[] | undefined;
 
   /**
    * The list of patterns of Git branches that, when pull request events occurs, are
@@ -75,7 +75,7 @@ interface GitFilter {
    *
    * @default - no branches.
    */
-  readonly branchesIncludes?: string[];
+  readonly branchesIncludes?: string[] | undefined;
 
   /**
    * The list of patterns of Git repository file paths that, when pull request events occurs,
@@ -88,7 +88,7 @@ interface GitFilter {
    *
    * @default - no filePaths.
    */
-  readonly filePathsExcludes?: string[];
+  readonly filePathsExcludes?: string[] | undefined;
 
   /**
    * The list of patterns of Git repository file paths that, when pull request events occurs,
@@ -101,7 +101,7 @@ interface GitFilter {
    *
    * @default - no filePaths.
    */
-  readonly filePathsIncludes?: string[];
+  readonly filePathsIncludes?: string[] | undefined;
 }
 
 /**
@@ -149,7 +149,7 @@ export interface GitConfiguration {
    *
    * @default - no filter.
    */
-  readonly pushFilter?: GitPushFilter[];
+  readonly pushFilter?: GitPushFilter[] | undefined;
 
   /**
    * The field where the repository event that will start the pipeline
@@ -159,7 +159,7 @@ export interface GitConfiguration {
    *
    * @default - no filter.
    */
-  readonly pullRequestFilter?: GitPullRequestFilter[];
+  readonly pullRequestFilter?: GitPullRequestFilter[] | undefined;
 }
 
 /**
@@ -188,7 +188,7 @@ export interface TriggerProps {
    *
    * @default - no configuration.
    */
-  readonly gitConfiguration?: GitConfiguration;
+  readonly gitConfiguration?: GitConfiguration | undefined;
 }
 
 /**

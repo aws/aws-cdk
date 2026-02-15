@@ -14,14 +14,14 @@ export interface ResourcePolicyProps {
    * Name of the log group resource policy
    * @default - Uses a unique id based on the construct path
    */
-  readonly resourcePolicyName?: string;
+  readonly resourcePolicyName?: string | undefined;
 
   /**
    * Initial statements to add to the resource policy
    *
    * @default - No statements
    */
-  readonly policyStatements?: PolicyStatement[];
+  readonly policyStatements?: PolicyStatement[] | undefined;
 }
 
 /**

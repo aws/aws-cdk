@@ -23,14 +23,14 @@ export interface SendToQueueProps {
    *
    * @default Default value of the queue is used
    */
-  readonly delay?: Duration;
+  readonly delay?: Duration | undefined;
 
   /**
    * The token used for deduplication of sent messages.
    *
    * @default Use content-based deduplication
    */
-  readonly messageDeduplicationId?: string;
+  readonly messageDeduplicationId?: string | undefined;
 
   /**
    * The tag that specifies that a message belongs to a specific message group.
@@ -40,7 +40,7 @@ export interface SendToQueueProps {
    *
    * @default No group ID
    */
-  readonly messageGroupId?: string;
+  readonly messageGroupId?: string | undefined;
 
   /**
    * The service integration pattern indicates different ways to call SendMessage to SQS.
@@ -49,7 +49,7 @@ export interface SendToQueueProps {
    *
    * @default FIRE_AND_FORGET
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 }
 
 /**

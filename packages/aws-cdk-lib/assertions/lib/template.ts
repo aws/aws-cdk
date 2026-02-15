@@ -315,7 +315,7 @@ export interface TemplateParsingOptions {
    *
    * @default false
    */
-  readonly skipCyclicalDependenciesCheck?: boolean;
+  readonly skipCyclicalDependenciesCheck?: boolean | undefined;
 }
 
 function toTemplate(stack: Stack): any {

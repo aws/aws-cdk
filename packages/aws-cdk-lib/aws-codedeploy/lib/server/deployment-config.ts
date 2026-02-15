@@ -30,7 +30,7 @@ export interface ServerDeploymentConfigProps extends BaseDeploymentConfigOptions
    *
    * @default - deploy your application to a random selection of hosts across a Region
    */
-  readonly zonalConfig?: ZonalConfig;
+  readonly zonalConfig?: ZonalConfig | undefined;
 }
 
 /**

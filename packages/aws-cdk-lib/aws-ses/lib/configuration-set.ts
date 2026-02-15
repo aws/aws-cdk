@@ -30,14 +30,14 @@ export interface ConfigurationSetProps {
    *
    * @default - a CloudFormation generated name
    */
-  readonly configurationSetName?: string;
+  readonly configurationSetName?: string | undefined;
 
   /**
    * The dedicated IP pool to associate with the configuration set
    *
    * @default - do not use a dedicated IP pool
    */
-  readonly dedicatedIpPool?: IDedicatedIpPoolRef;
+  readonly dedicatedIpPool?: IDedicatedIpPoolRef | undefined;
 
   /**
    * Specifies whether messages that use the configuration set are required to
@@ -45,7 +45,7 @@ export interface ConfigurationSetProps {
    *
    * @default ConfigurationSetTlsPolicy.OPTIONAL
    */
-  readonly tlsPolicy?: ConfigurationSetTlsPolicy;
+  readonly tlsPolicy?: ConfigurationSetTlsPolicy | undefined;
 
   /**
    * Whether to publish reputation metrics for the configuration set, such as
@@ -53,14 +53,14 @@ export interface ConfigurationSetProps {
    *
    * @default true
    */
-  readonly reputationMetrics?: boolean;
+  readonly reputationMetrics?: boolean | undefined;
 
   /**
    * Whether email sending is enabled
    *
    * @default true
    */
-  readonly sendingEnabled?: boolean;
+  readonly sendingEnabled?: boolean | undefined;
 
   /**
    * The reasons for which recipient email addresses should be automatically added
@@ -68,7 +68,7 @@ export interface ConfigurationSetProps {
    *
    * @default - use account level settings
    */
-  readonly suppressionReasons?: SuppressionReasons;
+  readonly suppressionReasons?: SuppressionReasons | undefined;
 
   /**
    * If true, account-level suppression list is disabled; email sent with this configuration set
@@ -76,7 +76,7 @@ export interface ConfigurationSetProps {
    *
    * @default false
    */
-  readonly disableSuppressionList?: boolean;
+  readonly disableSuppressionList?: boolean | undefined;
 
   /**
    * The custom subdomain that is used to redirect email recipients to the
@@ -84,21 +84,21 @@ export interface ConfigurationSetProps {
    *
    * @default - use the default awstrack.me domain
    */
-  readonly customTrackingRedirectDomain?: string;
+  readonly customTrackingRedirectDomain?: string | undefined;
 
   /**
    * The https policy to use for tracking open and click events.
    *
    * @default - HttpsPolicy.OPTIONAL if customTrackingRedirectDomain is set, otherwise undefined
    */
-  readonly customTrackingHttpsPolicy?: HttpsPolicy;
+  readonly customTrackingHttpsPolicy?: HttpsPolicy | undefined;
 
   /**
    * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
    *
    * @default - VDM options not configured at the configuration set level. In this case, use account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
    */
-  readonly vdmOptions?: VdmOptions;
+  readonly vdmOptions?: VdmOptions | undefined;
 
   /**
    * The maximum amount of time that Amazon SES API v2 will attempt delivery of email.
@@ -107,7 +107,7 @@ export interface ConfigurationSetProps {
    *
    * @default undefined - SES defaults to 14 hours
    */
-  readonly maxDeliveryDuration?: Duration;
+  readonly maxDeliveryDuration?: Duration | undefined;
 }
 
 /**
@@ -119,14 +119,14 @@ export interface VdmOptions {
    *
    * @default - Engagement metrics not configured at the configuration set level. In this case, use account level settings.
    */
-  readonly engagementMetrics?: boolean;
+  readonly engagementMetrics?: boolean | undefined;
 
   /**
    * If true, optimized shared delivery is enabled for the configuration set
    *
    * @default - Optimized shared delivery not configured at the configuration set level. In this case, use account level settings.
    */
-  readonly optimizedSharedDelivery?: boolean;
+  readonly optimizedSharedDelivery?: boolean | undefined;
 }
 
 /**

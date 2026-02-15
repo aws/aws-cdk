@@ -24,7 +24,7 @@ export interface PrivateCertificateProps {
    *
    * @default - No additional FQDNs will be included as alternative domain names.
    */
-  readonly subjectAlternativeNames?: string[];
+  readonly subjectAlternativeNames?: string[] | undefined;
 
   /**
    * Private certificate authority (CA) that will be used to issue the certificate.
@@ -41,7 +41,7 @@ export interface PrivateCertificateProps {
    *
    * @default KeyAlgorithm.RSA_2048
    */
-  readonly keyAlgorithm?: KeyAlgorithm;
+  readonly keyAlgorithm?: KeyAlgorithm | undefined;
 
   /**
    * Enable or disable export of this certificate.
@@ -51,7 +51,7 @@ export interface PrivateCertificateProps {
    *
    * @default false
    */
-  readonly allowExport?: boolean;
+  readonly allowExport?: boolean | undefined;
 }
 
 /**

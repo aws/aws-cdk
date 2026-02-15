@@ -21,7 +21,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-s3
    * @default - The default file extension appended by Data Format Conversion or S3 compression features
    */
-  readonly fileExtension?: string;
+  readonly fileExtension?: string | undefined;
 
   /**
    * The time zone you prefer.
@@ -30,7 +30,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default - UTC
    */
-  readonly timeZone?: cdk.TimeZone;
+  readonly timeZone?: cdk.TimeZone | undefined;
 
   /**
    * The input format, output format, and schema config for converting data from the JSON format to the Parquet or ORC format before writing to Amazon S3.
@@ -38,7 +38,7 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default no data format conversion is done
    */
-  readonly dataFormatConversion?: DataFormatConversionProps;
+  readonly dataFormatConversion?: DataFormatConversionProps | undefined;
 }
 
 /**
@@ -52,7 +52,7 @@ export interface DataFormatConversionProps {
    *
    * @default `true`
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The schema configuration to use in converting the input format to output format

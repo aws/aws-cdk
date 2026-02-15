@@ -23,21 +23,21 @@ export interface FileSystemConfig {
    *
    * @default - no dependency
    */
-  readonly dependency?: IDependable[];
+  readonly dependency?: IDependable[] | undefined;
 
   /**
    * connections object used to allow ingress traffic from lambda function
    *
    * @default - no connections required to add extra ingress rules for Lambda function
    */
-  readonly connections?: Connections;
+  readonly connections?: Connections | undefined;
 
   /**
    * additional IAM policies required for the lambda function
    *
    * @default - no additional policies required
    */
-  readonly policies?: iam.PolicyStatement[];
+  readonly policies?: iam.PolicyStatement[] | undefined;
 }
 
 /**

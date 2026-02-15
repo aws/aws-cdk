@@ -13,21 +13,21 @@ export interface MetricWidgetProps {
    *
    * @default - None
    */
-  readonly title?: string;
+  readonly title?: string | undefined;
 
   /**
    * The region the metrics of this graph should be taken from
    *
    * @default - Current region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Width of the widget, in a grid of 24 units wide
    *
    * @default 6
    */
-  readonly width?: number;
+  readonly width?: number | undefined;
 
   /**
    * Height of the widget
@@ -35,7 +35,7 @@ export interface MetricWidgetProps {
    * @default - 6 for Alarm and Graph widgets.
    *   3 for single value widgets where most recent value of a metric is displayed.
    */
-  readonly height?: number;
+  readonly height?: number | undefined;
 
   /**
    * The AWS account ID where the metrics are located.
@@ -49,7 +49,7 @@ export interface MetricWidgetProps {
    *
    * @default - Current account
    */
-  readonly accountId?: string;
+  readonly accountId?: string | undefined;
 }
 
 /**
@@ -61,28 +61,28 @@ export interface YAxisProps {
    *
    * @default - Auto
    */
-  readonly min?: number;
+  readonly min?: number | undefined;
 
   /**
    * The max value
    *
    * @default - Auto
    */
-  readonly max?: number;
+  readonly max?: number | undefined;
 
   /**
    * The label
    *
    * @default - No label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Whether to show units
    *
    * @default true
    */
-  readonly showUnits?: boolean;
+  readonly showUnits?: boolean | undefined;
 }
 
 /**
@@ -99,7 +99,7 @@ export interface AlarmWidgetProps extends MetricWidgetProps {
    *
    * @default - No minimum or maximum values for the left Y-axis
    */
-  readonly leftYAxis?: YAxisProps;
+  readonly leftYAxis?: YAxisProps | undefined;
 }
 
 /**
@@ -163,35 +163,35 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default - No metrics
    */
-  readonly metrics?: IMetric[];
+  readonly metrics?: IMetric[] | undefined;
 
   /**
    * Annotations for the left Y axis
    *
    * @default - No annotations
    */
-  readonly annotations?: HorizontalAnnotation[];
+  readonly annotations?: HorizontalAnnotation[] | undefined;
 
   /**
    * Left Y axis
    *
    * @default {min:0,max:100}
    */
-  readonly leftYAxis?: YAxisProps;
+  readonly leftYAxis?: YAxisProps | undefined;
 
   /**
    * Position of the legend
    *
    * @default - bottom
    */
-  readonly legendPosition?: LegendPosition;
+  readonly legendPosition?: LegendPosition | undefined;
 
   /**
    * Whether the graph should show live data
    *
    * @default false
    */
-  readonly liveData?: boolean;
+  readonly liveData?: boolean | undefined;
 
   /**
    * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
@@ -201,7 +201,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default false
    */
-  readonly setPeriodToTimeRange?: boolean;
+  readonly setPeriodToTimeRange?: boolean | undefined;
 
   /**
    * The default period for all metrics in this widget.
@@ -210,7 +210,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default cdk.Duration.seconds(300)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * The default statistic to be displayed for each metric.
@@ -218,7 +218,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default - The statistic for each metric is used
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * The start of the time range to use for each widget independently from those of the dashboard.
@@ -230,7 +230,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the start time will be the default time range.
    */
-  readonly start?: string;
+  readonly start?: string | undefined;
 
   /**
    * The end of the time range to use for each widget independently from those of the dashboard.
@@ -239,7 +239,7 @@ export interface GaugeWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the end date will be the current time.
    */
-  readonly end?: string;
+  readonly end?: string | undefined;
 }
 
 /**
@@ -314,84 +314,84 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default - No metrics
    */
-  readonly left?: IMetric[];
+  readonly left?: IMetric[] | undefined;
 
   /**
    * Metrics to display on right Y axis
    *
    * @default - No metrics
    */
-  readonly right?: IMetric[];
+  readonly right?: IMetric[] | undefined;
 
   /**
    * Annotations for the left Y axis
    *
    * @default - No annotations
    */
-  readonly leftAnnotations?: HorizontalAnnotation[];
+  readonly leftAnnotations?: HorizontalAnnotation[] | undefined;
 
   /**
    * Annotations for the right Y axis
    *
    * @default - No annotations
    */
-  readonly rightAnnotations?: HorizontalAnnotation[];
+  readonly rightAnnotations?: HorizontalAnnotation[] | undefined;
 
   /**
    * Annotations for the X axis
    *
    * @default - No annotations
    */
-  readonly verticalAnnotations?: VerticalAnnotation[];
+  readonly verticalAnnotations?: VerticalAnnotation[] | undefined;
 
   /**
    * Whether the graph should be shown as stacked lines
    *
    * @default false
    */
-  readonly stacked?: boolean;
+  readonly stacked?: boolean | undefined;
 
   /**
    * Left Y axis
    *
    * @default - None
    */
-  readonly leftYAxis?: YAxisProps;
+  readonly leftYAxis?: YAxisProps | undefined;
 
   /**
    * Right Y axis
    *
    * @default - None
    */
-  readonly rightYAxis?: YAxisProps;
+  readonly rightYAxis?: YAxisProps | undefined;
 
   /**
    * Position of the legend
    *
    * @default - bottom
    */
-  readonly legendPosition?: LegendPosition;
+  readonly legendPosition?: LegendPosition | undefined;
 
   /**
    * Whether the graph should show live data
    *
    * @default false
    */
-  readonly liveData?: boolean;
+  readonly liveData?: boolean | undefined;
 
   /**
    * Whether the graph should show labels on the chart. Currently only applicable for Pie charts.
    *
    * @default false
    */
-  readonly displayLabelsOnChart?: boolean;
+  readonly displayLabelsOnChart?: boolean | undefined;
 
   /**
    * Display this metric
    *
    * @default TimeSeries
    */
-  readonly view?: GraphWidgetView;
+  readonly view?: GraphWidgetView | undefined;
 
   /**
    * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
@@ -401,7 +401,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default false
    */
-  readonly setPeriodToTimeRange?: boolean;
+  readonly setPeriodToTimeRange?: boolean | undefined;
 
   /**
    * The default period for all metrics in this widget.
@@ -410,7 +410,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default cdk.Duration.seconds(300)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * The default statistic to be displayed for each metric.
@@ -418,7 +418,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default - The statistic for each metric is used
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * The start of the time range to use for each widget independently from those of the dashboard.
@@ -430,7 +430,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the start time will be the default time range.
    */
-  readonly start?: string;
+  readonly start?: string | undefined;
 
   /**
    * The end of the time range to use for each widget independently from those of the dashboard.
@@ -439,7 +439,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the end date will be the current time.
    */
-  readonly end?: string;
+  readonly end?: string | undefined;
 }
 
 /**
@@ -593,21 +593,21 @@ export interface TableSummaryProps {
    *
    * @default - No summary columns will be shown
    */
-  readonly columns?: TableSummaryColumn[];
+  readonly columns?: TableSummaryColumn[] | undefined;
 
   /**
    * Make the summary columns sticky, so that they remain in view while scrolling
    *
    * @default - false
    */
-  readonly sticky?: boolean;
+  readonly sticky?: boolean | undefined;
 
   /**
    * Prevent the columns of datapoints from being displayed, so that only the label and summary columns are displayed
    *
    * @default - false
    */
-  readonly hideNonSummaryColumns?: boolean;
+  readonly hideNonSummaryColumns?: boolean | undefined;
 }
 
 /**
@@ -646,9 +646,9 @@ export class TableThreshold {
   }
 
   private readonly lowerBound: number;
-  private readonly upperBound?: number;
-  private readonly color?: string;
-  private readonly comparator?: Shading;
+  private readonly upperBound?: number | undefined;
+  private readonly color?: string | undefined;
+  private readonly comparator?: Shading | undefined;
 
   private constructor(lowerBound: number, upperBound?: number, color?: string, comparator?: Shading) {
     this.lowerBound = lowerBound;
@@ -677,49 +677,49 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default - TableLayout.HORIZONTAL
    */
-  readonly layout?: TableLayout;
+  readonly layout?: TableLayout | undefined;
 
   /**
    * Properties for displaying summary columns
    *
    * @default - no summary columns are shown
    */
-  readonly summary?: TableSummaryProps;
+  readonly summary?: TableSummaryProps | undefined;
 
   /**
    * Thresholds for highlighting table cells
    *
    * @default - No thresholds
    */
-  readonly thresholds?: TableThreshold[];
+  readonly thresholds?: TableThreshold[] | undefined;
 
   /**
    * Show the metrics units in the label column
    *
    * @default - false
    */
-  readonly showUnitsInLabel?: boolean;
+  readonly showUnitsInLabel?: boolean | undefined;
 
   /**
    * Metrics to display in the table
    *
    * @default - No metrics
    */
-  readonly metrics?: IMetric[];
+  readonly metrics?: IMetric[] | undefined;
 
   /**
    * Whether the graph should show live data
    *
    * @default false
    */
-  readonly liveData?: boolean;
+  readonly liveData?: boolean | undefined;
 
   /**
    * Whether to show as many digits as can fit, before rounding.
    *
    * @default false
    */
-  readonly fullPrecision?: boolean;
+  readonly fullPrecision?: boolean | undefined;
 
   /**
    * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
@@ -729,7 +729,7 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default false
    */
-  readonly setPeriodToTimeRange?: boolean;
+  readonly setPeriodToTimeRange?: boolean | undefined;
 
   /**
    * The default period for all metrics in this widget.
@@ -738,7 +738,7 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default cdk.Duration.seconds(300)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * The default statistic to be displayed for each metric.
@@ -746,7 +746,7 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default - The statistic for each metric is used
    */
-  readonly statistic?: string;
+  readonly statistic?: string | undefined;
 
   /**
    * The start of the time range to use for each widget independently from those of the dashboard.
@@ -758,7 +758,7 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the start time will be the default time range.
    */
-  readonly start?: string;
+  readonly start?: string | undefined;
 
   /**
    * The end of the time range to use for each widget independently from those of the dashboard.
@@ -767,7 +767,7 @@ export interface TableWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the end date will be the current time.
    */
-  readonly end?: string;
+  readonly end?: string | undefined;
 }
 
 /**
@@ -856,21 +856,21 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    *
    * @default cdk.Duration.seconds(300)
    */
-  readonly period?: cdk.Duration;
+  readonly period?: cdk.Duration | undefined;
 
   /**
    * Whether to show the value from the entire time range.
    *
    * @default false
    */
-  readonly setPeriodToTimeRange?: boolean;
+  readonly setPeriodToTimeRange?: boolean | undefined;
 
   /**
    * Whether to show as many digits as can fit, before rounding.
    *
    * @default false
    */
-  readonly fullPrecision?: boolean;
+  readonly fullPrecision?: boolean | undefined;
 
   /**
    * Whether to show a graph below the value illustrating the value for the whole time range.
@@ -878,7 +878,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    *
    * @default false
    */
-  readonly sparkline?: boolean;
+  readonly sparkline?: boolean | undefined;
 
   /**
    * The start of the time range to use for each widget independently from those of the dashboard.
@@ -890,7 +890,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the start time will be the default time range.
    */
-  readonly start?: string;
+  readonly start?: string | undefined;
 
   /**
    * The end of the time range to use for each widget independently from those of the dashboard.
@@ -899,7 +899,7 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    *
    * @default When the dashboard loads, the end date will be the current time.
    */
-  readonly end?: string;
+  readonly end?: string | undefined;
 }
 
 /**
@@ -960,7 +960,7 @@ export interface CustomWidgetProps {
    *
    * @default 6
    */
-  readonly width?: number;
+  readonly width?: number | undefined;
 
   /**
    * Height of the widget
@@ -968,7 +968,7 @@ export interface CustomWidgetProps {
    * @default - 6 for Alarm and Graph widgets.
    *   3 for single value widgets where most recent value of a metric is displayed.
    */
-  readonly height?: number;
+  readonly height?: number | undefined;
 
   /**
    * The title of the widget
@@ -980,28 +980,28 @@ export interface CustomWidgetProps {
    *
    * @default true
    */
-  readonly updateOnRefresh?: boolean;
+  readonly updateOnRefresh?: boolean | undefined;
 
   /**
    * Update the widget on resize
    *
    * @default true
    */
-  readonly updateOnResize?: boolean;
+  readonly updateOnResize?: boolean | undefined;
 
   /**
    * Update the widget on time range change
    *
    * @default true
    */
-  readonly updateOnTimeRangeChange?: boolean;
+  readonly updateOnTimeRangeChange?: boolean | undefined;
 
   /**
    * Parameters passed to the lambda function
    *
    * @default - no parameters are passed to the lambda function
    */
-  readonly params?: any;
+  readonly params?: any | undefined;
 }
 
 /**
@@ -1050,7 +1050,7 @@ export interface HorizontalAnnotation {
    *
    * @default - No label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
@@ -1058,21 +1058,21 @@ export interface HorizontalAnnotation {
    *
    * @default - Automatic color
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * Add shading above or below the annotation
    *
    * @default No shading
    */
-  readonly fill?: Shading;
+  readonly fill?: Shading | undefined;
 
   /**
    * Whether the annotation is visible
    *
    * @default true
    */
-  readonly visible?: boolean;
+  readonly visible?: boolean | undefined;
 }
 
 /**
@@ -1089,7 +1089,7 @@ export interface VerticalAnnotation {
    *
    * @default - No label
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to be used for the annotation.
@@ -1097,21 +1097,21 @@ export interface VerticalAnnotation {
    *
    * @default - Automatic color
    */
-  readonly color?: string;
+  readonly color?: string | undefined;
 
   /**
    * Add shading before or after the annotation
    *
    * @default No shading
    */
-  readonly fill?: VerticalShading;
+  readonly fill?: VerticalShading | undefined;
 
   /**
    * Whether the annotation is visible
    *
    * @default true
    */
-  readonly visible?: boolean;
+  readonly visible?: boolean | undefined;
 }
 
 /**

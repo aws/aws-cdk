@@ -28,14 +28,14 @@ export interface EndpointGroupOptions {
    *
    * @default - logical ID of the resource
    */
-  readonly endpointGroupName?: string;
+  readonly endpointGroupName?: string | undefined;
 
   /**
    * The AWS Region where the endpoint group is located.
    *
    * @default - region of the first endpoint in this group, or the stack region if that region can't be determined
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The time between health checks for each endpoint
@@ -44,28 +44,28 @@ export interface EndpointGroupOptions {
    *
    * @default Duration.seconds(30)
    */
-  readonly healthCheckInterval?: cdk.Duration;
+  readonly healthCheckInterval?: cdk.Duration | undefined;
 
   /**
    * The ping path for health checks (if the protocol is HTTP(S)).
    *
    * @default '/'
    */
-  readonly healthCheckPath?: string;
+  readonly healthCheckPath?: string | undefined;
 
   /**
    * The port used to perform health checks
    *
    * @default - The listener's port
    */
-  readonly healthCheckPort?: number;
+  readonly healthCheckPort?: number | undefined;
 
   /**
    * The protocol used to perform health checks
    *
    * @default HealthCheckProtocol.TCP
    */
-  readonly healthCheckProtocol?: HealthCheckProtocol;
+  readonly healthCheckProtocol?: HealthCheckProtocol | undefined;
 
   /**
    * The number of consecutive health checks required to set the state of a
@@ -73,7 +73,7 @@ export interface EndpointGroupOptions {
    *
    * @default 3
    */
-  readonly healthCheckThreshold?: number;
+  readonly healthCheckThreshold?: number | undefined;
 
   /**
    * The percentage of traffic to send to this AWS Region.
@@ -84,7 +84,7 @@ export interface EndpointGroupOptions {
    *
    * @default 100
    */
-  readonly trafficDialPercentage?: number;
+  readonly trafficDialPercentage?: number | undefined;
 
   /**
    * Override the destination ports used to route traffic to an endpoint.
@@ -94,14 +94,14 @@ export interface EndpointGroupOptions {
    *
    * @default - No overrides
    */
-  readonly portOverrides?: PortOverride[];
+  readonly portOverrides?: PortOverride[] | undefined;
 
   /**
    * Initial list of endpoints for this group
    *
    * @default - Group is initially empty
    */
-  readonly endpoints?: IEndpoint[];
+  readonly endpoints?: IEndpoint[] | undefined;
 }
 
 /**

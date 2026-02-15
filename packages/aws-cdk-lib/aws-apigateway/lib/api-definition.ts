@@ -106,7 +106,7 @@ export interface ApiDefinitionS3Location {
    * An optional version
    * @default - latest version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**
@@ -118,14 +118,14 @@ export interface ApiDefinitionConfig {
    *
    * @default - API definition is not an S3 location
    */
-  readonly s3Location?: ApiDefinitionS3Location;
+  readonly s3Location?: ApiDefinitionS3Location | undefined;
 
   /**
    * Inline specification (mutually exclusive with `s3Location`).
    *
    * @default - API definition is not defined inline
    */
-  readonly inlineDefinition?: any;
+  readonly inlineDefinition?: any | undefined;
 }
 
 /**

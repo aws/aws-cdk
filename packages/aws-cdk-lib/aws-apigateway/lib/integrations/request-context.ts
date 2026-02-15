@@ -11,7 +11,7 @@ export interface RequestContext {
    * Whether the AWS account of the API owner should be included in the request context
    * @default false
    */
-  readonly accountId?: boolean;
+  readonly accountId?: boolean | undefined;
 
   /**
    * Represents the information of $context.apiId
@@ -19,7 +19,7 @@ export interface RequestContext {
    * Whether the identifier API Gateway assigns to your API should be included in the request context.
    * @default false
    */
-  readonly apiId?: boolean;
+  readonly apiId?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.apiKey
@@ -27,7 +27,7 @@ export interface RequestContext {
    * Whether the API key associated with the request should be included in request context.
    * @default false
    */
-  readonly apiKey?: boolean;
+  readonly apiKey?: boolean | undefined;
 
   /**
    * Represents the information of $context.authorizer.principalId
@@ -36,7 +36,7 @@ export interface RequestContext {
    * from an API Gateway Lambda authorizer should be included in the request context.
    * @default false
    */
-  readonly authorizerPrincipalId?: boolean;
+  readonly authorizerPrincipalId?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.caller
@@ -45,7 +45,7 @@ export interface RequestContext {
    * Supported for resources that use IAM authorization.
    * @default false
    */
-  readonly caller?: boolean;
+  readonly caller?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.cognitoAuthenticationProvider
@@ -54,7 +54,7 @@ export interface RequestContext {
    * Available only if the request was signed with Amazon Cognito credentials.
    * @default false
    */
-  readonly cognitoAuthenticationProvider?: boolean;
+  readonly cognitoAuthenticationProvider?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.cognitoAuthenticationType
@@ -64,7 +64,7 @@ export interface RequestContext {
    * Possible values include authenticated for authenticated identities and unauthenticated for unauthenticated identities.
    * @default false
    */
-  readonly cognitoAuthenticationType?: boolean;
+  readonly cognitoAuthenticationType?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.cognitoIdentityId
@@ -73,7 +73,7 @@ export interface RequestContext {
    * Available only if the request was signed with Amazon Cognito credentials.
    * @default false
    */
-  readonly cognitoIdentityId?: boolean;
+  readonly cognitoIdentityId?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.cognitoIdentityPoolId
@@ -82,7 +82,7 @@ export interface RequestContext {
    * Available only if the request was signed with Amazon Cognito credentials.
    * @default false
    */
-  readonly cognitoIdentityPoolId?: boolean;
+  readonly cognitoIdentityPoolId?: boolean | undefined;
 
   /**
    * Represents the information of $context.httpMethod
@@ -91,7 +91,7 @@ export interface RequestContext {
    * Valid values include: DELETE, GET, HEAD, OPTIONS, PATCH, POST, and PUT.
    * @default false
    */
-  readonly httpMethod?: boolean;
+  readonly httpMethod?: boolean | undefined;
 
   /**
    * Represents the information of $context.stage
@@ -99,7 +99,7 @@ export interface RequestContext {
    * Whether the deployment stage of the API request should be included in the request context.
    * @default false
    */
-  readonly stage?: boolean;
+  readonly stage?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.sourceIp
@@ -108,7 +108,7 @@ export interface RequestContext {
    * to API Gateway endpoint should be included in the request context.
    * @default false
    */
-  readonly sourceIp?: boolean;
+  readonly sourceIp?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.user
@@ -117,7 +117,7 @@ export interface RequestContext {
    * Supported for resources that use IAM authorization.
    * @default false
    */
-  readonly user?: boolean;
+  readonly user?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.userAgent
@@ -125,7 +125,7 @@ export interface RequestContext {
    * Whether the User-Agent header of the API caller should be included in the request context.
    * @default false
    */
-  readonly userAgent?: boolean;
+  readonly userAgent?: boolean | undefined;
 
   /**
    * Represents the information of $context.identity.userArn
@@ -133,7 +133,7 @@ export interface RequestContext {
    * Whether the Amazon Resource Name (ARN) of the effective user identified after authentication should be included in the request context.
    * @default false
    */
-  readonly userArn?: boolean;
+  readonly userArn?: boolean | undefined;
 
   /**
    * Represents the information of $context.requestId
@@ -141,7 +141,7 @@ export interface RequestContext {
    * Whether the ID for the request should be included in the request context.
    * @default false
    */
-  readonly requestId?: boolean;
+  readonly requestId?: boolean | undefined;
 
   /**
    * Represents the information of $context.resourceId
@@ -149,7 +149,7 @@ export interface RequestContext {
    * Whether the identifier that API Gateway assigns to your resource should be included in the request context.
    * @default false
    */
-  readonly resourceId?: boolean;
+  readonly resourceId?: boolean | undefined;
 
   /**
    * Represents the information of $context.resourcePath
@@ -157,5 +157,5 @@ export interface RequestContext {
    * Whether the path to the resource should be included in the request context.
    * @default false
    */
-  readonly resourcePath?: boolean;
+  readonly resourcePath?: boolean | undefined;
 }

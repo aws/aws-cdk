@@ -13,21 +13,21 @@ export interface UrlSubscriptionProps extends SubscriptionProps {
    *
    * @default false
    */
-  readonly rawMessageDelivery?: boolean;
+  readonly rawMessageDelivery?: boolean | undefined;
 
   /**
    * The subscription's protocol.
    *
    * @default - Protocol is derived from url
    */
-  readonly protocol?: sns.SubscriptionProtocol;
+  readonly protocol?: sns.SubscriptionProtocol | undefined;
 
   /**
    * The delivery policy.
    *
    * @default - if the initial delivery of the message fails, three retries with a delay between failed attempts set at 20 seconds
    */
-  readonly deliveryPolicy?: sns.DeliveryPolicy;
+  readonly deliveryPolicy?: sns.DeliveryPolicy | undefined;
 }
 
 /**

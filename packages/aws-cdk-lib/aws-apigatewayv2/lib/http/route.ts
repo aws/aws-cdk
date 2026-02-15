@@ -24,7 +24,7 @@ export interface IHttpRoute extends IRoute {
   /**
    * Returns the path component of this HTTP route, `undefined` if the path is the catch-all route.
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * Returns the arn of the route.
@@ -48,7 +48,7 @@ export interface GrantInvokeOptions {
    * The HTTP methods to allow.
    * @default - the HttpMethod of the route
    */
-  readonly httpMethods?: HttpMethod[];
+  readonly httpMethods?: HttpMethod[] | undefined;
 }
 
 /**
@@ -106,7 +106,7 @@ export class HttpRouteKey {
    * The path part of this RouteKey.
    * Returns `undefined` when `RouteKey.DEFAULT` is used.
    */
-  public readonly path?: string;
+  public readonly path?: string | undefined;
 
   private constructor(method?: HttpMethod, path?: string) {
     this.method = method ?? HttpMethod.ANY;
@@ -144,7 +144,7 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * Authorizer for a WebSocket API or an HTTP API.
    * @default - No authorizer
    */
-  readonly authorizer?: IHttpRouteAuthorizer;
+  readonly authorizer?: IHttpRouteAuthorizer | undefined;
 
   /**
    * The list of OIDC scopes to include in the authorization.
@@ -152,7 +152,7 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * These scopes will be merged with the scopes from the attached authorizer
    * @default - no additional authorization scopes
    */
-  readonly authorizationScopes?: string[];
+  readonly authorizationScopes?: string[] | undefined;
 }
 
 /**
@@ -184,12 +184,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigatewayv2.HttpRoute';
 
   public readonly routeId: string;
-  public readonly path?: string;
+  public readonly path?: string | undefined;
   public readonly routeArn: string;
 
   private readonly _httpApi: IHttpApiRef;
   private readonly method: HttpMethod;
-  private readonly authBindResult?: HttpRouteAuthorizerConfig;
+  private readonly authBindResult?: HttpRouteAuthorizerConfig | undefined;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);

@@ -33,7 +33,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - gzip
    */
-  readonly compressionType?: GelfCompressionType;
+  readonly compressionType?: GelfCompressionType | undefined;
 
   /**
    * UDP Only The level of compression when gzip or zlib is the gelf-compression-type.
@@ -42,7 +42,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 1
    */
-  readonly compressionLevel?: number;
+  readonly compressionLevel?: number | undefined;
 
   /**
    * TCP Only The maximum number of reconnection attempts when the connection drop.
@@ -50,7 +50,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 3
    */
-  readonly tcpMaxReconnect?: number;
+  readonly tcpMaxReconnect?: number | undefined;
 
   /**
    * TCP Only The number of seconds to wait between reconnection attempts.
@@ -58,7 +58,7 @@ export interface GelfLogDriverProps extends BaseLogDriverProps {
    *
    * @default - 1
    */
-  readonly tcpReconnectDelay?: Duration;
+  readonly tcpReconnectDelay?: Duration | undefined;
 }
 
 /**

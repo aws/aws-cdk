@@ -20,7 +20,7 @@ export interface ServiceManagedVolumeProps {
    *
    * @default - undefined
    */
-  readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration;
+  readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration | undefined;
 }
 
 /**
@@ -33,14 +33,14 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default - automatically generated role.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Indicates whether the volume should be encrypted.
    *
    * @default - Default Amazon EBS encryption.
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 
   /**
    * AWS Key Management Service key to use for Amazon EBS encryption.
@@ -48,14 +48,14 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - When `encryption` is turned on and no `kmsKey` is specified,
    * the default AWS managed key for Amazon EBS volumes is used.
    */
-  readonly kmsKeyId?: kms.IKey;
+  readonly kmsKeyId?: kms.IKey | undefined;
 
   /**
    * The volume type.
    *
    * @default - ec2.EbsDeviceVolumeType.GP2
    */
-  readonly volumeType?: ec2.EbsDeviceVolumeType;
+  readonly volumeType?: ec2.EbsDeviceVolumeType | undefined;
 
   /**
    * The size of the volume in GiB.
@@ -72,7 +72,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - The snapshot size is used for the volume size if you specify `snapshotId`,
    * otherwise this parameter is required.
    */
-  readonly size?: Size;
+  readonly size?: Size | undefined;
 
   /**
    * The snapshot that Amazon ECS uses to create the volume.
@@ -81,7 +81,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default - No snapshot.
    */
-  readonly snapShotId?: string;
+  readonly snapShotId?: string | undefined;
 
   /**
    * The number of I/O operations per second (IOPS).
@@ -100,7 +100,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default - undefined
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The throughput to provision for a volume, in MiB/s, with a maximum of 1,000 MiB/s.
@@ -109,7 +109,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default - No throughput.
    */
-  readonly throughput?: number;
+  readonly throughput?: number | undefined;
 
   /**
    * The Linux filesystem type for the volume.
@@ -120,14 +120,14 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default - FileSystemType.XFS
    */
-  readonly fileSystemType?: FileSystemType;
+  readonly fileSystemType?: FileSystemType | undefined;
 
   /**
    * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
    *
    * @default - No tags are specified.
    */
-  readonly tagSpecifications?: EBSTagSpecification[];
+  readonly tagSpecifications?: EBSTagSpecification[] | undefined;
 
   /**
    * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
@@ -137,7 +137,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    *
    * @default undefined - The volume initialization rate is not set.
    */
-  readonly volumeInitializationRate?: Size;
+  readonly volumeInitializationRate?: Size | undefined;
 }
 
 /**
@@ -149,7 +149,7 @@ export interface EBSTagSpecification {
    *
    * @default - No tags
    */
-  readonly tags?: {[key: string]: string};
+  readonly tags?: {[key: string]: string} | undefined;
 
   /**
    * Specifies whether to propagate the tags from the task definition or the service to the task.
@@ -157,7 +157,7 @@ export interface EBSTagSpecification {
    *
    * @default - undefined
    */
-  readonly propagateTags?: EbsPropagatedTagSource;
+  readonly propagateTags?: EbsPropagatedTagSource | undefined;
 }
 
 /**
@@ -214,7 +214,7 @@ export class ServiceManagedVolume extends Construct {
   /**
    * Volume configuration
    */
-  public readonly config?: ServiceManagedEBSVolumeConfiguration;
+  public readonly config?: ServiceManagedEBSVolumeConfiguration | undefined;
 
   /**
    * configuredAtLaunch indicates volume at launch time, referenced by taskdefinition volume.

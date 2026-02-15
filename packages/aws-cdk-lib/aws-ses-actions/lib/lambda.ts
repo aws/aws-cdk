@@ -35,14 +35,14 @@ export interface LambdaProps {
    *
    * @default Event
    */
-  readonly invocationType?: LambdaInvocationType;
+  readonly invocationType?: LambdaInvocationType | undefined;
 
   /**
    * The SNS topic to notify when the Lambda action is taken.
    *
    * @default no notification
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ITopic | undefined;
 }
 
 /**

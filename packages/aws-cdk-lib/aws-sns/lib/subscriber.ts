@@ -16,7 +16,7 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
    *
    * @default - use the topic as the scope of the subscription, in which case `subscriberId` must be defined.
    */
-  readonly subscriberScope?: Construct;
+  readonly subscriberScope?: Construct | undefined;
 
   /**
    * The id of the SNS subscription resource created under `scope`. In most
@@ -32,7 +32,7 @@ export interface TopicSubscriptionConfig extends SubscriptionOptions {
    *
    * @default - empty list
    */
-  readonly subscriptionDependency?: IDependable;
+  readonly subscriptionDependency?: IDependable | undefined;
 }
 
 /**

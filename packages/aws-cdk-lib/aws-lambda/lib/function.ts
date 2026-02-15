@@ -176,7 +176,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The function execution time (in seconds) after which Lambda terminates
@@ -185,7 +185,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default Duration.seconds(3)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * Key-value pairs that Lambda caches and makes available for your Lambda
@@ -195,7 +195,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No environment variables.
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * A name for the function.
@@ -203,7 +203,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - AWS CloudFormation generates a unique physical ID and uses that
    * ID for the function's name. For more information, see Name Type.
    */
-  readonly functionName?: string;
+  readonly functionName?: string | undefined;
 
   /**
    * The amount of memory, in MB, that is allocated to your Lambda function.
@@ -213,14 +213,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default 128
    */
-  readonly memorySize?: number;
+  readonly memorySize?: number | undefined;
 
   /**
    * The size of the function’s /tmp directory in MiB.
    *
    * @default 512 MiB
    */
-  readonly ephemeralStorageSize?: Size;
+  readonly ephemeralStorageSize?: Size | undefined;
 
   /**
    * Initial policy statements to add to the created Lambda Role.
@@ -229,7 +229,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No policy statements are added to the created Lambda role.
    */
-  readonly initialPolicy?: iam.PolicyStatement[];
+  readonly initialPolicy?: iam.PolicyStatement[] | undefined;
 
   /**
    * Lambda execution role.
@@ -247,7 +247,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * VPC network to place Lambda network interfaces
@@ -257,7 +257,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - Function is not placed within a VPC.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
@@ -266,7 +266,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default false
    */
-  readonly ipv6AllowedForDualStack?: boolean;
+  readonly ipv6AllowedForDualStack?: boolean | undefined;
 
   /**
    * Where to place the network interfaces within the VPC.
@@ -279,7 +279,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * What security group to associate with the Lambda's network interfaces.
@@ -296,7 +296,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @deprecated - This property is deprecated, use securityGroups instead
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The list of security groups to associate with the Lambda's network interfaces.
@@ -307,7 +307,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * not specified, either by this or securityGroup prop, a dedicated security
    * group will be created for this function.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * Whether to allow the Lambda to send all network traffic (except ipv6)
@@ -320,7 +320,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * Whether to allow the Lambda to send all ipv6 network traffic
@@ -334,7 +334,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default false
    */
-  readonly allowAllIpv6Outbound?: boolean;
+  readonly allowAllIpv6Outbound?: boolean | undefined;
 
   /**
    * Enabled DLQ. If `deadLetterQueue` is undefined,
@@ -342,7 +342,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - false unless `deadLetterQueue` is set, which implies DLQ is enabled.
    */
-  readonly deadLetterQueueEnabled?: boolean;
+  readonly deadLetterQueueEnabled?: boolean | undefined;
 
   /**
    * The SQS queue to use if DLQ is enabled.
@@ -350,7 +350,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 
   /**
    * The SNS topic to use as a DLQ.
@@ -359,14 +359,14 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - no SNS topic
    */
-  readonly deadLetterTopic?: sns.ITopic;
+  readonly deadLetterTopic?: sns.ITopic | undefined;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
    *
    * @default Tracing.Disabled
    */
-  readonly tracing?: Tracing;
+  readonly tracing?: Tracing | undefined;
 
   /**
    * Enable SnapStart for Lambda Function.
@@ -374,7 +374,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No snapstart
    */
-  readonly snapStart?: SnapStartConf;
+  readonly snapStart?: SnapStartConf | undefined;
 
   /**
    * Enable profiling.
@@ -382,7 +382,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No profiling.
    */
-  readonly profiling?: boolean;
+  readonly profiling?: boolean | undefined;
 
   /**
    * Profiling Group.
@@ -390,7 +390,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - A new profiling group will be created if `profiling` is set.
    */
-  readonly profilingGroup?: IProfilingGroup;
+  readonly profilingGroup?: IProfilingGroup | undefined;
 
   /**
    * Specify the version of CloudWatch Lambda insights to use for monitoring
@@ -402,7 +402,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No Lambda Insights
    */
-  readonly insightsVersion?: LambdaInsightsVersion;
+  readonly insightsVersion?: LambdaInsightsVersion | undefined;
 
   /**
    * Specify the configuration of AWS Distro for OpenTelemetry (ADOT) instrumentation
@@ -410,7 +410,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No ADOT instrumentation
    */
-  readonly adotInstrumentation?: AdotInstrumentationConfig;
+  readonly adotInstrumentation?: AdotInstrumentationConfig | undefined;
 
   /**
    * Specify the configuration of Parameters and Secrets Extension
@@ -419,7 +419,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No Parameters and Secrets Extension
    */
-  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion;
+  readonly paramsAndSecrets?: ParamsAndSecretsLayerVersion | undefined;
 
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
@@ -428,7 +428,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No layers.
    */
-  readonly layers?: ILayerVersion[];
+  readonly layers?: ILayerVersion[] | undefined;
 
   /**
    * The maximum of concurrent executions you want to reserve for the function.
@@ -436,7 +436,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No specific limit - account limit.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/concurrent-executions.html
    */
-  readonly reservedConcurrentExecutions?: number;
+  readonly reservedConcurrentExecutions?: number | undefined;
 
   /**
    * Event sources for this function.
@@ -445,7 +445,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No event sources.
    */
-  readonly events?: IEventSource[];
+  readonly events?: IEventSource[] | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs. When updating
@@ -469,7 +469,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @deprecated use `logGroup` instead
    * @default logs.RetentionDays.INFINITE
    */
-  readonly logRetention?: logs.RetentionDays;
+  readonly logRetention?: logs.RetentionDays | undefined;
 
   /**
    * Determine the removal policy of the log group that is auto-created by this construct.
@@ -482,7 +482,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @deprecated use `logGroup` instead
    * @default RemovalPolicy.Retain
    */
-  readonly logRemovalPolicy?: RemovalPolicy;
+  readonly logRemovalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The IAM role for the Lambda function associated with the custom resource
@@ -493,7 +493,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - A new role is created.
    */
-  readonly logRetentionRole?: iam.IRole;
+  readonly logRetentionRole?: iam.IRole | undefined;
 
   /**
    * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
@@ -504,21 +504,21 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - Default AWS SDK retry options.
    */
-  readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
+  readonly logRetentionRetryOptions?: LogRetentionRetryOptions | undefined;
 
   /**
    * Options for the `lambda.Version` resource automatically created by the
    * `fn.currentVersion` method.
    * @default - default options as described in `VersionOptions`
    */
-  readonly currentVersionOptions?: VersionOptions;
+  readonly currentVersionOptions?: VersionOptions | undefined;
 
   /**
    * The filesystem configuration for the lambda function
    *
    * @default - will not mount any filesystem
    */
-  readonly filesystem?: FileSystem;
+  readonly filesystem?: FileSystem | undefined;
 
   /**
    * Lambda Functions in a public subnet can NOT access the internet.
@@ -527,47 +527,47 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default false
    */
-  readonly allowPublicSubnet?: boolean;
+  readonly allowPublicSubnet?: boolean | undefined;
 
   /**
    * The AWS KMS key that's used to encrypt your function's environment variables.
    *
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
-  readonly environmentEncryption?: kms.IKeyRef;
+  readonly environmentEncryption?: kms.IKeyRef | undefined;
 
   /**
    * Code signing config associated with this function
    *
    * @default - Not Sign the Code
    */
-  readonly codeSigningConfig?: ICodeSigningConfigRef;
+  readonly codeSigningConfig?: ICodeSigningConfigRef | undefined;
 
   /**
    * DEPRECATED
    * @default [Architecture.X86_64]
    * @deprecated use `architecture`
    */
-  readonly architectures?: Architecture[];
+  readonly architectures?: Architecture[] | undefined;
 
   /**
    * The system architectures compatible with this lambda function.
    * @default Architecture.X86_64
    */
-  readonly architecture?: Architecture;
+  readonly architecture?: Architecture | undefined;
 
   /**
    * Sets the runtime management configuration for a function's version.
    * @default Auto
    */
-  readonly runtimeManagementMode?: RuntimeManagementMode;
+  readonly runtimeManagementMode?: RuntimeManagementMode | undefined;
 
   /**
    * The tenancy configuration for the function.
    *
    * @default - Tenant isolation is not enabled
    */
-  readonly tenancyConfig?: TenancyConfig;
+  readonly tenancyConfig?: TenancyConfig | undefined;
 
   /**
    * The durable configuration for the function.
@@ -577,7 +577,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - No durable configuration
    */
-  readonly durableConfig?: DurableConfig;
+  readonly durableConfig?: DurableConfig | undefined;
 
   /**
    * The log group the function sends logs to.
@@ -592,20 +592,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Sets the logFormat for the function.
    * @deprecated Use `loggingFormat` as a property instead.
    * @default "Text"
    */
-  readonly logFormat?: string;
+  readonly logFormat?: string | undefined;
 
   /**
    * Sets the loggingFormat for the function.
    * @default LoggingFormat.TEXT
    */
-  readonly loggingFormat?: LoggingFormat;
+  readonly loggingFormat?: LoggingFormat | undefined;
 
   /**
    * Sets the Recursive Loop Protection for Lambda Function.
@@ -613,33 +613,33 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default RecursiveLoop.Terminate
    */
-  readonly recursiveLoop?: RecursiveLoop;
+  readonly recursiveLoop?: RecursiveLoop | undefined;
 
   /**
    * Sets the application log level for the function.
    * @deprecated Use `applicationLogLevelV2` as a property instead.
    * @default "INFO"
    */
-  readonly applicationLogLevel?: string;
+  readonly applicationLogLevel?: string | undefined;
 
   /**
    * Sets the application log level for the function.
    * @default ApplicationLogLevel.INFO
    */
-  readonly applicationLogLevelV2?: ApplicationLogLevel;
+  readonly applicationLogLevelV2?: ApplicationLogLevel | undefined;
 
   /**
    * Sets the system log level for the function.
    * @deprecated Use `systemLogLevelV2` as a property instead.
    * @default "INFO"
    */
-  readonly systemLogLevel?: string;
+  readonly systemLogLevel?: string | undefined;
 
   /**
    * Sets the system log level for the function.
    * @default SystemLogLevel.INFO
    */
-  readonly systemLogLevelV2?: SystemLogLevel;
+  readonly systemLogLevelV2?: SystemLogLevel | undefined;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -902,7 +902,7 @@ export class Function extends FunctionBase {
   /**
    * Execution role associated with this function
    */
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
 
   /**
    * The runtime configured for this lambda.
@@ -917,12 +917,12 @@ export class Function extends FunctionBase {
   /**
    * The DLQ (as queue) associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterQueue?: sqs.IQueue;
+  public readonly deadLetterQueue?: sqs.IQueue | undefined;
 
   /**
    * The DLQ (as topic) associated with this Lambda Function (this is an optional attribute).
    */
-  public readonly deadLetterTopic?: sns.ITopic;
+  public readonly deadLetterTopic?: sns.ITopic | undefined;
 
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
@@ -932,7 +932,7 @@ export class Function extends FunctionBase {
   /**
    * The timeout configured for this lambda.
    */
-  public readonly timeout?: Duration;
+  public readonly timeout?: Duration | undefined;
 
   public readonly permissionsNode = this.node;
 
@@ -972,7 +972,7 @@ export class Function extends FunctionBase {
    */
   private environment: { [key: string]: EnvironmentConfig } = {};
 
-  private readonly currentVersionOptions?: VersionOptions;
+  private readonly currentVersionOptions?: VersionOptions | undefined;
   private _currentVersion?: Version;
 
   private _architecture?: Architecture;
@@ -981,7 +981,7 @@ export class Function extends FunctionBase {
   /**
    * The tenancy configuration for this function.
    */
-  public readonly tenancyConfig?: TenancyConfig;
+  public readonly tenancyConfig?: TenancyConfig | undefined;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -1836,7 +1836,7 @@ export interface EnvironmentOptions {
    *
    * @default false - using the function in Lambda@Edge will throw
    */
-  readonly removeInEdge?: boolean;
+  readonly removeInEdge?: boolean | undefined;
 }
 
 /**

@@ -16,7 +16,7 @@ export interface Permission {
    *
    * @default 'lambda:InvokeFunction'
    */
-  readonly action?: string;
+  readonly action?: string | undefined;
 
   /**
    * A unique token that must be supplied by the principal invoking the
@@ -24,7 +24,7 @@ export interface Permission {
    *
    * @default - The caller would not need to present a token.
    */
-  readonly eventSourceToken?: string;
+  readonly eventSourceToken?: string | undefined;
 
   /**
    * The entity for which you are granting permission to invoke the Lambda
@@ -49,7 +49,7 @@ export interface Permission {
    *
    * @default - The instance of lambda.IFunction
    */
-  readonly scope?: Construct;
+  readonly scope?: Construct | undefined;
 
   /**
    * The AWS account ID (without hyphens) of the source owner. For example, if
@@ -57,7 +57,7 @@ export interface Permission {
    * bucket owner's account ID. You can use this property to ensure that all
    * source principals are owned by a specific account.
    */
-  readonly sourceAccount?: string;
+  readonly sourceAccount?: string | undefined;
 
   /**
    * The ARN of a resource that is invoking your function. When granting
@@ -67,7 +67,7 @@ export interface Permission {
    * any bucket from any AWS account that creates a mapping to your function,
    * can invoke the function.
    */
-  readonly sourceArn?: string;
+  readonly sourceArn?: string | undefined;
 
   /**
    * The organization you want to grant permissions to. Use this ONLY if you
@@ -80,14 +80,14 @@ export interface Permission {
    *
    * @default - No organizationId
    */
-  readonly organizationId?: string;
+  readonly organizationId?: string | undefined;
 
   /**
    * The authType for the function URL that you are granting permissions for.
    *
    * @default - No functionUrlAuthType
    */
-  readonly functionUrlAuthType?: FunctionUrlAuthType;
+  readonly functionUrlAuthType?: FunctionUrlAuthType | undefined;
 
   /**
    * The condition key for limiting the scope of lambda:InvokeFunction action to Function URL only.
@@ -95,6 +95,6 @@ export interface Permission {
    *
    * @default - false
    */
-  readonly invokedViaFunctionUrl?: boolean;
+  readonly invokedViaFunctionUrl?: boolean | undefined;
 
 }

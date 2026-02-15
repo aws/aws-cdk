@@ -15,7 +15,7 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default '*' that treated as ANY
    */
-  readonly method?: string;
+  readonly method?: string | undefined;
 
   /**
    * The api resource invoked by the rule.
@@ -24,21 +24,21 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default '/'
    */
-  readonly path?: string;
+  readonly path?: string | undefined;
 
   /**
    * The deploy stage of api gateway invoked by the rule.
    *
    * @default the value of deploymentStage.stageName of target api gateway.
    */
-  readonly stage?: string;
+  readonly stage?: string | undefined;
 
   /**
    * The headers to be set when requesting API
    *
    * @default no header parameters
    */
-  readonly headerParameters?: { [key: string]: (string) };
+  readonly headerParameters?: { [key: string]: (string) } | undefined;
 
   /**
    * The path parameter values to be used to
@@ -46,21 +46,21 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default no path parameters
    */
-  readonly pathParameterValues?: string[];
+  readonly pathParameterValues?: string[] | undefined;
 
   /**
    * The query parameters to be set when requesting API.
    *
    * @default no querystring parameters
    */
-  readonly queryStringParameters?: { [key: string]: (string) };
+  readonly queryStringParameters?: { [key: string]: (string) } | undefined;
 
   /**
    * This will be the post request body send to the API.
    *
    * @default the entire EventBridge event
    */
-  readonly postBody?: events.RuleTargetInput;
+  readonly postBody?: events.RuleTargetInput | undefined;
 
   /**
    * The role to assume before invoking the target
@@ -68,7 +68,7 @@ export interface ApiGatewayProps extends TargetBaseProps {
    *
    * @default - a new role will be created
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 }
 
 /**

@@ -12,14 +12,14 @@ interface FailBaseOptions {
    *
    * @default - No error code
    */
-  readonly error?: string;
+  readonly error?: string | undefined;
 
   /**
    * A description for the cause of the failure
    *
    * @default - No description
    */
-  readonly cause?: string;
+  readonly cause?: string | undefined;
 }
 
 interface FailJsonPathOptions {
@@ -31,7 +31,7 @@ interface FailJsonPathOptions {
    *
    * @default - No error path
    */
-  readonly errorPath?: string;
+  readonly errorPath?: string | undefined;
 
   /**
    * JsonPath expression to select part of the state to be the cause to this state.
@@ -41,7 +41,7 @@ interface FailJsonPathOptions {
    *
    * @default - No cause path
    */
-  readonly causePath?: string;
+  readonly causePath?: string | undefined;
 }
 
 /**
@@ -94,10 +94,10 @@ export class Fail extends State {
 
   public readonly endStates: INextable[] = [];
 
-  private readonly error?: string;
-  private readonly errorPath?: string;
-  private readonly cause?: string;
-  private readonly causePath?: string;
+  private readonly error?: string | undefined;
+  private readonly errorPath?: string | undefined;
+  private readonly cause?: string | undefined;
+  private readonly causePath?: string | undefined;
 
   constructor(scope: Construct, id: string, props: FailProps = {}) {
     super(scope, id, props);

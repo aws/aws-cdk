@@ -15,7 +15,7 @@ export interface CommonCloudFormationStackSetOptions {
    *
    * @default 0%
    */
-  readonly failureTolerancePercentage?: number;
+  readonly failureTolerancePercentage?: number | undefined;
 
   /**
    * The maximum percentage of accounts in which to perform this operation at one time. When calculating the number of accounts based on the specified
@@ -25,7 +25,7 @@ export interface CommonCloudFormationStackSetOptions {
    *
    * @default 1%
    */
-  readonly maxAccountConcurrencyPercentage?: number;
+  readonly maxAccountConcurrencyPercentage?: number | undefined;
 
   /**
    * The AWS Region the StackSet is in.
@@ -37,7 +37,7 @@ export interface CommonCloudFormationStackSetOptions {
    *
    * @default - same region as the Pipeline
    */
-  readonly stackSetRegion?: string;
+  readonly stackSetRegion?: string | undefined;
 }
 
 /**
@@ -185,7 +185,7 @@ export abstract class StackInstances {
    *
    * @internal
    */
-  readonly _artifactsReferenced?: codepipeline.Artifact[];
+  readonly _artifactsReferenced?: codepipeline.Artifact[] | undefined;
 
   /**
    * Called to attach the stack set instances to a stackset action
@@ -426,7 +426,7 @@ export interface StackSetDeploymentModelBindResult {
    *
    * @default - No roles
    */
-  readonly passedRoles?: iam.IRole[];
+  readonly passedRoles?: iam.IRole[] | undefined;
 }
 
 /**
@@ -442,7 +442,7 @@ export interface OrganizationsDeploymentProps {
    *
    * @default Disabled
    */
-  readonly autoDeployment?: StackSetOrganizationsAutoDeployment;
+  readonly autoDeployment?: StackSetOrganizationsAutoDeployment | undefined;
 }
 
 /**
@@ -488,7 +488,7 @@ export interface SelfManagedDeploymentProps {
    * @default - Assume an existing role named `AWSCloudFormationStackSetAdministrationRole` in the same account as the pipeline.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html
    */
-  readonly administrationRole?: iam.IRole;
+  readonly administrationRole?: iam.IRole | undefined;
 
   /**
    * The name of the IAM role in the target accounts used to perform stack set operations.
@@ -505,5 +505,5 @@ export interface SelfManagedDeploymentProps {
    * @default AWSCloudFormationStackSetExecutionRole
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html
    */
-  readonly executionRoleName?: string;
+  readonly executionRoleName?: string | undefined;
 }

@@ -42,7 +42,7 @@ export interface FlagInfoBase {
    * `unconfiguredBehavesLike` is set for that line, we will document the default
    * behavior (even though it's not configurable).
    */
-  readonly introducedIn: { v1?: string; v2?: string };
+  readonly introducedIn: { v1?: string | undefined; v2?: string | undefined };
   /** What you would like new users to set this flag to (default in new projects) */
   readonly recommendedValue: any;
   /**
@@ -58,7 +58,7 @@ export interface FlagInfoBase {
    * Again: the value you put here should describe whatever value gets us the
    * legacy behavior, from before this flag was introduced.
    */
-  readonly unconfiguredBehavesLike?: { v1?: any; v2?: any };
+  readonly unconfiguredBehavesLike?: { v1?: any; v2?: any } | undefined;
 }
 
 /** Flag information, adding required fields if present */

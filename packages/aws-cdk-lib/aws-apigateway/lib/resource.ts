@@ -18,7 +18,7 @@ export interface IResource extends IResourceBase, IResourceRef {
   /**
    * The parent of this resource or undefined for the root resource.
    */
-  readonly parentResource?: IResource;
+  readonly parentResource?: IResource | undefined;
 
   /**
    * The rest API that this resource is part of.
@@ -52,18 +52,18 @@ export interface IResource extends IResourceBase, IResourceRef {
    * An integration to use as a default for all methods created within this
    * API unless an integration is specified.
    */
-  readonly defaultIntegration?: Integration;
+  readonly defaultIntegration?: Integration | undefined;
 
   /**
    * Method options to use as a default for all methods created within this
    * API unless custom options are specified.
    */
-  readonly defaultMethodOptions?: MethodOptions;
+  readonly defaultMethodOptions?: MethodOptions | undefined;
 
   /**
    * Default options for CORS preflight OPTIONS method.
    */
-  readonly defaultCorsPreflightOptions?: CorsOptions;
+  readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
   /**
    * Gets or create all resources leading up to the specified path.
@@ -133,7 +133,7 @@ export interface ResourceOptions {
    *
    * @default - Inherited from parent.
    */
-  readonly defaultIntegration?: Integration;
+  readonly defaultIntegration?: Integration | undefined;
 
   /**
    * Method options to use as a default for all methods created within this
@@ -141,7 +141,7 @@ export interface ResourceOptions {
    *
    * @default - Inherited from parent.
    */
-  readonly defaultMethodOptions?: MethodOptions;
+  readonly defaultMethodOptions?: MethodOptions | undefined;
 
   /**
    * Adds a CORS preflight OPTIONS method to this resource and all child
@@ -151,7 +151,7 @@ export interface ResourceOptions {
    *
    * @default - CORS is disabled
    */
-  readonly defaultCorsPreflightOptions?: CorsOptions;
+  readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 }
 
 export interface ResourceProps extends ResourceOptions {
@@ -168,7 +168,7 @@ export interface ResourceProps extends ResourceOptions {
 }
 
 export abstract class ResourceBase extends ResourceConstruct implements IResource {
-  public abstract readonly parentResource?: IResource;
+  public abstract readonly parentResource?: IResource | undefined;
   /**
    * @deprecated -  Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead.
    */
@@ -176,9 +176,9 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
   public abstract readonly api: IRestApi;
   public abstract readonly resourceId: string;
   public abstract readonly path: string;
-  public abstract readonly defaultIntegration?: Integration;
-  public abstract readonly defaultMethodOptions?: MethodOptions;
-  public abstract readonly defaultCorsPreflightOptions?: CorsOptions;
+  public abstract readonly defaultIntegration?: Integration | undefined;
+  public abstract readonly defaultMethodOptions?: MethodOptions | undefined;
+  public abstract readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
   private readonly children: { [pathPart: string]: Resource } = { };
 
@@ -445,14 +445,14 @@ export class Resource extends ResourceBase {
     return new Import(scope, id);
   }
 
-  public readonly parentResource?: IResource;
+  public readonly parentResource?: IResource | undefined;
   public readonly api: IRestApi;
   public readonly resourceId: string;
   public readonly path: string;
 
-  public readonly defaultIntegration?: Integration;
-  public readonly defaultMethodOptions?: MethodOptions;
-  public readonly defaultCorsPreflightOptions?: CorsOptions;
+  public readonly defaultIntegration?: Integration | undefined;
+  public readonly defaultMethodOptions?: MethodOptions | undefined;
+  public readonly defaultCorsPreflightOptions?: CorsOptions | undefined;
 
   constructor(scope: Construct, id: string, props: ResourceProps) {
     super(scope, id);
@@ -521,7 +521,7 @@ export interface ProxyResourceOptions extends ResourceOptions {
    *
    * @default true
    */
-  readonly anyMethod?: boolean;
+  readonly anyMethod?: boolean | undefined;
 }
 
 export interface ProxyResourceProps extends ProxyResourceOptions {
@@ -544,7 +544,7 @@ export class ProxyResource extends Resource {
    * If `props.anyMethod` is `true`, this will be the reference to the 'ANY'
    * method associated with this proxy resource.
    */
-  public readonly anyMethod?: Method;
+  public readonly anyMethod?: Method | undefined;
 
   constructor(scope: Construct, id: string, props: ProxyResourceProps) {
     super(scope, id, {

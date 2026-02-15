@@ -30,7 +30,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - NetworkMode.BRIDGE for EC2 tasks, AWS_VPC for Fargate tasks.
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 
   /**
    * An array of placement constraint objects to use for the task. You can
@@ -39,7 +39,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - No placement constraints.
    */
-  readonly placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[] | undefined;
 
   /**
    * The IPC resource namespace to use for the containers in the task.
@@ -48,7 +48,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - IpcMode used by the task is not specified
    */
-  readonly ipcMode?: IpcMode;
+  readonly ipcMode?: IpcMode | undefined;
 
   /**
    * The process namespace to use for the containers in the task.
@@ -57,7 +57,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - PidMode used by the task is not specified
    */
-  readonly pidMode?: PidMode;
+  readonly pidMode?: PidMode | undefined;
 
   /**
    * The inference accelerators to use for the containers in the task.
@@ -66,7 +66,7 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default - No inference accelerators.
    */
-  readonly inferenceAccelerators?: InferenceAccelerator[];
+  readonly inferenceAccelerators?: InferenceAccelerator[] | undefined;
 }
 
 /**

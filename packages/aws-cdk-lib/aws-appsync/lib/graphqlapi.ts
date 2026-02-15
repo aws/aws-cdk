@@ -34,22 +34,22 @@ export interface AuthorizationMode {
    * If authorizationType is `AuthorizationType.USER_POOL`, this option is required.
    * @default - none
    */
-  readonly userPoolConfig?: UserPoolConfig;
+  readonly userPoolConfig?: UserPoolConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.API_KEY`, this option can be configured.
    * @default - name: 'DefaultAPIKey' | description: 'Default API Key created by CDK'
    */
-  readonly apiKeyConfig?: ApiKeyConfig;
+  readonly apiKeyConfig?: ApiKeyConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.OIDC`, this option is required.
    * @default - none
    */
-  readonly openIdConnectConfig?: OpenIdConnectConfig;
+  readonly openIdConnectConfig?: OpenIdConnectConfig | undefined;
   /**
    * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
    * @default - none
    */
-  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
+  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig | undefined;
 }
 
 /**
@@ -79,13 +79,13 @@ export interface UserPoolConfig {
    *
    * @default -  None
    */
-  readonly appIdClientRegex?: string;
+  readonly appIdClientRegex?: string | undefined;
   /**
    * Default auth action
    *
    * @default ALLOW
    */
-  readonly defaultAction?: UserPoolDefaultAction;
+  readonly defaultAction?: UserPoolDefaultAction | undefined;
 }
 
 /**
@@ -96,12 +96,12 @@ export interface ApiKeyConfig {
    * Unique name of the API Key
    * @default - 'DefaultAPIKey'
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
   /**
    * Description of API key
    * @default - 'Default API Key created by CDK'
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The time from creation time after which the API key expires.
@@ -110,7 +110,7 @@ export interface ApiKeyConfig {
    *
    * @default - 7 days rounded down to nearest hour
    */
-  readonly expires?: Expiration;
+  readonly expires?: Expiration | undefined;
 }
 
 /**
@@ -122,20 +122,20 @@ export interface OpenIdConnectConfig {
    * `auth_time` claim in OIDC token is required for this validation to work.
    * @default - no validation
    */
-  readonly tokenExpiryFromAuth?: number;
+  readonly tokenExpiryFromAuth?: number | undefined;
   /**
    * The number of milliseconds an OIDC token is valid after being issued to a user.
    * This validation uses `iat` claim of OIDC token.
    * @default - no validation
    */
-  readonly tokenExpiryFromIssue?: number;
+  readonly tokenExpiryFromIssue?: number | undefined;
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
    * @example - 'ABCD|CDEF' // where ABCD and CDEF are two different clientId
    * @default - * (All)
    */
-  readonly clientId?: string;
+  readonly clientId?: string | undefined;
   /**
    * The issuer for the OIDC configuration. The issuer returned by discovery must exactly match the value of `iss` in the OIDC token.
    */
@@ -159,14 +159,14 @@ export interface LambdaAuthorizerConfig {
    *
    * @default Duration.minutes(5)
    */
-  readonly resultsCacheTtl?: Duration;
+  readonly resultsCacheTtl?: Duration | undefined;
 
   /**
    * A regular expression for validation of tokens before the Lambda function is called.
    *
    * @default - no regex filter will be applied.
    */
-  readonly validationRegex?: string;
+  readonly validationRegex?: string | undefined;
 }
 
 /**
@@ -178,14 +178,14 @@ export interface AuthorizationConfig {
    *
    * @default - API Key authorization
    */
-  readonly defaultAuthorization?: AuthorizationMode;
+  readonly defaultAuthorization?: AuthorizationMode | undefined;
 
   /**
    * Additional authorization modes
    *
    * @default - No other modes
    */
-  readonly additionalAuthorizationModes?: AuthorizationMode[];
+  readonly additionalAuthorizationModes?: AuthorizationMode[] | undefined;
 }
 
 /**
@@ -223,20 +223,20 @@ export interface LogConfig {
    *
    * @default false
    */
-  readonly excludeVerboseContent?: boolean | IResolvable;
+  readonly excludeVerboseContent?: boolean | IResolvable | undefined;
   /**
    * log level for fields
    *
    * @default - Use AppSync default
    */
-  readonly fieldLogLevel?: FieldLogLevel;
+  readonly fieldLogLevel?: FieldLogLevel | undefined;
 
   /**
    * The role for CloudWatch Logs
    *
    * @default - None
    */
-  readonly role?: IRoleRef;
+  readonly role?: IRoleRef | undefined;
 
   /**
    * The number of days log events are kept in CloudWatch Logs.
@@ -246,7 +246,7 @@ export interface LogConfig {
    *
    * @default RetentionDays.INFINITE
    */
-  readonly retention?: RetentionDays;
+  readonly retention?: RetentionDays | undefined;
 }
 
 /**
@@ -278,7 +278,7 @@ export interface SourceApiOptions {
    *
    * @default - An IAM Role with acccess to source schemas will be created
    */
-  readonly mergedApiExecutionRole?: Role;
+  readonly mergedApiExecutionRole?: Role | undefined;
 }
 
 /**
@@ -295,12 +295,12 @@ export interface SourceApi {
    *
    * @default - Auto merge. The merge is triggered automatically when the source API has changed
    */
-  readonly mergeType?: MergeType;
+  readonly mergeType?: MergeType | undefined;
 
   /**
    * Description of the Source API asssociation.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -341,12 +341,12 @@ export abstract class Definition {
   /**
    * Schema, when AppSync API is created from schema file
    */
-  readonly schema?: ISchema;
+  readonly schema?: ISchema | undefined;
 
   /**
    * Source APIs for Merged API
    */
-  readonly sourceApiOptions?: SourceApiOptions;
+  readonly sourceApiOptions?: SourceApiOptions | undefined;
 }
 
 /**
@@ -363,19 +363,19 @@ export interface GraphqlApiProps {
    *
    * @default - API Key authorization
    */
-  readonly authorizationConfig?: AuthorizationConfig;
+  readonly authorizationConfig?: AuthorizationConfig | undefined;
 
   /**
    * Logging configuration for this api
    *
    * @default - None
    */
-  readonly logConfig?: LogConfig;
+  readonly logConfig?: LogConfig | undefined;
 
   /**
    * Definition (schema file or source APIs) for this GraphQL Api
    */
-  readonly definition?: Definition;
+  readonly definition?: Definition | undefined;
 
   /**
    * GraphQL schema definition. Specify how you want to define your schema.
@@ -385,20 +385,20 @@ export interface GraphqlApiProps {
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    * @deprecated use Definition.schema instead
    */
-  readonly schema?: ISchema;
+  readonly schema?: ISchema | undefined;
   /**
    * A flag indicating whether or not X-Ray tracing is enabled for the GraphQL API.
    *
    * @default - false
    */
-  readonly xrayEnabled?: boolean;
+  readonly xrayEnabled?: boolean | undefined;
 
   /**
    * A value indicating whether the API is accessible from anywhere (GLOBAL) or can only be access from a VPC (PRIVATE).
    *
    * @default - GLOBAL
    */
-  readonly visibility?: Visibility;
+  readonly visibility?: Visibility | undefined;
 
   /**
    * The domain name configuration for the GraphQL API
@@ -408,14 +408,14 @@ export interface GraphqlApiProps {
    *
    * @default - no domain name
    */
-  readonly domainName?: DomainOptions;
+  readonly domainName?: DomainOptions | undefined;
 
   /**
    * A value indicating whether the API to enable (ENABLED) or disable (DISABLED) introspection.
    *
    * @default IntrospectionConfig.ENABLED
    */
-  readonly introspectionConfig?: IntrospectionConfig;
+  readonly introspectionConfig?: IntrospectionConfig | undefined;
 
   /**
    * A number indicating the maximum depth resolvers should be accepted when handling queries.
@@ -423,7 +423,7 @@ export interface GraphqlApiProps {
    *
    * @default - The default value is 0 (or unspecified) which indicates no maximum depth.
    */
-  readonly queryDepthLimit?: number;
+  readonly queryDepthLimit?: number | undefined;
 
   /**
    * A number indicating the maximum number of resolvers that should be accepted when handling queries.
@@ -431,7 +431,7 @@ export interface GraphqlApiProps {
    *
    * @default - The default value is 0 (or unspecified), which will set the limit to 10000
    */
-  readonly resolverCountLimit?: number;
+  readonly resolverCountLimit?: number | undefined;
 
   /**
    * A map containing the list of resources with their properties and environment variables.
@@ -445,7 +445,7 @@ export interface GraphqlApiProps {
    *
    * @default - No environment variables.
    */
-  readonly environmentVariables?: { [key: string]: string };
+  readonly environmentVariables?: { [key: string]: string } | undefined;
 
   /**
    * The owner contact information for an API resource.
@@ -454,7 +454,7 @@ export interface GraphqlApiProps {
    *
    * @default - No owner contact.
    */
-  readonly ownerContact?: string;
+  readonly ownerContact?: string | undefined;
 }
 
 /**
@@ -471,28 +471,28 @@ export interface GraphqlApiAttributes {
    * the arn for the GraphQL Api
    * @default - autogenerated arn
    */
-  readonly graphqlApiArn?: string;
+  readonly graphqlApiArn?: string | undefined;
 
   /**
    * The GraphQl endpoint arn for the GraphQL API
    *
    * @default - none, required to construct event rules from imported APIs
    */
-  readonly graphQLEndpointArn?: string;
+  readonly graphQLEndpointArn?: string | undefined;
 
   /**
    * The GraphQl API visibility
    *
    * @default - GLOBAL
    */
-  readonly visibility?: Visibility;
+  readonly visibility?: Visibility | undefined;
 
   /**
    * The Authorization Types for this GraphQL Api
    *
    * @default - none, required to construct event rules from imported APIs
    */
-  readonly modes?: AuthorizationType[];
+  readonly modes?: AuthorizationType[] | undefined;
 }
 
 /**
@@ -604,7 +604,7 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @default - no api key
    */
-  public readonly apiKey?: string;
+  public readonly apiKey?: string | undefined;
 
   /**
    * the CloudWatch Log Group for this API

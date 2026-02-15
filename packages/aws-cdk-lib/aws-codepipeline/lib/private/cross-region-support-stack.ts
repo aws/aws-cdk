@@ -46,14 +46,14 @@ export interface CrossRegionSupportConstructProps {
    *
    * @default true
    */
-  readonly createKmsKey?: boolean;
+  readonly createKmsKey?: boolean | undefined;
 
   /**
    * Enables KMS key rotation for cross-account keys.
    *
    * @default - false (key rotation is disabled)
    */
-  readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean | undefined;
 }
 
 export class CrossRegionSupportConstruct extends Construct {
@@ -118,14 +118,14 @@ export interface CrossRegionSupportStackProps {
    *
    * @default true
    */
-  readonly createKmsKey?: boolean;
+  readonly createKmsKey?: boolean | undefined;
 
   /**
    * Enables KMS key rotation for cross-account keys.
    *
    * @default - false (key rotation is disabled)
    */
-  readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean | undefined;
 }
 
 /**

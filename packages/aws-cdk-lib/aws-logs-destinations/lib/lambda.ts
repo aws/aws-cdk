@@ -11,7 +11,7 @@ export interface LambdaDestinationOptions {
   /** Whether or not to add Lambda Permissions.
    * @default true
    */
-  readonly addPermissions?: boolean;
+  readonly addPermissions?: boolean | undefined;
 }
 
 /**

@@ -135,7 +135,7 @@ export class AssetManifestReader {
 interface AssetLike<A, B> {
   readonly source: A;
   readonly destinations: Record<string, B>;
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 type AssetType = 'files' | 'dockerImages';
@@ -169,7 +169,7 @@ export interface IManifestEntry {
   /**
    * A display name for this asset manifest entry, if given
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**
@@ -269,12 +269,12 @@ export class DestinationPattern {
   /**
    * Identifies the asset, by source.
    */
-  public readonly assetId?: string;
+  public readonly assetId?: string | undefined;
 
   /**
    * Identifies the destination where this asset will be published
    */
-  public readonly destinationId?: string;
+  public readonly destinationId?: string | undefined;
 
   constructor(assetId?: string, destinationId?: string) {
     this.assetId = assetId;

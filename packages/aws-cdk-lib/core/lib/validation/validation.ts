@@ -44,7 +44,7 @@ export interface IPolicyValidationPluginBeta1 {
    * software package. If the version is not provided or is not a valid semantic
    * version, it will be reported as `0.0.0`.
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 
   /**
    * The list of rule IDs that the plugin will evaluate. Used for analytics
@@ -52,7 +52,7 @@ export interface IPolicyValidationPluginBeta1 {
    *
    * @default - No rule is reported
    */
-  readonly ruleIds?: string[];
+  readonly ruleIds?: string[] | undefined;
 
   /**
    * The method that will be called by the CDK framework to perform

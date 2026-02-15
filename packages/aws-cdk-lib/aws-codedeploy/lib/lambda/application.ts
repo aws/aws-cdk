@@ -35,7 +35,7 @@ export interface LambdaApplicationProps {
    *
    * @default an auto-generated name will be used
    */
-  readonly applicationName?: string;
+  readonly applicationName?: string | undefined;
 }
 
 /**

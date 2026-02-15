@@ -43,7 +43,7 @@ export interface BaseNamespaceProps {
    *
    * @default none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 export enum NamespaceType {

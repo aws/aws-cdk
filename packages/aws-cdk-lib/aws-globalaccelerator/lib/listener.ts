@@ -28,7 +28,7 @@ export interface ListenerOptions {
    *
    * @default - logical ID of the resource
    */
-  readonly listenerName?: string;
+  readonly listenerName?: string | undefined;
 
   /**
    * The list of port ranges for the connections from clients to the accelerator
@@ -40,7 +40,7 @@ export interface ListenerOptions {
    *
    * @default ConnectionProtocol.TCP
    */
-  readonly protocol?: ConnectionProtocol;
+  readonly protocol?: ConnectionProtocol | undefined;
 
   /**
    * Client affinity to direct all requests from a user to the same endpoint
@@ -54,7 +54,7 @@ export interface ListenerOptions {
    *
    * @default ClientAffinity.NONE
    */
-  readonly clientAffinity?: ClientAffinity;
+  readonly clientAffinity?: ClientAffinity | undefined;
 }
 
 /**
@@ -81,7 +81,7 @@ export interface PortRange {
    *
    * @default - same as `fromPort`
    */
-  readonly toPort?: number;
+  readonly toPort?: number | undefined;
 }
 
 /**

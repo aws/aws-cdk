@@ -13,7 +13,7 @@ export interface VpcOriginProps extends cloudfront.OriginProps {
    * The domain name associated with your VPC origin.
    * @default - The default domain name of the endpoint.
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront waits for a response from the origin, also known as the origin response timeout.
@@ -24,7 +24,7 @@ export interface VpcOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(30)
    */
-  readonly readTimeout?: cdk.Duration;
+  readonly readTimeout?: cdk.Duration | undefined;
 
   /**
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
@@ -35,7 +35,7 @@ export interface VpcOriginProps extends cloudfront.OriginProps {
    *
    * @default Duration.seconds(5)
    */
-  readonly keepaliveTimeout?: cdk.Duration;
+  readonly keepaliveTimeout?: cdk.Duration | undefined;
 }
 
 /**

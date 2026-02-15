@@ -34,28 +34,28 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default A security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * The type of IP addresses to use
    *
    * @default IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * Indicates whether HTTP/2 is enabled.
    *
    * @default true
    */
-  readonly http2Enabled?: boolean;
+  readonly http2Enabled?: boolean | undefined;
 
   /**
    * The load balancer idle timeout, in seconds
    *
    * @default 60
    */
-  readonly idleTimeout?: Duration;
+  readonly idleTimeout?: Duration | undefined;
 
   /**
    * Indicates whether HTTP headers with invalid header fields are removed
@@ -63,7 +63,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly dropInvalidHeaderFields?: boolean;
+  readonly dropInvalidHeaderFields?: boolean | undefined;
 
   /**
    * Determines how the load balancer handles requests that
@@ -71,14 +71,14 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default DesyncMitigationMode.DEFENSIVE
    */
-  readonly desyncMitigationMode?: DesyncMitigationMode;
+  readonly desyncMitigationMode?: DesyncMitigationMode | undefined;
 
   /**
    * The client keep alive duration. The valid range is 60 to 604800 seconds (1 minute to 7 days).
    *
    * @default - Duration.seconds(3600)
    */
-  readonly clientKeepAlive?: Duration;
+  readonly clientKeepAlive?: Duration | undefined;
 
   /**
    * Indicates whether the Application Load Balancer should preserve the host header in the HTTP request
@@ -86,7 +86,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly preserveHostHeader?: boolean;
+  readonly preserveHostHeader?: boolean | undefined;
 
   /**
    * Indicates whether the two headers (x-amzn-tls-version and x-amzn-tls-cipher-suite),
@@ -100,7 +100,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
+  readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean | undefined;
 
   /**
    * Indicates whether the X-Forwarded-For header should preserve the source port
@@ -108,7 +108,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly preserveXffClientPort?: boolean;
+  readonly preserveXffClientPort?: boolean | undefined;
 
   /**
    * Enables you to modify, preserve, or remove the X-Forwarded-For header in the HTTP request
@@ -116,7 +116,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default XffHeaderProcessingMode.APPEND
    */
-  readonly xffHeaderProcessingMode?: XffHeaderProcessingMode;
+  readonly xffHeaderProcessingMode?: XffHeaderProcessingMode | undefined;
 
   /**
    * Indicates whether to allow a WAF-enabled load balancer to route requests to targets
@@ -124,7 +124,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default false
    */
-  readonly wafFailOpen?: boolean;
+  readonly wafFailOpen?: boolean | undefined;
 }
 
 /**
@@ -189,7 +189,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly isApplicationLoadBalancer = true;
   public readonly connections: ec2.Connections;
-  public readonly ipAddressType?: IpAddressType;
+  public readonly ipAddressType?: IpAddressType | undefined;
   public readonly listeners: ApplicationListener[];
   public readonly metrics: IApplicationLoadBalancerMetrics;
 
@@ -1140,7 +1140,7 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
    * If this interface is the result of an import call to fromApplicationLoadBalancerAttributes,
    * the vpc attribute will be undefined unless specified in the optional properties of that method.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The IP Address Type for this load balancer
@@ -1156,7 +1156,7 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
    *
    * @default IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * A list of listeners that have been added to the load balancer.
@@ -1194,14 +1194,14 @@ export interface ApplicationLoadBalancerAttributes {
    *
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
-  readonly loadBalancerCanonicalHostedZoneId?: string;
+  readonly loadBalancerCanonicalHostedZoneId?: string | undefined;
 
   /**
    * The DNS name of this load balancer
    *
    * @default - When not provided, LB cannot be used as Route53 Alias target.
    */
-  readonly loadBalancerDnsName?: string;
+  readonly loadBalancerDnsName?: string | undefined;
 
   /**
    * Whether the security group allows all outbound traffic or not
@@ -1210,7 +1210,7 @@ export interface ApplicationLoadBalancerAttributes {
    *
    * @default true
    */
-  readonly securityGroupAllowsAllOutbound?: boolean;
+  readonly securityGroupAllowsAllOutbound?: boolean | undefined;
 
   /**
    * The VPC this load balancer has been created in, if available
@@ -1218,7 +1218,7 @@ export interface ApplicationLoadBalancerAttributes {
    * @default - If the Load Balancer was imported and a VPC was not specified,
    * the VPC is not available.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
 }
 
@@ -1260,7 +1260,7 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    *
    * Undefined if optional vpc is not specified.
    */
-  public readonly vpc?: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc | undefined;
   public readonly metrics: IApplicationLoadBalancerMetrics;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
@@ -1309,9 +1309,9 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly loadBalancerArn: string;
   public readonly loadBalancerCanonicalHostedZoneId: string;
   public readonly loadBalancerDnsName: string;
-  public readonly ipAddressType?: IpAddressType;
+  public readonly ipAddressType?: IpAddressType | undefined;
   public readonly connections: ec2.Connections;
-  public readonly vpc?: ec2.IVpc;
+  public readonly vpc?: ec2.IVpc | undefined;
   public readonly metrics: IApplicationLoadBalancerMetrics;
 
   /**
@@ -1377,28 +1377,28 @@ export interface ApplicationLoadBalancerRedirectConfig {
    *
    * @default HTTP
    */
-  readonly sourceProtocol?: ApplicationProtocol;
+  readonly sourceProtocol?: ApplicationProtocol | undefined;
 
   /**
    * The port number to listen to
    *
    * @default 80
    */
-  readonly sourcePort?: number;
+  readonly sourcePort?: number | undefined;
 
   /**
    * The protocol of the redirection target
    *
    * @default HTTPS
    */
-  readonly targetProtocol?: ApplicationProtocol;
+  readonly targetProtocol?: ApplicationProtocol | undefined;
 
   /**
    * The port number to redirect to
    *
    * @default 443
    */
-  readonly targetPort?: number;
+  readonly targetPort?: number | undefined;
 
   /**
    * Allow anyone to connect to this listener
@@ -1413,6 +1413,6 @@ export interface ApplicationLoadBalancerRedirectConfig {
    *
    * @default true
    */
-  readonly open?: boolean;
+  readonly open?: boolean | undefined;
 
 }

@@ -17,7 +17,7 @@ interface ParallelJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -31,7 +31,7 @@ interface ParallelJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default - None
    */
-  readonly resultSelector?: { [key: string]: any };
+  readonly resultSelector?: { [key: string]: any } | undefined;
 
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.
@@ -41,7 +41,7 @@ interface ParallelJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default No parameters
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 }
 interface ParallelJsonataOptions extends JsonataCommonOptions {
   /**
@@ -52,7 +52,7 @@ interface ParallelJsonataOptions extends JsonataCommonOptions {
    *
    * @default No arguments
    */
-  readonly arguments?: { [name: string]: any };
+  readonly arguments?: { [name: string]: any } | undefined;
 }
 
 /**

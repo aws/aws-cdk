@@ -22,7 +22,7 @@ interface EmrContainersStartJobRunOptions {
    *
    * @default - No job run name
    */
-  readonly jobName?: string;
+  readonly jobName?: string | undefined;
 
   /**
    * The execution role for the job run.
@@ -33,7 +33,7 @@ interface EmrContainersStartJobRunOptions {
    *
    * @default - Automatically generated only when the provided `virtualClusterId` is not an encoded JSON path
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * The Amazon EMR release version to use for the job run.
@@ -49,7 +49,7 @@ interface EmrContainersStartJobRunOptions {
    *
    * @default - No application config
    */
-  readonly applicationConfig?: ApplicationConfiguration[];
+  readonly applicationConfig?: ApplicationConfiguration[] | undefined;
 
   /**
    * The job driver for the job run.
@@ -65,14 +65,14 @@ interface EmrContainersStartJobRunOptions {
    *
    * @default - logging enabled and resources automatically generated if `monitoring.logging` is set to `true`
    */
-  readonly monitoring?: Monitoring;
+  readonly monitoring?: Monitoring | undefined;
 
   /**
    * The tags assigned to job runs.
    *
    * @default - None
    */
-  readonly tags?: { [key: string]: string };
+  readonly tags?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -134,13 +134,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   public readonly grantPrincipal: iam.IPrincipal;
   private role: iam.IRole;
-  private readonly logGroup?: logs.ILogGroup;
-  private readonly logBucket?: s3.IBucket;
+  private readonly logGroup?: logs.ILogGroup | undefined;
+  private readonly logBucket?: s3.IBucket | undefined;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: EmrContainersStartJobRunProps) {
@@ -495,7 +495,7 @@ export interface SparkSubmitJobDriver {
    *
    * @default - No arguments defined
    */
-  readonly entryPointArguments?: sfn.TaskInput;
+  readonly entryPointArguments?: sfn.TaskInput | undefined;
 
   /**
    * The Spark submit parameters that are used for job runs.
@@ -504,7 +504,7 @@ export interface SparkSubmitJobDriver {
    *
    * @default - No spark submit parameters
    */
-  readonly sparkSubmitParameters?: string;
+  readonly sparkSubmitParameters?: string | undefined;
 }
 
 /**
@@ -605,7 +605,7 @@ export interface ApplicationConfiguration {
    *
    * @default - No other configurations
    */
-  readonly nestedConfig?: ApplicationConfiguration[];
+  readonly nestedConfig?: ApplicationConfiguration[] | undefined;
 
   /**
    * A set of properties specified within a configuration classification.
@@ -614,7 +614,7 @@ export interface ApplicationConfiguration {
    *
    * @default - No properties
    */
-  readonly properties?: { [key: string]: string };
+  readonly properties?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -629,7 +629,7 @@ export interface Monitoring {
    *
    * @default true - true if values are provided for `logGroup` or `logBucket`, false otherwise
    */
-  readonly logging?: boolean;
+  readonly logging?: boolean | undefined;
 
   /**
    * A log group for CloudWatch monitoring.
@@ -638,14 +638,14 @@ export interface Monitoring {
    *
    * @default - if `logging` is manually set to `true` and a `logGroup` is not provided, a `logGroup` will be automatically generated`.
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroup | undefined;
 
   /**
    * A log stream name prefix for Cloudwatch monitoring.
    *
    * @default - Log streams created in this log group have no default prefix
    */
-  readonly logStreamNamePrefix?: string;
+  readonly logStreamNamePrefix?: string | undefined;
 
   /**
    * Amazon S3 Bucket for monitoring log publishing.
@@ -654,14 +654,14 @@ export interface Monitoring {
    *
    * @default - if `logging` is manually set to `true` and a `logBucket` is not provided, a `logBucket` will be automatically generated`.
    */
-  readonly logBucket?: s3.IBucket;
+  readonly logBucket?: s3.IBucket | undefined;
 
   /**
    * Monitoring configurations for the persistent application UI.
    *
    * @default true
    */
-  readonly persistentAppUI?: boolean;
+  readonly persistentAppUI?: boolean | undefined;
 }
 
 /**

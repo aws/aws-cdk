@@ -18,7 +18,7 @@ export interface HttpStepFunctionsIntegrationProps {
    *
    * @default - specify only `StateMachineArn`
    */
-  readonly parameterMapping?: apigwv2.ParameterMapping;
+  readonly parameterMapping?: apigwv2.ParameterMapping | undefined;
 
   /**
    * The subtype of the HTTP integration.
@@ -27,7 +27,7 @@ export interface HttpStepFunctionsIntegrationProps {
    *
    * @default HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION
    */
-  readonly subtype?: apigwv2.HttpIntegrationSubtype;
+  readonly subtype?: apigwv2.HttpIntegrationSubtype | undefined;
 
   /**
    * Statemachine that Integrates with API Gateway

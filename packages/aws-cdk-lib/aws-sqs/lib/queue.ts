@@ -23,7 +23,7 @@ export interface QueueProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly queueName?: string;
+  readonly queueName?: string | undefined;
 
   /**
    * The number of seconds that Amazon SQS retains a message.
@@ -33,7 +33,7 @@ export interface QueueProps {
    *
    * @default Duration.days(4)
    */
-  readonly retentionPeriod?: Duration;
+  readonly retentionPeriod?: Duration | undefined;
 
   /**
    * The time in seconds that the delivery of all messages in the queue is delayed.
@@ -43,7 +43,7 @@ export interface QueueProps {
    *
    * @default 0
    */
-  readonly deliveryDelay?: Duration;
+  readonly deliveryDelay?: Duration | undefined;
 
   /**
    * The limit of how many bytes that a message can contain before Amazon SQS rejects it.
@@ -53,7 +53,7 @@ export interface QueueProps {
    *
    * @default 1MiB
    */
-  readonly maxMessageSizeBytes?: number;
+  readonly maxMessageSizeBytes?: number | undefined;
 
   /**
    * Default wait time for ReceiveMessage calls.
@@ -65,7 +65,7 @@ export interface QueueProps {
    *
    *  @default 0
    */
-  readonly receiveMessageWaitTime?: Duration;
+  readonly receiveMessageWaitTime?: Duration | undefined;
 
   /**
    * Timeout of processing a single message.
@@ -79,14 +79,14 @@ export interface QueueProps {
    *
    * @default Duration.seconds(30)
    */
-  readonly visibilityTimeout?: Duration;
+  readonly visibilityTimeout?: Duration | undefined;
 
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
    *
    * @default no dead-letter queue
    */
-  readonly deadLetterQueue?: DeadLetterQueue;
+  readonly deadLetterQueue?: DeadLetterQueue | undefined;
 
   /**
    * Whether the contents of the queue are encrypted, and by what type of key.
@@ -96,7 +96,7 @@ export interface QueueProps {
    *
    * @default SQS_MANAGED (SSE-SQS) for newly created queues
    */
-  readonly encryption?: QueueEncryption;
+  readonly encryption?: QueueEncryption | undefined;
 
   /**
    * External KMS key to use for queue encryption.
@@ -110,7 +110,7 @@ export interface QueueProps {
    *
    * @default If encryption is set to KMS and not specified, a key will be created.
    */
-  readonly encryptionMasterKey?: kms.IKey;
+  readonly encryptionMasterKey?: kms.IKey | undefined;
 
   /**
    * The length of time that Amazon SQS reuses a data key before calling KMS again.
@@ -120,14 +120,14 @@ export interface QueueProps {
    *
    * @default Duration.minutes(5)
    */
-  readonly dataKeyReuse?: Duration;
+  readonly dataKeyReuse?: Duration | undefined;
 
   /**
    * Whether this a first-in-first-out (FIFO) queue.
    *
    * @default false, unless queueName ends in '.fifo' or 'contentBasedDeduplication' is true.
    */
-  readonly fifo?: boolean;
+  readonly fifo?: boolean | undefined;
 
   /**
    * Specifies whether to enable content-based deduplication.
@@ -143,7 +143,7 @@ export interface QueueProps {
    *
    * @default false
    */
-  readonly contentBasedDeduplication?: boolean;
+  readonly contentBasedDeduplication?: boolean | undefined;
 
   /**
    * For high throughput for FIFO queues, specifies whether message deduplication
@@ -153,7 +153,7 @@ export interface QueueProps {
    *
    * @default DeduplicationScope.QUEUE
    */
-  readonly deduplicationScope?: DeduplicationScope;
+  readonly deduplicationScope?: DeduplicationScope | undefined;
 
   /**
    * For high throughput for FIFO queues, specifies whether the FIFO queue
@@ -163,7 +163,7 @@ export interface QueueProps {
    *
    * @default FifoThroughputLimit.PER_QUEUE
    */
-  readonly fifoThroughputLimit?: FifoThroughputLimit;
+  readonly fifoThroughputLimit?: FifoThroughputLimit | undefined;
 
   /**
    * Policy to apply when the queue is removed from the stack
@@ -175,7 +175,7 @@ export interface QueueProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Enforce encryption of data in transit.
@@ -183,7 +183,7 @@ export interface QueueProps {
    *
    * @default false
    */
-  readonly enforceSSL?: boolean;
+  readonly enforceSSL?: boolean | undefined;
 
   /**
    * The string that includes the parameters for the permissions for the dead-letter queue
@@ -191,7 +191,7 @@ export interface QueueProps {
    *
    * @default - All source queues can designate this queue as their dead-letter queue.
    */
-  readonly redriveAllowPolicy?: RedriveAllowPolicy;
+  readonly redriveAllowPolicy?: RedriveAllowPolicy | undefined;
 }
 
 /**
@@ -218,7 +218,7 @@ export interface RedriveAllowPolicy {
    *
    * @default - `RedrivePermission.BY_QUEUE` if `sourceQueues` is specified,`RedrivePermission.ALLOW_ALL` otherwise.
    */
-  readonly redrivePermission?: RedrivePermission;
+  readonly redrivePermission?: RedrivePermission | undefined;
 
   /**
    * Source queues that can designate this queue as their dead-letter queue.
@@ -234,7 +234,7 @@ export interface RedriveAllowPolicy {
    *
    * @default - Required when `redrivePermission` is `RedrivePermission.BY_QUEUE`, cannot be defined otherwise.
    */
-  readonly sourceQueues?: IQueue[];
+  readonly sourceQueues?: IQueue[] | undefined;
 }
 
 /**
@@ -379,7 +379,7 @@ export class Queue extends QueueBase {
   /**
    * If this queue is encrypted, this is the KMS key.
    */
-  public readonly encryptionMasterKey?: kms.IKey;
+  public readonly encryptionMasterKey?: kms.IKey | undefined;
 
   /**
    * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
@@ -389,12 +389,12 @@ export class Queue extends QueueBase {
   /**
    * Whether the contents of the queue are encrypted, and by what type of key.
    */
-  public readonly encryptionType?: QueueEncryption;
+  public readonly encryptionType?: QueueEncryption | undefined;
 
   /**
    * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
    */
-  public readonly deadLetterQueue?: DeadLetterQueue;
+  public readonly deadLetterQueue?: DeadLetterQueue | undefined;
 
   protected readonly autoCreatePolicy = true;
 
@@ -596,14 +596,14 @@ export class Queue extends QueueBase {
 }
 
 interface FifoProps {
-  readonly fifoQueue?: boolean;
-  readonly contentBasedDeduplication?: boolean;
-  readonly deduplicationScope?: DeduplicationScope;
-  readonly fifoThroughputLimit?: FifoThroughputLimit;
+  readonly fifoQueue?: boolean | undefined;
+  readonly contentBasedDeduplication?: boolean | undefined;
+  readonly deduplicationScope?: DeduplicationScope | undefined;
+  readonly fifoThroughputLimit?: FifoThroughputLimit | undefined;
 }
 
 interface EncryptionProps {
-  readonly kmsMasterKeyId?: string;
-  readonly kmsDataKeyReusePeriodSeconds?: number;
-  readonly sqsManagedSseEnabled?: boolean;
+  readonly kmsMasterKeyId?: string | undefined;
+  readonly kmsDataKeyReusePeriodSeconds?: number | undefined;
+  readonly sqsManagedSseEnabled?: boolean | undefined;
 }

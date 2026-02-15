@@ -31,7 +31,7 @@ export interface CodeDeployEcsContainerImageInput {
    *
    * @default IMAGE
    */
-  readonly taskDefinitionPlaceholder?: string;
+  readonly taskDefinitionPlaceholder?: string | undefined;
 }
 
 /**
@@ -54,7 +54,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    *
    * @default - one of this property, or `taskDefinitionTemplateFile`, is required
    */
-  readonly taskDefinitionTemplateInput?: codepipeline.Artifact;
+  readonly taskDefinitionTemplateInput?: codepipeline.Artifact | undefined;
 
   /**
    * The name of the ECS task definition template file.
@@ -66,7 +66,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    *
    * @default - one of this property, or `taskDefinitionTemplateInput`, is required
    */
-  readonly taskDefinitionTemplateFile?: codepipeline.ArtifactPath;
+  readonly taskDefinitionTemplateFile?: codepipeline.ArtifactPath | undefined;
 
   /**
    * The artifact containing the CodeDeploy AppSpec file.
@@ -81,7 +81,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    *
    * @default - one of this property, or `appSpecTemplateFile`, is required
    */
-  readonly appSpecTemplateInput?: codepipeline.Artifact;
+  readonly appSpecTemplateInput?: codepipeline.Artifact | undefined;
 
   /**
    * The name of the CodeDeploy AppSpec file.
@@ -95,7 +95,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    *
    * @default - one of this property, or `appSpecTemplateInput`, is required
    */
-  readonly appSpecTemplateFile?: codepipeline.ArtifactPath;
+  readonly appSpecTemplateFile?: codepipeline.ArtifactPath | undefined;
 
   /**
    * Configuration for dynamically updated images in the task definition.
@@ -104,7 +104,7 @@ export interface CodeDeployEcsDeployActionProps extends codepipeline.CommonAwsAc
    * that will be used to dynamically update the ECS task definition template
    * file prior to deployment. A maximum of 4 images can be given.
    */
-  readonly containerImageInputs?: CodeDeployEcsContainerImageInput[];
+  readonly containerImageInputs?: CodeDeployEcsContainerImageInput[] | undefined;
 }
 
 export class CodeDeployEcsDeployAction extends Action {

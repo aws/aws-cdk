@@ -17,21 +17,21 @@ export interface ConnectionPoolConfig {
    *
    * @default - none
    */
-  readonly maxConnections?: number;
+  readonly maxConnections?: number | undefined;
 
   /**
    * The maximum pending requests in the pool
    *
    * @default - none
    */
-  readonly maxPendingRequests?: number;
+  readonly maxPendingRequests?: number | undefined;
 
   /**
    * The maximum requests in the pool
    *
    * @default - none
    */
-  readonly maxRequests?: number;
+  readonly maxRequests?: number | undefined;
 }
 
 /**

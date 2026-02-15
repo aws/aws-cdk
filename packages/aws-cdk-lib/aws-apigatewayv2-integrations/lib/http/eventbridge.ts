@@ -21,7 +21,7 @@ export interface HttpEventBridgeIntegrationProps {
    * @default - set `Detail` to `$request.body.Detail`,
    * `DetailType` to `$request.body.DetailType`, and `Source` to `$request.body.Source`.
    */
-  readonly parameterMapping?: apigwv2.ParameterMapping;
+  readonly parameterMapping?: apigwv2.ParameterMapping | undefined;
 
   /**
    * The subtype of the HTTP integration.
@@ -30,7 +30,7 @@ export interface HttpEventBridgeIntegrationProps {
    *
    * @default HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS
    */
-  readonly subtype?: apigwv2.HttpIntegrationSubtype;
+  readonly subtype?: apigwv2.HttpIntegrationSubtype | undefined;
 
   /**
    * EventBridge event bus that integrates with API Gateway

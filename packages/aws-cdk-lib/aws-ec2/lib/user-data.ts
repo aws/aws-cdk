@@ -12,7 +12,7 @@ export interface LinuxUserDataOptions {
    *
    * @default "#!/bin/bash"
    */
-  readonly shebang?: string;
+  readonly shebang?: string | undefined;
 }
 
 /**
@@ -30,7 +30,7 @@ export interface WindowsUserDataOptions {
    *
    * @default false
    */
-  readonly persist?: boolean;
+  readonly persist?: boolean | undefined;
 }
 
 /**
@@ -54,13 +54,13 @@ export interface S3DownloadOptions {
    * @default Linux   - /tmp/bucketKey
    *          Windows - %TEMP%/bucketKey
    */
-  readonly localFile?: string;
+  readonly localFile?: string | undefined;
 
   /**
    * The region of the S3 Bucket (needed for access via VPC Gateway)
    * @default none
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
 }
 
@@ -79,7 +79,7 @@ export interface ExecuteFileOptions {
    *
    * @default No arguments are passed to the file.
    */
-  readonly arguments?: string;
+  readonly arguments?: string | undefined;
 
 }
 
@@ -322,14 +322,14 @@ export interface MultipartBodyOptions {
    *
    * @default undefined - body is not encoded
    */
-  readonly transferEncoding?: string;
+  readonly transferEncoding?: string | undefined;
 
   /**
    * The body of message.
    *
    * @default undefined - body will not be added to part
    */
-  readonly body?: string;
+  readonly body?: string | undefined;
 }
 
 /**
@@ -449,7 +449,7 @@ export interface MultipartUserDataOptions {
    *
    * @default `+AWS+CDK+User+Data+Separator==`
    */
-  readonly partsSeparator?: string;
+  readonly partsSeparator?: string | undefined;
 }
 
 /**

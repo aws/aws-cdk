@@ -54,7 +54,7 @@ export interface OriginFailoverConfig {
    *
    * @default - 500, 502, 503 and 504
    */
-  readonly statusCodes?: number[];
+  readonly statusCodes?: number[] | undefined;
 }
 
 /** The struct returned from `IOrigin.bind`. */
@@ -64,14 +64,14 @@ export interface OriginBindConfig {
    *
    * @default - nothing is returned
    */
-  readonly originProperty?: CfnDistribution.OriginProperty;
+  readonly originProperty?: CfnDistribution.OriginProperty | undefined;
 
   /**
    * The failover configuration for this Origin.
    *
    * @default - nothing is returned
    */
-  readonly failoverConfig?: OriginFailoverConfig;
+  readonly failoverConfig?: OriginFailoverConfig | undefined;
 
   /**
    * The selection criteria for how your origins are selected.
@@ -80,7 +80,7 @@ export interface OriginBindConfig {
    *
    * @default - OriginSelectionCriteria.DEFAULT
    */
-  readonly selectionCriteria?: OriginSelectionCriteria;
+  readonly selectionCriteria?: OriginSelectionCriteria | undefined;
 }
 
 /**
@@ -105,21 +105,21 @@ export interface OriginOptions {
    *
    * @default Duration.seconds(10)
    */
-  readonly connectionTimeout?: Duration;
+  readonly connectionTimeout?: Duration | undefined;
 
   /**
    * The number of times that CloudFront attempts to connect to the origin; valid values are 1, 2, or 3 attempts.
    *
    * @default 3
    */
-  readonly connectionAttempts?: number;
+  readonly connectionAttempts?: number | undefined;
 
   /**
    * A list of HTTP header names and values that CloudFront adds to requests it sends to the origin.
    *
    * @default {}
    */
-  readonly customHeaders?: Record<string, string>;
+  readonly customHeaders?: Record<string, string> | undefined;
 
   /**
    * When you enable Origin Shield in the AWS Region that has the lowest latency to your origin, you can get better network performance
@@ -128,28 +128,28 @@ export interface OriginOptions {
    *
    * @default - origin shield not enabled
    */
-  readonly originShieldRegion?: string;
+  readonly originShieldRegion?: string | undefined;
 
   /**
    * Origin Shield is enabled by setting originShieldRegion to a valid region, after this to disable Origin Shield again you must set this flag to false.
    *
    * @default - true
    */
-  readonly originShieldEnabled?: boolean;
+  readonly originShieldEnabled?: boolean | undefined;
 
   /**
    * A unique identifier for the origin. This value must be unique within the distribution.
    *
    * @default - an originid will be generated for you
    */
-  readonly originId?: string;
+  readonly originId?: string | undefined;
 
   /**
    * The unique identifier of an origin access control for this origin.
    *
    * @default - no origin access control
    */
-  readonly originAccessControlId?: string;
+  readonly originAccessControlId?: string | undefined;
 
   /**
    * The time that a request from CloudFront to the origin can stay open and wait for a response.
@@ -161,7 +161,7 @@ export interface OriginOptions {
    * @default undefined -  AWS CloudFront default is not enforcing a maximum value
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DownloadDistValuesOrigin.html#response-completion-timeout
    */
-  readonly responseCompletionTimeout?: Duration;
+  readonly responseCompletionTimeout?: Duration | undefined;
 }
 
 /**
@@ -174,7 +174,7 @@ export interface OriginProps extends OriginOptions {
    *
    * @default '/'
    */
-  readonly originPath?: string;
+  readonly originPath?: string | undefined;
 }
 
 /**
@@ -193,7 +193,7 @@ export interface OriginBindOptions {
    *
    * @default - no distribution id
    */
-  readonly distributionId?: string;
+  readonly distributionId?: string | undefined;
 }
 
 /**
@@ -202,15 +202,15 @@ export interface OriginBindOptions {
  */
 export abstract class OriginBase implements IOrigin {
   private readonly domainName: string;
-  private readonly originPath?: string;
-  private readonly connectionTimeout?: Duration;
-  private readonly connectionAttempts?: number;
-  private readonly customHeaders?: Record<string, string>;
-  private readonly originShieldRegion?: string;
+  private readonly originPath?: string | undefined;
+  private readonly connectionTimeout?: Duration | undefined;
+  private readonly connectionAttempts?: number | undefined;
+  private readonly customHeaders?: Record<string, string> | undefined;
+  private readonly originShieldRegion?: string | undefined;
   private readonly originShieldEnabled: boolean;
-  private readonly originId?: string;
-  private readonly originAccessControlId?: string;
-  private readonly responseCompletionTimeout?: Duration;
+  private readonly originId?: string | undefined;
+  private readonly originAccessControlId?: string | undefined;
+  private readonly responseCompletionTimeout?: Duration | undefined;
 
   protected constructor(domainName: string, props: OriginProps = {}) {
     validateIntInRangeOrUndefined('connectionTimeout', 1, 10, props.connectionTimeout?.toSeconds());

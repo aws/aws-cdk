@@ -76,7 +76,7 @@ export interface NetworkAclProps {
    *
    * @default CDK generated name
    */
-  readonly networkAclName?: string;
+  readonly networkAclName?: string | undefined;
 
   /**
    * The VPC in which to create the NetworkACL.
@@ -91,7 +91,7 @@ export interface NetworkAclProps {
    *
    * @default - No subnets associated
    */
-  readonly subnetSelection?: SubnetSelection;
+  readonly subnetSelection?: SubnetSelection | undefined;
 }
 
 /**
@@ -238,7 +238,7 @@ export interface CommonNetworkAclEntryOptions {
    * @default If you don't specify a NetworkAclName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly networkAclEntryName?: string;
+  readonly networkAclEntryName?: string | undefined;
 
   /**
    * The CIDR range to allow or deny.
@@ -255,7 +255,7 @@ export interface CommonNetworkAclEntryOptions {
    *
    * @default TrafficDirection.INGRESS
    */
-  readonly direction?: TrafficDirection;
+  readonly direction?: TrafficDirection | undefined;
 
   /**
    * Whether to allow or deny traffic that matches the rule; valid values are "allow" or "deny".
@@ -265,7 +265,7 @@ export interface CommonNetworkAclEntryOptions {
    *
    * @default ALLOW
    */
-  readonly ruleAction?: Action;
+  readonly ruleAction?: Action | undefined;
 
   /**
    * Rule number to assign to the entry, such as 100. ACL entries are processed in ascending order by rule number.
@@ -347,7 +347,7 @@ export interface SubnetNetworkAclAssociationProps {
    * @default If you don't specify a SubnetNetworkAclAssociationName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly subnetNetworkAclAssociationName?: string;
+  readonly subnetNetworkAclAssociationName?: string | undefined;
 
   /**
    * The Network ACL this association is defined for

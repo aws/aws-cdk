@@ -18,7 +18,7 @@ export interface ScheduleTargetBaseProps {
    *
    * @default - created by target
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
   /**
    * The SQS queue to be used as deadLetterQueue.
    *
@@ -28,14 +28,14 @@ export interface ScheduleTargetBaseProps {
    *
    * @default - no dead-letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 
   /**
    * Input passed to the target.
    *
    * @default - no input.
    */
-  readonly input?: ScheduleTargetInput;
+  readonly input?: ScheduleTargetInput | undefined;
 
   /**
    * The maximum age of a request that Scheduler sends to a target for processing.
@@ -45,7 +45,7 @@ export interface ScheduleTargetBaseProps {
    *
    * @default Duration.hours(24)
    */
-  readonly maxEventAge?: Duration;
+  readonly maxEventAge?: Duration | undefined;
   /**
    * The maximum number of times to retry when the target returns an error.
    *
@@ -54,7 +54,7 @@ export interface ScheduleTargetBaseProps {
    *
    * @default 185
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 }
 
 /**

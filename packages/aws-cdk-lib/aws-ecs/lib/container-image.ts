@@ -95,7 +95,7 @@ export interface ContainerImageConfig {
   /**
    * Specifies the credentials used to access the image repository.
    */
-  readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty;
+  readonly repositoryCredentials?: CfnTaskDefinition.RepositoryCredentialsProperty | undefined;
 }
 
 // These imports have to be at the end to prevent circular imports

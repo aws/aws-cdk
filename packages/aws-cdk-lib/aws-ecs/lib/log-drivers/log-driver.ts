@@ -46,11 +46,11 @@ export interface LogDriverConfig {
   /**
    * The configuration options to send to the log driver.
    */
-  readonly options?: { [key: string]: string };
+  readonly options?: { [key: string]: string } | undefined;
 
   /**
    * The secrets to pass to the log configuration.
    * @default - No secret options provided.
    */
-  readonly secretOptions?: CfnTaskDefinition.SecretProperty[];
+  readonly secretOptions?: CfnTaskDefinition.SecretProperty[] | undefined;
 }

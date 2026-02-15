@@ -61,12 +61,12 @@ export interface LogConfig {
    * Whether EventBridge include detailed event information in the records it generates.
    * @default no details
    */
-  readonly includeDetail?: IncludeDetail;
+  readonly includeDetail?: IncludeDetail | undefined;
   /**
    * Logging level
    * @default OFF
    */
-  readonly level?: Level;
+  readonly level?: Level | undefined;
 }
 
 /**
@@ -102,7 +102,7 @@ export interface IEventBus extends IResource, IEventBusRef {
    *
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-eventsourcename
    */
-  readonly eventSourceName?: string;
+  readonly eventSourceName?: string | undefined;
 
   /**
    * Create an EventBridge archive to send events to.
@@ -135,7 +135,7 @@ export interface EventBusProps {
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-name
    * @default - automatically generated name
    */
-  readonly eventBusName?: string;
+  readonly eventBusName?: string | undefined;
 
   /**
    * The partner event source to associate with this event bus resource
@@ -144,7 +144,7 @@ export interface EventBusProps {
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-eventsourcename
    * @default - no partner event source
    */
-  readonly eventSourceName?: string;
+  readonly eventSourceName?: string | undefined;
 
   /**
    * Dead-letter queue for the event bus
@@ -153,7 +153,7 @@ export interface EventBusProps {
    *
    * @default - no dead-letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.IQueue | undefined;
 
   /**
    * The event bus description.
@@ -164,19 +164,19 @@ export interface EventBusProps {
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The customer managed key that encrypt events on this event bus.
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
   /**
    * The Logging Configuration of the Èvent Bus.
    *  @default - no logging
    */
-  readonly logConfig?: LogConfig;
+  readonly logConfig?: LogConfig | undefined;
 }
 
 /**
@@ -210,7 +210,7 @@ export interface EventBusAttributes {
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-eventsourcename
    * @default - no partner event source
    */
-  readonly eventSourceName?: string;
+  readonly eventSourceName?: string | undefined;
 }
 
 abstract class EventBusBase extends Resource implements IEventBus, iam.IResourceWithPolicy {
@@ -233,7 +233,7 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
   /**
    * The name of the partner event source
    */
-  public abstract readonly eventSourceName?: string;
+  public abstract readonly eventSourceName?: string | undefined;
 
   /**
    * Collection of grant methods for an EventBus
@@ -567,7 +567,7 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusArn: string;
   public readonly eventBusName: string;
   public readonly eventBusPolicy: string;
-  public readonly eventSourceName?: string;
+  public readonly eventSourceName?: string | undefined;
 
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
     const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);

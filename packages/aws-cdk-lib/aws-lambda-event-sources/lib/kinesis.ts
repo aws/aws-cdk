@@ -13,7 +13,7 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
    *
    * @default - no timestamp
    */
-  readonly startingPositionTimestamp?: number;
+  readonly startingPositionTimestamp?: number | undefined;
 }
 
 /**

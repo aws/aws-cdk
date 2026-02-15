@@ -7,7 +7,7 @@ export interface CorsOptions {
    *
    * @default 204
    */
-  readonly statusCode?: number;
+  readonly statusCode?: number | undefined;
 
   /**
    * Specifies the list of origins that are allowed to make requests to this
@@ -30,7 +30,7 @@ export interface CorsOptions {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
    * @default Cors.DEFAULT_HEADERS
    */
-  readonly allowHeaders?: string[];
+  readonly allowHeaders?: string[] | undefined;
 
   /**
    * The Access-Control-Allow-Methods response header specifies the method or
@@ -41,7 +41,7 @@ export interface CorsOptions {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
    * @default Cors.ALL_METHODS
    */
-  readonly allowMethods?: string[];
+  readonly allowMethods?: string[] | undefined;
 
   /**
    * The Access-Control-Allow-Credentials response header tells browsers whether
@@ -56,7 +56,7 @@ export interface CorsOptions {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
    * @default false
    */
-  readonly allowCredentials?: boolean;
+  readonly allowCredentials?: boolean | undefined;
 
   /**
    * The Access-Control-Max-Age response header indicates how long the results of
@@ -69,7 +69,7 @@ export interface CorsOptions {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
    * @default - browser-specific (see reference)
    */
-  readonly maxAge?: Duration;
+  readonly maxAge?: Duration | undefined;
 
   /**
    * Sets Access-Control-Max-Age to -1, which means that caching is disabled.
@@ -77,7 +77,7 @@ export interface CorsOptions {
    *
    * @default - cache is enabled
    */
-  readonly disableCache?: boolean;
+  readonly disableCache?: boolean | undefined;
 
   /**
    * The Access-Control-Expose-Headers response header indicates which headers
@@ -92,7 +92,7 @@ export interface CorsOptions {
    * Cache-Control, Content-Language, Content-Type, Expires, Last-Modified,
    * Pragma
    */
-  readonly exposeHeaders?: string[];
+  readonly exposeHeaders?: string[] | undefined;
 }
 
 export class Cors {

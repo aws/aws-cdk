@@ -53,7 +53,7 @@ export interface BlockDevice {
    *
    * @default true - device mapping is left untouched
    */
-  readonly mappingEnabled?: boolean;
+  readonly mappingEnabled?: boolean | undefined;
 }
 
 /**
@@ -65,7 +65,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default - true for Amazon EC2 Auto Scaling, false otherwise (e.g. EBS)
    */
-  readonly deleteOnTermination?: boolean;
+  readonly deleteOnTermination?: boolean | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume.
@@ -79,7 +79,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default - none, required for `EbsDeviceVolumeType.IO1`
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The EBS volume type
@@ -88,7 +88,7 @@ export interface EbsDeviceOptionsBase {
    * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` or `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3` if
    * `@aws-cdk/aws-ec2:ebsDefaultGp3Volume` is enabled.
    */
-  readonly volumeType?: EbsDeviceVolumeType;
+  readonly volumeType?: EbsDeviceVolumeType | undefined;
 
   /**
    * The throughput to provision for a `gp3` volume.
@@ -102,7 +102,7 @@ export interface EbsDeviceOptionsBase {
    *
    * @default - 125 MiB/s.
    */
-  readonly throughput?: number;
+  readonly throughput?: number | undefined;
 }
 
 /**
@@ -117,7 +117,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default false
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 
   /**
    * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
@@ -128,7 +128,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default - If encrypted is true, the default aws/ebs KMS key will be used.
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKey?: IKey | undefined;
 }
 
 /**
@@ -142,7 +142,7 @@ export interface EbsDeviceSnapshotOptions extends EbsDeviceOptionsBase {
    *
    * @default - The snapshot size
    */
-  readonly volumeSize?: number;
+  readonly volumeSize?: number | undefined;
 }
 
 /**
@@ -154,7 +154,7 @@ export interface EbsDeviceProps extends EbsDeviceSnapshotOptions, EbsDeviceOptio
    *
    * @default - No snapshot will be used
    */
-  readonly snapshotId?: string;
+  readonly snapshotId?: string | undefined;
 }
 
 /**
@@ -300,7 +300,7 @@ export interface IVolume extends IResource, IVolumeRef {
    *
    * @attribute
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: IKey | undefined;
 
   /**
    * Grants permission to attach this Volume to an instance.
@@ -370,7 +370,7 @@ export interface VolumeProps {
    *
    * @default - The physical name will be allocated by CloudFormation at deployment time
    */
-  readonly volumeName?: string;
+  readonly volumeName?: string | undefined;
 
   /**
    * The Availability Zone in which to create the volume.
@@ -384,14 +384,14 @@ export interface VolumeProps {
    *
    * @default - If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
    */
-  readonly size?: Size;
+  readonly size?: Size | undefined;
 
   /**
    * The snapshot from which to create the volume. You must specify either a snapshot ID or a volume size.
    *
    * @default - The EBS volume is not created from a snapshot.
    */
-  readonly snapshotId?: string;
+  readonly snapshotId?: string | undefined;
 
   /**
    * Indicates whether Amazon EBS Multi-Attach is enabled.
@@ -400,7 +400,7 @@ export interface VolumeProps {
    *
    * @default false
    */
-  readonly enableMultiAttach?: boolean;
+  readonly enableMultiAttach?: boolean | undefined;
 
   /**
    * Specifies whether the volume should be encrypted. The effect of setting the encryption state to true depends on the volume origin
@@ -413,7 +413,7 @@ export interface VolumeProps {
    *
    * @default false
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 
   /**
    * The customer-managed encryption key that is used to encrypt the Volume. The encrypted property must
@@ -441,7 +441,7 @@ export interface VolumeProps {
    *
    * @default - The default KMS key for the account, region, and EC2 service is used.
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: IKey | undefined;
 
   /**
    * Indicates whether the volume is auto-enabled for I/O operations. By default, Amazon EBS disables I/O to the volume from attached EC2
@@ -450,14 +450,14 @@ export interface VolumeProps {
    *
    * @default false
    */
-  readonly autoEnableIo?: boolean;
+  readonly autoEnableIo?: boolean | undefined;
 
   /**
    * The type of the volume; what type of storage to use to form the EBS Volume.
    *
    * @default `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD`
    */
-  readonly volumeType?: EbsDeviceVolumeType;
+  readonly volumeType?: EbsDeviceVolumeType | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) to provision for the volume. The maximum ratio is 50 IOPS/GiB for PROVISIONED_IOPS_SSD,
@@ -469,14 +469,14 @@ export interface VolumeProps {
    *
    * @default None -- Required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS if omitted.
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * Policy to apply when the volume is removed from the stack
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The throughput that the volume supports, in MiB/s
@@ -484,7 +484,7 @@ export interface VolumeProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html#cfn-ec2-volume-throughput
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
-  readonly throughput?: number;
+  readonly throughput?: number | undefined;
 
   /**
    * Specifies the Amazon EBS Provisioned Rate for Volume Initialization (volume initialization rate),
@@ -498,7 +498,7 @@ export interface VolumeProps {
    *
    * @default undefined - The volume initialization rate is not set.
    */
-  readonly volumeInitializationRate?: Size;
+  readonly volumeInitializationRate?: Size | undefined;
 }
 
 /**
@@ -520,7 +520,7 @@ export interface VolumeAttributes {
    *
    * @default None -- The EBS Volume is not using a customer-managed KMS key for encryption.
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: IKey | undefined;
 }
 
 /**
@@ -529,7 +529,7 @@ export interface VolumeAttributes {
 abstract class VolumeBase extends Resource implements IVolume {
   public abstract readonly volumeId: string;
   public abstract readonly availabilityZone: string;
-  public abstract readonly encryptionKey?: IKey;
+  public abstract readonly encryptionKey?: IKey | undefined;
 
   public get volumeRef(): VolumeReference {
     return {
@@ -675,7 +675,7 @@ export class Volume extends VolumeBase {
 
   public readonly volumeId: string;
   public readonly availabilityZone: string;
-  public readonly encryptionKey?: IKey;
+  public readonly encryptionKey?: IKey | undefined;
 
   constructor(scope: Construct, id: string, props: VolumeProps) {
     super(scope, id, {

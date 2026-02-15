@@ -23,7 +23,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * @default - one of this property, or `imageFile`, is required
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
    */
-  readonly input?: codepipeline.Artifact;
+  readonly input?: codepipeline.Artifact | undefined;
 
   /**
    * The name of the JSON image definitions file to use for deployments.
@@ -36,7 +36,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * @default - one of this property, or `input`, is required
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
    */
-  readonly imageFile?: codepipeline.ArtifactPath;
+  readonly imageFile?: codepipeline.ArtifactPath | undefined;
 
   /**
    * The ECS Service to deploy.
@@ -49,7 +49,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * @default - 60 minutes
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
    */
-  readonly deploymentTimeout?: Duration;
+  readonly deploymentTimeout?: Duration | undefined;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcsDeployAction extends Action {
   private readonly props: EcsDeployActionProps;
-  private readonly deploymentTimeout?: number;
+  private readonly deploymentTimeout?: number | undefined;
 
   constructor(props: EcsDeployActionProps) {
     super({

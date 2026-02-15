@@ -16,7 +16,7 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
    *
    * @default Private subnets
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly subnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Existing security group to use for the task's ENIs
@@ -25,21 +25,21 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
    *
    * @default A new security group is created
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Placement constraints
    *
    * @default No constraints
    */
-  readonly placementConstraints?: ecs.PlacementConstraint[];
+  readonly placementConstraints?: ecs.PlacementConstraint[] | undefined;
 
   /**
    * Placement strategies
    *
    * @default No strategies
    */
-  readonly placementStrategies?: ecs.PlacementStrategy[];
+  readonly placementStrategies?: ecs.PlacementStrategy[] | undefined;
 }
 
 /**

@@ -6,8 +6,8 @@ import { UnscopedValidationError } from '../../../core';
 import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
-  readonly displayName?: string;
-  readonly data?: A;
+  readonly displayName?: string | undefined;
+  readonly data?: A | undefined;
 }
 
 export class GraphNode<A> {
@@ -16,8 +16,8 @@ export class GraphNode<A> {
   }
 
   public readonly dependencies: GraphNode<A>[] = [];
-  public readonly data?: A;
-  public readonly displayName?: string;
+  public readonly data?: A | undefined;
+  public readonly displayName?: string | undefined;
   private _parentGraph?: Graph<A>;
 
   constructor(public readonly id: string, props: GraphNodeProps<A> = {}) {
@@ -208,7 +208,7 @@ export interface GraphProps<A> extends GraphNodeProps<A> {
   /**
    * Initial nodes in the workflow
    */
-  readonly nodes?: GraphNode<A>[];
+  readonly nodes?: GraphNode<A>[] | undefined;
 }
 
 export class Graph<A> extends GraphNode<A> {

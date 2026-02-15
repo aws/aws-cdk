@@ -114,7 +114,7 @@ export interface InitCommandOptions {
    *
    * @default - Automatically generated based on index
    */
-  readonly key?: string;
+  readonly key?: string | undefined;
 
   /**
    * Sets environment variables for the command.
@@ -123,14 +123,14 @@ export interface InitCommandOptions {
    *
    * @default - Use current environment
    */
-  readonly env?: Record<string, string>;
+  readonly env?: Record<string, string> | undefined;
 
   /**
    * The working directory
    *
    * @default - Use default working directory
    */
-  readonly cwd?: string;
+  readonly cwd?: string | undefined;
 
   /**
    * Command to determine whether this command should be run
@@ -139,14 +139,14 @@ export interface InitCommandOptions {
    *
    * @default - Always run the command
    */
-  readonly testCmd?: string;
+  readonly testCmd?: string | undefined;
 
   /**
    * Continue running if this command fails
    *
    * @default false
    */
-  readonly ignoreErrors?: boolean;
+  readonly ignoreErrors?: boolean | undefined;
 
   /**
    * The duration to wait after a command has finished in case the command causes a reboot.
@@ -158,14 +158,14 @@ export interface InitCommandOptions {
    *
    * @default - 60 seconds
    */
-  readonly waitAfterCompletion?: InitCommandWaitDuration;
+  readonly waitAfterCompletion?: InitCommandWaitDuration | undefined;
 
   /**
    * Restart the given service(s) after this command has run
    *
    * @default - Do not restart any service
    */
-  readonly serviceRestartHandles?: InitServiceRestartHandle[];
+  readonly serviceRestartHandles?: InitServiceRestartHandle[] | undefined;
 }
 
 /**
@@ -270,7 +270,7 @@ export interface InitFileOptions {
    *
    * @default 'root'
    */
-  readonly group?: string;
+  readonly group?: string | undefined;
 
   /**
    * The name of the owning user for this file.
@@ -279,7 +279,7 @@ export interface InitFileOptions {
    *
    * @default 'root'
    */
-  readonly owner?: string;
+  readonly owner?: string | undefined;
 
   /**
    * A six-digit octal value representing the mode for this file.
@@ -293,7 +293,7 @@ export interface InitFileOptions {
    *
    * @default '000644'
    */
-  readonly mode?: string;
+  readonly mode?: string | undefined;
 
   /**
    * True if the inlined content (from a string or file) should be treated as base64 encoded.
@@ -301,14 +301,14 @@ export interface InitFileOptions {
    *
    * @default false
    */
-  readonly base64Encoded?: boolean;
+  readonly base64Encoded?: boolean | undefined;
 
   /**
    * Restart the given service after this file has been written
    *
    * @default - Do not restart any service
    */
-  readonly serviceRestartHandles?: InitServiceRestartHandle[];
+  readonly serviceRestartHandles?: InitServiceRestartHandle[] | undefined;
 }
 
 /**
@@ -550,7 +550,7 @@ export interface InitUserOptions {
    *
    * @default assigned by the OS
    */
-  readonly homeDir?: string;
+  readonly homeDir?: string | undefined;
 
   /**
    * A user ID. The creation process fails if the user name exists with a different user ID.
@@ -559,14 +559,14 @@ export interface InitUserOptions {
    *
    * @default assigned by the OS
    */
-  readonly userId?: number;
+  readonly userId?: number | undefined;
 
   /**
    * A list of group names. The user will be added to each group in the list.
    *
    * @default the user is not associated with any groups.
    */
-  readonly groups?: string[];
+  readonly groups?: string[] | undefined;
 }
 
 /**
@@ -620,14 +620,14 @@ export interface LocationPackageOptions {
    *
    * @default - Automatically generated
    */
-  readonly key?: string;
+  readonly key?: string | undefined;
 
   /**
    * Restart the given service after this command has run
    *
    * @default - Do not restart any service
    */
-  readonly serviceRestartHandles?: InitServiceRestartHandle[];
+  readonly serviceRestartHandles?: InitServiceRestartHandle[] | undefined;
 }
 
 /**
@@ -639,14 +639,14 @@ export interface NamedPackageOptions {
    *
    * @default - Install the latest version
    */
-  readonly version?: string[];
+  readonly version?: string[] | undefined;
 
   /**
    * Restart the given services after this command has run
    *
    * @default - Do not restart any service
    */
-  readonly serviceRestartHandles?: InitServiceRestartHandle[];
+  readonly serviceRestartHandles?: InitServiceRestartHandle[] | undefined;
 }
 
 /**
@@ -757,7 +757,7 @@ export interface InitServiceOptions {
    * @default - true if used in `InitService.enable()`, no change to service
    * state if used in `InitService.fromOptions()`.
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Make sure this service is running or not running after cfn-init finishes.
@@ -768,7 +768,7 @@ export interface InitServiceOptions {
    *
    * @default - same value as `enabled`.
    */
-  readonly ensureRunning?: boolean;
+  readonly ensureRunning?: boolean | undefined;
 
   /**
    * Restart service when the actions registered into the restartHandle have been performed
@@ -778,7 +778,7 @@ export interface InitServiceOptions {
    *
    * @default - No files trigger restart
    */
-  readonly serviceRestartHandle?: InitServiceRestartHandle;
+  readonly serviceRestartHandle?: InitServiceRestartHandle | undefined;
 
   /**
    * What service manager to use
@@ -788,7 +788,7 @@ export interface InitServiceOptions {
    *
    * @default ServiceManager.SYSVINIT for Linux images, ServiceManager.WINDOWS for Windows images
    */
-  readonly serviceManager?: ServiceManager;
+  readonly serviceManager?: ServiceManager | undefined;
 }
 
 /**
@@ -897,7 +897,7 @@ export interface InitSourceOptions {
    *
    * @default - Do not restart any service
    */
-  readonly serviceRestartHandles?: InitServiceRestartHandle[];
+  readonly serviceRestartHandles?: InitServiceRestartHandle[] | undefined;
 }
 
 /**
@@ -1078,28 +1078,28 @@ export interface SystemdConfigFileOptions {
    *
    * @default Root directory or home directory of specified user
    */
-  readonly cwd?: string;
+  readonly cwd?: string | undefined;
 
   /**
    * A description of this service
    *
    * @default - No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The user to execute the process under
    *
    * @default root
    */
-  readonly user?: string;
+  readonly user?: string | undefined;
 
   /**
    * The group to execute the process under
    *
    * @default root
    */
-  readonly group?: string;
+  readonly group?: string | undefined;
 
   /**
    * Keep the process running all the time
@@ -1109,21 +1109,21 @@ export interface SystemdConfigFileOptions {
    *
    * @default true
    */
-  readonly keepRunning?: boolean;
+  readonly keepRunning?: boolean | undefined;
 
   /**
    * Start the service after the networking part of the OS comes up
    *
    * @default true
    */
-  readonly afterNetwork?: boolean;
+  readonly afterNetwork?: boolean | undefined;
 
   /**
    * Environment variables to load when the process is running.
    *
    * @default - No environment variables set
    */
-  readonly environmentVariables?: Record<string, string>;
+  readonly environmentVariables?: Record<string, string> | undefined;
 
   /**
    * Loads environment variables from files when the process is running.
@@ -1131,5 +1131,5 @@ export interface SystemdConfigFileOptions {
    *
    * @default - No environment files
    */
-  readonly environmentFiles?: string[];
+  readonly environmentFiles?: string[] | undefined;
 }

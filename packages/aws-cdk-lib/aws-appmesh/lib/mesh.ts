@@ -128,21 +128,21 @@ export interface MeshProps {
    *
    * @default - A name is automatically generated
    */
-  readonly meshName?: string;
+  readonly meshName?: string | undefined;
 
   /**
    * Egress filter to be applied to the Mesh
    *
    * @default DROP_ALL
    */
-  readonly egressFilter?: MeshFilterType;
+  readonly egressFilter?: MeshFilterType | undefined;
 
   /**
    * Defines how upstream clients will discover VirtualNodes in the Mesh
    *
    * @default - No Service Discovery
    */
-  readonly serviceDiscovery?: MeshServiceDiscovery;
+  readonly serviceDiscovery?: MeshServiceDiscovery | undefined;
 }
 
 /**

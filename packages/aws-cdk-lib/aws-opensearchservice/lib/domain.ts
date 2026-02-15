@@ -36,7 +36,7 @@ export interface CapacityConfig {
    *
    * @default - no dedicated master nodes
    */
-  readonly masterNodes?: number;
+  readonly masterNodes?: number | undefined;
 
   /**
    * The hardware configuration of the computer that hosts the dedicated master
@@ -46,14 +46,14 @@ export interface CapacityConfig {
    *
    * @default - r5.large.search
    */
-  readonly masterNodeInstanceType?: string;
+  readonly masterNodeInstanceType?: string | undefined;
 
   /**
    * The number of data nodes (instances) to use in the Amazon OpenSearch Service domain.
    *
    * @default - 1
    */
-  readonly dataNodes?: number;
+  readonly dataNodes?: number | undefined;
 
   /**
    * The instance type for your data nodes, such as
@@ -63,14 +63,14 @@ export interface CapacityConfig {
    *
    * @default - r5.large.search
    */
-  readonly dataNodeInstanceType?: string;
+  readonly dataNodeInstanceType?: string | undefined;
 
   /**
    * The number of UltraWarm nodes (instances) to use in the Amazon OpenSearch Service domain.
    *
    * @default - no UltraWarm nodes
    */
-  readonly warmNodes?: number;
+  readonly warmNodes?: number | undefined;
 
   /**
    * The instance type for your UltraWarm node, such as `ultrawarm1.medium.search`.
@@ -80,7 +80,7 @@ export interface CapacityConfig {
    *
    * @default - ultrawarm1.medium.search
    */
-  readonly warmInstanceType?: string;
+  readonly warmInstanceType?: string | undefined;
 
   /**
    * Indicates whether Multi-AZ with Standby deployment option is enabled.
@@ -90,14 +90,14 @@ export interface CapacityConfig {
    * @default - multi-az with standby if the feature flag `ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY`
    * is true, no multi-az with standby otherwise
    */
-  readonly multiAzWithStandbyEnabled?: boolean;
+  readonly multiAzWithStandbyEnabled?: boolean | undefined;
 
   /**
    * Additional node options for the domain
    *
    * @default - no additional node options
    */
-  readonly nodeOptions?: NodeOptions[];
+  readonly nodeOptions?: NodeOptions[] | undefined;
 }
 
 /**
@@ -116,7 +116,7 @@ export interface ZoneAwarenessConfig {
    *
    * @default - false
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * If you enabled multiple Availability Zones (AZs), the number of AZs that you
@@ -124,7 +124,7 @@ export interface ZoneAwarenessConfig {
    *
    * @default - 2 if zone awareness is enabled.
    */
-  readonly availabilityZoneCount?: number;
+  readonly availabilityZoneCount?: number | undefined;
 }
 
 /**
@@ -140,7 +140,7 @@ export interface EbsOptions {
    *
    * @default - true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The number of I/O operations per second (IOPS) that the volume
@@ -149,7 +149,7 @@ export interface EbsOptions {
    *
    * @default - iops are not set.
    */
-  readonly iops?: number;
+  readonly iops?: number | undefined;
 
   /**
    * The throughput (in MiB/s) of the EBS volumes attached to data nodes.
@@ -157,7 +157,7 @@ export interface EbsOptions {
    *
    * @default - throughput is not set.
    */
-  readonly throughput?: number;
+  readonly throughput?: number | undefined;
 
   /**
    * The size (in GiB) of the EBS volume for each data node. The minimum and
@@ -168,14 +168,14 @@ export interface EbsOptions {
    *
    * @default 10
    */
-  readonly volumeSize?: number;
+  readonly volumeSize?: number | undefined;
 
   /**
    * The EBS volume type to use with the Amazon OpenSearch Service domain, such as standard, gp2, io1.
    *
    * @default gp2
    */
-  readonly volumeType?: ec2.EbsDeviceVolumeType;
+  readonly volumeType?: ec2.EbsDeviceVolumeType | undefined;
 }
 
 /**
@@ -189,14 +189,14 @@ export interface LoggingOptions {
    *
    * @default - false
    */
-  readonly slowSearchLogEnabled?: boolean;
+  readonly slowSearchLogEnabled?: boolean | undefined;
 
   /**
    * Log slow searches to this log group.
    *
    * @default - a new log group is created if slow search logging is enabled
    */
-  readonly slowSearchLogGroup?: logs.ILogGroupRef;
+  readonly slowSearchLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if slow index logging should be set up.
@@ -205,14 +205,14 @@ export interface LoggingOptions {
    *
    * @default - false
    */
-  readonly slowIndexLogEnabled?: boolean;
+  readonly slowIndexLogEnabled?: boolean | undefined;
 
   /**
    * Log slow indices to this log group.
    *
    * @default - a new log group is created if slow index logging is enabled
    */
-  readonly slowIndexLogGroup?: logs.ILogGroupRef;
+  readonly slowIndexLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if Amazon OpenSearch Service application logging should be set up.
@@ -221,14 +221,14 @@ export interface LoggingOptions {
    *
    * @default - false
    */
-  readonly appLogEnabled?: boolean;
+  readonly appLogEnabled?: boolean | undefined;
 
   /**
    * Log Amazon OpenSearch Service application logs to this log group.
    *
    * @default - a new log group is created if app logging is enabled
    */
-  readonly appLogGroup?: logs.ILogGroupRef;
+  readonly appLogGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * Specify if Amazon OpenSearch Service audit logging should be set up.
@@ -236,14 +236,14 @@ export interface LoggingOptions {
    *
    * @default - false
    */
-  readonly auditLogEnabled?: boolean;
+  readonly auditLogEnabled?: boolean | undefined;
 
   /**
    * Log Amazon OpenSearch Service audit logs to this log group.
    *
    * @default - a new log group is created if audit logging is enabled
    */
-  readonly auditLogGroup?: logs.ILogGroupRef;
+  readonly auditLogGroup?: logs.ILogGroupRef | undefined;
 }
 
 /**
@@ -257,14 +257,14 @@ export interface EncryptionAtRestOptions {
    *
    * @default - encryption at rest is disabled.
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Supply if using KMS key for encryption at rest.
    *
    * @default - uses default aws/es KMS key.
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -323,7 +323,7 @@ export interface SAMLOptionsProperty {
    *
    * @default - No master user name is configured
    */
-  readonly masterUserName?: string;
+  readonly masterUserName?: string | undefined;
 
   /**
    * The backend role that the SAML master user is mapped to.
@@ -332,28 +332,28 @@ export interface SAMLOptionsProperty {
    *
    * @default - The master user is not mapped to a backend role
    */
-  readonly masterBackendRole?: string;
+  readonly masterBackendRole?: string | undefined;
 
   /**
    * Element of the SAML assertion to use for backend roles.
    *
    * @default - roles
    */
-  readonly rolesKey?: string;
+  readonly rolesKey?: string | undefined;
 
   /**
    * Element of the SAML assertion to use for the user name.
    *
    * @default - NameID element of the SAML assertion fot the user name
    */
-  readonly subjectKey?: string;
+  readonly subjectKey?: string | undefined;
 
   /**
    * The duration, in minutes, after which a user session becomes inactive.
    *
    * @default - 60
    */
-  readonly sessionTimeoutMinutes?: number;
+  readonly sessionTimeoutMinutes?: number | undefined;
 }
 
 /**
@@ -365,14 +365,14 @@ export interface AdvancedSecurityOptions {
    *
    * @default - fine-grained access control is disabled
    */
-  readonly masterUserArn?: string;
+  readonly masterUserArn?: string | undefined;
 
   /**
    * Username for the master user. Only specify this or masterUserArn, but not both.
    *
    * @default - fine-grained access control is disabled
    */
-  readonly masterUserName?: string;
+  readonly masterUserName?: string | undefined;
 
   /**
    * Password for the master user.
@@ -383,7 +383,7 @@ export interface AdvancedSecurityOptions {
    *
    * @default - A Secrets Manager generated password
    */
-  readonly masterUserPassword?: cdk.SecretValue;
+  readonly masterUserPassword?: cdk.SecretValue | undefined;
 
   /**
    * True to enable SAML authentication for a domain.
@@ -392,7 +392,7 @@ export interface AdvancedSecurityOptions {
    *
    * @default - SAML authentication is disabled. Enabled if `samlAuthenticationOptions` is set.
    */
-  readonly samlAuthenticationEnabled?: boolean;
+  readonly samlAuthenticationEnabled?: boolean | undefined;
 
   /**
    * Container for information about the SAML configuration for OpenSearch Dashboards.
@@ -400,7 +400,7 @@ export interface AdvancedSecurityOptions {
    *
    * @default - no SAML authentication options
    */
-  readonly samlAuthenticationOptions?: SAMLOptionsProperty;
+  readonly samlAuthenticationOptions?: SAMLOptionsProperty | undefined;
 }
 
 /**
@@ -416,13 +416,13 @@ export interface CustomEndpointOptions {
    * The certificate to use
    * @default - create a new one
    */
-  readonly certificate?: ICertificateRef;
+  readonly certificate?: ICertificateRef | undefined;
 
   /**
    * The hosted zone in Route53 to create the CNAME record in
    * @default - do not create a CNAME
    */
-  readonly hostedZone?: route53.IHostedZone;
+  readonly hostedZone?: route53.IHostedZone | undefined;
 }
 
 export interface WindowStartTime {
@@ -464,21 +464,21 @@ export interface NodeConfig {
    *
    * @default - false
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The instance type for the nodes
    *
    * @default - m5.large.search
    */
-  readonly type?: string;
+  readonly type?: string | undefined;
 
   /**
    * The number of nodes of this type
    *
    * @default - 1
    */
-  readonly count?: number;
+  readonly count?: number | undefined;
 }
 
 /**
@@ -516,7 +516,7 @@ export interface DomainProps {
    *
    * @default - No access policies.
    */
-  readonly accessPolicies?: iam.PolicyStatement[];
+  readonly accessPolicies?: iam.PolicyStatement[] | undefined;
 
   /**
    * Additional options to specify for the Amazon OpenSearch Service domain.
@@ -524,21 +524,21 @@ export interface DomainProps {
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options
    * @default - no advanced options are specified
    */
-  readonly advancedOptions?: { [key: string]: (string) };
+  readonly advancedOptions?: { [key: string]: (string) } | undefined;
 
   /**
    * Configures Amazon OpenSearch Service to use Amazon Cognito authentication for OpenSearch Dashboards.
    *
    * @default - Cognito not used for authentication to OpenSearch Dashboards.
    */
-  readonly cognitoDashboardsAuth?: CognitoOptions;
+  readonly cognitoDashboardsAuth?: CognitoOptions | undefined;
 
   /**
    * Enforces a particular physical domain name.
    *
    * @default - A name will be auto-generated.
    */
-  readonly domainName?: string;
+  readonly domainName?: string | undefined;
 
   /**
    * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
@@ -546,21 +546,21 @@ export interface DomainProps {
    *
    * @default - 10 GiB General Purpose (SSD) volumes per node.
    */
-  readonly ebs?: EbsOptions;
+  readonly ebs?: EbsOptions | undefined;
 
   /**
    * The cluster capacity configuration for the Amazon OpenSearch Service domain.
    *
    * @default - 1 r5.large.search data node; no dedicated master nodes.
    */
-  readonly capacity?: CapacityConfig;
+  readonly capacity?: CapacityConfig | undefined;
 
   /**
    * The cluster zone awareness configuration for the Amazon OpenSearch Service domain.
    *
    * @default - no zone awareness (1 AZ)
    */
-  readonly zoneAwareness?: ZoneAwarenessConfig;
+  readonly zoneAwareness?: ZoneAwarenessConfig | undefined;
 
   /**
    * The Elasticsearch/OpenSearch version that your domain will leverage.
@@ -572,14 +572,14 @@ export interface DomainProps {
    *
    * @default - No encryption at rest
    */
-  readonly encryptionAtRest?: EncryptionAtRestOptions;
+  readonly encryptionAtRest?: EncryptionAtRestOptions | undefined;
 
   /**
    * Configuration log publishing configuration options.
    *
    * @default - No logs are published
    */
-  readonly logging?: LoggingOptions;
+  readonly logging?: LoggingOptions | undefined;
 
   /**
    * Specify true to enable node to node encryption.
@@ -587,7 +587,7 @@ export interface DomainProps {
    *
    * @default - Node to node encryption is not enabled.
    */
-  readonly nodeToNodeEncryption?: boolean;
+  readonly nodeToNodeEncryption?: boolean | undefined;
 
   /**
    * The hour in UTC during which the service takes an automated daily snapshot
@@ -596,7 +596,7 @@ export interface DomainProps {
    *
    * @default - Hourly automated snapshots not used
    */
-  readonly automatedSnapshotStartHour?: number;
+  readonly automatedSnapshotStartHour?: number | undefined;
 
   /**
    * Place the domain inside this VPC.
@@ -604,7 +604,7 @@ export interface DomainProps {
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/vpc.html
    * @default - Domain is not placed in a VPC.
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * The list of security groups that are associated with the VPC endpoints
@@ -615,7 +615,7 @@ export interface DomainProps {
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
    * @default - One new security group is created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The specific vpc subnets the domain will be placed in. You must provide one subnet for each Availability Zone
@@ -627,21 +627,21 @@ export interface DomainProps {
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
    * @default - All private subnets.
    */
-  readonly vpcSubnets?: ec2.SubnetSelection[];
+  readonly vpcSubnets?: ec2.SubnetSelection[] | undefined;
 
   /**
    * True to require that all traffic to the domain arrive over HTTPS.
    *
    * @default - false
    */
-  readonly enforceHttps?: boolean;
+  readonly enforceHttps?: boolean | undefined;
 
   /**
    * The minimum TLS version required for traffic to the domain.
    *
    * @default - TLSSecurityPolicy.TLS_1_2
    */
-  readonly tlsSecurityPolicy?: TLSSecurityPolicy;
+  readonly tlsSecurityPolicy?: TLSSecurityPolicy | undefined;
 
   /**
    * Specifies options for fine-grained access control.
@@ -651,7 +651,7 @@ export interface DomainProps {
    *
    * @default - fine-grained access control is disabled
    */
-  readonly fineGrainedAccessControl?: AdvancedSecurityOptions;
+  readonly fineGrainedAccessControl?: AdvancedSecurityOptions | undefined;
 
   /**
    * Configures the domain so that unsigned basic auth is enabled. If no master user is provided a default master user
@@ -665,7 +665,7 @@ export interface DomainProps {
    *
    * @default - false
    */
-  readonly useUnsignedBasicAuth?: boolean;
+  readonly useUnsignedBasicAuth?: boolean | undefined;
 
   /**
    * To upgrade an Amazon OpenSearch Service domain to a new version, rather than replacing the entire
@@ -675,14 +675,14 @@ export interface DomainProps {
    *
    * @default - false
    */
-  readonly enableVersionUpgrade?: boolean;
+  readonly enableVersionUpgrade?: boolean | undefined;
 
   /**
    * Policy to apply when the domain is removed from the stack
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 
   /**
    * To configure a custom domain configure these options
@@ -691,7 +691,7 @@ export interface DomainProps {
    *
    * @default - no custom domain endpoint will be configured
    */
-  readonly customEndpoint?: CustomEndpointOptions;
+  readonly customEndpoint?: CustomEndpointOptions | undefined;
 
   /**
    * Options for enabling a domain's off-peak window, during which OpenSearch Service can perform mandatory
@@ -707,7 +707,7 @@ export interface DomainProps {
    *
    * @default - Disabled for domains created before February 16, 2023. Enabled for domains created after. Enabled if `offPeakWindowStart` is set.
    */
-  readonly offPeakWindowEnabled?: boolean;
+  readonly offPeakWindowEnabled?: boolean | undefined;
 
   /**
    * Start time for the off-peak window, in Coordinated Universal Time (UTC).
@@ -716,7 +716,7 @@ export interface DomainProps {
    *
    * @default - 10:00 P.M. local time
    */
-  readonly offPeakWindowStart?: WindowStartTime;
+  readonly offPeakWindowStart?: WindowStartTime | undefined;
 
   /**
    * Specifies whether automatic service software updates are enabled for the domain.
@@ -725,7 +725,7 @@ export interface DomainProps {
    *
    * @default - false
    */
-  readonly enableAutoSoftwareUpdate?: boolean;
+  readonly enableAutoSoftwareUpdate?: boolean | undefined;
 
   /**
    * Specify either dual stack or IPv4 as your IP address type.
@@ -735,7 +735,7 @@ export interface DomainProps {
    *
    * @default - IpAddressType.IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * Specify whether to create a CloudWatch Logs resource policy or not.
@@ -751,7 +751,7 @@ export interface DomainProps {
    *
    * @default - false
    */
-  readonly suppressLogsResourcePolicy?: boolean;
+  readonly suppressLogsResourcePolicy?: boolean | undefined;
 
   /**
    * Whether to enable or disable cold storage on the domain. You must enable UltraWarm storage to enable cold storage.
@@ -760,7 +760,7 @@ export interface DomainProps {
    *
    * @default - undefined
    */
-  readonly coldStorageEnabled?: boolean;
+  readonly coldStorageEnabled?: boolean | undefined;
 }
 
 /**
@@ -1483,12 +1483,12 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * Master user password if fine grained access control is configured.
    */
-  public readonly masterUserPassword?: cdk.SecretValue;
+  public readonly masterUserPassword?: cdk.SecretValue | undefined;
 
-  private readonly _slowSearchLogGroup?: logs.ILogGroupRef;
-  private readonly _slowIndexLogGroup?: logs.ILogGroupRef;
-  private readonly _appLogGroup?: logs.ILogGroupRef;
-  private readonly _auditLogGroup?: logs.ILogGroupRef;
+  private readonly _slowSearchLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _slowIndexLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _appLogGroup?: logs.ILogGroupRef | undefined;
+  private readonly _auditLogGroup?: logs.ILogGroupRef | undefined;
 
   private readonly domain: CfnDomain;
 

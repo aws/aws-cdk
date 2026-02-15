@@ -7,14 +7,14 @@ export interface LifecycleRule {
   /**
    * A unique identifier for this rule. The value cannot be more than 255 characters.
    */
-  readonly id?: string;
+  readonly id?: string | undefined;
 
   /**
    * Whether this rule is enabled.
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Specifies a lifecycle rule that aborts incomplete multipart uploads to an Amazon S3 bucket.
@@ -29,7 +29,7 @@ export interface LifecycleRule {
    *
    * @default - Incomplete uploads are never aborted
    */
-  readonly abortIncompleteMultipartUploadAfter?: Duration;
+  readonly abortIncompleteMultipartUploadAfter?: Duration | undefined;
 
   /**
    * Indicates when objects are deleted from Amazon S3 and Amazon Glacier.
@@ -42,7 +42,7 @@ export interface LifecycleRule {
    *
    * @default - No expiration date
    */
-  readonly expirationDate?: Date;
+  readonly expirationDate?: Date | undefined;
 
   /**
    * Indicates the number of days after creation when objects are deleted from Amazon S3 and Amazon Glacier.
@@ -56,7 +56,7 @@ export interface LifecycleRule {
    *
    * @default - No expiration timeout
    */
-  readonly expiration?: Duration;
+  readonly expiration?: Duration | undefined;
 
   /**
    * Time between when a new version of the object is uploaded to the bucket and when old versions of the object expire.
@@ -73,7 +73,7 @@ export interface LifecycleRule {
    *
    * @default - No noncurrent version expiration
    */
-  readonly noncurrentVersionExpiration?: Duration;
+  readonly noncurrentVersionExpiration?: Duration | undefined;
 
   /**
    * Indicates a maximum number of noncurrent versions to retain.
@@ -83,7 +83,7 @@ export interface LifecycleRule {
    *
    * @default - No noncurrent versions to retain
    */
-  readonly noncurrentVersionsToRetain?: number;
+  readonly noncurrentVersionsToRetain?: number | undefined;
 
   /**
    * One or more transition rules that specify when non-current objects transition to a specified storage class.
@@ -93,7 +93,7 @@ export interface LifecycleRule {
    * If you specify a transition and expiration time, the expiration time
    * must be later than the transition time.
    */
-  readonly noncurrentVersionTransitions?: NoncurrentVersionTransition[];
+  readonly noncurrentVersionTransitions?: NoncurrentVersionTransition[] | undefined;
 
   /**
    * One or more transition rules that specify when an object transitions to a specified storage class.
@@ -104,21 +104,21 @@ export interface LifecycleRule {
    *
    * @default - No transition rules
    */
-  readonly transitions?: Transition[];
+  readonly transitions?: Transition[] | undefined;
 
   /**
    * Object key prefix that identifies one or more objects to which this rule applies.
    *
    * @default - Rule applies to all objects
    */
-  readonly prefix?: string;
+  readonly prefix?: string | undefined;
 
   /**
    * The TagFilter property type specifies tags to use to identify a subset of objects for an Amazon S3 bucket.
    *
    * @default - Rule applies to all objects
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: {[tag: string]: any} | undefined;
 
   /**
    * Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions.
@@ -126,7 +126,7 @@ export interface LifecycleRule {
    *
    * @default false
    */
-  readonly expiredObjectDeleteMarker?: boolean;
+  readonly expiredObjectDeleteMarker?: boolean | undefined;
 
   /**
    * Specifies the maximum object size in bytes for this rule to apply to.
@@ -134,7 +134,7 @@ export interface LifecycleRule {
    *
    * @default - No rule
    */
-  readonly objectSizeLessThan?: number;
+  readonly objectSizeLessThan?: number | undefined;
 
   /**
    * Specifies the minimum object size in bytes for this rule to apply to.
@@ -142,7 +142,7 @@ export interface LifecycleRule {
    *
    * @default - No rule
    */
-  readonly objectSizeGreaterThan?: number;
+  readonly objectSizeGreaterThan?: number | undefined;
 }
 
 /**
@@ -161,14 +161,14 @@ export interface Transition {
    *
    * @default - No transition date.
    */
-  readonly transitionDate?: Date;
+  readonly transitionDate?: Date | undefined;
 
   /**
    * Indicates the number of days after creation when objects are transitioned to the specified storage class.
    *
    * @default - No transition count.
    */
-  readonly transitionAfter?: Duration;
+  readonly transitionAfter?: Duration | undefined;
 }
 
 /**
@@ -192,7 +192,7 @@ export interface NoncurrentVersionTransition {
    *
    * @default - No noncurrent version retained.
    */
-  readonly noncurrentVersionsToRetain?: number;
+  readonly noncurrentVersionsToRetain?: number | undefined;
 }
 
 /**

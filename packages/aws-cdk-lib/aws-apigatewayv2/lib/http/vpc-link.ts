@@ -36,21 +36,21 @@ export interface VpcLinkProps {
    * The name used to label and identify the VPC link.
    * @default - automatically generated name
    */
-  readonly vpcLinkName?: string;
+  readonly vpcLinkName?: string | undefined;
 
   /**
    * A list of subnets for the VPC link.
    *
    * @default - private subnets of the provided VPC. Use `addSubnets` to add more subnets
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly subnets?: ec2.SubnetSelection | undefined;
 
   /**
    * A list of security groups for the VPC link.
    *
    * @default - no security groups. Use `addSecurityGroups` to add security groups
    */
-  readonly securityGroups?: ec2.ISecurityGroupRef[];
+  readonly securityGroups?: ec2.ISecurityGroupRef[] | undefined;
 }
 
 /**

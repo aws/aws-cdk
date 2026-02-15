@@ -11,14 +11,14 @@ export interface HttpRoutePathMatchConfig {
    *
    * @default - no matching will be performed on the complete URL path
    */
-  readonly wholePathMatch?: CfnRoute.HttpPathMatchProperty;
+  readonly wholePathMatch?: CfnRoute.HttpPathMatchProperty | undefined;
 
   /**
    * Route configuration for matching on the prefix of the URL path of the request.
    *
    * @default - no matching will be performed on the prefix of the URL path
    */
-  readonly prefixPathMatch?: string;
+  readonly prefixPathMatch?: string | undefined;
 }
 
 /**
@@ -103,28 +103,28 @@ export interface HttpGatewayRoutePathMatchConfig {
    *
    * @default - no matching will be performed on the complete URL path
    */
-  readonly wholePathMatch?: CfnGatewayRoute.HttpPathMatchProperty;
+  readonly wholePathMatch?: CfnGatewayRoute.HttpPathMatchProperty | undefined;
 
   /**
    * Gateway route configuration for matching on the prefix of the URL path of the request.
    *
    * @default - no matching will be performed on the prefix of the URL path
    */
-  readonly prefixPathMatch?: string;
+  readonly prefixPathMatch?: string | undefined;
 
   /**
    * Gateway route configuration for rewriting the complete URL path of the request..
    *
    * @default - no rewrite will be performed on the request's complete URL path
    */
-  readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty;
+  readonly wholePathRewrite?: CfnGatewayRoute.HttpGatewayRoutePathRewriteProperty | undefined;
 
   /**
    * Gateway route configuration for rewriting the prefix of the URL path of the request.
    *
    * @default - rewrites the request's URL path to '/'
    */
-  readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty;
+  readonly prefixPathRewrite?: CfnGatewayRoute.HttpGatewayRoutePrefixRewriteProperty | undefined;
 }
 
 /**

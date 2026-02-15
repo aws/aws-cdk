@@ -32,35 +32,35 @@ export interface ResponseHeadersPolicyProps {
    *
    * @default - generated from the `id`
    */
-  readonly responseHeadersPolicyName?: string;
+  readonly responseHeadersPolicyName?: string | undefined;
 
   /**
    * A comment to describe the response headers policy.
    *
    * @default - no comment
    */
-  readonly comment?: string;
+  readonly comment?: string | undefined;
 
   /**
    * A configuration for a set of HTTP response headers that are used for cross-origin resource sharing (CORS).
    *
    * @default - no cors behavior
    */
-  readonly corsBehavior?: ResponseHeadersCorsBehavior;
+  readonly corsBehavior?: ResponseHeadersCorsBehavior | undefined;
 
   /**
    * A configuration for a set of custom HTTP response headers.
    *
    * @default - no custom headers behavior
    */
-  readonly customHeadersBehavior?: ResponseCustomHeadersBehavior;
+  readonly customHeadersBehavior?: ResponseCustomHeadersBehavior | undefined;
 
   /**
    * A configuration for a set of security-related HTTP response headers.
    *
    * @default - no security headers behavior
    */
-  readonly securityHeadersBehavior?: ResponseSecurityHeadersBehavior;
+  readonly securityHeadersBehavior?: ResponseSecurityHeadersBehavior | undefined;
 
   /**
    * A list of HTTP response headers that CloudFront removes from HTTP responses
@@ -68,7 +68,7 @@ export interface ResponseHeadersPolicyProps {
    *
    * @default - no headers are removed
    */
-  readonly removeHeaders?: string[];
+  readonly removeHeaders?: string[] | undefined;
 
   /**
    * The percentage of responses that you want CloudFront to add the Server-Timing
@@ -76,7 +76,7 @@ export interface ResponseHeadersPolicyProps {
    *
    * @default - no Server-Timing header is added to HTTP responses
    */
-  readonly serverTimingSamplingRate?: number;
+  readonly serverTimingSamplingRate?: number | undefined;
 }
 
 /**
@@ -268,14 +268,14 @@ export interface ResponseHeadersCorsBehavior {
    *
    * @default - no headers exposed
    */
-  readonly accessControlExposeHeaders?: string[];
+  readonly accessControlExposeHeaders?: string[] | undefined;
 
   /**
    * A number that CloudFront uses as the value for the Access-Control-Max-Age HTTP response header.
    *
    * @default - no max age
    */
-  readonly accessControlMaxAge?: Duration;
+  readonly accessControlMaxAge?: Duration | undefined;
 
   /**
    * A Boolean that determines whether CloudFront overrides HTTP response headers received from the origin with the ones specified in this response headers policy.
@@ -327,42 +327,42 @@ export interface ResponseSecurityHeadersBehavior {
    *
    * @default - no content security policy
    */
-  readonly contentSecurityPolicy?: ResponseHeadersContentSecurityPolicy;
+  readonly contentSecurityPolicy?: ResponseHeadersContentSecurityPolicy | undefined;
 
   /**
    * Determines whether CloudFront includes the X-Content-Type-Options HTTP response header with its value set to nosniff.
    *
    * @default - no content type options
    */
-  readonly contentTypeOptions?: ResponseHeadersContentTypeOptions;
+  readonly contentTypeOptions?: ResponseHeadersContentTypeOptions | undefined;
 
   /**
    * Determines whether CloudFront includes the X-Frame-Options HTTP response header and the header’s value.
    *
    * @default - no frame options
    */
-  readonly frameOptions?: ResponseHeadersFrameOptions;
+  readonly frameOptions?: ResponseHeadersFrameOptions | undefined;
 
   /**
    * Determines whether CloudFront includes the Referrer-Policy HTTP response header and the header’s value.
    *
    * @default - no referrer policy
    */
-  readonly referrerPolicy?: ResponseHeadersReferrerPolicy;
+  readonly referrerPolicy?: ResponseHeadersReferrerPolicy | undefined;
 
   /**
    * Determines whether CloudFront includes the Strict-Transport-Security HTTP response header and the header’s value.
    *
    * @default - no strict transport security
    */
-  readonly strictTransportSecurity?: ResponseHeadersStrictTransportSecurity;
+  readonly strictTransportSecurity?: ResponseHeadersStrictTransportSecurity | undefined;
 
   /**
    * Determines whether CloudFront includes the X-XSS-Protection HTTP response header and the header’s value.
    *
    * @default - no xss protection
    */
-  readonly xssProtection?: ResponseHeadersXSSProtection;
+  readonly xssProtection?: ResponseHeadersXSSProtection | undefined;
 }
 
 /**
@@ -438,7 +438,7 @@ export interface ResponseHeadersStrictTransportSecurity {
    *
    * @default false
    */
-  readonly includeSubdomains?: boolean;
+  readonly includeSubdomains?: boolean | undefined;
 
   /**
    * A Boolean that determines whether CloudFront overrides the Strict-Transport-Security HTTP response header
@@ -451,7 +451,7 @@ export interface ResponseHeadersStrictTransportSecurity {
    *
    * @default false
    */
-  readonly preload?: boolean;
+  readonly preload?: boolean | undefined;
 }
 
 /**
@@ -463,7 +463,7 @@ export interface ResponseHeadersXSSProtection {
    *
    * @default false
    */
-  readonly modeBlock?: boolean;
+  readonly modeBlock?: boolean | undefined;
 
   /**
    * A Boolean that determines whether CloudFront overrides the X-XSS-Protection HTTP response header
@@ -484,7 +484,7 @@ export interface ResponseHeadersXSSProtection {
    *
    * @default - no report uri
    */
-  readonly reportUri?: string;
+  readonly reportUri?: string | undefined;
 }
 
 /**

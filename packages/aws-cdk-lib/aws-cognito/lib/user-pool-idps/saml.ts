@@ -16,7 +16,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - the unique ID of the construct
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * Identifiers
@@ -25,7 +25,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[];
+  readonly identifiers?: string[] | undefined;
 
   /**
    * The SAML metadata.
@@ -37,7 +37,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - false
    */
-  readonly idpSignout?: boolean;
+  readonly idpSignout?: boolean | undefined;
 
   /**
    * Whether to require encrypted SAML assertions from IdP.
@@ -46,7 +46,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default false
    */
-  readonly encryptedResponses?: boolean;
+  readonly encryptedResponses?: boolean | undefined;
 
   /**
    * The signing algorithm for SAML requests.
@@ -55,14 +55,14 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - don't sign requests
    */
-  readonly requestSigningAlgorithm?: SigningAlgorithm;
+  readonly requestSigningAlgorithm?: SigningAlgorithm | undefined;
 
   /**
    * Whether to enable IdP-initiated SAML auth flows.
    *
    * @default false
    */
-  readonly idpInitiated?: boolean;
+  readonly idpInitiated?: boolean | undefined;
 }
 
 /**

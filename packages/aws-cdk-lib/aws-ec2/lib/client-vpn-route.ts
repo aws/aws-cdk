@@ -27,7 +27,7 @@ export interface ClientVpnRouteOptions {
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The target for the route
@@ -68,14 +68,14 @@ export interface ClientVpnRouteProps extends ClientVpnRouteOptions {
    * The client VPN endpoint to which to add the route.
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndpoint?: IClientVpnEndpoint;
+  readonly clientVpnEndpoint?: IClientVpnEndpoint | undefined;
 
   /**
    * The client VPN endpoint to which to add the route.
    * @deprecated Use `clientVpnEndpoint` instead
    * @default clientVpnEndpoint is required
    */
-  readonly clientVpnEndoint?: IClientVpnEndpoint;
+  readonly clientVpnEndoint?: IClientVpnEndpoint | undefined;
 }
 
 /**

@@ -20,7 +20,7 @@ export interface BasicScheduledActionProps {
    * @default - UTC
    *
    */
-  readonly timeZone?: string;
+  readonly timeZone?: string | undefined;
   /**
    * When to perform this action.
    *
@@ -35,14 +35,14 @@ export interface BasicScheduledActionProps {
    *
    * @default - The rule is activate immediately.
    */
-  readonly startTime?: Date;
+  readonly startTime?: Date | undefined;
 
   /**
    * When this scheduled action expires.
    *
    * @default - The rule never expires.
    */
-  readonly endTime?: Date;
+  readonly endTime?: Date | undefined;
 
   /**
    * The new minimum capacity.
@@ -53,7 +53,7 @@ export interface BasicScheduledActionProps {
    *
    * @default - No new minimum capacity.
    */
-  readonly minCapacity?: number;
+  readonly minCapacity?: number | undefined;
 
   /**
    * The new maximum capacity.
@@ -64,7 +64,7 @@ export interface BasicScheduledActionProps {
    *
    * @default - No new maximum capacity.
    */
-  readonly maxCapacity?: number;
+  readonly maxCapacity?: number | undefined;
 
   /**
    * The new desired capacity.
@@ -75,7 +75,7 @@ export interface BasicScheduledActionProps {
    *
    * @default - No new desired capacity.
    */
-  readonly desiredCapacity?: number;
+  readonly desiredCapacity?: number | undefined;
 }
 
 /**

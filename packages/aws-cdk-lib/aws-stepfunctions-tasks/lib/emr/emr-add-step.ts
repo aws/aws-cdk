@@ -50,7 +50,7 @@ interface EmrAddStepOptions {
    *
    * @default ActionOnFailure.CONTINUE
    */
-  readonly actionOnFailure?: ActionOnFailure;
+  readonly actionOnFailure?: ActionOnFailure | undefined;
 
   /**
    * A path to a JAR file run during the step.
@@ -66,7 +66,7 @@ interface EmrAddStepOptions {
    *
    * @default - No mainClass
    */
-  readonly mainClass?: string;
+  readonly mainClass?: string | undefined;
 
   /**
    * A list of command line arguments passed to the JAR file's main function when executed.
@@ -75,7 +75,7 @@ interface EmrAddStepOptions {
    *
    * @default - No args
    */
-  readonly args?: string[];
+  readonly args?: string[] | undefined;
 
   /**
    * A list of Java properties that are set when the step runs. You can use these properties to pass key value pairs to your main function.
@@ -84,7 +84,7 @@ interface EmrAddStepOptions {
    *
    * @default - No properties
    */
-  readonly properties?: { [key: string]: string };
+  readonly properties?: { [key: string]: string } | undefined;
 
   /**
    * The Amazon Resource Name (ARN) of the runtime role for a step on the cluster.
@@ -93,7 +93,7 @@ interface EmrAddStepOptions {
    *
    * @default - Uses EC2 instance profile role
    */
-  readonly executionRoleArn?: string;
+  readonly executionRoleArn?: string | undefined;
 }
 
 /**
@@ -155,8 +155,8 @@ export class EmrAddStep extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   private readonly actionOnFailure: ActionOnFailure;
   private readonly integrationPattern: sfn.IntegrationPattern;

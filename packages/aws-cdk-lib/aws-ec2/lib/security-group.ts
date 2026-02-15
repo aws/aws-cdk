@@ -84,7 +84,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   public readonly canInlineRule = false;
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
-  public readonly defaultPort?: Port;
+  public readonly defaultPort?: Port | undefined;
 
   private peerAsTokenCount: number = 0;
 
@@ -253,14 +253,14 @@ export interface SecurityGroupProps {
    * @default If you don't specify a GroupName, AWS CloudFormation generates a
    * unique physical ID and uses that ID for the group name.
    */
-  readonly securityGroupName?: string;
+  readonly securityGroupName?: string | undefined;
 
   /**
    * A description of the security group.
    *
    * @default The default name will be the construct's CDK path.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The VPC in which to create the security group.
@@ -278,7 +278,7 @@ export interface SecurityGroupProps {
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * Whether to allow all outbound ipv6 traffic by default.
@@ -291,7 +291,7 @@ export interface SecurityGroupProps {
    *
    * @default false
    */
-  readonly allowAllIpv6Outbound?: boolean;
+  readonly allowAllIpv6Outbound?: boolean | undefined;
 
   /**
    * Whether to disable inline ingress and egress rule optimization.
@@ -307,7 +307,7 @@ export interface SecurityGroupProps {
    *
    * @default false
    */
-  readonly disableInlineRules?: boolean;
+  readonly disableInlineRules?: boolean | undefined;
 }
 
 /**
@@ -324,7 +324,7 @@ export interface SecurityGroupImportOptions {
    *
    * @default true
    */
-  readonly allowAllOutbound?: boolean;
+  readonly allowAllOutbound?: boolean | undefined;
 
   /**
    * Mark the SecurityGroup as having been created allowing all outbound ipv6 traffic
@@ -335,7 +335,7 @@ export interface SecurityGroupImportOptions {
    *
    * @default false
    */
-  readonly allowAllIpv6Outbound?: boolean;
+  readonly allowAllIpv6Outbound?: boolean | undefined;
 
   /**
    * If a SecurityGroup is mutable CDK can add rules to existing groups
@@ -346,7 +346,7 @@ export interface SecurityGroupImportOptions {
    *
    * @default true
    */
-  readonly mutable?: boolean;
+  readonly mutable?: boolean | undefined;
 }
 
 /**
@@ -780,7 +780,7 @@ export interface ConnectionRule {
    *
    * @default tcp
    */
-  readonly protocol?: string;
+  readonly protocol?: string | undefined;
 
   /**
    * Start of port range for the TCP and UDP protocols, or an ICMP type number.
@@ -798,7 +798,7 @@ export interface ConnectionRule {
    *
    * @default If toPort is not specified, it will be the same as fromPort.
    */
-  readonly toPort?: number;
+  readonly toPort?: number | undefined;
 
   /**
    * Description of this connection. It is applied to both the ingress rule
@@ -806,7 +806,7 @@ export interface ConnectionRule {
    *
    * @default No description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -856,7 +856,7 @@ interface SecurityGroupLookupOptions {
    *
    * @default Don't filter on securityGroupName
    */
-  readonly securityGroupName?: string;
+  readonly securityGroupName?: string | undefined;
 
   /**
    * The ID of the security group
@@ -865,7 +865,7 @@ interface SecurityGroupLookupOptions {
    *
    * @default Don't filter on securityGroupId
    */
-  readonly securityGroupId?: string;
+  readonly securityGroupId?: string | undefined;
 
   /**
    * The VPC of the security group
@@ -874,5 +874,5 @@ interface SecurityGroupLookupOptions {
    *
    * @default Don't filter on VPC
    */
-  readonly vpc?: IVpc;
+  readonly vpc?: IVpc | undefined;
 }

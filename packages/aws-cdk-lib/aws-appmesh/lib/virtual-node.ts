@@ -56,42 +56,42 @@ export interface VirtualNodeBaseProps {
    *
    * @default - A name is automatically determined
    */
-  readonly virtualNodeName?: string;
+  readonly virtualNodeName?: string | undefined;
 
   /**
    * Defines how upstream clients will discover this VirtualNode
    *
    * @default - No Service Discovery
    */
-  readonly serviceDiscovery?: ServiceDiscovery;
+  readonly serviceDiscovery?: ServiceDiscovery | undefined;
 
   /**
    * Virtual Services that this is node expected to send outbound traffic to
    *
    * @default - No backends
    */
-  readonly backends?: Backend[];
+  readonly backends?: Backend[] | undefined;
 
   /**
    * Initial listener for the virtual node
    *
    * @default - No listeners
    */
-  readonly listeners?: VirtualNodeListener[];
+  readonly listeners?: VirtualNodeListener[] | undefined;
 
   /**
    * Access Logging Configuration for the virtual node
    *
    * @default - No access logging
    */
-  readonly accessLog?: AccessLog;
+  readonly accessLog?: AccessLog | undefined;
 
   /**
    * Default Configuration Virtual Node uses to communicate with Virtual Service
    *
    * @default - No Config
    */
-  readonly backendDefaults?: BackendDefaults;
+  readonly backendDefaults?: BackendDefaults | undefined;
 }
 
 /**
@@ -211,7 +211,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
-  private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
+  private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig | undefined;
 
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();

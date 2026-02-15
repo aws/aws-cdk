@@ -29,21 +29,21 @@ export interface ClusterInstanceBindOptions {
    *
    * @default no enhanced monitoring
    */
-  readonly monitoringInterval?: Duration;
+  readonly monitoringInterval?: Duration | undefined;
 
   /**
    * Role that will be used to manage DB instances monitoring.
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: IRoleRef;
+  readonly monitoringRole?: IRoleRef | undefined;
 
   /**
    * The removal policy on the cluster
    *
    * @default - RemovalPolicy.DESTROY (cluster snapshot can restore)
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The promotion tier of the cluster instance
@@ -56,7 +56,7 @@ export interface ClusterInstanceBindOptions {
    *
    * @default 2
    */
-  readonly promotionTier?: number;
+  readonly promotionTier?: number | undefined;
 
   /**
    * Existing subnet group for the cluster.
@@ -64,7 +64,7 @@ export interface ClusterInstanceBindOptions {
    *
    * @default - cluster subnet group is used
    */
-  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef | undefined;
 }
 
 /**
@@ -123,7 +123,7 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    *
    * @default db.t3.medium
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * The promotion tier of the cluster instance
@@ -135,7 +135,7 @@ export interface ProvisionedClusterInstanceProps extends ClusterInstanceOptions 
    *
    * @default 2
    */
-  readonly promotionTier?: number;
+  readonly promotionTier?: number | undefined;
 }
 
 /**
@@ -154,7 +154,7 @@ export interface ServerlessV2ClusterInstanceProps extends ClusterInstanceOptions
    *
    * @default false
    */
-  readonly scaleWithWriter?: boolean;
+  readonly scaleWithWriter?: boolean | undefined;
 }
 
 /**
@@ -178,7 +178,7 @@ export interface ClusterInstanceProps extends ClusterInstanceOptions {
    *
    * @default 2
    */
-  readonly promotionTier?: number;
+  readonly promotionTier?: number | undefined;
 }
 
 /**
@@ -190,35 +190,35 @@ export interface ClusterInstanceOptions {
    *
    * @default - CloudFormation generated identifier
    */
-  readonly instanceIdentifier?: string;
+  readonly instanceIdentifier?: string | undefined;
 
   /**
    * Whether to enable automatic upgrade of minor version for the DB instance.
    *
    * @default - true
    */
-  readonly autoMinorVersionUpgrade?: boolean;
+  readonly autoMinorVersionUpgrade?: boolean | undefined;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
    * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
-  readonly enablePerformanceInsights?: boolean;
+  readonly enablePerformanceInsights?: boolean | undefined;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    *
    * @default 7
    */
-  readonly performanceInsightRetention?: PerformanceInsightRetention;
+  readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKey | undefined;
 
   /**
    * Indicates whether the DB instance is an internet-facing instance. If not specified,
@@ -227,7 +227,7 @@ export interface ClusterInstanceOptions {
    *
    * @default - `true` if the cluster's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
-  readonly publiclyAccessible?: boolean;
+  readonly publiclyAccessible?: boolean | undefined;
 
   /**
    * The Availability Zone (AZ) where the database will be created.
@@ -238,7 +238,7 @@ export interface ClusterInstanceOptions {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/Concepts.RegionsAndAvailabilityZones.html
    * @default - A random, system-chosen Availability Zone in the endpointʼs AWS Region.
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -249,7 +249,7 @@ export interface ClusterInstanceOptions {
    * each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-  readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string | undefined;
 
   /**
    * The parameters in the DBParameterGroup to create automatically
@@ -259,14 +259,14 @@ export interface ClusterInstanceOptions {
    *
    * @default - None
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * Whether to allow upgrade of major version for the DB instance.
    *
    * @default - false
    */
-  readonly allowMajorVersionUpgrade?: boolean;
+  readonly allowMajorVersionUpgrade?: boolean | undefined;
 
   /**
    * The DB parameter group to associate with the instance.
@@ -276,7 +276,7 @@ export interface ClusterInstanceOptions {
    *
    * @default the cluster parameter group is used
    */
-  readonly parameterGroup?: IParameterGroup;
+  readonly parameterGroup?: IParameterGroup | undefined;
 
   /**
    * Only used for migrating existing clusters from using `instanceProps` to `writer` and `readers`
@@ -323,7 +323,7 @@ export interface ClusterInstanceOptions {
    *
    * @default false
    */
-  readonly isFromLegacyInstanceProps?: boolean;
+  readonly isFromLegacyInstanceProps?: boolean | undefined;
 
   /**
    * The identifier of the CA certificate for this DB cluster's instances.
@@ -337,7 +337,7 @@ export interface ClusterInstanceOptions {
    *
    * @default - RDS will choose a certificate authority
    */
-  readonly caCertificate?: CaCertificate;
+  readonly caCertificate?: CaCertificate | undefined;
 
   /**
    * Specifies whether changes to the DB instance and any pending modifications are applied immediately, regardless of the `preferredMaintenanceWindow` setting.
@@ -351,7 +351,7 @@ export interface ClusterInstanceOptions {
    *
    * @default - Changes will be applied immediately
    */
-  readonly applyImmediately?: boolean;
+  readonly applyImmediately?: boolean | undefined;
 }
 
 /**
@@ -464,7 +464,7 @@ export interface IAuroraClusterInstance extends IResource, aws_rds.IDBInstanceRe
   /**
    * The instance size if the instance is a provisioned type
    */
-  readonly instanceSize?: string;
+  readonly instanceSize?: string | undefined;
 
   /**
    * The promotion tier the instance was created in
@@ -474,17 +474,17 @@ export interface IAuroraClusterInstance extends IResource, aws_rds.IDBInstanceRe
   /**
    * Whether Performance Insights is enabled
    */
-  readonly performanceInsightsEnabled?: boolean;
+  readonly performanceInsightsEnabled?: boolean | undefined;
 
   /**
    * The amount of time, in days, to retain Performance Insights data.
    */
-  readonly performanceInsightRetention?: PerformanceInsightRetention;
+  readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
 
   /**
    * The AWS KMS key for encryption of Performance Insights data.
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKey | undefined;
 }
 
 @propertyInjectable
@@ -501,10 +501,10 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
   public readonly type: InstanceType;
   public readonly tier: number;
-  public readonly instanceSize?: string;
+  public readonly instanceSize?: string | undefined;
   public readonly performanceInsightsEnabled: boolean;
-  public readonly performanceInsightRetention?: PerformanceInsightRetention;
-  public readonly performanceInsightEncryptionKey?: kms.IKey;
+  public readonly performanceInsightRetention?: PerformanceInsightRetention | undefined;
+  public readonly performanceInsightEncryptionKey?: kms.IKey | undefined;
 
   private readonly _resource: CfnDBInstance;
   constructor(scope: Construct, id: string, props: AuroraClusterInstanceProps) {

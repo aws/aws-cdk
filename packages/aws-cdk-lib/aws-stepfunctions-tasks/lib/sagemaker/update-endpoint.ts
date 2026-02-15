@@ -66,8 +66,8 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: SageMakerUpdateEndpointProps) {

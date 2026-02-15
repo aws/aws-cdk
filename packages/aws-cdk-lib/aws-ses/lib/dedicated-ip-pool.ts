@@ -48,7 +48,7 @@ export interface DedicatedIpPoolProps {
    *
    * @default - a CloudFormation generated name
    */
-  readonly dedicatedIpPoolName?: string;
+  readonly dedicatedIpPoolName?: string | undefined;
 
   /**
    * The type of scailing mode to use for this IP pool
@@ -58,7 +58,7 @@ export interface DedicatedIpPoolProps {
    *
    * @default ScalingMode.STANDARD
    */
-  readonly scalingMode?: ScalingMode;
+  readonly scalingMode?: ScalingMode | undefined;
 }
 
 /**

@@ -19,7 +19,7 @@ export interface SqsQueueProps extends TargetBaseProps {
    *
    * @default - no message group ID
    */
-  readonly messageGroupId?: string;
+  readonly messageGroupId?: string | undefined;
 
   /**
    * The message to send to the queue.
@@ -28,7 +28,7 @@ export interface SqsQueueProps extends TargetBaseProps {
    *
    * @default the entire EventBridge event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly message?: events.RuleTargetInput | undefined;
 }
 
 /**

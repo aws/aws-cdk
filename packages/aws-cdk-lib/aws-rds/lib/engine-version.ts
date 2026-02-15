@@ -11,7 +11,7 @@ export interface EngineVersion {
    *
    * @default - no version specified
    */
-  readonly fullVersion?: string;
+  readonly fullVersion?: string | undefined;
 
   /**
    * The major version of the engine,

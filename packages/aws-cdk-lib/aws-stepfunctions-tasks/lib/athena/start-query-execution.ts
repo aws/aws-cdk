@@ -18,28 +18,28 @@ interface AthenaStartQueryExecutionOptions {
    *
    * @default - No client request token
    */
-  readonly clientRequestToken?: string;
+  readonly clientRequestToken?: string | undefined;
 
   /**
    * Database within which query executes
    *
    * @default - No query execution context
    */
-  readonly queryExecutionContext?: QueryExecutionContext;
+  readonly queryExecutionContext?: QueryExecutionContext | undefined;
 
   /**
    * Configuration on how and where to save query
    *
    * @default - No result configuration
    */
-  readonly resultConfiguration?: ResultConfiguration;
+  readonly resultConfiguration?: ResultConfiguration | undefined;
 
   /**
    * Configuration on how and where to save query
    *
    * @default - No work group
    */
-  readonly workGroup?: string;
+  readonly workGroup?: string | undefined;
 
   /**
    * A list of values for the parameters in a query.
@@ -49,14 +49,14 @@ interface AthenaStartQueryExecutionOptions {
    *
    * @default - No parameters
    */
-  readonly executionParameters?: string[];
+  readonly executionParameters?: string[] | undefined;
 
   /**
    * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
    *
    * @default - Query results are not reused
    */
-  readonly resultReuseConfigurationMaxAge?: cdk.Duration;
+  readonly resultReuseConfigurationMaxAge?: cdk.Duration | undefined;
 }
 
 /**
@@ -99,8 +99,8 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
@@ -304,14 +304,14 @@ export interface ResultConfiguration {
    *
    * @default - Query Result Location set in Athena settings for this workgroup
    */
-  readonly outputLocation?: s3.Location;
+  readonly outputLocation?: s3.Location | undefined;
 
   /**
    * Encryption option used if enabled in S3
    *
    * @default - SSE_S3 encryption is enabled with default encryption key
    */
-  readonly encryptionConfiguration?: EncryptionConfiguration;
+  readonly encryptionConfiguration?: EncryptionConfiguration | undefined;
 }
 
 /**
@@ -333,7 +333,7 @@ export interface EncryptionConfiguration {
    *
    * @default - No KMS key for Encryption Option SSE_S3 and default master key for Encryption Option SSE_KMS and CSE_KMS
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 }
 
 /**
@@ -376,12 +376,12 @@ export interface QueryExecutionContext {
    *
    * @default - No catalog
    */
-  readonly catalogName?: string;
+  readonly catalogName?: string | undefined;
 
   /**
    * Name of database used in query execution
    *
    * @default - No database
    */
-  readonly databaseName?: string;
+  readonly databaseName?: string | undefined;
 }

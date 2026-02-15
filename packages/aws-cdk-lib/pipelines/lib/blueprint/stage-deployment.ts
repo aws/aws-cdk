@@ -15,28 +15,28 @@ export interface StageDeploymentProps {
    *
    * @default - Use Stage's construct ID
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 
   /**
    * Additional steps to run before any of the stacks in the stage
    *
    * @default - No additional steps
    */
-  readonly pre?: Step[];
+  readonly pre?: Step[] | undefined;
 
   /**
    * Additional steps to run after all of the stacks in the stage
    *
    * @default - No additional steps
    */
-  readonly post?: Step[];
+  readonly post?: Step[] | undefined;
 
   /**
    * Instructions for additional steps that are run at the stack level
    *
    * @default - No additional instructions
    */
-  readonly stackSteps?: StackSteps[];
+  readonly stackSteps?: StackSteps[] | undefined;
 }
 
 /**
@@ -125,7 +125,7 @@ export class StageDeployment {
    * Determine if all stacks in stage should be deployed with prepare
    * step or not.
    */
-  public readonly prepareStep?: boolean;
+  public readonly prepareStep?: boolean | undefined;
 
   private constructor(
     /** The stacks deployed in this stage */

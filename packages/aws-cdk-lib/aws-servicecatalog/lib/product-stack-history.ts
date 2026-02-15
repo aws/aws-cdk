@@ -31,20 +31,20 @@ export interface ProductStackHistoryProps {
    * The description of the product version
    * @default - No description provided
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Whether the specified product template will be validated by CloudFormation.
    * If turned off, an invalid template configuration can be stored.
    * @default true
    */
-  readonly validateTemplate?: boolean;
+  readonly validateTemplate?: boolean | undefined;
 
   /**
    * The directory where template snapshots will be stored
    * @default 'product-stack-snapshots'
    */
-  readonly directory?: string;
+  readonly directory?: string | undefined;
 }
 
 /**

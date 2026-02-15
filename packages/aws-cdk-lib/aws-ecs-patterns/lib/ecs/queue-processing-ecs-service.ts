@@ -29,7 +29,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    *
    * @default none
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The hard limit (in MiB) of memory to present to the container.
@@ -41,7 +41,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    *
    * @default - No memory limit.
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -55,21 +55,21 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    *
    * @default - No memory reserved.
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number | undefined;
 
   /**
    * Gpu count for container in task definition. Set this if you want to use gpu based instances.
    *
    * @default - No GPUs assigned.
    */
-  readonly gpuCount?: number;
+  readonly gpuCount?: number | undefined;
 
   /**
    * Optional name for the container added
    *
    * @default - QueueProcessingContainer
    */
-  readonly containerName?: string;
+  readonly containerName?: string | undefined;
 
   /**
    * The placement constraints to use for tasks in the service. For more information, see
@@ -77,7 +77,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    *
    * @default - No constraints.
    */
-  readonly placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[] | undefined;
 
   /**
    * The placement strategies to use for tasks in the service. For more information, see
@@ -85,7 +85,7 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    *
    * @default - No strategies.
    */
-  readonly placementStrategies?: PlacementStrategy[];
+  readonly placementStrategies?: PlacementStrategy[] | undefined;
 }
 
 /**

@@ -18,7 +18,7 @@ export interface LogGroupTargetInputOptions {
    *
    * @default EventField.time
    */
-  readonly timestamp?: any;
+  readonly timestamp?: any | undefined;
 
   /**
    * The value provided here will be used in the Log "message" field.
@@ -31,7 +31,7 @@ export interface LogGroupTargetInputOptions {
    *
    * @default EventField.detailType
    */
-  readonly message?: any;
+  readonly message?: any | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export interface LogGroupProps extends TargetBaseProps {
    * @default - the entire EventBridge event
    * @deprecated use logEvent instead
    */
-  readonly event?: events.RuleTargetInput;
+  readonly event?: events.RuleTargetInput | undefined;
 
   /**
    * The event to send to the CloudWatch LogGroup
@@ -93,7 +93,7 @@ export interface LogGroupProps extends TargetBaseProps {
    *
    * @default - the entire EventBridge event
    */
-  readonly logEvent?: LogGroupTargetInput;
+  readonly logEvent?: LogGroupTargetInput | undefined;
 
   /**
    * Whether the custom resource created wll default to
@@ -101,7 +101,7 @@ export interface LogGroupProps extends TargetBaseProps {
    *
    * @default - install latest AWS SDK
    */
-  readonly installLatestAwsSdk?: boolean;
+  readonly installLatestAwsSdk?: boolean | undefined;
 }
 
 /**

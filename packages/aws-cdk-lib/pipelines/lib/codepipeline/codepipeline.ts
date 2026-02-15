@@ -44,7 +44,7 @@ export interface CodePipelineProps {
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
    */
-  readonly pipelineType?: cp.PipelineType;
+  readonly pipelineType?: cp.PipelineType | undefined;
 
   /**
    * The build step that produces the CDK Cloud Assembly
@@ -62,7 +62,7 @@ export interface CodePipelineProps {
    *
    * @default - Automatically generated
    */
-  readonly pipelineName?: string;
+  readonly pipelineName?: string | undefined;
 
   /**
    * Create KMS keys for the artifact buckets, allowing cross-account deployments
@@ -75,7 +75,7 @@ export interface CodePipelineProps {
    *
    * @default false
    */
-  readonly crossAccountKeys?: boolean;
+  readonly crossAccountKeys?: boolean | undefined;
 
   /**
    * CDK CLI version to use in self-mutation step
@@ -98,7 +98,7 @@ export interface CodePipelineProps {
    *
    * @default - Latest version
    */
-  readonly cliVersion?: string;
+  readonly cliVersion?: string | undefined;
 
   /**
    * CDK CLI version to use in asset publishing steps
@@ -112,7 +112,7 @@ export interface CodePipelineProps {
    * @see https://www.npmjs.com/package/cdk-assets
    * @default - Latest version
    */
-  readonly cdkAssetsCliVersion?: string;
+  readonly cdkAssetsCliVersion?: string | undefined;
 
   /**
    * Whether the pipeline will update itself
@@ -126,7 +126,7 @@ export interface CodePipelineProps {
    *
    * @default true
    */
-  readonly selfMutation?: boolean;
+  readonly selfMutation?: boolean | undefined;
 
   /**
    * Enable Docker for the self-mutate step
@@ -146,7 +146,7 @@ export interface CodePipelineProps {
    *
    * @default false
    */
-  readonly dockerEnabledForSelfMutation?: boolean;
+  readonly dockerEnabledForSelfMutation?: boolean | undefined;
 
   /**
    * Enable Docker for the 'synth' step
@@ -168,35 +168,35 @@ export interface CodePipelineProps {
    *
    * @default false
    */
-  readonly dockerEnabledForSynth?: boolean;
+  readonly dockerEnabledForSynth?: boolean | undefined;
 
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
    * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
-  readonly codeBuildDefaults?: CodeBuildOptions;
+  readonly codeBuildDefaults?: CodeBuildOptions | undefined;
 
   /**
    * Additional customizations to apply to the synthesize CodeBuild projects
    *
    * @default - Only `codeBuildDefaults` are applied
    */
-  readonly synthCodeBuildDefaults?: CodeBuildOptions;
+  readonly synthCodeBuildDefaults?: CodeBuildOptions | undefined;
 
   /**
    * Additional customizations to apply to the asset publishing CodeBuild projects
    *
    * @default - Only `codeBuildDefaults` are applied
    */
-  readonly assetPublishingCodeBuildDefaults?: CodeBuildOptions;
+  readonly assetPublishingCodeBuildDefaults?: CodeBuildOptions | undefined;
 
   /**
    * Additional customizations to apply to the self mutation CodeBuild projects
    *
    * @default - Only `codeBuildDefaults` are applied
    */
-  readonly selfMutationCodeBuildDefaults?: CodeBuildOptions;
+  readonly selfMutationCodeBuildDefaults?: CodeBuildOptions | undefined;
 
   /**
    * Publish assets in multiple CodeBuild projects
@@ -211,7 +211,7 @@ export interface CodePipelineProps {
    *
    * @default true
    */
-  readonly publishAssetsInParallel?: boolean;
+  readonly publishAssetsInParallel?: boolean | undefined;
 
   /**
    * A list of credentials used to authenticate to Docker registries.
@@ -220,7 +220,7 @@ export interface CodePipelineProps {
    *
    * @default []
    */
-  readonly dockerCredentials?: DockerCredential[];
+  readonly dockerCredentials?: DockerCredential[] | undefined;
 
   /**
    * An existing Pipeline to be reused and built upon.
@@ -229,21 +229,21 @@ export interface CodePipelineProps {
    *
    * @default - a new underlying pipeline is created.
    */
-  readonly codePipeline?: cp.Pipeline;
+  readonly codePipeline?: cp.Pipeline | undefined;
 
   /**
    * Reuse the same cross region support stack for all pipelines in the App.
    *
    * @default - true (Use the same support stack for all pipelines in App)
    */
-  readonly reuseCrossRegionSupportStacks?: boolean;
+  readonly reuseCrossRegionSupportStacks?: boolean | undefined;
 
   /**
    * The IAM role to be assumed by this Pipeline
    *
    * @default - A new role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Deploy every stack by creating a change set and executing it
@@ -253,7 +253,7 @@ export interface CodePipelineProps {
    *
    * @default true
    */
-  readonly useChangeSets?: boolean;
+  readonly useChangeSets?: boolean | undefined;
 
   /**
    * Enable KMS key rotation for the generated KMS keys.
@@ -263,14 +263,14 @@ export interface CodePipelineProps {
    *
    * @default - false (key rotation is disabled)
    */
-  readonly enableKeyRotation?: boolean;
+  readonly enableKeyRotation?: boolean | undefined;
 
   /**
    * An existing S3 Bucket to use for storing the pipeline's artifact.
    *
    * @default - A new S3 bucket will be created.
    */
-  readonly artifactBucket?: s3.IBucket;
+  readonly artifactBucket?: s3.IBucket | undefined;
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
@@ -280,14 +280,14 @@ export interface CodePipelineProps {
    *
    * @default - no cross region replication buckets.
    */
-  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket } | undefined;
 
   /**
    * Use pipeline service role for actions if no action role configured
    *
    * @default - false
    */
-  readonly usePipelineRoleForActions?: boolean;
+  readonly usePipelineRoleForActions?: boolean | undefined;
 }
 
 /**
@@ -299,14 +299,14 @@ export interface CodeBuildOptions {
    *
    * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
-  readonly buildEnvironment?: cb.BuildEnvironment;
+  readonly buildEnvironment?: cb.BuildEnvironment | undefined;
 
   /**
    * Policy statements to add to role
    *
    * @default - No policy statements added to CodeBuild Project Role
    */
-  readonly rolePolicy?: iam.PolicyStatement[];
+  readonly rolePolicy?: iam.PolicyStatement[] | undefined;
 
   /**
    * Partial buildspec, will be combined with other buildspecs that apply
@@ -316,7 +316,7 @@ export interface CodeBuildOptions {
    *
    * @default - No initial BuildSpec
    */
-  readonly partialBuildSpec?: cb.BuildSpec;
+  readonly partialBuildSpec?: cb.BuildSpec | undefined;
 
   /**
    * Which security group(s) to associate with the project network interfaces.
@@ -325,14 +325,14 @@ export interface CodeBuildOptions {
    *
    * @default - Security group will be automatically created.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 
   /**
    * The VPC where to create the CodeBuild network interfaces in.
    *
    * @default - No VPC
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Which subnets to use.
@@ -341,14 +341,14 @@ export interface CodeBuildOptions {
    *
    * @default - All private subnets.
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * Caching strategy to use.
    *
    * @default - No cache
    */
-  readonly cache?: cb.Cache;
+  readonly cache?: cb.Cache | undefined;
 
   /**
    * The number of minutes after which AWS CodeBuild stops the build if it's
@@ -357,7 +357,7 @@ export interface CodeBuildOptions {
    *
    * @default Duration.hours(1)
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * ProjectFileSystemLocation objects for CodeBuild build projects.
@@ -368,14 +368,14 @@ export interface CodeBuildOptions {
    *
    * @default - no file system locations
    */
-  readonly fileSystemLocations?: cb.IFileSystemLocation[];
+  readonly fileSystemLocations?: cb.IFileSystemLocation[] | undefined;
 
   /**
    * Information about logs for CodeBuild projects. A CodeBuild project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
    *
    * @default - no log configuration is set
    */
-  readonly logging?: cb.LoggingOptions;
+  readonly logging?: cb.LoggingOptions | undefined;
 }
 
 /**
@@ -419,7 +419,7 @@ export class CodePipeline extends PipelineBase {
   private _cloudAssemblyFileSet?: FileSet;
 
   private readonly singlePublisherPerAssetType: boolean;
-  private readonly cliVersion?: string;
+  private readonly cliVersion?: string | undefined;
   private readonly cdkAssetsCliVersion: string;
 
   constructor(scope: Construct, id: string, private readonly props: CodePipelineProps) {

@@ -23,21 +23,21 @@ export interface ImportedTaskDefinitionProps {
    *
    * @default Compatibility.EC2_AND_FARGATE
    */
-  readonly compatibility?: Compatibility;
+  readonly compatibility?: Compatibility | undefined;
 
   /**
    * The networking mode to use for the containers in the task.
    *
    * @default Network mode cannot be provided to the imported task.
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
    * @default Permissions cannot be granted to the imported task.
    */
-  readonly taskRole?: IRole;
+  readonly taskRole?: IRole | undefined;
 
   /**
    * The IAM role that grants containers and Fargate agents permission to make AWS API calls on your behalf.
@@ -46,7 +46,7 @@ export interface ImportedTaskDefinitionProps {
    *
    * @default - undefined
    */
-  readonly executionRole?: IRole;
+  readonly executionRole?: IRole | undefined;
 }
 
 /**
@@ -74,12 +74,12 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
   /**
    * The networking mode to use for the containers in the task.
    */
-  readonly _networkMode?: NetworkMode;
+  readonly _networkMode?: NetworkMode | undefined;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
-  readonly _taskRole?: IRole;
+  readonly _taskRole?: IRole | undefined;
 
   constructor(scope: Construct, id: string, props: ImportedTaskDefinitionProps) {
     super(scope, id);

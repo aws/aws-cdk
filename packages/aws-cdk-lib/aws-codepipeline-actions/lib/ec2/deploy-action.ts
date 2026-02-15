@@ -24,7 +24,7 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
    * The tag value of the instances that you created in Amazon EC2.
    * @default - all instances with `instanceTagKey` will be matched
    */
-  readonly instanceTagValue?: string;
+  readonly instanceTagValue?: string | undefined;
 
   /**
    * The type of instances or SSM nodes created in Amazon EC2.
@@ -43,14 +43,14 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default - No configuration
    */
-  readonly maxBatch?: Ec2MaxInstances;
+  readonly maxBatch?: Ec2MaxInstances | undefined;
 
   /**
    * Stop the task after the task fails on the specified number or percentage of instances.
    *
    * @default - No configuration
    */
-  readonly maxError?: Ec2MaxInstances;
+  readonly maxError?: Ec2MaxInstances | undefined;
 
   /**
    * The list of target groups for deployment. You must have already created the target groups.
@@ -60,7 +60,7 @@ export interface Ec2DeployActionProps extends codepipeline.CommonAwsActionProps 
    *
    * @default - No target groups
    */
-  readonly targetGroups?: elbv2.ITargetGroup[];
+  readonly targetGroups?: elbv2.ITargetGroup[] | undefined;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface Ec2DeploySpecificationsInlineProps {
    *
    * @default - No script
    */
-  readonly preScript?: string;
+  readonly preScript?: string | undefined;
 
   /**
    * Path to the executable script file that runs AFTER the Deploy phase.

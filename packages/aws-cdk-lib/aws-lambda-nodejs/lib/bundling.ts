@@ -47,13 +47,13 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * Run compilation using `tsc` before bundling
    */
-  readonly preCompilation?: boolean;
+  readonly preCompilation?: boolean | undefined;
 
   /**
    * Which option to use to copy the source files to the docker container and output files back
    * @default - BundlingFileAccess.BIND_MOUNT
    */
-  readonly bundlingFileAccess?: cdk.BundlingFileAccess;
+  readonly bundlingFileAccess?: cdk.BundlingFileAccess | undefined;
 }
 
 /**
@@ -84,21 +84,21 @@ export class Bundling implements cdk.BundlingOptions {
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
-  public readonly entrypoint?: string[];
+  public readonly entrypoint?: string[] | undefined;
   public readonly command: string[];
-  public readonly volumes?: cdk.DockerVolume[];
-  public readonly volumesFrom?: string[];
-  public readonly environment?: { [key: string]: string };
+  public readonly volumes?: cdk.DockerVolume[] | undefined;
+  public readonly volumesFrom?: string[] | undefined;
+  public readonly environment?: { [key: string]: string } | undefined;
   public readonly workingDirectory: string;
-  public readonly user?: string;
-  public readonly securityOpt?: string;
-  public readonly network?: string;
-  public readonly local?: cdk.ILocalBundling;
-  public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
+  public readonly user?: string | undefined;
+  public readonly securityOpt?: string | undefined;
+  public readonly network?: string | undefined;
+  public readonly local?: cdk.ILocalBundling | undefined;
+  public readonly bundlingFileAccess?: cdk.BundlingFileAccess | undefined;
 
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
-  private readonly relativeTsconfigPath?: string;
+  private readonly relativeTsconfigPath?: string | undefined;
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
@@ -360,7 +360,7 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly esbuildRunner: string;
-  readonly tscRunner?: string;
+  readonly tscRunner?: string | undefined;
   readonly osPlatform: NodeJS.Platform;
 }
 

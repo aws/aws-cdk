@@ -26,28 +26,28 @@ export interface AlgorithmSpecification {
    *
    * @default - No algorithm is specified
    */
-  readonly algorithmName?: string;
+  readonly algorithmName?: string | undefined;
 
   /**
    * List of metric definition objects. Each object specifies the metric name and regular expressions used to parse algorithm logs.
    *
    * @default - No metrics
    */
-  readonly metricDefinitions?: MetricDefinition[];
+  readonly metricDefinitions?: MetricDefinition[] | undefined;
 
   /**
    * Registry path of the Docker image that contains the training algorithm.
    *
    * @default - No Docker image is specified
    */
-  readonly trainingImage?: DockerImage;
+  readonly trainingImage?: DockerImage | undefined;
 
   /**
    * Input mode that the algorithm supports.
    *
    * @default 'File' mode
    */
-  readonly trainingInputMode?: InputMode;
+  readonly trainingInputMode?: InputMode | undefined;
 }
 
 /**
@@ -66,14 +66,14 @@ export interface Channel {
    *
    * @default - None
    */
-  readonly compressionType?: CompressionType;
+  readonly compressionType?: CompressionType | undefined;
 
   /**
    * The MIME type of the data.
    *
    * @default - None
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
 
   /**
    * Location of the channel data.
@@ -85,7 +85,7 @@ export interface Channel {
    *
    * @default - None
    */
-  readonly inputMode?: InputMode;
+  readonly inputMode?: InputMode | undefined;
 
   /**
    * Specify RecordIO as the value when input data is in raw format but the training algorithm requires the RecordIO format.
@@ -94,14 +94,14 @@ export interface Channel {
    *
    * @default - None
    */
-  readonly recordWrapperType?: RecordWrapperType;
+  readonly recordWrapperType?: RecordWrapperType | undefined;
 
   /**
    * Shuffle config option for input data in a channel.
    *
    * @default - None
    */
-  readonly shuffleConfig?: ShuffleConfig;
+  readonly shuffleConfig?: ShuffleConfig | undefined;
 }
 
 /**
@@ -138,21 +138,21 @@ export interface S3DataSource {
    *
    * @default - No attribute names
    */
-  readonly attributeNames?: string[];
+  readonly attributeNames?: string[] | undefined;
 
   /**
    * S3 Data Distribution Type
    *
    * @default - None
    */
-  readonly s3DataDistributionType?: S3DataDistributionType;
+  readonly s3DataDistributionType?: S3DataDistributionType | undefined;
 
   /**
    * S3 Data Type
    *
    * @default S3_PREFIX
    */
-  readonly s3DataType?: S3DataType;
+  readonly s3DataType?: S3DataType | undefined;
 
   /**
    * S3 Uri
@@ -169,7 +169,7 @@ export interface OutputDataConfig {
    *
    * @default - Amazon SageMaker uses the default KMS key for Amazon S3 for your role's account
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Identifies the S3 path where you want Amazon SageMaker to store the model artifacts.
@@ -188,7 +188,7 @@ export interface StoppingCondition {
    *
    * @default - 1 hour
    */
-  readonly maxRuntime?: Duration;
+  readonly maxRuntime?: Duration | undefined;
 }
 
 /**
@@ -224,7 +224,7 @@ export interface ResourceConfig {
    *
    * @default - Amazon SageMaker uses the default KMS key for Amazon S3 for your role's account
    */
-  readonly volumeEncryptionKey?: kms.IKey;
+  readonly volumeEncryptionKey?: kms.IKey | undefined;
 
   /**
    * Size of the ML storage volume that you want to provision.
@@ -249,7 +249,7 @@ export interface VpcConfig {
    *
    * @default - Private Subnets are selected
    */
-  readonly subnets?: ec2.SubnetSelection;
+  readonly subnets?: ec2.SubnetSelection | undefined;
 }
 
 /**
@@ -326,14 +326,14 @@ export interface S3LocationBindOptions {
    *
    * @default false
    */
-  readonly forReading?: boolean;
+  readonly forReading?: boolean | undefined;
 
   /**
    * Allow writing to the S3 Location.
    *
    * @default false
    */
-  readonly forWriting?: boolean;
+  readonly forWriting?: boolean | undefined;
 }
 
 /**
@@ -506,14 +506,14 @@ export interface ModelClientOptions {
    *
    * @default 0
    */
-  readonly invocationsMaxRetries?: number;
+  readonly invocationsMaxRetries?: number | undefined;
 
   /**
    * The timeout duration for an invocation request.
    *
    * @default Duration.minutes(1)
    */
-  readonly invocationsTimeout?: Duration;
+  readonly invocationsTimeout?: Duration | undefined;
 }
 
 /**
@@ -527,14 +527,14 @@ export interface TransformInput {
    *
    * @default NONE
    */
-  readonly compressionType?: CompressionType;
+  readonly compressionType?: CompressionType | undefined;
 
   /**
    * Multipurpose internet mail extension (MIME) type of the data.
    *
    * @default - None
    */
-  readonly contentType?: string;
+  readonly contentType?: string | undefined;
 
   /**
    * S3 location of the channel data
@@ -546,7 +546,7 @@ export interface TransformInput {
    *
    * @default NONE
    */
-  readonly splitType?: SplitType;
+  readonly splitType?: SplitType | undefined;
 }
 
 /**
@@ -572,7 +572,7 @@ export interface TransformS3DataSource {
    *
    * @default 'S3Prefix'
    */
-  readonly s3DataType?: S3DataType;
+  readonly s3DataType?: S3DataType | undefined;
 
   /**
    * Identifies either a key name prefix or a manifest.
@@ -591,21 +591,21 @@ export interface TransformOutput {
    *
    * @default - None
    */
-  readonly accept?: string;
+  readonly accept?: string | undefined;
 
   /**
    * Defines how to assemble the results of the transform job as a single S3 object.
    *
    * @default - None
    */
-  readonly assembleWith?: AssembleWith;
+  readonly assembleWith?: AssembleWith | undefined;
 
   /**
    * AWS KMS key that Amazon SageMaker uses to encrypt the model artifacts at rest using Amazon S3 server-side encryption.
    *
    * @default - default KMS key for Amazon S3 for your role's account.
    */
-  readonly encryptionKey?: kms.IKeyRef;
+  readonly encryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * S3 path where you want Amazon SageMaker to store the results of the transform job.
@@ -634,7 +634,7 @@ export interface TransformResources {
    *
    * @default - None
    */
-  readonly volumeEncryptionKey?: kms.IKeyRef;
+  readonly volumeEncryptionKey?: kms.IKeyRef | undefined;
 }
 
 /**
@@ -648,25 +648,25 @@ export interface ContainerDefinitionOptions {
    *
    * @default - None
    */
-  readonly image?: DockerImage;
+  readonly image?: DockerImage | undefined;
   /**
    * The environment variables to set in the Docker container
    *
    * @default - No variables
    */
-  readonly environmentVariables?: sfn.TaskInput;
+  readonly environmentVariables?: sfn.TaskInput | undefined;
   /**
    * The name or Amazon Resource Name (ARN) of the model package to use to create the model.
    *
    * @default - None
    */
-  readonly modelPackageName?: string;
+  readonly modelPackageName?: string | undefined;
   /**
    * Defines how many models the container hosts
    *
    * @default - Mode.SINGLE_MODEL
    */
-  readonly mode?: Mode;
+  readonly mode?: Mode | undefined;
   /**
    * This parameter is ignored for models that contain only a PrimaryContainer.
    * When a ContainerDefinition is part of an inference pipeline,
@@ -674,7 +674,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - None
    */
-  readonly containerHostName?: string;
+  readonly containerHostName?: string | undefined;
   /**
    * The S3 path where the model artifacts, which result from model training, are stored.
    * This path must point to a single gzip compressed tar archive (.tar.gz suffix).
@@ -682,7 +682,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - None
    */
-  readonly modelS3Location?: S3Location;
+  readonly modelS3Location?: S3Location | undefined;
 }
 
 /**
@@ -731,7 +731,7 @@ export interface ContainerDefinitionConfig {
    *
    * @default - No additional parameters passed
    */
-  readonly parameters?: { [key: string]: any };
+  readonly parameters?: { [key: string]: any } | undefined;
 }
 
 /**
@@ -762,19 +762,19 @@ export interface ProductionVariant {
    *
    * @default - None
    */
-  readonly acceleratorType?: AcceleratorType;
+  readonly acceleratorType?: AcceleratorType | undefined;
   /**
    * Number of instances to launch initially.
    *
    * @default - 1
    */
-  readonly initialInstanceCount?: number;
+  readonly initialInstanceCount?: number | undefined;
   /**
    * Determines initial traffic distribution among all of the models that you specify in the endpoint configuration.
    *
    * @default - 1.0
    */
-  readonly initialVariantWeight?: number;
+  readonly initialVariantWeight?: number | undefined;
   /**
    * The ML compute instance type
    */
@@ -906,7 +906,7 @@ export enum AssembleWith {
 class StandardDockerImage extends DockerImage {
   private readonly allowAnyEcrImagePull: boolean;
   private readonly imageUri: string;
-  private readonly repository?: ecr.IRepository;
+  private readonly repository?: ecr.IRepository | undefined;
 
   constructor(opts: { allowAnyEcrImagePull?: boolean; imageUri: string; repository?: ecr.IRepository }) {
     super();
@@ -937,7 +937,7 @@ class StandardDockerImage extends DockerImage {
 }
 
 class StandardS3Location extends S3Location {
-  private readonly bucket?: s3.IBucket;
+  private readonly bucket?: s3.IBucket | undefined;
   private readonly keyGlob: string;
   private readonly uri: string;
 

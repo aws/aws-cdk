@@ -93,7 +93,7 @@ export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
    *
    * @attribute
    */
-  readonly launchTemplateId?: string;
+  readonly launchTemplateId?: string | undefined;
 
   /**
    * The name of the Launch Template
@@ -102,7 +102,7 @@ export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
    *
    * @attribute
    */
-  readonly launchTemplateName?: string;
+  readonly launchTemplateName?: string | undefined;
 }
 
 /**
@@ -162,14 +162,14 @@ export interface LaunchTemplateSpotOptions {
    *
    * @default Requested spot instances do not have a pre-defined duration.
    */
-  readonly blockDuration?: Duration;
+  readonly blockDuration?: Duration | undefined;
 
   /**
    * The behavior when a Spot Instance is interrupted.
    *
    * @default Spot instances will terminate when interrupted.
    */
-  readonly interruptionBehavior?: SpotInstanceInterruption;
+  readonly interruptionBehavior?: SpotInstanceInterruption | undefined;
 
   /**
    * Maximum hourly price you're willing to pay for each Spot instance. The value is given
@@ -177,7 +177,7 @@ export interface LaunchTemplateSpotOptions {
    *
    * @default Maximum hourly price will default to the on-demand price for the instance type.
    */
-  readonly maxPrice?: number;
+  readonly maxPrice?: number | undefined;
 
   /**
    * The Spot Instance request type.
@@ -188,7 +188,7 @@ export interface LaunchTemplateSpotOptions {
    *
    * @default One-time spot request.
    */
-  readonly requestType?: SpotRequestType;
+  readonly requestType?: SpotRequestType | undefined;
 
   /**
    * The end date of the request. For a one-time request, the request remains active until all instances
@@ -197,7 +197,7 @@ export interface LaunchTemplateSpotOptions {
    *
    * @default The default end date is 7 days from the current date.
    */
-  readonly validUntil?: Expiration;
+  readonly validUntil?: Expiration | undefined;
 }
 
 /**
@@ -227,7 +227,7 @@ export interface LaunchTemplateProps {
    *
    * @default Automatically generated name
    */
-  readonly launchTemplateName?: string;
+  readonly launchTemplateName?: string | undefined;
 
   /**
    * A description for the first version of the launch template.
@@ -238,21 +238,21 @@ export interface LaunchTemplateProps {
    *
    * @default - No description
    */
-  readonly versionDescription?: string;
+  readonly versionDescription?: string | undefined;
 
   /**
    * Type of instance to launch.
    *
    * @default - This Launch Template does not specify a default Instance Type.
    */
-  readonly instanceType?: InstanceType;
+  readonly instanceType?: InstanceType | undefined;
 
   /**
    * The AMI that will be used by instances.
    *
    * @default - This Launch Template does not specify a default AMI.
    */
-  readonly machineImage?: IMachineImage;
+  readonly machineImage?: IMachineImage | undefined;
 
   /**
    * The user data to make available to the instance.
@@ -260,7 +260,7 @@ export interface LaunchTemplateProps {
    * @default - This Launch Template creates a UserData based on the type of provided
    * machineImage; no UserData is created if a machineImage is not provided
    */
-  readonly userData?: UserData;
+  readonly userData?: UserData | undefined;
 
   /**
    * An IAM role to associate with the instance profile that is used by instances.
@@ -275,7 +275,7 @@ export interface LaunchTemplateProps {
    *
    * @default - No new role is created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.
@@ -289,7 +289,7 @@ export interface LaunchTemplateProps {
    *
    * @default - Uses the block device mapping of the AMI
    */
-  readonly blockDevices?: BlockDevice[];
+  readonly blockDevices?: BlockDevice[] | undefined;
 
   /**
    * CPU credit type for burstable EC2 instance types.
@@ -298,7 +298,7 @@ export interface LaunchTemplateProps {
    *
    * @default - No credit type is specified in the Launch Template.
    */
-  readonly cpuCredits?: CpuCredits;
+  readonly cpuCredits?: CpuCredits | undefined;
 
   /**
    * If you set this parameter to true, you cannot terminate the instances launched with this launch template
@@ -306,7 +306,7 @@ export interface LaunchTemplateProps {
    *
    * @default - The API termination setting is not specified in the Launch Template.
    */
-  readonly disableApiTermination?: boolean;
+  readonly disableApiTermination?: boolean | undefined;
 
   /**
    * Indicates whether the instances are optimized for Amazon EBS I/O. This optimization provides dedicated throughput
@@ -315,21 +315,21 @@ export interface LaunchTemplateProps {
    *
    * @default - EBS optimization is not specified in the launch template.
    */
-  readonly ebsOptimized?: boolean;
+  readonly ebsOptimized?: boolean | undefined;
 
   /**
    * If this parameter is set to true, the instance is enabled for AWS Nitro Enclaves; otherwise, it is not enabled for AWS Nitro Enclaves.
    *
    * @default - Enablement of Nitro enclaves is not specified in the launch template; defaulting to false.
    */
-  readonly nitroEnclaveEnabled?: boolean;
+  readonly nitroEnclaveEnabled?: boolean | undefined;
 
   /**
    * If you set this parameter to true, the instance is enabled for hibernation.
    *
    * @default - Hibernation configuration is not specified in the launch template; defaulting to false.
    */
-  readonly hibernationConfigured?: boolean;
+  readonly hibernationConfigured?: boolean | undefined;
 
   /**
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).
@@ -338,7 +338,7 @@ export interface LaunchTemplateProps {
    *
    * @default - Shutdown behavior is not specified in the launch template; defaults to STOP.
    */
-  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior;
+  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior | undefined;
 
   /**
    * If this property is defined, then the Launch Template's InstanceMarketOptions will be
@@ -346,7 +346,7 @@ export interface LaunchTemplateProps {
    *
    * @default - Instance launched with this template will not be spot instances.
    */
-  readonly spotOptions?: LaunchTemplateSpotOptions;
+  readonly spotOptions?: LaunchTemplateSpotOptions | undefined;
 
   /**
    * Name of SSH keypair to grant access to instance
@@ -354,14 +354,14 @@ export interface LaunchTemplateProps {
    * @default - No SSH access will be possible.
    * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
-  readonly keyName?: string;
+  readonly keyName?: string | undefined;
 
   /**
    * The SSH keypair to grant access to the instance.
    *
    * @default - No SSH access will be possible.
    */
-  readonly keyPair?: IKeyPair;
+  readonly keyPair?: IKeyPair | undefined;
 
   /**
    * If set to true, then detailed monitoring will be enabled on instances created with this
@@ -371,21 +371,21 @@ export interface LaunchTemplateProps {
    *
    * @default False - Detailed monitoring is disabled.
    */
-  readonly detailedMonitoring?: boolean;
+  readonly detailedMonitoring?: boolean | undefined;
 
   /**
    * Security group to assign to instances created with the launch template.
    *
    * @default No security group is assigned.
    */
-  readonly securityGroup?: ISecurityGroup;
+  readonly securityGroup?: ISecurityGroup | undefined;
 
   /**
    * Whether IMDSv2 should be required on launched instances.
    *
    * @default - false
    */
-  readonly requireImdsv2?: boolean;
+  readonly requireImdsv2?: boolean | undefined;
 
   /**
    * Enables or disables the HTTP metadata endpoint on your instances.
@@ -394,7 +394,7 @@ export interface LaunchTemplateProps {
    *
    * @default true
    */
-  readonly httpEndpoint?: boolean;
+  readonly httpEndpoint?: boolean | undefined;
 
   /**
    * Enables or disables the IPv6 endpoint for the instance metadata service.
@@ -403,7 +403,7 @@ export interface LaunchTemplateProps {
    *
    * @default true
    */
-  readonly httpProtocolIpv6?: boolean;
+  readonly httpProtocolIpv6?: boolean | undefined;
 
   /**
    * The desired HTTP PUT response hop limit for instance metadata requests. The larger the number, the further instance metadata requests can travel.
@@ -412,7 +412,7 @@ export interface LaunchTemplateProps {
    *
    * @default 1
    */
-  readonly httpPutResponseHopLimit?: number;
+  readonly httpPutResponseHopLimit?: number | undefined;
 
   /**
    * The state of token usage for your instance metadata requests.  The default state is `optional` if not specified. However,
@@ -422,7 +422,7 @@ export interface LaunchTemplateProps {
    *
    * @default LaunchTemplateHttpTokens.OPTIONAL
    */
-  readonly httpTokens?: LaunchTemplateHttpTokens;
+  readonly httpTokens?: LaunchTemplateHttpTokens | undefined;
 
   /**
    * Set to enabled to allow access to instance tags from the instance metadata. Set to disabled to turn off access to instance tags from the instance metadata.
@@ -431,14 +431,14 @@ export interface LaunchTemplateProps {
    *
    * @default false
    */
-  readonly instanceMetadataTags?: boolean;
+  readonly instanceMetadataTags?: boolean | undefined;
 
   /**
    * Whether instances should have a public IP addresses associated with them.
    *
    * @default - Use subnet settings
    */
-  readonly associatePublicIpAddress?: boolean;
+  readonly associatePublicIpAddress?: boolean | undefined;
 
   /**
    * The instance profile used to pass role information to EC2 instances.
@@ -447,14 +447,14 @@ export interface LaunchTemplateProps {
    *
    * @default - No instance profile
    */
-  readonly instanceProfile?: iam.IInstanceProfile;
+  readonly instanceProfile?: iam.IInstanceProfile | undefined;
 
   /**
    * The placement group that you want to launch the instance into.
    *
    * @default - no placement group will be used for this launch template.
    */
-  readonly placementGroup?: IPlacementGroupRef;
+  readonly placementGroup?: IPlacementGroupRef | undefined;
 }
 
 /**
@@ -484,7 +484,7 @@ export interface LaunchTemplateAttributes {
    *
    * @default Version: "$Default"
    */
-  readonly versionNumber?: string;
+  readonly versionNumber?: string | undefined;
 
   /**
    * The identifier of the Launch Template
@@ -493,7 +493,7 @@ export interface LaunchTemplateAttributes {
    *
    * @default None
    */
-  readonly launchTemplateId?: string;
+  readonly launchTemplateId?: string | undefined;
 
   /**
    * The name of the Launch Template
@@ -502,7 +502,7 @@ export interface LaunchTemplateAttributes {
    *
    * @default None
    */
-  readonly launchTemplateName?: string;
+  readonly launchTemplateName?: string | undefined;
 }
 
 /**
@@ -548,8 +548,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   // ============================================
   //   Members for ILaunchTemplate interface
 
-  public readonly launchTemplateId?: string;
-  public readonly launchTemplateName?: string;
+  public readonly launchTemplateId?: string | undefined;
+  public readonly launchTemplateName?: string | undefined;
 
   // =============================================
   //   Data members
@@ -573,35 +573,35 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    *
    * @attribute
    */
-  public readonly osType?: OperatingSystemType;
+  public readonly osType?: OperatingSystemType | undefined;
 
   /**
    * The AMI ID of the image to use
    *
    * @attribute
    */
-  public readonly imageId?: string;
+  public readonly imageId?: string | undefined;
 
   /**
    * IAM Role assumed by instances that are launched from this template.
    *
    * @attribute
    */
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
 
   /**
    * UserData executed by instances that are launched from this template.
    *
    * @attribute
    */
-  public readonly userData?: UserData;
+  public readonly userData?: UserData | undefined;
 
   /**
    * Type of instance to launch.
    *
    * @attribute
    */
-  public readonly instanceType?: InstanceType;
+  public readonly instanceType?: InstanceType | undefined;
 
   // =============================================
   //   Private/protected data members
@@ -610,13 +610,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * Principal to grant permissions to.
    * @internal
    */
-  protected readonly _grantPrincipal?: iam.IPrincipal;
+  protected readonly _grantPrincipal?: iam.IPrincipal | undefined;
 
   /**
    * Allows specifying security group connections for the instance.
    * @internal
    */
-  protected readonly _connections?: Connections;
+  protected readonly _connections?: Connections | undefined;
 
   /**
    * TagManager for tagging support.

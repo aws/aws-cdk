@@ -12,14 +12,14 @@ export interface CommonConstraintOptions {
    *
    * @default - English
    */
-  readonly messageLanguage?: MessageLanguage;
+  readonly messageLanguage?: MessageLanguage | undefined;
 
   /**
    * The description of the constraint.
    *
    * @default - No description provided
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -51,7 +51,7 @@ export interface StackSetsConstraintOptions extends CommonConstraintOptions {
    *
    * @default false
    */
-  readonly allowStackSetInstanceOperations?: boolean;
+  readonly allowStackSetInstanceOperations?: boolean | undefined;
 }
 
 /**
@@ -62,7 +62,7 @@ export interface TagUpdateConstraintOptions extends CommonConstraintOptions {
    * Toggle for if users should be allowed to change/update tags on provisioned products.
    * @default true
    */
-  readonly allow?: boolean;
+  readonly allow?: boolean | undefined;
 }
 
 /**
@@ -78,7 +78,7 @@ export interface TemplateRuleAssertion {
    * The description for the asssertion.
    * @default - no description provided for the assertion.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -94,7 +94,7 @@ export interface TemplateRule {
    * Specify when to apply rule with a rule-specific intrinsic function.
    * @default - no rule condition provided
    */
-  readonly condition?: cdk.ICfnRuleConditionExpression;
+  readonly condition?: cdk.ICfnRuleConditionExpression | undefined;
 
   /**
    * A list of assertions that make up the rule.

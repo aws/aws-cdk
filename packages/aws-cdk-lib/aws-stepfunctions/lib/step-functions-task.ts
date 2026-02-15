@@ -40,7 +40,7 @@ export interface StepFunctionsTaskConfig {
    *
    * @default No parameters
    */
-  readonly parameters?: { [name: string]: any };
+  readonly parameters?: { [name: string]: any } | undefined;
 
   /**
    * Maximum time between heart beats
@@ -51,35 +51,35 @@ export interface StepFunctionsTaskConfig {
    *
    * @default No heart beat timeout
    */
-  readonly heartbeat?: Duration;
+  readonly heartbeat?: Duration | undefined;
 
   /**
    * Additional policy statements to add to the execution role
    *
    * @default No policy roles
    */
-  readonly policyStatements?: iam.PolicyStatement[];
+  readonly policyStatements?: iam.PolicyStatement[] | undefined;
 
   /**
    * Prefix for singular metric names of activity actions
    *
    * @default No such metrics
    */
-  readonly metricPrefixSingular?: string;
+  readonly metricPrefixSingular?: string | undefined;
 
   /**
    * Prefix for plural metric names of activity actions
    *
    * @default No such metrics
    */
-  readonly metricPrefixPlural?: string;
+  readonly metricPrefixPlural?: string | undefined;
 
   /**
    * The dimensions to attach to metrics
    *
    * @default No metrics
    */
-  readonly metricDimensions?: cloudwatch.DimensionHash;
+  readonly metricDimensions?: cloudwatch.DimensionHash | undefined;
 }
 
 /**

@@ -22,14 +22,14 @@ export interface WebSocketMockIntegrationProps {
    * @default - No request template provided to the integration.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html
    */
-  readonly requestTemplates?: { [contentType: string]: string };
+  readonly requestTemplates?: { [contentType: string]: string } | undefined;
 
   /**
    * The template selection expression for the integration.
    *
    * @default - No template selection expression provided.
    */
-  readonly templateSelectionExpression?: string;
+  readonly templateSelectionExpression?: string | undefined;
 }
 
 /**

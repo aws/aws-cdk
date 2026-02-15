@@ -19,21 +19,21 @@ export interface StepScalingActionProps {
    * @default The default cooldown configured on the AutoScalingGroup
    * @deprecated cooldown is not valid with step scaling action
    */
-  readonly cooldown?: Duration;
+  readonly cooldown?: Duration | undefined;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmup?: Duration;
+  readonly estimatedInstanceWarmup?: Duration | undefined;
 
   /**
    * How the adjustment numbers are interpreted
    *
    * @default ChangeInCapacity
    */
-  readonly adjustmentType?: AdjustmentType;
+  readonly adjustmentType?: AdjustmentType | undefined;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -43,14 +43,14 @@ export interface StepScalingActionProps {
    *
    * @default No minimum scaling effect
    */
-  readonly minAdjustmentMagnitude?: number;
+  readonly minAdjustmentMagnitude?: number | undefined;
 
   /**
    * The aggregation type for the CloudWatch metrics.
    *
    * @default Average
    */
-  readonly metricAggregationType?: MetricAggregationType;
+  readonly metricAggregationType?: MetricAggregationType | undefined;
 }
 
 /**
@@ -176,7 +176,7 @@ export interface AdjustmentTier {
    *
    * @default -Infinity if this is the first tier, otherwise the upperBound of the previous tier
    */
-  readonly lowerBound?: number;
+  readonly lowerBound?: number | undefined;
 
   /**
    * Upper bound where this scaling tier applies
@@ -186,5 +186,5 @@ export interface AdjustmentTier {
    *
    * @default +Infinity
    */
-  readonly upperBound?: number;
+  readonly upperBound?: number | undefined;
 }

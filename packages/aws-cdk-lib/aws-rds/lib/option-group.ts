@@ -43,14 +43,14 @@ export interface OptionConfiguration {
    *
    * @default - no settings
    */
-  readonly settings?: { [name: string]: string };
+  readonly settings?: { [name: string]: string } | undefined;
 
   /**
    * The version for the option.
    *
    * @default - no version
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 
   /**
    * The port number that this option uses. If `port` is specified then `vpc`
@@ -58,7 +58,7 @@ export interface OptionConfiguration {
    *
    * @default - no port
    */
-  readonly port?: number;
+  readonly port?: number | undefined;
 
   /**
    * The VPC where a security group should be created for this option. If `vpc`
@@ -66,7 +66,7 @@ export interface OptionConfiguration {
    *
    * @default - no VPC
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Optional list of security groups to use for this option, if `vpc` is specified.
@@ -74,7 +74,7 @@ export interface OptionConfiguration {
    *
    * @default - a default group will be created if `port` or `vpc` are specified.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups?: ec2.ISecurityGroup[] | undefined;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface OptionGroupProps {
    *
    * @default a CDK generated description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The configurations for this option group.
@@ -103,7 +103,7 @@ export interface OptionGroupProps {
    *
    * @default - a CDK generated name
    */
-  readonly optionGroupName?: string;
+  readonly optionGroupName?: string | undefined;
 }
 
 /**

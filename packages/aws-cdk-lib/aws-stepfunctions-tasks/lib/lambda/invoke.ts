@@ -17,14 +17,14 @@ interface LambdaInvokeBaseProps {
    *
    * @default - The state input (JSONata: '{% $states.input %}', JSONPath: '$')
    */
-  readonly payload?: sfn.TaskInput;
+  readonly payload?: sfn.TaskInput | undefined;
 
   /**
    * Invocation type of the Lambda function
    *
    * @default InvocationType.REQUEST_RESPONSE
    */
-  readonly invocationType?: LambdaInvocationType;
+  readonly invocationType?: LambdaInvocationType | undefined;
 
   /**
    * Up to 3583 bytes of base64-encoded data about the invoking client
@@ -32,7 +32,7 @@ interface LambdaInvokeBaseProps {
    *
    * @default - No context
    */
-  readonly clientContext?: string;
+  readonly clientContext?: string | undefined;
 
   /**
    * Version or alias to invoke a published version of the function
@@ -44,7 +44,7 @@ interface LambdaInvokeBaseProps {
    * @default - Version or alias inherent to the `lambdaFunction` object.
    * @deprecated pass a Version or Alias object as lambdaFunction instead
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 
   /**
    * Invoke the Lambda in a way that only returns the payload response without additional metadata.
@@ -55,7 +55,7 @@ interface LambdaInvokeBaseProps {
    *
    * @default false
    */
-  readonly payloadResponseOnly?: boolean;
+  readonly payloadResponseOnly?: boolean | undefined;
 
   /**
    * Whether to retry on Lambda service exceptions.
@@ -69,7 +69,7 @@ interface LambdaInvokeBaseProps {
    *
    * @default true
    */
-  readonly retryOnServiceExceptions?: boolean;
+  readonly retryOnServiceExceptions?: boolean | undefined;
 }
 
 /**
@@ -118,8 +118,8 @@ export class LambdaInvoke extends sfn.TaskStateBase {
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

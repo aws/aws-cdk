@@ -25,7 +25,7 @@ export interface MethodOptions {
    * A friendly operation name for the method. For example, you can assign the
    * OperationName of ListPets for the GET /pets method.
    */
-  readonly operationName?: string;
+  readonly operationName?: string | undefined;
 
   /**
    * Method authorization.
@@ -38,20 +38,20 @@ export interface MethodOptions {
    *
    * @default - open access unless `authorizer` is specified
    */
-  readonly authorizationType?: AuthorizationType;
+  readonly authorizationType?: AuthorizationType | undefined;
 
   /**
    * If `authorizationType` is `Custom`, this specifies the ID of the method
    * authorizer resource.
    * If specified, the value of `authorizationType` must be set to `Custom`
    */
-  readonly authorizer?: IAuthorizer;
+  readonly authorizer?: IAuthorizer | undefined;
 
   /**
    * Indicates whether the method requires clients to submit a valid API key.
    * @default false
    */
-  readonly apiKeyRequired?: boolean;
+  readonly apiKeyRequired?: boolean | undefined;
 
   /**
    * The responses that can be sent to the client who calls the method.
@@ -62,7 +62,7 @@ export interface MethodOptions {
    * for the integration response to be correctly mapped to a response to the client.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-response.html
    */
-  readonly methodResponses?: MethodResponse[];
+  readonly methodResponses?: MethodResponse[] | undefined;
 
   /**
    * The request parameters that API Gateway accepts. Specify request parameters
@@ -72,7 +72,7 @@ export interface MethodOptions {
    * is querystring, path, or header, and name is a valid, unique parameter name.
    * @default None
    */
-  readonly requestParameters?: { [param: string]: boolean };
+  readonly requestParameters?: { [param: string]: boolean } | undefined;
 
   /**
    * The models which describe data structure of request payload. When
@@ -110,7 +110,7 @@ export interface MethodOptions {
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-settings-method-request.html#setup-method-request-model
    */
-  readonly requestModels?: { [param: string]: IModel };
+  readonly requestModels?: { [param: string]: IModel } | undefined;
 
   /**
    * The ID of the associated request validator.
@@ -119,7 +119,7 @@ export interface MethodOptions {
    * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
-  readonly requestValidator?: IRequestValidator;
+  readonly requestValidator?: IRequestValidator | undefined;
 
   /**
    * A list of authorization scopes configured on the method. The scopes are used with
@@ -127,7 +127,7 @@ export interface MethodOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-method.html#cfn-apigateway-method-authorizationscopes
    * @default - no authorization scopes
    */
-  readonly authorizationScopes?: string[];
+  readonly authorizationScopes?: string[] | undefined;
 
   /**
    * Request validator options to create new validator
@@ -136,7 +136,7 @@ export interface MethodOptions {
    * the request before it reaches integration like Lambda Proxy Integration.
    * @default - No default validator
    */
-  readonly requestValidatorOptions?: RequestValidatorOptions;
+  readonly requestValidatorOptions?: RequestValidatorOptions | undefined;
 }
 
 export interface MethodProps {
@@ -156,14 +156,14 @@ export interface MethodProps {
    *
    * @default - a new `MockIntegration`.
    */
-  readonly integration?: Integration;
+  readonly integration?: Integration | undefined;
 
   /**
    * Method options.
    *
    * @default - No options.
    */
-  readonly options?: MethodOptions;
+  readonly options?: MethodOptions | undefined;
 }
 
 @propertyInjectable

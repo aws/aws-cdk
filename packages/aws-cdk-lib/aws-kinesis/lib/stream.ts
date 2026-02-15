@@ -103,7 +103,7 @@ export interface IStream extends IResource, IStreamRef {
   /**
    * Optional KMS encryption key associated with this stream.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Adds a statement to the IAM resource policy associated with this stream.
@@ -374,7 +374,7 @@ export interface StreamAttributes {
    *
    * @default - No encryption
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 }
 
 /**
@@ -394,7 +394,7 @@ abstract class StreamBase extends Resource implements IStream {
   /**
    * Optional KMS encryption key associated with this stream.
    */
-  public abstract readonly encryptionKey?: kms.IKey;
+  public abstract readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * A reference to this stream.
@@ -797,13 +797,13 @@ export interface StreamProps {
    * Enforces a particular physical stream name.
    * @default <generated>
    */
-  readonly streamName?: string;
+  readonly streamName?: string | undefined;
 
   /**
    * The number of hours for the data records that are stored in shards to remain accessible.
    * @default Duration.hours(24)
    */
-  readonly retentionPeriod?: Duration;
+  readonly retentionPeriod?: Duration | undefined;
 
   /**
    * The number of shards for the stream.
@@ -812,7 +812,7 @@ export interface StreamProps {
    *
    * @default 1
    */
-  readonly shardCount?: number;
+  readonly shardCount?: number | undefined;
 
   /**
    * The kind of server-side encryption to apply to this stream.
@@ -824,7 +824,7 @@ export interface StreamProps {
    *   or StreamEncryption.UNENCRYPTED otherwise.
    *   StreamEncryption.KMS if an encryption key is supplied through the encryptionKey property
    */
-  readonly encryption?: StreamEncryption;
+  readonly encryption?: StreamEncryption | undefined;
 
   /**
    * External KMS key to use for stream encryption.
@@ -835,21 +835,21 @@ export interface StreamProps {
    *   If encryption is set to StreamEncryption.KMS and this property is undefined, a new KMS key
    *   will be created and associated with this stream.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * The capacity mode of this stream.
    *
    * @default StreamMode.PROVISIONED
    */
-  readonly streamMode?: StreamMode;
+  readonly streamMode?: StreamMode | undefined;
 
   /**
    * Policy to apply when the stream is removed from the stack.
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * A list of shard-level metrics in properties to enable enhanced monitoring mode.
@@ -858,7 +858,7 @@ export interface StreamProps {
    *
    * @default undefined - AWS Kinesis default is disabled
    */
-  readonly shardLevelMetrics?: ShardLevelMetrics[];
+  readonly shardLevelMetrics?: ShardLevelMetrics[] | undefined;
 }
 
 /**
@@ -905,7 +905,7 @@ export class Stream extends StreamBase {
 
   private readonly stream: CfnStream;
 
-  public readonly encryptionKey?: kms.IKey;
+  public readonly encryptionKey?: kms.IKey | undefined;
 
   protected readonly autoCreatePolicy = true;
 

@@ -8,12 +8,12 @@ export interface CfnOutputProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The key of the property returned by aws cloudformation describe-stacks command.
    */
-  readonly key?: string;
+  readonly key?: string | undefined;
 
   /**
    * The value of the property returned by the aws cloudformation describe-stacks command.
@@ -29,7 +29,7 @@ export interface CfnOutputProps {
    *
    * @default - the output is not exported
    */
-  readonly exportName?: string;
+  readonly exportName?: string | undefined;
 
   /**
    * A condition to associate with this output value. If the condition evaluates
@@ -37,7 +37,7 @@ export interface CfnOutputProps {
    *
    * @default - No condition is associated with the output.
    */
-  readonly condition?: CfnCondition;
+  readonly condition?: CfnCondition | undefined;
 }
 
 export class CfnOutput extends CfnElement {

@@ -17,14 +17,14 @@ export interface BasicLifecycleHookProps {
    *
    * @default - Automatically generated name.
    */
-  readonly lifecycleHookName?: string;
+  readonly lifecycleHookName?: string | undefined;
 
   /**
    * The action the Auto Scaling group takes when the lifecycle hook timeout elapses or if an unexpected failure occurs.
    *
    * @default Continue
    */
-  readonly defaultResult?: DefaultResult;
+  readonly defaultResult?: DefaultResult | undefined;
 
   /**
    * Maximum time between calls to RecordLifecycleActionHeartbeat for the hook
@@ -33,7 +33,7 @@ export interface BasicLifecycleHookProps {
    *
    * @default - No heartbeat timeout.
    */
-  readonly heartbeatTimeout?: Duration;
+  readonly heartbeatTimeout?: Duration | undefined;
 
   /**
    * The state of the Amazon EC2 instance to which you want to attach the lifecycle hook.
@@ -45,21 +45,21 @@ export interface BasicLifecycleHookProps {
    *
    * @default - No metadata.
    */
-  readonly notificationMetadata?: string;
+  readonly notificationMetadata?: string | undefined;
 
   /**
    * The target of the lifecycle hook
    *
    * @default - No target.
    */
-  readonly notificationTarget?: ILifecycleHookTarget;
+  readonly notificationTarget?: ILifecycleHookTarget | undefined;
 
   /**
    * The role that allows publishing to the notification target
    *
    * @default - A role will be created if a target is provided. Otherwise, no role is created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

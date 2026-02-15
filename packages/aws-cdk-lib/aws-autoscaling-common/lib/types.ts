@@ -9,7 +9,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  readonly lower?: number;
+  readonly lower?: number | undefined;
 
   /**
    * The upper bound of the interval.
@@ -18,7 +18,7 @@ export interface ScalingInterval {
    *
    * @default Threshold automatically derived from neighbouring intervals
    */
-  readonly upper?: number;
+  readonly upper?: number | undefined;
 
   /**
    * The capacity adjustment to apply in this interval

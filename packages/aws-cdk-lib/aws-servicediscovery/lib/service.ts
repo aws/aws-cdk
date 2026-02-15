@@ -67,14 +67,14 @@ export interface BaseServiceProps {
    *
    * @default CloudFormation-generated name
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * A description of the service.
    *
    * @default none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Settings for an optional health check.  If you specify health check settings, AWS Cloud Map associates the health
@@ -84,7 +84,7 @@ export interface BaseServiceProps {
    *
    * @default none
    */
-  readonly healthCheck?: HealthCheckConfig;
+  readonly healthCheck?: HealthCheckConfig | undefined;
 
   /**
    * Structure containing failure threshold for a custom health checker.
@@ -93,7 +93,7 @@ export interface BaseServiceProps {
    *
    * @default none
    */
-  readonly customHealthCheck?: HealthCheckCustomConfig;
+  readonly customHealthCheck?: HealthCheckCustomConfig | undefined;
 }
 
 /**
@@ -106,7 +106,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default DNS_AND_API
    */
-  readonly discoveryType?: DiscoveryType;
+  readonly discoveryType?: DiscoveryType | undefined;
 
   /**
    * The DNS type of the record that you want AWS Cloud Map to create. Supported record types
@@ -114,7 +114,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default A
    */
-  readonly dnsRecordType?: DnsRecordType;
+  readonly dnsRecordType?: DnsRecordType | undefined;
 
   /**
    * The amount of time, in seconds, that you want DNS resolvers to cache the settings for this
@@ -122,7 +122,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default Duration.minutes(1)
    */
-  readonly dnsTtl?: Duration;
+  readonly dnsTtl?: Duration | undefined;
 
   /**
    * The routing policy that you want to apply to all DNS records that AWS Cloud Map creates when you
@@ -130,7 +130,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default WEIGHTED for CNAME records and when loadBalancer is true, MULTIVALUE otherwise
    */
-  readonly routingPolicy?: RoutingPolicy;
+  readonly routingPolicy?: RoutingPolicy | undefined;
 
   /**
    * Whether or not this service will have an Elastic LoadBalancer registered to it as an AliasTargetInstance.
@@ -140,7 +140,7 @@ export interface DnsServiceProps extends BaseServiceProps {
    *
    * @default false
    */
-  readonly loadBalancer?: boolean;
+  readonly loadBalancer?: boolean | undefined;
 }
 
 export interface ServiceProps extends DnsServiceProps {
@@ -174,7 +174,7 @@ export interface ServiceAttributes {
   readonly serviceArn: string;
   readonly dnsRecordType: DnsRecordType;
   readonly routingPolicy: RoutingPolicy;
-  readonly discoveryType?: DiscoveryType;
+  readonly discoveryType?: DiscoveryType | undefined;
 }
 
 /**
@@ -413,14 +413,14 @@ export interface HealthCheckConfig {
    *
    * @default HTTP
    */
-  readonly type?: HealthCheckType;
+  readonly type?: HealthCheckType | undefined;
 
   /**
    * The path that you want Route 53 to request when performing health checks. Do not use when health check type is TCP.
    *
    * @default '/'
    */
-  readonly resourcePath?: string;
+  readonly resourcePath?: string | undefined;
 
   /**
    * The number of consecutive health checks that an endpoint must pass or fail for Route 53 to change the current
@@ -428,7 +428,7 @@ export interface HealthCheckConfig {
    *
    * @default 1
    */
-  readonly failureThreshold?: number;
+  readonly failureThreshold?: number | undefined;
 }
 
 /**
@@ -441,7 +441,7 @@ export interface HealthCheckCustomConfig {
    *
    * @default 1
    */
-  readonly failureThreshold?: number;
+  readonly failureThreshold?: number | undefined;
 }
 
 /**

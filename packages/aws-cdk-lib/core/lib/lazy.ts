@@ -92,7 +92,7 @@ export interface LazyStringValueOptions {
    *
    * @default - No hint
    */
-  readonly displayHint?: string;
+  readonly displayHint?: string | undefined;
 }
 
 /**
@@ -104,14 +104,14 @@ export interface LazyListValueOptions {
    *
    * @default - No hint
    */
-  readonly displayHint?: string;
+  readonly displayHint?: string | undefined;
 
   /**
    * If the produced list is empty, return 'undefined' instead
    *
    * @default false
    */
-  readonly omitEmpty?: boolean;
+  readonly omitEmpty?: boolean | undefined;
 }
 
 /**
@@ -123,14 +123,14 @@ export interface LazyAnyValueOptions {
    *
    * @default - No hint
    */
-  readonly displayHint?: string;
+  readonly displayHint?: string | undefined;
 
   /**
    * If the produced value is an array and it is empty, return 'undefined' instead
    *
    * @default false
    */
-  readonly omitEmptyArray?: boolean;
+  readonly omitEmptyArray?: boolean | undefined;
 }
 
 /**

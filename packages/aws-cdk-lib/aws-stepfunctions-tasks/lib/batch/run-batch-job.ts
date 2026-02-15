@@ -15,7 +15,7 @@ export interface ContainerOverrides {
    *
    * @default - No command overrides
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to send to the container.
@@ -25,7 +25,7 @@ export interface ContainerOverrides {
    *
    * @default - No environment overrides
    */
-  readonly environment?: { [key: string]: string };
+  readonly environment?: { [key: string]: string } | undefined;
 
   /**
    * The instance type to use for a multi-node parallel job.
@@ -33,7 +33,7 @@ export interface ContainerOverrides {
    *
    * @default - No instance type overrides
    */
-  readonly instanceType?: ec2.InstanceType;
+  readonly instanceType?: ec2.InstanceType | undefined;
 
   /**
    * The number of MiB of memory reserved for the job.
@@ -41,7 +41,7 @@ export interface ContainerOverrides {
    *
    * @default - No memory overrides
    */
-  readonly memory?: number;
+  readonly memory?: number | undefined;
 
   /**
    * The number of physical GPUs to reserve for the container.
@@ -51,7 +51,7 @@ export interface ContainerOverrides {
    *
    * @default - No GPU reservation
    */
-  readonly gpuCount?: number;
+  readonly gpuCount?: number | undefined;
 
   /**
    * The number of vCPUs to reserve for the container.
@@ -59,7 +59,7 @@ export interface ContainerOverrides {
    *
    * @default - No vCPUs overrides
    */
-  readonly vcpus?: number;
+  readonly vcpus?: number | undefined;
 }
 
 /**
@@ -71,14 +71,14 @@ export interface JobDependency {
    *
    * @default - No jobId
    */
-  readonly jobId?: string;
+  readonly jobId?: string | undefined;
 
   /**
    * The type of the job dependency.
    *
    * @default - No type
    */
-  readonly type?: string;
+  readonly type?: string | undefined;
 }
 
 /**
@@ -111,7 +111,7 @@ export interface RunBatchJobProps {
    *
    * @default - No array size
    */
-  readonly arraySize?: number;
+  readonly arraySize?: number | undefined;
 
   /**
    * A list of container overrides in JSON format that specify the name of a container
@@ -121,7 +121,7 @@ export interface RunBatchJobProps {
    *
    * @default - No container overrides
    */
-  readonly containerOverrides?: ContainerOverrides;
+  readonly containerOverrides?: ContainerOverrides | undefined;
 
   /**
    * A list of dependencies for the job.
@@ -131,14 +131,14 @@ export interface RunBatchJobProps {
    *
    * @default - No dependencies
    */
-  readonly dependsOn?: JobDependency[];
+  readonly dependsOn?: JobDependency[] | undefined;
 
   /**
    * The payload to be passed as parametrs to the batch job
    *
    * @default - No parameters are passed
    */
-  readonly payload?: { [key: string]: any };
+  readonly payload?: { [key: string]: any } | undefined;
 
   /**
    * The number of times to move a job to the RUNNABLE status.
@@ -148,7 +148,7 @@ export interface RunBatchJobProps {
    *
    * @default - 1
    */
-  readonly attempts?: number;
+  readonly attempts?: number | undefined;
 
   /**
    * The timeout configuration for this SubmitJob operation.
@@ -158,7 +158,7 @@ export interface RunBatchJobProps {
    *
    * @default - No timeout
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The service integration pattern indicates different ways to call TerminateCluster.
@@ -167,7 +167,7 @@ export interface RunBatchJobProps {
    *
    * @default SYNC
    */
-  readonly integrationPattern?: sfn.ServiceIntegrationPattern;
+  readonly integrationPattern?: sfn.ServiceIntegrationPattern | undefined;
 }
 
 /**

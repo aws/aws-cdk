@@ -12,14 +12,14 @@ export interface ApiDestinationProps extends TargetBaseProps {
    *
    * @default - the entire EventBridge event
    */
-  readonly event?: events.RuleTargetInput;
+  readonly event?: events.RuleTargetInput | undefined;
 
   /**
    * The role to assume before invoking the target
    *
    * @default - a new role will be created
    */
-  readonly eventRole?: iam.IRole;
+  readonly eventRole?: iam.IRole | undefined;
 
   /**
    * Additional headers sent to the API Destination
@@ -31,7 +31,7 @@ export interface ApiDestinationProps extends TargetBaseProps {
    *
    * @default - none
    */
-  readonly headerParameters?: Record<string, string>;
+  readonly headerParameters?: Record<string, string> | undefined;
 
   /**
    * Path parameters to insert in place of path wildcards (`*`).
@@ -41,7 +41,7 @@ export interface ApiDestinationProps extends TargetBaseProps {
    *
    * @default - none
    */
-  readonly pathParameterValues?: string[];
+  readonly pathParameterValues?: string[] | undefined;
 
   /**
    * Additional query string parameters sent to the API Destination
@@ -53,7 +53,7 @@ export interface ApiDestinationProps extends TargetBaseProps {
    *
    * @default - none
    */
-  readonly queryStringParameters?: Record<string, string>;
+  readonly queryStringParameters?: Record<string, string> | undefined;
 }
 
 /**

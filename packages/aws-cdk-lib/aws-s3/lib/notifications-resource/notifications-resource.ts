@@ -49,7 +49,7 @@ export class BucketNotifications extends Construct {
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
-  private readonly handlerRole?: iam.IRole;
+  private readonly handlerRole?: iam.IRole | undefined;
   private readonly skipDestinationValidation: boolean;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {

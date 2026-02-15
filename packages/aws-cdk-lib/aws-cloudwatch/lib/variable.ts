@@ -45,7 +45,7 @@ export interface VariableValue {
    *
    * @default - the variable's value
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Value of the selected item
@@ -199,28 +199,28 @@ export interface DashboardVariableOptions {
    *
    * @default - the variable's value
    */
-  readonly label?: string;
+  readonly label?: string | undefined;
 
   /**
    * Optional values (required for {@link VariableInputType.RADIO} and {@link VariableInputType.SELECT} dashboard variables).
    *
    * @default - no values
    */
-  readonly values?: Values;
+  readonly values?: Values | undefined;
 
   /**
    * Optional default value
    *
    * @default - no default value is set
    */
-  readonly defaultValue?: DefaultValue;
+  readonly defaultValue?: DefaultValue | undefined;
 
   /**
    * Whether the variable is visible
    *
    * @default - true
    */
-  readonly visible?: boolean;
+  readonly visible?: boolean | undefined;
 }
 
 /**

@@ -14,7 +14,7 @@ export interface Environment {
    *
    * @default Aws.ACCOUNT_ID which means that the stack will be account-agnostic.
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * The AWS region for this environment.
@@ -28,7 +28,7 @@ export interface Environment {
    *
    * @default Aws.REGION which means that the stack will be region-agnostic.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 // For backwards compatibility with TypeScript users

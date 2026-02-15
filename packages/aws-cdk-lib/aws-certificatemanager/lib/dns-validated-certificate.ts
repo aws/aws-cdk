@@ -26,7 +26,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    *
    * @default the region the stack is deployed in.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * An endpoint of Route53 service, which is not necessary as AWS SDK could figure
@@ -40,14 +40,14 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    *
    * @default - The AWS SDK will determine the Route53 endpoint to use based on region
    */
-  readonly route53Endpoint?: string;
+  readonly route53Endpoint?: string | undefined;
 
   /**
    * Role to use for the custom resource that creates the validated certificate
    *
    * @default - A new role will be created
    */
-  readonly customResourceRole?: iam.IRole;
+  readonly customResourceRole?: iam.IRole | undefined;
 
   /**
    * When set to true, when the DnsValidatedCertificate is deleted,
@@ -59,7 +59,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    *
    * @default false
    */
-  readonly cleanupRoute53Records?: boolean;
+  readonly cleanupRoute53Records?: boolean | undefined;
 }
 
 /**
@@ -81,7 +81,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
    */
 
   public readonly tags: cdk.TagManager;
-  protected readonly region?: string;
+  protected readonly region?: string | undefined;
   private normalizedZoneName: string;
   private hostedZoneId: string;
   private domainName: string;

@@ -10,7 +10,7 @@ export interface TlsClientPolicy {
    *
    * @default true
    */
-  readonly enforce?: boolean;
+  readonly enforce?: boolean | undefined;
 
   /**
    * TLS is enforced on the ports specified here.
@@ -18,7 +18,7 @@ export interface TlsClientPolicy {
    *
    * @default - all ports
    */
-  readonly ports?: number[];
+  readonly ports?: number[] | undefined;
 
   /**
    * Represents the object for TLS validation context
@@ -31,5 +31,5 @@ export interface TlsClientPolicy {
    *
    * @default - client TLS certificate is not provided
    */
-  readonly mutualTlsCertificate?: MutualTlsCertificate;
+  readonly mutualTlsCertificate?: MutualTlsCertificate | undefined;
 }

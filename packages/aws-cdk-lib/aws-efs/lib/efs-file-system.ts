@@ -205,14 +205,14 @@ export interface FileSystemProps {
    *
    * @default - creates new security group which allows all outbound traffic
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup?: ec2.ISecurityGroup | undefined;
 
   /**
    * Which subnets to place the mount target in the VPC.
    *
    * @default - the Vpc default strategy if not specified
    */
-  readonly vpcSubnets?: ec2.SubnetSelection;
+  readonly vpcSubnets?: ec2.SubnetSelection | undefined;
 
   /**
    * Defines if the data at rest in the file system is encrypted or not.
@@ -220,28 +220,28 @@ export interface FileSystemProps {
    * @default - If your application has the '@aws-cdk/aws-efs:defaultEncryptionAtRest' feature flag set, the default is true, otherwise, the default is false.
    * @link https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
    */
-  readonly encrypted?: boolean;
+  readonly encrypted?: boolean | undefined;
 
   /**
    * The file system's name.
    *
    * @default - CDK generated name
    */
-  readonly fileSystemName?: string;
+  readonly fileSystemName?: string | undefined;
 
   /**
    * The KMS key used for encryption. This is required to encrypt the data at rest if @encrypted is set to true.
    *
    * @default - if 'encrypted' is true, the default key for EFS (/aws/elasticfilesystem) is used
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 
   /**
    * A policy used by EFS lifecycle management to transition files to the Infrequent Access (IA) storage class.
    *
    * @default - None. EFS will not transition files to the IA storage class.
    */
-  readonly lifecyclePolicy?: LifecyclePolicy;
+  readonly lifecyclePolicy?: LifecyclePolicy | undefined;
 
   /**
    * A policy used by EFS lifecycle management to transition files from Infrequent Access (IA) storage class to
@@ -249,7 +249,7 @@ export interface FileSystemProps {
    *
    * @default - None. EFS will not transition files from IA storage to primary storage.
    */
-  readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
+  readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy | undefined;
 
   /**
    * The number of days after files were last accessed in primary storage (the Standard storage class) at which to move them to Archive storage.
@@ -257,7 +257,7 @@ export interface FileSystemProps {
    *
    * @default - None. EFS will not transition files to Archive storage class.
    */
-  readonly transitionToArchivePolicy?: LifecyclePolicy;
+  readonly transitionToArchivePolicy?: LifecyclePolicy | undefined;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -265,14 +265,14 @@ export interface FileSystemProps {
    *
    * @default PerformanceMode.GENERAL_PURPOSE
    */
-  readonly performanceMode?: PerformanceMode;
+  readonly performanceMode?: PerformanceMode | undefined;
 
   /**
    * Enum to mention the throughput mode of the file system.
    *
    * @default ThroughputMode.BURSTING
    */
-  readonly throughputMode?: ThroughputMode;
+  readonly throughputMode?: ThroughputMode | undefined;
 
   /**
    * Provisioned throughput for the file system.
@@ -281,28 +281,28 @@ export interface FileSystemProps {
    *
    * @default - none, errors out
    */
-  readonly provisionedThroughputPerSecond?: Size;
+  readonly provisionedThroughputPerSecond?: Size | undefined;
 
   /**
    * The removal policy to apply to the file system.
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * Whether to enable automatic backups for the file system.
    *
    * @default false
    */
-  readonly enableAutomaticBackups?: boolean;
+  readonly enableAutomaticBackups?: boolean | undefined;
 
   /**
    * File system policy is an IAM resource policy used to control NFS access to an EFS file system.
    *
    * @default none
    */
-  readonly fileSystemPolicy?: iam.PolicyDocument;
+  readonly fileSystemPolicy?: iam.PolicyDocument | undefined;
 
   /**
    * Allow access from anonymous client that doesn't use IAM authentication.
@@ -310,7 +310,7 @@ export interface FileSystemProps {
    * @default false when using `grantRead`, `grantWrite`, `grantRootAccess`
    * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
    */
-  readonly allowAnonymousAccess?: boolean;
+  readonly allowAnonymousAccess?: boolean | undefined;
 
   /**
    * Whether this is a One Zone file system.
@@ -319,7 +319,7 @@ export interface FileSystemProps {
    * @default false
    * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
    */
-  readonly oneZone?: boolean;
+  readonly oneZone?: boolean | undefined;
 
   /**
    * Whether to enable the filesystem's replication overwrite protection or not.
@@ -329,14 +329,14 @@ export interface FileSystemProps {
    *
    * @default ReplicationOverwriteProtection.ENABLED
    */
-  readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
+  readonly replicationOverwriteProtection?: ReplicationOverwriteProtection | undefined;
 
   /**
    * Replication configuration for the file system.
    *
    * @default - no replication
    */
-  readonly replicationConfiguration?: ReplicationConfiguration;
+  readonly replicationConfiguration?: ReplicationConfiguration | undefined;
 }
 
 /**
@@ -353,14 +353,14 @@ export interface FileSystemAttributes {
    *
    * @default - determined based on fileSystemArn
    */
-  readonly fileSystemId?: string;
+  readonly fileSystemId?: string | undefined;
 
   /**
    * The File System's Arn.
    *
    * @default - determined based on fileSystemId
    */
-  readonly fileSystemArn?: string;
+  readonly fileSystemArn?: string | undefined;
 }
 
 /**
@@ -372,21 +372,21 @@ export interface ReplicationConfigurationProps {
    *
    * @default - None
    */
-  readonly destinationFileSystem?: IFileSystemRef;
+  readonly destinationFileSystem?: IFileSystemRef | undefined;
 
   /**
    * AWS KMS key used to protect the encrypted file system.
    *
    * @default - use service-managed KMS key for Amazon EFS
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The AWS Region in which the destination file system is located.
    *
    * @default - the region of the stack
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The availability zone name of the destination file system.
@@ -394,7 +394,7 @@ export interface ReplicationConfigurationProps {
    *
    * @default - no availability zone is set
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 }
 
 /**
@@ -407,7 +407,7 @@ export interface OneZoneFileSystemProps {
    *
    * @default - use service-managed KMS key for Amazon EFS
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The AWS Region in which the destination file system is located.
@@ -431,14 +431,14 @@ export interface RegionalFileSystemProps {
    *
    * @default - use service-managed KMS key for Amazon EFS
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The AWS Region in which the destination file system is located.
    *
    * @default - the region of the stack
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 }
 
 /**
@@ -486,7 +486,7 @@ export abstract class ReplicationConfiguration {
     return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
-  private readonly _destinationFileSystem?: IFileSystemRef;
+  private readonly _destinationFileSystem?: IFileSystemRef | undefined;
 
   /**
    * The existing destination file system for the replication.
@@ -505,18 +505,18 @@ export abstract class ReplicationConfiguration {
   /**
    * AWS KMS key used to protect the encrypted file system.
    */
-  public readonly kmsKey?: kms.IKey;
+  public readonly kmsKey?: kms.IKey | undefined;
 
   /**
    * The AWS Region in which the destination file system is located.
    */
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   /**
    * The availability zone name of the destination file system.
    * One zone file system is used as the destination file system when this property is set.
    */
-  public readonly availabilityZone?: string;
+  public readonly availabilityZone?: string | undefined;
 
   constructor(options: ReplicationConfigurationProps) {
     this._destinationFileSystem = options.destinationFileSystem;

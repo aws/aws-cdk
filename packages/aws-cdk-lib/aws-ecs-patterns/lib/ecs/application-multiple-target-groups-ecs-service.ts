@@ -21,7 +21,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - none
    */
-  readonly taskDefinition?: Ec2TaskDefinition;
+  readonly taskDefinition?: Ec2TaskDefinition | undefined;
 
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -30,7 +30,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - No minimum CPU units reserved.
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -42,7 +42,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - No memory limit.
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimitMiB?: number | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -59,7 +59,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - No memory reserved.
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservationMiB?: number | undefined;
 
   /**
    * The placement constraints to use for tasks in the service. For more information, see
@@ -67,7 +67,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - No constraints.
    */
-  readonly placementConstraints?: PlacementConstraint[];
+  readonly placementConstraints?: PlacementConstraint[] | undefined;
 
   /**
    * The placement strategies to use for tasks in the service. For more information, see
@@ -75,7 +75,7 @@ export interface ApplicationMultipleTargetGroupsEc2ServiceProps extends Applicat
    *
    * @default - No strategies.
    */
-  readonly placementStrategies?: PlacementStrategy[];
+  readonly placementStrategies?: PlacementStrategy[] | undefined;
 }
 
 /**

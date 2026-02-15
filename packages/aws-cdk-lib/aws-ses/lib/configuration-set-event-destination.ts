@@ -31,14 +31,14 @@ export interface ConfigurationSetEventDestinationOptions {
    *
    * @default - a CloudFormation generated name
    */
-  readonly configurationSetEventDestinationName?: string;
+  readonly configurationSetEventDestinationName?: string | undefined;
 
   /**
    * Whether Amazon SES publishes events to this destination
    *
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * The event destination
@@ -50,7 +50,7 @@ export interface ConfigurationSetEventDestinationOptions {
    *
    * @default - send all event types
    */
-  readonly events?: EmailSendingEvent[];
+  readonly events?: EmailSendingEvent[] | undefined;
 }
 
 /**
@@ -90,28 +90,28 @@ export abstract class EventDestination {
    *
    * @default - do not send events to a SNS topic
    */
-  public abstract readonly topic?: sns.ITopic;
+  public abstract readonly topic?: sns.ITopic | undefined;
 
   /**
    * A list of CloudWatch dimensions upon which to categorize your emails
    *
    * @default - do not send events to CloudWatch
    */
-  public abstract readonly dimensions?: CloudWatchDimension[];
+  public abstract readonly dimensions?: CloudWatchDimension[] | undefined;
 
   /**
    * Use Event Bus as event destination
    *
    * @default - do not send events to Event bus
    */
-  public abstract readonly bus?: events.IEventBusRef;
+  public abstract readonly bus?: events.IEventBusRef | undefined;
 
   /**
    * Use Firehose Delivery Stream
    *
    * @default - do not send events to Firehose Delivery Stream
    */
-  public abstract readonly stream?: FirehoseDeliveryStreamDestination;
+  public abstract readonly stream?: FirehoseDeliveryStreamDestination | undefined;
 }
 
 /**
@@ -261,7 +261,7 @@ export interface FirehoseDeliveryStreamDestination {
    *
    * @default - Create IAM Role for Amazon Data Firehose Delivery stream
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

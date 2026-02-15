@@ -18,14 +18,14 @@ export interface EventInvokeConfigOptions {
    *
    * @default - no destination
    */
-  readonly onFailure?: IDestination;
+  readonly onFailure?: IDestination | undefined;
 
   /**
    * The destination for successful invocations.
    *
    * @default - no destination
    */
-  readonly onSuccess?: IDestination;
+  readonly onSuccess?: IDestination | undefined;
 
   /**
    * The maximum age of a request that Lambda sends to a function for
@@ -36,7 +36,7 @@ export interface EventInvokeConfigOptions {
    *
    * @default Duration.hours(6)
    */
-  readonly maxEventAge?: Duration;
+  readonly maxEventAge?: Duration | undefined;
 
   /**
    * The maximum number of times to retry when the function returns an error.
@@ -46,7 +46,7 @@ export interface EventInvokeConfigOptions {
    *
    * @default 2
    */
-  readonly retryAttempts?: number;
+  readonly retryAttempts?: number | undefined;
 }
 
 /**
@@ -63,7 +63,7 @@ export interface EventInvokeConfigProps extends EventInvokeConfigOptions {
    *
    * @default - latest version
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 }
 
 /**

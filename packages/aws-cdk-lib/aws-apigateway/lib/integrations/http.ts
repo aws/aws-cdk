@@ -7,13 +7,13 @@ export interface HttpIntegrationProps {
    *
    * @default true
    */
-  readonly proxy?: boolean;
+  readonly proxy?: boolean | undefined;
 
   /**
    * HTTP method to use when invoking the backend URL.
    * @default GET
    */
-  readonly httpMethod?: string;
+  readonly httpMethod?: string | undefined;
 
   /**
    * Integration options, such as request/resopnse mapping, content handling,
@@ -21,7 +21,7 @@ export interface HttpIntegrationProps {
    *
    * @default defaults based on `IntegrationOptions` defaults
    */
-  readonly options?: IntegrationOptions;
+  readonly options?: IntegrationOptions | undefined;
 }
 
 /**

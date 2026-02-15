@@ -46,7 +46,7 @@ export interface AspectOptions {
    *
    * @default AspectPriority.DEFAULT
    */
-  readonly priority?: number;
+  readonly priority?: number | undefined;
 }
 
 /**

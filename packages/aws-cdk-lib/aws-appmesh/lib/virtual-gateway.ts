@@ -60,28 +60,28 @@ export interface VirtualGatewayBaseProps {
    *
    * @default - A name is automatically determined
    */
-  readonly virtualGatewayName?: string;
+  readonly virtualGatewayName?: string | undefined;
 
   /**
    * Listeners for the VirtualGateway. Only one is supported.
    *
    * @default - Single HTTP listener on port 8080
    */
-  readonly listeners?: VirtualGatewayListener[];
+  readonly listeners?: VirtualGatewayListener[] | undefined;
 
   /**
    * Access Logging Configuration for the VirtualGateway
    *
    * @default - no access logging
    */
-  readonly accessLog?: AccessLog;
+  readonly accessLog?: AccessLog | undefined;
 
   /**
    * Default Configuration Virtual Node uses to communicate with Virtual Service
    *
    * @default - No Config
    */
-  readonly backendDefaults?: BackendDefaults;
+  readonly backendDefaults?: BackendDefaults | undefined;
 }
 
 /**

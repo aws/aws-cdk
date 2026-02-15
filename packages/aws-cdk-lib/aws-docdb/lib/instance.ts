@@ -141,7 +141,7 @@ export interface DatabaseInstanceProps {
    *
    * @default - no preference
    */
-  readonly availabilityZone?: string;
+  readonly availabilityZone?: string | undefined;
 
   /**
    * A name for the DB instance. If you specify a name, AWS CloudFormation
@@ -149,7 +149,7 @@ export interface DatabaseInstanceProps {
    *
    * @default - a CloudFormation generated name
    */
-  readonly dbInstanceName?: string;
+  readonly dbInstanceName?: string | undefined;
 
   /**
    * Indicates that minor engine upgrades are applied automatically to the
@@ -157,7 +157,7 @@ export interface DatabaseInstanceProps {
    *
    * @default true
    */
-  readonly autoMinorVersionUpgrade?: boolean;
+  readonly autoMinorVersionUpgrade?: boolean | undefined;
 
   /**
    * The weekly time range (in UTC) during which system maintenance can occur.
@@ -169,7 +169,7 @@ export interface DatabaseInstanceProps {
    * time for each AWS Region, occurring on a random day of the week. To see
    * the time blocks available, see https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-maintain.html#maintenance-window
    */
-  readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string | undefined;
 
   /**
    * The CloudFormation policy to apply when the instance is removed from the
@@ -177,14 +177,14 @@ export interface DatabaseInstanceProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: cdk.RemovalPolicy;
+  readonly removalPolicy?: cdk.RemovalPolicy | undefined;
 
   /**
    * A value that indicates whether to enable Performance Insights for the DB Instance.
    *
    * @default - false
    */
-  readonly enablePerformanceInsights?: boolean;
+  readonly enablePerformanceInsights?: boolean | undefined;
 
   /**
    * The identifier of the CA certificate for this DB instance.
@@ -195,7 +195,7 @@ export interface DatabaseInstanceProps {
    *
    * @default - DocumentDB will choose a certificate authority
    */
-  readonly caCertificate?: CaCertificate;
+  readonly caCertificate?: CaCertificate | undefined;
 }
 
 /**

@@ -36,7 +36,7 @@ export interface EventBridgePutEventsEntry {
    *
    * @default - event is sent to account's default event bus
    */
-  readonly eventBus?: events.IEventBusRef;
+  readonly eventBus?: events.IEventBusRef | undefined;
 
   /**
    * The service or application that caused this event to be generated
@@ -97,8 +97,8 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

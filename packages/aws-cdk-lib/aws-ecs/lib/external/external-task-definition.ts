@@ -26,7 +26,7 @@ export interface ExternalTaskDefinitionProps extends CommonTaskDefinitionProps {
    *
    * @default NetworkMode.BRIDGE
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 }
 
 /**

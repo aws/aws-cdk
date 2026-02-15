@@ -15,7 +15,7 @@ export interface BootstraplessSynthesizerProps {
    * @default 'hnb659fds'
    *
    */
-  readonly qualifier?: string;
+  readonly qualifier?: string | undefined;
 
   /**
    * The deploy Role ARN to use.
@@ -23,14 +23,14 @@ export interface BootstraplessSynthesizerProps {
    * @default - No deploy role (use CLI credentials)
    *
    */
-  readonly deployRoleArn?: string;
+  readonly deployRoleArn?: string | undefined;
 
   /**
    * The CFN execution Role ARN to use.
    *
    * @default - No CloudFormation role (use CLI credentials)
    */
-  readonly cloudFormationExecutionRoleArn?: string;
+  readonly cloudFormationExecutionRoleArn?: string | undefined;
 }
 
 /**

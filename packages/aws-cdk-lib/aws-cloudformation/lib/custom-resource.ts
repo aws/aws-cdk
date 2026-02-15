@@ -136,7 +136,7 @@ export interface CustomResourceProps {
    *
    * @default - No properties.
    */
-  readonly properties?: Properties;
+  readonly properties?: Properties | undefined;
 
   /**
    * For custom resources, you can specify AWS::CloudFormation::CustomResource
@@ -159,14 +159,14 @@ export interface CustomResourceProps {
    *
    * @default - AWS::CloudFormation::CustomResource
    */
-  readonly resourceType?: string;
+  readonly resourceType?: string | undefined;
 
   /**
    * The policy to apply when this resource is removed from the application.
    *
    * @default cdk.RemovalPolicy.Destroy
    */
-  readonly removalPolicy?: core.RemovalPolicy;
+  readonly removalPolicy?: core.RemovalPolicy | undefined;
 }
 
 /**

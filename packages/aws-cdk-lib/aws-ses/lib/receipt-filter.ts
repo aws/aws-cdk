@@ -28,21 +28,21 @@ export interface ReceiptFilterProps {
    *
    * @default a CloudFormation generated name
    */
-  readonly receiptFilterName?: string;
+  readonly receiptFilterName?: string | undefined;
 
   /**
    * The ip address or range to filter.
    *
    * @default 0.0.0.0/0
    */
-  readonly ip?: string;
+  readonly ip?: string | undefined;
 
   /**
    * The policy for the filter.
    *
    * @default Block
    */
-  readonly policy?: ReceiptFilterPolicy;
+  readonly policy?: ReceiptFilterPolicy | undefined;
 }
 
 /**

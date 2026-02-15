@@ -15,7 +15,7 @@ export interface RuleProps {
    * @remarks Using compute time for this action will incur separate charges in AWS CodeBuild.
    * @default - No commands
    */
-  readonly commands?: string[];
+  readonly commands?: string[] | undefined;
 
   /**
    * The action configuration fields for the rule.
@@ -23,7 +23,7 @@ export interface RuleProps {
    *
    * @default - No configuration
    */
-  readonly configuration?: object;
+  readonly configuration?: object | undefined;
 
   /**
    * The input artifacts fields for the rule, such as specifying an input file for the rule.
@@ -31,7 +31,7 @@ export interface RuleProps {
    *
    * @default - No input artifacts
    */
-  readonly inputArtifacts?: string[];
+  readonly inputArtifacts?: string[] | undefined;
 
   /**
    * The name of the rule that is created for the condition.
@@ -40,7 +40,7 @@ export interface RuleProps {
    * @example 'VariableCheck'
    * @default - A unique name will be generated
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The AWS Region for the condition associated with the rule.
@@ -48,7 +48,7 @@ export interface RuleProps {
    *
    * @default - Pipeline's region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The IAM role that the rule will use to execute its actions.
@@ -56,7 +56,7 @@ export interface RuleProps {
    *
    * @default - A new role will be created
    */
-  readonly role?: iam.Role;
+  readonly role?: iam.Role | undefined;
 
   /**
    * The rule provider that implements the rule's functionality.
@@ -65,7 +65,7 @@ export interface RuleProps {
    * @see AWS CodePipeline rule reference for available providers
    * @default - No provider, must be specified if rule is used
    */
-  readonly provider?: string;
+  readonly provider?: string | undefined;
 
   /**
    * The version of the rule to use.
@@ -73,7 +73,7 @@ export interface RuleProps {
    *
    * @default '1'
    */
-  readonly version?: string;
+  readonly version?: string | undefined;
 }
 
 /**
@@ -84,7 +84,7 @@ export class Rule {
   /**
    * The name of the rule, if specified in the properties
    */
-  public readonly ruleName?: string;
+  public readonly ruleName?: string | undefined;
 
   private readonly _props: RuleProps;
 

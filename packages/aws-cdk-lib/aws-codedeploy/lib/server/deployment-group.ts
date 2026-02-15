@@ -23,7 +23,7 @@ import type { AutoRollbackConfig } from '../rollback-config';
 
 export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   readonly application: IServerApplication;
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
   /**
    * @attribute
    */
@@ -34,7 +34,7 @@ export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupR
    */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
-  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[] | undefined;
 }
 
 /**
@@ -60,7 +60,7 @@ export interface ServerDeploymentGroupAttributes {
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  readonly deploymentConfig?: IDeploymentConfigRef;
+  readonly deploymentConfig?: IDeploymentConfigRef | undefined;
 }
 
 @propertyInjectable
@@ -136,28 +136,28 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - A new Application will be created.
    */
-  readonly application?: IApplicationRef;
+  readonly application?: IApplicationRef | undefined;
 
   /**
    * The service Role of this Deployment Group.
    *
    * @default - A new Role will be created.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group.
    *
    * @default - An auto-generated name will be used.
    */
-  readonly deploymentGroupName?: string;
+  readonly deploymentGroupName?: string | undefined;
 
   /**
    * The EC2/on-premise Deployment Configuration to use for this Deployment Group.
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  readonly deploymentConfig?: IDeploymentConfigRef;
+  readonly deploymentConfig?: IDeploymentConfigRef | undefined;
 
   /**
    * The auto-scaling groups belonging to this Deployment Group.
@@ -170,7 +170,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default []
    */
-  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[] | undefined;
 
   /**
    * If you've provided any auto-scaling groups with the `#autoScalingGroups` property,
@@ -179,7 +179,7 @@ export interface ServerDeploymentGroupProps {
    * @default true
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/codedeploy-agent-operations-install.html
    */
-  readonly installAgent?: boolean;
+  readonly installAgent?: boolean | undefined;
 
   /**
    * The load balancer to place in front of this Deployment Group.
@@ -189,7 +189,7 @@ export interface ServerDeploymentGroupProps {
    * @default - Deployment Group will not have a load balancer defined.
    * @deprecated - Use `loadBalancers` instead.
    */
-  readonly loadBalancer?: LoadBalancer;
+  readonly loadBalancer?: LoadBalancer | undefined;
 
   /**
    * CodeDeploy supports the deployment to multiple load balancers.
@@ -198,21 +198,21 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - Deployment Group will not have load balancers defined.
    */
-  readonly loadBalancers?: LoadBalancer[];
+  readonly loadBalancers?: LoadBalancer[] | undefined;
 
   /**
    * All EC2 instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default - No additional EC2 instances will be added to the Deployment Group.
    */
-  readonly ec2InstanceTags?: InstanceTagSet;
+  readonly ec2InstanceTags?: InstanceTagSet | undefined;
 
   /**
    * All on-premise instances matching the given set of tags when a deployment occurs will be added to this Deployment Group.
    *
    * @default - No additional on-premise instances will be added to the Deployment Group.
    */
-  readonly onPremiseInstanceTags?: InstanceTagSet;
+  readonly onPremiseInstanceTags?: InstanceTagSet | undefined;
 
   /**
    * The CloudWatch alarms associated with this Deployment Group.
@@ -224,28 +224,28 @@ export interface ServerDeploymentGroupProps {
    * @default []
    * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/monitoring-create-alarms.html
    */
-  readonly alarms?: IAlarmRef[];
+  readonly alarms?: IAlarmRef[] | undefined;
 
   /**
    * Whether to continue a deployment even if fetching the alarm status from CloudWatch failed.
    *
    * @default false
    */
-  readonly ignorePollAlarmsFailure?: boolean;
+  readonly ignorePollAlarmsFailure?: boolean | undefined;
 
   /**
    * The auto-rollback configuration for this Deployment Group.
    *
    * @default - default AutoRollbackConfig.
    */
-  readonly autoRollback?: AutoRollbackConfig;
+  readonly autoRollback?: AutoRollbackConfig | undefined;
 
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
    * @default - false
    */
-  readonly ignoreAlarmConfiguration?: boolean;
+  readonly ignoreAlarmConfiguration?: boolean | undefined;
 
   /**
    * Indicates whether the deployment group was configured to have CodeDeploy install a termination hook into an Auto Scaling group.
@@ -254,7 +254,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - false
    */
-  readonly terminationHook?: boolean;
+  readonly terminationHook?: boolean | undefined;
 }
 
 /**
@@ -287,13 +287,13 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   /**
    * The service Role of this Deployment Group.
    */
-  public readonly role?: iam.IRole;
+  public readonly role?: iam.IRole | undefined;
 
   private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: IAlarmRef[];
-  private readonly loadBalancers?: LoadBalancer[];
+  private readonly loadBalancers?: LoadBalancer[] | undefined;
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupProps = {}) {
     super(scope, id, {

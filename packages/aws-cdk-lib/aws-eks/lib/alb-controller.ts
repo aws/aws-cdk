@@ -252,14 +252,14 @@ export interface AlbControllerHelmChartOptions {
    *
    * @default - no value defined for this helm chart option, so it will not be set in the helm chart values
    */
-  readonly enableWafv2?: boolean;
+  readonly enableWafv2?: boolean | undefined;
 
   /**
    * Enable or disable AWS WAF on the ALB ingress controller.
    *
    * @default - no value defined for this helm chart option, so it will not be set in the helm chart values
    */
-  readonly enableWaf?: boolean;
+  readonly enableWaf?: boolean | undefined;
 }
 
 /**
@@ -281,7 +281,7 @@ export interface AlbControllerOptions {
    *
    * @default '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller'
    */
-  readonly repository?: string;
+  readonly repository?: string | undefined;
 
   /**
    * The IAM policy to apply to the service account.
@@ -293,14 +293,14 @@ export interface AlbControllerOptions {
    *
    * @default - Corresponds to the predefined version.
    */
-  readonly policy?: any;
+  readonly policy?: any | undefined;
 
   /**
    * Additional helm chart values for ALB controller
    *
    * @default - no additional helm chart values
    */
-  readonly additionalHelmChartValues?: AlbControllerHelmChartOptions;
+  readonly additionalHelmChartValues?: AlbControllerHelmChartOptions | undefined;
 
   /**
    * Overwrite any existing ALB controller service account.
@@ -311,7 +311,7 @@ export interface AlbControllerOptions {
    *
    * @default false
    */
-  readonly overwriteServiceAccount?: boolean;
+  readonly overwriteServiceAccount?: boolean | undefined;
 
   /**
    * The removal policy applied to the ALB controller resources.
@@ -325,7 +325,7 @@ export interface AlbControllerOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

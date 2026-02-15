@@ -92,70 +92,70 @@ export interface DockerImageAssetInvalidationOptions {
    *
    * @default true
    */
-  readonly extraHash?: boolean;
+  readonly extraHash?: boolean | undefined;
 
   /**
    * Use `buildArgs` while calculating the asset hash
    *
    * @default true
    */
-  readonly buildArgs?: boolean;
+  readonly buildArgs?: boolean | undefined;
 
   /**
    * Use `buildSecrets` while calculating the asset hash
    *
    * @default true
    */
-  readonly buildSecrets?: boolean;
+  readonly buildSecrets?: boolean | undefined;
 
   /**
    * Use `buildSsh` while calculating the asset hash
    *
    * @default true
    */
-  readonly buildSsh?: boolean;
+  readonly buildSsh?: boolean | undefined;
 
   /**
    * Use `target` while calculating the asset hash
    *
    * @default true
    */
-  readonly target?: boolean;
+  readonly target?: boolean | undefined;
 
   /**
    * Use `file` while calculating the asset hash
    *
    * @default true
    */
-  readonly file?: boolean;
+  readonly file?: boolean | undefined;
 
   /**
    * Use `repositoryName` while calculating the asset hash
    *
    * @default true
    */
-  readonly repositoryName?: boolean;
+  readonly repositoryName?: boolean | undefined;
 
   /**
    * Use `networkMode` while calculating the asset hash
    *
    * @default true
    */
-  readonly networkMode?: boolean;
+  readonly networkMode?: boolean | undefined;
 
   /**
    * Use `platform` while calculating the asset hash
    *
    * @default true
    */
-  readonly platform?: boolean;
+  readonly platform?: boolean | undefined;
 
   /**
    * Use `outputs` while calculating the asset hash
    *
    * @default true
    */
-  readonly outputs?: boolean;
+  readonly outputs?: boolean | undefined;
 }
 
 /**
@@ -183,7 +183,7 @@ export interface DockerCacheOption {
    *   mode: "max",
    * };
    */
-  readonly params?: { [key: string]: string };
+  readonly params?: { [key: string]: string } | undefined;
 }
 
 /**
@@ -202,7 +202,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * `Stack.addDockerImageAsset`. this feature will be removed in future
    * releases.
    */
-  readonly repositoryName?: string;
+  readonly repositoryName?: string | undefined;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -213,7 +213,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *
    * @default - no build args are passed
    */
-  readonly buildArgs?: { [key: string]: string };
+  readonly buildArgs?: { [key: string]: string } | undefined;
 
   /**
    * Build secrets.
@@ -231,7 +231,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
    * };
    */
-  readonly buildSecrets?: { [key: string]: string };
+  readonly buildSecrets?: { [key: string]: string } | undefined;
 
   /**
    * SSH agent socket or keys to pass to the `docker build` command.
@@ -242,42 +242,42 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *
    * @default - no --ssh flag
    */
-  readonly buildSsh?: string;
+  readonly buildSsh?: string | undefined;
 
   /**
    * Docker target to build to
    *
    * @default - no target
    */
-  readonly target?: string;
+  readonly target?: string | undefined;
 
   /**
    * Path to the Dockerfile (relative to the directory).
    *
    * @default 'Dockerfile'
    */
-  readonly file?: string;
+  readonly file?: string | undefined;
 
   /**
    * Networking mode for the RUN commands during build. Support docker API 1.25+.
    *
    * @default - no networking mode specified (the default networking mode `NetworkMode.DEFAULT` will be used)
    */
-  readonly networkMode?: NetworkMode;
+  readonly networkMode?: NetworkMode | undefined;
 
   /**
    * Platform to build for. _Requires Docker Buildx_.
    *
    * @default - no platform specified (the current machine architecture will be used)
    */
-  readonly platform?: Platform;
+  readonly platform?: Platform | undefined;
 
   /**
    * Options to control which parameters are used to invalidate the asset hash.
    *
    * @default - hash all parameters
    */
-  readonly invalidation?: DockerImageAssetInvalidationOptions;
+  readonly invalidation?: DockerImageAssetInvalidationOptions | undefined;
 
   /**
    * Outputs to pass to the `docker build` command.
@@ -285,7 +285,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no outputs are passed to the build command (default outputs are used)
    * @see https://docs.docker.com/engine/reference/commandline/build/#custom-build-outputs
    */
-  readonly outputs?: string[];
+  readonly outputs?: string[] | undefined;
 
   /**
    * Unique identifier of the docker image asset and its potential revisions.
@@ -293,7 +293,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *
    * @default - no asset name
    */
-  readonly assetName?: string;
+  readonly assetName?: string | undefined;
 
   /**
    * Cache from options to pass to the `docker build` command.
@@ -301,7 +301,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no cache from options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheFrom?: DockerCacheOption[];
+  readonly cacheFrom?: DockerCacheOption[] | undefined;
 
   /**
    * Cache to options to pass to the `docker build` command.
@@ -309,14 +309,14 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default - no cache to options are passed to the build command
    * @see https://docs.docker.com/build/cache/backends/
    */
-  readonly cacheTo?: DockerCacheOption;
+  readonly cacheTo?: DockerCacheOption | undefined;
 
   /**
    * Disable the cache and pass `--no-cache` to the `docker build` command.
    *
    * @default - cache is used
    */
-  readonly cacheDisabled?: boolean;
+  readonly cacheDisabled?: boolean | undefined;
 
   /**
    * A display name for this asset
@@ -339,7 +339,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *
    * @default - Stack-relative construct path
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 }
 
 /**
@@ -409,26 +409,26 @@ export class DockerImageAsset extends Construct implements IAsset {
   /**
    * The path to the Dockerfile, relative to the assetPath
    */
-  private readonly dockerfilePath?: string;
+  private readonly dockerfilePath?: string | undefined;
 
   /**
    * Build args to pass to the `docker build` command.
    */
-  private readonly dockerBuildArgs?: { [key: string]: string };
+  private readonly dockerBuildArgs?: { [key: string]: string } | undefined;
 
   /**
    * Build secrets to pass to the `docker build` command.
    */
-  private readonly dockerBuildSecrets?: { [key: string]: string };
+  private readonly dockerBuildSecrets?: { [key: string]: string } | undefined;
 
   /**
    * SSH agent socket or keys to pass to the `docker build` command.
    */
-  private readonly dockerBuildSsh?: string;
+  private readonly dockerBuildSsh?: string | undefined;
   /**
    * Outputs to pass to the `docker build` command.
    */
-  private readonly dockerOutputs?: string[];
+  private readonly dockerOutputs?: string[] | undefined;
 
   /**
    * Unique identifier of the docker image asset and its potential revisions.
@@ -436,27 +436,27 @@ export class DockerImageAsset extends Construct implements IAsset {
    *
    * @default - no asset name
    */
-  private readonly assetName?: string;
+  private readonly assetName?: string | undefined;
 
   /**
    * Cache from options to pass to the `docker build` command.
    */
-  private readonly dockerCacheFrom?: DockerCacheOption[];
+  private readonly dockerCacheFrom?: DockerCacheOption[] | undefined;
 
   /**
    * Cache to options to pass to the `docker build` command.
    */
-  private readonly dockerCacheTo?: DockerCacheOption;
+  private readonly dockerCacheTo?: DockerCacheOption | undefined;
 
   /**
    * Disable the cache and pass `--no-cache` to the `docker build` command.
    */
-  private readonly dockerCacheDisabled?: boolean;
+  private readonly dockerCacheDisabled?: boolean | undefined;
 
   /**
    * Docker target to build to
    */
-  private readonly dockerBuildTarget?: string;
+  private readonly dockerBuildTarget?: string | undefined;
 
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);

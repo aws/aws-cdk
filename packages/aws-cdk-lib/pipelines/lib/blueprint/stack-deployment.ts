@@ -30,35 +30,35 @@ export interface StackDeploymentProps {
    *
    * @default - Pipeline region
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * Account where the stack should be deployed
    *
    * @default - Pipeline account
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * Role to assume before deploying this stack
    *
    * @default - Don't assume any role
    */
-  readonly assumeRoleArn?: string;
+  readonly assumeRoleArn?: string | undefined;
 
   /**
    * Execution role to pass to CloudFormation
    *
    * @default - No execution role
    */
-  readonly executionRoleArn?: string;
+  readonly executionRoleArn?: string | undefined;
 
   /**
    * Tags to apply to the stack
    *
    * @default - No tags
    */
-  readonly tags?: Record<string, string>;
+  readonly tags?: Record<string, string> | undefined;
 
   /**
    * Template path on disk to cloud assembly (cdk.out)
@@ -70,7 +70,7 @@ export interface StackDeploymentProps {
    *
    * @default - No assets
    */
-  readonly assets?: StackAsset[];
+  readonly assets?: StackAsset[] | undefined;
 
   /**
    * The S3 URL which points to the template asset location in the publishing
@@ -78,7 +78,7 @@ export interface StackDeploymentProps {
    *
    * @default - Stack template is not published
    */
-  readonly templateS3Uri?: string;
+  readonly templateS3Uri?: string | undefined;
 }
 
 /**
@@ -133,28 +133,28 @@ export class StackDeployment {
    *
    * @default - Pipeline region
    */
-  public readonly region?: string;
+  public readonly region?: string | undefined;
 
   /**
    * Account where the stack should be deployed
    *
    * @default - Pipeline account
    */
-  public readonly account?: string;
+  public readonly account?: string | undefined;
 
   /**
    * Role to assume before deploying this stack
    *
    * @default - Don't assume any role
    */
-  public readonly assumeRoleArn?: string;
+  public readonly assumeRoleArn?: string | undefined;
 
   /**
    * Execution role to pass to CloudFormation
    *
    * @default - No execution role
    */
-  public readonly executionRoleArn?: string;
+  public readonly executionRoleArn?: string | undefined;
 
   /**
    * Tags to apply to the stack
@@ -174,7 +174,7 @@ export class StackDeployment {
   /**
    * The asset that represents the CloudFormation template for this stack.
    */
-  public readonly templateAsset?: StackAsset;
+  public readonly templateAsset?: StackAsset | undefined;
 
   /**
    * The S3 URL which points to the template asset location in the publishing
@@ -185,7 +185,7 @@ export class StackDeployment {
    *
    * Example value: `https://bucket.s3.amazonaws.com/object/key`
    */
-  public readonly templateUrl?: string;
+  public readonly templateUrl?: string | undefined;
 
   /**
    * Template path on disk to CloudAssembly
@@ -282,14 +282,14 @@ export interface StackAsset {
    *
    * @default - Use some generated string as display name
    */
-  readonly displayName?: string;
+  readonly displayName?: string | undefined;
 
   /**
    * Role ARN to assume to publish
    *
    * @default - No need to assume any role
    */
-  readonly assetPublishingRoleArn?: string;
+  readonly assetPublishingRoleArn?: string | undefined;
 
   /**
    * Does this asset represent the CloudFormation template for the stack

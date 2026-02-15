@@ -135,14 +135,14 @@ export interface ProfilingGroupProps {
    * A name for the profiling group.
    * @default - automatically generated name.
    */
-  readonly profilingGroupName?: string;
+  readonly profilingGroupName?: string | undefined;
 
   /**
    * The compute platform of the profiling group.
    *
    * @default ComputePlatform.DEFAULT
    */
-  readonly computePlatform?: ComputePlatform;
+  readonly computePlatform?: ComputePlatform | undefined;
 
 }
 

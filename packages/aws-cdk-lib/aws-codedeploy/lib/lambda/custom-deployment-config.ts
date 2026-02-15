@@ -61,7 +61,7 @@ export interface CustomLambdaDeploymentConfigProps {
    * @default - automatically generated name
    * @deprecated Use `LambdaDeploymentConfig`
    */
-  readonly deploymentConfigName?: string;
+  readonly deploymentConfigName?: string | undefined;
 }
 
 /**

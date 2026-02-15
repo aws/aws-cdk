@@ -50,21 +50,21 @@ export interface EcrBuildAndPublishActionProps extends codepipeline.CommonAwsAct
    *
    * @default - the source repository root level
    */
-  readonly dockerfileDirectoryPath?: string;
+  readonly dockerfileDirectoryPath?: string | undefined;
 
   /**
    * The tags used for the image.
    *
    * @default - latest
    */
-  readonly imageTags?: string[];
+  readonly imageTags?: string[] | undefined;
 
   /**
    * Specifies whether the repository is public or private.
    *
    * @default - RegistryType.PRIVATE
    */
-  readonly registryType?: RegistryType;
+  readonly registryType?: RegistryType | undefined;
 
   /**
    * The artifact produced by the source action that contains the Dockerfile needed to build the image.

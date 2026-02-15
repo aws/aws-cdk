@@ -33,7 +33,7 @@ export interface RealtimeLogConfigProps {
    *
    * @default - the unique construct ID
    */
-  readonly realtimeLogConfigName?: string;
+  readonly realtimeLogConfigName?: string | undefined;
   /**
    * A list of fields that are included in each real-time log record.
    *

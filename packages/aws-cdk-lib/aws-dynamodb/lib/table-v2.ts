@@ -66,14 +66,14 @@ export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsights
    * @deprecated use `contributorInsightsSpecification` instead
    * @default - inherited from the primary table
    */
-  readonly contributorInsights?: boolean;
+  readonly contributorInsights?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    * for a specific global secondary index on a replica table.
    * @default - contributor insights is not enabled
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 
   /**
    * The read capacity for a specific global secondary index on a replica table.
@@ -82,7 +82,7 @@ export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsights
    *
    * @default - inherited from the primary table
    */
-  readonly readCapacity?: Capacity;
+  readonly readCapacity?: Capacity | undefined;
 
   /**
    * The maximum read request units for a specific global secondary index on a replica table.
@@ -91,7 +91,7 @@ export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsights
    *
    * @default - inherited from the primary table
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
 }
 
 /**
@@ -107,7 +107,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey?: Attribute;
+  readonly partitionKey?: Attribute | undefined;
 
   /**
    * Sort key attribute definition.
@@ -118,7 +118,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - no sort key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: Attribute | undefined;
 
   /**
    * Multi-attribute partition key
@@ -138,7 +138,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKeys?: Attribute[];
+  readonly partitionKeys?: Attribute[] | undefined;
 
   /**
    * Multi-attribute sort key
@@ -158,7 +158,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - no sort key
    */
-  readonly sortKeys?: Attribute[];
+  readonly sortKeys?: Attribute[] | undefined;
 
   /**
    * The read capacity.
@@ -167,7 +167,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - inherited from the primary table.
    */
-  readonly readCapacity?: Capacity;
+  readonly readCapacity?: Capacity | undefined;
 
   /**
    * The write capacity.
@@ -176,7 +176,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - inherited from the primary table.
    */
-  readonly writeCapacity?: Capacity;
+  readonly writeCapacity?: Capacity | undefined;
 
   /**
    * The maximum read request units.
@@ -185,7 +185,7 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - inherited from the primary table.
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
 
   /**
    * The maximum write request units.
@@ -194,14 +194,14 @@ export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
    *
    * @default - inherited from the primary table.
    */
-  readonly maxWriteRequestUnits?: number;
+  readonly maxWriteRequestUnits?: number | undefined;
 
   /**
    * The warm throughput configuration for the global secondary index.
    *
    * @default - no warm throughput is configured
    */
-  readonly warmThroughput?: WarmThroughput;
+  readonly warmThroughput?: WarmThroughput | undefined;
 }
 
 /**
@@ -213,12 +213,12 @@ interface IContributorInsightsConfigurable {
    * Whether CloudWatch contributor insights is enabled.
    * @deprecated use `contributorInsightsSpecification` instead
    */
-  readonly contributorInsights?: boolean;
+  readonly contributorInsights?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 }
 
 /**
@@ -230,27 +230,27 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
    * @deprecated use `contributorInsightsSpecification` instead
    * @default false
    */
-  readonly contributorInsights?: boolean;
+  readonly contributorInsights?: boolean | undefined;
 
   /**
    * Whether CloudWatch contributor insights is enabled and what mode is selected
    * @default - contributor insights is not enabled
    */
-  readonly contributorInsightsSpecification?: ContributorInsightsSpecification;
+  readonly contributorInsightsSpecification?: ContributorInsightsSpecification | undefined;
 
   /**
    * Whether deletion protection is enabled.
    *
    * @default false
    */
-  readonly deletionProtection?: boolean;
+  readonly deletionProtection?: boolean | undefined;
 
   /**
    * Whether point-in-time recovery is enabled.
    * @deprecated use `pointInTimeRecoverySpecification` instead
    * @default false - point in time recovery is not enabled.
    */
-  readonly pointInTimeRecovery?: boolean;
+  readonly pointInTimeRecovery?: boolean | undefined;
 
   /**
    * Whether point-in-time recovery is enabled
@@ -258,35 +258,35 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
    *
    * @default - point in time recovery is not enabled.
    */
-  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification;
+  readonly pointInTimeRecoverySpecification?: PointInTimeRecoverySpecification | undefined;
 
   /**
    * The table class.
    *
    * @default TableClass.STANDARD
    */
-  readonly tableClass?: TableClass;
+  readonly tableClass?: TableClass | undefined;
 
   /**
    * Kinesis Data Stream to capture item level changes.
    *
    * @default - no Kinesis Data Stream
    */
-  readonly kinesisStream?: IStream;
+  readonly kinesisStream?: IStream | undefined;
 
   /**
    * Tags to be applied to the primary table (default replica table).
    *
    * @default - no tags
    */
-  readonly tags?: CfnTag[];
+  readonly tags?: CfnTag[] | undefined;
 
   /**
    * Resource policy to assign to DynamoDB Table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-resourcepolicy
    * @default - No resource policy statements are added to the created table.
    */
-  readonly resourcePolicy?: PolicyDocument;
+  readonly resourcePolicy?: PolicyDocument | undefined;
 }
 
 /**
@@ -305,7 +305,7 @@ export interface ReplicaTableProps extends TableOptionsV2 {
    *
    * @default - inherited from the primary table
    */
-  readonly readCapacity?: Capacity;
+  readonly readCapacity?: Capacity | undefined;
 
   /**
    * The maximum read request units.
@@ -314,14 +314,14 @@ export interface ReplicaTableProps extends TableOptionsV2 {
    *
    * @default - inherited from the primary table
    */
-  readonly maxReadRequestUnits?: number;
+  readonly maxReadRequestUnits?: number | undefined;
 
   /**
    * Options used to configure global secondary index properties.
    *
    * @default - inherited from the primary table
    */
-  readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
+  readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions } | undefined;
 }
 
 /**
@@ -338,21 +338,21 @@ export interface TablePropsV2 extends TableOptionsV2 {
    *
    * @default - no sort key
    */
-  readonly sortKey?: Attribute;
+  readonly sortKey?: Attribute | undefined;
 
   /**
    * The name of the table.
    *
    * @default - generated by CloudFormation
    */
-  readonly tableName?: string;
+  readonly tableName?: string | undefined;
 
   /**
    * The name of the TTL attribute.
    *
    * @default - TTL is disabled
    */
-  readonly timeToLiveAttribute?: string;
+  readonly timeToLiveAttribute?: string | undefined;
 
   /**
    * When an item in the table is modified, StreamViewType determines what information is
@@ -362,21 +362,21 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * not specified. If this property is not specified when replicas are configured, then
    * NEW_AND_OLD_IMAGES will be the StreamViewType for all replicas
    */
-  readonly dynamoStream?: StreamViewType;
+  readonly dynamoStream?: StreamViewType | undefined;
 
   /**
    * The removal policy applied to the table.
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * The billing mode and capacity settings to apply to the table.
    *
    * @default Billing.onDemand()
    */
-  readonly billing?: Billing;
+  readonly billing?: Billing | undefined;
 
   /**
    * Replica tables to deploy with the primary table.
@@ -387,7 +387,7 @@ export interface TablePropsV2 extends TableOptionsV2 {
    *
    * @default - no replica tables
    */
-  readonly replicas?: ReplicaTableProps[];
+  readonly replicas?: ReplicaTableProps[] | undefined;
 
   /**
    * The witness Region for the MRSC global table.
@@ -398,14 +398,14 @@ export interface TablePropsV2 extends TableOptionsV2 {
    *
    * @default - no witness region
    */
-  readonly witnessRegion?: string;
+  readonly witnessRegion?: string | undefined;
 
   /**
    * Specifies the consistency mode for a new global table.
    *
    * @default MultiRegionConsistency.EVENTUAL
    */
-  readonly multiRegionConsistency?: MultiRegionConsistency;
+  readonly multiRegionConsistency?: MultiRegionConsistency | undefined;
 
   /**
    * Global secondary indexes.
@@ -414,7 +414,7 @@ export interface TablePropsV2 extends TableOptionsV2 {
    *
    * @default - no global secondary indexes
    */
-  readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[];
+  readonly globalSecondaryIndexes?: GlobalSecondaryIndexPropsV2[] | undefined;
 
   /**
    * Local secondary indexes.
@@ -423,21 +423,21 @@ export interface TablePropsV2 extends TableOptionsV2 {
    *
    * @default - no local secondary indexes
    */
-  readonly localSecondaryIndexes?: LocalSecondaryIndexProps[];
+  readonly localSecondaryIndexes?: LocalSecondaryIndexProps[] | undefined;
 
   /**
    * The server-side encryption.
    *
    * @default TableEncryptionV2.dynamoOwnedKey()
    */
-  readonly encryption?: TableEncryptionV2;
+  readonly encryption?: TableEncryptionV2 | undefined;
 
   /**
    * The warm throughput configuration for the table.
    *
    * @default - no warm throughput is configured
    */
-  readonly warmThroughput?: WarmThroughput;
+  readonly warmThroughput?: WarmThroughput | undefined;
 }
 
 /**
@@ -451,7 +451,7 @@ export interface TableAttributesV2 {
    *
    * @default - table arn generated using `tableName` and region of stack
    */
-  readonly tableArn?: string;
+  readonly tableArn?: string | undefined;
 
   /**
    * The name of the table.
@@ -460,28 +460,28 @@ export interface TableAttributesV2 {
    *
    * @default - table name retrieved from provided `tableArn`
    */
-  readonly tableName?: string;
+  readonly tableName?: string | undefined;
 
   /**
    * The ID of the table.
    *
    * @default - no table id
    */
-  readonly tableId?: string;
+  readonly tableId?: string | undefined;
 
   /**
    * The stream ARN of the table.
    *
    * @default - no table stream ARN
    */
-  readonly tableStreamArn?: string;
+  readonly tableStreamArn?: string | undefined;
 
   /**
    * KMS encryption key for the table.
    *
    * @default - no KMS encryption key
    */
-  readonly encryptionKey?: IKey;
+  readonly encryptionKey?: IKey | undefined;
 
   /**
    * The name of the global indexes set for the table.
@@ -491,7 +491,7 @@ export interface TableAttributesV2 {
    *
    * @default - no global indexes
    */
-  readonly globalIndexes?: string[];
+  readonly globalIndexes?: string[] | undefined;
 
   /**
    * The name of the local indexes set for the table.
@@ -501,7 +501,7 @@ export interface TableAttributesV2 {
    *
    * @default - no local indexes
    */
-  readonly localIndexes?: string[];
+  readonly localIndexes?: string[] | undefined;
 
   /**
    * Whether or not to grant permissions for all indexes of the table.
@@ -511,7 +511,7 @@ export interface TableAttributesV2 {
    *
    * @default false
    */
-  readonly grantIndexPermissions?: boolean;
+  readonly grantIndexPermissions?: boolean | undefined;
 }
 
 /**
@@ -557,10 +557,10 @@ export class TableV2 extends TableBaseV2 {
     class Import extends TableBaseV2 {
       public readonly tableArn: string;
       public readonly tableName: string;
-      public readonly tableId?: string;
-      public readonly tableStreamArn?: string;
-      public readonly encryptionKey?: IKey;
-      public readonly resourcePolicy?: PolicyDocument;
+      public readonly tableId?: string | undefined;
+      public readonly tableStreamArn?: string | undefined;
+      public readonly encryptionKey?: IKey | undefined;
+      public readonly resourcePolicy?: PolicyDocument | undefined;
 
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
@@ -629,7 +629,7 @@ export class TableV2 extends TableBaseV2 {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
-  public readonly encryptionKey?: IKey;
+  public readonly encryptionKey?: IKey | undefined;
 
   /**
    * @attribute
@@ -644,18 +644,18 @@ export class TableV2 extends TableBaseV2 {
   private readonly partitionKey: Attribute;
   private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
-  private readonly encryption?: TableEncryptionV2;
+  private readonly encryption?: TableEncryptionV2 | undefined;
   private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
   private readonly nonKeyAttributes = new Set<string>();
 
-  private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
-  private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty;
+  private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty | undefined;
+  private readonly writeProvisioning?: CfnGlobalTable.WriteProvisionedThroughputSettingsProperty | undefined;
 
-  private readonly maxReadRequestUnits?: number;
-  private readonly maxWriteRequestUnits?: number;
+  private readonly maxReadRequestUnits?: number | undefined;
+  private readonly maxWriteRequestUnits?: number | undefined;
 
   private readonly replicaTables = new Map<string, ReplicaTableProps>();
   private readonly replicaKeys: { [region: string]: IKey } = {};

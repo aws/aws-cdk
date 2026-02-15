@@ -23,7 +23,7 @@ export interface DeploymentProps {
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * When an API Gateway model is updated, a new deployment will automatically be created.
@@ -32,7 +32,7 @@ export interface DeploymentProps {
    *
    * @default false
    */
-  readonly retainDeployments?: boolean;
+  readonly retainDeployments?: boolean | undefined;
 
   /**
    * The name of the stage the API Gateway deployment deploys to.
@@ -41,7 +41,7 @@ export interface DeploymentProps {
    * corresponding name does not exist, a new stage resource will be created with the
    * provided stage name.
    */
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 }
 
 /**
@@ -87,7 +87,7 @@ export class Deployment extends Resource {
   /**
    * The stage of the API gateway deployment.
    */
-  public readonly stageName?: string;
+  public readonly stageName?: string | undefined;
 
   private readonly resource: LatestDeploymentResource;
 
@@ -155,9 +155,9 @@ export class Deployment extends Resource {
 }
 
 interface LatestDeploymentResourceProps {
-  readonly description?: string;
+  readonly description?: string | undefined;
   readonly restApi: IRestApiRef;
-  readonly stageName?: string;
+  readonly stageName?: string | undefined;
 }
 
 class LatestDeploymentResource extends CfnDeployment {

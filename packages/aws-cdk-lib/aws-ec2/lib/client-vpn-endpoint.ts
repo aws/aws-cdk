@@ -61,7 +61,7 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - use user-based authentication
    */
-  readonly clientCertificateArn?: string;
+  readonly clientCertificateArn?: string | undefined;
 
   /**
    * The type of user-based authentication to use.
@@ -70,28 +70,28 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - use mutual authentication
    */
-  readonly userBasedAuthentication?: ClientVpnUserBasedAuthentication;
+  readonly userBasedAuthentication?: ClientVpnUserBasedAuthentication | undefined;
 
   /**
    * Whether to enable connections logging
    *
    * @default true
    */
-  readonly logging?: boolean;
+  readonly logging?: boolean | undefined;
 
   /**
    * A CloudWatch Logs log group for connection logging
    *
    * @default - a new group is created
    */
-  readonly logGroup?: logs.ILogGroupRef;
+  readonly logGroup?: logs.ILogGroupRef | undefined;
 
   /**
    * A CloudWatch Logs log stream for connection logging
    *
    * @default - a new stream is created
    */
-  readonly logStream?: ILogStreamRef;
+  readonly logStream?: ILogStreamRef | undefined;
 
   /**
    * The AWS Lambda function used for connection authorization
@@ -100,28 +100,28 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - no connection handler
    */
-  readonly clientConnectionHandler?: IClientVpnConnectionHandler;
+  readonly clientConnectionHandler?: IClientVpnConnectionHandler | undefined;
 
   /**
    * A brief description of the Client VPN endpoint.
    *
    * @default - no description
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The security groups to apply to the target network.
    *
    * @default - a new security group is created
    */
-  readonly securityGroups?: ISecurityGroup[];
+  readonly securityGroups?: ISecurityGroup[] | undefined;
 
   /**
    * Specify whether to enable the self-service portal for the Client VPN endpoint.
    *
    * @default true
    */
-  readonly selfServicePortal?: boolean;
+  readonly selfServicePortal?: boolean | undefined;
 
   /**
    * The ARN of the server certificate
@@ -135,14 +135,14 @@ export interface ClientVpnEndpointOptions {
    *
    * @default false
    */
-  readonly splitTunnel?: boolean;
+  readonly splitTunnel?: boolean | undefined;
 
   /**
    * The transport protocol to be used by the VPN session.
    *
    * @default TransportProtocol.UDP
    */
-  readonly transportProtocol?: TransportProtocol;
+  readonly transportProtocol?: TransportProtocol | undefined;
 
   /**
    * The port number to assign to the Client VPN endpoint for TCP and UDP
@@ -150,7 +150,7 @@ export interface ClientVpnEndpointOptions {
    *
    * @default VpnPort.HTTPS
    */
-  readonly port?: VpnPort;
+  readonly port?: VpnPort | undefined;
 
   /**
    * Information about the DNS servers to be used for DNS resolution.
@@ -159,14 +159,14 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - use the DNS address configured on the device
    */
-  readonly dnsServers?: string[];
+  readonly dnsServers?: string[] | undefined;
 
   /**
    * Subnets to associate to the client VPN endpoint.
    *
    * @default - the VPC default strategy
    */
-  readonly vpcSubnets?: SubnetSelection;
+  readonly vpcSubnets?: SubnetSelection | undefined;
 
   /**
    * Whether to authorize all users to the VPC CIDR
@@ -176,14 +176,14 @@ export interface ClientVpnEndpointOptions {
    *
    * @default true
    */
-  readonly authorizeAllUsersToVpcCidr?: boolean;
+  readonly authorizeAllUsersToVpcCidr?: boolean | undefined;
 
   /**
    * The maximum VPN session duration time.
    *
    * @default ClientVpnSessionTimeout.TWENTY_FOUR_HOURS
    */
-  readonly sessionTimeout?: ClientVpnSessionTimeout;
+  readonly sessionTimeout?: ClientVpnSessionTimeout | undefined;
 
   /**
    * Indicates whether the client VPN session is disconnected after the maximum `sessionTimeout` is reached.
@@ -194,7 +194,7 @@ export interface ClientVpnEndpointOptions {
    * @default undefined - AWS Client VPN default is true
    * @see https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html
    */
-  readonly disconnectOnSessionTimeout?: boolean;
+  readonly disconnectOnSessionTimeout?: boolean | undefined;
 
   /**
    * Customizable text that will be displayed in a banner on AWS provided clients
@@ -204,7 +204,7 @@ export interface ClientVpnEndpointOptions {
    *
    * @default - no banner is presented to the client
    */
-  readonly clientLoginBanner?: string;
+  readonly clientLoginBanner?: string | undefined;
 
   /**
    * Options for Client Route Enforcement.
@@ -216,7 +216,7 @@ export interface ClientVpnEndpointOptions {
    *
    * @default undefined - AWS Client VPN default setting is disable client route enforcement
    */
-  readonly clientRouteEnforcementOptions?: ClientRouteEnforcementOptions;
+  readonly clientRouteEnforcementOptions?: ClientRouteEnforcementOptions | undefined;
 }
 
 /**

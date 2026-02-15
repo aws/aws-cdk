@@ -40,7 +40,7 @@ export interface AddonProps {
    *
    * @default the latest version.
    */
-  readonly addonVersion?: string;
+  readonly addonVersion?: string | undefined;
   /**
    * The EKS cluster the Add-On is associated with.
    */
@@ -51,14 +51,14 @@ export interface AddonProps {
    *
    * @default true
    */
-  readonly preserveOnDelete?: boolean;
+  readonly preserveOnDelete?: boolean | undefined;
 
   /**
    * The configuration values for the Add-on.
    *
    * @default - Use default configuration.
    */
-  readonly configurationValues?: Record<string, any>;
+  readonly configurationValues?: Record<string, any> | undefined;
 
   /**
    * The removal policy applied to the EKS add-on.
@@ -72,7 +72,7 @@ export interface AddonProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**

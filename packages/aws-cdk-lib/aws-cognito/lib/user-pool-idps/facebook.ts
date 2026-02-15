@@ -23,12 +23,12 @@ export interface UserPoolIdentityProviderFacebookProps extends UserPoolIdentityP
    * @see https://developers.facebook.com/docs/facebook-login/permissions
    * @default [ public_profile ]
    */
-  readonly scopes?: string[];
+  readonly scopes?: string[] | undefined;
   /**
    * The Facebook API version to use
    * @default - to the oldest version supported by Facebook
    */
-  readonly apiVersion?: string;
+  readonly apiVersion?: string | undefined;
 }
 
 /**

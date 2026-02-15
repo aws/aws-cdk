@@ -61,7 +61,7 @@ export interface ArnComponents {
    *
    * @default The AWS partition the stack is deployed to.
    */
-  readonly partition?: string;
+  readonly partition?: string | undefined;
 
   /**
    * The service namespace that identifies the AWS product (for example,
@@ -75,7 +75,7 @@ export interface ArnComponents {
    *
    * @default The region the stack is deployed to.
    */
-  readonly region?: string;
+  readonly region?: string | undefined;
 
   /**
    * The ID of the AWS account that owns the resource, without the hyphens.
@@ -84,7 +84,7 @@ export interface ArnComponents {
    *
    * @default The account the stack is deployed to.
    */
-  readonly account?: string;
+  readonly account?: string | undefined;
 
   /**
    * Resource type (e.g. "table", "autoScalingGroup", "certificate").
@@ -100,13 +100,13 @@ export interface ArnComponents {
    *
    * @deprecated use arnFormat instead
    */
-  readonly sep?: string;
+  readonly sep?: string | undefined;
 
   /**
    * Resource name or path within the resource (i.e. S3 bucket object key) or
    * a wildcard such as ``"*"``. This is service-dependent.
    */
-  readonly resourceName?: string;
+  readonly resourceName?: string | undefined;
 
   /**
    * The specific ARN format to use for this ARN value.
@@ -114,7 +114,7 @@ export interface ArnComponents {
    * @default - uses value of `sep` as the separator for formatting,
    *   `ArnFormat.SLASH_RESOURCE_NAME` if that property was also not provided
    */
-  readonly arnFormat?: ArnFormat;
+  readonly arnFormat?: ArnFormat | undefined;
 }
 
 export class Arn {

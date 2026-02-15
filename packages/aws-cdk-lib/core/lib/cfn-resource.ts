@@ -31,7 +31,7 @@ export interface CfnResourceProps {
    *
    * @default - No resource properties.
    */
-  readonly properties?: { [name: string]: any };
+  readonly properties?: { [name: string]: any } | undefined;
 }
 
 /**

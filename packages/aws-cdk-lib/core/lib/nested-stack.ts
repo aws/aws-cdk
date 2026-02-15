@@ -34,7 +34,7 @@ export interface NestedStackProps {
    *
    * @default - no user-defined parameters are passed to the nested stack
    */
-  readonly parameters?: { [key: string]: string };
+  readonly parameters?: { [key: string]: string } | undefined;
 
   /**
    * The length of time that CloudFormation waits for the nested stack to reach
@@ -49,7 +49,7 @@ export interface NestedStackProps {
    *
    * @default - no timeout
    */
-  readonly timeout?: Duration;
+  readonly timeout?: Duration | undefined;
 
   /**
    * The Simple Notification Service (SNS) topics to publish stack related
@@ -57,7 +57,7 @@ export interface NestedStackProps {
    *
    * @default - notifications are not sent for this stack.
    */
-  readonly notificationArns?: string[];
+  readonly notificationArns?: string[] | undefined;
 
   /**
    * Policy to apply when the nested stack is removed
@@ -68,14 +68,14 @@ export interface NestedStackProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 
   /**
    * A description of the stack.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * Enable this flag to suppress indentation in generated CloudFormation templates.
@@ -86,7 +86,7 @@ export interface NestedStackProps {
    *
    * @default - the value of `@aws-cdk/core:suppressTemplateIndentation`, or `false` if that is not set.
    */
-  readonly suppressTemplateIndentation?: boolean;
+  readonly suppressTemplateIndentation?: boolean | undefined;
 }
 
 /**
@@ -115,7 +115,7 @@ export class NestedStack extends Stack {
   }
 
   public readonly templateFile: string;
-  public readonly nestedStackResource?: CfnResource;
+  public readonly nestedStackResource?: CfnResource | undefined;
 
   private readonly parameters: { [name: string]: string };
   private readonly resource: CfnStack;

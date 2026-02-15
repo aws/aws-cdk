@@ -13,7 +13,7 @@ export interface KinesisDestinationProps {
    *
    * @default - A new Role is created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 }
 
 /**

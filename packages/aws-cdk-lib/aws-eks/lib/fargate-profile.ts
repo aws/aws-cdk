@@ -16,7 +16,7 @@ export interface FargateProfileOptions {
    * The name of the Fargate profile.
    * @default - generated
    */
-  readonly fargateProfileName?: string;
+  readonly fargateProfileName?: string | undefined;
 
   /**
    * The pod execution role to use for pods that match the selectors in the
@@ -27,7 +27,7 @@ export interface FargateProfileOptions {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
    * @default - a role will be automatically created
    */
-  readonly podExecutionRole?: iam.IRole;
+  readonly podExecutionRole?: iam.IRole | undefined;
 
   /**
    * The selectors to match for pods to use this Fargate profile. Each selector
@@ -46,7 +46,7 @@ export interface FargateProfileOptions {
    *
    * @default - all private subnets used by the EKS cluster
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpc?: ec2.IVpc | undefined;
 
   /**
    * Select which subnets to launch your pods into. At this time, pods running
@@ -57,7 +57,7 @@ export interface FargateProfileOptions {
    *
    * @default - all private subnets of the VPC are selected.
    */
-  readonly subnetSelection?: ec2.SubnetSelection;
+  readonly subnetSelection?: ec2.SubnetSelection | undefined;
 
   /**
    * The removal policy applied to the custom resource that manages the Fargate profile.
@@ -71,7 +71,7 @@ export interface FargateProfileOptions {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy;
+  readonly removalPolicy?: RemovalPolicy | undefined;
 }
 
 /**
@@ -105,7 +105,7 @@ export interface Selector {
    *
    * @default - all pods within the namespace will be selected.
    */
-  readonly labels?: { [key: string]: string };
+  readonly labels?: { [key: string]: string } | undefined;
 }
 
 /**

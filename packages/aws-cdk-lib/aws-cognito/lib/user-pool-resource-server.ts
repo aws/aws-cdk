@@ -66,13 +66,13 @@ export interface UserPoolResourceServerOptions {
    * A friendly name for the resource server.
    * @default - same as `identifier`
    */
-  readonly userPoolResourceServerName?: string;
+  readonly userPoolResourceServerName?: string | undefined;
 
   /**
    * Oauth scopes
    * @default - No scopes will be added
    */
-  readonly scopes?: ResourceServerScope[];
+  readonly scopes?: ResourceServerScope[] | undefined;
 }
 
 /**

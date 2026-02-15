@@ -18,7 +18,7 @@ export interface MapBaseJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly itemsPath?: string;
+  readonly itemsPath?: string | undefined;
 
   /**
    * MaxConcurrencyPath
@@ -30,7 +30,7 @@ export interface MapBaseJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default - full concurrency
    */
-  readonly maxConcurrencyPath?: string;
+  readonly maxConcurrencyPath?: string | undefined;
 
   /**
    * JSONPath expression to indicate where to inject the state's output
@@ -40,7 +40,7 @@ export interface MapBaseJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default $
    */
-  readonly resultPath?: string;
+  readonly resultPath?: string | undefined;
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -54,7 +54,7 @@ export interface MapBaseJsonPathOptions extends JsonPathCommonOptions {
    *
    * @default - None
    */
-  readonly resultSelector?: { [key: string]: any };
+  readonly resultSelector?: { [key: string]: any } | undefined;
 }
 
 /**
@@ -87,7 +87,7 @@ export interface MapBaseJsonataOptions extends JsonataCommonOptions {
    * The array that the Map state will iterate over.
    * @default - The state input as is.
    */
-  readonly items?: ProvideItems;
+  readonly items?: ProvideItems | undefined;
 }
 
 /**
@@ -104,7 +104,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
    *
    * @default - full concurrency
    */
-  readonly maxConcurrency?: number;
+  readonly maxConcurrency?: number | undefined;
 
   /**
    * JSONata expression for MaxConcurrency
@@ -119,7 +119,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
    *
    * @default - full concurrency
    */
-  readonly jsonataMaxConcurrency?: string;
+  readonly jsonataMaxConcurrency?: string | undefined;
 
   /**
    * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters` and `jsonataItemSelector`).
@@ -129,7 +129,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
    *
    * @default $
    */
-  readonly itemSelector?: { [key: string]: any };
+  readonly itemSelector?: { [key: string]: any } | undefined;
 
   /**
    * Jsonata expression that evaluates to a JSON array to override your default iteration input (mutually exclusive with `parameters` and `itemSelector`).
@@ -138,7 +138,7 @@ export interface MapBaseOptions extends AssignableStateOptions {
    *
    * @default $
    */
-  readonly jsonataItemSelector?: string;
+  readonly jsonataItemSelector?: string | undefined;
 }
 
 /**
@@ -172,13 +172,13 @@ export const isPositiveInteger = (value: number) => {
 export abstract class MapBase extends State implements INextable {
   public readonly endStates: INextable[];
 
-  private readonly maxConcurrency?: number;
-  private readonly maxConcurrencyPath?: string;
-  private readonly jsonataMaxConcurrency?: string;
-  protected readonly items?: ProvideItems;
-  protected readonly itemsPath?: string;
-  protected readonly itemSelector?: { [key: string]: any };
-  protected readonly jsonataItemSelector?: string;
+  private readonly maxConcurrency?: number | undefined;
+  private readonly maxConcurrencyPath?: string | undefined;
+  private readonly jsonataMaxConcurrency?: string | undefined;
+  protected readonly items?: ProvideItems | undefined;
+  protected readonly itemsPath?: string | undefined;
+  protected readonly itemSelector?: { [key: string]: any } | undefined;
+  protected readonly jsonataItemSelector?: string | undefined;
 
   constructor(scope: Construct, id: string, props: MapBaseProps = {}) {
     super(scope, id, props);

@@ -19,13 +19,13 @@ export interface BaseArchiveProps {
    *
    * @default - Automatically generated
    */
-  readonly archiveName?: string;
+  readonly archiveName?: string | undefined;
   /**
    * A description for the archive.
    *
    * @default - none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
   /**
    * An event pattern to use to filter events sent to the archive.
    */
@@ -34,14 +34,14 @@ export interface BaseArchiveProps {
    * The number of days to retain events for. Default value is 0. If set to 0, events are retained indefinitely.
    * @default - Infinite
    */
-  readonly retention?: Duration;
+  readonly retention?: Duration | undefined;
 
   /**
    * The customer managed key that encrypts this archive
    *
    * @default - Use an AWS managed key
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKey | undefined;
 }
 
 /**

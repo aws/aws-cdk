@@ -51,8 +51,8 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
       queryLanguage: sfn.QueryLanguage.JSONATA,
     });
   }
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 

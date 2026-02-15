@@ -14,7 +14,7 @@ interface SourceConfig {
    *
    * @default - Kinesis Data Stream Source configuration property is not provided.
    */
-  readonly kinesisStreamSourceConfiguration?: CfnDeliveryStream.KinesisStreamSourceConfigurationProperty;
+  readonly kinesisStreamSourceConfiguration?: CfnDeliveryStream.KinesisStreamSourceConfigurationProperty | undefined;
 
   /**
    * Configuration for using an MSK (Managed Streaming for Kafka) cluster as a source for the delivery stream.
@@ -23,7 +23,7 @@ interface SourceConfig {
    *
    * @default - MSK Source configuration property is not provided.
    */
-  readonly mskSourceConfiguration?: CfnDeliveryStream.MSKSourceConfigurationProperty;
+  readonly mskSourceConfiguration?: CfnDeliveryStream.MSKSourceConfigurationProperty | undefined;
 }
 
 /**

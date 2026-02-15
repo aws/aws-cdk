@@ -14,7 +14,7 @@ export interface WorkerConfigurationProperty {
    * @default - must choose one of `workerType` or `workerTypeV2`
    * @deprecated Use `workerTypeV2` for more flexibility in defining worker types.
    */
-  readonly workerType?: WorkerType;
+  readonly workerType?: WorkerType | undefined;
 
   /**
    * The type of predefined worker that is allocated when a job runs. Can be one of the
@@ -22,7 +22,7 @@ export interface WorkerConfigurationProperty {
    *
    * @default - must choose one of `workerType` or `workerTypeV2`
    */
-  readonly workerTypeV2?: WorkerTypeV2;
+  readonly workerTypeV2?: WorkerTypeV2 | undefined;
 
   /**
    * The number of workers of a defined `WorkerType` that are allocated when a job runs.
@@ -44,7 +44,7 @@ interface GlueStartJobRunOptions {
    *
    * @default - Default arguments set in the job definition
    */
-  readonly arguments?: sfn.TaskInput;
+  readonly arguments?: sfn.TaskInput | undefined;
 
   /**
    * The name of the SecurityConfiguration structure to be used with this job run.
@@ -54,7 +54,7 @@ interface GlueStartJobRunOptions {
    *
    * @default - Default configuration set in the job definition
    */
-  readonly securityConfiguration?: string;
+  readonly securityConfiguration?: string | undefined;
 
   /**
    * After a job run starts, the number of minutes to wait before sending a job run delay notification.
@@ -63,21 +63,21 @@ interface GlueStartJobRunOptions {
    *
    * @default - Default delay set in the job definition
    */
-  readonly notifyDelayAfter?: Duration;
+  readonly notifyDelayAfter?: Duration | undefined;
 
   /**
    * The worker configuration for this run.
    *
    * @default - Default worker configuration in the job definition
    */
-  readonly workerConfiguration?: WorkerConfigurationProperty;
+  readonly workerConfiguration?: WorkerConfigurationProperty | undefined;
 
   /**
    * The excecution class of the job.
    *
    * @default - STANDARD
    */
-  readonly executionClass?: ExecutionClass;
+  readonly executionClass?: ExecutionClass | undefined;
 }
 
 /**
@@ -133,11 +133,11 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
-  private readonly jobArguments?: sfn.TaskInput;
+  private readonly jobArguments?: sfn.TaskInput | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: GlueStartJobRunProps) {
     const superProps = {

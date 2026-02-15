@@ -39,21 +39,21 @@ export interface ApiKeyOptions {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automatically generated name
    */
-  readonly apiKeyName?: string;
+  readonly apiKeyName?: string | undefined;
 
   /**
    * The value of the API key. Must be at least 20 characters long.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-value
    * @default none
    */
-  readonly value?: string;
+  readonly value?: string | undefined;
 
   /**
    * A description of the purpose of the API key.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
    * @default none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 }
 
 /**
@@ -66,21 +66,21 @@ export interface ApiKeyProps extends ApiKeyOptions {
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
    * @default none
    */
-  readonly customerId?: string;
+  readonly customerId?: string | undefined;
 
   /**
    * Indicates whether the API key can be used by clients.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
    * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled?: boolean | undefined;
 
   /**
    * Specifies whether the key identifier is distinct from the created API key value.
    * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
-  readonly generateDistinctId?: boolean;
+  readonly generateDistinctId?: boolean | undefined;
 }
 
 /**
@@ -210,19 +210,19 @@ export interface RateLimitedApiKeyProps extends ApiKeyProps {
    *
    * @default none
    */
-  readonly apiStages?: UsagePlanPerApiStage[];
+  readonly apiStages?: UsagePlanPerApiStage[] | undefined;
 
   /**
    * Number of requests clients can make in a given time period.
    * @default none
    */
-  readonly quota?: QuotaSettings;
+  readonly quota?: QuotaSettings | undefined;
 
   /**
    * Overall throttle settings for the API.
    * @default none
    */
-  readonly throttle?: ThrottleSettings;
+  readonly throttle?: ThrottleSettings | undefined;
 }
 
 /**

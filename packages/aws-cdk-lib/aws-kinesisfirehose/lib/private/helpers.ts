@@ -17,7 +17,7 @@ export interface DestinationLoggingProps {
    *
    * @default - errors will be logged and a log group will be created for you.
    */
-  readonly loggingConfig?: ILoggingConfig;
+  readonly loggingConfig?: ILoggingConfig | undefined;
 
   /**
    * The IAM role associated with this destination.

@@ -33,7 +33,7 @@ export interface SynthesisOptions extends StageSynthesisOptions {
    * The output directory into which to synthesize the cloud assembly.
    * @default - creates a temporary directory
    */
-  readonly outdir?: string;
+  readonly outdir?: string | undefined;
 }
 
 export function synthesize(root: IConstruct, options: SynthesisOptions = { }): private_cxapi.CloudAssembly {

@@ -68,8 +68,8 @@ export class EmrModifyInstanceGroupByName extends sfn.TaskStateBase {
       queryLanguage: sfn.QueryLanguage.JSONATA,
     });
   }
-  protected readonly taskPolicies?: iam.PolicyStatement[];
-  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
 
   constructor(scope: Construct, id: string, private readonly props: EmrModifyInstanceGroupByNameProps) {
     super(scope, id, props);
@@ -119,21 +119,21 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - No instances will be protected when shrinking an instance group
      */
-    readonly instancesToProtect?: string[];
+    readonly instancesToProtect?: string[] | undefined;
 
     /**
      * Specific list of instances to be terminated when shrinking an instance group.
      *
      * @default - No instances will be terminated when shrinking an instance group.
      */
-    readonly instancesToTerminate?: string[];
+    readonly instancesToTerminate?: string[] | undefined;
 
     /**
      * Decommissioning timeout override for the specific list of instances to be terminated.
      *
      * @default cdk.Duration.seconds
      */
-    readonly instanceTerminationTimeout?: Duration;
+    readonly instanceTerminationTimeout?: Duration | undefined;
   }
 
   /**
@@ -148,14 +148,14 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - EMR selected default
      */
-    readonly decommissionTimeout?: Duration;
+    readonly decommissionTimeout?: Duration | undefined;
 
     /**
      * Custom policy for requesting termination protection or termination of specific instances when shrinking an instance group.
      *
      * @default - None
      */
-    readonly instanceResizePolicy?: InstanceResizePolicyProperty;
+    readonly instanceResizePolicy?: InstanceResizePolicyProperty | undefined;
   }
 
   /**
@@ -170,21 +170,21 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - None
      */
-    readonly configurations?: EmrCreateCluster.ConfigurationProperty[];
+    readonly configurations?: EmrCreateCluster.ConfigurationProperty[] | undefined;
 
     /**
      * The EC2 InstanceIds to terminate. After you terminate the instances, the instance group will not return to its original requested size.
      *
      * @default - None
      */
-    readonly eC2InstanceIdsToTerminate?: string[];
+    readonly eC2InstanceIdsToTerminate?: string[] | undefined;
 
     /**
      * Target size for the instance group.
      *
      * @default - None
      */
-    readonly instanceCount?: number;
+    readonly instanceCount?: number | undefined;
 
     /**
      * Policy for customizing shrink operations.
@@ -193,6 +193,6 @@ export namespace EmrModifyInstanceGroupByName {
      *
      * @default - None
      */
-    readonly shrinkPolicy?: ShrinkPolicyProperty;
+    readonly shrinkPolicy?: ShrinkPolicyProperty | undefined;
   }
 }

@@ -61,46 +61,46 @@ export interface WebSocketApiProps {
    * Name for the WebSocket API resource
    * @default - id of the WebSocketApi construct.
    */
-  readonly apiName?: string;
+  readonly apiName?: string | undefined;
 
   /**
    * An API key selection expression. Providing this option will require an API Key be provided to access the API.
    * @default - Key is not required to access these APIs
    */
-  readonly apiKeySelectionExpression?: WebSocketApiKeySelectionExpression;
+  readonly apiKeySelectionExpression?: WebSocketApiKeySelectionExpression | undefined;
 
   /**
    * The description of the API.
    * @default - none
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The route selection expression for the API
    * @default '$request.body.action'
    */
-  readonly routeSelectionExpression?: string;
+  readonly routeSelectionExpression?: string | undefined;
 
   /**
    * Options to configure a '$connect' route
    *
    * @default - no '$connect' route configured
    */
-  readonly connectRouteOptions?: WebSocketRouteOptions;
+  readonly connectRouteOptions?: WebSocketRouteOptions | undefined;
 
   /**
    * Options to configure a '$disconnect' route
    *
    * @default - no '$disconnect' route configured
    */
-  readonly disconnectRouteOptions?: WebSocketRouteOptions;
+  readonly disconnectRouteOptions?: WebSocketRouteOptions | undefined;
 
   /**
    * Options to configure a '$default' route
    *
    * @default - no '$default' route configured
    */
-  readonly defaultRouteOptions?: WebSocketRouteOptions;
+  readonly defaultRouteOptions?: WebSocketRouteOptions | undefined;
 
   /**
    * The IP address types that can invoke the API.
@@ -109,14 +109,14 @@ export interface WebSocketApiProps {
    *
    * @default undefined - AWS default is IPV4
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipAddressType?: IpAddressType | undefined;
 
   /**
    * Avoid validating models when creating a deployment.
    *
    * @default false
    */
-  readonly disableSchemaValidation?: boolean;
+  readonly disableSchemaValidation?: boolean | undefined;
 }
 
 /**
@@ -132,7 +132,7 @@ export interface WebSocketApiAttributes {
    * The endpoint URL of the WebSocketApi
    * @default - throw san error if apiEndpoint is accessed.
    */
-  readonly apiEndpoint?: string;
+  readonly apiEndpoint?: string | undefined;
 }
 
 /**
@@ -171,7 +171,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * A human friendly name for this WebSocket API. Note that this is different from `webSocketApiId`.
    */
-  public readonly webSocketApiName?: string;
+  public readonly webSocketApiName?: string | undefined;
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);

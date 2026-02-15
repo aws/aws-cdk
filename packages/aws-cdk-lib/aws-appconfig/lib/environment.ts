@@ -33,21 +33,21 @@ export interface EnvironmentAttributes {
    *
    * @default - None.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The description of the environment.
    *
    * @default - None.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The monitors for the environment.
    *
    * @default - None.
    */
-  readonly monitors?: Monitor[];
+  readonly monitors?: Monitor[] | undefined;
 }
 
 abstract class EnvironmentBase extends Resource implements IEnvironment, IExtensible {
@@ -169,28 +169,28 @@ export interface EnvironmentOptions {
    *
    * @default - A name is generated.
    */
-  readonly environmentName?: string;
+  readonly environmentName?: string | undefined;
 
   /**
    * The description of the environment.
    *
    * @default - No description.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The monitors for the environment.
    *
    * @default - No monitors.
    */
-  readonly monitors?: Monitor[];
+  readonly monitors?: Monitor[] | undefined;
 
   /**
    * A property to prevent accidental deletion of active environments.
    *
    * @default undefined - AppConfig default is ACCOUNT_DEFAULT
    */
-  readonly deletionProtectionCheck?: DeletionProtectionCheck;
+  readonly deletionProtectionCheck?: DeletionProtectionCheck | undefined;
 }
 
 /**
@@ -240,7 +240,7 @@ export class Environment extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
-      public readonly name?: string;
+      public readonly name?: string | undefined;
     }
 
     return new Import(scope, id, {
@@ -284,22 +284,22 @@ export class Environment extends EnvironmentBase {
   /**
    * The application associated with the environment.
    */
-  public readonly application?: IApplication;
+  public readonly application?: IApplication | undefined;
 
   /**
    * The name of the environment.
    */
-  public readonly name?: string;
+  public readonly name?: string | undefined;
 
   /**
    * The description of the environment.
    */
-  public readonly description?: string;
+  public readonly description?: string | undefined;
 
   /**
    * The monitors for the environment.
    */
-  public readonly monitors?: Monitor[];
+  public readonly monitors?: Monitor[] | undefined;
 
   /**
    * The ID of the environment.
@@ -457,19 +457,19 @@ export abstract class Monitor {
   /**
    * The IAM role ARN for AWS AppConfig to view the alarm state.
    */
-  public abstract readonly alarmRoleArn?: string;
+  public abstract readonly alarmRoleArn?: string | undefined;
 
   /**
    * Indicates whether a CloudWatch alarm is a composite alarm.
    */
-  public abstract readonly isCompositeAlarm?: boolean;
+  public abstract readonly isCompositeAlarm?: boolean | undefined;
 }
 
 export interface IEnvironment extends IResource, IEnvironmentRef {
   /**
    * The application associated with the environment.
    */
-  readonly application?: IApplication;
+  readonly application?: IApplication | undefined;
 
   /**
    * The ID of the application associated to the environment.
@@ -479,17 +479,17 @@ export interface IEnvironment extends IResource, IEnvironmentRef {
   /**
    * The name of the environment.
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The description of the environment.
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The monitors for the environment.
    */
-  readonly monitors?: Monitor[];
+  readonly monitors?: Monitor[] | undefined;
 
   /**
    * The ID of the environment.

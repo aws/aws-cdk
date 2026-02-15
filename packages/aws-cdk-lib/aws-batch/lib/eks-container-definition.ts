@@ -32,7 +32,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * @see https://docs.docker.com/engine/reference/builder/#cmd
    * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    */
-  readonly args?: string[];
+  readonly args?: string[] | undefined;
 
   /**
    * The entrypoint for the container. This isn't run within a shell.
@@ -49,7 +49,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    * @see https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to pass to this container.
@@ -57,7 +57,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
    */
-  readonly env?: { [key:string]: string };
+  readonly env?: { [key:string]: string } | undefined;
 
   /**
    * The image pull policy for this container
@@ -66,14 +66,14 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
-  readonly imagePullPolicy?: ImagePullPolicy;
+  readonly imagePullPolicy?: ImagePullPolicy | undefined;
 
   /**
    * The name of this container
    *
    * @default: `'Default'`
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -91,7 +91,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No memory limit
    */
-  readonly memoryLimit?: Size;
+  readonly memoryLimit?: Size | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -116,7 +116,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No memory reserved
    */
-  readonly memoryReservation?: Size;
+  readonly memoryReservation?: Size | undefined;
 
   /**
    * The hard limit of CPUs to present to this container.
@@ -131,7 +131,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No CPU limit
    */
-  readonly cpuLimit?: number;
+  readonly cpuLimit?: number | undefined;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -146,7 +146,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No CPUs reserved
    */
-  readonly cpuReservation?: number;
+  readonly cpuReservation?: number | undefined;
 
   /**
    * The hard limit of GPUs to present to this container.
@@ -159,7 +159,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No GPU limit
    */
-  readonly gpuLimit?: number;
+  readonly gpuLimit?: number | undefined;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -173,7 +173,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No GPUs reserved
    */
-  readonly gpuReservation?: number;
+  readonly gpuReservation?: number | undefined;
 
   /**
    * If specified, gives this container elevated permissions on the host container instance.
@@ -187,7 +187,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * If specified, gives this container readonly access to its root file system.
@@ -200,7 +200,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default false
    */
-  readonly readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean | undefined;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
@@ -213,7 +213,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default none
    */
-  readonly runAsGroup?: number;
+  readonly runAsGroup?: number | undefined;
 
   /**
    * If specified, the container is run as a user with a `uid` other than 0. Otherwise, no such rule is enforced.
@@ -225,7 +225,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - the container is *not* required to run as a non-root user
    */
-  readonly runAsRoot?: boolean;
+  readonly runAsRoot?: boolean | undefined;
 
   /**
    * If specified, this container is run as the specified user ID (`uid`).
@@ -237,7 +237,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - the user that is specified in the image metadata.
    */
-  readonly runAsUser?: number;
+  readonly runAsUser?: number | undefined;
 
   /**
    * The Volumes to mount to this container.
@@ -308,7 +308,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - no args
    */
-  readonly args?: string[];
+  readonly args?: string[] | undefined;
 
   /**
    * The entrypoint for the container. This isn't run within a shell.
@@ -327,7 +327,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - no command
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * The environment variables to pass to this container.
@@ -337,7 +337,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - no environment variables
    */
-  readonly env?: { [key:string]: string };
+  readonly env?: { [key:string]: string } | undefined;
 
   /**
    * The image pull policy for this container
@@ -346,14 +346,14 @@ export interface EksContainerDefinitionProps {
    *
    * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
-  readonly imagePullPolicy?: ImagePullPolicy;
+  readonly imagePullPolicy?: ImagePullPolicy | undefined;
 
   /**
    * The name of this container
    *
    * @default: `'Default'`
    */
-  readonly name?: string;
+  readonly name?: string | undefined;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -371,7 +371,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No memory limit
    */
-  readonly memoryLimit?: Size;
+  readonly memoryLimit?: Size | undefined;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -396,7 +396,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No memory reserved
    */
-  readonly memoryReservation?: Size;
+  readonly memoryReservation?: Size | undefined;
 
   /**
    * The hard limit of CPUs to present to this container.
@@ -411,7 +411,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No CPU limit
    */
-  readonly cpuLimit?: number;
+  readonly cpuLimit?: number | undefined;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -426,7 +426,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No CPUs reserved
    */
-  readonly cpuReservation?: number;
+  readonly cpuReservation?: number | undefined;
 
   /**
    * The hard limit of GPUs to present to this container.
@@ -439,7 +439,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No GPU limit
    */
-  readonly gpuLimit?: number;
+  readonly gpuLimit?: number | undefined;
 
   /**
    * The soft limit of CPUs to reserve for the container
@@ -453,7 +453,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No GPUs reserved
    */
-  readonly gpuReservation?: number;
+  readonly gpuReservation?: number | undefined;
 
   /**
    * If specified, gives this container elevated permissions on the host container instance.
@@ -467,7 +467,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default false
    */
-  readonly privileged?: boolean;
+  readonly privileged?: boolean | undefined;
 
   /**
    * If specified, gives this container readonly access to its root file system.
@@ -480,7 +480,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default false
    */
-  readonly readonlyRootFilesystem?: boolean;
+  readonly readonlyRootFilesystem?: boolean | undefined;
 
   /**
    * If specified, the container is run as the specified group ID (`gid`).
@@ -493,7 +493,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default none
    */
-  readonly runAsGroup?: number;
+  readonly runAsGroup?: number | undefined;
 
   /**
    * If specified, the container is run as a user with a `uid` other than 0. Otherwise, no such rule is enforced.
@@ -505,7 +505,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - the container is *not* required to run as a non-root user
    */
-  readonly runAsRoot?: boolean;
+  readonly runAsRoot?: boolean | undefined;
 
   /**
    * If specified, this container is run as the specified user ID (`uid`).
@@ -517,7 +517,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - the user that is specified in the image metadata.
    */
-  readonly runAsUser?: number;
+  readonly runAsUser?: number | undefined;
 
   /**
    * The Volumes to mount to this container.
@@ -527,7 +527,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - no volumes
    */
-  readonly volumes?: EksVolume[];
+  readonly volumes?: EksVolume[] | undefined;
 }
 
 /**
@@ -541,22 +541,22 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.EksContainerDefinition';
 
   public readonly image: ecs.ContainerImage;
-  public readonly args?: string[];
-  public readonly command?: string[];
-  public readonly env?: { [key:string]: string };
-  public readonly imagePullPolicy?: ImagePullPolicy;
-  public readonly name?: string;
-  public readonly memoryLimit?: Size;
-  public readonly memoryReservation?: Size;
-  public readonly cpuLimit?: number;
-  public readonly cpuReservation?: number;
-  public readonly gpuLimit?: number;
-  public readonly gpuReservation?: number;
-  public readonly privileged?: boolean;
-  public readonly readonlyRootFilesystem?: boolean;
-  public readonly runAsGroup?: number;
-  public readonly runAsRoot?: boolean;
-  public readonly runAsUser?: number;
+  public readonly args?: string[] | undefined;
+  public readonly command?: string[] | undefined;
+  public readonly env?: { [key:string]: string } | undefined;
+  public readonly imagePullPolicy?: ImagePullPolicy | undefined;
+  public readonly name?: string | undefined;
+  public readonly memoryLimit?: Size | undefined;
+  public readonly memoryReservation?: Size | undefined;
+  public readonly cpuLimit?: number | undefined;
+  public readonly cpuReservation?: number | undefined;
+  public readonly gpuLimit?: number | undefined;
+  public readonly gpuReservation?: number | undefined;
+  public readonly privileged?: boolean | undefined;
+  public readonly readonlyRootFilesystem?: boolean | undefined;
+  public readonly runAsGroup?: number | undefined;
+  public readonly runAsRoot?: boolean | undefined;
+  public readonly runAsUser?: number | undefined;
   public readonly volumes: EksVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
@@ -660,7 +660,7 @@ export interface EksVolumeOptions {
    *
    * @default - the volume is not mounted
    */
-  readonly mountPath?: string;
+  readonly mountPath?: string | undefined;
 
   /**
    * If specified, the container has readonly access to the volume.
@@ -668,7 +668,7 @@ export interface EksVolumeOptions {
    *
    * @default false
    */
-  readonly readonly?: boolean;
+  readonly readonly?: boolean | undefined;
 }
 
 /**
@@ -713,7 +713,7 @@ export abstract class EksVolume {
    *
    * @default - the container is not mounted
    */
-  readonly containerPath?: string;
+  readonly containerPath?: string | undefined;
 
   /**
    * If specified, the container has readonly access to the volume.
@@ -721,7 +721,7 @@ export abstract class EksVolume {
    *
    * @default false
    */
-  readonly readonly?: boolean;
+  readonly readonly?: boolean | undefined;
 
   constructor(options: EksVolumeOptions) {
     this.name = options.name;
@@ -741,14 +741,14 @@ export interface EmptyDirVolumeOptions extends EksVolumeOptions {
    *
    * @default `EmptyDirMediumType.DISK`
    */
-  readonly medium?: EmptyDirMediumType;
+  readonly medium?: EmptyDirMediumType | undefined;
 
   /**
    * The maximum size for this Volume
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: Size;
+  readonly sizeLimit?: Size | undefined;
 }
 
 /**
@@ -786,14 +786,14 @@ export class EmptyDirVolume extends EksVolume {
    *
    * @default `EmptyDirMediumType.DISK`
    */
-  readonly medium?: EmptyDirMediumType;
+  readonly medium?: EmptyDirMediumType | undefined;
 
   /**
    * The maximum size for this Volume
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: Size;
+  readonly sizeLimit?: Size | undefined;
 
   constructor(options: EmptyDirVolumeOptions) {
     super(options);
@@ -877,7 +877,7 @@ export interface SecretPathVolumeOptions extends EksVolumeOptions {
    *
    * @default true
    */
-  readonly optional?: boolean;
+  readonly optional?: boolean | undefined;
 }
 
 /**
@@ -906,7 +906,7 @@ export class SecretPathVolume extends EksVolume {
    *
    * @default true
    */
-  readonly optional?: boolean;
+  readonly optional?: boolean | undefined;
 
   constructor(options: SecretPathVolumeOptions) {
     super(options);

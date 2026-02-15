@@ -24,14 +24,14 @@ export interface TrailProps {
    *
    * @default true
    */
-  readonly includeGlobalServiceEvents?: boolean;
+  readonly includeGlobalServiceEvents?: boolean | undefined;
 
   /**
    * Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account.
    *
    * @default true
    */
-  readonly isMultiRegionTrail?: boolean;
+  readonly isMultiRegionTrail?: boolean | undefined;
 
   /**
    * When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails.
@@ -48,7 +48,7 @@ export interface TrailProps {
    *
    * @default ReadWriteType.ALL
    */
-  readonly managementEvents?: ReadWriteType;
+  readonly managementEvents?: ReadWriteType | undefined;
 
   /**
    * To determine whether a log file was modified, deleted, or unchanged after CloudTrail delivered it,
@@ -59,7 +59,7 @@ export interface TrailProps {
    *
    * @default true
    */
-  readonly enableFileValidation?: boolean;
+  readonly enableFileValidation?: boolean | undefined;
 
   /**
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
@@ -67,7 +67,7 @@ export interface TrailProps {
    *
    * @default false
    */
-  readonly sendToCloudWatchLogs?: boolean;
+  readonly sendToCloudWatchLogs?: boolean | undefined;
 
   /**
    * How long to retain logs in CloudWatchLogs.
@@ -75,31 +75,31 @@ export interface TrailProps {
    *
    *  @default logs.RetentionDays.ONE_YEAR
    */
-  readonly cloudWatchLogsRetention?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays | undefined;
 
   /**
    * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
    * @default - a new log group is created and used.
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroupRef;
+  readonly cloudWatchLogGroup?: logs.ILogGroupRef | undefined;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    * @default - No encryption.
    * @deprecated - use encryptionKey instead.
    */
-  readonly kmsKey?: kms.IKeyRef;
+  readonly kmsKey?: kms.IKeyRef | undefined;
 
   /** The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs.
    *
    * @default - No encryption.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /** SNS topic that is notified when new log files are published.
    *
    * @default - No notifications.
    */
-  readonly snsTopic?: sns.ITopic;
+  readonly snsTopic?: sns.ITopic | undefined;
 
   /**
    * The name of the trail.
@@ -110,19 +110,19 @@ export interface TrailProps {
    *
    * @default - AWS CloudFormation generated name.
    */
-  readonly trailName?: string;
+  readonly trailName?: string | undefined;
 
   /** An Amazon S3 object key prefix that precedes the name of all log files.
    *
    * @default - No prefix.
    */
-  readonly s3KeyPrefix?: string;
+  readonly s3KeyPrefix?: string | undefined;
 
   /** The Amazon S3 bucket
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.IBucket | undefined;
 
   /**
    * Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account.
@@ -134,7 +134,7 @@ export interface TrailProps {
    *
    * @default - false
    */
-  readonly isOrganizationTrail?: boolean;
+  readonly isOrganizationTrail?: boolean | undefined;
 
   /** The orgId.
    *
@@ -142,14 +142,14 @@ export interface TrailProps {
    *
    * @default - No orgId
    */
-  readonly orgId?: string;
+  readonly orgId?: string | undefined;
 
   /**
    * A JSON string that contains the insight types you want to log on a trail.
    *
    * @default - No Value.
    */
-  readonly insightTypes?: InsightType[];
+  readonly insightTypes?: InsightType[] | undefined;
 }
 
 /**
@@ -252,7 +252,7 @@ export class Trail extends Resource {
    */
   public readonly trailSnsTopicArn: string;
 
-  private readonly _logGroup?: logs.ILogGroupRef;
+  private readonly _logGroup?: logs.ILogGroupRef | undefined;
   private readonly resource: CfnTrail;
 
   /**
@@ -527,21 +527,21 @@ export interface AddEventSelectorOptions {
    *
    * @default ReadWriteType.All
    */
-  readonly readWriteType?: ReadWriteType;
+  readonly readWriteType?: ReadWriteType | undefined;
 
   /**
    * Specifies whether the event selector includes management events for the trail.
    *
    * @default true
    */
-  readonly includeManagementEvents?: boolean;
+  readonly includeManagementEvents?: boolean | undefined;
 
   /**
    * An optional list of service event sources from which you do not want management events to be logged on your trail.
    *
    * @default []
    */
-  readonly excludeManagementEventSources?: ManagementEventSources[];
+  readonly excludeManagementEventSources?: ManagementEventSources[] | undefined;
 }
 
 /**
@@ -570,7 +570,7 @@ export interface S3EventSelector {
    * Data events for objects whose key matches this prefix will be logged.
    * @default - all objects
    */
-  readonly objectPrefix?: string;
+  readonly objectPrefix?: string | undefined;
 }
 
 /**
@@ -589,10 +589,10 @@ export enum DataResourceType {
 }
 
 interface EventSelector {
-  readonly includeManagementEvents?: boolean;
-  readonly excludeManagementEventSources?: string[];
-  readonly readWriteType?: ReadWriteType;
-  readonly dataResources?: EventSelectorData[];
+  readonly includeManagementEvents?: boolean | undefined;
+  readonly excludeManagementEventSources?: string[] | undefined;
+  readonly readWriteType?: ReadWriteType | undefined;
+  readonly dataResources?: EventSelectorData[] | undefined;
 }
 
 interface EventSelectorData {
@@ -601,5 +601,5 @@ interface EventSelectorData {
 }
 
 interface InsightSelector {
-  readonly insightType?: string;
+  readonly insightType?: string | undefined;
 }

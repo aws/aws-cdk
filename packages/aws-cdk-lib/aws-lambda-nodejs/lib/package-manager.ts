@@ -6,7 +6,7 @@ interface PackageManagerProps {
   readonly lockFile: string;
   readonly installCommand: string[];
   readonly runCommand: string[];
-  readonly argsSeparator?: string;
+  readonly argsSeparator?: string | undefined;
 }
 
 export enum LockFile {
@@ -69,7 +69,7 @@ export class PackageManager {
   public readonly lockFile: string;
   public readonly installCommand: string[];
   public readonly runCommand: string[];
-  public readonly argsSeparator?: string;
+  public readonly argsSeparator?: string | undefined;
 
   constructor(props: PackageManagerProps) {
     this.lockFile = props.lockFile;

@@ -99,7 +99,7 @@ interface LiteralMatchOptions {
    * Whether objects nested at any level should be matched partially.
    * @default false
    */
-  readonly partialObjects?: boolean;
+  readonly partialObjects?: boolean | undefined;
 }
 
 /**
@@ -163,14 +163,14 @@ interface ArrayMatchOptions {
    * some or no elements without changing the order of the remaining elements.
    * @default true
    */
-  readonly subsequence?: boolean;
+  readonly subsequence?: boolean | undefined;
 
   /**
    * Whether to continue matching objects inside the array partially
    *
    * @default false
    */
-  readonly partialObjects?: boolean;
+  readonly partialObjects?: boolean | undefined;
 }
 
 /**
@@ -320,7 +320,7 @@ interface ObjectMatchOptions {
    * The target object can contain more keys than expected by the pattern.
    * @default true
    */
-  readonly partial?: boolean;
+  readonly partial?: boolean | undefined;
 }
 
 /**

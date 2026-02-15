@@ -25,7 +25,7 @@ export interface CodeBuildFactoryProps {
    *
    * @default - Automatically generated
    */
-  readonly projectName?: string;
+  readonly projectName?: string | undefined;
 
   /**
    * Customization options for the project
@@ -35,21 +35,21 @@ export interface CodeBuildFactoryProps {
    *
    * @default - No special values
    */
-  readonly projectOptions?: CodeBuildOptions;
+  readonly projectOptions?: CodeBuildOptions | undefined;
 
   /**
    * Custom execution role to be used for the CodeBuild project
    *
    * @default - A role is automatically created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Custom execution role to be used for the Code Build Action
    *
    * @default - A role is automatically created
    */
-  readonly actionRole?: iam.IRole;
+  readonly actionRole?: iam.IRole | undefined;
 
   /**
    * If true, the build spec will be passed via the Cloud Assembly instead of rendered onto the Project
@@ -65,7 +65,7 @@ export interface CodeBuildFactoryProps {
    *
    * @default false
    */
-  readonly passBuildSpecViaCloudAssembly?: boolean;
+  readonly passBuildSpecViaCloudAssembly?: boolean | undefined;
 
   /**
    * Override the construct tree where the CodeBuild project is created.
@@ -88,42 +88,42 @@ export interface CodeBuildFactoryProps {
    *
    * @default true
    */
-  readonly additionalConstructLevel?: boolean;
+  readonly additionalConstructLevel?: boolean | undefined;
 
   /**
    * Additional dependency that the CodeBuild project should take
    *
    * @default -
    */
-  readonly additionalDependable?: IDependable;
+  readonly additionalDependable?: IDependable | undefined;
 
-  readonly inputs?: FileSetLocation[];
-  readonly outputs?: FileSetLocation[];
+  readonly inputs?: FileSetLocation[] | undefined;
+  readonly outputs?: FileSetLocation[] | undefined;
 
-  readonly stepId?: string;
+  readonly stepId?: string | undefined;
 
   readonly commands: string[];
-  readonly installCommands?: string[];
+  readonly installCommands?: string[] | undefined;
 
-  readonly env?: Record<string, string>;
-  readonly envFromCfnOutputs?: Record<string, StackOutputReference>;
+  readonly env?: Record<string, string> | undefined;
+  readonly envFromCfnOutputs?: Record<string, StackOutputReference> | undefined;
 
   /**
    * If given, override the scope from the produce call with this scope.
    */
-  readonly scope?: Construct;
+  readonly scope?: Construct | undefined;
 
   /**
    * Whether or not the given CodeBuild project is going to be the synth step
    *
    * @default false
    */
-  readonly isSynth?: boolean;
+  readonly isSynth?: boolean | undefined;
 
   /**
    * StepOutputs produced by this CodeBuild step
    */
-  readonly producedStepOutputs?: StepOutput[];
+  readonly producedStepOutputs?: StepOutput[] | undefined;
 }
 
 /**

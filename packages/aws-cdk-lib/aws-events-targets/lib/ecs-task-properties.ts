@@ -9,33 +9,33 @@ export interface ContainerOverride {
    *
    * @default Default command
    */
-  readonly command?: string[];
+  readonly command?: string[] | undefined;
 
   /**
    * Variables to set in the container's environment
    */
-  readonly environment?: TaskEnvironmentVariable[];
+  readonly environment?: TaskEnvironmentVariable[] | undefined;
 
   /**
    * The number of cpu units reserved for the container
    *
    * @default The default value from the task definition.
    */
-  readonly cpu?: number;
+  readonly cpu?: number | undefined;
 
   /**
    * Hard memory limit on the container
    *
    * @default The default value from the task definition.
    */
-  readonly memoryLimit?: number;
+  readonly memoryLimit?: number | undefined;
 
   /**
    * Soft memory limit on the container
    *
    * @default The default value from the task definition.
    */
-  readonly memoryReservation?: number;
+  readonly memoryReservation?: number | undefined;
 }
 
 /**
