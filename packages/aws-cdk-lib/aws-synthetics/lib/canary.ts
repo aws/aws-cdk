@@ -4,7 +4,7 @@ import type { Code } from './code';
 import { Runtime, RuntimeFamily } from './runtime';
 import type { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
-import { CfnCanary } from './synthetics.generated';
+import { CanaryReference, CfnCanary, ICanaryRef } from './synthetics.generated';
 import type { MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { Metric } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -394,14 +394,72 @@ export enum ArtifactsEncryptionMode {
 }
 
 /**
+ * Represents a CloudWatch Synthetics Canary
+ */
+export interface ICanary extends cdk.IResource, ICanaryRef {
+  /**
+   * The ID of the canary
+   * @attribute
+   */
+  readonly canaryId: string;
+
+  /**
+   * The name of the canary
+   * @attribute
+   */
+  readonly canaryName: string;
+
+  /**
+   * The ARN of the canary
+   * @attribute
+   */
+  readonly canaryArn: string;
+}
+
+/**
  * Define a new Canary
  */
 @propertyInjectable
-export class Canary extends cdk.Resource implements ec2.IConnectable {
+export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   /**
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Canary';
+
+  /**
+   * Import an existing canary by ARN
+   */
+  public static fromCanaryArn(scope: Construct, id: string, canaryArn: string): ICanary {
+    const arnParts = cdk.Arn.split(canaryArn, cdk.ArnFormat.COLON_RESOURCE_NAME);
+    const canaryName = arnParts.resourceName;
+
+    if (!canaryName) {
+      throw new ValidationError('Canary ARN must contain a canary name', scope);
+    }
+
+    return Canary.fromCanaryName(scope, id, canaryName);
+  }
+
+  /**
+   * Import an existing canary by name
+   */
+  public static fromCanaryName(scope: Construct, id: string, canaryName: string): ICanary {
+    class Import extends cdk.Resource implements ICanary {
+      public readonly canaryId = canaryName;
+      public readonly canaryName = canaryName;
+      public readonly canaryArn = cdk.Stack.of(this).formatArn({
+        service: 'synthetics',
+        resource: 'canary',
+        resourceName: canaryName,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+      });
+      public get canaryRef(): CanaryReference {
+        return { canaryName: this.canaryName };
+      }
+    }
+
+    return new Import(scope, id);
+  }
 
   /**
    * Execution role associated with this Canary.
@@ -436,9 +494,22 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   /**
+   * The canary ARN
+   * @attribute
+   */
+  public readonly canaryArn: string;
+
+  /**
    * Bucket where data from each canary run is stored.
    */
   public readonly artifactsBucket: s3.IBucket;
+
+  /**
+   * A reference to the canary.
+   */
+  public get canaryRef(): CanaryReference {
+    return { canaryName: this.canaryName };
+  }
 
   /**
    * Actual connections object for the underlying Lambda
@@ -511,6 +582,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       resourcesToReplicateTags: props.resourcesToReplicateTags,
     });
     this._resource = resource;
+
+    this.canaryArn = cdk.Stack.of(this).formatArn({
+      service: 'synthetics',
+      resource: 'canary',
+      resourceName: this.canaryName,
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+    });
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -768,7 +846,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     if (
       props.activeTracing &&
       (
-        // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
+      // Only check runtime family is nodejs because versions prior to syn-nodejs-2.0 are deprecated and can no longer be configured.
         (!cdk.Token.isUnresolved(props.runtime.family) && props.runtime.family !== RuntimeFamily.NODEJS) ||
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )

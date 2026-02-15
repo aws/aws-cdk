@@ -1864,6 +1864,8 @@
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.role",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.securityGroups",
     "prefer-ref-interface:aws-cdk-lib.aws_synthetics.CanaryProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_synthetics.IGroup.addCanary.canary",
+    "prefer-ref-interface:aws-cdk-lib.aws_synthetics.GroupProps.canaries",
     "prefer-ref-interface:aws-cdk-lib.custom_resources.AwsCustomResourceProps.role",
     "prefer-ref-interface:aws-cdk-lib.custom_resources.AwsCustomResourceProps.vpc",
     "prefer-ref-interface:aws-cdk-lib.custom_resources.ProviderProps.onEventHandler",
