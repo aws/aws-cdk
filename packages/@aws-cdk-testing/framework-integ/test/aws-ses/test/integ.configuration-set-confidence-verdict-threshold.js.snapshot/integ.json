@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "ConfigurationSetConfidenceVerdictThresholdInteg/DefaultTest": {
+      "stacks": [
+        "cdk-ses-configuration-set-confidence-verdict-threshold-integ"
+      ],
+      "assertionStack": "ConfigurationSetConfidenceVerdictThresholdInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigurationSetConfidenceVerdictThresholdIntegDefaultTestDeployAssert233CEC5F"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
