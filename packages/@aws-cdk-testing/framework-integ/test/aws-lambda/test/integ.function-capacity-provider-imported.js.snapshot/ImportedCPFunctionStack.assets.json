@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0b03d5993c028e97ed49a76ea40bf80739e4ba31c930b08f312960761dc2c0b4": {
+      "displayName": "ImportedCPFunctionStack Template",
+      "source": {
+        "path": "ImportedCPFunctionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ec5877aa": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0b03d5993c028e97ed49a76ea40bf80739e4ba31c930b08f312960761dc2c0b4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
