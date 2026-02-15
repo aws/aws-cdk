@@ -1,7 +1,5 @@
 # Amazon EC2 Auto Scaling Construct Library
 
-
-
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ## Auto Scaling Group
@@ -14,7 +12,10 @@ declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.BURSTABLE2,
+    ec2.InstanceSize.MICRO
+  ),
 
   // The latest Amazon Linux 2 image
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
@@ -22,17 +23,18 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 ```
 
 Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after December 31, 2023 will no longer be able to create Launch Configurations. With the `@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig` feature flag set to true, `AutoScalingGroup` properties used to create a Launch Configuration will now be used to create a `LaunchTemplate` using a [Launch Configuration to `LaunchTemplate` mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference). Specifically, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate`:
-* machineImage
-* keyName (deprecated, prefer keyPair)
-* keyPair
-* instanceType
-* instanceMonitoring
-* securityGroup
-* role
-* userData
-* associatePublicIpAddress
-* spotPrice
-* blockDevices
+
+- machineImage
+- keyName (deprecated, prefer keyPair)
+- keyPair
+- instanceType
+- instanceMonitoring
+- securityGroup
+- role
+- userData
+- associatePublicIpAddress
+- spotPrice
+- blockDevices
 
 After the Launch Configuration is replaced with a `LaunchTemplate`, any new instances launched by the `AutoScalingGroup` will use the new `LaunchTemplate`. Existing instances are not affected. To update an existing instance, you can allow the `AutoScalingGroup` to gradually replace existing instances with new instances based on the `terminationPolicies` for the `AutoScalingGroup`. Alternatively, you can terminate them yourself and force the `AutoScalingGroup` to launch new instances to maintain the `desiredCapacity`.
 
@@ -41,7 +43,7 @@ Support for creating an `AutoScalingGroup` from a `LaunchTemplate` was added in 
 For additional migration information, please see: [Migrating to a `LaunchTemplate` from a Launch Configuration](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-to-launch-templates.html)
 
 NOTE: AutoScalingGroup has a property called `allowAllOutbound` (allowing the instances to contact the
-internet) which is set to `true` by default. Be sure to set this to `false`  if you don't want
+internet) which is set to `true` by default. Be sure to set this to `false` if you don't want
 your instances to be able to start arbitrary connections. Alternatively, you can specify an existing security
 group to attach to the instances that are launched, rather than have the group create a new one.
 
@@ -51,7 +53,10 @@ declare const vpc: ec2.Vpc;
 const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.BURSTABLE2,
+    ec2.InstanceSize.MICRO
+  ),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   securityGroup: mySecurityGroup,
 });
@@ -65,7 +70,7 @@ declare const launchTemplate: ec2.LaunchTemplate;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  launchTemplate: launchTemplate
+  launchTemplate: launchTemplate,
 });
 ```
 
@@ -83,12 +88,16 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
       onDemandPercentageAboveBaseCapacity: 50, // Mix Spot and On-Demand instances
     },
     launchTemplate: launchTemplate1,
-    launchTemplateOverrides: [ // Mix multiple instance types
+    launchTemplateOverrides: [
+      // Mix multiple instance types
       { instanceType: new ec2.InstanceType('t3.micro') },
       { instanceType: new ec2.InstanceType('t3a.micro') },
-      { instanceType: new ec2.InstanceType('t4g.micro'), launchTemplate: launchTemplate2 },
+      {
+        instanceType: new ec2.InstanceType('t4g.micro'),
+        launchTemplate: launchTemplate2,
+      },
     ],
-  }
+  },
 });
 ```
 
@@ -109,9 +118,9 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
           memoryMiB: { min: 16384 },
           cpuManufacturers: ['intel'],
         },
-      }
+      },
     ],
-  }
+  },
 });
 ```
 
@@ -146,13 +155,13 @@ below).
 
 There are three ways to scale your capacity:
 
-* **In response to a metric** (also known as step scaling); for example, you
+- **In response to a metric** (also known as step scaling); for example, you
   might want to scale out if the CPU usage across your cluster starts to rise,
   and scale in when it drops again.
-* **By trying to keep a certain metric around a given value** (also known as
+- **By trying to keep a certain metric around a given value** (also known as
   target tracking scaling); you might want to automatically scale out and in to
   keep your CPU usage around 50%.
-* **On a schedule**; you might want to organize your scaling around traffic
+- **On a schedule**; you might want to organize your scaling around traffic
   flows you expect, by scaling out in the morning and scaling in in the
   evening.
 
@@ -169,7 +178,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   machineImage,
 
   minCapacity: 5,
-  maxCapacity: 100
+  maxCapacity: 100,
   // ...
 });
 
@@ -212,8 +221,8 @@ you would configure the scaling something like this:
 declare const autoScalingGroup: autoscaling.AutoScalingGroup;
 
 const workerUtilizationMetric = new cloudwatch.Metric({
-    namespace: 'MyService',
-    metricName: 'WorkerUtilization'
+  namespace: 'MyService',
+  metricName: 'WorkerUtilization',
 });
 
 autoScalingGroup.scaleOnMetric('ScaleToCPU', {
@@ -254,7 +263,7 @@ The following example scales to keep the CPU usage of your instances around
 declare const autoScalingGroup: autoscaling.AutoScalingGroup;
 
 autoScalingGroup.scaleOnCpuUtilization('KeepSpareCPU', {
-  targetUtilizationPercent: 50
+  targetUtilizationPercent: 50,
 });
 ```
 
@@ -264,10 +273,10 @@ To scale on average network traffic in and out of your instances:
 declare const autoScalingGroup: autoscaling.AutoScalingGroup;
 
 autoScalingGroup.scaleOnIncomingBytes('LimitIngressPerInstance', {
-    targetBytesPerSecond: 10 * 1024 * 1024 // 10 MB/s
+  targetBytesPerSecond: 10 * 1024 * 1024, // 10 MB/s
 });
 autoScalingGroup.scaleOnOutgoingBytes('LimitEgressPerInstance', {
-    targetBytesPerSecond: 10 * 1024 * 1024 // 10 MB/s
+  targetBytesPerSecond: 10 * 1024 * 1024, // 10 MB/s
 });
 ```
 
@@ -279,7 +288,7 @@ Balancers):
 declare const autoScalingGroup: autoscaling.AutoScalingGroup;
 
 autoScalingGroup.scaleOnRequestCount('LimitRPS', {
-    targetRequestsPerSecond: 1000
+  targetRequestsPerSecond: 1000,
 });
 ```
 
@@ -289,9 +298,9 @@ This type of scaling is used to change capacities based on time. It works by
 changing `minCapacity`, `maxCapacity` and `desiredCapacity` of the
 AutoScalingGroup, and so can be used for two purposes:
 
-* Scale in and out on a schedule by setting the `minCapacity` high or
+- Scale in and out on a schedule by setting the `minCapacity` high or
   the `maxCapacity` low.
-* Still allow the regular scaling actions to do their job, but restrict
+- Still allow the regular scaling actions to do their job, but restrict
   the range they can scale over (by setting both `minCapacity` and
   `maxCapacity` but changing their range over time).
 
@@ -310,7 +319,7 @@ autoScalingGroup.scaleOnSchedule('PrescaleInTheMorning', {
 
 autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
-  minCapacity: 1
+  minCapacity: 1,
 });
 ```
 
@@ -327,7 +336,10 @@ declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.BURSTABLE2,
+    ec2.InstanceSize.MICRO
+  ),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   healthChecks: autoscaling.HealthChecks.ec2({
     gracePeriod: Duration.seconds(100),
@@ -343,7 +355,10 @@ declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.BURSTABLE2,
+    ec2.InstanceSize.MICRO
+  ),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   healthChecks: autoscaling.HealthChecks.withAdditionalChecks({
     gracePeriod: Duration.seconds(100),
@@ -381,7 +396,10 @@ declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.BURSTABLE2,
+    ec2.InstanceSize.MICRO
+  ),
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
   maxHealthyPercentage: 200,
   minHealthyPercentage: 100,
@@ -409,12 +427,12 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   machineImage,
   blockDevices: [
     {
-        deviceName: 'gp3-volume',
-        volume: autoscaling.BlockDeviceVolume.ebs(15, {
-          volumeType: autoscaling.EbsDeviceVolumeType.GP3,
-          throughput: 125,
-        }),
-      },
+      deviceName: 'gp3-volume',
+      volume: autoscaling.BlockDeviceVolume.ebs(15, {
+        volumeType: autoscaling.EbsDeviceVolumeType.GP3,
+        throughput: 125,
+      }),
+    },
   ],
   // ...
 });
@@ -430,12 +448,12 @@ and the documentation of CDK's `aws-ec2` library for more information.
 
 When you specify a CloudFormation Init configuration for an AutoScalingGroup:
 
-* you *must* also specify `signals` to configure how long CloudFormation
+- you _must_ also specify `signals` to configure how long CloudFormation
   should wait for the instances to successfully configure themselves.
-* you *should* also specify an `updatePolicy` to configure how instances
+- you _should_ also specify an `updatePolicy` to configure how instances
   should be updated when the AutoScalingGroup is updated (for example,
-  when the AMI is updated). If you don't specify an update policy, a *rolling
-  update* is chosen by default.
+  when the AMI is updated). If you don't specify an update policy, a _rolling
+  update_ is chosen by default.
 
 Here's an example of using CloudFormation Init to write a file to the
 instance hosts on startup:
@@ -453,7 +471,10 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ...
 
   init: ec2.CloudFormationInit.fromElements(
-    ec2.InitFile.fromString('/etc/my_instance', 'This got written during instance startup'),
+    ec2.InitFile.fromString(
+      '/etc/my_instance',
+      'This got written during instance startup'
+    )
   ),
   signals: autoscaling.Signals.waitForAll({
     timeout: Duration.minutes(10),
@@ -465,7 +486,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 In normal operation, CloudFormation will send a Create or Update command to
 an AutoScalingGroup and proceed with the rest of the deployment without waiting
-for the *instances in the AutoScalingGroup*.
+for the _instances in the AutoScalingGroup_.
 
 Configure `signals` to tell CloudFormation to wait for a specific number of
 instances in the AutoScalingGroup to have been started (or failed to start)
@@ -479,27 +500,71 @@ the appropriate call to `cfn-signal` is automatically added to the
 AutoScalingGroup's UserData. If you don't use the `signals` directly, you are
 responsible for adding such a call yourself.
 
+### Manual Signal Control
+
+By default, when using CloudFormation Init, the `cfn-signal` command is automatically
+added to the UserData immediately after `cfn-init` completes. However, if you need to
+control when the signal is sent (for example, to wait until your application is fully
+ready to serve traffic), you can disable the automatic signal:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  init: ec2.CloudFormationInit.fromElements(
+    ec2.InitFile.fromString(
+      '/etc/my_instance',
+      'This got written during instance startup'
+    )
+  ),
+  initOptions: {
+    includeSignalCommand: false, // Disable automatic cfn-signal
+  },
+  signals: autoscaling.Signals.waitForAll({
+    timeout: Duration.minutes(10),
+  }),
+});
+```
+
+When `includeSignalCommand` is set to `false`, you must manually add the `cfn-signal`
+command in your application logic or UserData. This allows you to signal CloudFormation
+only after your application is fully initialized and ready. For example:
+
+```bash
+# In your application startup script
+/opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource MyAutoScalingGroup
+```
+
+Note: Even when automatic signaling is disabled, instances must still send a signal
+eventually, or CloudFormation will time out waiting for the configured number of success signals.
+
 The following type of `Signals` are available:
 
-* `Signals.waitForAll([options])`: wait for all of `desiredCapacity` amount of instances
+- `Signals.waitForAll([options])`: wait for all of `desiredCapacity` amount of instances
   to have started (recommended).
-* `Signals.waitForMinCapacity([options])`: wait for a `minCapacity` amount of instances
+- `Signals.waitForMinCapacity([options])`: wait for a `minCapacity` amount of instances
   to have started (use this if waiting for all instances takes too long and you are happy
   with a minimum count of healthy hosts).
-* `Signals.waitForCount(count, [options])`: wait for a specific amount of instances to have
+- `Signals.waitForCount(count, [options])`: wait for a specific amount of instances to have
   started.
 
 There are two `options` you can configure:
 
-* `timeout`: maximum time a host startup is allowed to take. If a host does not report
+- `timeout`: maximum time a host startup is allowed to take. If a host does not report
   success within this time, it is considered a failure. Default is 5 minutes.
-* `minSuccessPercentage`: percentage of hosts that needs to be healthy in order for the
+- `minSuccessPercentage`: percentage of hosts that needs to be healthy in order for the
   update to succeed. If you set this value lower than 100, some percentage of hosts may
   report failure, while still considering the deployment a success. Default is 100%.
 
 ## Update Policy
 
-The *update policy* describes what should happen to running instances when the definition
+The _update policy_ describes what should happen to running instances when the definition
 of the AutoScalingGroup is changed. For example, if you add a command to the UserData
 of an AutoScalingGroup, do the existing instances get replaced with new instances that
 have executed the new UserData? Or do the "old" instances just keep on running?
@@ -510,13 +575,13 @@ source code. This degrades the reproducibility of your deployments.
 
 The following update policies are available:
 
-* `UpdatePolicy.none()`: leave existing instances alone (not recommended).
-* `UpdatePolicy.rollingUpdate([options])`: progressively replace the existing
+- `UpdatePolicy.none()`: leave existing instances alone (not recommended).
+- `UpdatePolicy.rollingUpdate([options])`: progressively replace the existing
   instances with new instances, in small batches. At any point in time,
   roughly the same amount of total instances will be running. If the deployment
   needs to be rolled back, the fresh instances will be replaced with the "old"
   configuration again.
-* `UpdatePolicy.replacingUpdate([options])`: build a completely fresh copy
+- `UpdatePolicy.replacingUpdate([options])`: build a completely fresh copy
   of the new AutoScalingGroup next to the old one. Once the AutoScalingGroup
   has been successfully created (and the instances started, if `signals` is
   configured on the AutoScalingGroup), the old AutoScalingGroup is deleted.
@@ -573,7 +638,12 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
   // ...
 
-  groupMetrics: [new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE, autoscaling.GroupMetric.MAX_SIZE)],
+  groupMetrics: [
+    new autoscaling.GroupMetrics(
+      autoscaling.GroupMetric.MIN_SIZE,
+      autoscaling.GroupMetric.MAX_SIZE
+    ),
+  ],
 });
 ```
 
@@ -673,13 +743,13 @@ AWS Console, without preparing SSH keys.
 
 To do so, you need to:
 
-* Use an image with [SSM agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) installed
+- Use an image with [SSM agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/ssm-agent.html) installed
   and configured. [Many images come with SSM Agent
   preinstalled](https://docs.aws.amazon.com/systems-manager/latest/userguide/ami-preinstalled-agent.html), otherwise you
   may need to manually put instructions to [install SSM
   Agent](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-manual-agent-install.html) into your
   instance's UserData or use EC2 Init).
-* Create the AutoScalingGroup with `ssmSessionPermissions: true`.
+- Create the AutoScalingGroup with `ssmSessionPermissions: true`.
 
 If these conditions are met, you can connect to the instance from the EC2 Console. Example:
 
@@ -688,7 +758,10 @@ declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  instanceType: ec2.InstanceType.of(
+    ec2.InstanceClass.T3,
+    ec2.InstanceSize.MICRO
+  ),
 
   // Amazon Linux 2 comes with SSM Agent by default
   machineImage: ec2.MachineImage.latestAmazonLinux2(),
@@ -771,7 +844,6 @@ declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType,
@@ -811,8 +883,8 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 If launches fail in an Availability Zone, the following strategies are available.
 
-* `BALANCED_BEST_EFFORT` (default) - If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
-* `BALANCED_ONLY` - If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
+- `BALANCED_BEST_EFFORT` (default) - If launches fail in an Availability Zone, Auto Scaling will attempt to launch in another healthy Availability Zone instead.
+- `BALANCED_ONLY` - If launches fail in an Availability Zone, Auto Scaling will continue to attempt to launch in the unhealthy zone to preserve a balanced distribution.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -826,11 +898,12 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
   // ...
 
-  azCapacityDistributionStrategy: autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
+  azCapacityDistributionStrategy:
+    autoscaling.CapacityDistributionStrategy.BALANCED_ONLY,
 });
 ```
 
 ## Future work
 
-* [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
-  necessary to make this rule and this cannot be accessed from CloudFormation).
+- [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
+      necessary to make this rule and this cannot be accessed from CloudFormation).

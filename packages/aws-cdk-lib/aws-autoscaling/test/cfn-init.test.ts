@@ -22,7 +22,10 @@ beforeEach(() => {
   baseProps = {
     vpc,
     machineImage: new ec2.AmazonLinuxImage(),
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+    instanceType: ec2.InstanceType.of(
+      ec2.InstanceClass.M4,
+      ec2.InstanceSize.MICRO,
+    ),
     desiredCapacity: 5,
     minCapacity: 2,
   };
@@ -107,11 +110,13 @@ test('When signals are given appropriate IAM policy is added', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: 'cloudformation:SignalResource',
-        Effect: 'Allow',
-        Resource: { Ref: 'AWS::StackId' },
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: 'cloudformation:SignalResource',
+          Effect: 'Allow',
+          Resource: { Ref: 'AWS::StackId' },
+        },
+      ]),
     },
   });
 });
@@ -175,8 +180,7 @@ test('UpdatePolicy.rollingUpdate() without Signals', () => {
   // THEN
   Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
     UpdatePolicy: {
-      AutoScalingRollingUpdate: {
-      },
+      AutoScalingRollingUpdate: {},
     },
   });
 });
@@ -227,31 +231,139 @@ test('Using init config in ASG leads to correct UserData and permissions', () =>
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
-    UserData: {
-      'Fn::Base64': {
-        'Fn::Join': ['', [
-          '#!/bin/bash\n# fingerprint: 593c357d7f305b75\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
-          { Ref: 'AWS::Region' },
-          ' --stack ',
-          { Ref: 'AWS::StackName' },
-          ' --resource AsgASGD1D7B4E2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
-          { Ref: 'AWS::Region' },
-          ' --stack ',
-          { Ref: 'AWS::StackName' },
-          ' --resource AsgASGD1D7B4E2\n  cat /var/log/cfn-init.log >&2\n)',
-        ]],
+  Template.fromStack(stack).hasResourceProperties(
+    'AWS::AutoScaling::LaunchConfiguration',
+    {
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
+            [
+              '#!/bin/bash\n# fingerprint: 593c357d7f305b75\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+              { Ref: 'AWS::Region' },
+              ' --stack ',
+              { Ref: 'AWS::StackName' },
+              ' --resource AsgASGD1D7B4E2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
+              { Ref: 'AWS::Region' },
+              ' --stack ',
+              { Ref: 'AWS::StackName' },
+              ' --resource AsgASGD1D7B4E2\n  cat /var/log/cfn-init.log >&2\n)',
+            ],
+          ],
+        },
       },
     },
-  });
+  );
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: Match.arrayWith([{
-        Action: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
-        Effect: 'Allow',
-        Resource: { Ref: 'AWS::StackId' },
-      }]),
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'cloudformation:DescribeStackResource',
+            'cloudformation:SignalResource',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'AWS::StackId' },
+        },
+      ]),
+    },
+  });
+});
+
+test('Init config without cfn-signal when includeSignalCommand is false', () => {
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'Asg', {
+    ...baseProps,
+    init: ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('echo hihi'),
+    ),
+    initOptions: {
+      includeSignalCommand: false,
+    },
+    signals: autoscaling.Signals.waitForAll(),
+  });
+
+  // THEN - UserData should contain cfn-init but NOT cfn-signal
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\n# fingerprint: 593c357d7f305b75\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+            { Ref: 'AWS::Region' },
+            ' --stack ',
+            { Ref: 'AWS::StackName' },
+            ' --resource AsgASGD1D7B4E2 -c default\n  cat /var/log/cfn-init.log >&2\n)',
+          ],
+        ],
+      },
+    },
+  });
+});
+
+test('Init config with cfn-signal by default (backward compatibility)', () => {
+  // WHEN - Not specifying includeSignalCommand should default to true
+  new autoscaling.AutoScalingGroup(stack, 'Asg', {
+    ...baseProps,
+    init: ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('echo hihi'),
+    ),
+    signals: autoscaling.Signals.waitForAll(),
+  });
+
+  // THEN - UserData should contain both cfn-init and cfn-signal (default behavior)
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          Match.arrayWith([
+            Match.stringLikeRegexp('cfn-init'),
+            Match.stringLikeRegexp('cfn-signal'),
+          ]),
+        ],
+      },
+    },
+  });
+});
+
+test('Init config with explicit includeSignalCommand true', () => {
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'Asg', {
+    ...baseProps,
+    init: ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('echo hihi'),
+    ),
+    initOptions: {
+      includeSignalCommand: true,
+    },
+    signals: autoscaling.Signals.waitForAll(),
+  });
+
+  // THEN - UserData should contain both cfn-init and cfn-signal
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\n# fingerprint: 593c357d7f305b75\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ',
+            { Ref: 'AWS::Region' },
+            ' --stack ',
+            { Ref: 'AWS::StackName' },
+            ' --resource AsgASGD1D7B4E2 -c default\n  /opt/aws/bin/cfn-signal -e $? --region ',
+            { Ref: 'AWS::Region' },
+            ' --stack ',
+            { Ref: 'AWS::StackName' },
+            ' --resource AsgASGD1D7B4E2\n  cat /var/log/cfn-init.log >&2\n)',
+          ],
+        ],
+      },
     },
   });
 });
