@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BuildTest/DefaultTest": {
+      "stacks": [
+        "AssetBuilds"
+      ],
+      "assertionStack": "BuildTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BuildTestDefaultTestDeployAssert572416BC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
