@@ -1297,6 +1297,17 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   readonly credentials?: Credentials;
 
   /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * Cannot be used together with credentials containing a password.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
    * For supported engines, specifies the character set to associate with the
    * DB instance.
    *
@@ -1352,15 +1363,56 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     // Validate database instance props
     validateDatabaseInstanceProps(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    // Validate manageMasterUserPassword conflicts with unsupported credential properties
+    if (props.manageMasterUserPassword) {
+      const unsupportedProps = [
+        props.credentials?.excludeCharacters && 'excludeCharacters',
+        props.credentials?.password && 'password',
+        props.credentials?.replicaRegions && 'replicaRegions',
+        props.credentials?.secret && 'secret',
+        props.credentials?.secretName && 'secretName',
+        props.credentials?.usernameAsString && 'usernameAsString',
+      ].filter(Boolean);
+
+      if (unsupportedProps.length > 0) {
+        throw new ValidationError(
+          'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
+          `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
+          this,
+        );
+      }
+    }
+
+    // Prepare credential-specific configuration
+    let secret: secretsmanager.ISecret | undefined;
+    let masterUsername: string | undefined;
+    let masterUserPassword: string | undefined;
+    let manageMasterUserPassword: boolean | undefined;
+    let masterUserSecret: { kmsKeyId: string } | undefined;
+
+    if (props.manageMasterUserPassword) {
+      // RDS-managed approach: RDS creates and manages the Secret automatically
+      masterUsername = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
+      manageMasterUserPassword = props.manageMasterUserPassword;
+      masterUserSecret = props.credentials?.encryptionKey
+        ? { kmsKeyId: props.credentials.encryptionKey.keyId }
+        : undefined;
+    } else {
+      // Standard approach: CDK creates and manages the Secret via DatabaseSecret
+      const credentials = renderCredentials(this, props.engine, props.credentials);
+      secret = credentials.secret;
+      masterUsername = credentials.username;
+      masterUserPassword = credentials.password?.unsafeUnwrap();
+    }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyRef.keyArn,
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername,
+      masterUserPassword,
+      manageMasterUserPassword,
+      masterUserSecret,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -1369,15 +1421,22 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
 
+    // Set up the secret reference
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
+        this,
+        'ManagedSecret',
+        instance.attrMasterUserSecretSecretArn,
+      );
+    } else if (secret) {
+      this.secret = secret.attach(this);
+    }
+
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
-
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
 
     this.setLogRetention();
   }

@@ -2020,6 +2020,78 @@ describe('instance', () => {
     });
   });
 
+  describe('manageMasterUserPassword', () => {
+    test('with username and KMS encryption key', () => {
+      // GIVEN
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+        credentials: {
+          username: 'testuser',
+          encryptionKey: kmsKey,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyId),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('without username (uses engine default)', () => {
+      // WHEN
+      new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        Engine: 'mysql',
+        MasterUsername: 'admin', // engine default username
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+        MasterUserSecret: Match.absent(),
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+  });
+
+  describe('manageMasterUserPassword validation errors', () => {
+    test('should reject all unsupported credential properties', () => {
+      // THEN
+      expect(() => {
+        new rds.DatabaseInstance(stack, 'Database', {
+          engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+          vpc,
+          manageMasterUserPassword: true,
+          credentials: {
+            username: 'testuser',
+            password: cdk.SecretValue.unsafePlainText('password'),
+            excludeCharacters: '"@/\\',
+            secretName: 'my-secret',
+            replicaRegions: [{ region: 'us-west-2' }],
+            usernameAsString: true,
+          },
+        });
+      }).toThrow(/When manageMasterUserPassword is enabled, only 'username' and 'encryptionKey' are allowed in credentials\. Found unsupported properties: excludeCharacters, password, replicaRegions, secretName, usernameAsString\./);
+    });
+  });
+
   test('can set publiclyAccessible to false with public subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({

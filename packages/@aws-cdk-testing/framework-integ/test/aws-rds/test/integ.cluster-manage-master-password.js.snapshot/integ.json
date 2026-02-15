@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "test-rds-cluster-manage-master-password/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-manage-master-password-integ"
+      ],
+      "assertionStack": "test-rds-cluster-manage-master-password/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsclustermanagemasterpasswordDefaultTestDeployAssertB00D0413"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

@@ -853,6 +853,39 @@ new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
 });
 ```
 
+### RDS-managed master password
+
+You can enable RDS to manage the master password in AWS Secrets Manager by setting `manageMasterUserPassword` to `true`. When enabled, RDS creates and manages the secret automatically, and you can only specify the `username` and optionally an `encryptionKey` in the credentials:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+
+// Database cluster with RDS-managed password
+new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc,
+  manageMasterUserPassword: true,
+  credentials: {
+    username: 'admin', // Optional - defaults to engine's default username
+    encryptionKey: kmsKey, // Optional - uses default KMS key if not specified
+  },
+});
+
+// Database instance with RDS-managed password
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
+  vpc,
+  manageMasterUserPassword: true,
+  credentials: {
+    username: 'postgres',
+  },
+});
+```
+
+**Note**: When `manageMasterUserPassword` is enabled, you cannot use other credential properties like `password`, `secret`, `secretName`, `excludeCharacters`, `replicaRegions`, or `usernameAsString`. Only `username` and `encryptionKey` are allowed.
+
 ### Snapshot credentials
 
 As noted above, Databases created with `DatabaseInstanceFromSnapshot` or `ServerlessClusterFromSnapshot` will not create user and auto-generated password by default because it's not possible to change the master username for a snapshot. Instead, they will use the existing username and password from the snapshot. You can still generate a new password - to generate a secret similarly to the other constructs, pass in credentials with `fromGeneratedSecret()` or `fromGeneratedPassword()`.
