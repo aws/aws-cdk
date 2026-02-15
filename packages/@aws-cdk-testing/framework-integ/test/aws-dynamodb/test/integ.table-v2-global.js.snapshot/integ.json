@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
     "aws-cdk-global-table-integ/DefaultTest": {
       "stacks": [
@@ -13,5 +13,5 @@
       "assertionStackName": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1033.0"
 }
