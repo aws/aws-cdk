@@ -728,6 +728,34 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Consumable Resources
+
+Batch supports resource-aware scheduling through consumable resources, which allow you to manage finite resources beyond traditional compute resources (vCPU, memory, GPU). This is useful for managing third-party software licenses, API rate limits, or other constrained resources.
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+  consumableResourceProperties: {
+    consumableResourceList: [
+      {
+        consumableResource: 'arn:aws:batch:us-east-1:123456789012:consumable-resource/license-tokens',
+        quantity: 2,
+      },
+      {
+        consumableResource: 'arn:aws:batch:us-east-1:123456789012:consumable-resource/api-calls',
+        quantity: 100,
+      },
+    ],
+  },
+});
+```
+
+Consumable resources must be created and managed outside of CDK using the AWS Batch API or console. The scheduler will ensure that jobs only run when the required consumable resources are available.
+
 ### Understanding Progressive Allocation Strategies
 
 AWS Batch uses an [allocation strategy](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) to determine what compute resource will efficiently handle incoming job requests. By default, **BEST_FIT** will pick an available compute instance based on vCPU requirements. If none exist, the job will wait until resources become available. However, with this strategy, you may have jobs waiting in the queue unnecessarily despite having more powerful instances available. Below is an example of how that situation might look like:
