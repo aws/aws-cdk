@@ -182,6 +182,63 @@ Which subnets are selected is evaluated as follows:
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
   * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
 
+### Using Regional NAT Gateways
+
+[Regional NAT Gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html) provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
+
+```ts
+// Basic usage
+// Creates a single Regional NAT Gateway for the VPC and automatically allocate Elastic IPs
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway(),
+});
+```
+
+You can specify an existing EIP from a `CfnEIP` resource or an allocation ID:
+
+```ts
+const eip = new ec2.CfnEIP(this, 'NatEip');
+
+new ec2.Vpc(this, 'Vpc1', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    eip,
+  }),
+});
+
+new ec2.Vpc(this, 'Vpc2', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    allocationId: eip.attrAllocationId,
+  }),
+});
+```
+
+For manual control over AZ coverage and EIP allocation, use `availabilityZoneAddresses`:
+
+```ts
+const eip1 = new ec2.CfnEIP(this, 'NatEip1');
+const eip2 = new ec2.CfnEIP(this, 'NatEip2');
+
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    availabilityZoneAddresses: [
+      { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
+      { allocationIds: [eip2.attrAllocationId], availabilityZone: 'us-east-1b' },
+    ],
+  }),
+});
+```
+
+You can also configure the maximum drain duration:
+
+```ts
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    maxDrainDuration: Duration.minutes(10),
+  }),
+});
+```
+
 ### Using NAT instances
 
 By default, the `Vpc` construct will create NAT *gateways* for you, which
