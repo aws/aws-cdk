@@ -143,7 +143,7 @@ describe('cluster engine', () => {
       AuroraEngineVersion.VER_1_23_4,
     ])('cluster parameter group correctly determined for AURORA_MYSQL 1.x and given version $auroraFullVersion', (version: AuroraEngineVersion) => {
       // GIVEN
-      const engine_ver = DatabaseClusterEngine.auroraMysql({version});
+      const engine_ver = DatabaseClusterEngine.aurora({version});
 
       // THEN
       expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql5.6');
