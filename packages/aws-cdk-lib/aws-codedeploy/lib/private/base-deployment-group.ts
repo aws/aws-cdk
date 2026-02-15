@@ -9,6 +9,14 @@ import type { CfnDeploymentGroup } from '../codedeploy.generated';
 import { isIBindableDeploymentConfig } from './predefined-deployment-config';
 
 /**
+ * Extract application name from deployment group ARN
+ * ARN format: arn:aws:codedeploy:region:account:deploymentgroup:ApplicationName/DeploymentGroupName
+ */
+function extractApplicationNameFromDeploymentGroupArn(arn: string): string {
+  return Arn.split(arn, ArnFormat.COLON_RESOURCE_NAME).resourceName!.split('/')[0];
+}
+
+/**
  */
 export interface ImportedDeploymentGroupBaseProps {
   /**
@@ -37,6 +45,7 @@ export class ImportedDeploymentGroupBase extends Resource {
 
   public get deploymentGroupRef(): DeploymentGroupReference {
     return {
+      applicationName: extractApplicationNameFromDeploymentGroupArn(this.deploymentGroupArn),
       deploymentGroupName: this.deploymentGroupName,
     };
   }
@@ -116,6 +125,7 @@ export class DeploymentGroupBase extends Resource {
    */
   public get deploymentGroupRef(): DeploymentGroupReference {
     return {
+      applicationName: extractApplicationNameFromDeploymentGroupArn(this.deploymentGroupArn),
       deploymentGroupName: this.deploymentGroupName,
     };
   }
