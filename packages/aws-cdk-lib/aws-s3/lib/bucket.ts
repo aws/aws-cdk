@@ -2995,10 +2995,12 @@ export class Bucket extends BucketBase {
             } : undefined,
             metrics: rule.metrics !== undefined ? {
               status: 'Enabled',
-              eventThreshold: {
-                minutes: rule.metrics.minutes,
-              },
-            } : undefined,
+              ...(rule.replicationTimeControl !== undefined ? {
+                eventThreshold: {
+                  minutes: rule.metrics.minutes,
+                },
+              } : {}),
+            }:undefined,
           },
           filter,
           // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
