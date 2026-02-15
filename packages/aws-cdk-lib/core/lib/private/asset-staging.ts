@@ -59,9 +59,9 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
       const userInfo = os.userInfo();
       const hostUser = userInfo.uid !== -1 ? `${userInfo.uid}:${userInfo.gid}` : '1000:1000';
       const escapedCommand = command.map(arg => {
-        // A simple escaping for shell. If it contains shell special chars, wrap in double quotes and escape internal double quotes.
-        if (/[&|;()<> \t]/.test(arg)) {
-          return `"${arg.replace(/"/g, '\\"')}"`;
+        // A simple escaping for shell. If it contains shell special chars, wrap in double quotes and escape internal backslashes and double quotes.
+        if (/[&|;()<> \t\\"]/g.test(arg)) {
+          return `"${arg.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
         }
         return arg;
       }).join(' ');
