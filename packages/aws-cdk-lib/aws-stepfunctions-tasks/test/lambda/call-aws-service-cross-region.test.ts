@@ -78,6 +78,28 @@ describe('default tests', () => {
     });
   });
 
+  test('CallAwsServiceCrossRegion task with custom timeout', () => {
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'copyObject',
+      parameters: {
+        Bucket: 'my-bucket',
+        Key: sfn.JsonPath.stringAt('$.key'),
+      },
+      region: 'us-east-1',
+      iamResources: ['*'],
+      timeout: cdk.Duration.seconds(120),
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Timeout: 120,
+    });
+  });
+
   test('CallAwsServiceCrossRegion task - using JSONata', () => {
     // WHEN
     const task = tasks.CallAwsServiceCrossRegion.jsonata(stack, 'GetObject', {
