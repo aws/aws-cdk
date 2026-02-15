@@ -5,9 +5,14 @@
       "stacks": [
         "aws-cdk-firehose-event-target"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "firehose-event-target-integ/DefaultTest/DeployAssert",
       "assertionStackName": "firehoseeventtargetintegDefaultTestDeployAssert453EDADE"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
