@@ -45,6 +45,12 @@ new elbv2.ApplicationLoadBalancer(stack, 'Http2EnabledTrue', {
   http2Enabled: true,
 });
 
+new elbv2.ApplicationLoadBalancer(stack, 'DropInvalidHeaderFieldsFalse', {
+  vpc,
+  internetFacing: true,
+  dropInvalidHeaderFields: false,
+});
+
 new integ.IntegTest(app, 'Elbv2Test', {
   testCases: [stack],
 });
