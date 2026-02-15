@@ -119,7 +119,7 @@
     "@aws-cdk/cloud-assembly-api": "^2.0.1",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^50.1.0",
+    "@aws-cdk/cloud-assembly-schema": "^50.3.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
