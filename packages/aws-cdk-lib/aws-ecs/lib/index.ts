@@ -16,6 +16,8 @@ export * from './placement';
 
 export * from './ec2/ec2-service';
 export * from './ec2/ec2-task-definition';
+export * from './managed-instances/managed-instances-service';
+export * from './managed-instances/managed-instances-task-definition';
 
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';

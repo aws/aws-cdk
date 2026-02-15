@@ -502,8 +502,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Managed Instances validations
     if (this.isManagedInstancesCompatible) {
-      // Managed Instances only support awsvpc and host network modes
-      if (![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
+      // Managed Instances only support awsvpc or host network mode
+      if (this.networkMode !== NetworkMode.AWS_VPC && this.networkMode !== NetworkMode.HOST) {
         throw new ValidationError(`Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
       }
 
@@ -1409,14 +1409,22 @@ export interface ITaskDefinitionExtension {
  * Return true if the given task definition can be run on an EC2 cluster
  */
 export function isEc2Compatible(compatibility: Compatibility): boolean {
-  return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE, Compatibility.EC2_AND_MANAGED_INSTANCES].includes(compatibility);
+  return [
+    Compatibility.EC2,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.EC2_AND_MANAGED_INSTANCES,
+  ].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
 export function isFargateCompatible(compatibility: Compatibility): boolean {
-  return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE, Compatibility.FARGATE_AND_MANAGED_INSTANCES].includes(compatibility);
+  return [
+    Compatibility.FARGATE,
+    Compatibility.EC2_AND_FARGATE,
+    Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+  ].includes(compatibility);
 }
 
 /**
