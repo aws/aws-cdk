@@ -18,6 +18,7 @@ import type { GeoRestriction } from './geo-restriction';
 import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
+import type { ITrustStore } from './trust-store';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
@@ -299,6 +300,17 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+   *
+   * When configured, CloudFront validates client certificates using the specified trust store.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+   *
+   * @default - mTLS is not enabled
+   */
+  readonly viewerMtlsConfig?: ViewerMtlsConfig;
 }
 
 /**
@@ -392,6 +404,7 @@ export class Distribution extends Resource implements IDistribution {
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
+    this.validateMtls(props);
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
@@ -434,6 +447,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
+        viewerMtlsConfig: this.renderViewerMtlsConfig(props.viewerMtlsConfig),
         webAclId: Lazy.string({ produce: () => this.webAclId }),
       },
     });
@@ -882,6 +896,21 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
+  private renderViewerMtlsConfig(config?: ViewerMtlsConfig): CfnDistribution.ViewerMtlsConfigProperty | undefined {
+    if (!config) {
+      return undefined;
+    }
+
+    return {
+      mode: config.mode,
+      trustStoreConfig: {
+        trustStoreId: config.trustStore.trustStoreId,
+        advertiseTrustStoreCaNames: config.advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry: config.ignoreCertificateExpiry,
+      },
+    };
+  }
+
   private validateGrpc(behaviorOptions: AddBehaviorOptions) {
     if (!behaviorOptions.enableGrpc) {
       return;
@@ -889,6 +918,53 @@ export class Distribution extends Resource implements IDistribution {
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
       throw new ValidationError(`'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+    }
+  }
+
+  private validateMtls(props: DistributionProps): void {
+    if (!props.viewerMtlsConfig) {
+      return;
+    }
+    const invalidHttpVersions = [HttpVersion.HTTP3, HttpVersion.HTTP2_AND_3];
+    if (invalidHttpVersions.includes(this.httpVersion)) {
+      throw new ValidationError(
+        `'httpVersion' must be ${HttpVersion.HTTP1_1} or ${HttpVersion.HTTP2} when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${this.httpVersion}`,
+        this,
+      );
+    }
+
+    // Validate viewerProtocolPolicy - mTLS requires HTTPS.
+    const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
+    const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy;
+    if (defaultPolicy === undefined) {
+      throw new ValidationError(
+        `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
+        this,
+      );
+    }
+    if (!validPolicies.includes(defaultPolicy)) {
+      throw new ValidationError(
+        `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${defaultPolicy}' in default behavior`,
+        this,
+      );
+    }
+
+    if (props.additionalBehaviors) {
+      for (const [pathPattern, behavior] of Object.entries(props.additionalBehaviors)) {
+        const policy = behavior.viewerProtocolPolicy;
+        if (policy === undefined) {
+          throw new ValidationError(
+            `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified for behavior at path '${pathPattern}'. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
+            this,
+          );
+        }
+        if (!validPolicies.includes(policy)) {
+          throw new ValidationError(
+            `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in behavior for path '${pathPattern}'`,
+            this,
+          );
+        }
+      }
     }
   }
 }
@@ -978,6 +1054,69 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2021 = 'TLSv1.2_2021',
   TLS_V1_2_2025 = 'TLSv1.2_2025',
   TLS_V1_3_2025 = 'TLSv1.3_2025',
+}
+
+/**
+ * The mode for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ */
+export enum MtlsMode {
+  /**
+   * All clients must present valid certificates during the TLS handshake.
+   * Connections without valid certificates are rejected.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * Clients can optionally present certificates during the TLS handshake.
+   * Connections are allowed even without certificates.
+   */
+  OPTIONAL = 'optional',
+}
+
+/**
+ * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ *
+ * Mutual TLS authentication enables bidirectional certificate-based authentication,
+ * ensuring only trusted clients can access your CloudFront distribution.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+ */
+export interface ViewerMtlsConfig {
+  /**
+   * The mode for mutual TLS authentication.
+   *
+   * - REQUIRED: All clients must present valid certificates
+   * - OPTIONAL: Clients can optionally present certificates
+   */
+  readonly mode: MtlsMode;
+
+  /**
+   * The trust store to use for mTLS authentication.
+   *
+   * The trust store contains CA certificates that CloudFront uses to
+   * authenticate client certificates during mTLS handshakes.
+   */
+  readonly trustStore: ITrustStore;
+
+  /**
+   * Whether to advertise trust store CA names to clients during the TLS handshake.
+   *
+   * When enabled, CloudFront sends the list of CA names from the trust store to clients,
+   * which can help clients select the appropriate certificate to present.
+   *
+   * @default undefined - AWS CloudFront default is to not advertise CA names to clients
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
+
+  /**
+   * Whether to allow connections with expired client certificates.
+   *
+   * When enabled, CloudFront accepts connections from clients with expired certificates.
+   * This should only be used in specific scenarios where certificate expiration cannot be controlled.
+   *
+   * @default undefined - AWS CloudFront default is to reject expired client certificates
+   */
+  readonly ignoreCertificateExpiry?: boolean;
 }
 
 /**
