@@ -26,7 +26,19 @@
   "DefaultTable0A5768B5": {
    "Type": "AWS::S3Tables::Table",
    "Properties": {
-    "Namespace": "table_test_namespace",
+    "Namespace": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Split": [
+        "|",
+        {
+         "Ref": "DefaultNamespaceD1A02467"
+        }
+       ]
+      }
+     ]
+    },
     "OpenTableFormat": "ICEBERG",
     "TableBucketARN": {
      "Fn::GetAtt": [
@@ -37,9 +49,6 @@
     "TableName": "default_test_table",
     "WithoutMetadata": "Yes"
    },
-   "DependsOn": [
-    "DefaultNamespaceD1A02467"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
@@ -54,6 +63,14 @@
    },
    "Export": {
     "Name": "DefaultTableStack:ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D"
+   }
+  },
+  "ExportsOutputRefDefaultNamespaceD1A024671175E22D": {
+   "Value": {
+    "Ref": "DefaultNamespaceD1A02467"
+   },
+   "Export": {
+    "Name": "DefaultTableStack:ExportsOutputRefDefaultNamespaceD1A024671175E22D"
    }
   }
  },

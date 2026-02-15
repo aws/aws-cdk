@@ -523,6 +523,5 @@ export class Table extends TableBase {
     this.tableName = props.tableName;
     this.tableArn = this._resource.attrTableArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
-    this.node.addDependency(this.namespace);
   }
 }
