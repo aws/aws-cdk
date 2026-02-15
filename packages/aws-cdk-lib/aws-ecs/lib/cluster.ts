@@ -807,7 +807,7 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
     }
 
-    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
+    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
   }
 
   /**
@@ -1852,13 +1852,13 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
   ): CfnCapacityProvider.InstanceRequirementsRequestProperty {
     // Validate that allowedInstanceTypes and excludedInstanceTypes are not both specified
     if (instanceRequirements.allowedInstanceTypes && instanceRequirements.allowedInstanceTypes.length > 0 &&
-        instanceRequirements.excludedInstanceTypes && instanceRequirements.excludedInstanceTypes.length > 0) {
+      instanceRequirements.excludedInstanceTypes && instanceRequirements.excludedInstanceTypes.length > 0) {
       throw new ValidationError('Cannot specify both allowedInstanceTypes and excludedInstanceTypes. Use one or the other.', this);
     }
 
     // Validate that spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice are not both specified
     if (instanceRequirements.spotMaxPricePercentageOverLowestPrice !== undefined &&
-        instanceRequirements.onDemandMaxPricePercentageOverLowestPrice !== undefined) {
+      instanceRequirements.onDemandMaxPricePercentageOverLowestPrice !== undefined) {
       throw new ValidationError('Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.', this);
     }
 
@@ -1872,25 +1872,25 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
         max: instanceRequirements.memoryMax?.toMebibytes(),
       },
       acceleratorCount: (instanceRequirements.acceleratorCountMin !== undefined ||
-          instanceRequirements.acceleratorCountMax !== undefined) ? {
-          min: instanceRequirements.acceleratorCountMin,
-          max: instanceRequirements.acceleratorCountMax,
-        } : undefined,
+        instanceRequirements.acceleratorCountMax !== undefined) ? {
+        min: instanceRequirements.acceleratorCountMin,
+        max: instanceRequirements.acceleratorCountMax,
+      } : undefined,
       acceleratorManufacturers: instanceRequirements.acceleratorManufacturers?.map(m => m.toString()),
       acceleratorNames: instanceRequirements.acceleratorNames?.map(n => n.toString()),
       acceleratorTotalMemoryMiB: (instanceRequirements.acceleratorTotalMemoryMin !== undefined ||
-          instanceRequirements.acceleratorTotalMemoryMax !== undefined) ? {
-          min: instanceRequirements.acceleratorTotalMemoryMin?.toMebibytes(),
-          max: instanceRequirements.acceleratorTotalMemoryMax?.toMebibytes(),
-        } : undefined,
+        instanceRequirements.acceleratorTotalMemoryMax !== undefined) ? {
+        min: instanceRequirements.acceleratorTotalMemoryMin?.toMebibytes(),
+        max: instanceRequirements.acceleratorTotalMemoryMax?.toMebibytes(),
+      } : undefined,
       acceleratorTypes: instanceRequirements.acceleratorTypes?.map(t => t.toString()),
       allowedInstanceTypes: instanceRequirements.allowedInstanceTypes,
       bareMetal: instanceRequirements.bareMetal?.toString(),
       baselineEbsBandwidthMbps: (instanceRequirements.baselineEbsBandwidthMbpsMin !== undefined ||
-          instanceRequirements.baselineEbsBandwidthMbpsMax !== undefined) ? {
-          min: instanceRequirements.baselineEbsBandwidthMbpsMin,
-          max: instanceRequirements.baselineEbsBandwidthMbpsMax,
-        } : undefined,
+        instanceRequirements.baselineEbsBandwidthMbpsMax !== undefined) ? {
+        min: instanceRequirements.baselineEbsBandwidthMbpsMin,
+        max: instanceRequirements.baselineEbsBandwidthMbpsMax,
+      } : undefined,
       burstablePerformance: instanceRequirements.burstablePerformance?.toString(),
       cpuManufacturers: instanceRequirements.cpuManufacturers?.map(m => m.toString()),
       excludedInstanceTypes: instanceRequirements.excludedInstanceTypes,
@@ -1900,28 +1900,28 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       maxSpotPriceAsPercentageOfOptimalOnDemandPrice:
         instanceRequirements.maxSpotPriceAsPercentageOfOptimalOnDemandPrice,
       memoryGiBPerVCpu: (instanceRequirements.memoryPerVCpuMin !== undefined ||
-          instanceRequirements.memoryPerVCpuMax !== undefined) ? {
-          min: instanceRequirements.memoryPerVCpuMin?.toGibibytes(),
-          max: instanceRequirements.memoryPerVCpuMax?.toGibibytes(),
-        } : undefined,
+        instanceRequirements.memoryPerVCpuMax !== undefined) ? {
+        min: instanceRequirements.memoryPerVCpuMin?.toGibibytes(),
+        max: instanceRequirements.memoryPerVCpuMax?.toGibibytes(),
+      } : undefined,
       networkBandwidthGbps: (instanceRequirements.networkBandwidthGbpsMin !== undefined ||
-          instanceRequirements.networkBandwidthGbpsMax !== undefined) ? {
-          min: instanceRequirements.networkBandwidthGbpsMin,
-          max: instanceRequirements.networkBandwidthGbpsMax,
-        } : undefined,
+        instanceRequirements.networkBandwidthGbpsMax !== undefined) ? {
+        min: instanceRequirements.networkBandwidthGbpsMin,
+        max: instanceRequirements.networkBandwidthGbpsMax,
+      } : undefined,
       networkInterfaceCount: (instanceRequirements.networkInterfaceCountMin !== undefined ||
-          instanceRequirements.networkInterfaceCountMax !== undefined) ? {
-          min: instanceRequirements.networkInterfaceCountMin,
-          max: instanceRequirements.networkInterfaceCountMax,
-        } : undefined,
+        instanceRequirements.networkInterfaceCountMax !== undefined) ? {
+        min: instanceRequirements.networkInterfaceCountMin,
+        max: instanceRequirements.networkInterfaceCountMax,
+      } : undefined,
       onDemandMaxPricePercentageOverLowestPrice: instanceRequirements.onDemandMaxPricePercentageOverLowestPrice,
       requireHibernateSupport: instanceRequirements.requireHibernateSupport,
       spotMaxPricePercentageOverLowestPrice: instanceRequirements.spotMaxPricePercentageOverLowestPrice,
       totalLocalStorageGb: (instanceRequirements.totalLocalStorageGBMin !== undefined ||
-          instanceRequirements.totalLocalStorageGBMax !== undefined) ? {
-          min: instanceRequirements.totalLocalStorageGBMin,
-          max: instanceRequirements.totalLocalStorageGBMax,
-        } : undefined,
+        instanceRequirements.totalLocalStorageGBMax !== undefined) ? {
+        min: instanceRequirements.totalLocalStorageGBMin,
+        max: instanceRequirements.totalLocalStorageGBMax,
+      } : undefined,
     };
   }
 }
@@ -2047,7 +2047,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   public visit(node: IConstruct): void {
     if (Cluster.isCluster(node)) {
       if ((this.scope.defaultCapacityProviderStrategy.length > 0
-          || (this.scope.capacityProviderNames.length > 0) && !this.resource)) {
+        || (this.scope.capacityProviderNames.length > 0) && !this.resource)) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
           defaultCapacityProviderStrategy: this.scope.defaultCapacityProviderStrategy,
