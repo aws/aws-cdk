@@ -855,19 +855,73 @@ describe('S3 destination', () => {
     });
   });
 
-  it('sets customTimeZone', () => {
-    const destination = new firehose.S3Bucket(bucket, {
-      role: destinationRole,
-      timeZone: cdk.TimeZone.ASIA_TOKYO,
-    });
-    new firehose.DeliveryStream(stack, 'DeliveryStream', {
-      destination: destination,
+  describe('customTimeZone', () => {
+    it('sets customTimeZone', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.ASIA_TOKYO,
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: 'Asia/Tokyo',
+        },
+      });
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-      ExtendedS3DestinationConfiguration: {
-        CustomTimeZone: 'Asia/Tokyo',
-      },
+    it('sets customTimeZone UTC', () => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.of('UTC'),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: 'UTC',
+        },
+      });
+    });
+
+    it('sets customTimeZone from a token', () => {
+      const timeZone = new cdk.CfnParameter(stack, 'TimeZone');
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: cdk.TimeZone.of(timeZone.valueAsString),
+      });
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: destination,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          CustomTimeZone: { Ref: 'TimeZone' },
+        },
+      });
+    });
+
+    test.each([
+      cdk.TimeZone.EST,
+      cdk.TimeZone.ETC_UTC,
+      cdk.TimeZone.EST5EDT,
+      cdk.TimeZone.ETC_GMT_MINUS_1,
+    ])('throws when customTimeZone is not a standard IANA timezone: %s', (timezone: cdk.TimeZone) => {
+      const destination = new firehose.S3Bucket(bucket, {
+        role: destinationRole,
+        timeZone: timezone,
+      });
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: destination,
+        });
+      }).toThrow(`Invalid timezone format '${timezone.timezoneName}'. Use standard IANA timezone identifiers ` +
+      '(e.g., \'America/New_York\', \'Europe/London\'). ' +
+      'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details');
     });
   });
 

@@ -4,8 +4,8 @@ import { BackupMode } from './common';
 import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
 import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
-import type * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import type { IBucket } from '../../aws-s3';
+import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig, createTimezoneName } from './private/helpers';
 import * as cdk from '../../core';
 
 /**
@@ -26,8 +26,9 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
   /**
    * The time zone you prefer.
    *
-   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#timestamp-namespace
+   * AWS Kinesis Data Firehose supports standard IANA time zone identifiers (e.g., 'America/New_York', 'Europe/London', 'Asia/Tokyo').
    *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html
    * @default - UTC
    */
   readonly timeZone?: cdk.TimeZone;
@@ -74,7 +75,7 @@ export interface DataFormatConversionProps {
  * An S3 bucket destination for data from an Amazon Data Firehose delivery stream.
  */
 export class S3Bucket implements IDestination {
-  constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
+  constructor(private readonly bucket: IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
       throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
     }
@@ -138,7 +139,7 @@ export class S3Bucket implements IDestination {
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
-        customTimeZone: this.props.timeZone?.timezoneName,
+        customTimeZone: createTimezoneName(scope, this.props.timeZone),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
