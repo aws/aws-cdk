@@ -20,8 +20,8 @@ import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { BaseListener } from '../shared/base-listener';
 import type { HealthCheck } from '../shared/base-target-group';
-import type { ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, SslPolicy } from '../shared/enums';
-import { ApplicationProtocol, IpAddressType } from '../shared/enums';
+import type { ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
 import type { IListenerCertificate } from '../shared/listener-certificate';
 import { ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
@@ -286,12 +286,19 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       advertiseTrustStoreCaNames = props.mutualAuthentication.advertiseTrustStoreCaNames ? 'on' : 'off';
     }
 
+    // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
+    let sslPolicy = props.sslPolicy;
+    if (!sslPolicy && protocol === ApplicationProtocol.HTTPS &&
+        FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+      sslPolicy = SslPolicy.RECOMMENDED_TLS_PQ;
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       protocol,
       port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy,
       mutualAuthentication: props.mutualAuthentication ? {
         advertiseTrustStoreCaNames,
         ignoreClientCertificateExpiry: props.mutualAuthentication?.ignoreClientCertificateExpiry,

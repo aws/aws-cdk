@@ -109,6 +109,7 @@ Flags come in three types:
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
+| [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | V2NEXT | new default |
 | [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | V2NEXT | new default |
 
@@ -203,7 +204,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
-    "@aws-cdk/aws-route53-patterns:useDistribution": true
+    "@aws-cdk/aws-route53-patterns:useDistribution": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true
   }
 }
 ```
@@ -2313,6 +2315,33 @@ of the deprecated `CloudFrontWebDistribution` construct.
 | 2.233.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
+
+
+### @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy
+
+*When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+`sslPolicy` will use the post-quantum cryptography policy
+`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09` by default.
+
+This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+hybrid ML-KEM key exchange.
+
+When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+where `RECOMMENDED_TLS` (`ELBSecurityPolicy-TLS13-1-2-2021-06`) is used.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.
 
 
 ### @aws-cdk/aws-eks:useNativeOidcProvider
