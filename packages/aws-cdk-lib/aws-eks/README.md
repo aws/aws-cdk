@@ -178,6 +178,21 @@ new eks.FargateCluster(this, 'HelloEKS', {
 });
 ```
 
+You can enable deletion protection for your cluster to prevent accidental deletion. When deletion protection is enabled,
+the cluster cannot be deleted until protection is disabled. This setting only applies to clusters in an active state.
+
+> For more details visit [Deletion protection](https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html).
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+  deletionProtection: true,
+});
+```
+
 > **NOTE: Only 1 cluster per stack is supported.** If you have a use-case for multiple clusters per stack, or would like to understand more about this limitation, see <https://github.com/aws/aws-cdk/issues/10073>.
 
 Below you'll find a few important cluster configuration options. First of which is Capacity.

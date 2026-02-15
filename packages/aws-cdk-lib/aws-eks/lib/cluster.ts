@@ -745,6 +745,17 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - Resources will be deleted.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The current deletion protection setting for the cluster.
+   * When true, deletion protection is enabled and the cluster cannot be deleted until protection is disabled.
+   * When false, the cluster can be deleted normally. This setting only applies to clusters in an active state.
+   *
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html
+   *
+   * @default - deletion protection is disabled
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -1848,6 +1859,7 @@ export class Cluster extends ClusterBase {
       tags: props.tags,
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      deletionProtection: props.deletionProtection,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
