@@ -155,6 +155,36 @@ describe('restapi', () => {
     expect(() => app.synth()).toThrow(/The REST API doesn't contain any methods/);
   });
 
+  test('throws if EDGE endpoint is used without securityPolicy ending with _EDGE', () => {
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS12_PFS_2025_EDGE,
+    })).toThrow(/SecurityPolicy starting with "SecurityPolicy_"\, endpointAccessMode must be specified./);
+  });
+
+  test('throws if EDGE endpoint is used without securityPolicy ending with _EDGE', () => {
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+    })).toThrow(/must end with "_EDGE"/);
+  });
+
+  test('EDGE endpoint is used with securityPolicy ending with _EDGE', () => {
+    // Should NOT throw if securityPolicy ends with _EDGE (using valid enum values)
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() =>new apigw.RestApi(stack, 'api', {
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+    })).not.toThrow();
+  });
+
   test('"addResource" can be used on "IRestApiResource" to form a tree', () => {
     const api = new apigw.RestApi(stack, 'restapi', {
       deploy: false,

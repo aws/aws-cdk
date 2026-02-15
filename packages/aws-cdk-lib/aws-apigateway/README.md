@@ -1186,7 +1186,8 @@ new apigateway.DomainName(this, 'custom-domain', {
   domainName: 'example.com',
   certificate: acmCertificateForExampleCom,
   endpointType: apigateway.EndpointType.EDGE, // default is REGIONAL
-  securityPolicy: apigateway.SecurityPolicy.TLS_1_2
+  securityPolicy: apigateway.SecurityPolicy.SecurityPolicy_TLS13_2025_EDGE, // default is legacy policy TLS_1_2
+  endpointAccessMode: apigateway.EndpointAccessMode.STRICT // default is unset
 });
 ```
 
