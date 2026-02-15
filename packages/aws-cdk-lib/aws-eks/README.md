@@ -1395,6 +1395,24 @@ declare const cluster: eks.Cluster;
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
+### Control Plane Scaling
+
+You can configure the scaling tier for the EKS cluster control plane using the `controlPlaneScalingConfig` property. This allows you to specify the tier for provisioned control plane scaling.
+
+```ts
+declare const kubectlLayer: lambda.ILayerVersion;
+
+const cluster = new eks.Cluster(this, 'MyCluster', {
+  version: eks.KubernetesVersion.V1_29,
+  kubectlLayer,
+  controlPlaneScalingConfig: {
+    tier: 'standard'
+  }
+});
+```
+
+The `tier` property accepts string values that correspond to the EKS control plane scaling tiers. The default value is `"standard"` if not specified.
+
 ### Node SSH Access
 
 If you want to be able to SSH into your worker nodes, you must already have an SSH key in the region you're connecting to and pass it when
