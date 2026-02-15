@@ -1,13 +1,13 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest": {
+    "ecs-external-service-daemon-test/DefaultTest": {
       "stacks": [
         "ecs-external-service-daemon"
       ],
-      "assertionStack": "ecs-external-service-daemon/ecs-external-service-daemon-test/DefaultTest/DeployAssert",
-      "assertionStackName": "ecsexternalservicedaemonecsexternalservicedaemontestDefaultTestDeployAssert31EDBC58"
+      "assertionStack": "ecs-external-service-daemon-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ecsexternalservicedaemontestDefaultTestDeployAssert01E0A807"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

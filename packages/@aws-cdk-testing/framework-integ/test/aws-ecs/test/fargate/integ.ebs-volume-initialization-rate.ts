@@ -1,25 +1,11 @@
+import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
-
-/*
- * This integration test demonstrates how to use EBS volume initialization rate
- * with Service Managed Volumes.
- *
- * To run this test with a real EBS snapshot:
- * 1. Create an EBS volume:
- *    aws ec2 create-volume --size 1 --volume-type gp3 --availability-zone us-east-1a
- * 2. Create a snapshot from the volume:
- *    aws ec2 create-snapshot --volume-id vol-xxxxxxxxx --description "Test snapshot"
- * 3. Wait for snapshot completion:
- *    aws ec2 wait snapshot-completed --snapshot-ids snap-xxxxxxxxx
- * 4. Set the environment variable SNAPSHOT_ID to the snapshot ID:
- *    export SNAPSHOT_ID=snap-xxxxxxxxx
- */
-
-const snapShotId = process.env.SNAPSHOT_ID ?? 'snap-123456789abcdef0';
 
 class TestStack extends cdk.Stack {
   constructor(scope: Construct, id: string) {
@@ -30,21 +16,41 @@ class TestStack extends cdk.Stack {
       restrictDefaultSecurityGroup: false,
     });
 
-    const cluster = new ecs.Cluster(this, 'FargateCluster', {
-      vpc,
+    const sourceVolume = new ec2.Volume(this, 'SourceVolume', {
+      availabilityZone: vpc.availabilityZones[0],
+      size: cdk.Size.gibibytes(1),
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
+    const snapshotFn = new lambda.NodejsFunction(this, 'SnapshotFn', {
+      entry: path.join(__dirname, 'snapshot-provider', 'index.ts'),
+      handler: 'handler',
+      timeout: cdk.Duration.minutes(10),
+      initialPolicy: [
+        new iam.PolicyStatement({
+          actions: ['ec2:CreateSnapshot', 'ec2:DescribeSnapshots', 'ec2:DeleteSnapshot'],
+          resources: ['*'],
+        }),
+      ],
+    });
+
+    const snapshotCr = new cdk.CustomResource(this, 'Snapshot', {
+      serviceToken: snapshotFn.functionArn,
+      properties: { VolumeId: sourceVolume.volumeId },
+    });
+
+    const snapShotId = snapshotCr.getAttString('SnapshotId');
+
+    const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
 
     const container = taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      portMappings: [{
-        containerPort: 80,
-        protocol: ecs.Protocol.TCP,
-      }],
+      portMappings: [{ containerPort: 80, protocol: ecs.Protocol.TCP }],
     });
 
-    const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
+    const ebsVolume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
       name: 'ebs1',
       managedEBSVolume: {
         volumeType: ec2.EbsDeviceVolumeType.GP3,
@@ -55,20 +61,15 @@ class TestStack extends cdk.Stack {
       },
     });
 
-    volume.mountIn(container, {
-      containerPath: '/var/lib',
-      readOnly: false,
-    });
-
-    taskDefinition.addVolume(volume);
+    ebsVolume.mountIn(container, { containerPath: '/var/lib', readOnly: false });
+    taskDefinition.addVolume(ebsVolume);
 
     const service = new ecs.FargateService(this, 'FargateService', {
       cluster,
       taskDefinition,
       desiredCount: 1,
     });
-
-    service.addVolume(volume);
+    service.addVolume(ebsVolume);
   }
 }
 
