@@ -833,6 +833,56 @@ If you intend to use the `tableStreamArn` (including indirectly, for example by 
 
 To grant permissions to indexes for a referenced table you can either set `grantIndexPermissions` to `true`, or you can provide the indexes via the `globalIndexes` or `localIndexes` properties. This will enable `grant*` methods to also grant permissions to *all* table indexes.
 
+### Referencing Table Replicas Across Regions
+
+When working with global tables across multiple regions, you may need to reference a table replica in a different region than where the table was created. The `regionalReplica` method returns an `ITableV2` reference with the ARN adjusted to the specified region:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+class DynamoStack extends cdk.Stack {
+  public readonly table: dynamodb.TableV2;
+
+  public constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+
+    this.table = new dynamodb.TableV2(this, 'GlobalTable', {
+      partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+      replicas: [{ region: 'us-west-2' }],
+    });
+  }
+}
+
+interface RegionalStackProps extends cdk.StackProps {
+  readonly table: dynamodb.ITableV2;
+}
+
+class RegionalStack extends cdk.Stack {
+  public constructor(scope: Construct, id: string, props: RegionalStackProps) {
+    super(scope, id, props);
+
+    const fn = new lambda.Function(this, 'Function', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+    });
+
+    // grants permissions to the table replica in us-west-2
+    props.table.grantReadData(fn);
+  }
+}
+
+const app = new cdk.App();
+const dynamoStack = new DynamoStack(app, 'DynamoStack', { env: { region: 'us-east-1' } });
+new RegionalStack(app, 'RegionalStack', {
+  env: { region: 'us-west-2' },
+  table: dynamoStack.table.regionalReplica('us-west-2'),
+});
+```
+
+The `regionalReplica` method validates that the table is actually replicated to the requested region and returns the same table instance if the requested region matches the current stack region.
+
 ## Resource Policy
 
 Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/access-control-resource-based.html) to a table in the form of a `PolicyDocument`:

@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "478323c4e6d598e36bdd3b18dee84bd9143775837543fa337b34551e83b24560": {
+      "displayName": "GlobalTableStack Template",
+      "source": {
+        "path": "GlobalTableStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-1-4c62eb5e": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
+          "objectKey": "478323c4e6d598e36bdd3b18dee84bd9143775837543fa337b34551e83b24560.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
