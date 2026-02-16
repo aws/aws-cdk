@@ -133,6 +133,13 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new BucketVersioning());
 ```
 
+**BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
+
+```typescript
+const bucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(bucket).apply(new BucketBlockPublicAccess());
+```
+
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
