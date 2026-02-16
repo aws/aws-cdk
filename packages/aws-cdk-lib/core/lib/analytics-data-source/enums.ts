@@ -248,6 +248,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ARM64",
     "Neuron"
   ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
+  ],
   "ApiKeyCredentialLocationType": [
     "HEADER",
     "QUERY_PARAMETER"
@@ -2720,7 +2729,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPENAPI_SCHEMA",
     "SMITHY_MODEL",
     "LAMBDA",
-    "MCP_SERVER"
+    "MCP_SERVER",
+    "API_GATEWAY"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
