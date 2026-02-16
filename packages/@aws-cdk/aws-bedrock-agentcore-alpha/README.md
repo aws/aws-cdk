@@ -71,6 +71,12 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
   - [Basic Memory Creation](#basic-memory-creation)
   - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
   - [Memory Strategy Methods](#memory-strategy-methods)
+- [Workload Identity](#workload-identity)
+  - [Workload Identity Properties](#workload-identity-properties)
+  - [Basic Workload Identity Creation](#basic-workload-identity-creation)
+  - [Workload Identity with OAuth2 Return URLs](#workload-identity-with-oauth2-return-urls)
+  - [Importing an Existing Workload Identity](#importing-an-existing-workload-identity)
+  - [Workload Identity IAM Permissions](#workload-identity-iam-permissions)
 - [Amazon Bedrock AgentCore Construct Library](#amazon-bedrock-agentcore-construct-library)
   - [Table of contents](#table-of-contents)
   - [AgentCore Runtime](#agentcore-runtime)
@@ -2519,4 +2525,81 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+## Workload Identity
+
+[Amazon Bedrock AgentCore Workload Identity](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity.html) is an identity type for AI agents that enables secure credential management, OAuth2 flows, and token vault integration for agents to access external services.
+
+### Workload Identity Properties
+
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `workloadIdentityName` | `string` | No | Name of the workload identity. Must start with a letter, followed by letters, numbers, or underscores (max 48 characters). Auto-generated if not provided. |
+| `allowedResourceOauth2ReturnUrls` | `string[]` | No | List of allowed OAuth2 return URLs for resources associated with this workload identity. |
+| `tags` | `Record<string, string>` | No | Key-value pairs of tags to apply to the resource. |
+
+### Basic Workload Identity Creation
+
+```typescript fixture=default
+// Create a workload identity with default settings (auto-generated name)
+const workloadIdentity = new agentcore.WorkloadIdentity(this, 'MyWorkloadIdentity');
+
+// Create a workload identity with an explicit name
+const namedWorkloadIdentity = new agentcore.WorkloadIdentity(this, 'MyNamedWorkloadIdentity', {
+  workloadIdentityName: 'my_workload_identity',
+});
+```
+
+### Workload Identity with OAuth2 Return URLs
+
+You can configure allowed OAuth2 return URLs for the workload identity to support OAuth2 flows with external services:
+
+```typescript fixture=default
+const workloadIdentity = new agentcore.WorkloadIdentity(this, 'MyWorkloadIdentity', {
+  workloadIdentityName: 'my_workload_identity',
+  allowedResourceOauth2ReturnUrls: [
+    'https://example.com/callback',
+    'https://example.com/auth/callback',
+  ],
+});
+```
+
+### Importing an Existing Workload Identity
+
+You can import an existing workload identity by its ARN:
+
+```typescript fixture=default
+const importedWorkloadIdentity = agentcore.WorkloadIdentity.fromWorkloadIdentityAttributes(this, 'ImportedWI', {
+  workloadIdentityArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/my_workload_identity',
+});
+```
+
+### Workload Identity IAM Permissions
+
+The WorkloadIdentity construct provides several grant methods to control access:
+
+| Method | Description | IAM Actions |
+|---|---|---|
+| `grant(grantee, ...actions)` | Grant custom actions | User-specified actions |
+| `grantGetAccessToken(grantee)` | Grant access token retrieval | `GetWorkloadAccessToken`, `GetWorkloadAccessTokenForJWT`, `GetWorkloadAccessTokenForUserId` |
+| `grantRead(grantee)` | Grant read access | `GetWorkloadIdentity` |
+| `grantAdmin(grantee)` | Grant full control plane access | `CreateWorkloadIdentity`, `GetWorkloadIdentity`, `UpdateWorkloadIdentity`, `DeleteWorkloadIdentity`, `ListWorkloadIdentities` |
+
+Example:
+
+```typescript fixture=default
+const workloadIdentity = new agentcore.WorkloadIdentity(this, 'MyWorkloadIdentity', {
+  workloadIdentityName: 'my_workload_identity',
+});
+
+const role = new iam.Role(this, 'AgentRole', {
+  assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+});
+
+// Grant the role permission to obtain access tokens
+workloadIdentity.grantGetAccessToken(role);
+
+// Grant the role admin permissions for control plane operations
+workloadIdentity.grantAdmin(role);
 ```
