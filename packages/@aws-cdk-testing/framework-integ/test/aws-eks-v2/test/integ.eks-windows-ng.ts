@@ -4,7 +4,6 @@ import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 class EksClusterStack extends Stack {
@@ -14,18 +13,12 @@ class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
 
-    // allow all account users to assume this role in order to admin the cluster
-    const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
-
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
 
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
-      mastersRole,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {

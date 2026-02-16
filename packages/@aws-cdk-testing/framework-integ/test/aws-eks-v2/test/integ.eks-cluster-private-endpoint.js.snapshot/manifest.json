@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-private-endpoint-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1806501b64b4abb487f1845f6a44deac4ae4703e20998c6b546453f53847769a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c9524e8188e7ac3df85376c44bde1cf283d03c87101c5088bd147484e078ab6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,23 +34,6 @@
         "aws-cdk-eks-cluster-private-endpoint-test.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/AdminRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdminRole38563C57"
-          }
-        ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -322,10 +305,6 @@
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -828,30 +807,6 @@
             "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/mastersRoleAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/mastersRoleAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/ConfigCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterConfigCommand43AAE40F"
-          }
-        ],
-        "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/GetTokenCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterGetTokenCommand06AE992E"
-          }
-        ],
         "/aws-cdk-eks-cluster-private-endpoint-test/Cluster/manifest-config-map/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -874,6 +829,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "AdminRole38563C57": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminRole38563C57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClustermastersRoleAccess698EBA51": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustermastersRoleAccess698EBA51",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -1224,6 +1197,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1420,10 +1397,17 @@
           "@aws-cdk/aws-route53-patterns:useDistribution": {
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

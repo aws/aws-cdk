@@ -1,37 +1,5 @@
 {
  "Resources": {
-  "AdminRole38563C57": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -861,7 +829,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -970,7 +938,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-private-endpoint-test/Cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1089,39 +1057,6 @@
     }
    }
   },
-  "ClustermastersRoleAccess698EBA51": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [
-     {
-      "AccessScope": {
-       "Type": "cluster"
-      },
-      "PolicyArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-        ]
-       ]
-      }
-     }
-    ],
-    "ClusterName": {
-     "Ref": "ClusterEB0386A7"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "AdminRole38563C57",
-      "Arn"
-     ]
-    }
-   }
-  },
   "Clustermanifestconfigmap3F180550": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
    "Properties": {
@@ -1152,56 +1087,6 @@
     },
     "aws"
    ]
-  }
- },
- "Outputs": {
-  "ClusterConfigCommand43AAE40F": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "ClusterEB0386A7"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "ClusterGetTokenCommand06AE992E": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "ClusterEB0386A7"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
   }
  },
  "Parameters": {

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/bc45d1eca4949ce80142cdd8eebfb6803054ed09deccc448dc7d378fbb426dba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/26484ae12c49fa471ba4cba634af0468bd14effd28f7514dea79e839a8841eac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,23 +34,6 @@
         "aws-cdk-eks-cluster.assets"
       ],
       "metadata": {
-        "/aws-cdk-eks-cluster/AdminRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-eks-cluster/AdminRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdminRole38563C57"
-          }
-        ],
         "/aws-cdk-eks-cluster/SecretsKey": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -334,10 +317,6 @@
         "/aws-cdk-eks-cluster/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -1211,18 +1190,6 @@
             "data": "ClusterClusterAdminRoleAccessF2BFF759"
           }
         ],
-        "/aws-cdk-eks-cluster/Cluster/mastersRoleAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/mastersRoleAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClustermastersRoleAccess698EBA51"
-          }
-        ],
         "/aws-cdk-eks-cluster/Cluster/NodegroupDefaultCapacity": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -1280,18 +1247,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterNodegroupDefaultCapacityDA0920A3"
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/ConfigCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterConfigCommand43AAE40F"
-          }
-        ],
-        "/aws-cdk-eks-cluster/Cluster/GetTokenCommand": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterGetTokenCommand06AE992E"
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/fargate-profile-default/PodExecutionRole": [
@@ -3441,6 +3396,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "AdminRole38563C57": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AdminRole38563C57",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClustermastersRoleAccess698EBA51": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustermastersRoleAccess698EBA51",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-eks-cluster"
@@ -3990,6 +3963,13 @@
           "@aws-cdk/aws-route53-patterns:useDistribution": {
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
