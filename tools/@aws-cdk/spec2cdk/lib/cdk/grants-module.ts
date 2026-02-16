@@ -241,7 +241,7 @@ export class GrantsModule extends Module {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`)
           .import(this, this.service.shortName, { fromLocation: `./${this.service.shortName}.generated` });
         new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam', { fromLocation: this.iamModulePath });
-        CDK_CORE.import(this, 'cdk', { fromLocation: this.coreModulePath });
+        CDK_CORE.import(this, 'cdk', { fromLocation: `${this.coreModulePath}/core` });
       } else {
         new ExternalModule(`aws-cdk-lib/aws-${this.service.shortName}`).import(this, this.service.shortName);
         new ExternalModule('aws-cdk-lib/aws-iam').import(this, 'iam');
