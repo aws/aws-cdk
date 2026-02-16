@@ -5,7 +5,7 @@ import type { DestinationBindOptions, DestinationConfig, IDestination } from './
 import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
 import type * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig, PARTKEY_LAMBDA, PARTKEY_QUERY } from './private/helpers';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig, ERROR_OUTPUT_TYPE, PARTITION_KEY_LAMBDA, PARTITION_KEY_QUERY } from './private/helpers';
 import * as cdk from '../../core';
 
 /**
@@ -120,9 +120,9 @@ export class S3Bucket implements IDestination {
     // CFN validation message: "Dynamic Partitioning Namespaces can only be part of a prefix expression when Dynamic Partitioning is enabled."
     if (
       !this.props.dynamicPartitioning?.enabled &&
-      (this.props.dataOutputPrefix?.includes(`!{${PARTKEY_LAMBDA}:`) || this.props.dataOutputPrefix?.includes(`!{${PARTKEY_QUERY}:`))
+      (this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`))
     ) {
-      throw new cdk.UnscopedValidationError(`When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTKEY_LAMBDA} nor ${PARTKEY_QUERY}.`);
+      throw new cdk.UnscopedValidationError(`When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
     }
   }
 
@@ -199,7 +199,6 @@ export class S3Bucket implements IDestination {
  * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#prefix-rules
  */
 function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
-  const ERROR_OUTPUT_TYPE = '!{firehose:error-output-type}';
   // The sequence !{ can only appear in !{namespace:value} expressions.
   if (prefix) validateOutputPrefixExpression(prefix, 'dataOutputPrefix');
   if (errorOutputPrefix) validateOutputPrefixExpression(errorOutputPrefix, 'errorOutputPrefix');
@@ -216,8 +215,8 @@ function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
     throw new cdk.UnscopedValidationError(`The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
   }
   // You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces when creating ErrorOutputPrefix expressions.
-  if (errorOutputPrefix?.includes(`!{${PARTKEY_LAMBDA}:`) || errorOutputPrefix?.includes(`!{${PARTKEY_QUERY}:`)) {
-    throw new cdk.UnscopedValidationError(`You cannot use ${PARTKEY_LAMBDA} and ${PARTKEY_QUERY} namespaces in errorOutputPreix.`);
+  if (errorOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || errorOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`)) {
+    throw new cdk.UnscopedValidationError(`You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
   }
 }
 
