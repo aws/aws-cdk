@@ -110,7 +110,7 @@ Flags come in three types:
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
 | [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
-| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | V2NEXT | new default |
+| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
 
 <!-- END table -->
 
@@ -2352,7 +2352,7 @@ resource policies, or how to find an encryption key for a given L1 construct.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
+| 2.239.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Register traits explicitly for each resource type
 

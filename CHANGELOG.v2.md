@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.239.0](https://github.com/aws/aws-cdk/compare/v2.238.0...v2.239.0) (2026-02-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-licensemanager: AWS::LicenseManager::License: Beneficiary property is now required
+aws-licensemanager: AWS::LicenseManager::License: ProductSKU property is now required
+aws-sagemaker: AWS::SageMaker::Cluster: Orchestrator.Eks property is now immutable
+
+### Features
+
+* **dynamodb:** add cross-account global table replication support ([#36895](https://github.com/aws/aws-cdk/issues/36895)) ([353a9bb](https://github.com/aws/aws-cdk/commit/353a9bbb27c501972cc1638f7361060ba2e5aa1b))
+* resource policy and encrypted resource wrappers for L1s ([#36849](https://github.com/aws/aws-cdk/issues/36849)) ([ee87e26](https://github.com/aws/aws-cdk/commit/ee87e26dfd36fa3b36b20445071aeb577f114283))
+* update L1 CloudFormation resource definitions ([#36923](https://github.com/aws/aws-cdk/issues/36923)) ([64cfc4d](https://github.com/aws/aws-cdk/commit/64cfc4d3a38a7de070e56de2f5b28f91152de491))
+* update L1 CloudFormation resource definitions ([#36997](https://github.com/aws/aws-cdk/issues/36997)) ([e3eecad](https://github.com/aws/aws-cdk/commit/e3eecad143499cce542c30bce4554e88714e3029))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** update cloud-assembly-schema to resolve peer dependency conflict ([#36953](https://github.com/aws/aws-cdk/issues/36953)) ([f194236](https://github.com/aws/aws-cdk/commit/f194236b086eaf49996e809f616919ee117c7ba1)), closes [#36939](https://github.com/aws/aws-cdk/issues/36939)
+
 ## [2.238.0](https://github.com/aws/aws-cdk/compare/v2.237.1...v2.238.0) (2026-02-09)
 
 
