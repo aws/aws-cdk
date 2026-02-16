@@ -3,10 +3,10 @@ import { Bucket, BucketEncryption, BucketPolicy, CfnBucket, CfnBucketPolicy } fr
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnDeliveryStream, DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnDeliveryDestination, CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
-import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
+import { DestinationLogsDelivery, FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('S3 Delivery', () => {
@@ -1227,5 +1227,99 @@ describe('XRay Delivery', () => {
         ],
       },
     });
+  });
+});
+
+describe('Destination Delivery', () => {
+  let stack: Stack;
+  let source: Bucket;
+  const logType = 'ACCESS_LOGS';
+
+  beforeEach(() => {
+    stack = new Stack();
+    source = new Bucket(stack, 'SourceBucket');
+  });
+
+  test('creates delivery connection with existing delivery destination resource', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination);
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      DeliveryDestinationArn: {
+        'Fn::GetAtt': ['Dest', 'Arn'],
+      },
+      DeliverySourceName: {
+        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
+      },
+    });
+  });
+
+  test('reuses delivery source when binding same source multiple times and destination arn is unresolved', () => {
+    const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
+      name: 'my-cool-xray-dest-1',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destination2 = new CfnDeliveryDestination(stack, 'Dest2', {
+      name: 'my-cool-xray-dest-2',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs1 = new DestinationLogsDelivery(destination1);
+    destLogs1.bind(source, logType, source.bucketArn);
+
+    const destLogs2 = new DestinationLogsDelivery(destination2);
+    destLogs2.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
+  });
+
+  test('able to make multiple deliveries to different destinations', () => {
+    const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
+      name: 'my-cool-xray-dest-1',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destination2 = new CfnDeliveryDestination(stack, 'Dest2', {
+      name: 'my-cool-xray-dest-2',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const source2 = new Bucket(stack, 'SourceBucket2');
+
+    const destLogs1 = new DestinationLogsDelivery(destination1);
+    destLogs1.bind(source, logType, source.bucketArn);
+
+    const destLogs2 = new DestinationLogsDelivery(destination2);
+    destLogs2.bind(source2, logType, source2.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
+  });
+
+  test('able to make delivery when destination is imported cross stack', () => {
+    const destName = 'my-cool-xray-dest';
+    const crossStack = new Stack();
+
+    new CfnDeliveryDestination(crossStack, 'Dest', {
+      name: destName,
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destCrossStack = CfnDeliveryDestination.fromDeliveryDestinationName(stack, 'CrossStackDest', destName);
+
+    const destLogs = new DestinationLogsDelivery(destCrossStack);
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
   });
 });
