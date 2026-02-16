@@ -30,14 +30,25 @@ class EksClusterStack extends Stack {
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
+    const cfnExecRoleArn = this.formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'role',
+      resourceName: 'cdk-*-cfn-exec-role-*',
+    });
+
     // create a eks admin role that allows restricted principles to assume
     const mastersRole = new iam.Role(this, 'EksAdminRole', {
       roleName: `eksAdminrole-${Stack.of(this).stackName}`,
       /**
        * Specify your principal arn below so you are allowed to assume this role and run kubectl to verify cluster status.
-       * For this integ testing we simply use AccountRootPrincipal, which should be avoided in production.
+       * For this integ testing, we allow CDK bootstrap CFN execution like role in this account to assume this role
        */
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: new iam.AccountRootPrincipal().withConditions({
+        ArnLike: {
+          'aws:PrincipalArn': cfnExecRoleArn,
+        },
+      }),
     });
 
     // create the cluster with a default nodegroup capacity
