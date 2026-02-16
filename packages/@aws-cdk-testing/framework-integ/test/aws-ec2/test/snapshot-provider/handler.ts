@@ -1,11 +1,10 @@
-const { EC2Client, CreateVolumeCommand, CreateSnapshotCommand, DeleteVolumeCommand, DeleteSnapshotCommand, DescribeSnapshotsCommand, DescribeVolumesCommand } = require('@aws-sdk/client-ec2');
+import { EC2Client, CreateVolumeCommand, CreateSnapshotCommand, DeleteVolumeCommand, DeleteSnapshotCommand, DescribeSnapshotsCommand, DescribeVolumesCommand } from '@aws-sdk/client-ec2';
 
 const ec2 = new EC2Client();
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 export const handler = async (event: any) => {
   console.log('Event:', JSON.stringify(event, null, 2));
-  
   // On DELETE, clean up the snapshot created during CREATE
   if (event.RequestType === 'Delete') {
     const snapshotId = event.PhysicalResourceId;

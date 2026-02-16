@@ -31,16 +31,16 @@ export interface SnapshotProviderProps {
 
 /**
  * A construct that creates an EBS snapshot dynamically during stack deployment.
- * 
+ *
  * This is useful for integration tests that need a real snapshot ID but cannot
  * hardcode one (since snapshot IDs are region/account-specific).
- * 
+ *
  * @example
  * ```typescript
  * const snapshotProvider = new SnapshotProvider(stack, 'SnapshotProvider', {
  *   availabilityZone: stack.availabilityZones[0],
  * });
- * 
+ *
  * new ec2.Volume(stack, 'Volume', {
  *   availabilityZone: stack.availabilityZones[0],
  *   snapshotId: snapshotProvider.snapshotId,
