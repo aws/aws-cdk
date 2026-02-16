@@ -181,19 +181,11 @@ export class GrantsModule extends Module {
       };
 
       if (hasKeyActions) {
-        props[encryptedResourcePropName] = expr.cond(
-          $E(expr.ident('iam.GrantableResources')).isEncryptedResource(staticResourceParam),
-          staticResourceParam,
-          expr.UNDEFINED,
-        );
+        props[encryptedResourcePropName] = $E(expr.ident('iam.EncryptedResources')).of(staticResourceParam);
       }
 
       if (hasPolicy) {
-        props.policyResource = expr.cond(
-          $E(expr.ident('iam.GrantableResources')).isResourceWithPolicy(staticResourceParam),
-          staticResourceParam,
-          expr.UNDEFINED,
-        );
+        props.policyResource = $E(expr.ident('iam.ResourceWithPolicies')).of(staticResourceParam);
       }
 
       factoryMethod.addBody(
