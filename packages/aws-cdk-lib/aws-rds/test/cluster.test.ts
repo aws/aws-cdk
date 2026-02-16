@@ -4635,9 +4635,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    const art = app.synth().getStackArtifact('TestStack');
-    const meta = art.findMetadataByType('aws:cdk:error');
-    expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
+    Annotations.fromStack(stack).hasError('/TestStack/Cluster', 'Cluster requires at least 2 subnets, got 0');
   });
 
   test('create a read replica using replicationSourceIdentifier', () => {

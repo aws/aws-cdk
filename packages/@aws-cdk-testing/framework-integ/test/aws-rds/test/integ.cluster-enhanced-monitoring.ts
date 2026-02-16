@@ -24,4 +24,3 @@ new IntegTest(app, 'cluster-enhanced-monitoring-integ-test', {
   testCases: [stack],
 });
 
-app.synth();

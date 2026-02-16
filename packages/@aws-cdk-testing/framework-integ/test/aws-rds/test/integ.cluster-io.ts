@@ -49,4 +49,3 @@ new IntegTest(app, 'IntegClusterIO', {
   testCases: [stack],
 });
 
-app.synth();

@@ -51,4 +51,3 @@ new IntegTest(app, 'test-aurora-pub-sn-cluster', {
   testCases: [stack],
 });
 
-app.synth();

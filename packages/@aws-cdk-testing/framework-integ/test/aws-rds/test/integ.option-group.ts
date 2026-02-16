@@ -38,4 +38,3 @@ const stack = new OptionGroupTestStack(app, 'aws-rds-option-group');
 new IntegTest(app, 'OptionGroupTest', {
   testCases: [stack],
 });
-app.synth();

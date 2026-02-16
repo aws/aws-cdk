@@ -27,4 +27,3 @@ new IntegTest(app, 'integ.instance-s3', {
   testCases: [stack],
 });
 
-app.synth();

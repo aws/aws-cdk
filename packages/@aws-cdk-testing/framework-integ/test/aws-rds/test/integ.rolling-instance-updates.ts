@@ -45,4 +45,3 @@ new integTests.IntegTest(app, 'InstanceUpdateBehaviorTests', {
   ],
 });
 
-app.synth();

@@ -65,4 +65,3 @@ new IntegTest(app, 'test-rds-cluster-rotation', {
   testCases: [stack],
 });
 
-app.synth();

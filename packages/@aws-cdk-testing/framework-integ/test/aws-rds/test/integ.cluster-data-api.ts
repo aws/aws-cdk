@@ -33,4 +33,3 @@ new IntegTest(app, 'cluster-data-api-integ-test', {
   testCases: [stack],
 });
 
-app.synth();

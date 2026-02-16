@@ -50,5 +50,3 @@ integ.assertions.awsApiCall('RDS', 'describeDBInstances', {
     },
   ],
 }));
-
-app.synth();

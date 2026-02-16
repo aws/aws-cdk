@@ -47,4 +47,3 @@ new IntegTest(app, 'test-rds-cluster-s3', {
   testCases: [stack],
 });
 
-app.synth();

@@ -40,4 +40,3 @@ new IntegTest(app, 'proxy-endpoint-integ-test', {
   testCases: [stack],
 });
 
-app.synth();

@@ -45,4 +45,3 @@ new integ.IntegTest(app, 'integ-cluster-kerberos', {
   testCases: [stack],
 });
 
-app.synth();

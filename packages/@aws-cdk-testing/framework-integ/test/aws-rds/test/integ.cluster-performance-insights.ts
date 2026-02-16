@@ -39,4 +39,3 @@ new IntegTest(app, 'integ-cluster-performance-insights', {
   testCases: [stack],
 });
 
-app.synth();

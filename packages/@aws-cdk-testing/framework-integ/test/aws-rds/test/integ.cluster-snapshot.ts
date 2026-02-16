@@ -46,4 +46,3 @@ new IntegTest(app, 'cluster-snapshot-integ-test', {
   testCases: [stack],
 });
 
-app.synth();

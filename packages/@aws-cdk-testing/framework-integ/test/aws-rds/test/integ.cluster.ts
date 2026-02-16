@@ -93,7 +93,6 @@ const stack = new TestStack(app, 'aws-cdk-rds-integ');
 new IntegTest(app, 'test-rds-cluster', {
   testCases: [stack],
 });
-app.synth();
 
 featureFlag = true;
 const appWithFeatureFlag = new cdk.App({
