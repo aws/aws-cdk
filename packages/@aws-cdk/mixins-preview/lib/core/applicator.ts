@@ -58,8 +58,10 @@ export class MixinApplicator {
    */
   public apply(...mixins: IMixin[]): this {
     const applications: MixinApplication[] = [];
-    for (const construct of this.selectedConstructs) {
-      for (const mixin of mixins) {
+
+    const allConstructs = Array.from(this.selectedConstructs);
+    for (const mixin of mixins) {
+      for (const construct of allConstructs) {
         if (mixin.supports(construct)) {
           applyMixin(construct, mixin);
           applications.push({ construct, mixin });
