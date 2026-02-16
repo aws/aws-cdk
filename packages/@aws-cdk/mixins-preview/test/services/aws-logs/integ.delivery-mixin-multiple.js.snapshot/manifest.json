@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa3411adc42cc099cb4e955b8615cfff045d013c6077296d54c92b59bd31c239.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6c9e6ab49478a7035a4b9a83e9809ef387022fcd21a547442507afa3ddb640e0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,22 +88,16 @@
             "data": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
           }
         ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Destinfo-logs": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestinfologsC05ADDC0"
-          }
-        ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery69196BA3"
-          }
-        ],
         "/VendedLogsMixinTest/EventBus/Resource/CDKSourceINFO_LOGSVendedLogsMixinTestEventBus050202CA": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+          }
+        ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EF/Delivery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryA29B2652"
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Desterror-logs": [

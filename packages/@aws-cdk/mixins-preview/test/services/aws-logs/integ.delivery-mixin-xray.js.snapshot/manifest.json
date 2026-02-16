@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/720ddfe81be36a0fa15e6228bdc67485fd878dcf393c57425e0efaca5b35d565.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8100d0da4b984a346ee3d9245b2351e6cc979936f5cda06eb2ee815334db9bb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,10 @@
         "VendedLogsMixinTest.assets"
       ],
       "metadata": {
-        "/VendedLogsMixinTest/Memory": [
+        "/VendedLogsMixinTest/Memory1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Memory"
+            "data": "Memory1"
           },
           {
             "type": "aws:cdk:analytics:mixin",
@@ -46,22 +46,52 @@
             }
           }
         ],
-        "/VendedLogsMixinTest/Memory/CDKSourceTRACESVendedLogsMixinTestMemory0304CA9A": [
+        "/VendedLogsMixinTest/Memory1/CDKSourceTRACESVendedLogsMixinTestMemory12DB2114E": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9A739FD639"
+            "data": "Memory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114E89653713"
           }
         ],
-        "/VendedLogsMixinTest/Memory/CdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22D/Desttraces": [
+        "/VendedLogsMixinTest/Memory1/CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742B/Desttraces": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDesttraces13B35261"
+            "data": "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDesttraces396C0FCC"
           }
         ],
-        "/VendedLogsMixinTest/Memory/CdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22D/Delivery": [
+        "/VendedLogsMixinTest/Memory1/CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742B/Delivery": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDelivery6A5E8462"
+            "data": "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDelivery411076C1"
+          }
+        ],
+        "/VendedLogsMixinTest/Memory2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Memory2"
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.aws_bedrockagentcore.mixins.CfnMemoryLogsMixin"
+            }
+          }
+        ],
+        "/VendedLogsMixinTest/Memory2/CDKSourceTRACESVendedLogsMixinTestMemory2EFBD0367": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Memory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD03678711C98D"
+          }
+        ],
+        "/VendedLogsMixinTest/Memory2/CdkDestVendedLogsMixinTestDeliveryDestination409399E9TracesDeliveryVendedLogsMixinTestMemory2EFBD0367VendedLogsMixinTestMemory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD0367F7FC23DE/Delivery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Memory2CdkDestVendedLogsMixinTestDeliveryDestination409399E9TracesDeliveryVendedLogsMixinTestMemory2EFBD0367VendedLogsMixinTestMemory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD0367F7FC23DEDelivery56534D45"
+          }
+        ],
+        "/VendedLogsMixinTest/DeliveryDestination": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryDestination"
           }
         ],
         "/VendedLogsMixinTest/CdkXRayLogsDeliveryPolicy": [

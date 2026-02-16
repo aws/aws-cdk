@@ -1,48 +1,92 @@
 {
  "Resources": {
-  "Memory": {
+  "Memory1": {
    "Type": "AWS::BedrockAgentCore::Memory",
    "Properties": {
     "EventExpiryDuration": 7,
     "Name": "vended_logs_mixin_memory_01"
    }
   },
-  "MemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9A739FD639": {
+  "Memory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114E89653713": {
    "Type": "AWS::Logs::DeliverySource",
    "Properties": {
     "LogType": "TRACES",
-    "Name": "cdk-traces-source-VendedLogsMixinTestMemory0304CA9A",
+    "Name": "cdk-traces-source-VendedLogsMixinTestMemory12DB2114E",
     "ResourceArn": {
-     "Ref": "Memory"
+     "Ref": "Memory1"
     }
    }
   },
-  "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDesttraces13B35261": {
+  "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDesttraces396C0FCC": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "XRAY",
-    "Name": "cdk-xray-Desttraces-dest-VendedLogsMix4CA9AB1D6C22D889D990A"
+    "Name": "cdk-xray-Desttraces-dest-VendedLogsMix2114EF080742BA80B6D78"
    },
    "DependsOn": [
     "CdkXRayLogsDeliveryPolicyResourcePolicy2C9C91AC"
    ]
   },
-  "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDelivery6A5E8462": {
+  "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDelivery411076C1": {
    "Type": "AWS::Logs::Delivery",
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDesttraces13B35261",
+      "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDesttraces396C0FCC",
       "Arn"
      ]
     },
     "DeliverySourceName": {
-     "Ref": "MemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9A739FD639"
+     "Ref": "Memory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114E89653713"
     }
    },
    "DependsOn": [
-    "MemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9A739FD639",
-    "MemoryCdkXRayTracesDeliveryVendedLogsMixinTestMemory0304CA9AVendedLogsMixinTestMemoryCDKSourceTRACESVendedLogsMixinTestMemory0304CA9AB1D6C22DDesttraces13B35261"
+    "Memory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114E89653713",
+    "Memory1CdkXRayTracesDeliveryVendedLogsMixinTestMemory12DB2114EVendedLogsMixinTestMemory1CDKSourceTRACESVendedLogsMixinTestMemory12DB2114EF080742BDesttraces396C0FCC"
+   ]
+  },
+  "Memory2": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "EventExpiryDuration": 7,
+    "Name": "vended_logs_mixin_memory_02"
+   }
+  },
+  "Memory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD03678711C98D": {
+   "Type": "AWS::Logs::DeliverySource",
+   "Properties": {
+    "LogType": "TRACES",
+    "Name": "cdk-traces-source-VendedLogsMixinTestMemory2EFBD0367",
+    "ResourceArn": {
+     "Ref": "Memory2"
+    }
+   }
+  },
+  "Memory2CdkDestVendedLogsMixinTestDeliveryDestination409399E9TracesDeliveryVendedLogsMixinTestMemory2EFBD0367VendedLogsMixinTestMemory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD0367F7FC23DEDelivery56534D45": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": {
+     "Fn::GetAtt": [
+      "DeliveryDestination",
+      "Arn"
+     ]
+    },
+    "DeliverySourceName": {
+     "Ref": "Memory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD03678711C98D"
+    }
+   },
+   "DependsOn": [
+    "Memory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD03678711C98D"
+   ]
+  },
+  "DeliveryDestination": {
+   "Type": "AWS::Logs::DeliveryDestination",
+   "Properties": {
+    "DeliveryDestinationType": "XRAY",
+    "Name": "cdk-xray-DeliveryDestination-dest-VendedLogsMixinTest"
+   },
+   "DependsOn": [
+    "CdkXRayLogsDeliveryPolicyResourcePolicy2C9C91AC"
    ]
   },
   "CdkXRayLogsDeliveryPolicyResourcePolicy2C9C91AC": {
@@ -54,7 +98,30 @@
       [
        "{\"Statement\":[{\"Action\":\"xray:PutTraceSegments\",\"Condition\":{\"ForAllValues:ArnLike\":{\"logs:LogGeneratingResourceArns\":[\"",
        {
-        "Ref": "Memory"
+        "Fn::GetAtt": [
+         "Memory2",
+         "MemoryArn"
+        ]
+       },
+       "\"]},\"StringEquals\":{\"aws:SourceAccount\":\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\"},\"ArnLike\":{\"aws:SourceArn\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":delivery-source:*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"*\",\"Sid\":\"CDKLogsDeliveryWrite\"},{\"Action\":\"xray:PutTraceSegments\",\"Condition\":{\"ForAllValues:ArnLike\":{\"logs:LogGeneratingResourceArns\":[\"",
+       {
+        "Ref": "Memory1"
        },
        "\"]},\"StringEquals\":{\"aws:SourceAccount\":\"",
        {
