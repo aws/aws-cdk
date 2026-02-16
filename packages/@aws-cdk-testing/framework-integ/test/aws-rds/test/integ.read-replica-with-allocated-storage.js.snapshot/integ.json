@@ -1,13 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
-    "ReadReplicaWithAllocatedStorageTest/DefaultTest": {
+    "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest": {
       "stacks": [
         "cdk-rds-read-replica-with-allocated-storage"
       ],
-      "assertionStack": "ReadReplicaWithAllocatedStorageTest/DefaultTest/DeployAssert",
-      "assertionStackName": "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8"
+      "assertionStack": "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1105.0"
 }

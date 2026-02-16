@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2aa9af6fb41af8312a68a9674b89cf5bf3c7e2397eef4f0b2dd69f43614fad9c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c2c8800f094aec57695df5ec038774276962d65d4a43965edaa1ab3ed0a02ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,19 +39,7 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "maxAzs": "*",
-              "restrictDefaultSecurityGroup": false,
-              "subnetConfiguration": [
-                {
-                  "cidrMask": "*",
-                  "name": "*",
-                  "subnetType": "Public"
-                },
-                {
-                  "cidrMask": "*",
-                  "name": "*",
-                  "subnetType": "Isolated"
-                }
-              ]
+              "restrictDefaultSecurityGroup": false
             }
           }
         ],
@@ -87,12 +75,23 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VpcPublicSubnet1Subnet5C2D37C4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTable": [
@@ -104,13 +103,28 @@
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2": [
@@ -139,12 +153,23 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VpcPublicSubnet2Subnet691E08A3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTable": [
@@ -156,7 +181,10 @@
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/DefaultRoute": [
@@ -165,7 +193,19 @@
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -187,27 +227,37 @@
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1SubnetE48C5737"
+            "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -229,24 +279,34 @@
               "ipv6CidrBlock": "*",
               "assignIpv6AddressOnCreation": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2Subnet16364B91"
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
         "/cdk-rds-read-replica-with-allocated-storage/Vpc/IGW": [
@@ -277,10 +337,7 @@
                 "supportsReadReplicaBackups": true
               },
               "instanceType": "*",
-              "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              }
+              "vpc": "*"
             }
           }
         ],
@@ -290,9 +347,7 @@
             "data": {
               "description": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              },
+              "vpcSubnets": "*",
               "removalPolicy": "*"
             }
           }
@@ -373,9 +428,6 @@
               "sourceDatabaseInstance": "*",
               "instanceType": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              },
               "allocatedStorage": "*"
             }
           }
@@ -386,9 +438,7 @@
             "data": {
               "description": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              },
+              "vpcSubnets": "*",
               "removalPolicy": "*"
             }
           }
@@ -431,23 +481,77 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "VpcIsolatedSubnet1SubnetE48C5737": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1SubnetE48C5737",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcIsolatedSubnet1RouteTable4771E3E5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcIsolatedSubnet1RouteTableAssociationD300FCBB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcIsolatedSubnet2Subnet16364B91": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2Subnet16364B91",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcIsolatedSubnet2RouteTable1D30AF7D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "cdk-rds-read-replica-with-allocated-storage"
     },
-    "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8.assets": {
+    "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8.assets.json",
+        "file": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8": {
+    "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8.template.json",
+        "templateFile": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -456,7 +560,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8.assets"
+          "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -465,23 +569,23 @@
         }
       },
       "dependencies": [
-        "ReadReplicaWithAllocatedStorageTestDefaultTestDeployAssert324955B8.assets"
+        "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.assets"
       ],
       "metadata": {
-        "/ReadReplicaWithAllocatedStorageTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ReadReplicaWithAllocatedStorageTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ReadReplicaWithAllocatedStorageTest/DefaultTest/DeployAssert"
+      "displayName": "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -978,12 +1082,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1105.0"
 }

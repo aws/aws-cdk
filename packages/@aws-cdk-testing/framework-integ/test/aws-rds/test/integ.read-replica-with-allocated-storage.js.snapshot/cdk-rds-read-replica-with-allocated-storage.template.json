@@ -28,7 +28,7 @@
       }
      ]
     },
-    "CidrBlock": "10.0.0.0/24",
+    "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -97,6 +97,46 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "VpcPublicSubnet1EIPD7E02669": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VpcPublicSubnet1NATGateway4D7517AA": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcPublicSubnet1EIPD7E02669",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPublicSubnet1DefaultRoute3DA9E72A",
+    "VpcPublicSubnet1RouteTableAssociation97140677"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -108,7 +148,7 @@
       }
      ]
     },
-    "CidrBlock": "10.0.1.0/24",
+    "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -177,7 +217,47 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet1SubnetE48C5737": {
+  "VpcPublicSubnet2EIP3C605A87": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VpcPublicSubnet2NATGateway9182C01D": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VpcPublicSubnet2EIP3C605A87",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPublicSubnet2DefaultRoute97F91067",
+    "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -188,20 +268,20 @@
       }
      ]
     },
-    "CidrBlock": "10.0.2.0/24",
+    "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
+      "Value": "Private"
      },
      {
       "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
+      "Value": "Private"
      },
      {
       "Key": "Name",
-      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1"
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -211,13 +291,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet1RouteTable4771E3E5": {
+  "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet1"
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -227,20 +307,34 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet1RouteTableAssociationD300FCBB": {
+  "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcIsolatedSubnet1RouteTable4771E3E5"
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     },
     "SubnetId": {
-     "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+     "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet2Subnet16364B91": {
+  "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
     "AvailabilityZone": {
@@ -251,20 +345,20 @@
       }
      ]
     },
-    "CidrBlock": "10.0.3.0/24",
+    "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
       "Key": "aws-cdk:subnet-name",
-      "Value": "Isolated"
+      "Value": "Private"
      },
      {
       "Key": "aws-cdk:subnet-type",
-      "Value": "Isolated"
+      "Value": "Private"
      },
      {
       "Key": "Name",
-      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2"
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -274,13 +368,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet2RouteTable1D30AF7D": {
+  "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/IsolatedSubnet2"
+      "Value": "cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -290,14 +384,28 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA": {
+  "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     },
     "SubnetId": {
-     "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+     "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VpcPrivateSubnet2DefaultRoute060D2087": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -335,10 +443,10 @@
     "DBSubnetGroupDescription": "Subnet group for SourceInstance database",
     "SubnetIds": [
      {
-      "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
      },
      {
-      "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
    },
@@ -436,7 +544,6 @@
       ]
      ]
     },
-    "PubliclyAccessible": false,
     "StorageType": "gp2",
     "VPCSecurityGroups": [
      {
@@ -456,10 +563,10 @@
     "DBSubnetGroupDescription": "Subnet group for ReadReplica database",
     "SubnetIds": [
      {
-      "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
      },
      {
-      "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
    },
@@ -493,7 +600,6 @@
     "DBSubnetGroupName": {
      "Ref": "ReadReplicaSubnetGroup680C605C"
     },
-    "PubliclyAccessible": false,
     "SourceDBInstanceIdentifier": {
      "Fn::Join": [
       "",
