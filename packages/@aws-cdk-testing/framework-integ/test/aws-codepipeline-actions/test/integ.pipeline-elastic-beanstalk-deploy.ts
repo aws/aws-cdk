@@ -29,7 +29,6 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
@@ -65,7 +64,6 @@ function makePolicy(arn: string): IManagedPolicy {
 }
 
 const serviceRole = new iam.Role(stack, 'service-role', {
-  roleName: 'codepipeline-elasticbeanstalk-action-test-serivce-role',
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
     makePolicy('arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'),
@@ -74,7 +72,6 @@ const serviceRole = new iam.Role(stack, 'service-role', {
 });
 
 const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
-  roleName: 'codepipeline-elasticbeanstalk-action-test-instance-profile-role',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
     makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier'),
@@ -88,13 +85,10 @@ const instanceProfile = new iam.CfnInstanceProfile(stack, 'instance-profile', {
   instanceProfileName: instanceProfileRole.roleName,
 });
 
-const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', {
-  applicationName: 'codepipeline-test-app',
-});
+const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', {});
 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
-  applicationName: beanstalkApp.applicationName!,
-  environmentName: 'codepipeline-test-env',
+  applicationName: beanstalkApp.ref,
   solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
   optionSettings: [
     {
@@ -145,8 +139,8 @@ pipeline.addStage({
 const deployAction = new cpactions.ElasticBeanstalkDeployAction({
   actionName: 'Deploy',
   input: sourceOutput,
-  environmentName: beanstalkEnv.environmentName!,
-  applicationName: beanstalkApp.applicationName!,
+  environmentName: beanstalkEnv.ref,
+  applicationName: beanstalkApp.ref,
 });
 
 pipeline.addStage({
