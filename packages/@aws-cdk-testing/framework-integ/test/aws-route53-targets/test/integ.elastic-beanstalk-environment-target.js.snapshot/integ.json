@@ -1,16 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
     "aws-cdk-elasticbeanstalk-integ-test/DefaultTest": {
       "stacks": [
         "aws-cdk-elasticbeanstalk-integ"
       ],
-      "regions": [
-        "us-east-1"
-      ],
       "assertionStack": "aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkelasticbeanstalkintegtestDefaultTestDeployAssertF173BB65"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1105.0"
 }
