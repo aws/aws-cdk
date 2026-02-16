@@ -3127,6 +3127,12 @@ export class SqlServerEngineVersion {
   public static readonly VER_16_00_4210_1_V1 = SqlServerEngineVersion.of('16.00.4210.1.v1', '16.00');
   /** Version "16.00.4215.2.v1". */
   public static readonly VER_16_00_4215_2_V1 = SqlServerEngineVersion.of('16.00.4215.2.v1', '16.00');
+  /** Version "16.00.4225.2.v1". */
+  public static readonly VER_16_00_4225_2_V1 = SqlServerEngineVersion.of('16.00.4225.2.v1', '16.00');
+  /** Version "16.00.4230.2.v1". */
+  public static readonly VER_16_00_4230_2_V1 = SqlServerEngineVersion.of('16.00.4230.2.v1', '16.00');
+  /** Version "16.00.4236.2.v1". */
+  public static readonly VER_16_00_4236_2_V1 = SqlServerEngineVersion.of('16.00.4236.2.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
