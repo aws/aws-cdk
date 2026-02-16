@@ -15,9 +15,20 @@ class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // allow all account users to assume this role in order to admin the cluster
+    const cfnExecRoleArn = this.formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'role',
+      resourceName: 'cdk-*-cfn-exec-role-*',
+    });
+
+    // allow only CDK bootstrap CFN execution roles in this account to assume this role
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal(),
+      assumedBy: new iam.AccountRootPrincipal().withConditions({
+        ArnLike: {
+          'aws:PrincipalArn': cfnExecRoleArn,
+        },
+      }),
     });
 
     // just need one nat gateway to simplify the test
