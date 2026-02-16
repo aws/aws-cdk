@@ -26,7 +26,7 @@
  *     - `yarn integ services/aws-logs/integ.delivery-mixin-cross-account.js`
  *   b. Fall back if temp credentials do not work (account info may be in snapshot)
  *     - `yarn integ services/aws-logs/integ.delivery-mixin-cross-account.js --profiles cross-account`
- * 
+ *
  * 4. Ensure you account IDs are replaced by dummy account IDs in the template.json files that were added to the snapshot if you are updating this test
  * Note: Integration test should be successful, the destination name that is generated should be consistent based on the id we provided and its position in the stack
 */
