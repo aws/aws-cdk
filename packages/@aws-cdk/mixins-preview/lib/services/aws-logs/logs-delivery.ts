@@ -274,20 +274,17 @@ export class DestinationLogsDelivery implements ILogsDelivery {
     const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
     const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
 
-    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination',
-      this.destination.deliveryDestinationRef.deliveryDestinationName);
-
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
     });
 
     delivery.node.addDependency(deliverySource);
-    delivery.node.addDependency(deliveryDestination);
+    delivery.node.addDependency(this.destination);
 
     return {
       deliverySource,
-      deliveryDestination,
+      deliveryDestination: this.destination,
       delivery,
     };
   }

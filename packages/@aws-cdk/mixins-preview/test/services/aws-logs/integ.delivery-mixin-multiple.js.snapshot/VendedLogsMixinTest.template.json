@@ -84,6 +84,7 @@
     }
    },
    "DependsOn": [
+    "DeliveryDestination",
     "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
    ]
   },

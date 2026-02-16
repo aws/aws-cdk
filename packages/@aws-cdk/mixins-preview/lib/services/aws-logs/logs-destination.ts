@@ -364,6 +364,7 @@ function deliveryDestCrossAccPolicy(sourceAccount: string, destEnv: IEnvironment
     statements: [new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new AccountPrincipal(sourceAccount)],
+      actions: ['logs:CreateDelivery'],
       resources: [`arn:${Aws.PARTITION}:logs:${destEnv.env.region}:${destEnv.env.account}:delivery-destination:*`],
     })],
   }).toJSON();

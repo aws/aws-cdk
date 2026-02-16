@@ -30,6 +30,7 @@ describe('cross acount destination', () => {
         DeliveryDestinationPolicy: {
           Statement: [
             {
+              Action: 'logs:CreateDelivery',
               Effect: 'Allow',
               Principal: {
                 AWS: {
@@ -264,6 +265,7 @@ describe('cross acount destination', () => {
         DeliveryDestinationPolicy: {
           Statement: [
             {
+              Action: 'logs:CreateDelivery',
               Effect: 'Allow',
               Principal: {
                 AWS: {

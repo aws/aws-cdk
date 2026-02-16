@@ -76,6 +76,7 @@
     }
    },
    "DependsOn": [
+    "DeliveryDestination",
     "Memory2CDKSourceTRACESVendedLogsMixinTestMemory2EFBD03678711C98D"
    ]
   },
