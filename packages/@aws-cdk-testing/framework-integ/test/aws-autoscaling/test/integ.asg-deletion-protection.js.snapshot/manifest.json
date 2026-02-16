@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-autoscaling-deletion-protection.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40e32d838c4a5585fa15a7189623437e02c0d2c23d78528807511d2f1c4834ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee3f55c0193f4fb3f47d4d91be6514b3b2106e0f92f09f69f2f010ce0d45297e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -121,78 +121,6 @@
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2EIP4947BC00"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2NATGateway3C070193"
-          }
-        ],
         "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -245,58 +173,6 @@
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/VPC/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
-          }
-        ],
         "/aws-cdk-autoscaling-deletion-protection/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
@@ -309,176 +185,22 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetNoneInstanceSecurityGroup166C43AE"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/InstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetNoneInstanceRole9D487123"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetNoneInstanceProfile811D9E88"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/LaunchTemplate": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "machineImage": "*",
-              "instanceType": "*",
-              "detailedMonitoring": false,
-              "securityGroup": "*",
-              "userData": "*",
-              "associatePublicIpAddress": "*",
-              "spotOptions": "*",
-              "blockDevices": "*",
-              "instanceProfile": "*",
-              "keyPair": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/LaunchTemplate/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetNoneLaunchTemplate9CC13D71"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetNone/ASG": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetNoneASGB8AA2772"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetPreventForceInstanceSecurityGroup8D437EBE"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/InstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetPreventForceInstanceRole1CDDD09C"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetPreventForceInstanceProfileCE2E980C"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/LaunchTemplate": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "machineImage": "*",
-              "instanceType": "*",
-              "detailedMonitoring": false,
-              "securityGroup": "*",
-              "userData": "*",
-              "associatePublicIpAddress": "*",
-              "spotOptions": "*",
-              "blockDevices": "*",
-              "instanceProfile": "*",
-              "keyPair": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/LaunchTemplate/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetPreventForceLaunchTemplateFB87578F"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/FleetPreventForce/ASG": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FleetPreventForceASG1192ED87"
-          }
-        ],
         "/aws-cdk-autoscaling-deletion-protection/FleetPreventAll": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
+              "autoScalingGroupName": "*",
               "vpc": "*",
+              "minCapacity": "*",
+              "desiredCapacity": "*",
+              "maxCapacity": "*",
               "instanceType": "*",
               "machineImage": "*"
             }
+          },
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-cdk-autoscaling-deletion-protection/FleetPreventAll/InstanceSecurityGroup": [
@@ -549,22 +271,10 @@
             "data": "FleetPreventAllASG47A4FAA0"
           }
         ],
-        "/aws-cdk-autoscaling-deletion-protection/Exports/Output{\"Ref\":\"FleetNoneASGB8AA2772\"}": [
+        "/aws-cdk-autoscaling-deletion-protection/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFleetNoneASGB8AA2772DDB40149"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/Exports/Output{\"Ref\":\"FleetPreventForceASG1192ED87\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFleetPreventForceASG1192ED8763FFE8A9"
-          }
-        ],
-        "/aws-cdk-autoscaling-deletion-protection/Exports/Output{\"Ref\":\"FleetPreventAllASG47A4FAA0\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFleetPreventAllASG47A4FAA073F8E227"
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-autoscaling-deletion-protection/BootstrapVersion": [
@@ -599,7 +309,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/325bdaff5c0b0dedae13b1d4e4da8b2a073d5406bf7f5705b30f7c6eea07453b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -612,100 +322,9 @@
         }
       },
       "dependencies": [
-        "aws-cdk-autoscaling-deletion-protection",
         "DeletionProtectionTestDefaultTestDeployAssert40122E2E.assets"
       ],
       "metadata": {
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsa72113f8baaf2d62b78818f81479c8f3/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsa72113f8baaf2d62b78818f81479c8f3/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallAutoScalingdescribeAutoScalingGroupsa72113f8baaf2d62b78818f81479c8f3"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsa72113f8baaf2d62b78818f81479c8f3/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallAutoScalingdescribeAutoScalingGroupsa72113f8baaf2d62b78818f81479c8f3"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsdf3bd3052213a86b53f46563952825c1/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsdf3bd3052213a86b53f46563952825c1/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallAutoScalingdescribeAutoScalingGroupsdf3bd3052213a86b53f46563952825c1"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsdf3bd3052213a86b53f46563952825c1/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallAutoScalingdescribeAutoScalingGroupsdf3bd3052213a86b53f46563952825c1"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsd77f5cbb134171bafb960db7285c6b05/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsd77f5cbb134171bafb960db7285c6b05/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallAutoScalingdescribeAutoScalingGroupsd77f5cbb134171bafb960db7285c6b05"
-          }
-        ],
-        "/DeletionProtectionTest/DefaultTest/DeployAssert/AwsApiCallAutoScalingdescribeAutoScalingGroupsd77f5cbb134171bafb960db7285c6b05/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallAutoScalingdescribeAutoScalingGroupsd77f5cbb134171bafb960db7285c6b05"
-          }
-        ],
         "/DeletionProtectionTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -1218,10 +837,17 @@
           "@aws-cdk/aws-route53-patterns:useDistribution": {
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

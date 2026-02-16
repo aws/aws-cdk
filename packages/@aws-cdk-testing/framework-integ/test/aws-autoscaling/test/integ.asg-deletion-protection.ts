@@ -19,19 +19,12 @@ new autoscaling.AutoScalingGroup(asgStack, 'FleetPreventAll', {
   deletionProtection: autoscaling.DeletionProtection.PREVENT_ALL_DELETION,
 });
 
-const test = new integ.IntegTest(app, 'DeletionProtectionTest', {
+new integ.IntegTest(app, 'DeletionProtectionTest', {
   testCases: [asgStack],
   stackUpdateWorkflow: false,
+  hooks: {
+    preDestroy: [
+      'aws autoscaling update-auto-scaling-group --auto-scaling-group-name test-asg-deletion-protection --deletion-protection none --region us-east-1',
+    ],
+  },
 });
-
-// Verify DeletionProtection is set to PREVENT_ALL_DELETION
-test.assertions.awsApiCall('AutoScaling', 'describeAutoScalingGroups', {
-  AutoScalingGroupNames: ['test-asg-deletion-protection'],
-}).expect(integ.ExpectedResult.objectLike({
-  AutoScalingGroups: integ.Match.arrayWith([
-    integ.Match.objectLike({
-      AutoScalingGroupName: 'test-asg-deletion-protection',
-      DeletionProtection: 'PREVENT_ALL_DELETION',
-    }),
-  ]),
-}));

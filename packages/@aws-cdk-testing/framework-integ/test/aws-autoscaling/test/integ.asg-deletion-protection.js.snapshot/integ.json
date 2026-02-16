@@ -1,13 +1,19 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
     "DeletionProtectionTest/DefaultTest": {
       "stacks": [
         "aws-cdk-autoscaling-deletion-protection"
       ],
+      "hooks": {
+        "preDestroy": [
+          "aws autoscaling update-auto-scaling-group --auto-scaling-group-name test-asg-deletion-protection --deletion-protection none --region us-east-1"
+        ]
+      },
+      "stackUpdateWorkflow": false,
       "assertionStack": "DeletionProtectionTest/DefaultTest/DeployAssert",
       "assertionStackName": "DeletionProtectionTestDefaultTestDeployAssert40122E2E"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1105.0"
 }
