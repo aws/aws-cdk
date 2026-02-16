@@ -4,7 +4,7 @@ exports[`generates grants for methods with and without key actions 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as sns from "./sns.generated";
 import * as iam from "aws-cdk-lib/aws-iam";
-import * as cdk from "aws-cdk-lib/core";
+import * as cdk from "aws-cdk-lib";
 
 /**
  * Properties for TopicGrants
