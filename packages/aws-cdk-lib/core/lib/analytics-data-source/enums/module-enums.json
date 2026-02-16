@@ -327,7 +327,10 @@
       "STANDARD",
       "FARGATE_LINUX",
       "EC2_LINUX",
-      "EC2_WINDOWS"
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
@@ -558,6 +561,23 @@
       "SUCCEEDED",
       "FAILED",
       "ERROR"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/partition-projection.ts": {
+    "PartitionProjectionType": [
+      "integer",
+      "date",
+      "enum",
+      "injected"
+    ],
+    "DateIntervalUnit": [
+      "YEARS",
+      "MONTHS",
+      "WEEKS",
+      "DAYS",
+      "HOURS",
+      "MINUTES",
+      "SECONDS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
@@ -4450,7 +4470,10 @@
       "STANDARD",
       "FARGATE_LINUX",
       "EC2_LINUX",
-      "EC2_WINDOWS"
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.ts": {
@@ -6180,25 +6203,21 @@
       "failure"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/load-balancer.ts": {
-    "LoadBalancerIpAddressType": [
-      "ipv4",
-      "dualstack",
-      "dualstack-without-public-ipv4"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/vpc.ts": {
-    "VpcSubnetGroupType": [
-      "Public",
-      "Private",
-      "Isolated"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/metadata.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/legacy-moved.ts": {
     "SynthesisMessageLevel": [
       "info",
       "warning",
       "error"
+    ],
+    "VpcSubnetGroupType": [
+      "Public",
+      "Private",
+      "Isolated"
+    ],
+    "LoadBalancerIpAddressType": [
+      "ipv4",
+      "dualstack",
+      "dualstack-without-public-ipv4"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/cx-api/lib/private/flag-modeling.ts": {

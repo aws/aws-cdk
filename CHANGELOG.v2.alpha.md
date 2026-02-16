@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.238.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.1-alpha.0...v2.238.0-alpha.0) (2026-02-09)
+
+
+### Features
+
+* **eks-v2-alpha:** add support for bootstrapSelfManagedAddons ([#36740](https://github.com/aws/aws-cdk/issues/36740)) ([1ffe38d](https://github.com/aws/aws-cdk/commit/1ffe38dc950a096cb5e1c1ee20f2c49899dc0a23))
+* **eks-v2-alpha:** add support for EKS hybrid nodes ([#36749](https://github.com/aws/aws-cdk/issues/36749)) ([48ace56](https://github.com/aws/aws-cdk/commit/48ace56d82537630fc339cb41962473a97375aea))
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** ensure kubectl provider and handler functions use the same vpc configuration  ([#36735](https://github.com/aws/aws-cdk/issues/36735)) ([4e02f08](https://github.com/aws/aws-cdk/commit/4e02f0896069105dae83c46f19f1b346a546ad57)), closes [#34878](https://github.com/aws/aws-cdk/issues/34878) [#34877](https://github.com/aws/aws-cdk/issues/34877)
+* **ivs-alpha:** add region constraints to integration tests ([#36851](https://github.com/aws/aws-cdk/issues/36851)) ([d55fec4](https://github.com/aws/aws-cdk/commit/d55fec42357410b8263b814b931daf5dccc5c5e3))
+* **mixins-preview:** apply mixins in order ([#36847](https://github.com/aws/aws-cdk/issues/36847)) ([726060c](https://github.com/aws/aws-cdk/commit/726060c0ea9f57de4c6e13c1f50c330e4fc2608e))
+* **mixins-preview:** apply mixins in order in `MixinApplicator` ([#36877](https://github.com/aws/aws-cdk/issues/36877)) ([09db1c9](https://github.com/aws/aws-cdk/commit/09db1c99710c9f8e91774e767de93fff1a0d2650)), closes [#36847](https://github.com/aws/aws-cdk/issues/36847)
+
 ## [2.237.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.0-alpha.0...v2.237.1-alpha.0) (2026-02-03)
 
 ## [2.237.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.236.0-alpha.0...v2.237.0-alpha.0) (2026-02-02)
