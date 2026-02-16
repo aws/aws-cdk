@@ -503,34 +503,6 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
-  "Role1ABCC5F0": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:aws:iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "helloekskubectl90D845D3": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -914,7 +886,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1023,7 +995,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1141,39 +1113,6 @@
      ]
     }
    }
-  },
-  "helloeksclustermastersRoleAccess58C59E45": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [
-     {
-      "AccessScope": {
-       "Type": "cluster"
-      },
-      "PolicyArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-        ]
-       ]
-      }
-     }
-    ],
-    "ClusterName": {
-     "Ref": "helloeksclusterA526EE63"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "Role1ABCC5F0",
-      "Arn"
-     ]
-    }
-   }
   }
  },
  "Conditions": {
@@ -1184,48 +1123,6 @@
     },
     "aws"
    ]
-  }
- },
- "Outputs": {
-  "helloeksclusterConfigCommand5E7007D6": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "helloeksclusterA526EE63"
-      },
-      " --region us-east-1 --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "Role1ABCC5F0",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "helloeksclusterGetTokenCommand86B51962": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "helloeksclusterA526EE63"
-      },
-      " --region us-east-1 --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "Role1ABCC5F0",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
   }
  },
  "Parameters": {

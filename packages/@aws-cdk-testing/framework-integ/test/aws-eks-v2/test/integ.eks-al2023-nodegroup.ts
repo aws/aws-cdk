@@ -5,7 +5,6 @@ import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 class EksClusterStack extends Stack {
@@ -15,29 +14,12 @@ class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const cfnExecRoleArn = this.formatArn({
-      service: 'iam',
-      region: '',
-      resource: 'role',
-      resourceName: 'cdk-*-cfn-exec-role-*',
-    });
-
-    // allow only CDK bootstrap CFN execution roles in this account to assume this role
-    const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: new iam.AccountRootPrincipal().withConditions({
-        ArnLike: {
-          'aws:PrincipalArn': cfnExecRoleArn,
-        },
-      }),
-    });
-
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1, restrictDefaultSecurityGroup: false });
 
     // create the cluster with no defaultCapacity, nodegroup will be created later
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
-      mastersRole,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       version: eks.KubernetesVersion.V1_34,

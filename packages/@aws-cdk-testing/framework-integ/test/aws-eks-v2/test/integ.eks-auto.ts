@@ -3,13 +3,13 @@ import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 interface EksMinimalClusterProps {
   readonly vpc: ec2.Vpc;
-  readonly mastersRole: iam.Role;
+  readonly mastersRole?: iam.Role;
   readonly compute?: {
     nodePools: any[];
   };
@@ -21,7 +21,7 @@ class EksMinimalCluster extends Construct {
 
     const clusterProps: any = {
       vpc: props.vpc,
-      mastersRole: props.mastersRole,
+      ...(props.mastersRole && { mastersRole: props.mastersRole }),
       version: eks.KubernetesVersion.V1_33,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(this, 'kubectl'),
@@ -46,13 +46,9 @@ export class EksAutoModeBaseStack extends Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
-    const mastersRole = new iam.Role(this, 'Role', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
 
     new EksMinimalCluster(this, 'hello-eks', {
       vpc,
-      mastersRole,
     });
   }
 }
@@ -65,13 +61,9 @@ export class EksAutoModeNodePoolsStack extends Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
-    const mastersRole = new iam.Role(this, 'Role', {
-      assumedBy: new iam.AccountRootPrincipal(),
-    });
 
     new EksMinimalCluster(this, 'hello-eks', {
       vpc,
-      mastersRole,
       compute: {
         nodePools: [],
       },

@@ -1,57 +1,5 @@
 {
  "Resources": {
-  "AdminRole38563C57": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Condition": {
-        "ArnLike": {
-         "aws:PrincipalArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":iam::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":role/cdk-*-cfn-exec-role-*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -1005,39 +953,6 @@
     }
    }
   },
-  "ClustermastersRoleAccess698EBA51": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [
-     {
-      "AccessScope": {
-       "Type": "cluster"
-      },
-      "PolicyArn": {
-       "Fn::Join": [
-        "",
-        [
-         "arn:",
-         {
-          "Ref": "AWS::Partition"
-         },
-         ":eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
-        ]
-       ]
-      }
-     }
-    ],
-    "ClusterName": {
-     "Ref": "ClusterEB0386A7"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "AdminRole38563C57",
-      "Arn"
-     ]
-    }
-   }
-  },
   "ClusterNodegroupMNGAL2023X8664STANDARDNodeGroupRole5CB41DCB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1383,56 +1298,6 @@
     },
     "aws"
    ]
-  }
- },
- "Outputs": {
-  "ClusterConfigCommand43AAE40F": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks update-kubeconfig --name ",
-      {
-       "Ref": "ClusterEB0386A7"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
-  },
-  "ClusterGetTokenCommand06AE992E": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "aws eks get-token --cluster-name ",
-      {
-       "Ref": "ClusterEB0386A7"
-      },
-      " --region ",
-      {
-       "Ref": "AWS::Region"
-      },
-      " --role-arn ",
-      {
-       "Fn::GetAtt": [
-        "AdminRole38563C57",
-        "Arn"
-       ]
-      }
-     ]
-    ]
-   }
   }
  },
  "Parameters": {
