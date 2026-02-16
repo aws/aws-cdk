@@ -1,4 +1,4 @@
-import { Template, Match } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -444,9 +444,8 @@ describe('serverless cluster', () => {
     });
 
     // THEN
-    const art = app.synth().getStackArtifact('TestStack');
-    const meta = art.findMetadataByType('aws:cdk:error');
-    expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
+    app.synth();
+    Annotations.fromStack(stack).hasError('/TestStack/Cluster', 'Cluster requires at least 2 subnets, got 0');
   });
 
   test('can set scaling configuration', () => {

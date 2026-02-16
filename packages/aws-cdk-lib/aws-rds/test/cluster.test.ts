@@ -4635,6 +4635,7 @@ describe('cluster', () => {
     });
 
     // THEN
+    app.synth();
     Annotations.fromStack(stack).hasError('/TestStack/Cluster', 'Cluster requires at least 2 subnets, got 0');
   });
 
