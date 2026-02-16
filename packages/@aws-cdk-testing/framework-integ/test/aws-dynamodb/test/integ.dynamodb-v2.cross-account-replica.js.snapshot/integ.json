@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "MultiAccountReplicaIntegTestV2/DefaultTest": {
+      "stacks": [
+        "MultiAccountSourceStackV2",
+        "MultiAccountReplicaStackV2"
+      ],
+      "assertionStack": "MultiAccountReplicaIntegTestV2/DefaultTest/DeployAssert",
+      "assertionStackName": "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

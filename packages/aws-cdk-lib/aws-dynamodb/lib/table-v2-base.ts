@@ -2,9 +2,10 @@ import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
 import type { SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
 import { Operation } from './shared';
+import type { TableGrants } from './table-grants';
 import type { IMetric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import { MathExpression, Metric } from '../../aws-cloudwatch';
-import type { AddToResourcePolicyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import type { AddToResourcePolicyResult, GrantOnKeyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Grant } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
@@ -20,6 +21,11 @@ export interface ITableV2 extends ITable {
    * @attribute
    */
   readonly tableId?: string;
+
+  /**
+   * Grants for this table
+   */
+  readonly grants: TableGrants;
 }
 
 /**
@@ -53,6 +59,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @attribute
    */
   public abstract readonly tableId?: string;
+
+  /**
+   * Grants for this table.
+   */
+  public abstract readonly grants: TableGrants;
 
   /**
    * The KMS encryption key for the table.
@@ -238,6 +249,18 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public grantFullAccess(grantee: IGrantable): Grant {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+  }
+
+  /**
+   * Grants permissions on the table's encryption key.
+   *
+   * @param grantee the principal to grant access to
+   * @param actions the KMS actions to grant
+   */
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    return {
+      grant: this.encryptionKey?.grant(grantee, ...actions),
+    };
   }
 
   /**
