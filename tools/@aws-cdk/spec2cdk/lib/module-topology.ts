@@ -1,7 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
-import { namespaceToModuleDefinition, PackageBaseNames } from './util/jsii';
+import type { PackageBaseNames } from './util/jsii';
+import { namespaceToModuleDefinition } from './util/jsii';
 
 /**
  * A data structure holding information about a single scope in a generated module.
@@ -89,7 +90,7 @@ export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = 
   }, {});
 }
 
-const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
+export const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
 
 /**
  * Loads the global module map from the `aws-cdk-lib` package.

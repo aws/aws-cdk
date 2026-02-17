@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { IInstanceEngine } from './instance-engine';
+import type { Construct } from 'constructs';
+import type { IInstanceEngine } from './instance-engine';
+import type { IOptionGroupRef, OptionGroupReference } from './rds.generated';
 import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
-import { IResource, Lazy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -10,7 +12,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * An option group
  */
-export interface IOptionGroup extends IResource {
+export interface IOptionGroup extends IResource, IOptionGroupRef {
   /**
    * The name of the option group.
    *
@@ -95,6 +97,13 @@ export interface OptionGroupProps {
    * The configurations for this option group.
    */
   readonly configurations: OptionConfiguration[];
+
+  /**
+   * The name of the option group.
+   *
+   * @default - a CDK generated name
+   */
+  readonly optionGroupName?: string;
 }
 
 /**
@@ -112,6 +121,9 @@ export class OptionGroup extends Resource implements IOptionGroup {
     class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
       public addConfiguration(_: OptionConfiguration) { return false; }
+      public get optionGroupRef(): OptionGroupReference {
+        return { optionGroupName: this.optionGroupName };
+      }
     }
     return new Import(scope, id);
   }
@@ -145,9 +157,10 @@ export class OptionGroup extends Resource implements IOptionGroup {
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
       optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
+      optionGroupName: props.optionGroupName,
     });
 
-    this.optionGroupName = optionGroup.ref;
+    this.optionGroupName = props.optionGroupName ?? optionGroup.ref;
   }
 
   @MethodMetadata()
@@ -195,5 +208,9 @@ export class OptionGroup extends Resource implements IOptionGroup {
     }
 
     return configs;
+  }
+
+  public get optionGroupRef(): OptionGroupReference {
+    return { optionGroupName: this.optionGroupName };
   }
 }

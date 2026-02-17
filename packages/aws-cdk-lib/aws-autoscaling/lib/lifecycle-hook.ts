@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
+import type { Construct } from 'constructs';
 import { CfnLifecycleHook } from './autoscaling.generated';
-import { ILifecycleHookTarget } from './lifecycle-hook-target';
-import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource, ValidationError } from '../../core';
+import type { ILifecycleHookTarget } from './lifecycle-hook-target';
+import type * as iam from '../../aws-iam';
+import type { Duration, IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IAutoScalingGroupRef, ILifecycleHookRef, LifecycleHookReference } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Basic properties for a lifecycle hook
@@ -68,13 +69,13 @@ export interface LifecycleHookProps extends BasicLifecycleHookProps {
   /**
    * The AutoScalingGroup to add the lifecycle hook to
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 /**
  * A basic lifecycle hook object
  */
-export interface ILifecycleHook extends IResource {
+export interface ILifecycleHook extends ILifecycleHookRef, IResource {
   /**
    * The role for the lifecycle hook to execute
    *
@@ -92,6 +93,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.LifecycleHook';
   private _role?: iam.IRole;
+  private readonly _autoScalingGroupName: string;
 
   /**
    * The role that allows the ASG to publish to the notification target
@@ -113,12 +115,21 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
    */
   public readonly lifecycleHookName: string;
 
+  public get lifecycleHookRef(): LifecycleHookReference {
+    return {
+      autoScalingGroupName: this._autoScalingGroupName,
+      lifecycleHookName: this.lifecycleHookName,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: LifecycleHookProps) {
     super(scope, id, {
       physicalName: props.lifecycleHookName,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this._autoScalingGroupName = props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName;
 
     const targetProps = props.notificationTarget ? props.notificationTarget.bind(this, { lifecycleHook: this, role: props.role }) : undefined;
 
@@ -136,7 +147,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
     const l1RoleArn = this._role ? this.role.roleArn : undefined;
 
     const resource = new CfnLifecycleHook(this, 'Resource', {
-      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
+      autoScalingGroupName: props.autoScalingGroup.autoScalingGroupRef.autoScalingGroupName,
       defaultResult: props.defaultResult,
       heartbeatTimeout: props.heartbeatTimeout && props.heartbeatTimeout.toSeconds(),
       lifecycleHookName: this.physicalName,

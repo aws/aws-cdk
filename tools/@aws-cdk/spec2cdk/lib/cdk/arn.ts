@@ -1,4 +1,4 @@
-import { Resource } from '@aws-cdk/service-spec-types';
+import type { Resource } from '@aws-cdk/service-spec-types';
 
 /**
  * Find an ARN property for a given resource
@@ -7,7 +7,8 @@ import { Resource } from '@aws-cdk/service-spec-types';
  * included in the primary identifier.
  */
 export function findNonIdentifierArnProperty(resource: Resource) {
-  return findArnProperty(resource, (name) => !resource.primaryIdentifier?.includes(name));
+  const refIdentifier = resource.cfnRefIdentifier ?? resource.primaryIdentifier;
+  return findArnProperty(resource, (name) => !refIdentifier?.includes(name));
 }
 
 export function findArnProperty(resource: Resource, filter: (name: string) => boolean = () => true): string | undefined {
@@ -15,11 +16,13 @@ export function findArnProperty(resource: Resource, filter: (name: string) => bo
   const suffixes = ['Arn', 'ARN'];
   const primaryIdentifierSuffixes = ['Id', 'ID'];
 
+  const refIdentifier = resource.cfnRefIdentifier ?? resource.primaryIdentifier;
+
   // if the primary identifier uses a prefix that is different than the resource name, we add that to the list
-  if (resource.primaryIdentifier?.length === 1) {
+  if (refIdentifier?.length === 1) {
     for (const suffix of primaryIdentifierSuffixes) {
-      if (resource.primaryIdentifier[0].endsWith(suffix)) {
-        const prefix = resource.primaryIdentifier[0].slice(0, -suffix.length);
+      if (refIdentifier[0].endsWith(suffix)) {
+        const prefix = refIdentifier[0].slice(0, -suffix.length);
         if (prefix && !prefixes.includes(prefix)) {
           prefixes.push(prefix);
         }

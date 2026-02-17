@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "RuntimeGatewayIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreRuntimeGatewayM2MIntegTest"
+      ],
+      "assertionStack": "RuntimeGatewayIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

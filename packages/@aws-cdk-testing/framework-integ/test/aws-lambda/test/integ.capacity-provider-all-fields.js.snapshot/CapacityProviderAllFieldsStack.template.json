@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -547,7 +547,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AmazonLambdaCapacityProviderOperatorRolePolicy"
+        ":iam::aws:policy/AWSLambdaManagedEC2ResourceOperator"
        ]
       ]
      }
@@ -557,7 +557,6 @@
   "CapacityProvider7AA4F436": {
    "Type": "AWS::Lambda::CapacityProvider",
    "Properties": {
-    "CapacityProviderName": "test-capacity-provider",
     "CapacityProviderScalingConfig": {
      "MaxVCpuCount": 12,
      "ScalingMode": "Manual",
@@ -570,7 +569,7 @@
     },
     "InstanceRequirements": {
      "AllowedInstanceTypes": [
-      "t2.micro"
+      "m5.large"
      ],
      "Architectures": [
       "x86_64"
@@ -602,65 +601,6 @@
       }
      ]
     }
-   }
-  }
- },
- "Outputs": {
-  "ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60": {
-   "Value": {
-    "Fn::GetAtt": [
-     "CapacityProvider7AA4F436",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttCapacityProvider7AA4F436Arn4B0DFB60"
-   }
-  },
-  "ExportsOutputFnGetAttOperatorRole6A7B6B68Arn9CC337A5": {
-   "Value": {
-    "Fn::GetAtt": [
-     "OperatorRole6A7B6B68",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttOperatorRole6A7B6B68Arn9CC337A5"
-   }
-  },
-  "ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940": {
-   "Value": {
-    "Ref": "VpcPrivateSubnet1Subnet536B997A"
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
-   }
-  },
-  "ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3": {
-   "Value": {
-    "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
-   }
-  },
-  "ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09": {
-   "Value": {
-    "Fn::GetAtt": [
-     "SecurityGroupDD263621",
-     "GroupId"
-    ]
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputFnGetAttSecurityGroupDD263621GroupIdDF6F8B09"
-   }
-  },
-  "ExportsOutputRefCapacityProvider7AA4F436FE90E476": {
-   "Value": {
-    "Ref": "CapacityProvider7AA4F436"
-   },
-   "Export": {
-    "Name": "CapacityProviderAllFieldsStack:ExportsOutputRefCapacityProvider7AA4F436FE90E476"
    }
   }
  },

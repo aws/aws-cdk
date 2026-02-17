@@ -1,11 +1,12 @@
 
-import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy } from 'aws-cdk-lib';
+import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { RuntimeAuthorizerConfiguration } from './inbound-auth/runtime-authorizer-configuration';
 import {
   RUNTIME_LOGS_GROUP_ACTIONS,
   RUNTIME_LOGS_DESCRIBE_ACTIONS,
@@ -15,11 +16,13 @@ import {
   RUNTIME_CLOUDWATCH_NAMESPACE,
   RUNTIME_WORKLOAD_IDENTITY_ACTIONS,
 } from './perms';
-import { AgentRuntimeArtifact } from './runtime-artifact';
-import { RuntimeAuthorizerConfiguration } from './runtime-authorizer-configuration';
-import { RuntimeBase, IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
+import type { AgentRuntimeArtifact } from './runtime-artifact';
+
+import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
+import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import { LifecycleConfiguration, ProtocolType, RequestHeaderConfiguration } from './types';
+import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import { ProtocolType } from './types';
 import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 
@@ -51,8 +54,9 @@ export interface RuntimeProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * Must start with a letter and can be up to 48 characters long
    * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   * @default - auto generate
    */
-  readonly runtimeName: string;
+  readonly runtimeName?: string;
 
   /**
    * The artifact configuration for the agent runtime
@@ -256,12 +260,19 @@ export class Runtime extends RuntimeBase {
   private readonly lifecycleConfiguration?: LifecycleConfiguration;
 
   constructor(scope: Construct, id: string, props: RuntimeProps) {
-    super(scope, id);
+    super(scope, id, {
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-agentruntimename
+      physicalName: props.runtimeName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
 
     // CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.agentRuntimeName = props.runtimeName;
+    this.agentRuntimeName = this.physicalName;
     this.validateRuntimeName();
 
     this.description = props.description;

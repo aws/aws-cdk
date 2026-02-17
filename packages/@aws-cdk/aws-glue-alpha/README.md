@@ -713,6 +713,186 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
+### Partition Projection
+
+Partition projection allows Athena to automatically add new partitions as new data arrives, without requiring `ALTER TABLE ADD PARTITION` statements. This improves query performance and reduces management overhead by eliminating the need to manually manage partition metadata.
+
+For more information, see the [AWS documentation on partition projection](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html).
+
+#### INTEGER Projection
+
+For partition keys with sequential numeric values:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.INTEGER,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    year: glue.PartitionProjectionConfiguration.integer({
+      min: 2020,
+      max: 2023,
+      interval: 1,  // optional, defaults to 1
+      digits: 4,    // optional, pads with leading zeros
+    }),
+  },
+});
+```
+
+#### DATE Projection
+
+For partition keys with date or timestamp values. Supports both fixed dates and relative dates using `NOW`:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'date',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    date: glue.PartitionProjectionConfiguration.date({
+      min: '2020-01-01',
+      max: '2023-12-31',
+      format: 'yyyy-MM-dd',
+      interval: 1,  // optional, defaults to 1
+      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+    }),
+  },
+});
+```
+
+You can also use relative dates with `NOW`:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'date',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    date: glue.PartitionProjectionConfiguration.date({
+      min: 'NOW-3YEARS',
+      max: 'NOW',
+      format: 'yyyy-MM-dd',
+    }),
+  },
+});
+```
+
+#### ENUM Projection
+
+For partition keys with a known set of values:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'region',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    region: glue.PartitionProjectionConfiguration.enum({
+      values: ['us-east-1', 'us-west-2', 'eu-west-1'],
+    }),
+  },
+});
+```
+
+#### INJECTED Projection
+
+For custom partition values injected at query time:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'custom',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    custom: glue.PartitionProjectionConfiguration.injected(),
+  },
+});
+```
+
+#### Multiple Partition Projections
+
+You can configure partition projection for multiple partition keys:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [
+    {
+      name: 'year',
+      type: glue.Schema.INTEGER,
+    },
+    {
+      name: 'month',
+      type: glue.Schema.INTEGER,
+    },
+    {
+      name: 'region',
+      type: glue.Schema.STRING,
+    },
+  ],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    year: glue.PartitionProjectionConfiguration.integer({
+      min: 2020,
+      max: 2023,
+    }),
+    month: glue.PartitionProjectionConfiguration.integer({
+      min: 1,
+      max: 12,
+      digits: 2,
+    }),
+    region: glue.PartitionProjectionConfiguration.enum({
+      values: ['us-east-1', 'us-west-2'],
+    }),
+  },
+});
+```
+
 ### Glue Connections
 
 Glue connections allow external data connections to third party databases and data warehouses. However, these connections can also be assigned to Glue Tables, allowing you to query external data sources using the Glue Data Catalog.

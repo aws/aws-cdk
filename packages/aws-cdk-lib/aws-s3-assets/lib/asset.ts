@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
-import { CopyOptions } from '../../assets';
-import * as iam from '../../aws-iam';
+import type { CopyOptions } from '../../assets';
+import type * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
@@ -247,6 +247,8 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Grants read permissions to the principal on the assets bucket.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     // we give permissions on all files in the bucket since we don't want to

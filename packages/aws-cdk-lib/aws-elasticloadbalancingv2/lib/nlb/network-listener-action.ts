@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { INetworkListener } from './network-listener';
-import { INetworkTargetGroup } from './network-target-group';
-import { Duration } from '../../../core';
+import type { Construct } from 'constructs';
+import type { INetworkListenerRef } from './network-listener';
+import type { INetworkTargetGroup } from './network-target-group';
+import type { Duration } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener
@@ -96,7 +96,7 @@ export class NetworkListenerAction implements IListenerAction {
   /**
    * Called when the action is being used in a listener
    */
-  public bind(scope: Construct, listener: INetworkListener) {
+  public bind(scope: Construct, listener: INetworkListenerRef) {
     // Empty on purpose
     Array.isArray(scope);
     Array.isArray(listener);
@@ -164,7 +164,7 @@ class TargetGroupListenerAction extends NetworkListenerAction {
     super(defaultActionJson);
   }
 
-  public bind(_scope: Construct, listener: INetworkListener) {
+  public bind(_scope: Construct, listener: INetworkListenerRef) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener);
     }

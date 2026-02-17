@@ -1,9 +1,10 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import type { GlobalSecondaryIndexProps } from './table';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, ValidationError } from '../../core';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import { ValidationError, type IResource } from '../../core';
+import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Supported DynamoDB table operations.
@@ -176,6 +177,25 @@ export enum ContributorInsightsMode {
 }
 
 /**
+ * The replication mode for global table settings across multiple accounts.
+ *
+ * Note: In a multi-account global table, you cannot make changes to a synchronized setting using CDK.
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_MA_HowItWorks.html
+ */
+export enum GlobalTableSettingsReplicationMode {
+  /**
+   * All synchronizable settings are replicated across all replicas.
+   *
+   * Synchronizable settings include: billing mode, provisioned throughput, auto-scaling,
+   * on-demand throughput, warm throughput, TTL, streams view type, and GSIs.
+   *
+   * Note: Some settings are always synchronized (key schema, LSIs) and some are never
+   * synchronized (table class, SSE, deletion protection, PITR, tags, resource policy, CCI).
+   */
+  ALL = 'ENABLED',
+}
+
+/**
  * Reference to ContributorInsightsSpecification
  */
 export interface ContributorInsightsSpecification {
@@ -339,7 +359,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 /**
  * An interface that represents a DynamoDB Table - either created with the CDK, or an existing one.
  */
-export interface ITable extends IResource {
+export interface ITable extends IResource, ITableRef {
   /**
    * Arn of the dynamodb table.
    *

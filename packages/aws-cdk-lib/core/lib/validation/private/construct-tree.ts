@@ -1,7 +1,7 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
-import { constructInfoFromConstruct } from '../../helpers-internal';
+import { constructInfoFromConstruct } from '../../private/runtime-info';
 import { Stack } from '../../stack';
 
 /**

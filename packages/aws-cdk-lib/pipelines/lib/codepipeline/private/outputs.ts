@@ -1,6 +1,6 @@
-import * as cp from '../../../../aws-codepipeline';
+import type * as cp from '../../../../aws-codepipeline';
 import { ValidationError } from '../../../../core';
-import { Step } from '../../blueprint/step';
+import type { Step } from '../../blueprint/step';
 import { StepOutput } from '../../helpers-internal';
 
 const CODEPIPELINE_ENGINE_NAME = 'codepipeline';

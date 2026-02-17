@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
 import { table } from 'table';
-import { ConstructTree, ConstructTrace } from './construct-tree';
+import type { ConstructTree, ConstructTrace } from './construct-tree';
 import { ReportTrace } from './trace';
 import * as report from '../report';
 

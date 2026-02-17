@@ -1,9 +1,10 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnRouteCalculator } from 'aws-cdk-lib/aws-location';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { generateUniqueId, DataSource } from './util';
 
 /**
@@ -149,6 +150,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this route calculator.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -161,6 +163,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
 
   /**
    * Grant the given identity permissions to access to a route calculator resource to calculate a route.
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-calculate-route
    */

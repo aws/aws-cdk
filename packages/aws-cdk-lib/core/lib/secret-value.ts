@@ -1,11 +1,12 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
-import { CfnParameter } from './cfn-parameter';
+import type { CfnParameter } from './cfn-parameter';
 import { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import { CfnReference } from './private/cfn-reference';
-import { Intrinsic, IntrinsicProps } from './private/intrinsic';
-import { IResolveContext } from './resolvable';
+import type { IntrinsicProps } from './private/intrinsic';
+import { Intrinsic } from './private/intrinsic';
+import type { IResolveContext } from './resolvable';
 import { Token, Tokenization } from './token';
 import { CHECK_SECRET_USAGE } from '../../cx-api';
 
@@ -44,7 +45,7 @@ export class SecretValue extends Intrinsic {
    * Test whether an object is a SecretValue
    */
   public static isSecretValue(x: any): x is SecretValue {
-    return typeof x === 'object' && x && x[SECRET_VALUE_SYM];
+    return typeof x === 'object' && x && SECRET_VALUE_SYM in x;
   }
 
   /**

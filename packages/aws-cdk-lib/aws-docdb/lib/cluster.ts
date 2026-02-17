@@ -1,19 +1,20 @@
-import { Construct } from 'constructs';
-import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
-import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, Login, RotationMultiUserOptions } from './props';
+import type { BackupProps, Login, RotationMultiUserOptions } from './props';
 import * as ec2 from '../../aws-ec2';
-import { IRole } from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type { IRole } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import { CaCertificate } from '../../aws-rds';
+import type { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { CfnResource, Duration, RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { CfnResource, Duration } from '../../core';
+import { RemovalPolicy, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { DBClusterReference, IDBClusterParameterGroupRef } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
@@ -172,7 +173,7 @@ export interface DatabaseClusterProps {
    *
    * @default no parameter group
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly parameterGroup?: IDBClusterParameterGroupRef;
 
   /**
    * A weekly time range in which maintenance should preferably execute.
@@ -332,6 +333,15 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
    * Security group identifier of this database
    */
   public abstract readonly securityGroupId: string;
+
+  /**
+   * A reference to this cluster.
+   */
+  public get dbClusterRef(): DBClusterReference {
+    return {
+      dbClusterId: this.clusterIdentifier,
+    };
+  }
 
   /**
    * Renders the secret attachment target specifications.
@@ -601,7 +611,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: subnetGroup.ref,
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
-      dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      dbClusterParameterGroupName: props.parameterGroup?.dbClusterParameterGroupRef.dbClusterParameterGroupId,
       deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').unsafeUnwrap() : props.masterUser.username,

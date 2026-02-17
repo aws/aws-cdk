@@ -1,23 +1,24 @@
-import { Construct, IConstruct } from 'constructs';
-import { MessageLanguage } from './common';
-import {
+import type { Construct, IConstruct } from 'constructs';
+import type { MessageLanguage } from './common';
+import type {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
   StackSetsConstraintOptions, TagUpdateConstraintOptions,
 } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
-import { IProduct } from './product';
+import type { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
-import { TagOptions } from './tag-options';
+import type { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
-import { IBucket } from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type { IBucket } from '../../aws-s3';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IPortfolioRef, PortfolioReference } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * Options for portfolio share.
@@ -42,7 +43,7 @@ export interface PortfolioShareOptions {
 /**
  * A Service Catalog portfolio.
  */
-export interface IPortfolio extends cdk.IResource {
+export interface IPortfolio extends cdk.IResource, IPortfolioRef {
   /**
    * The ARN of the portfolio.
    * @attribute
@@ -162,6 +163,12 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   private readonly associatedPrincipals: Set<string> = new Set();
   private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
   private readonly sharedAccounts: string[] = [];
+
+  public get portfolioRef(): PortfolioReference {
+    return {
+      portfolioId: this.portfolioId,
+    };
+  }
 
   public giveAccessToRole(role: iam.IRole): void {
     this.associatePrincipal(role.roleArn, role.node.addr);

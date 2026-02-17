@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { IAlias } from './alias';
-import { IFunction } from './function-base';
-import { IVersion } from './lambda-version';
+import type { Construct } from 'constructs';
+import type { IAlias } from './alias';
+import type { IFunction } from './function-base';
+import type { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * The auth types for a function url
@@ -131,7 +133,7 @@ export interface FunctionUrlCorsOptions {
 /**
  * A Lambda function Url
  */
-export interface IFunctionUrl extends IResource {
+export interface IFunctionUrl extends IResource, IUrlRef {
   /**
    * The url of the Lambda function.
    *
@@ -278,6 +280,15 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     }
   }
 
+  public get urlRef(): UrlReference {
+    return {
+      functionArn: this.functionArn,
+    };
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
     return this.function.grantInvokeUrl(grantee);

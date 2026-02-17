@@ -1,5 +1,5 @@
-import { IPipe, ITarget } from '@aws-cdk/aws-pipes-alpha';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { IPipe, ITarget } from '@aws-cdk/aws-pipes-alpha';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 
 export class TestTarget implements ITarget {
   readonly targetArn: string = 'target-arn';

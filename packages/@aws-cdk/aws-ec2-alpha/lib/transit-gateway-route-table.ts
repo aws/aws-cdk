@@ -1,13 +1,18 @@
-import { CfnTransitGatewayRouteTable, IRouteTable } from 'aws-cdk-lib/aws-ec2';
-import { IResource, Resource } from 'aws-cdk-lib/core';
+import type { IRouteTable } from 'aws-cdk-lib/aws-ec2';
+import { CfnTransitGatewayRouteTable } from 'aws-cdk-lib/aws-ec2';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITransitGateway } from './transit-gateway';
-import { ITransitGatewayAttachment } from './transit-gateway-attachment';
-import { TransitGatewayRoute, TransitGatewayBlackholeRoute, ITransitGatewayRoute } from './transit-gateway-route';
-import { ITransitGatewayRouteTableAssociation, TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
-import { ITransitGatewayRouteTablePropagation, TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import type { Construct } from 'constructs';
+import type { ITransitGateway } from './transit-gateway';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import type { ITransitGatewayRoute } from './transit-gateway-route';
+import { TransitGatewayRoute, TransitGatewayBlackholeRoute } from './transit-gateway-route';
+import type { ITransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
+import type { ITransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
+import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 
 /**
  * Represents a Transit Gateway Route Table.

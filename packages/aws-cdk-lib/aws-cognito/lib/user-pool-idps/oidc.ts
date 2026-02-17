@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -118,7 +118,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     const scopes = props.scopes ?? ['openid'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'OIDC',
       providerDetails: {
@@ -137,6 +137,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 
   private getProviderName(name?: string): string {

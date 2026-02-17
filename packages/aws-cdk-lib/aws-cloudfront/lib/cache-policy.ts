@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { CachePolicyReference, CfnCachePolicy, ICachePolicyRef } from './cloudfront.generated';
+import type { Construct } from 'constructs';
+import type { CachePolicyReference, ICachePolicyRef } from './cloudfront.generated';
+import { CfnCachePolicy } from './cloudfront.generated';
 import {
   Duration,
   Names,

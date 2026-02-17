@@ -1,16 +1,19 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { HostedZoneGrants } from './hosted-zone-grants';
-import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { GrantDelegationOptions, HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
-import { IKeySigningKey, KeySigningKey } from './key-signing-key';
+import type { HostedZoneProviderProps } from './hosted-zone-provider';
+import type { GrantDelegationOptions, HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
+import type { IKeySigningKey } from './key-signing-key';
+import { KeySigningKey } from './key-signing-key';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
-import { CfnHostedZone, CfnDNSSEC, CfnKeySigningKey, HostedZoneReference } from './route53.generated';
+import type { CfnKeySigningKey, HostedZoneReference } from './route53.generated';
+import { CfnHostedZone, CfnDNSSEC } from './route53.generated';
 import { makeHostedZoneArn, validateZoneName } from './util';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
+import type { Duration } from '../../core';
+import { ContextProvider, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -271,6 +274,9 @@ export class HostedZone extends Resource implements IHostedZone {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
     return this.grants.delegation(grantee, options);

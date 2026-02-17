@@ -1,6 +1,7 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { Aspects, IAspect, AspectPriority } from './aspect';
+import type { IAspect } from './aspect';
+import { Aspects, AspectPriority } from './aspect';
 import { CfnResource } from './cfn-resource';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { RemovalPolicy } from './removal-policy';

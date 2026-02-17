@@ -4,9 +4,11 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
+import type { StackProps } from '../lib';
+import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { App, AppProps } from '../lib/app';
+import type { AppProps } from '../lib/app';
+import { App } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -367,6 +369,18 @@ describe('app', () => {
     expect(app.node.tryGetContext('isString')).toEqual('string');
     expect(app.node.tryGetContext('isNumber')).toEqual(10);
     expect(app.node.tryGetContext('isObject')).toEqual({ isString: 'string', isNumber: 10 });
+  });
+
+  test('App.of() returns the app when scope is app', () => {
+    const app = new App();
+    expect(App.of(app)).toBe(app);
+  });
+
+  test('App.of() returns the app when scope is stack->stage->app', () => {
+    const app = new App();
+    const stage = new Stage(app, 'TestStage');
+    const stack = new Stack(stage, 'TestStack');
+    expect(App.of(stack)).toBe(app);
   });
 });
 

@@ -156,7 +156,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -366,8 +366,7 @@
     "ManagedPolicyArns": [
      "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
      "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
-    ],
-    "RoleName": "codepipeline-elasticbeanstalk-action-test-serivce-role"
+    ]
    }
   },
   "instanceprofilerole786BCBC7": {
@@ -389,8 +388,7 @@
      "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
      "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
      "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
-    ],
-    "RoleName": "codepipeline-elasticbeanstalk-action-test-instance-profile-role"
+    ]
    }
   },
   "instanceprofile": {
@@ -407,16 +405,14 @@
    }
   },
   "beastalkapp": {
-   "Type": "AWS::ElasticBeanstalk::Application",
-   "Properties": {
-    "ApplicationName": "codepipeline-test-app"
-   }
+   "Type": "AWS::ElasticBeanstalk::Application"
   },
   "beanstlkenv": {
    "Type": "AWS::ElasticBeanstalk::Environment",
    "Properties": {
-    "ApplicationName": "codepipeline-test-app",
-    "EnvironmentName": "codepipeline-test-env",
+    "ApplicationName": {
+     "Ref": "beastalkapp"
+    },
     "OptionSettings": [
      {
       "Namespace": "aws:autoscaling:launchconfiguration",
@@ -443,7 +439,7 @@
       "Value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.6.2 running Node.js 20"
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.3 running Node.js 20"
    },
    "DependsOn": [
     "beastalkapp",
@@ -606,8 +602,12 @@
          "Version": "1"
         },
         "Configuration": {
-         "ApplicationName": "codepipeline-test-app",
-         "EnvironmentName": "codepipeline-test-env"
+         "ApplicationName": {
+          "Ref": "beastalkapp"
+         },
+         "EnvironmentName": {
+          "Ref": "beanstlkenv"
+         }
         },
         "InputArtifacts": [
          {
@@ -643,19 +643,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }
@@ -766,19 +756,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }

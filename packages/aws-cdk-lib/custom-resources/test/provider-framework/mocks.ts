@@ -1,9 +1,9 @@
 
-import { OutgoingHttpHeaders } from 'http';
-import * as https from 'https';
+import type { OutgoingHttpHeaders } from 'http';
+import type * as https from 'https';
 import { parse as urlparse } from 'url';
-import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
-import { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
+import type { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
+import type { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
 import * as consts from '../../lib/provider-framework/runtime/consts';
 
 export const MOCK_REQUEST = {

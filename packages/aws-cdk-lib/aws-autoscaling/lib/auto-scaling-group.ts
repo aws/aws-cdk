@@ -1,32 +1,41 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
-import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
-import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
-import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
-import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
-import { BaseTargetTrackingProps, PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import type { CfnAutoScalingGroupProps } from './autoscaling.generated';
+import { CfnAutoScalingGroup, CfnLaunchConfiguration } from './autoscaling.generated';
+import type { BasicLifecycleHookProps } from './lifecycle-hook';
+import { LifecycleHook } from './lifecycle-hook';
+import type { BasicScheduledActionProps } from './scheduled-action';
+import { ScheduledAction } from './scheduled-action';
+import type { BasicStepScalingPolicyProps } from './step-scaling-policy';
+import { StepScalingPolicy } from './step-scaling-policy';
+import type { BaseTargetTrackingProps } from './target-tracking-scaling-policy';
+import { PredefinedMetric, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import { TerminationPolicy } from './termination-policy';
-import { BlockDevice, BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
-import { WarmPool, WarmPoolOptions } from './warm-pool';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { BlockDevice } from './volume';
+import { BlockDeviceVolume, EbsDeviceVolumeType } from './volume';
+import type { WarmPoolOptions } from './warm-pool';
+import { WarmPool } from './warm-pool';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
-import * as elb from '../../aws-elasticloadbalancing';
+import type * as elb from '../../aws-elasticloadbalancing';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
+import type { CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy, IResource } from '../../core';
 import {
   Annotations,
   Aspects,
   Aws,
-  CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
-  Duration, FeatureFlags, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
+  Duration, FeatureFlags, Fn, Lazy, PhysicalName, Resource, Stack, Tags,
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import type { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Name tag constant
@@ -1142,6 +1151,13 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
   protected hasCalledScaleOnRequestCount: boolean = false;
 
+  public get autoScalingGroupRef(): AutoScalingGroupReference {
+    return {
+      autoScalingGroupName: this.autoScalingGroupName,
+      autoScalingGroupArn: this.autoScalingGroupArn,
+    };
+  }
+
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
@@ -1321,12 +1337,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Name of the AutoScalingGroup
    */
-  public readonly autoScalingGroupName: string;
+  @memoizedGetter
+  public get autoScalingGroupName(): string {
+    return this.getResourceNameAttribute(this.autoScalingGroup.ref);
+  }
 
   /**
    * Arn of the AutoScalingGroup
    */
-  public readonly autoScalingGroupArn: string;
+  @memoizedGetter
+  public get autoScalingGroupArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'autoscaling',
+      resource: 'autoScalingGroup:*:autoScalingGroupName',
+      resourceName: this.autoScalingGroupName,
+    });
+  }
 
   /**
    * The maximum spot price configured for the autoscaling group. `undefined`
@@ -1605,12 +1631,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
-    this.autoScalingGroupName = this.getResourceNameAttribute(this.autoScalingGroup.ref),
-    this.autoScalingGroupArn = Stack.of(this).formatArn({
-      service: 'autoscaling',
-      resource: 'autoScalingGroup:*:autoScalingGroupName',
-      resourceName: this.autoScalingGroupName,
-    });
     this.node.defaultChild = this.autoScalingGroup;
 
     this.applyUpdatePolicies(props, { desiredCapacity, minCapacity });
@@ -1676,7 +1696,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this.targetGroupArns.push(targetGroup.targetGroupArn);
+    this.targetGroupArns.push(targetGroup.targetGroupRef.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
@@ -2463,7 +2483,7 @@ function validatePercentage(x?: number): number | undefined {
 /**
  * An AutoScalingGroup
  */
-export interface IAutoScalingGroup extends IResource, iam.IGrantable {
+export interface IAutoScalingGroup extends IAutoScalingGroupRef, IResource, iam.IGrantable {
   /**
    * The name of the AutoScalingGroup
    * @attribute

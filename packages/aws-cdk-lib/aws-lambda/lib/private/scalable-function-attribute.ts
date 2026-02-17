@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-attribute-api';
+import type { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-attribute-api';
 
 /**
  * A scalable lambda alias attribute

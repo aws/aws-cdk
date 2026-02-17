@@ -1,15 +1,14 @@
 import { Node } from 'constructs';
-import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import type { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 import { makeCodePipelineOutput } from './private/outputs';
-import * as codecommit from '../../../aws-codecommit';
-import * as cp from '../../../aws-codepipeline';
-import { Artifact } from '../../../aws-codepipeline';
+import type * as codecommit from '../../../aws-codecommit';
+import type { Artifact, IStage } from '../../../aws-codepipeline';
 import * as cp_actions from '../../../aws-codepipeline-actions';
-import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
-import { IRepository } from '../../../aws-ecr';
-import * as iam from '../../../aws-iam';
-import { IBucket } from '../../../aws-s3';
+import type { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
+import type * as iam from '../../../aws-iam';
+import type { IBucket } from '../../../aws-s3';
 import { Fn, SecretValue, Token, UnscopedValidationError } from '../../../core';
+import type { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
 import { FileSet, Step } from '../blueprint';
 
 /**
@@ -76,7 +75,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *   imageTag: 'latest',
    * });
    */
-  public static ecr(repository: IRepository, props: ECRSourceOptions = {}): CodePipelineSource {
+  public static ecr(repository: IRepositoryRef, props: ECRSourceOptions = {}): CodePipelineSource {
     return new ECRSource(repository, props);
   }
 
@@ -133,7 +132,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   // tells `PipelineGraph` to hoist a "Source" step
   public readonly isSource = true;
 
-  public produceAction(stage: cp.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
+  public produceAction(stage: IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const output = options.artifacts.toCodePipeline(this.primaryOutput!);
 
     const action = this.getAction(output, options.actionName, options.runOrder, options.variablesNamespace);
@@ -352,7 +351,7 @@ export interface ECRSourceOptions {
 }
 
 class ECRSource extends CodePipelineSource {
-  constructor(readonly repository: IRepository, readonly props: ECRSourceOptions) {
+  constructor(readonly repository: IRepositoryRef, readonly props: ECRSourceOptions) {
     super(Node.of(repository).addr);
 
     this.configurePrimaryOutput(new FileSet('Source', this));
@@ -360,7 +359,7 @@ class ECRSource extends CodePipelineSource {
 
   protected getAction(output: Artifact, _actionName: string, runOrder: number, variablesNamespace: string) {
     // RepositoryName can contain '/' that is not a valid ActionName character, use '_' instead
-    const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryName));
+    const formattedRepositoryName = Fn.join('_', Fn.split('/', this.repository.repositoryRef.repositoryName));
     return new cp_actions.EcrSourceAction({
       output,
       actionName: this.props.actionName ?? formattedRepositoryName,

@@ -1,4 +1,30 @@
 {
-    "exclude": [
-    ]
+  "exclude": [
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSource.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.EventSourceMappingOptions.filterEncryption",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.targetHandler",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.target",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.targetHandler",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IDestination.bind.fn",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IFunction.grantInvokeVersion.version",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.IVersion.grantInvokeVersion.version",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.FunctionAttributes.role",
+    "prefer-ref-interface:aws-cdk-lib.aws_lambda.FunctionAttributes.securityGroup",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunction.addLayers.layers",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.deadLetterQueue",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.deadLetterTopic",
+    "prefer-ref-interface:aws-cdk-lib.aws_sns.ITopicSubscription.bind.topic",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.layers",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.logRetentionRole",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.profilingGroup",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.role",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-lambda-python-alpha.PythonFunctionProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups"
+  ]
 }
