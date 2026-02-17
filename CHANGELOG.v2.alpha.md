@@ -1,4 +1,4 @@
-# Changelog
+hc# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-redshift-alpha: changed the default node type to RA3_LARGE
+redshift-alpha: update default node type from `DC2_LARGE` to `RA3_LARGE`
 
 ### Features
 
