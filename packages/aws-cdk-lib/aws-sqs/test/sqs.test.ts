@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
+import { QueueGrants } from '../lib';
 import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
 /* eslint-disable @stylistic/quote-props */
@@ -498,6 +499,62 @@ describe('grants', () => {
         ],
         'Version': '2012-10-17',
       },
+    });
+  });
+
+  test('grant on CfnQueue with KMS key grants key permissions', () => {
+    const stack = new Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Resource: '*',
+            Principal: { 'AWS': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grant on CfnQueue adds statement to queue policy', () => {
+    const stack = new Stack();
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue');
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: { 'Fn::GetAtt': ['Queue', 'Arn'] },
+          }),
+        ]),
+      },
+      Queues: [{ 'Ref': 'Queue' }],
     });
   });
 });
