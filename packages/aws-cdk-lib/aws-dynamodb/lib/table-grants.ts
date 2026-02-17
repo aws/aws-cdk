@@ -1,7 +1,7 @@
 import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { Stack } from '../../core';
+import { ArnFormat, Stack, ValidationError } from '../../core';
 
 /**
  * Construction properties for TableGrants
@@ -186,5 +186,82 @@ export class TableGrants {
     const result = this.actions(grantee, ...actions);
     this.encryptedResource?.grantOnKey(grantee, ...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS);
     return result;
+  }
+
+  /**
+   * Grants permissions for this table to act as a source for multi-account global table replication.
+   *
+   * @param destinationReplicaArn The ARN of the destination replica table in the other account
+   */
+  public multiAccountReplicationTo(destinationReplicaArn: string): void {
+    if (!this.policyResource) {
+      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+    }
+
+    const stack = Stack.of(this.table);
+    const arnComponents = stack.splitArn(destinationReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
+    if (!arnComponents.account) {
+      throw new ValidationError(`Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
+    }
+
+    this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
+      sid: `AllowMultiAccountReplicaAssociation-${arnComponents.account}`,
+      actions: ['dynamodb:AssociateTableReplica'],
+      resources: ['*'],
+      principals: [new iam.AccountPrincipal(arnComponents.account)],
+    }));
+
+    this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
+      sid: `AllowReplicationServiceReadWrite-${arnComponents.account}`,
+      actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
+      resources: ['*'],
+      principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': [stack.account, arnComponents.account],
+        },
+      },
+    }));
+
+    this.encryptedResource?.grantOnKey(
+      new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
+      ...perms.KEY_READ_ACTIONS,
+      ...perms.KEY_WRITE_ACTIONS,
+    );
+  }
+
+  /**
+   * Grants permissions for this table to act as a destination for multi-account global table replication.
+   *
+   * @param sourceReplicaArn The ARN of the source replica table in the other account
+   */
+  public multiAccountReplicationFrom(sourceReplicaArn: string): void {
+    if (!this.policyResource) {
+      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+    }
+
+    const stack = Stack.of(this.table);
+    const arnComponents = stack.splitArn(sourceReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
+    if (!arnComponents.account) {
+      throw new ValidationError(`Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
+    }
+
+    this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
+      sid: 'AllowReplicationService',
+      actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
+      resources: ['*'],
+      principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
+      conditions: {
+        StringEquals: {
+          'aws:SourceAccount': [stack.account, arnComponents.account],
+        },
+      },
+    }));
+
+    this.encryptedResource?.grantOnKey(
+      new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
+      ...perms.KEY_READ_ACTIONS,
+      ...perms.KEY_WRITE_ACTIONS,
+    );
   }
 }
