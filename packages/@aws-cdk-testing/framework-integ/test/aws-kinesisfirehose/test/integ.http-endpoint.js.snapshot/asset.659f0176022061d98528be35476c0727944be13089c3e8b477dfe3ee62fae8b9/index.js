@@ -12990,7 +12990,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? function(o, m, k, k2) {
+    __createBinding = Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -12999,13 +12999,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    };
-    __setModuleDefault = Object.create ? function(o, v) {
+    });
+    __setModuleDefault = Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -21569,7 +21569,7 @@ var require_dist_cjs72 = __commonJS({
 var require_fromWebToken = __commonJS({
   "node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -21578,13 +21578,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -22756,7 +22756,7 @@ var require_aws_crc32 = __commonJS({
     var index_1 = require_main2();
     var AwsCrc32 = (
       /** @class */
-      function() {
+      (function() {
         function AwsCrc322() {
           this.crc32 = new index_1.Crc32();
         }
@@ -22776,7 +22776,7 @@ var require_aws_crc32 = __commonJS({
           this.crc32 = new index_1.Crc32();
         };
         return AwsCrc322;
-      }()
+      })()
     );
     exports2.AwsCrc32 = AwsCrc32;
   }
@@ -22796,7 +22796,7 @@ var require_main2 = __commonJS({
     exports2.crc32 = crc32;
     var Crc32 = (
       /** @class */
-      function() {
+      (function() {
         function Crc322() {
           this.checksum = 4294967295;
         }
@@ -22822,7 +22822,7 @@ var require_main2 = __commonJS({
           return (this.checksum ^ 4294967295) >>> 0;
         };
         return Crc322;
-      }()
+      })()
     );
     exports2.Crc32 = Crc32;
     var a_lookUpTable = [
@@ -24167,7 +24167,7 @@ var require_aws_crc32c = __commonJS({
     var index_1 = require_main3();
     var AwsCrc32c = (
       /** @class */
-      function() {
+      (function() {
         function AwsCrc32c2() {
           this.crc32c = new index_1.Crc32c();
         }
@@ -24187,7 +24187,7 @@ var require_aws_crc32c = __commonJS({
           this.crc32c = new index_1.Crc32c();
         };
         return AwsCrc32c2;
-      }()
+      })()
     );
     exports2.AwsCrc32c = AwsCrc32c;
   }
@@ -24207,7 +24207,7 @@ var require_main3 = __commonJS({
     exports2.crc32c = crc32c;
     var Crc32c = (
       /** @class */
-      function() {
+      (function() {
         function Crc32c2() {
           this.checksum = 4294967295;
         }
@@ -24233,7 +24233,7 @@ var require_main3 = __commonJS({
           return (this.checksum ^ 4294967295) >>> 0;
         };
         return Crc32c2;
-      }()
+      })()
     );
     exports2.Crc32c = Crc32c;
     var a_lookupTable = [
@@ -35141,11 +35141,15 @@ module.exports = __toCommonJS(http_endpoint_destination_exports);
 var import_client_s3 = __toESM(require_dist_cjs88());
 var s3 = new import_client_s3.S3Client();
 var handler = async (event) => {
+  const now = /* @__PURE__ */ new Date();
   console.log(JSON.stringify(event));
+  if (event.headers["x-amz-firehose-access-key"] !== "access-key") {
+    return { statusCode: 401 };
+  }
   const req = JSON.parse(event.body);
   await s3.send(new import_client_s3.PutObjectCommand({
     Bucket: process.env.BUCKET_NAME,
-    Key: (/* @__PURE__ */ new Date()).toISOString(),
+    Key: now.toISOString(),
     Body: event.body,
     ContentType: "application/json"
   }));
@@ -35154,7 +35158,7 @@ var handler = async (event) => {
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       requestId: req.requestId,
-      timestamp: Date.now()
+      timestamp: now.getTime()
     })
   };
 };

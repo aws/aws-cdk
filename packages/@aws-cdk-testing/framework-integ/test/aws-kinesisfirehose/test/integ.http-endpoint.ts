@@ -55,6 +55,7 @@ const deliveryStream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
   destination: new firehose.HttpEndpoint({
     url: destinationFunctionUrl.url,
     name: 'MyDestinationName',
+    authentication: firehose.HttpEndpointAuthentication.accessKey('access-key'),
     loggingConfig: new firehose.EnableLogging(destinationLogGroup),
     processors: [processor],
     bufferingInterval: cdk.Duration.seconds(60),

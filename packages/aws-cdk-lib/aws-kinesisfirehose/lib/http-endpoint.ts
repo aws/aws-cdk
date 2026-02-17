@@ -34,11 +34,11 @@ export interface HttpEndpointProps extends CommonDestinationProps {
   readonly bufferingSize?: cdk.Size;
 
   /**
-   * The access key required for Firehose to authenticate with the HTTP endpoint selected as the destination.
+   * The authentication configuration to access the HTTP endpoint.
    *
-   * @default - no access key
+   * @default - no authentication
    */
-  readonly accessKey?: string;
+  readonly authentication?: HttpEndpointAuthentication;
 
   /**
    * The name of the HTTP endpoint selected as the destination.
@@ -76,13 +76,76 @@ export interface HttpEndpointProps extends CommonDestinationProps {
    * @default Duration.seconds(300)
    */
   readonly retryDuration?: cdk.Duration;
+}
+
+/**
+ * The authentication configuration to access the HTTP endpoint.
+ */
+export interface HttpEndpointAuthenticationOptions {
+  /**
+   * The plaintext access key
+   * @default - no access key
+   */
+  readonly accessKey?: string;
 
   /**
-   * The configuration that defines how you access secrets for HTTP Endpoint destination.
-   *
-   * @default - no secrets
+   * The configuration that defines how you access secrets for destinations.
+   * @default - no secret
    */
   readonly secretsManager?: SecretsManagerProps;
+}
+
+/**
+ * The authentication configuration to access the HTTP endpoint.
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/create-destination.html#create-destination-http
+ */
+export abstract class HttpEndpointAuthentication {
+  /**
+   * Authenticate with an API key or other credentials.
+   *
+   * The maximum length of the access key is 4096 bytes.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/httpdeliveryrequestresponse.html#requestformat
+   *
+   * @param accessKey The access key
+   */
+  public static accessKey(accessKey: string): HttpEndpointAuthentication {
+    return new HttpEndpointAccesKeyAuthentication(accessKey);
+  }
+
+  /**
+   * Authenticate with AWS Secrets Manager.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/using-secrets-manager.html
+   *
+   * @param secretsManager The secrets manager configuration
+   */
+  public static secretsManager(secretsManager: SecretsManagerProps): HttpEndpointAuthentication {
+    return new HttpEndpointSecretsManagerAuthentication(secretsManager);
+  }
+
+  /**
+   * Binds this authentication configuration to access the HTTP endpoint.
+   */
+  abstract bind(scope: Construct): HttpEndpointAuthenticationOptions;
+}
+
+class HttpEndpointAccesKeyAuthentication extends HttpEndpointAuthentication {
+  constructor(private readonly accessKey: string) { super(); }
+
+  bind(scope: Construct): HttpEndpointAuthenticationOptions {
+    if (!cdk.Token.isUnresolved(this.accessKey) && Buffer.from(this.accessKey).byteLength > 4096) {
+      throw new cdk.ValidationError('The maximum length of the access key is 4096 bytes.', scope);
+    }
+    return { accessKey: this.accessKey };
+  }
+}
+
+class HttpEndpointSecretsManagerAuthentication extends HttpEndpointAuthentication {
+  constructor(private readonly secretsManager: SecretsManagerProps) { super(); }
+
+  bind(_scope: Construct): HttpEndpointAuthenticationOptions {
+    return { secretsManager: this.secretsManager };
+  }
 }
 
 /**
@@ -121,21 +184,18 @@ export class HttpEndpoint implements IDestination {
     const s3Backup = { ...this.props.s3Backup, mode: this.props.s3Backup?.mode ?? BackupMode.FAILED };
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, s3Backup)!;
 
-    const secretsManagerConfiguration = createSecretsManagerConfiguration(scope, role, this.props.secretsManager);
-    if (secretsManagerConfiguration?.secretArn && this.props.accessKey) {
-      throw new cdk.ValidationError("You can specify either 'accessKey' or 'secretsManager.secrets', not both.", scope);
-    }
+    const authentication = this.props.authentication?.bind(scope);
 
     return {
       httpEndpointDestinationConfiguration: {
         bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize),
         cloudWatchLoggingOptions: loggingOptions,
         endpointConfiguration: {
-          accessKey: this.props.accessKey,
+          accessKey: authentication?.accessKey,
           name: this.props.name,
           url: this.props.url,
         },
-        processingConfiguration: createProcessingConfig(scope, role, this.props),
+        processingConfiguration: createProcessingConfig(scope, this.props, { role }),
         requestConfiguration: undefinedIfAllValuesAreEmpty({
           commonAttributes: this.props.parameters
             && Object.entries(this.props.parameters).map(([key, value]) => ({ attributeName: key, attributeValue: value })),
@@ -147,7 +207,7 @@ export class HttpEndpoint implements IDestination {
         roleArn: role.roleArn,
         s3BackupMode: s3Backup.mode === BackupMode.ALL ? 'AllData' : 'FailedDataOnly',
         s3Configuration: backupConfig,
-        secretsManagerConfiguration: createSecretsManagerConfiguration(scope, role, this.props.secretsManager),
+        secretsManagerConfiguration: createSecretsManagerConfiguration(scope, role, authentication?.secretsManager),
       },
       dependables: [...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

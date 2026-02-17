@@ -240,7 +240,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5bbc4fd59a61faa1bde3c1ea7137bb83ed01e5b2bd48542904f53ad33e5f946f.zip"
+     "S3Key": "659f0176022061d98528be35476c0727944be13089c3e8b477dfe3ee62fae8b9.zip"
     },
     "Environment": {
      "Variables": {
@@ -685,6 +685,7 @@
       }
      },
      "EndpointConfiguration": {
+      "AccessKey": "access-key",
       "Name": "MyDestinationName",
       "Url": {
        "Fn::GetAtt": [

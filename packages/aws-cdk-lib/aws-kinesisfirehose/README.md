@@ -151,7 +151,7 @@ Specify an access key directly:
 ```ts
 const httpDestination = new firehose.HttpEndpoint({
   url: 'https://example.com/',
-  accessKey: 'plaintext-access-key',
+  authentication: firehose.HttpEndpointAuthentication.accessKey('plaintext-access-key'),
 });
 ```
 
@@ -161,7 +161,7 @@ import * as secrets from 'aws-cdk-lib/aws-secretsmanager';
 declare const secret: secrets.ISecret;
 const httpDestination = new firehose.HttpEndpoint({
   url: 'https://example.com/',
-  secretsManager: { secret },
+  authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret }),
 });
 ```
 

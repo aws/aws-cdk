@@ -50,7 +50,6 @@ describe('HTTP endpoint destination', () => {
       destination: new firehose.HttpEndpoint({
         url: 'https://example.com/',
         name: 'MyEndpointName',
-        accessKey: 'my-access-key',
         parameters: {
           'my-header-name1': 'my-header-value1',
           'my-header-name2': 'my-header-value2',
@@ -67,7 +66,6 @@ describe('HTTP endpoint destination', () => {
         EndpointConfiguration: {
           Url: 'https://example.com/',
           Name: 'MyEndpointName',
-          AccessKey: 'my-access-key',
         },
         RequestConfiguration: {
           CommonAttributes: [
@@ -349,7 +347,7 @@ describe('HTTP endpoint destination', () => {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         }),
-      })).toThrow('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrow('Buffering interval must be less than 900 seconds, got 960 seconds.');
     });
 
     it('validates bufferingSize', () => {
@@ -359,7 +357,7 @@ describe('HTTP endpoint destination', () => {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(0),
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 0 MiBs');
+      })).toThrow('Buffering size must be at least 1 MiB, got 0 MiBs.');
 
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destination: new firehose.HttpEndpoint({
@@ -367,7 +365,7 @@ describe('HTTP endpoint destination', () => {
           bufferingInterval: cdk.Duration.minutes(1),
           bufferingSize: cdk.Size.mebibytes(256),
         }),
-      })).toThrow('Buffering size must be between 1 and 128 MiBs. Buffering size provided was 256 MiBs');
+      })).toThrow('Buffering size must be at most 128 MiBs, got 256 MiBs.');
     });
   });
 
@@ -399,14 +397,32 @@ describe('HTTP endpoint destination', () => {
     });
   });
 
-  describe('secrets manager configuration', () => {
+  describe('authentication configuration', () => {
+    it('creates configuration with plaintext access key', () => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: new firehose.HttpEndpoint({
+          url: 'https://example.com/',
+          authentication: firehose.HttpEndpointAuthentication.accessKey('my-access-key'),
+        }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        HttpEndpointDestinationConfiguration: {
+          EndpointConfiguration: {
+            Url: 'https://example.com/',
+            AccessKey: 'my-access-key',
+          },
+        },
+      });
+    });
+
     it('creates configuration with secret', () => {
       const secret = new secrets.Secret(stack, 'Secret');
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
+          authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret }),
           retryDuration: cdk.Duration.minutes(60),
-          secretsManager: { secret },
         }),
       });
 
@@ -425,8 +441,8 @@ describe('HTTP endpoint destination', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
+          authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret }),
           retryDuration: cdk.Duration.minutes(60),
-          secretsManager: { secret },
         }),
       });
 
@@ -453,8 +469,8 @@ describe('HTTP endpoint destination', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
+          authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret, role: secretRole }),
           retryDuration: cdk.Duration.minutes(60),
-          secretsManager: { secret, role: secretRole },
         }),
       });
 
@@ -473,8 +489,8 @@ describe('HTTP endpoint destination', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
+          authentication: firehose.HttpEndpointAuthentication.secretsManager({ enabled: false }),
           retryDuration: cdk.Duration.minutes(60),
-          secretsManager: { enabled: false },
         }),
       });
 
@@ -487,18 +503,28 @@ describe('HTTP endpoint destination', () => {
       });
     });
 
-    it('throws when secret and access key are both specified', () => {
-      const secret = new secrets.Secret(stack, 'Secret');
+    it('throws when the access key exceeds 4096 bytes', () => {
       expect(() => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: new firehose.HttpEndpoint({
             url: 'https://example.com/',
-            accessKey: 'my-access-key',
+            authentication: firehose.HttpEndpointAuthentication.accessKey(Array.from({ length: 4097 }, () => '*').join('')),
             retryDuration: cdk.Duration.minutes(60),
-            secretsManager: { secret },
           }),
         });
-      }).toThrow("You can specify either 'accessKey' or 'secretsManager.secrets', not both.");
+      }).toThrow('The maximum length of the access key is 4096 bytes.');
+    });
+
+    it('throws when secret not present but enabled', () => {
+      expect(() => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destination: new firehose.HttpEndpoint({
+            url: 'https://example.com/',
+            authentication: firehose.HttpEndpointAuthentication.secretsManager({ enabled: true }),
+            retryDuration: cdk.Duration.minutes(60),
+          }),
+        });
+      }).toThrow('The secret is required when enabled');
     });
   });
 
