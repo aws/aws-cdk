@@ -738,13 +738,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Grant a predefined set of permissions on this Table.
    */
   public get grants(): TableGrants {
-    return new TableGrants({
-      table: this,
-      encryptedResource: this,
-      policyResource: this,
-      regions: this.regions,
-      hasIndex: this.hasIndex,
-    });
+    return TableGrants.fromTable(this, this.regions, this.hasIndex);
   }
 
   /**
@@ -789,6 +783,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
    *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.stream()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
@@ -805,6 +802,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.readData()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -815,6 +815,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.tableListStreams()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -832,6 +835,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.streamRead()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -846,6 +852,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.writeData()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -863,6 +872,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.readWriteData()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -876,6 +888,9 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.fullAccess()` instead.
    *
    * [disable-awslint:no-grants]
    *

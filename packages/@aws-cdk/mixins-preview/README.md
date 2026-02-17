@@ -133,6 +133,13 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new BucketVersioning());
 ```
 
+**BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
+
+```typescript
+const bucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(bucket).apply(new BucketBlockPublicAccess());
+```
+
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
@@ -173,6 +180,38 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 // Configure log delivery using the mixin
 distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
+```
+
+Configures vended logs delivery for supported resources when a pre-created destination is provided:
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
+
+// Create CloudFront distribution
+declare const bucket: s3.Bucket;
+const distribution = new cloudfront.Distribution(scope, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+  },
+});
+
+// Create destination bucket
+const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
+// Add permissions to bucket to facilitate log delivery
+const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
+  bucket: destBucket,
+  document: new iam.PolicyDocument(),
+});
+// Create S3 delivery destination for logs
+const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
+  destinationResourceArn: destBucket.bucketArn,
+  name: 'unique-destination-name',
+  deliveryDestinationType: 'S3',
+});
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
 ### L1 Property Mixins

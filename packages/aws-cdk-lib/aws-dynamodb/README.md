@@ -156,6 +156,114 @@ const barStack = new BarStack(app, 'BarStack', {
 
 Note: You can create an instance of the `TableV2` construct with as many `replicas` as needed as long as there is only one replica per region. After table creation you can add or remove `replicas`, but you can only add or remove a single replica in each update.
 
+### Multi-Account Global Tables
+
+Multi-account global tables extend DynamoDB replication across AWS accounts, providing enhanced security, governance, and fault isolation. Each replica resides in a separate AWS account, enabling account-level isolation and alignment with organizational structures.
+
+#### Creating Multi-Account Replicas
+
+For tables defined in the same CDK application, use the `TableV2MultiAccountReplica` construct:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+
+// Source table in Account A
+const sourceStack = new cdk.Stack(app, 'SourceStack', {
+  env: { region: 'us-east-2', account: '111111111111' },
+});
+
+const sourceTable = new dynamodb.TableV2(sourceStack, 'SourceTable', {
+  tableName: 'MyMultiAccountTable',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
+});
+
+// Replica stack in Account B
+const replicaStack = new cdk.Stack(app, 'ReplicaStack', {
+  env: { region: 'us-east-1', account: '222222222222' },
+});
+
+// Create replica - permissions are automatically configured
+const replica = new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+  tableName: 'MyMultiAccountTable',
+  replicaSourceTable: sourceTable,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
+});
+```
+
+The `TableV2MultiAccountReplica` construct:
+* Creates the replica table with the correct source ARN
+* Copies the key schema from the source table
+* Automatically adds resource policies to both source and replica tables
+* Validates that the replica is in a different account and region
+
+**Note**: Permissions are automatically configured when both tables are in the same CDK app. For imported source tables, see "Working with Imported Tables" below.
+
+#### Adding Replicas to Existing Tables
+
+If the source table already exists in AWS, you cannot use automatic cross-stack references. The replica will issue a warning, and you must manually configure permissions:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+
+// Source table in Account A
+const sourceStack = new cdk.Stack(app, 'SourceStack', {
+  env: { region: 'us-east-1', account: '111111111111' },
+});
+
+// Region us-west-2
+const sourceTable = new dynamodb.TableV2(sourceStack, 'SourceTable', {
+  tableName: 'MyMultiAccountTable',
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
+});
+// After replica is deployed, update source stack with the ARN
+sourceTable.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/MyMultiAccountTable');
+```
+
+#### Working with Imported Tables
+
+When importing a source table, the replica will issue a warning since it cannot automatically configure permissions on the imported table:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const app = new cdk.App();
+
+const replicaStack = new cdk.Stack(app, 'ReplicaStack', {
+  env: { region: 'us-east-1', account: '222222222222' },
+});
+
+// Import source table
+const importedSource = dynamodb.TableV2.fromTableArn(
+  replicaStack,
+  'ImportedSource',
+  'arn:aws:dynamodb:us-east-2:111111111111:table/MyMultiAccountTable',
+);
+
+// Create replica - will issue a warning about missing source permissions
+const replica = new dynamodb.TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+  tableName: 'MyMultiAccountTable',
+  replicaSourceTable: importedSource,
+  globalTableSettingsReplicationMode: dynamodb.GlobalTableSettingsReplicationMode.ALL,
+});
+```
+
+**Warning**: The replica will emit a warning indicating that you must manually configure permissions on the actual source table.
+
+Then configure permissions on the actual source table using the replica ARN as shown in "Adding Replicas to Existing Tables" above.
+
+#### Key Considerations
+
+* Multi-account replicas can only be created using the `TableV2MultiAccountReplica` construct
+* Each replica must be in a separate AWS account and region
+* Only Multi-Region Eventual Consistency (MREC) is supported
+* Resource-based policies must be configured on both source and replica tables before replication begins
+
 ## Multi-Region Strong Consistency (MRSC)
 
 By default, DynamoDB global tables provide eventual consistency across regions. For applications requiring strong consistency across regions, you can configure Multi-Region Strong Consistency (MRSC) using the `multiRegionConsistency` property.

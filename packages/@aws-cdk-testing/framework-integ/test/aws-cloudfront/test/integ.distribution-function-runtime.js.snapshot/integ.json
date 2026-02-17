@@ -3,11 +3,11 @@
   "testCases": {
     "CF2Runtime/DefaultTest": {
       "stacks": [
-        "integ-distribution-function"
+        "integ-distribution-function-runtime"
       ],
       "assertionStack": "CF2Runtime/DefaultTest/DeployAssert",
       "assertionStackName": "CF2RuntimeDefaultTestDeployAssertB25F4037"
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1033.0"
 }

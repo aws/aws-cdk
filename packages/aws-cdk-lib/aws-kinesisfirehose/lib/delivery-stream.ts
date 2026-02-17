@@ -133,6 +133,9 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.putRecords()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPutRecords(grantee: iam.IGrantable): iam.Grant {

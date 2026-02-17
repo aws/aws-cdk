@@ -10,7 +10,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import '@aws-cdk/mixins-preview/with';
 import { ConstructSelector, Mixins, Mixin, IMixin } from '@aws-cdk/mixins-preview/core';
 import { PropertyMergeStrategy } from '@aws-cdk/mixins-preview/mixins';
-import { AutoDeleteObjects, BucketVersioning, CfnBucketPropsMixin, BucketPolicyStatementsMixin } from '@aws-cdk/mixins-preview/aws-s3/mixins';
+import { AutoDeleteObjects, BucketVersioning, CfnBucketPropsMixin, BucketPolicyStatementsMixin, BucketBlockPublicAccess } from '@aws-cdk/mixins-preview/aws-s3/mixins';
 
 // for testing purposes, ensure these imports work
 import { mixins as alexa_mixins } from '@aws-cdk/mixins-preview/alexa-ask';

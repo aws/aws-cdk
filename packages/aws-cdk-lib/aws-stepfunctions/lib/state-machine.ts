@@ -234,6 +234,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity permissions to start an execution of this state
    * machine.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.startExecution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
@@ -244,6 +247,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity permissions to start a synchronous execution of
    * this state machine.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.startSyncExecution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
@@ -253,6 +259,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to read results from state
    * machine.
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
@@ -261,6 +270,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity task response permissions on a state machine
+   *
+   * The use of this method is discouraged. Please use `grants.taskResponse()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
@@ -269,6 +281,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permissions on all executions of the state machine
+   *
+   * The use of this method is discouraged. Please use `grants.execution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
@@ -277,6 +292,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permission to redrive the execution of the state machine
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.redriveExecution()` instead.
    *
    * [disable-awslint:no-grants]
    */

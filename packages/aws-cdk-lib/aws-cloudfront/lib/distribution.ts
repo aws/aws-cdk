@@ -342,6 +342,9 @@ export class Distribution extends Resource implements IDistribution {
       }
 
       /**
+       *
+       * The use of this method is discouraged. Please use `grants.createInvalidation()` instead.
+       *
        * [disable-awslint:no-grants]
        */
       public grantCreateInvalidation(grantee: iam.IGrantable): iam.Grant {

@@ -1,12 +1,13 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "AutoPublishTest/DefaultTest": {
       "stacks": [
-        "integ-distribution-function"
+        "integ-distribution-function-autopublish"
       ],
       "assertionStack": "AutoPublishTest/DefaultTest/DeployAssert",
       "assertionStackName": "AutoPublishTestDefaultTestDeployAssert10053C6C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

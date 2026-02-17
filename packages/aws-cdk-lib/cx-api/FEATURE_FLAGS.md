@@ -110,6 +110,7 @@ Flags come in three types:
 | [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
 | [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
+| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
 
 <!-- END table -->
 
@@ -251,6 +252,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
+| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -2334,6 +2336,25 @@ When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OI
 | 2.237.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to use the custom resource provider.
+
+
+### @aws-cdk/core:automaticL1Traits
+
+*Automatically use the default L1 traits for L1 constructs`*
+
+Flag type: New default behavior
+
+When enabled, the construct library will apply default L1 traits for types that 
+have no traits defined yet. Traits regulate behaviors such as how to create 
+resource policies, or how to find an encryption key for a given L1 construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.239.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Register traits explicitly for each resource type
 
 
 <!-- END details -->

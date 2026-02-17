@@ -300,8 +300,19 @@ make sure your custom resource behaves correctly in all cases:
     to roll back to the previous state (with `ResourceProperties` and
     `OldResourceProperties` reversed).
   * If you return a different `PhysicalResourceId`, you will subsequently
-    receive a `Delete` event to clean up the previous state of the resource.
+    receive a `Delete` event to clean up the previous instance of the resource.
 * During `Delete`:
+  * If your `Create` takes a long time to complete, it is possible **that
+    another resource may fail during this time**. If that happens, CloudFormation
+    will stop waiting for the Create call to complete and send you a `Delete`
+    event. Because the original Create event never finished, it doesn't know
+    about the resource's physical ID, and will invent one. The `PhysicalId` it
+    will send you in this call looks like `<stackname>-<logicalId>-<suffix>`.
+    The best you can do is ignore this event; since you cannot know the physical
+    ID of the resource in the `Create` call, there is no way to delete it. The
+    *provider framework* cannot help you with this, you have no choice but to
+    leak this resource.
+    ([CloudFormation roadmap issue](https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/1814)).
   * If the behavior of your custom resource is tied to another AWS resource
     (for example, it exists to clean the contents of a stateful resource), keep
     in mind that your custom resource may be deleted independently of the other
@@ -891,9 +902,9 @@ For more information on external IDs and preventing confused deputy attacks, see
 
 **This feature is currently experimental**
 
-You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`.
 
-Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
+Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
@@ -986,7 +997,7 @@ CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
-});    
+});
 ```
 
 ### Setting Lambda Runtimes

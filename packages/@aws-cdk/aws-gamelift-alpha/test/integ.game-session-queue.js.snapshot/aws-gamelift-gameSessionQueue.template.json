@@ -125,7 +125,7 @@
     },
     "MaxSize": 1,
     "MinSize": 0,
-    "Name": "test-fleet",
+    "Name": "test-fleet-gsq",
     "NewGameSessionProtectionPolicy": "NoProtection",
     "RuntimeConfiguration": {
      "GameSessionActivationTimeoutSeconds": 300,
@@ -158,7 +158,6 @@
   "MyGameSessionQueue1A15CE31": {
    "Type": "AWS::GameLift::GameSessionQueue",
    "Properties": {
-    "Name": "test-gameSessionQueue",
     "CustomEventData": "test-event-data",
     "Destinations": [
      {
@@ -218,6 +217,7 @@
       "eu-west-2"
      ]
     },
+    "Name": "test-gameSessionQueue",
     "NotificationTarget": {
      "Ref": "MyTopic86869434"
     },

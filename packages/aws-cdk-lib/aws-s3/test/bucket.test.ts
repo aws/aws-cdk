@@ -3,9 +3,11 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
+import { BucketGrants, CfnBucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */
@@ -1723,6 +1725,62 @@ describe('bucket', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
+  });
+
+  test('can grant read permissions to a CfnBucket', () => {
+    const stack = new cdk.Stack();
+    const principal = new iam.ServicePrincipal('s3.amazonaws.com');
+
+    const key = new CfnKey(stack, 'EncryptionKey');
+    const cfnBucket = new CfnBucket(stack, 'CfnBucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          bucketKeyEnabled: true,
+          serverSideEncryptionByDefault: {
+            kmsMasterKeyId: key.attrKeyId,
+            sseAlgorithm: 'aws:kms',
+          },
+        }],
+      },
+    });
+
+    BucketGrants.fromBucket(cfnBucket).read(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'CfnBucket' },
+      PolicyDocument: {
+        Statement: [{
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Effect: 'Allow',
+          Principal: { 'Service': 's3.amazonaws.com' },
+          Resource: [{
+            'Fn::GetAtt': ['CfnBucket', 'Arn'],
+          }, {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']],
+          }],
+        }],
+      },
+    });
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Service: 's3.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
     });
   });
 
