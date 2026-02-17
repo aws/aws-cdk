@@ -1435,7 +1435,7 @@ credential provider attached enabling you to securely access targets whether the
 | `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
-| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
@@ -1649,7 +1649,9 @@ You can create targets in two ways: using the static factory methods on `Gateway
 
 #### Using addTarget methods (Recommended)
 
-Below are the examples on how you can create Lambda , Smity and OpenAPI target using `addTarget` method.
+This approach is recommended for most use cases, especially when creating targets alongside the gateway. It provides a cleaner, more fluent API by eliminating the need to explicitly pass the gateway reference.
+
+Below are the examples on how you can create Lambda, Smithy, OpenAPI, MCP Server, and API Gateway targets using `addTarget` methods.
 
 ```typescript fixture=default
 // Create a gateway first
@@ -1794,9 +1796,36 @@ def handler(event, context):
 mcpTarget.grantSync(syncFunction);
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Uses IAM authorization for outbound auth by default
+const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+});
+```
+
 #### Using static factory methods
 
-Create Gateway target using static convienence method.
+Use static factory methods when working with imported gateways, creating targets in different constructs/stacks, or when you need more explicit control over the construct tree hierarchy.
+
+Create Gateway target using static convenience methods.
 
 - Lambda Target
 
@@ -1912,6 +1941,38 @@ const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
 });
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Create a gateway target using the static factory method
+const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(this, "MyApiGatewayTarget", {
+  gatewayTargetName: "my-api-gateway-target",
+  description: "Target for API Gateway REST API integration",
+  gateway: gateway,
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  metadataConfiguration: {
+    allowedRequestHeaders: ["X-User-Id"],
+    allowedQueryParameters: ["limit"],
+  },
+});
+```
+
 ### Advanced Usage: Direct Configuration for gateway target
 
 For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
@@ -1923,6 +1984,7 @@ Each target type has a corresponding configuration class with a static `create()
 - **Lambda**: `LambdaTargetConfiguration.create(lambdaFunction, toolSchema)`
 - **OpenAPI**: `OpenApiTargetConfiguration.create(apiSchema, validateSchema?)`
 - **Smithy**: `SmithyTargetConfiguration.create(smithyModel)`
+- **API Gateway**: `ApiGatewayTargetConfiguration.create(props)`
 
 #### Example: Lambda Target with Custom Configuration
 
@@ -1965,7 +2027,7 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 });
 ```
 
-This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
+This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`) handle all of this internally.
 
 ### Gateway Interceptors
 
