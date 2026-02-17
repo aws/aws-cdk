@@ -252,7 +252,10 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         throw new ValidationError('The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type', this);
       }
 
-      if (cfnSvc.taskDefinition !== (props.service as ecs.BaseService).taskDefinition.family) {
+      const taskDef = (props.service as ecs.BaseService).taskDefinition;
+      // Type assertion is safe: BaseService constructor (base-service.ts:877-882) already validates
+      // that CODE_DEPLOY deployment controller requires an owned TaskDefinition
+      if (cfnSvc.taskDefinition !== (taskDef as ecs.TaskDefinition).family) {
         throw new ValidationError('The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack', this);
       }
     }

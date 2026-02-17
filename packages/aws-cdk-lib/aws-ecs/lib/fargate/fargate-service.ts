@@ -28,6 +28,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * require an owned TaskDefinition.
    *
    * [disable-awslint:ref-via-interface]
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly taskDefinition: ITaskDefinition;
 

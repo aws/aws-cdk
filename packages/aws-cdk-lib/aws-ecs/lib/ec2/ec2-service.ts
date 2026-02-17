@@ -28,6 +28,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * cannot be verified automatically.
    *
    * [disable-awslint:ref-via-interface]
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly taskDefinition: ITaskDefinition;
 

@@ -1450,7 +1450,7 @@ describe('fargate service', () => {
 
       test('throws an exception when adding multiple services without different discovery names', () => {
         // GIVEN
-        service.taskDefinition.addContainer('mobile', {
+        (service.taskDefinition as ecs.FargateTaskDefinition).addContainer('mobile', {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
           portMappings: [
             {
@@ -1480,7 +1480,7 @@ describe('fargate service', () => {
 
       test('throws an exception if ingressPortOverride is not valid.', () => {
         // GIVEN
-        service.taskDefinition.addContainer('mobile', {
+        (service.taskDefinition as ecs.FargateTaskDefinition).addContainer('mobile', {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
           portMappings: [
             {
@@ -1507,7 +1507,7 @@ describe('fargate service', () => {
 
       test('throws an exception if Client Alias port is not valid', () => {
         // GIVEN
-        service.taskDefinition.addContainer('mobile', {
+        (service.taskDefinition as ecs.FargateTaskDefinition).addContainer('mobile', {
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
           portMappings: [
             {
@@ -3902,6 +3902,38 @@ describe('fargate service', () => {
           },
         ],
       });
+    });
+
+    test('throws error when using imported TaskDefinition with Cloud Map options', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      // Import task definition from ARN - does not include networkMode
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(
+        stack,
+        'ImportedTaskDef',
+        'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      );
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      // WHEN / THEN
+      // Imported TaskDefinition lacks required networkMode property for Cloud Map
+      expect(() => {
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            name: 'myApp',
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+          },
+        });
+      }).toThrow(/This operation requires the networkMode.*to be defined/);
     });
   });
 

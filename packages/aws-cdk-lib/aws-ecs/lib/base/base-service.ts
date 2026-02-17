@@ -1474,7 +1474,8 @@ export abstract class BaseService extends Resource
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
+        // Type assertion is safe because we've already checked with isTaskDefinition at line 1464
+        targetGroup.registerConnectable(self, (self.taskDefinition as TaskDefinition)._portRangeFromPortMapping(target.portMapping));
         return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort!, options.alternateTarget);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -2054,7 +2055,7 @@ export enum PropagatedTagSource {
  */
 interface DetermineContainerNameAndPortOptions {
   dnsRecordType: cloudmap.DnsRecordType;
-  taskDefinition: TaskDefinition;
+  taskDefinition: ITaskDefinition;
   container?: ContainerDefinition;
   containerPort?: number;
 }
@@ -2070,6 +2071,11 @@ function determineContainerNameAndPort(scope: IConstruct, options: DetermineCont
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
       throw new ValidationError('Cannot add discovery for a container from another task definition', scope);
+    }
+
+    // defaultContainer access requires owned TaskDefinition
+    if (!TaskDefinition.isTaskDefinition(options.taskDefinition)) {
+      throw new ValidationError('Cloud Map service discovery requires an owned TaskDefinition with container configuration', scope);
     }
 
     const container = options.container ?? options.taskDefinition.defaultContainer!;

@@ -30,6 +30,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    * ECS Anywhere.
    *
    * [disable-awslint:ref-via-interface]
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly taskDefinition: ITaskDefinition;
 
