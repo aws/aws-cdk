@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file. See [standa
 ## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-16)
 
 
+### ⚠ BREAKING CHANGES
+
+aws-redshift-alpha: changed the default node type to RA3_LARGE
+
 ### Features
 
 * **bedrock-agentcore-alpha:** added new target type (api gateway) in agentcore gateway target. ([#36841](https://github.com/aws/aws-cdk/issues/36841)) ([0842754](https://github.com/aws/aws-cdk/commit/0842754ec56412a9b22f2e92f5aea7c86129ec52)), closes [#36817](https://github.com/aws/aws-cdk/issues/36817)
