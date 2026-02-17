@@ -364,8 +364,30 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+       ]
+      ]
+     }
     ]
    }
   },
@@ -385,9 +407,42 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWebTier"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+       ]
+      ]
+     }
     ]
    }
   },
