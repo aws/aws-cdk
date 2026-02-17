@@ -16,6 +16,7 @@ import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import type { Construct } from 'constructs';
 import type { Runtime } from './runtime';
 import { ValidationError } from './validation-helpers';
@@ -41,6 +42,26 @@ export enum AgentCoreRuntime {
    * Python 3.13 runtime
    */
   PYTHON_3_13 = 'PYTHON_3_13',
+}
+
+/**
+ * Options for configuring an S3 code asset from local files for agent runtime artifact
+ */
+export interface CodeAssetOptions extends s3_assets.AssetOptions {
+  /**
+   * The file path to the code asset
+   */
+  readonly path: string;
+
+  /**
+   * The runtime environment for executing the code
+   */
+  readonly runtime: AgentCoreRuntime;
+
+  /**
+   * The entry point for the code execution, specifying the function or method that should be invoked when the code runs
+   */
+  readonly entrypoint: string[];
 }
 
 /**
@@ -72,6 +93,14 @@ export abstract class AgentRuntimeArtifact {
    */
   public static fromS3(s3Location: s3.Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
     return new S3Image(s3Location, runtime, entrypoint);
+  }
+
+  /**
+   * Reference an agent runtime artifact that's constructed from local code assets uploaded to a CDK-managed S3 bucket
+   * @param options The options for configuring the code asset
+   */
+  public static fromCodeAsset(options: CodeAssetOptions): AgentRuntimeArtifact {
+    return new CodeAsset(options);
   }
 
   /**
@@ -193,6 +222,61 @@ class S3Image extends AgentRuntimeArtifact {
     if (this.s3Location.objectVersion) {
       s3Config.versionId = this.s3Location.objectVersion;
     }
+    return {
+      code: {
+        s3: s3Config,
+      },
+      runtime: this.runtime,
+      entryPoint: this.entrypoint,
+    } as any;
+  }
+}
+
+class CodeAsset extends AgentRuntimeArtifact {
+  private asset?: s3_assets.Asset;
+  private bound = false;
+  private readonly path: string;
+  private readonly runtime: AgentCoreRuntime;
+  private readonly entrypoint: string[];
+  private readonly options: s3_assets.AssetOptions;
+
+  constructor(props: CodeAssetOptions) {
+    super();
+    const { path, runtime, entrypoint, ...options } = props;
+    this.path = path;
+    this.runtime = runtime;
+    this.entrypoint = entrypoint;
+    this.options = options;
+  }
+
+  public bind(scope: Construct, runtime: Runtime): void {
+    // Create the asset if not already created
+    if (!this.asset) {
+      this.asset = new s3_assets.Asset(scope, 'AgentRuntimeArtifact', {
+        path: this.path,
+        ...this.options,
+      });
+    }
+
+    // Handle permissions (only once)
+    if (!this.bound && runtime.role) {
+      const bucket = this.asset.bucket;
+      // Ensure the policy is applied before the runtime resource is created
+      bucket.grantRead(runtime.role);
+      this.bound = true;
+    }
+  }
+
+  public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
+    if (!this.asset) {
+      throw new ValidationError('Asset not initialized. Call bind() before _render()');
+    }
+
+    const s3Config: any = {
+      bucket: this.asset.bucket.bucketName,
+      prefix: this.asset.s3ObjectKey,
+    };
+
     return {
       code: {
         s3: s3Config,
