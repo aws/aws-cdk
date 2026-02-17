@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-aws-redshift-alpha: changed the default node type to RA3_LARGE
+redshift-alpha: changed the default node type to RA3_LARGE
 
 ### Features
 
