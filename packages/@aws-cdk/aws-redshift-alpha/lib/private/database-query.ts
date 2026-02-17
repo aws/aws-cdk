@@ -64,7 +64,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const provider = new customresources.Provider(this, 'Provider', {
       onEventHandler: handler,
-      role: this.getOrCreateInvokerRole(handler),
+      frameworkOnEventRole: this.getOrCreateInvokerRole(handler),
     });
 
     const queryHandlerProps: DatabaseQueryHandlerProps & HandlerProps = {
