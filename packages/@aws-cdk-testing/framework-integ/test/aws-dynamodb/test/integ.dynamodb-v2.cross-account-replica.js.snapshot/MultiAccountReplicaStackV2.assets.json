@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "5dfa6e09a3f5cf4319ab561bcc01ff3ac6f849db80c3c09bdff396d0f238e66f": {
+      "displayName": "MultiAccountReplicaStackV2 Template",
+      "source": {
+        "path": "MultiAccountReplicaStackV2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "222222222222-ca-central-1-f36b6746": {
+          "bucketName": "cdk-hnb659fds-assets-222222222222-ca-central-1",
+          "objectKey": "5dfa6e09a3f5cf4319ab561bcc01ff3ac6f849db80c3c09bdff396d0f238e66f.json",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-file-publishing-role-222222222222-ca-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
