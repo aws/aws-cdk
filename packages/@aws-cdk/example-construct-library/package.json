@@ -84,7 +84,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "separate-module": false,
   "engines": {
