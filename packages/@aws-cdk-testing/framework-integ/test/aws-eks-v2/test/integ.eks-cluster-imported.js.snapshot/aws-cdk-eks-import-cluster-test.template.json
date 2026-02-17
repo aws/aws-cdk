@@ -1289,10 +1289,10 @@
      "Ref": "ClusterEB0386A7"
     },
     "Release": "mportclustertestimportedclusterchartdashboard428d91dc",
-    "Chart": "kubernetes-dashboard",
-    "Version": "6.0.8",
+    "Chart": "headlamp",
+    "Version": "0.40.0",
     "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
+    "Repository": "https://kubernetes-sigs.github.io/headlamp/",
     "CreateNamespace": true
    },
    "UpdateReplacePolicy": "Delete",
