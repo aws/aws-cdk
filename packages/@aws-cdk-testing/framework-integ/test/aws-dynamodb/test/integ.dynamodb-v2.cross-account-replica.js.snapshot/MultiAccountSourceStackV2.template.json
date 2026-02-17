@@ -1,0 +1,175 @@
+{
+ "Resources": {
+  "SourceTableV21A662B48": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "Replicas": [
+     {
+      "GlobalTableSettingsReplicationMode": "ENABLED",
+      "Region": "eu-west-1",
+      "ResourcePolicy": {
+       "PolicyDocument": {
+        "Statement": [
+         {
+          "Action": "dynamodb:AssociateTableReplica",
+          "Effect": "Allow",
+          "Principal": {
+           "AWS": {
+            "Fn::Join": [
+             "",
+             [
+              "arn:aws:iam::",
+              {
+               "Fn::Select": [
+                4,
+                {
+                 "Fn::Split": [
+                  ":",
+                  "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                 ]
+                }
+               ]
+              },
+              ":root"
+             ]
+            ]
+           }
+          },
+          "Resource": "*",
+          "Sid": {
+           "Fn::Join": [
+            "",
+            [
+             "AllowMultiAccountReplicaAssociation-",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          }
+         },
+         {
+          "Action": [
+           "dynamodb:ReadDataForReplication",
+           "dynamodb:ReplicateSettings",
+           "dynamodb:WriteDataForReplication"
+          ],
+          "Condition": {
+           "StringEquals": {
+            "aws:SourceAccount": [
+             "12345678",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          },
+          "Effect": "Allow",
+          "Principal": {
+           "Service": "replication.dynamodb.amazonaws.com"
+          },
+          "Resource": "*",
+          "Sid": {
+           "Fn::Join": [
+            "",
+            [
+             "AllowReplicationServiceReadWrite-",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:ca-central-1:222222222222:table/MultiAccountGlobalTable"
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          }
+         }
+        ],
+        "Version": "2012-10-17"
+       }
+      }
+     }
+    ],
+    "TableName": "MultiAccountGlobalTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
