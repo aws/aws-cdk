@@ -21,11 +21,8 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   /**
    * The task definition to use for tasks in the service.
    *
-   * You can use either an owned TaskDefinition (created in this stack) or an imported one
-   * (using `TaskDefinition.fromTaskDefinitionArn()`).
-   *
-   * Note: When using imported task definitions, EC2 compatibility and network mode
-   * cannot be verified automatically.
+   * TaskDefinition can be either owned (created in this stack) or imported.
+   * Note that some features require an owned TaskDefinition.
    *
    * [disable-awslint:ref-via-interface]
    * [disable-awslint:prefer-ref-interface]
