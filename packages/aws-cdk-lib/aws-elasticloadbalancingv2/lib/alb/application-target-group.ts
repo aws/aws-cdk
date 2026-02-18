@@ -408,6 +408,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
       }
     }
+
+    // Add a warning if neither protocol nor port was explicitly specified for non-Lambda targets
+    if (props.protocol === undefined && props.port === undefined && this.targetType !== TargetType.LAMBDA) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-elbv2:target-group-protocol-default',
+        'ApplicationTargetGroup protocol and port not specified. Please specify either protocol (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS) or port number. Note: Missing both will cause deployment failures.',
+      );
+    }
   }
 
   public get metrics(): IApplicationTargetGroupMetrics {
@@ -618,10 +626,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
-    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && (this.protocol === undefined || this.port === undefined)) {
-      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
-    }
+    // Note: Protocol/port validation is now handled as a warning in the constructor
+    // instead of a hard validation error to maintain backward compatibility
 
     if (this.healthCheck) {
       if (this.healthCheck.interval && this.healthCheck.timeout &&
