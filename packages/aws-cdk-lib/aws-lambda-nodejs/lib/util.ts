@@ -138,13 +138,13 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 export function validatePackageName(name: string, fieldName: string): void {
   if (!NPM_PACKAGE_NAME_PATTERN.test(name)) {
     throw new UnscopedValidationError(
-      `Invalid ${fieldName}: "${name}". Package names must contain only alphanumeric characters, @, /, -, _, and . to prevent command injection.`
+      `Invalid ${fieldName}: "${name}". Package names must contain only alphanumeric characters, @, /, -, _, and . to prevent command injection.`,
     );
   }
-  
+
   if (SHELL_METACHARACTERS.test(name)) {
     throw new UnscopedValidationError(
-      `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + `) to prevent command injection.`
+      `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + ') to prevent command injection.',
     );
   }
 }

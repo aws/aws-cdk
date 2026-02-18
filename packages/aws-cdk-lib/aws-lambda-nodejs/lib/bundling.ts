@@ -410,12 +410,12 @@ export class Bundling implements cdk.BundlingOptions {
 
       const pathJoin = osPathJoin(osPlatform);
       let relativeEntryPath = pathJoin(this.projectRoot, this.relativeEntryPath);
-      
+
       // Get command arrays for direct execution
-      const esbuildCmd = esbuild.isLocal 
+      const esbuildCmd = esbuild.isLocal
         ? this.packageManager.runBinCommandArray('esbuild')
         : ['esbuild'];
-      const tscCmd = tsc && (tsc.isLocal 
+      const tscCmd = tsc && (tsc.isLocal
         ? this.packageManager.runBinCommandArray('tsc')
         : ['tsc']);
 
@@ -464,7 +464,7 @@ export class Bundling implements cdk.BundlingOptions {
         esbuildArgs,
       };
     };
-    
+
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
 
@@ -480,7 +480,7 @@ export class Bundling implements cdk.BundlingOptions {
         }
 
         const bundlingData = createBundlingData(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
-        
+
         const execOptions = {
           env: { ...process.env, ...environment },
           stdio: [
@@ -495,7 +495,7 @@ export class Bundling implements cdk.BundlingOptions {
         if (bundlingData.tscCmd && bundlingData.tscArgs.length > 0) {
           const [tscCommand, ...tscCmdArgs] = bundlingData.tscCmd;
           const tscProc = spawnSync(tscCommand, [...tscCmdArgs, ...bundlingData.tscArgs], { ...execOptions, shell: false });
-          
+
           if (tscProc.error) {
             throw tscProc.error;
           }
@@ -510,7 +510,7 @@ export class Bundling implements cdk.BundlingOptions {
         // Execute esbuild directly without shell - spawnSync('esbuild', [...args])
         const [esbuildCommand, ...esbuildCmdArgs] = bundlingData.esbuildCmd;
         const proc = spawnSync(esbuildCommand, [...esbuildCmdArgs, ...bundlingData.esbuildArgs], { ...execOptions, shell: false });
-        
+
         if (proc.error) {
           throw proc.error;
         }
