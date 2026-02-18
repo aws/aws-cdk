@@ -671,6 +671,9 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       image: this.imageConfig.imageName,
+      repositoryCredentials: this.imageConfig.repositoryCredentials ? {
+        credentialsParameter: this.imageConfig.repositoryCredentials.credentialsParameter!,
+      } : undefined,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,

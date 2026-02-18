@@ -799,6 +799,46 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       },
     });
   });
+
+  test('respects repository credentials for private registries', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'RegistrySecret');
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromRegistry('private.registry.com/my-image:tag', {
+          credentials: secret,
+        }),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: 'private.registry.com/my-image:tag',
+        RepositoryCredentials: {
+          CredentialsParameter: { Ref: 'RegistrySecret44FA9C40' },
+        },
+      },
+    });
+
+    // Verify execution role has permission to read the secret
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'RegistrySecret44FA9C40' },
+          }),
+        ]),
+      },
+    });
+  });
 });
 
 describe('EC2 containers', () => {
