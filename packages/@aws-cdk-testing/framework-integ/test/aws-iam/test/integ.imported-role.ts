@@ -29,11 +29,6 @@ const tooLongIdRoleInSecondStack = Role.fromRoleName(secondStack, `Role${'y'.rep
 // Expect Policy Name to be truncated to the upper limit
 tooLongIdRoleInSecondStack.addToPrincipalPolicy(new PolicyStatement({ resources: ['arn:aws:sqs:*:*:secondQueue'], actions: ['sqs:SendMessage'] }));
 
-const assertionStack = new Stack(app, 'ImportedRoleTestAssertions');
-assertionStack.addDependency(roleStack);
-assertionStack.addDependency(firstStack);
-assertionStack.addDependency(secondStack);
-
 const thirdStack = new Stack(app, 'integ-iam-imported-role-3');
 const roleToBeImported = new Role(thirdStack, 'roleToBeImported', {
   roleName: 'mutableRoleToBeImported',
@@ -60,21 +55,15 @@ const managedPolicy1 = new ManagedPolicy(thirdStack, 'ManagedPolicy1', {
 });
 importedMutableRole.addManagedPolicy(managedPolicy);
 importedMutableRole.addManagedPolicy(managedPolicy1);
-assertionStack.addDependency(thirdStack);
+
+const assertionStack = new Stack(app, 'ImportedRoleTestAssertions');
+assertionStack.addDependency(roleStack);
+assertionStack.addDependency(firstStack);
+assertionStack.addDependency(secondStack);
 
 const test = new integ.IntegTest(app, 'ImportedRoleTest', {
   testCases: [roleStack, thirdStack],
   assertionStack,
-  cdkCommandOptions: {
-    destroy: {
-      // integ-iam-imported-role-3 exports roleToBeImported's Ref, which is consumed by
-      // ImportedRoleTestAssertions. CloudFormation cannot delete the export while the
-      // assertion stack still references it, so the destroy phase always fails with:
-      //   "Cannot delete export integ-iam-imported-role-3:ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6
-      //    as it is in use by ImportedRoleTestAssertions."
-      expectError: true,
-    },
-  },
 });
 
 test.assertions
