@@ -10,7 +10,7 @@ describe('runtime', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       runtimeManagementMode: lambda.RuntimeManagementMode.AUTO,
     });
     // WHEN
@@ -27,7 +27,7 @@ describe('runtime', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       runtimeManagementMode: lambda.RuntimeManagementMode.FUNCTION_UPDATE,
     });
     // WHEN
@@ -44,7 +44,7 @@ describe('runtime', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       runtimeManagementMode: lambda.RuntimeManagementMode.manual(
         'arn:aws:lambda:ap-northeast-1::runtime:07a48df201798d627f2b950f03bb227aab4a655a1d019c3296406f95937e2525',
       ),

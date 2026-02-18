@@ -1,4 +1,5 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
@@ -26,6 +27,7 @@ export interface CallSite {
  * https://github.com/sindresorhus/callsites
  */
 export function callsites(): CallSite[] {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const _prepareStackTrace = Error.prepareStackTrace;
   Error.prepareStackTrace = (_, stack) => stack;
   const stack = new Error().stack?.slice(1);

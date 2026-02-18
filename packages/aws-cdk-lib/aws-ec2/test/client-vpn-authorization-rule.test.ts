@@ -1,7 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
-import { Connections, IClientVpnEndpoint } from '../lib';
+import type { IClientVpnEndpoint } from '../lib';
+import { Connections } from '../lib';
 import { ClientVpnAuthorizationRule } from '../lib/client-vpn-authorization-rule';
 
 let stack: Stack;
@@ -24,6 +25,10 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     new ClientVpnAuthorizationRule(stack, 'NormalRule', {
       cidr: '10.0.10.0/32',
@@ -52,6 +57,10 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'typoTypo',
+      },
     };
     const clientVpnEndpoint: IClientVpnEndpoint = {
       endpointId: 'myClientVpnEndpoint',
@@ -61,6 +70,10 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     expect(() => {
       new ClientVpnAuthorizationRule(stack, 'RuleBothEndointAndEndpoint', {
@@ -92,6 +105,10 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndoint,
+      clientVpnEndpointRef: {
+        clientVpnEndpointId: 'myClientVpnEndpoint',
+      },
     };
     new ClientVpnAuthorizationRule(stack, 'RuleWithEndointTypo', {
       cidr: '10.0.10.0/32',

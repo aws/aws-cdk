@@ -1,12 +1,12 @@
-/* eslint-disable no-console */
 
-/* eslint-disable import/no-extraneous-dependencies */
-import { Lambda, InvocationResponse, InvocationType } from '@aws-sdk/client-lambda';
+import type { InvocationResponse, InvocationType } from '@aws-sdk/client-lambda';
+import { Lambda } from '@aws-sdk/client-lambda';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 
 export type DecodedInvocationResponse = Omit<InvocationResponse, 'Payload'> & {
   Payload?: string;
-}
+};
 
 export type InvokeFunction = (functionName: string, invocationType: InvocationType, timeout: number) => Promise<DecodedInvocationResponse>;
 

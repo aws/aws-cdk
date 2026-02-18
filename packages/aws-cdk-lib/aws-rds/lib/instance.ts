@@ -1,35 +1,43 @@
-import { Construct } from 'constructs';
-import { CaCertificate } from './ca-certificate';
+import type { Construct } from 'constructs';
+import type { CaCertificate } from './ca-certificate';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IInstanceEngine } from './instance-engine';
-import { IOptionGroup } from './option-group';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
+import type { IInstanceEngine } from './instance-engine';
+import type { IOptionGroup } from './option-group';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
-import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
-import { ISubnetGroup, SubnetGroup } from './subnet-group';
+import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { PerformanceInsightRetention } from './props';
+import type { DatabaseProxyOptions } from './proxy';
+import { DatabaseProxy, ProxyTarget } from './proxy';
+import type { CfnDBInstanceProps } from './rds.generated';
+import { CfnDBInstance } from './rds.generated';
+import { SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import type { ArnComponents, Duration, IResource } from '../../core';
+import { ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * A database instance
  */
-export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget, aws_rds.IDBInstanceRef {
   /**
    * The instance identifier.
    */
@@ -188,7 +196,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
 
     return this.fromDatabaseInstanceAttributes(scope, id, {
       instanceEndpointAddress: instance['Endpoint.Address'],
-      port: instance['Endpoint.Port'],
+      port: Number(instance['Endpoint.Port']),
       instanceIdentifier: options.instanceIdentifier,
       securityGroups: securityGroups,
       instanceResourceId: instance.DbiResourceId,
@@ -241,6 +249,9 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
       throw new ValidationError('Cannot grant connect when IAM authentication is disabled', this);
@@ -305,6 +316,16 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   }
 
   /**
+   * A reference to this database instance
+   */
+  public get dbInstanceRef(): aws_rds.DBInstanceReference {
+    return {
+      dbInstanceIdentifier: this.instanceIdentifier,
+      dbInstanceArn: this.instanceArn,
+    };
+  }
+
+  /**
    * Renders the secret attachment target specifications.
    */
   public asSecretAttachmentTarget(): secretsmanager.SecretAttachmentTargetProps {
@@ -312,6 +333,24 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       targetId: this.instanceIdentifier,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_INSTANCE,
     };
+  }
+
+  /**
+   * The average number of disk read I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricReadIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('ReadIOPS', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * The average number of disk write I/O operations per second.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricWriteIOPS(props?: cloudwatch.MetricOptions) {
+    return this.metric('WriteIOPS', { statistic: 'Average', ...props });
   }
 }
 
@@ -416,6 +455,11 @@ export enum NetworkType {
    * Dual-stack network type.
    */
   DUAL = 'DUAL',
+
+  /**
+   * IPv6 only network type.
+   */
+  IPV6 = 'IPV6',
 }
 
 /**
@@ -437,11 +481,12 @@ export interface DatabaseInstanceNewProps {
   readonly availabilityZone?: string;
 
   /**
-   * The storage type. Storage types supported are gp2, io1, standard.
+   * The storage type to associate with the DB instance.
+   * Storage types supported are gp2, gp3, io1, io2, and standard.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
    *
-   * @default GP2
+   * @default StorageType.GP2
    */
   readonly storageType?: StorageType;
 
@@ -597,7 +642,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - A role is automatically created for you
    */
-  readonly monitoringRole?: iam.IRole;
+  readonly monitoringRole?: iam.IRoleRef;
 
   /**
    * Whether to enable Performance Insights for the DB instance.
@@ -620,7 +665,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - default master key
    */
-  readonly performanceInsightEncryptionKey?: kms.IKey;
+  readonly performanceInsightEncryptionKey?: kms.IKeyRef;
 
   /**
    * The database insights mode.
@@ -709,14 +754,14 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - The role will be created for you if `DatabaseInstanceNewProps#domain` is specified
    */
-  readonly domainRole?: iam.IRole;
+  readonly domainRole?: iam.IRoleRef;
 
   /**
    * Existing subnet group for the instance.
    *
    * @default - a new subnet group will be created.
    */
-  readonly subnetGroup?: ISubnetGroup;
+  readonly subnetGroup?: aws_rds.IDBSubnetGroupRef;
 
   /**
    * Role that will be associated with this DB instance to enable S3 import.
@@ -863,7 +908,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   private readonly cloudwatchLogsRetentionRole?: iam.IRole;
 
   private readonly domainId?: string;
-  private readonly domainRole?: iam.IRole;
+  private readonly domainRole?: iam.IRoleRef;
 
   protected enableIamAuthentication?: boolean;
 
@@ -968,7 +1013,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
         // as it might be used in a cross-environment fashion
         ? this.physicalName
         : maybeLowercasedInstanceId,
-      dbSubnetGroupName: subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.dbSubnetGroupRef.dbSubnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
@@ -976,11 +1021,11 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
-      monitoringRoleArn: monitoringRole?.roleArn,
+      monitoringRoleArn: monitoringRole?.roleRef.roleArn,
       multiAz: props.multiAz,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
-      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
+      performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyRef.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
@@ -995,7 +1040,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
       domain: this.domainId,
-      domainIamRoleName: this.domainRole?.roleName,
+      domainIamRoleName: this.domainRole?.roleRef.roleName,
       networkType: props.networkType,
       caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
       applyImmediately: props.applyImmediately,
@@ -1211,6 +1256,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   /**
    * Grant the given identity connection access to the database.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the Principal to grant the permissions to
    * @param dbUser the name of the database user to allow connecting as to the db instance,
    * or the default database user, obtained from the Secret, if not specified
@@ -1269,7 +1316,7 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
 }
 
 /**
@@ -1284,12 +1331,18 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1305,13 +1358,13 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyRef.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.unsafeUnwrap(),
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1387,12 +1440,18 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1429,7 +1488,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
-    this.instanceIdentifier = instance.ref;
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1478,7 +1537,7 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
-  readonly storageEncryptionKey?: kms.IKey;
+  readonly storageEncryptionKey?: kms.IKeyRef;
   /**
    * The allocated storage size, specified in gibibytes (GiB).
    *
@@ -1499,7 +1558,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
 
@@ -1513,6 +1576,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -1539,14 +1604,14 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyRef.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? engineType : undefined,
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 
+    this._resource = instance;
     this.instanceType = props.instanceType;
-    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 

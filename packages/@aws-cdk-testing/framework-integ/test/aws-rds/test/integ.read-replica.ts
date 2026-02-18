@@ -1,6 +1,8 @@
-import { InstanceClass, InstanceSize, InstanceType, SubnetSelection, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';

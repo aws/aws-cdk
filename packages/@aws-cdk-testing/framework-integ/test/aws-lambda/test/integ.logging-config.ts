@@ -18,49 +18,49 @@ const logGroup = new logs.LogGroup(stack, 'MyLogGroupWithLogGroupName', {
 new Function(stack, 'LambdaWithLogGroup', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logGroup: logGroup,
 });
 
 new Function(stack, 'LambdaWithLogGroupAndNoLogGroupName', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logGroup: new logs.LogGroup(stack, 'MyLogGroupWithoutLogGroupName'),
 });
 
 new Function(stack, 'LambdaWithTextFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logFormat: LogFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logFormat: LogFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithTextLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logFormat: LoggingFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logFormat: LoggingFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithLogLevel', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   logFormat: LogFormat.JSON,
   systemLogLevel: SystemLogLevel.INFO,
   applicationLogLevel: ApplicationLogLevel.INFO,
@@ -69,7 +69,7 @@ new Function(stack, 'LambdaWithLogLevel', {
 new Function(stack, 'LambdaWithLogLevelV2', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.NODEJS_20_X,
   loggingFormat: LoggingFormat.JSON,
   systemLogLevelV2: SystemLogLevel.INFO,
   applicationLogLevelV2: ApplicationLogLevel.INFO,

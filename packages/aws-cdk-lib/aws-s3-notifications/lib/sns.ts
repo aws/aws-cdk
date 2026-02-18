@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import { Annotations, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 
@@ -12,13 +12,13 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
+  public bind(scope: Construct, bucket: s3.IBucketRef): s3.BucketNotificationDestinationConfig {
     this.topic.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
       actions: ['sns:Publish'],
       resources: [this.topic.topicArn],
       conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+        ArnLike: { 'aws:SourceArn': bucket.bucketRef.bucketArn },
       },
     }));
 

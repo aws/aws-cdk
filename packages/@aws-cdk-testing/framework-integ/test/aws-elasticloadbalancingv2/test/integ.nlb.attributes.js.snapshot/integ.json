@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "nlb-attlibutes-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "nlb-attlibutes-integ/DefaultTest/DeployAssert",
       "assertionStackName": "nlbattlibutesintegDefaultTestDeployAssert2D727654"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

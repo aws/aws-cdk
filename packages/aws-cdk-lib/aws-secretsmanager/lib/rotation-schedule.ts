@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { ISecret, Secret } from './secret';
+import type { Construct } from 'constructs';
+import type { ISecret } from './secret';
+import { Secret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 import * as ec2 from '../../aws-ec2';
 import { Schedule } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -314,7 +315,7 @@ export class HostedRotation implements ec2.IConnectable {
    */
   public bind(secret: ISecret, scope: Construct): CfnRotationSchedule.HostedRotationLambdaProperty {
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-secretsmanager-rotationschedule-hostedrotationlambda.html
-    Stack.of(scope).addTransform('AWS::SecretsManager-2020-07-23');
+    Stack.of(scope).addTransform('AWS::SecretsManager-2024-09-16');
 
     if (!this.props.vpc && this.props.securityGroups) {
       throw new ValidationError('`vpc` must be specified when specifying `securityGroups`.', secret);

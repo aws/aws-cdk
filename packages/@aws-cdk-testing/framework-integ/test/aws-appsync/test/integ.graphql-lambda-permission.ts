@@ -16,7 +16,7 @@ const app = new cdk.App({
 const stack = new cdk.Stack(app, 'aws-graphql-lambda-permissions');
 
 const authorizer = new lambda.Function(stack, 'AuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
           console.log("Authorization event:", JSON.stringify(event));

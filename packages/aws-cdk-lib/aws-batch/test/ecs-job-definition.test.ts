@@ -1,8 +1,8 @@
-import { DefaultTokenResolver, Size, StringConcat, Stack, Tokenization } from '../..';
 import { Template } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import * as ecs from '../../aws-ecs';
 import * as iam from '../../aws-iam';
+import { DefaultTokenResolver, Size, StringConcat, Stack, Tokenization } from '../../core';
 import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
 test('EcsJobDefinition respects propagateTags', () => {

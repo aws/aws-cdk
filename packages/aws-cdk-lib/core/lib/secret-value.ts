@@ -1,11 +1,12 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
-import { CfnParameter } from './cfn-parameter';
+import type { CfnParameter } from './cfn-parameter';
 import { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import { CfnReference } from './private/cfn-reference';
-import { Intrinsic, IntrinsicProps } from './private/intrinsic';
-import { IResolveContext } from './resolvable';
+import type { IntrinsicProps } from './private/intrinsic';
+import { Intrinsic } from './private/intrinsic';
+import type { IResolveContext } from './resolvable';
 import { Token, Tokenization } from './token';
 import { CHECK_SECRET_USAGE } from '../../cx-api';
 
@@ -44,7 +45,7 @@ export class SecretValue extends Intrinsic {
    * Test whether an object is a SecretValue
    */
   public static isSecretValue(x: any): x is SecretValue {
-    return typeof x === 'object' && x && x[SECRET_VALUE_SYM];
+    return typeof x === 'object' && x && SECRET_VALUE_SYM in x;
   }
 
   /**
@@ -96,6 +97,20 @@ export class SecretValue extends Intrinsic {
    * @param options Options
    */
   public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = {}): SecretValue {
+    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, SecretValue.cfnDynamicReferenceKey(secretId, options));
+    return this.cfnDynamicReference(dyref);
+  }
+
+  /**
+   * Returns a key which can be used within an AWS CloudFormation dynamic reference to dynamically load a
+   * secret from AWS Secrets Manager
+   *
+   * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/cfn-example_reference-secret.html
+   *
+   * @param secretId The ID or ARN of the secret
+   * @param options Options
+   */
+  public static cfnDynamicReferenceKey(secretId: string, options: SecretsManagerSecretOptions = {}): string {
     if (!secretId) {
       throw new UnscopedValidationError('secretId cannot be empty');
     }
@@ -116,8 +131,7 @@ export class SecretValue extends Intrinsic {
       options.versionId || '',
     ];
 
-    const dyref = new CfnDynamicReference(CfnDynamicReferenceService.SECRETS_MANAGER, parts.join(':'));
-    return this.cfnDynamicReference(dyref);
+    return parts.join(':');
   }
 
   /**

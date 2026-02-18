@@ -222,7 +222,7 @@ async function renderStateMachineToTypeScript(sm: TypeCoercionStateMachine, file
 
   lines.push(
     `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
-    '/* eslint-disable quote-props,comma-dangle,quotes */',
+    '/* eslint-disable @stylistic/quote-props,comma-dangle,quotes */',
     'import * as zlib from \'zlib\';',
     'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\' | \'d\'>>',
     'export let typeCoercionStateMachine = (): TypeCoercionStateMachine => {',

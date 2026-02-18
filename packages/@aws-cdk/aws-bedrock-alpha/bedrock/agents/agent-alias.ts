@@ -1,10 +1,11 @@
-import { ArnFormat, aws_bedrock as bedrock, IResource, Resource, Stack } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { ArnFormat, aws_bedrock as bedrock, Resource, Stack } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IAgent } from './agent';
+import type { Construct } from 'constructs';
+import type { IAgent } from './agent';
 
 /******************************************************************************
  *                              COMMON
@@ -71,13 +72,13 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given principal identity permissions to perform actions on this agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account grant is not supported.
+   * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
       resourceArns: [this.aliasArn],
-      scope: this,
     });
   }
 
@@ -85,6 +86,7 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given identity permissions to invoke the agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account invocation is not supported.
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:InvokeAgent');
@@ -94,6 +96,7 @@ export abstract class AgentAliasBase extends Resource implements IAgentAlias {
    * Grant the given identity permissions to get the agent alias.
    * Note: This grant will only work when the grantee is in the same AWS account
    * where the agent alias is defined. Cross-account agent read is not supported.
+   * [disable-awslint:no-grants]
    */
   public grantGet(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'bedrock:GetAgentAlias');
@@ -135,7 +138,7 @@ export interface AgentAliasProps {
    * The name for the agent alias.
    * This will be used as the physical name of the agent alias.
    *
-   * @default - "latest"
+   * @default "latest"
    */
   readonly agentAliasName?: string;
   /**

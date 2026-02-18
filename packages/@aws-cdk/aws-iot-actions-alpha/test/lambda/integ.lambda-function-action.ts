@@ -1,6 +1,6 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as actions from '../../lib';
 
 const app = new cdk.App({
@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const func = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = (event) => {

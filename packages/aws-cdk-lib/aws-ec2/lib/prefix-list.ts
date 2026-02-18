@@ -1,16 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Connections } from './connections';
+import type { IPrefixListRef, PrefixListReference } from './ec2.generated';
 import { CfnPrefixList } from './ec2.generated';
-import { IPeer } from './peer';
+import type { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
-import { IResource, Lazy, Resource, Names, ContextProvider, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { ContextProvider, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * A prefix list
  */
-export interface IPrefixList extends IResource, IPeer {
+export interface IPrefixList extends IResource, IPeer, IPrefixListRef {
   /**
    * The ID of the prefix list
    *
@@ -89,6 +91,8 @@ abstract class PrefixListBase extends Resource implements IPrefixList {
    */
   public readonly canInlineRule = false;
 
+  public abstract readonly prefixListRef: PrefixListReference;
+
   /**
    * A unique identifier for this connection peer
    */
@@ -158,6 +162,17 @@ export class PrefixList extends PrefixListBase {
   public static fromPrefixListId(scope: Construct, id: string, prefixListId: string): IPrefixList {
     class Import extends PrefixListBase {
       public readonly prefixListId = prefixListId;
+
+      public get prefixListRef(): PrefixListReference {
+        return {
+          prefixListArn: Stack.of(scope).formatArn({
+            service: 'ec2',
+            resource: 'prefix-list',
+            resourceName: this.prefixListId,
+          }),
+          prefixListId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -290,5 +305,12 @@ export class PrefixList extends PrefixListBase {
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;
     this.addressFamily = prefixList.addressFamily;
+  }
+
+  public get prefixListRef(): PrefixListReference {
+    return {
+      prefixListArn: this.prefixListArn,
+      prefixListId: this.prefixListId,
+    };
   }
 }

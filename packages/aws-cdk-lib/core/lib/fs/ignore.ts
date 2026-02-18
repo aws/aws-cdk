@@ -1,7 +1,10 @@
 import * as path from 'path';
-import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
-import gitIgnore, * as GitIgnore from 'ignore';
-import { CopyOptions, IgnoreMode } from './options';
+import type * as DockerIgnore from '@balena/dockerignore';
+import dockerIgnore from '@balena/dockerignore';
+import type * as GitIgnore from 'ignore';
+import gitIgnore from 'ignore';
+import type { CopyOptions } from './options';
+import { IgnoreMode } from './options';
 import { UnscopedValidationError } from '../errors';
 
 // Must be a 'require' to not run afoul of ESM module import rules
@@ -80,14 +83,13 @@ export abstract class IgnoreStrategy {
   public abstract ignores(absoluteFilePath: string): boolean;
 
   /**
-   * Determines whether a given file path should be ignored and have all of its children ignored
-   * if its a directory.
+   * Determines whether a given directory path should be ignored and have all of its children ignored.
    *
-   * @param absoluteFilePath absolute file path to be assessed against the pattern
-   * @returns `true` if the file should be ignored
+   * @param absoluteDirectoryPath absolute directory path to be assessed against the pattern
+   * @returns `true` if the directory and all of its children should be ignored
    */
-  public completelyIgnores(absoluteFilePath: string): boolean {
-    return this.ignores(absoluteFilePath);
+  public completelyIgnores(absoluteDirectoryPath: string): boolean {
+    return this.ignores(absoluteDirectoryPath);
   }
 }
 
@@ -189,6 +191,23 @@ export class GitIgnoreStrategy extends IgnoreStrategy {
 
     return this.ignore.ignores(relativePath);
   }
+
+  /**
+   * Determines whether a given directory path should be ignored and have all of its children ignored.
+   *
+   * @param absoluteDirectoryPath absolute directory path to be assessed against the pattern
+   * @returns `true` if the directory and all of its children should be ignored
+   */
+  public completelyIgnores(absoluteDirectoryPath: string): boolean {
+    if (!path.isAbsolute(absoluteDirectoryPath)) {
+      throw new UnscopedValidationError('GitIgnoreStrategy.completelyIgnores() expects an absolute path');
+    }
+
+    const relativePath = path.relative(this.absoluteRootPath, absoluteDirectoryPath);
+    const relativePathWithSep = relativePath.endsWith(path.sep) ? relativePath : relativePath + path.sep;
+
+    return this.ignore.ignores(relativePathWithSep);
+  }
 }
 
 /**
@@ -268,14 +287,13 @@ export class DockerIgnoreStrategy extends IgnoreStrategy {
   }
 
   /**
-   * Determines whether a given file path should be ignored and have all of its children ignored
-   * if its a directory.
+   * Determines whether a given directory path should be ignored and have all of its children ignored.
    *
-   * @param absoluteFilePath absolute file path to be assessed against the pattern
-   * @returns `true` if the file should be ignored
+   * @param absoluteDirectoryPath absolute directory path to be assessed against the pattern
+   * @returns `true` if the directory and all of its children should be ignored
    */
-  public completelyIgnores(absoluteFilePath: string): boolean {
-    const relativePath = this.getRelativePath(absoluteFilePath);
+  public completelyIgnores(absoluteDirectoryPath: string): boolean {
+    const relativePath = this.getRelativePath(absoluteDirectoryPath);
     return this.ignore.ignores(relativePath) && this.completeIgnore.ignores(relativePath);
   }
 }

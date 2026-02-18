@@ -7,6 +7,7 @@ import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { App, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 /**
  * To validate that the deployment actually succeeds, perform the following actions:
@@ -25,7 +26,6 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
-    '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,
   },
 });
 
@@ -44,31 +44,19 @@ const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
 });
 
 const serviceRole = new iam.Role(stack, 'service-role', {
-  roleName: 'codepipeline-elasticbeanstalk-action-test-serivce-role',
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
-    },
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkEnhancedHealth'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 
 const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
-  roleName: 'codepipeline-elasticbeanstalk-action-test-instance-profile-role',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier',
-    },
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkMulticontainerDocker'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWorkerTier'),
   ],
 });
 
@@ -77,15 +65,11 @@ const instanceProfile = new iam.CfnInstanceProfile(stack, 'instance-profile', {
   instanceProfileName: instanceProfileRole.roleName,
 });
 
-const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', {
-  applicationName: 'codepipeline-test-app',
-});
+const beanstalkApp = new elasticbeanstalk.CfnApplication(stack, 'beastalk-app', {});
 
 const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', {
-  applicationName: beanstalkApp.applicationName!,
-  environmentName: 'codepipeline-test-env',
-  // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.6.2 running Node.js 20',
+  applicationName: beanstalkApp.ref,
+  solutionStackName: SOLUTION_STACK_NAME.NODEJS_20,
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',
@@ -135,8 +119,8 @@ pipeline.addStage({
 const deployAction = new cpactions.ElasticBeanstalkDeployAction({
   actionName: 'Deploy',
   input: sourceOutput,
-  environmentName: beanstalkEnv.environmentName!,
-  applicationName: beanstalkApp.applicationName!,
+  environmentName: beanstalkEnv.ref,
+  applicationName: beanstalkApp.ref,
 });
 
 pipeline.addStage({

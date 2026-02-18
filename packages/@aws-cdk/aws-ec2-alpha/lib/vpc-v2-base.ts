@@ -1,11 +1,50 @@
-import { Aws, Resource, Annotations, ValidationError } from 'aws-cdk-lib';
-import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
-import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
-import { IDependable, Dependable, IConstruct, DependencyGroup } from 'constructs';
-import { EgressOnlyInternetGateway, InternetGateway, NatConnectivityType, NatGateway, NatGatewayOptions, Route, VPCPeeringConnection, VPCPeeringConnectionOptions, VPNGatewayV2 } from './route';
-import { ISubnetV2 } from './subnet-v2';
+import { Annotations, Aws, Resource, ValidationError } from 'aws-cdk-lib';
+import type {
+  ClientVpnEndpointOptions,
+  EnableVpnGatewayOptions,
+  FlowLogOptions,
+  GatewayVpcEndpointOptions,
+  InterfaceVpcEndpointOptions,
+  ISubnet,
+  IVpc,
+  SelectedSubnets,
+  SubnetSelection,
+  VpnConnectionOptions,
+} from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnVPCGatewayAttachment,
+  CfnVPNGatewayRoutePropagation,
+  ClientVpnEndpoint,
+  FlowLog,
+  FlowLogResourceType,
+  GatewayVpcEndpoint,
+  InterfaceVpcEndpoint,
+  SubnetFilter,
+  SubnetType,
+  VpnConnection,
+  VpnConnectionType,
+  VpnGateway,
+} from 'aws-cdk-lib/aws-ec2';
+import type { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
-import { IVPCCidrBlock } from './vpc-v2';
+import type { IConstruct, IDependable } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
+import type {
+  NatGatewayOptions,
+  VPCPeeringConnectionOptions,
+} from './route';
+import {
+  EgressOnlyInternetGateway,
+  InternetGateway,
+  NatConnectivityType,
+  NatGateway,
+  Route,
+  VPCPeeringConnection,
+  VPNGatewayV2,
+} from './route';
+import type { ISubnetV2 } from './subnet-v2';
+import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
+import type { IVPCCidrBlock } from './vpc-v2';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -324,6 +363,12 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
       subnets,
       hasPublic: subnets.some(s => pubs.has(s)),
       isPendingLookup: this.incompleteSubnetDefinition,
+    };
+  }
+
+  public get vpcRef(): VPCReference {
+    return {
+      vpcId: this.vpcId,
     };
   }
 

@@ -1,5 +1,5 @@
-import * as iam from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as iam from '../../../aws-iam';
+import type * as s3 from '../../../aws-s3';
 import { Resource, Stack } from '../../../core';
 
 /**

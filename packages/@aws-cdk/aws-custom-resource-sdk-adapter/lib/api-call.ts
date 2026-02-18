@@ -140,7 +140,6 @@ export class ApiCall {
       }
       return ret;
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error(e);
       throw Error(`No client constructor found within package: ${this.v3PackageName}`);
     }
@@ -187,7 +186,8 @@ export async function coerceSdkv3Response(value: unknown): Promise<unknown> {
     return value.toString('utf8');
   }
   if (ArrayBuffer.isView(value)) {
-    return decoder.decode(value.buffer);
+    // Don't know why I can't get this to typecheck, but casting it away
+    return decoder.decode(value.buffer as any);
   }
 
   if (Array.isArray(value)) {

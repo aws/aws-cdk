@@ -135,7 +135,7 @@ export class CfnReference extends Reference {
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
-    // eslint-disable-next-line max-len
+
     //   throw new Error(`Cross-stack reference (${context.scope.node.path} -> ${this.target.node.path}) has not been assigned a value--call prepare() first`);
     // }
 
@@ -175,10 +175,10 @@ export class CfnReference extends Reference {
   }
 }
 
-import { Construct, IConstruct } from 'constructs';
-import { CfnElement } from '../cfn-element';
-import { IResolvable, IResolveContext } from '../resolvable';
+import type { Construct, IConstruct } from 'constructs';
+import type { CfnElement } from '../cfn-element';
+import type { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
+import type { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
 

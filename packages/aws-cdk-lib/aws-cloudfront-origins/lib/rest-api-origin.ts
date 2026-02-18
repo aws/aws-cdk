@@ -1,5 +1,5 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
-import * as apigateway from '../../aws-apigateway';
+import type * as apigateway from '../../aws-apigateway';
 import * as cloudfront from '../../aws-cloudfront';
 import * as cdk from '../../core';
 
@@ -45,6 +45,7 @@ export class RestApiOrigin extends cloudfront.OriginBase {
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
+    this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {

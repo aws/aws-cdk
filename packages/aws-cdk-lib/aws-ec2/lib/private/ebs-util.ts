@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations, ValidationError } from '../../../core';
-import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
-import { BlockDevice, EbsDeviceVolumeType } from '../volume';
+import type { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
+import type { BlockDevice } from '../volume';
+import { EbsDeviceVolumeType } from '../volume';
 
 export function instanceBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
   for (const blockDevice of blockDevices) {
@@ -43,8 +44,8 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
           throw new ValidationError(`'throughput' must be an integer, got: ${throughput}.`, construct);
         }
 
-        if (throughput < 125 || throughput > 1000) {
-          throw new ValidationError(`'throughput' must be between 125 and 1000, got ${throughput}.`, construct);
+        if (throughput < 125 || throughput > 2000) {
+          throw new ValidationError(`'throughput' must be between 125 and 2000, got ${throughput}.`, construct);
         }
 
         const maximumThroughputRatio = 0.25;

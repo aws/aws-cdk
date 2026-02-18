@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
     "5730bea116ff2f9738600530cfdc36b878c3210ca7c1cdeed1fff92b436b1b6f": {
       "displayName": "ApplicationSignalsCloudWatchAgent-Replica Template",

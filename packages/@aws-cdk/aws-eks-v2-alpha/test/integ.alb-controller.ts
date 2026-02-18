@@ -1,13 +1,13 @@
 /// !cdk-integ pragma:disable-update-workflow
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
+import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
-import { Pinger } from './pinger/pinger';
 import * as eks from '../lib';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { Pinger } from './pinger/pinger';
 
 const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
 class EksClusterAlbControllerStack extends Stack {
@@ -22,6 +22,9 @@ class EksClusterAlbControllerStack extends Stack {
       version: eks.KubernetesVersion.V1_33,
       albController: {
         version: LATEST_VERSION,
+        additionalHelmChartValues: {
+          enableWafv2: false,
+        },
       },
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),

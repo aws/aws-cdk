@@ -1,13 +1,18 @@
-import { Construct } from 'constructs';
-import { AccessLogFormat, IAccessLogDestination } from './access-log';
-import { IApiKey, ApiKeyOptions, ApiKey } from './api-key';
+import type { Construct } from 'constructs';
+import type { IAccessLogDestination } from './access-log';
+import { AccessLogFormat } from './access-log';
+import type { ApiKeyOptions, IApiKey } from './api-key';
+import { ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
+import type { IStageRef, StageReference } from './apigateway.generated';
 import { CfnStage } from './apigateway.generated';
-import { Deployment } from './deployment';
-import { IRestApi, RestApiBase } from './restapi';
+import type { Deployment } from './deployment';
+import type { IRestApi } from './restapi';
+import { RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -15,7 +20,7 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 /**
  * Represents an APIGateway Stage.
  */
-export interface IStage extends IResource {
+export interface IStage extends IResource, IStageRef {
   /**
    * Name of this stage.
    * @attribute
@@ -356,6 +361,13 @@ export abstract class StageBase extends Resource implements IStage {
       ...fn({ ApiName: this.restApi.restApiName, Stage: this.stageName }),
       ...props,
     }).attachTo(this);
+  }
+
+  public get stageRef(): StageReference {
+    return {
+      stageName: this.stageName,
+      restApiId: this.restApi.restApiId,
+    };
   }
 }
 

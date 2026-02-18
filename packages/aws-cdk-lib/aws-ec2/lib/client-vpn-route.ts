@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { IClientVpnEndpoint } from './client-vpn-endpoint-types';
+import type { Construct } from 'constructs';
+import type { IClientVpnEndpoint } from './client-vpn-endpoint-types';
+import type { ISubnetRef } from './ec2.generated';
 import { CfnClientVpnRoute } from './ec2.generated';
-import { ISubnet } from './vpc';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -45,8 +45,8 @@ export abstract class ClientVpnRouteTarget {
    * The specified subnet must be an existing target network of the client VPN
    * endpoint.
    */
-  public static subnet(subnet: ISubnet): ClientVpnRouteTarget {
-    return { subnetId: subnet.subnetId };
+  public static subnet(subnet: ISubnetRef): ClientVpnRouteTarget {
+    return { subnetId: subnet.subnetRef.subnetId };
   }
 
   /**

@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.osis"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.OSIS"
+      "namespace": "Amazon.CDK.AWS.OSIS"
     },
     "python": {
       "module": "aws_cdk.aws_osis"

@@ -3,7 +3,7 @@
  * Create a mock object for Octokit
  */
 export function createOctomock() {
-  return  {
+  return {
     pulls: {
       get: jest.fn(),
       listFiles: jest.fn(),

@@ -46,3 +46,16 @@ export CERT_ARN=your_certificate_arn
 ```console
 yarn integ --disable-update-workflow aws-certificatemanager/test/integ.certificate-name
 ```
+
+### Error: Docker pull from `public.ecr.aws` results in "403 Forbidden"
+
+When running CDK integration tests locally, you may encounter a **"403 Forbidden"** error while trying to pull Docker images from `public.ecr.aws`.
+
+This happens because Docker requires proper authentication to access ECR repositories, even public ones.  
+You can fix it by authenticating with AWS ECR Public before running your tests:
+
+```sh
+aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+```
+
+Refer to the [Amazon ECR public registry authentication documentation](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registry-auth.html) for additional details.

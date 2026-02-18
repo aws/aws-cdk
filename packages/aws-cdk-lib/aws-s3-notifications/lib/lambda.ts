@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { CfnResource, Names, Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
@@ -12,19 +13,19 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   constructor(private readonly fn: lambda.IFunction) {
   }
 
-  public bind(scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
+  public bind(scope: Construct, bucket: s3.IBucketRef): s3.BucketNotificationDestinationConfig {
     const permissionId = `AllowBucketNotificationsTo${Names.nodeUniqueId(this.fn.permissionsNode)}`;
 
     if (!(bucket instanceof Construct)) {
       throw new ValidationError(`LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
-        bucket construct (Bucket ${bucket.bucketName})`, scope);
+        bucket construct (Bucket ${bucket.bucketRef.bucketName})`, scope);
     }
 
     if (bucket.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
         sourceAccount: Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
-        sourceArn: bucket.bucketArn,
+        sourceArn: bucket.bucketRef.bucketArn,
         // Placing the permissions node in the same scope as the s3 bucket.
         // Otherwise, there is a circular dependency when the s3 bucket
         // and lambda functions declared in different stacks.

@@ -6,7 +6,7 @@ import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomResourceEvent & {
   ResourceProperties: ResourceProperties;
   OldResourceProperties?: ResourceProperties;
-}
+};
 
 interface ResourceProperties {
   AssumeRoleArn: string;

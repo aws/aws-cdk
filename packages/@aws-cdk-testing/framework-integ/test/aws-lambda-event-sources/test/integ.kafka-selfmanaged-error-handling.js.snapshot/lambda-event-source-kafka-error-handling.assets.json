@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "4acaeb41811b2c95056a45ac80701a3435d93ad9db2e53f929a50bf324f89395": {
+      "displayName": "lambda-event-source-kafka-error-handling Template",
+      "source": {
+        "path": "lambda-event-source-kafka-error-handling.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8d416080": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4acaeb41811b2c95056a45ac80701a3435d93ad9db2e53f929a50bf324f89395.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

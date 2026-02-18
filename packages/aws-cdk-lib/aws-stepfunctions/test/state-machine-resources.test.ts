@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
@@ -208,13 +208,13 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-        {
-          'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
-        },
+              {
+                'input.$': '$',
+                'stringArgument': 'inital-task',
+                'numberArgument': 123,
+                'booleanArgument': true,
+                'arrayArgument': ['a', 'b', 'c'],
+              },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -256,10 +256,10 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-        {
-          a: 'aa',
-          b: 'bb',
-        },
+              {
+                a: 'aa',
+                b: 'bb',
+              },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -804,13 +804,13 @@ describe('State Machine Resources', () => {
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-        {
-          'input.$': '$',
-          'stringArgument': 'inital-task',
-          'numberArgument': 123,
-          'booleanArgument': true,
-          'arrayArgument': ['a', 'b', 'c'],
-        },
+              {
+                'input.$': '$',
+                'stringArgument': 'inital-task',
+                'numberArgument': 123,
+                'booleanArgument': true,
+                'arrayArgument': ['a', 'b', 'c'],
+              },
       Type: 'Pass',
       QueryLanguage: undefined,
       Comment: undefined,
@@ -969,7 +969,7 @@ describe('State Machine Resources', () => {
     expect(taskState).toEqual({
       End: true,
       Parameters:
-          { 'input.$': '$.myField' },
+              { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),

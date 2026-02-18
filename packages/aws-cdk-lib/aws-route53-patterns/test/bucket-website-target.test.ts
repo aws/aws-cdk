@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import { Certificate } from '../../aws-certificatemanager';
 import { HostedZone } from '../../aws-route53';
 import { App, Stack } from '../../core';
-import { ROUTE53_PATTERNS_USE_CERTIFICATE } from '../../cx-api';
+import { ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION } from '../../cx-api';
 import { HttpsRedirect } from '../lib';
 
 testDeprecated('create HTTPS redirect', () => {
@@ -292,5 +292,138 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
         }),
       });
     }).toThrow(/When @aws-cdk\/aws-route53-patters:useCertificate is enabled, a region must be defined on the Stack/);
+  });
+});
+
+test('Uses Distribution when @aws-cdk/aws-route53-patterns:useDistribution=true', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [ROUTE53_PATTERNS_USE_CERTIFICATE]: true,
+      [ROUTE53_PATTERNS_USE_DISTRIBUTION]: true,
+    },
+  });
+
+  // WHEN
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+  new HttpsRedirect(stack, 'Redirect', {
+    recordNames: ['foo.example.com'],
+    targetDomain: 'bar.example.com',
+    zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+      hostedZoneId: 'ID',
+      zoneName: 'example.com',
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['foo.example.com'],
+      DefaultRootObject: '',
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+      },
+      Origins: [{
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'http-only',
+        },
+        DomainName: {
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::GetAtt': [
+                    'RedirectRedirectBucketC989E6F1',
+                    'WebsiteURL',
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      }],
+      ViewerCertificate: {
+        AcmCertificateArn: {
+          'Fn::GetAtt': [
+            'ExportsReader8B249524',
+            '/cdk/exports/test/certificateredirectstackc8e2763df63c0f7e0c9afe0394e299bb731e281e8euseast1RefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15A36EB7DA',
+          ],
+        },
+      },
+    },
+  });
+});
+
+test('Uses CloudFrontWebDistribution when @aws-cdk/aws-route53-patterns:useDistribution=false', () => {
+  // GIVEN
+  const app = new App({
+    context: {
+      [ROUTE53_PATTERNS_USE_CERTIFICATE]: true,
+      [ROUTE53_PATTERNS_USE_DISTRIBUTION]: false,
+    },
+  });
+
+  // WHEN
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+  new HttpsRedirect(stack, 'Redirect', {
+    recordNames: ['foo.example.com'],
+    targetDomain: 'bar.example.com',
+    zone: HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+      hostedZoneId: 'ID',
+      zoneName: 'example.com',
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Aliases: ['foo.example.com'],
+      DefaultRootObject: '',
+      DefaultCacheBehavior: {
+        AllowedMethods: ['GET', 'HEAD'],
+        CachedMethods: ['GET', 'HEAD'],
+        ForwardedValues: {
+          Cookies: {
+            Forward: 'none',
+          },
+          QueryString: false,
+        },
+      },
+      Origins: [{
+        ConnectionAttempts: 3,
+        ConnectionTimeout: 10,
+        CustomOriginConfig: {
+          HTTPPort: 80,
+          HTTPSPort: 443,
+          OriginKeepaliveTimeout: 5,
+          OriginProtocolPolicy: 'http-only',
+          OriginReadTimeout: 30,
+        },
+        DomainName: {
+          'Fn::Select': [
+            2,
+            {
+              'Fn::Split': [
+                '/',
+                {
+                  'Fn::GetAtt': [
+                    'RedirectRedirectBucketC989E6F1',
+                    'WebsiteURL',
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      }],
+      ViewerCertificate: {
+        AcmCertificateArn: {
+          'Fn::GetAtt': [
+            'ExportsReader8B249524',
+            '/cdk/exports/test/certificateredirectstackc8e2763df63c0f7e0c9afe0394e299bb731e281e8euseast1RefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15A36EB7DA',
+          ],
+        },
+      },
+    },
   });
 });

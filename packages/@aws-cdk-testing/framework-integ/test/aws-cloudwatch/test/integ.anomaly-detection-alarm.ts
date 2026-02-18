@@ -5,12 +5,19 @@ import { Metric, ComparisonOperator, AnomalyDetectionAlarm, Alarm } from 'aws-cd
 const app = new App();
 const stack = new Stack(app, 'AnomalyDetectionAlarmTestStack');
 
-// Create the test metric
+// Create the test metric. Period will default to 300 seconds.
 const metric = new Metric({
   namespace: 'AWS/EC2',
   metricName: 'CPUUtilization',
   statistic: 'Average',
-  period: Duration.minutes(5),
+});
+
+// Create test metric with custom period
+const customPeriodMetric = new Metric({
+  namespace: 'AWS/EC2',
+  metricName: 'CPUUtilization',
+  statistic: 'Average',
+  period: Duration.days(1),
 });
 
 // Create an anomaly detection alarm with default operator
@@ -38,6 +45,14 @@ const descriptiveAlarm = Metric.anomalyDetectionFor({
   evaluationPeriods: 3,
   alarmDescription: 'Alarm when CPU utilization is outside the expected band',
   comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+});
+
+// Create an anomaly detection alarm with custom period
+const customPeriodAlarm = new AnomalyDetectionAlarm(stack, 'CustomPeriodAnomalyAlarm', {
+  metric: customPeriodMetric,
+  stdDevs: 2,
+  evaluationPeriods: 1,
+  comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,
 });
 
 // Create the integration test
@@ -117,6 +132,33 @@ integ.assertions
           Match.objectLike({
             Expression: 'ANOMALY_DETECTION_BAND(m0, 2.5)',
             ReturnData: true,
+          }),
+        ]),
+      }),
+    ]),
+  }));
+
+integ.assertions
+  .awsApiCall('CloudWatch', 'describeAlarms', {
+    AlarmNames: [customPeriodAlarm.alarmName],
+  })
+  .expect(ExpectedResult.objectLike({
+    MetricAlarms: Match.arrayWith([
+      Match.objectLike({
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 1,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 86400, // 1 day in seconds, orignal metric period got overriden
+            }),
           }),
         ]),
       }),

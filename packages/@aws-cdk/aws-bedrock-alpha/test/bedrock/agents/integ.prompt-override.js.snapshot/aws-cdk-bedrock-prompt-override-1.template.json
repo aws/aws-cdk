@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "PromptOverrideFunctionServiceRoleB1ACDEAD"
@@ -129,7 +129,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomParserActionFunctionServiceRoleEE676A1C"
@@ -214,7 +214,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "ParserFunctionServiceRole59DD83FB"

@@ -9,7 +9,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:2058d11c",
+      "Key": "aws-cdk:cr-owned:6221481f",
       "Value": "true"
      }
     ],
@@ -157,7 +157,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DeployMeAwsCliLayer5F9219E9": {
+  "DeployWithCustomLogGroupAwsCliLayerF4FD8EC7": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -169,7 +169,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeployMeCustomResource4455EE35": {
+  "DeployWithCustomLogGroupCustomResource4F75CE21": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -339,7 +339,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMeAwsCliLayer5F9219E9"
+      "Ref": "DeployWithCustomLogGroupAwsCliLayerF4FD8EC7"
      }
     ],
     "LoggingConfig": {
@@ -353,7 +353,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [

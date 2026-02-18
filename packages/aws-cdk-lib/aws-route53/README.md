@@ -134,6 +134,30 @@ new route53.AaaaRecord(this, 'Alias', {
 });
 ```
 
+To add an HTTPS record:
+
+``` ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+
+declare const myZone: route53.HostedZone;
+declare const distribution: cloudfront.CloudFrontWebDistribution;
+// Alias to CloudFront target
+new route53.HttpsRecord(this, 'HttpsRecord-CloudFrontAlias', {
+  zone: myZone,
+  target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+});
+// ServiceMode (priority >= 1)
+new route53.HttpsRecord(this, 'HttpsRecord-ServiceMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.service({ alpn: [route53.Alpn.H3, route53.Alpn.H2] })],
+});
+// AliasMode (priority = 0)
+new route53.HttpsRecord(this, 'HttpsRecord-AliasMode', {
+  zone: myZone,
+  values: [route53.HttpsRecordValue.alias('service.example.com')],
+});
+```
+
 [Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html) can be enabled for continent, country or subdivision:
 
 ```ts
@@ -189,6 +213,36 @@ new route53.ARecord(this, 'ARecordLatency1', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   region: 'us-east-1',
+});
+```
+
+To enable [failover routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-failover.html), use the `failover` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+const healthCheck = new route53.HealthCheck(this, 'HealthCheck', {
+  type: route53.HealthCheckType.HTTP,
+  fqdn: 'example.com',
+  port: 80,
+  resourcePath: '/health',
+  failureThreshold: 3,
+  requestInterval: Duration.seconds(30),
+});
+
+new route53.ARecord(this, 'ARecordFailoverPrimary', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  failover: route53.Failover.PRIMARY,
+  healthCheck,
+  setIdentifier: 'failover-primary',
+});
+
+new route53.ARecord(this, 'ARecordFailoverSecondary', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('5.6.7.8'),
+  failover: route53.Failover.SECONDARY,
+  setIdentifier: 'failover-secondary',
 });
 ```
 
@@ -343,38 +397,38 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
   roleName: 'MyDelegationRole',
   // The other account
   assumedBy: new iam.AccountPrincipal('12345678901'),
-  // You can scope down this role policy to be least privileged.
-  // If you want the other account to be able to manage specific records,
-  // you can scope down by resource and/or normalized record names
-  inlinePolicies: {
-    crossAccountPolicy: new iam.PolicyDocument({
-      statements: [
-        new iam.PolicyStatement({
-          sid: 'ListHostedZonesByName',
-          effect: iam.Effect.ALLOW,
-          actions: ['route53:ListHostedZonesByName'],
-          resources: ['*'],
-        }),
-        new iam.PolicyStatement({
-          sid: 'GetHostedZoneAndChangeResourceRecordSets',
-          effect: iam.Effect.ALLOW,
-          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSets'],
-          // This example assumes the RecordSet subdomain.somexample.com
-          // is contained in the HostedZone
-          resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
-          conditions: {
-            'ForAllValues:StringLike': {
-              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-                'subdomain.someexample.com',
-              ],
-            },
-          },
-        }),
-      ],
-    }),
-  },
 });
 parentZone.grantDelegation(crossAccountRole);
+```
+
+To restrict the records that can be created with the delegation IAM role, use the optional `delegatedZoneNames` property in the delegation options,
+which enforces the `route53:ChangeResourceRecordSetsNormalizedRecordNames` condition key for record names that match those hosted zone names.
+The `delegatedZoneNames` list may only consist of hosted zones names that are subzones of the parent hosted zone.
+
+If the delegated zone name contains an unresolved token,
+it must resolve to a zone name that satisfies the requirements according to the documentation:
+https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/specifying-conditions-route53.html#route53_rrset_conditionkeys_normalization
+
+> All letters must be lowercase.
+> The DNS name must be without the trailing dot.
+> Characters other than a–z, 0–9, - (hyphen), _ (underscore), and . (period, as a delimiter between labels) must use escape codes in the format \three-digit octal code. For example, \052 is the octal code for character *.
+
+This feature allows you to better follow the minimum permissions privilege principle:
+
+```ts
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+});
+
+declare const betaCrossAccountRole: iam.Role;
+parentZone.grantDelegation(betaCrossAccountRole, {
+    delegatedZoneNames: ['beta.someexample.com'],
+});
+
+declare const prodCrossAccountRole: iam.Role;
+parentZone.grantDelegation(prodCrossAccountRole, {
+    delegatedZoneNames: ['prod.someexample.com'],
+});
 ```
 
 In the account containing the child zone to be delegated:
@@ -516,7 +570,8 @@ const zone = route53.HostedZone.fromHostedZoneAttributes(this, 'MyZone', {
 ```
 
 Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
-you know the ID and the retrieval for the `zoneName` is undesirable.
+you know the ID and the retrieval for the `zoneName` is undesirable. 
+Note that any records created with a hosted zone obtained this way must have their name be fully qualified
 
 ```ts
 const zone = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
@@ -532,6 +587,18 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 
 // Does not know zoneName
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+You can import a Private Hosted Zone with `PrivateHostedZone.fromPrivateHostedZoneId` and `PrivateHostedZone.fromPrivateHostedZoneAttributes` methods:
+
+```ts
+const privateZoneFromAttributes = route53.PrivateHostedZone.fromPrivateHostedZoneAttributes(this, 'MyPrivateZone', {
+  zoneName: 'example.local',
+  hostedZoneId: 'ZOJJZC49E0EPZ',
+});
+
+// Does not know zoneName  
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'ZOJJZC49E0EPZ');
 ```
 
 You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:

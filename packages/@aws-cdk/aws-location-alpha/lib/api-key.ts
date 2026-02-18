@@ -1,9 +1,10 @@
-import { ArnFormat, Aws, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnAPIKey } from 'aws-cdk-lib/aws-location';
-import { generateUniqueId } from './util';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Aws, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { generateUniqueId } from './util';
 
 /**
  * An API Key

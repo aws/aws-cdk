@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
-import { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { Construct } from 'constructs';
+import type { CommonDestinationProps, CommonDestinationS3Props } from './common';
+import { BackupMode } from './common';
+import type { DestinationBindOptions, DestinationConfig, IDestination } from './destination';
+import type { IInputFormat, IOutputFormat, SchemaConfiguration } from './record-format';
 import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
-import { TimeZone, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type * as s3 from '../../aws-s3';
+import { createBackupConfig, createBufferingHints, createDynamicPartitioningConfiguration, createEncryptionConfig, createLoggingOptions, createProcessingConfig, ERROR_OUTPUT_TYPE, PARTITION_KEY_LAMBDA, PARTITION_KEY_QUERY } from './private/helpers';
+import * as cdk from '../../core';
 
 /**
  * Props for defining an S3 destination of an Amazon Data Firehose delivery stream.
@@ -28,7 +30,77 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
    *
    * @default - UTC
    */
-  readonly timeZone?: TimeZone;
+  readonly timeZone?: cdk.TimeZone;
+
+  /**
+   * The input format, output format, and schema config for converting data from the JSON format to the Parquet or ORC format before writing to Amazon S3.
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-extendeds3destinationconfiguration.html#cfn-kinesisfirehose-deliverystream-extendeds3destinationconfiguration-dataformatconversionconfiguration
+   *
+   * @default - no data format conversion is done
+   */
+  readonly dataFormatConversion?: DataFormatConversionProps;
+
+  /**
+   * Specify dynamic partitioning.
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   * @default - Dynamic partitioning is disabled.
+   */
+  readonly dynamicPartitioning?: DynamicPartitioningProps;
+}
+
+/**
+ * Props for specifying data format conversion for Firehose
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/record-format-conversion.html
+ */
+export interface DataFormatConversionProps {
+  /**
+   * Whether data format conversion is enabled or not.
+   *
+   * @default `true`
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * The schema configuration to use in converting the input format to output format
+   */
+  readonly schemaConfiguration: SchemaConfiguration;
+
+  /**
+   * The input format to convert from for record format conversion
+   */
+  readonly inputFormat: IInputFormat;
+
+  /**
+   * The output format to convert to for record format conversion
+   */
+  readonly outputFormat: IOutputFormat;
+}
+
+/**
+ * Props for defining dynamic partitioning.
+ *
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+ */
+export interface DynamicPartitioningProps {
+  /**
+   * Whether to enable the dynamic partitioning.
+   *
+   * You cannot enable dynamic partitioning for an existing Firehose stream that does not have dynamic partitioning already enabled.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-enable.html
+   */
+  readonly enabled: boolean;
+
+  /**
+   * The total amount of time that Data Firehose spends on retries.
+   *
+   * Minimum: Duration.seconds(0)
+   * Maximum: Duration.seconds(7200)
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly retryDuration?: cdk.Duration;
 }
 
 /**
@@ -37,7 +109,20 @@ export interface S3BucketProps extends CommonDestinationS3Props, CommonDestinati
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+      throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+    }
+
+    if (this.props.dataFormatConversion && this.props.compression) {
+      throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
+    }
+
+    validateOutputPrefix(this.props.dataOutputPrefix, this.props.errorOutputPrefix);
+    // CFN validation message: "Dynamic Partitioning Namespaces can only be part of a prefix expression when Dynamic Partitioning is enabled."
+    if (
+      !this.props.dynamicPartitioning?.enabled &&
+      (this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`))
+    ) {
+      throw new cdk.UnscopedValidationError(`When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
     }
   }
 
@@ -57,30 +142,46 @@ export class S3Bucket implements IDestination {
     const { backupConfig, dependables: backupDependables } = createBackupConfig(scope, role, this.props.s3Backup) ?? {};
 
     const fileExtension = this.props.fileExtension;
-    if (fileExtension && !Token.isUnresolved(fileExtension)) {
+    if (fileExtension && !cdk.Token.isUnresolved(fileExtension)) {
       if (!fileExtension.startsWith('.')) {
-        throw new ValidationError("fileExtension must start with '.'", scope);
+        throw new cdk.ValidationError("fileExtension must start with '.'", scope);
       }
       if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
-        throw new ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+        throw new cdk.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
       }
     }
+
+    const dataFormatConfig = this.props.dataFormatConversion;
+
+    const dataFormatConversionConfiguration = dataFormatConfig ? {
+      enabled: dataFormatConfig.enabled ?? true,
+      schemaConfiguration: dataFormatConfig.schemaConfiguration.bind(scope, { role: role }),
+      inputFormatConfiguration: dataFormatConfig.inputFormat.createInputFormatConfig(),
+      outputFormatConfiguration: dataFormatConfig.outputFormat.createOutputFormatConfig(),
+    } : undefined;
 
     return {
       extendedS3DestinationConfiguration: {
         cloudWatchLoggingOptions: loggingOptions,
-        processingConfiguration: createProcessingConfig(scope, role, this.props.processor),
+        processingConfiguration: createProcessingConfig(scope, this.props, {
+          role,
+          dynamicPartitioningEnabled: this.props.dynamicPartitioning?.enabled,
+          prefix: this.props.dataOutputPrefix,
+        }),
         roleArn: role.roleArn,
         s3BackupConfiguration: backupConfig,
         s3BackupMode: this.getS3BackupMode(),
-        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize),
+        bufferingHints: createBufferingHints(scope, this.props.bufferingInterval, this.props.bufferingSize,
+          dataFormatConversionConfiguration?.enabled, this.props.dynamicPartitioning?.enabled),
         bucketArn: this.bucket.bucketArn,
+        dataFormatConversionConfiguration: dataFormatConversionConfiguration,
         compressionFormat: this.props.compression?.value,
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
         fileExtension: this.props.fileExtension,
         customTimeZone: this.props.timeZone?.timezoneName,
+        dynamicPartitioningConfiguration: createDynamicPartitioningConfiguration(scope, this.props.dynamicPartitioning),
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };
@@ -90,5 +191,37 @@ export class S3Bucket implements IDestination {
     return this.props.s3Backup?.bucket || this.props.s3Backup?.mode === BackupMode.ALL
       ? 'Enabled'
       : undefined;
+  }
+}
+
+/**
+ * Validates output prefixes
+ * @see https://docs.aws.amazon.com/firehose/latest/dev/s3-prefixes.html#prefix-rules
+ */
+function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
+  // The sequence !{ can only appear in !{namespace:value} expressions.
+  if (prefix) validateOutputPrefixExpression(prefix, 'dataOutputPrefix');
+  if (errorOutputPrefix) validateOutputPrefixExpression(errorOutputPrefix, 'errorOutputPrefix');
+  // ErrorOutputPrefix can be null only if Prefix contains no expressions.
+  if (prefix?.includes('!{') && !errorOutputPrefix) {
+    throw new cdk.UnscopedValidationError('Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
+  }
+  // If you specify an expression for ErrorOutputPrefix, you must include at least one instance of !{firehose:error-output-type}.
+  if (errorOutputPrefix?.includes('!{') && !errorOutputPrefix.includes(ERROR_OUTPUT_TYPE)) {
+    throw new cdk.UnscopedValidationError(`The errorOutputPrefix expression must include at least one instance of ${ERROR_OUTPUT_TYPE}.`);
+  }
+  // Prefix can't contain !{firehose:error-output-type}.
+  if (prefix?.includes(ERROR_OUTPUT_TYPE)) {
+    throw new cdk.UnscopedValidationError(`The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
+  }
+  // You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces when creating ErrorOutputPrefix expressions.
+  if (errorOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || errorOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`)) {
+    throw new cdk.UnscopedValidationError(`You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
+  }
+}
+
+function validateOutputPrefixExpression(prefix: string, prop: string) {
+  if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):[^{}]+\})/.test(prefix)) {
+    throw new cdk.UnscopedValidationError(`The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
   }
 }

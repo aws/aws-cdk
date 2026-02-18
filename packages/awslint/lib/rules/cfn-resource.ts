@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
 import { pascalize } from '../case';
@@ -94,7 +94,6 @@ export class CfnResourceReflection {
   }
 
   private attributePropertyNameFromCfnName(name: string): string {
-
     // special case (someone was smart), special case copied from spec2cdk
     if (this.basename === 'SecurityGroup' && name === 'GroupId') {
       return 'Id';

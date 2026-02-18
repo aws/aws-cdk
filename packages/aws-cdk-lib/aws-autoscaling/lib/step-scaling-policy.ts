@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
-import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-common';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { Duration, Token, ValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { Token, ValidationError } from '../../core';
+import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -92,7 +93,7 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
   /**
    * The auto scaling group
    */
-  readonly autoScalingGroup: IAutoScalingGroup;
+  readonly autoScalingGroup: IAutoScalingGroupRef;
 }
 
 /**

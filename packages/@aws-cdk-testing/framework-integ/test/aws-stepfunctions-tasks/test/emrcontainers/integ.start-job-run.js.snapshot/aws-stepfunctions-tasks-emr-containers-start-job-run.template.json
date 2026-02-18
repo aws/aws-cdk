@@ -1066,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9161faaa4df2e4cded386bd1d22ccf49859f7d17f1b4171c5e0bd9b15fad8681.json"
+       "/90b124ab82fe400d3e1e63d5a01fe93e038e703f646302073b8bbceb237db756.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/99c4a2874720fd5a2690ce174014fb5450d7c7031e64e13032c7afc58571b3ad.json"
+       "/da7229e26e05d37d2226e2ed12afa9dcadce0f7a4a6c63032e5ca8add9aab196.json"
       ]
      ]
     }
@@ -1466,7 +1466,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2b2f6e7d96d216685951807694b6e6fca88b8fd0f6ac90be6d3c75201710dd6a.zip"
+     "S3Key": "a73ebb32184d4a847fd87c0def742ac63ae3716c77d7d75f37ffe720d056adc6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -1594,7 +1594,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 30
    },
    "DependsOn": [

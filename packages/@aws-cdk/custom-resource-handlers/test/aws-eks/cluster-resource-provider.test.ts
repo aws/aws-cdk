@@ -1,4 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import * as eks from '@aws-sdk/client-eks';
 import * as mocks from './cluster-resource-handler-mocks';
 import { ClusterResourceHandler } from '../../lib/aws-eks/cluster-resource-handler/cluster';
@@ -1036,7 +1036,7 @@ describe('cluster resource provider', () => {
               foo: 'bar',
             },
           }));
-          const resp = await handler.onEvent();
+          await handler.onEvent();
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
           expect(mocks.actualRequest.tagResourceRequest).toEqual({
             resourceArn: 'arn:cluster-arn',
@@ -1061,7 +1061,7 @@ describe('cluster resource provider', () => {
               hello: 'world',
             },
           }));
-          const resp = await handler.onEvent();
+          await handler.onEvent();
           expect(mocks.actualRequest.tagResourceRequest).toEqual({
             resourceArn: 'arn:cluster-arn',
             tags: {
@@ -1085,7 +1085,7 @@ describe('cluster resource provider', () => {
               hello: 'world',
             },
           }));
-          const resp = await handler.onEvent();
+          await handler.onEvent();
           expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
           expect(mocks.actualRequest.untagResourceRequest).toEqual({
             resourceArn: 'arn:cluster-arn',
@@ -1104,7 +1104,7 @@ describe('cluster resource provider', () => {
             // this is the old props
             ...mocks.MOCK_PROPS,
           }));
-          const resp = await handler.onEvent();
+          await handler.onEvent();
           expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
           expect(mocks.actualRequest.tagResourceRequest).toEqual({
             resourceArn: 'arn:cluster-arn',
@@ -1123,7 +1123,7 @@ describe('cluster resource provider', () => {
             ...mocks.MOCK_PROPS,
             bootstrapSelfManagedAddons: true,
           }));
-          const resp = await handler.onEvent();
+          await handler.onEvent();
           expect(mocks.actualRequest.createClusterRequest!).toEqual({
             bootstrapSelfManagedAddons: false,
             name: 'MyResourceId-fakerequestid',

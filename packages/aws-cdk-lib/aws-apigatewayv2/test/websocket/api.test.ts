@@ -1,13 +1,15 @@
 import { Match, Template } from '../../../assertions';
 import { User } from '../../../aws-iam';
 import { Stack } from '../../../core';
+import type {
+  WebSocketRouteIntegrationBindOptions,
+  WebSocketRouteIntegrationConfig,
+} from '../../lib';
 import {
   WebSocketRouteIntegration,
   WebSocketApi,
   WebSocketApiKeySelectionExpression,
   WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions,
-  WebSocketRouteIntegrationConfig,
   IpAddressType,
 } from '../../lib';
 
@@ -305,6 +307,21 @@ describe('WebSocketApi', () => {
       Name: 'api',
       ProtocolType: 'WEBSOCKET',
       IpAddressType: ipAddressType,
+    });
+  });
+
+  test.each([true, false, undefined])('disableSchemaValidation is set to %s', (disableSchemaValidation) => {
+    const stack = new Stack();
+    new WebSocketApi(stack, 'api', {
+      disableSchemaValidation,
+    });
+
+    const value = disableSchemaValidation !== undefined ? disableSchemaValidation : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+      DisableSchemaValidation: value,
     });
   });
 });

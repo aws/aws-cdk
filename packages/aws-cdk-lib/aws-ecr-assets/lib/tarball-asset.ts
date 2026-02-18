@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { IAsset } from '../../assets';
+import type { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
 
@@ -107,7 +107,7 @@ export class TarballImageAsset extends Construct implements IAsset {
       executable: [
         'sh',
         '-c',
-        `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        `${process.env.CDK_DOCKER ?? 'docker'} load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
       ],
       displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });

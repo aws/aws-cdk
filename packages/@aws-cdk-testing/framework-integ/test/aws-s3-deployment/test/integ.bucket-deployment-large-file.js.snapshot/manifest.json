@@ -1,28 +1,28 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "TestBucketDeploymentLargeFile.assets": {
+    "test-bucket-deployment-large-file.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "TestBucketDeploymentLargeFile.assets.json",
+        "file": "test-bucket-deployment-large-file.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "TestBucketDeploymentLargeFile": {
+    "test-bucket-deployment-large-file": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "TestBucketDeploymentLargeFile.template.json",
+        "templateFile": "test-bucket-deployment-large-file.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aee3069cc0d1c0b669038ae69ae0bd7f2efe4fa10cbca55b8bb7d4ffbb903dbb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1130a6ff01a781bea9247d8359a104da59264bb31882d0ec8a687e9e5b8938b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "TestBucketDeploymentLargeFile.assets"
+          "test-bucket-deployment-large-file.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "TestBucketDeploymentLargeFile.assets"
+        "test-bucket-deployment-large-file.assets"
       ],
       "metadata": {
-        "/TestBucketDeploymentLargeFile/Bucket": [
+        "/test-bucket-deployment-large-file/Bucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -43,13 +43,13 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/Bucket/Resource": [
+        "/test-bucket-deployment-large-file/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Bucket/Policy": [
+        "/test-bucket-deployment-large-file/Bucket/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -57,43 +57,43 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/Bucket/Policy/Resource": [
+        "/test-bucket-deployment-large-file/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Bucket/AutoDeleteObjectsCustomResource": [
+        "/test-bucket-deployment-large-file/Bucket/AutoDeleteObjectsCustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Bucket/AutoDeleteObjectsCustomResource/Default": [
+        "/test-bucket-deployment-large-file/Bucket/AutoDeleteObjectsCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+        "/test-bucket-deployment-large-file/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
           {
             "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
             "data": true
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/test-bucket-deployment-large-file/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/test-bucket-deployment-large-file/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
           }
         ],
-        "/TestBucketDeploymentLargeFile/TestSecret": [
+        "/test-bucket-deployment-large-file/TestSecret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -104,13 +104,13 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/TestSecret/Resource": [
+        "/test-bucket-deployment-large-file/TestSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestSecret16AF87B1"
           }
         ],
-        "/TestBucketDeploymentLargeFile/SecretParam": [
+        "/test-bucket-deployment-large-file/SecretParam": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -118,25 +118,25 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/SecretParam/Resource": [
+        "/test-bucket-deployment-large-file/SecretParam/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SecretParam0C31D215"
           }
         ],
-        "/TestBucketDeploymentLargeFile/DeployLargeFiles/AwsCliLayer": [
+        "/test-bucket-deployment-large-file/DeployWithLargeFiles/AwsCliLayer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
           }
         ],
-        "/TestBucketDeploymentLargeFile/DeployLargeFiles/AwsCliLayer/Resource": [
+        "/test-bucket-deployment-large-file/DeployWithLargeFiles/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployLargeFilesAwsCliLayer6F5EAE42"
+            "data": "DeployWithLargeFilesAwsCliLayer2B9E5351"
           }
         ],
-        "/TestBucketDeploymentLargeFile/DeployLargeFiles/CustomResourceHandler": [
+        "/test-bucket-deployment-large-file/DeployWithLargeFiles/CustomResourceHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -152,6 +152,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -178,19 +179,19 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/DeployLargeFiles/CustomResource": [
+        "/test-bucket-deployment-large-file/DeployWithLargeFiles/CustomResource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestBucketDeploymentLargeFile/DeployLargeFiles/CustomResource/Default": [
+        "/test-bucket-deployment-large-file/DeployWithLargeFiles/CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DeployLargeFilesCustomResource302E40C9"
+            "data": "DeployWithLargeFilesCustomResourceB9F4A04D"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -204,6 +205,7 @@
               "ephemeralStorageSize": "*",
               "vpc": "*",
               "vpcSubnets": "*",
+              "securityGroups": "*",
               "filesystem": "*",
               "logGroup": "*",
               "code": "*",
@@ -237,7 +239,7 @@
             "data": 2
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -309,19 +311,19 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -383,44 +385,44 @@
             }
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+        "/test-bucket-deployment-large-file/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
           }
         ],
-        "/TestBucketDeploymentLargeFile/BucketName": [
+        "/test-bucket-deployment-large-file/BucketName": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketName"
           }
         ],
-        "/TestBucketDeploymentLargeFile/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+        "/test-bucket-deployment-large-file/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefBucket83908E7781C90AC0"
           }
         ],
-        "/TestBucketDeploymentLargeFile/BootstrapVersion": [
+        "/test-bucket-deployment-large-file/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/TestBucketDeploymentLargeFile/CheckBootstrapVersion": [
+        "/test-bucket-deployment-large-file/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "TestBucketDeploymentLargeFile"
+      "displayName": "test-bucket-deployment-large-file"
     },
     "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848.assets": {
       "type": "cdk:asset-manifest",
@@ -439,7 +441,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f3ce76428b8dc12e9fb41f2cb078c13f78521b310603f1032f2d06aab8830334.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0efc699a5bae3381544f5260dda895974208e429fe74f599c2b5337654f55a34.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -452,7 +454,7 @@
         }
       },
       "dependencies": [
-        "TestBucketDeploymentLargeFile",
+        "test-bucket-deployment-large-file",
         "integtestbucketdeploymentlargefileDefaultTestDeployAssert903EA848.assets"
       ],
       "metadata": {
@@ -687,6 +689,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -1135,10 +1141,25 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1024.0"
+  "minimumCliVersion": "2.1027.0"
 }

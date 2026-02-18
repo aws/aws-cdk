@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { ProductionVariant } from './base-types';
+import type { Construct } from 'constructs';
+import type { ProductionVariant } from './base-types';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
@@ -19,7 +19,7 @@ interface SageMakerCreateEndpointConfigOptions {
    *
    * @default - None
    */
-  readonly kmsKey?: kms.IKey;
+  readonly kmsKey?: kms.IKeyRef;
 
   /**
    * An list of ProductionVariant objects, one for each model that you want to host at this endpoint.
@@ -121,7 +121,7 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
     return {
       EndpointConfigName: this.props.endpointConfigName,
       Tags: this.props.tags?.value,
-      KmsKeyId: this.props.kmsKey?.keyId,
+      KmsKeyId: this.props.kmsKey?.keyRef.keyId,
       ProductionVariants: this.props.productionVariants.map((variant) => ({
         InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
         InstanceType: isJsonPathOrJsonataExpression(variant.instanceType.toString())

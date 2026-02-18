@@ -66,7 +66,7 @@ describe('application signals adot sdk agent integration', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'JAVA_TOOL_OPTIONS',
@@ -197,7 +197,7 @@ describe('application signals adot sdk agent integration', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'JAVA_TOOL_OPTIONS',
@@ -331,7 +331,7 @@ describe('application signals adot sdk agent integration', () => {
         },
         {
           Name: 'OTEL_PROPAGATORS',
-          Value: 'tracecontext,baggage,b3,xray',
+          Value: 'tracecontext,baggage,xray',
         },
         {
           Name: 'OTEL_PYTHON_DISTRO',
@@ -491,7 +491,7 @@ describe('application signals adot sdk agent integration', () => {
               },
               {
                 Name: 'OTEL_PROPAGATORS',
-                Value: 'tracecontext,baggage,b3,xray',
+                Value: 'tracecontext,baggage,xray',
               },
               {
                 Name: 'OTEL_DOTNET_DISTRO',
@@ -651,7 +651,7 @@ describe('application signals adot sdk agent integration', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'OTEL_DOTNET_DISTRO',
@@ -831,7 +831,7 @@ describe('application signals adot sdk agent integration', () => {
         },
         {
           Name: 'OTEL_PROPAGATORS',
-          Value: 'tracecontext,baggage,b3,xray',
+          Value: 'tracecontext,baggage,xray',
         },
         {
           Name: 'OTEL_SERVICE_NAME',
@@ -1001,7 +1001,7 @@ describe('application signals custom injector', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'JAVA_TOOL_OPTIONS',
@@ -1123,7 +1123,7 @@ describe('application signals custom injector', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'OTEL_PYTHON_DISTRO',
@@ -1254,7 +1254,7 @@ describe('application signals custom injector', () => {
             },
             {
               Name: 'OTEL_PROPAGATORS',
-              Value: 'tracecontext,baggage,b3,xray',
+              Value: 'tracecontext,baggage,xray',
             },
             {
               Name: 'OTEL_DOTNET_DISTRO',
@@ -1409,7 +1409,7 @@ describe('application signals custom injector', () => {
       },
       {
         Name: 'OTEL_PROPAGATORS',
-        Value: 'tracecontext,baggage,b3,xray',
+        Value: 'tracecontext,baggage,xray',
       },
       {
         Name: 'NODE_OPTIONS',

@@ -1,11 +1,9 @@
-import { App, Stack, AssetStaging, CfnResource, NestedStack } from '../../lib';
+import type { AssetStaging } from '../../lib';
+import { App, Stack, CfnResource, NestedStack } from '../../lib';
 import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { toCloudFormation } from '../util';
 
 describe('export writer provider', () => {
-  // Since all regions now have the same latest Node.js runtime (nodejs22.x),
-  // the CDK optimizes by using the literal value instead of creating a mapping
-
   test('basic configuration', () => {
     // GIVEN
     const app = new App();

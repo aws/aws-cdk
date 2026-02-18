@@ -1,6 +1,7 @@
-import { Connections, IConnectable, ISecurityGroup, IVpc } from '../../aws-ec2';
-import { IKey } from '../../aws-kms';
-import { RemovalPolicy, Resource } from '../../core';
+import type { Connections, IConnectable, ISecurityGroup, IVpc } from '../../aws-ec2';
+import type { IKeyRef } from '../../aws-kms';
+import type { RemovalPolicy } from '../../core';
+import { Resource } from '../../core';
 
 /**
  * The storage type for the file system.
@@ -54,7 +55,7 @@ export interface FileSystemProps {
    *
    * @default - the aws/fsx default KMS key for the AWS account being deployed into.
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKey?: IKeyRef;
 
   /**
    * Security Group to assign to this file system.

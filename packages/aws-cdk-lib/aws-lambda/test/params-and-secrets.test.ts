@@ -17,7 +17,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
 
@@ -63,7 +63,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets,
     });
 
@@ -97,7 +97,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
@@ -131,7 +131,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
 
@@ -175,7 +175,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
@@ -210,7 +210,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       architecture: lambda.Architecture.ARM_64,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
     });
@@ -266,7 +266,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets,
     });
 
@@ -302,7 +302,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         architecture: lambda.Architecture.ARM_64,
         paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersion(lambda.ParamsAndSecretsVersions.V1_0_103),
       });
@@ -321,7 +321,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
     secret.grantRead(lambdaFunction);
@@ -398,7 +398,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
     secret.grantRead(lambdaFunction);
@@ -604,7 +604,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
     parameter.grantRead(lambdaFunction);
@@ -690,7 +690,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
     parameter.grantRead(lambdaFunction);
@@ -820,7 +820,7 @@ describe('params and secrets', () => {
       functionName: 'lambda-function',
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       paramsAndSecrets: lambda.ParamsAndSecretsLayerVersion.fromVersionArn(layerArn),
     });
     secrets.forEach(secret => secret.grantRead(lambdaFunction));
@@ -934,7 +934,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: -1');
@@ -955,7 +955,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('Cache size must be between 0 and 1000 inclusive - provided: 1001');
@@ -976,7 +976,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 0');
@@ -997,7 +997,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('HTTP port must be between 1 and 65535 inclusive - provided: 65536');
@@ -1018,7 +1018,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('Maximum connections must be at least 1 - provided: 0');
@@ -1039,7 +1039,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('Maximum TTL for a cached secret is 300 seconds - provided: 301 seconds');
@@ -1060,7 +1060,7 @@ describe('params and secrets', () => {
         functionName: 'lambda-function',
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         paramsAndSecrets,
       });
     }).toThrow('Maximum TTL for a cached parameter is 300 seconds - provided: 301 seconds');

@@ -1,7 +1,9 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
-import { IInferenceProfile, InferenceProfileType } from './inference-profile';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileType } from './inference-profile';
 
 /**
  * Error thrown when cross-region inference profile validation fails.
@@ -20,36 +22,75 @@ class CrossRegionInferenceProfileError extends Error {
  */
 export enum CrossRegionInferenceProfileRegion {
   /**
+   * Global cross-region Inference Identifier.
+   * Routes requests to any supported commercial AWS Region.
+   */
+  GLOBAL = 'global',
+  /**
    * Cross-region Inference Identifier for the European area.
    * According to the model chosen, this might include:
    * - Frankfurt (`eu-central-1`)
    * - Ireland (`eu-west-1`)
    * - Paris (`eu-west-3`)
+   * - London (`eu-west-2`)
+   * - Stockholm (`eu-north-1`)
+   * - Milan (`eu-south-1`)
+   * - Spain (`eu-south-2`)
+   * - Zurich (`eu-central-2`)
    */
   EU = 'eu',
   /**
    * Cross-region Inference Identifier for the United States area.
    * According to the model chosen, this might include:
    * - N. Virginia (`us-east-1`)
-   * - Oregon (`us-west-2`)
    * - Ohio (`us-east-2`)
+   * - Oregon (`us-west-2`)
    */
   US = 'us',
+  /**
+   * Cross-region Inference Identifier for the US GovCloud area.
+   * According to the model chosen, this might include:
+   * - GovCloud US-East (`us-gov-east-1`)
+   * - GovCloud US-West (`us-gov-west-1`)
+   */
+  US_GOV = 'us-gov',
   /**
    * Cross-region Inference Identifier for the Asia-Pacific area.
    * According to the model chosen, this might include:
    * - Tokyo (`ap-northeast-1`)
    * - Seoul (`ap-northeast-2`)
+   * - Osaka (`ap-northeast-3`)
    * - Mumbai (`ap-south-1`)
+   * - Hyderabad (`ap-south-2`)
    * - Singapore (`ap-southeast-1`)
    * - Sydney (`ap-southeast-2`)
+   * - Jakarta (`ap-southeast-3`)
+   * - Melbourne (`ap-southeast-4`)
+   * - Malaysia (`ap-southeast-5`)
+   * - Thailand (`ap-southeast-7`)
+   * - Taipei (`ap-east-2`)
+   * - Middle East (UAE) (`me-central-1`)
    */
   APAC = 'apac',
+  /**
+   * Cross-region Inference Identifier for the Japan area.
+   * According to the model chosen, this might include:
+   * - Tokyo (`ap-northeast-1`)
+   * - Osaka (`ap-northeast-3`)
+   */
+  JP = 'jp',
+  /**
+   * Cross-region Inference Identifier for the Australia area.
+   * According to the model chosen, this might include:
+   * - Sydney (`ap-southeast-2`)
+   * - Melbourne (`ap-southeast-4`)
+   */
+  AU = 'au',
 }
 
 /**
  * Mapping of AWS regions to their corresponding geographic areas for cross-region inference.
- * This mapping is used to determine which cross-region inference profile to use based on the current region.
+ * This mapping is used to determine which cross-region inference profile to use based on the current region in prompt router.
  */
 export const REGION_TO_GEO_AREA: { [key: string]: CrossRegionInferenceProfileRegion } = {
   // US Regions
@@ -179,6 +220,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * For cross-region inference profiles, this method grants permissions to:
    * - Invoke the model in all regions where the inference profile can route requests
    * - Use the inference profile itself
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
@@ -200,6 +242,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    *
    * Note: This does not grant permissions to use the underlying model directly.
    * For comprehensive permissions, use grantInvoke() instead.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

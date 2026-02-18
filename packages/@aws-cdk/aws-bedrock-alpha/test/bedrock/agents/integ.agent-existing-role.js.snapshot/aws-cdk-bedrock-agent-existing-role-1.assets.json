@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "06eb7cf8af5cffaabec9d0fe8535793f3a0e525a5c69b73bb9a4b3e751e6a44e": {
+      "displayName": "aws-cdk-bedrock-agent-existing-role-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agent-existing-role-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b73af61f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "06eb7cf8af5cffaabec9d0fe8535793f3a0e525a5c69b73bb9a4b3e751e6a44e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,13 +1,14 @@
-/* eslint-disable import/no-extraneous-dependencies */
+
 import { DescribeTableCommand, DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as sinon from 'sinon';
 import { isCompleteHandler, onEventHandler } from '../../../lib/aws-dynamodb/replica-handler/index';
-import { OnEventRequest } from '../../../lib/copied-from-aws-cdk-lib/provider-framework-types';
+import type { OnEventRequest } from '../../../lib/copied-from-aws-cdk-lib/provider-framework-types';
 
 let oldConsoleLog: any;
 
 beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   oldConsoleLog = global.console.log;
   global.console.log = jest.fn();
 });

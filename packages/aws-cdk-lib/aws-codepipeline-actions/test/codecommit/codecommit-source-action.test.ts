@@ -10,9 +10,9 @@ import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
-import { CodeCommitSourceActionProps } from '../../lib';
+import type { CodeCommitSourceActionProps } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('CodeCommit Source Action', () => {
   describe('CodeCommit Source Action', () => {
@@ -199,16 +199,16 @@ describe('CodeCommit Source Action', () => {
       const stack = new Stack();
 
       const eventPattern
-      = {
-        'detail-type': ['CodeCommit Repository State Change'],
-        'resources': ['foo'],
-        'source': ['aws.codecommit'],
-        'detail': {
-          referenceType: ['branch'],
-          event: ['referenceCreated', 'referenceUpdated'],
-          referenceName: ['test-branch'],
-        },
-      };
+        = {
+          'detail-type': ['CodeCommit Repository State Change'],
+          'resources': ['foo'],
+          'source': ['aws.codecommit'],
+          'detail': {
+            referenceType: ['branch'],
+            event: ['referenceCreated', 'referenceUpdated'],
+            referenceName: ['test-branch'],
+          },
+        };
 
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS, {
         customEventRule: {

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "7a1e1eb0033b948ccdcff045a8f0d2fd773dc79eb4ed26124de600b561ccd6c6": {
+      "displayName": "aws-cdk-lambda-multi-tenancy Template",
+      "source": {
+        "path": "aws-cdk-lambda-multi-tenancy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-726f9c3b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7a1e1eb0033b948ccdcff045a8f0d2fd773dc79eb4ed26124de600b561ccd6c6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

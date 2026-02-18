@@ -7,7 +7,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('can use filename as buildspec', () => {
   // GIVEN
@@ -971,6 +971,7 @@ describe('Environment', () => {
 
   test.each([
     ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['Base 15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1039,10 +1040,13 @@ describe('Environment', () => {
     });
   });
 
-  test('can set fleet', () => {
+  test.each([
+    ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+  ])('can set macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const fleet = new codebuild.Fleet(stack, 'Fleet', {
       fleetName: 'MyFleet',
       baseCapacity: 1,
@@ -1058,7 +1062,7 @@ describe('Environment', () => {
       }),
       environment: {
         fleet,
-        buildImage: codebuild.MacBuildImage.BASE_14,
+        buildImage,
         computeType: codebuild.ComputeType.MEDIUM,
       },
     });
@@ -1067,7 +1071,7 @@ describe('Environment', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
-        Image: 'aws/codebuild/macos-arm-base:14',
+        Image: expectedImage,
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
@@ -1107,10 +1111,13 @@ describe('Environment', () => {
     });
   });
 
-  test('can set imported fleet', () => {
+  test.each([
+    ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
+    ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+  ])('can set imported macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket');
     const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
 
     // WHEN
@@ -1121,7 +1128,7 @@ describe('Environment', () => {
       }),
       environment: {
         fleet,
-        buildImage: codebuild.MacBuildImage.BASE_14,
+        buildImage,
         computeType: codebuild.ComputeType.MEDIUM,
       },
     });
@@ -1130,7 +1137,7 @@ describe('Environment', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: Match.objectLike({
         ComputeType: 'BUILD_GENERAL1_MEDIUM',
-        Image: 'aws/codebuild/macos-arm-base:14',
+        Image: expectedImage,
         Type: 'MAC_ARM',
         Fleet: {
           FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
@@ -1199,6 +1206,39 @@ describe('Environment', () => {
         },
       });
     }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
+  });
+
+  test('can enable docker server by setting docker server compute type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      environment: {
+        dockerServer: {
+          computeType: codebuild.DockerServerComputeType.SMALL,
+          securityGroups: [securityGroup],
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        DockerServer: {
+          ComputeType: 'BUILD_GENERAL1_SMALL',
+          SecurityGroupIds: [{
+            'Fn::GetAtt': ['SecurityGroupDD263621', 'GroupId'],
+          }],
+        },
+      }),
+    });
   });
 });
 

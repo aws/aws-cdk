@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { Artifact } from './artifact';
-import * as notifications from '../../aws-codestarnotifications';
+import type { Construct } from 'constructs';
+import type { Artifact } from './artifact';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
+import type { Duration, IResource } from '../../core';
+import { Lazy, UnscopedValidationError } from '../../core';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -195,7 +197,7 @@ export interface IAction {
  * It extends `events.IRuleTarget`,
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, notifications.INotificationRuleSource {
+export interface IPipeline extends IResource, IPipelineRef, notifications.INotificationRuleSource {
   /**
    * The name of the Pipeline.
    *

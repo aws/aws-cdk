@@ -1,0 +1,20 @@
+{
+  "version": "45.0.0",
+  "files": {
+    "be78e6d2cf4fa46f4448fb124e2a2f9f71b4fbc85548de4d7440e5e7adc56ac2": {
+      "displayName": "cdk-rds-proxy-endpoint Template",
+      "source": {
+        "path": "cdk-rds-proxy-endpoint.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a173a637": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "be78e6d2cf4fa46f4448fb124e2a2f9f71b4fbc85548de4d7440e5e7adc56ac2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

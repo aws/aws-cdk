@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "DistributedMapParallel/DefaultTest": {
+      "stacks": [
+        "DistributedMapParallelStack"
+      ],
+      "assertionStack": "DistributedMapParallel/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapParallelDefaultTestDeployAssert68743EC7"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

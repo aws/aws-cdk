@@ -1,5 +1,13 @@
 {
  "Resources": {
+  "MyLogGroup5C0DAD85": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "WebSocketApi34BCF99B": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -11,6 +19,15 @@
   "WebSocketStageC46B7E43": {
    "Type": "AWS::ApiGatewayV2::Stage",
    "Properties": {
+    "AccessLogSettings": {
+     "DestinationArn": {
+      "Fn::GetAtt": [
+       "MyLogGroup5C0DAD85",
+       "Arn"
+      ]
+     },
+     "Format": "{\"extendedRequestId\":\"$context.extendedRequestId\",\"requestTime\":\"$context.requestTime\"}"
+    },
     "ApiId": {
      "Ref": "WebSocketApi34BCF99B"
     },

@@ -431,6 +431,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "MyAutoScalingGroupInstanceRoleDFBF3134": {
@@ -580,7 +587,7 @@
          {
           "Ref": "ClusterEB0386A7"
          },
-         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+         " >> /etc/ecs/ecs.config"
         ]
        ]
       }
@@ -661,13 +668,13 @@
   "myServicelb1FA8CBE12": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "Name": "lb1",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
      }
     ],
+    "Name": "lb1",
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {
@@ -725,6 +732,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "myServicelb1listener15ED0E805": {
@@ -773,13 +787,13 @@
   "myServicelb2C84C7BCB": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "Name": "lb2",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
      }
     ],
+    "Name": "lb2",
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {
@@ -836,6 +850,13 @@
     ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
     }
    }
   },

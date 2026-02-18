@@ -49,7 +49,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "MyFunction1ServiceRole9852B06B"
@@ -139,7 +139,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "MyFunction2ServiceRole07E5BE0E"

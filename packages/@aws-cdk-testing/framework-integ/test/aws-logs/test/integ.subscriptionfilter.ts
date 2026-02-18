@@ -1,4 +1,5 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup, FilterPattern } from 'aws-cdk-lib/aws-logs';
 import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
@@ -11,7 +12,7 @@ class SubscriptionFilterIntegStack extends Stack {
     const logGroup = new LogGroup(this, 'LogGroup');
 
     const fn = new Function(this, 'Function', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromInline('foo'),
     });

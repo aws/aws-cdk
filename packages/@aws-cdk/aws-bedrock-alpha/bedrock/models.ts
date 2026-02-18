@@ -12,8 +12,9 @@
  */
 
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { IModel, FoundationModel, FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IModel, FoundationModel, FoundationModelIdentifier } from 'aws-cdk-lib/aws-bedrock';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 
 /**
  * The data type for the vectors when using a model to convert text into vector embeddings.
@@ -343,6 +344,85 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   /****************************************************************************
    *                            ANTHROPIC
    ***************************************************************************/
+
+  /**
+   * Anthropic's Claude Haiku 4.5 model, most cost-efficient and fastest.
+   * Delivers near-frontier performance with substantially lower cost and faster speeds.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Large-scale deployments, budget-conscious applications, real-time customer service, latency-sensitive use cases
+   */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-haiku-4-5-20251001-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 4.5 model, most intelligent in the Claude 4 series.
+   * Demonstrates advancements in agent capabilities with enhanced performance in tool handling,
+   * memory management, and context processing. Excels at autonomous long-horizon coding tasks.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Enhanced tool handling and memory management for long-running tasks
+   * - Best for: Complex agents, coding, autonomous long-horizon tasks, research and analysis, cybersecurity and finance applications
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_5_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-4-5-20250929-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4.1 model, most advanced for coding and agentic applications.
+   * Excels at independently planning and executing complex development tasks end-to-end.
+   * Drop-in replacement for Opus 4 with superior performance and precision.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Complex end-to-end development, agentic applications, research, advanced reasoning
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_1_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-1-20250805-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Opus 4 model, next-generation frontier model.
+   * High-performance model for advanced reasoning and complex multi-step tasks.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Advanced reasoning, complex workflows, enterprise applications
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-20250514-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
+
+  /**
+   * Anthropic's Claude Sonnet 4 model, next-generation frontier model.
+   * Advanced model with improved performance for production environments.
+   * Balances quality, cost-effectiveness, and responsiveness.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   * - Best for: Production applications, complex language tasks, balanced performance and cost
+   */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_V1_0 = new BedrockFoundationModel(
+    'anthropic.claude-sonnet-4-20250514-v1:0',
+    { supportsAgents: true, supportsCrossRegion: true, optimizedForAgents: true },
+  );
 
   /**
    * Anthropic's Claude 3.7 Sonnet model, latest in the Claude 3 series.
@@ -928,6 +1008,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * Gives the appropriate policies to invoke and use the Foundation Model in the stack region.
+   * [disable-awslint:no-grants]
    */
   public grantInvoke(grantee: IGrantable): Grant {
     const grant = Grant.addToPrincipal({
@@ -940,6 +1021,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * Gives the appropriate policies to invoke and use the Foundation Model in all regions.
+   * [disable-awslint:no-grants]
    */
   public grantInvokeAllRegions(grantee: IGrantable): Grant {
     const invokableArn = Arn.format({

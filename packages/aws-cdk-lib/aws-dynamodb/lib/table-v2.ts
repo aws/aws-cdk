@@ -1,41 +1,53 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
-import { Billing } from './billing';
-import { Capacity } from './capacity';
+import type { Billing } from './billing';
+import type { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
-import { TableEncryptionV2 } from './encryption';
-
-import {
+import type { TableEncryptionV2 } from './encryption';
+import type {
   Attribute,
-  BillingMode,
   LocalSecondaryIndexProps,
-  ProjectionType,
   SecondaryIndexProps,
-  StreamViewType,
   PointInTimeRecoverySpecification,
   TableClass,
   WarmThroughput,
-  MultiRegionConsistency,
   ContributorInsightsSpecification,
-  validateContributorInsights,
+  KeySchema,
+  GlobalTableSettingsReplicationMode,
 } from './shared';
-import { ITableV2, TableBaseV2 } from './table-v2-base';
+import {
+  BillingMode,
+  ProjectionType,
+  StreamViewType,
+  MultiRegionConsistency,
+  validateContributorInsights,
+  parseKeySchema,
+} from './shared';
+import { TableGrants } from './table-grants';
+import type { ITableV2 } from './table-v2-base';
+import { TableBaseV2 } from './table-v2-base';
+import type { AddToResourcePolicyResult, PolicyStatement } from '../../aws-iam';
 import { PolicyDocument } from '../../aws-iam';
-import { IStream } from '../../aws-kinesis';
-import { IKey, Key } from '../../aws-kms';
+import type { IStream } from '../../aws-kinesis';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
+import type {
+  CfnTag,
+  RemovalPolicy,
+} from '../../core';
 import {
   ArnFormat,
-  CfnTag,
   FeatureFlags,
   Lazy,
   PhysicalName,
-  RemovalPolicy,
   Stack,
   TagManager,
   TagType,
   Token,
+  Annotations,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -90,15 +102,65 @@ export interface ReplicaGlobalSecondaryIndexOptions extends IContributorInsights
 export interface GlobalSecondaryIndexPropsV2 extends SecondaryIndexProps {
   /**
    * Partition key attribute definition.
+   *
+   * If a single field forms the partition key, you can use this field.  Use the
+   * `partitionKeys` field if the partition key is a multi-attribute key (consists of
+   * multiple fields).
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
    */
-  readonly partitionKey: Attribute;
+  readonly partitionKey?: Attribute;
 
   /**
    * Sort key attribute definition.
    *
+   * If a single field forms the sort key, you can use this field.  Use the
+   * `sortKeys` field if the sort key is a multi-attribute key (consists of multiple
+   * fields).
+   *
    * @default - no sort key
    */
   readonly sortKey?: Attribute;
+
+  /**
+   * Multi-attribute partition key
+   *
+   * If a single field forms the partition key, you can use either
+   * `partitionKey` or `partitionKeys` to specify the partition key. Exactly
+   * one of these must be specified.
+   *
+   * You must use `partitionKeys` field if the partition key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields.
+   *
+   * The order of fields is not important.
+   *
+   * @default - exactly one of `partitionKey` and `partitionKeys` must be specified.
+   */
+  readonly partitionKeys?: Attribute[];
+
+  /**
+   * Multi-attribute sort key
+   *
+   * If a single field forms the sort key, you can use either
+   * `sortKey` or `sortKeys` to specify the sort key. At most one of these
+   * may be specified.
+   *
+   * You must use `sortKeys` field if the sort key is a multi-attribute key
+   * (consists of multiple fields).
+   *
+   * NOTE: although the name of this field makes it sound like it creates
+   * multiple keys, it does not. It defines a single key that consists of
+   * of multiple fields at the same time.
+   *
+   * NOTE: The order of fields is important!
+   *
+   * @default - no sort key
+   */
+  readonly sortKeys?: Attribute[];
 
   /**
    * The read capacity.
@@ -330,6 +392,20 @@ export interface TablePropsV2 extends TableOptionsV2 {
   readonly replicas?: ReplicaTableProps[];
 
   /**
+   * Controls whether table settings are synchronized across replicas.
+   *
+   * When set to ALL, synchronizable settings (billing mode, throughput, TTL, streams view type, GSIs)
+   * are automatically replicated across all replicas. When set to NONE, each replica manages its own
+   * settings independently (billing mode must be PAY_PER_REQUEST).
+   *
+   * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
+   * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
+   *
+   * @default GlobalTableSettingsReplicationMode.NONE
+   */
+  readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
+
+  /**
    * The witness Region for the MRSC global table.
    * A MRSC global table can be configured with either three replicas, or with two replicas and one witness.
    *
@@ -378,6 +454,70 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default - no warm throughput is configured
    */
   readonly warmThroughput?: WarmThroughput;
+}
+
+/**
+ * Properties for creating a multi-account replica table.
+ *
+ * Note: partitionKey, sortKey, and localSecondaryIndexes are not options because CloudFormation
+ * automatically inherits the key schema and LSIs from the source table via globalTableSourceArn.
+ */
+export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
+  /**
+   * The source table to replicate from.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - must be provided
+   */
+  readonly replicaSourceTable?: ITableV2;
+
+  /**
+   * Enforces a particular physical table name.
+   *
+   * @default - generated by CloudFormation
+   */
+  readonly tableName?: string;
+
+  /**
+   * The server-side encryption configuration for the replica table.
+   *
+   * Note: Each replica manages its own encryption independently. This is not synchronized
+   * across replicas.
+   *
+   * @default TableEncryptionV2.dynamoOwnedKey()
+   */
+  readonly encryption?: TableEncryptionV2;
+
+  /**
+   * The removal policy applied to the table.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Controls whether table settings are synchronized across replicas.
+   *
+   * When set to ALL, synchronizable settings (billing mode, throughput, TTL, streams view type, GSIs)
+   * are automatically replicated across all replicas. When set to NONE, each replica manages its own
+   * settings independently (billing mode must be PAY_PER_REQUEST).
+   *
+   * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
+   * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
+   *
+   * @default GlobalTableSettingsReplicationMode.ALL
+   */
+  readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
+
+  /**
+   * Whether or not to grant permissions for all indexes of the table.
+   *
+   * Note: If false, permissions will only be granted to indexes when `globalIndexes` is specified.
+   *
+   * @default false
+   */
+  readonly grantIndexPermissions?: boolean;
 }
 
 /**
@@ -501,6 +641,7 @@ export class TableV2 extends TableBaseV2 {
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
       public readonly resourcePolicy?: PolicyDocument;
+      public readonly grants: TableGrants;
 
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
@@ -510,6 +651,7 @@ export class TableV2 extends TableBaseV2 {
       public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string, resourcePolicy?: PolicyDocument) {
         super(scope, id, { environmentFromArn: tableArn });
 
+        const stack = Stack.of(scope);
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {
           throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', this);
@@ -522,6 +664,28 @@ export class TableV2 extends TableBaseV2 {
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
         this.resourcePolicy = resourcePolicy;
+
+        // Initialize grants - will be no-op for imported tables without resource policy
+        this.grants = new TableGrants({
+          table: this,
+          hasIndex: this.hasIndex,
+          encryptedResource: this.encryptionKey ? this : undefined,
+          policyResource: this.resourcePolicy ? this : undefined,
+        });
+      }
+
+      /**
+       * Adds a statement to the resource policy associated with this table.
+       *
+       * Note: This is a no-op for imported tables since resource policies cannot be modified.
+       *
+       * @param _statement The policy statement to add
+       */
+      public addToResourcePolicy(_statement: PolicyStatement): AddToResourcePolicyResult {
+        // No-op for imported tables - resource policies cannot be modified
+        return {
+          statementAdded: false,
+        };
       }
     }
 
@@ -555,32 +719,17 @@ export class TableV2 extends TableBaseV2 {
     return new Import(tableArn, tableName, attrs.tableId, attrs.tableStreamArn);
   }
 
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn?: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableId?: string;
-
   public readonly encryptionKey?: IKey;
 
   /**
    * @attribute
    */
   public resourcePolicy?: PolicyDocument;
+
+  /**
+   * Grants for this table
+   */
+  public readonly grants: TableGrants;
 
   protected readonly region: string;
 
@@ -591,6 +740,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly hasSortKey: boolean;
   private readonly tableOptions: TableOptionsV2;
   private readonly encryption?: TableEncryptionV2;
+  private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
   private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
@@ -611,6 +761,31 @@ export class TableV2 extends TableBaseV2 {
   private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
+  private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.resource.attrStreamArn;
+  }
+
+  @memoizedGetter
+  public get tableId(): string | undefined {
+    return this.resource.attrTableId;
+  }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
@@ -622,11 +797,13 @@ export class TableV2 extends TableBaseV2 {
     this.hasSortKey = props.sortKey !== undefined;
     this.region = this.stack.region;
     this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
+    this.globalTableSettingsReplicationMode = props.globalTableSettingsReplicationMode;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
     this.configureReplicaKeys(this.encryption?.replicaKeyArns);
 
+    // Only set up keys if not a replica - CloudFormation inherits keys from globalTableSourceArn
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     if (props.sortKey) {
       this.addKey(props.sortKey, RANGE_KEY_TYPE);
@@ -653,7 +830,10 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
     }
 
-    const resource = new CfnGlobalTable(this, 'Resource', {
+    // Initialize resourcePolicy from props or create empty one (KMS pattern)
+    this.resourcePolicy = props.resourcePolicy;
+
+    this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
@@ -676,22 +856,45 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.tableArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(resource.ref);
-    this.tableId = resource.attrTableId;
-    this.tableStreamArn = resource.attrStreamArn;
+    this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));
+
+    // Initialize grants with replica regions for multi-account permissions
+    this.grants = new TableGrants({
+      table: this,
+      regions: Array.from(this.replicaTables.keys()),
+      hasIndex: this.hasIndex,
+      encryptedResource: this.encryptionKey ? this : undefined,
+      policyResource: this,
+    });
 
     if (props.tableName) {
       this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
     }
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    // Initialize resourcePolicy if it doesn't exist
+    if (!this.resourcePolicy) {
+      this.resourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.resourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.resourcePolicy,
+    };
   }
 
   /**
@@ -807,8 +1010,8 @@ export class TableV2 extends TableBaseV2 {
     * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md
     */
     const resourcePolicy = FeatureFlags.of(this).isEnabled(cxapi.DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA)
-      ? (props.region === this.region ? this.tableOptions.resourcePolicy : props.resourcePolicy) || undefined
-      : props.resourcePolicy ?? this.tableOptions.resourcePolicy;
+      ? (props.region === this.region ? this.resourcePolicy : props.resourcePolicy) || undefined
+      : props.resourcePolicy ?? this.resourcePolicy;
 
     const propTags: Record<string, string> = (props.tags ?? []).reduce((p, item) =>
       ({ ...p, [item.key]: item.value }), {},
@@ -842,11 +1045,12 @@ export class TableV2 extends TableBaseV2 {
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
+      globalTableSettingsReplicationMode: this.globalTableSettingsReplicationMode,
     };
   }
 
   private configureGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2): CfnGlobalTable.GlobalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(props.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema(props, this));
     const projection = this.configureIndexProjection(props);
 
     props.readCapacity && this.globalSecondaryIndexReadCapacitys.set(props.indexName, props.readCapacity);
@@ -871,7 +1075,12 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private configureLocalSecondaryIndex(props: LocalSecondaryIndexProps): CfnGlobalTable.LocalSecondaryIndexProperty {
-    const keySchema = this.configureIndexKeySchema(this.partitionKey, props.sortKey);
+    const keySchema = this.configureIndexKeySchema(parseKeySchema({
+      ...props,
+      // The primary key is always the table PK, so copy that
+      partitionKey: this.partitionKey,
+      partitionKeys: undefined,
+    }, this));
     const projection = this.configureIndexProjection(props);
 
     return {
@@ -919,19 +1128,17 @@ export class TableV2 extends TableBaseV2 {
     return replicaGlobalSecondaryIndexes.length > 0 ? replicaGlobalSecondaryIndexes : undefined;
   }
 
-  private configureIndexKeySchema(partitionKey: Attribute, sortKey?: Attribute) {
-    this.addAttributeDefinition(partitionKey);
-
-    const indexKeySchema: CfnGlobalTable.KeySchemaProperty[] = [
-      { attributeName: partitionKey.name, keyType: HASH_KEY_TYPE },
-    ];
-
-    if (sortKey) {
-      this.addAttributeDefinition(sortKey);
-      indexKeySchema.push({ attributeName: sortKey.name, keyType: RANGE_KEY_TYPE });
+  private configureIndexKeySchema(keySchema: KeySchema) {
+    // Register as an attribute
+    for (const attr of [...keySchema.partitionKeys, ...keySchema.sortKeys]) {
+      this.addAttributeDefinition(attr);
     }
 
-    return indexKeySchema;
+    // Return rendered properties
+    return [
+      ...keySchema.partitionKeys.map((pk) => ({ attributeName: pk.name, keyType: HASH_KEY_TYPE })),
+      ...keySchema.sortKeys.map((sk) => ({ attributeName: sk.name, keyType: RANGE_KEY_TYPE })),
+    ];
   }
 
   private configureIndexProjection(props: SecondaryIndexProps): CfnGlobalTable.ProjectionProperty {
@@ -970,23 +1177,11 @@ export class TableV2 extends TableBaseV2 {
   }
 
   private renderGlobalIndexes() {
-    const globalSecondaryIndexes: CfnGlobalTable.GlobalSecondaryIndexProperty[] = [];
-
-    for (const globalSecondaryIndex of this.globalSecondaryIndexes.values()) {
-      globalSecondaryIndexes.push(globalSecondaryIndex);
-    }
-
-    return globalSecondaryIndexes;
+    return Array.from(this.globalSecondaryIndexes.values());
   }
 
   private renderLocalIndexes() {
-    const localSecondaryIndexes: CfnGlobalTable.LocalSecondaryIndexProperty[] = [];
-
-    for (const localSecondaryIndex of this.localSecondaryIndexes.values()) {
-      localSecondaryIndexes.push(localSecondaryIndex);
-    }
-
-    return localSecondaryIndexes;
+    return Array.from(this.localSecondaryIndexes.values());
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
@@ -1069,6 +1264,10 @@ export class TableV2 extends TableBaseV2 {
 
   private validateGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
+
+    // Calling this for its side effect of throwing an exception here. We will call it again later
+    // for its return value. Slightly wasteful but that's how the code was structured already.
+    parseKeySchema(props, this);
 
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
       throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
@@ -1171,5 +1370,182 @@ export class TableV2 extends TableBaseV2 {
     const contributorInsightsSpecification = props?.contributorInsightsSpecification || this.tableOptions?.contributorInsightsSpecification;
 
     return validateContributorInsights(contributorInsights, contributorInsightsSpecification, 'contributorInsights', this);
+  }
+}
+
+/**
+ * A nulti-account replica of a DynamoDB table.
+ *
+ * This construct represents a replica table in a different AWS account from the source table.
+ * It inherits the schema (partition key, sort key, and indexes) from the source table.
+ *
+ * Permissions on the replica side are automatically configured. You must manually add
+ * permissions to the source table using `sourceTable.grants.nultiAccountReplicationTo(replica.tableArn)`.
+ *
+ * @resource AWS::DynamoDB::GlobalTable
+ */
+export class TableV2MultiAccountReplica extends TableBaseV2 {
+  /**
+   * @attribute
+   */
+  public readonly tableStreamArn?: string;
+
+  /**
+   * @attribute
+   */
+  public readonly tableId?: string;
+
+  public readonly encryptionKey?: IKey;
+
+  /**
+   * @attribute
+   */
+  public resourcePolicy?: PolicyDocument;
+
+  /**
+   * Grants for this table
+   */
+  public readonly grants: TableGrants;
+
+  protected readonly region: string;
+  private readonly resource: CfnGlobalTable;
+  private readonly _hasIndex: boolean;
+
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  public constructor(scope: Construct, id: string, props: TableV2MultiAccountReplicaProps = {}) {
+    super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+
+    if (!props.replicaSourceTable) {
+      throw new ValidationError('replicaSourceTable is required for TableV2MultiAccountReplica', this);
+    }
+
+    this.validateMultiAccountReplica(props);
+
+    this.region = this.stack.region;
+    this._hasIndex = props.grantIndexPermissions ?? true;
+
+    this.resourcePolicy = props.resourcePolicy;
+
+    this.encryptionKey = props.encryption?.tableKey;
+
+    const resource = new CfnGlobalTable(this, 'Resource', {
+      tableName: props.replicaSourceTable.tableName,
+      replicas: [{
+        region: this.stack.region,
+        deletionProtectionEnabled: props.deletionProtection,
+        tableClass: props.tableClass,
+        kinesisStreamSpecification: props.kinesisStream ?
+          { streamArn: props.kinesisStream.streamArn } : undefined,
+        contributorInsightsSpecification: props.contributorInsightsSpecification,
+        pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
+        resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
+        sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
+        tags: props.tags,
+        globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
+      }],
+      globalTableSourceArn: props.replicaSourceTable.tableArn,
+    });
+    resource.applyRemovalPolicy(props.removalPolicy);
+
+    this.resource = resource;
+    this.tableId = resource.attrTableId;
+    this.tableStreamArn = resource.attrStreamArn;
+
+    // Initialize grants
+    this.grants = new TableGrants({
+      table: this,
+      regions: [],
+      encryptedResource: this.encryptionKey ? this : undefined,
+      policyResource: this,
+    });
+
+    this.grants.multiAccountReplicationFrom(props.replicaSourceTable.tableArn);
+
+    const sourceTable = props.replicaSourceTable as any;
+
+    const hasCfnResource = sourceTable.node.defaultChild !== undefined;
+
+    if (sourceTable.resourcePolicy || hasCfnResource) {
+      // Either has explicit resource policy, or is a concrete TableV2 that can create one
+      props.replicaSourceTable.grants.multiAccountReplicationTo(this.tableArn);
+    } else {
+      // Imported table without resource policy
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-dynamodb:multiAccountReplicaSourceWithoutPolicy',
+        'The source table is imported without a resource policy and cannot be granted multi-account replication permissions. ' +
+        'You must manually configure multi-account replication permissions on the source table. ' +
+        `Call sourceTable.grants.multiAccountReplicationTo('${this.tableArn}') on the actual source table stack.`,
+      );
+    }
+
+    if (props.tableName) {
+      this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName);
+    }
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table.
+   */
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.resourcePolicy) {
+      this.resourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.resourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.resourcePolicy,
+    };
+  }
+
+  protected get hasIndex() {
+    return this._hasIndex;
+  }
+
+  private validateMultiAccountReplica(props: TableV2MultiAccountReplicaProps) {
+    const sourceStack = Stack.of(props.replicaSourceTable!);
+    let sourceAccount = sourceStack.account;
+    let sourceRegion = sourceStack.region;
+
+    // For imported tables, extract account/region from ARN instead of stack
+    if (!Token.isUnresolved(props.replicaSourceTable!.tableArn)) {
+      const arnParts = this.stack.splitArn(props.replicaSourceTable!.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
+      if (arnParts.account) sourceAccount = arnParts.account;
+      if (arnParts.region) sourceRegion = arnParts.region;
+    }
+
+    // Validate different account (skip if token)
+    if (!Token.isUnresolved(sourceAccount) && !Token.isUnresolved(this.stack.account)) {
+      if (sourceAccount === this.stack.account) {
+        throw new ValidationError(
+          'Multi-account replica must be in a different account than the source table. For same-account replication, use addReplica() instead.',
+          this,
+        );
+      }
+    }
+
+    // Validate different region (skip if token)
+    if (!Token.isUnresolved(sourceRegion) && !Token.isUnresolved(this.stack.region)) {
+      if (sourceRegion === this.stack.region) {
+        throw new ValidationError(
+          'Multi-account replica must be in a different region than the source table.',
+          this,
+        );
+      }
+    }
   }
 }

@@ -1,9 +1,9 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Match } from 'aws-cdk-lib/assertions';
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
+import { Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as glue from '../lib';
 
 /**
  * Integration test to verify that Glue jobs deploy successfully with metrics disabled.

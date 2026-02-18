@@ -43,6 +43,26 @@ test.each([-0.5, 0.5, 1.5, 4])
   }).toThrow(`connectionAttempts: Must be an int between 1 and 3 (inclusive); received ${connectionAttempts}.`);
 });
 
+test.each([
+  Duration.seconds(0),
+  Duration.seconds(3601),
+])('validates responseCompletionTimeout is an int between 1 and 3600 seconds - out of bounds', (responseCompletionTimeout) => {
+  expect(() => {
+    new TestOrigin('www.example.com', {
+      responseCompletionTimeout,
+    });
+  }).toThrow(`responseCompletionTimeout: Must be an int between 1 and 3600 seconds (inclusive); received ${responseCompletionTimeout.toSeconds()}.`);
+});
+
+test('responseCompletionTimeout is correctly set in origin property', () => {
+  const origin = new TestOrigin('www.example.com', {
+    responseCompletionTimeout: Duration.seconds(120),
+  });
+
+  const originBindConfig = origin.bind(stack, { originId: 'OriginId' });
+  expect(originBindConfig.originProperty?.responseCompletionTimeout).toEqual(120);
+});
+
 test.each(['api', '/api', '/api/', 'api/'])
 ('enforces that originPath starts but does not end, with a /', (originPath) => {
   const origin = new TestOrigin('www.example.com', {

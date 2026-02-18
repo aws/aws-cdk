@@ -42,7 +42,6 @@ export class LogicalIDs {
 
     // If this newId has already been used, it must have been with the same oldId
     if (newId in this.reverse && this.reverse[newId] !== oldId) {
-      // eslint-disable-next-line max-len
       throw new UnscopedValidationError(`Two objects have been assigned the same Logical ID: '${this.reverse[newId]}' and '${oldId}' are now both named '${newId}'.`);
     }
     this.reverse[newId] = oldId;

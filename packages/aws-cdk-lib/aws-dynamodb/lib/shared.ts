@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, ValidationError } from '../../core';
+import type { Construct, IConstruct } from 'constructs';
+import type { GlobalSecondaryIndexProps } from './table';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as iam from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import { ValidationError, type IResource } from '../../core';
+import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Supported DynamoDB table operations.
@@ -175,6 +177,25 @@ export enum ContributorInsightsMode {
 }
 
 /**
+ * The replication mode for global table settings across multiple accounts.
+ *
+ * Note: In a multi-account global table, you cannot make changes to a synchronized setting using CDK.
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_MA_HowItWorks.html
+ */
+export enum GlobalTableSettingsReplicationMode {
+  /**
+   * All synchronizable settings are replicated across all replicas.
+   *
+   * Synchronizable settings include: billing mode, provisioned throughput, auto-scaling,
+   * on-demand throughput, warm throughput, TTL, streams view type, and GSIs.
+   *
+   * Note: Some settings are always synchronized (key schema, LSIs) and some are never
+   * synchronized (table class, SSE, deletion protection, PITR, tags, resource policy, CCI).
+   */
+  ALL = 'ENABLED',
+}
+
+/**
  * Reference to ContributorInsightsSpecification
  */
 export interface ContributorInsightsSpecification {
@@ -338,7 +359,7 @@ export interface LocalSecondaryIndexProps extends SecondaryIndexProps {
 /**
  * An interface that represents a DynamoDB Table - either created with the CDK, or an existing one.
  */
-export interface ITable extends IResource {
+export interface ITable extends IResource, ITableRef {
   /**
    * Arn of the dynamodb table.
    *
@@ -541,4 +562,60 @@ export function validateContributorInsights(
 
   return contributorInsightsSpecification ??
     (contributorInsights !== undefined ? { enabled: contributorInsights } : undefined);
+}
+
+/**
+ * A description of a key schema of an LSI, GSI or Table
+ */
+export interface KeySchema {
+  /**
+   * Partition key definition
+   *
+   * This array has at least one, but potentially multiple entries.  Together,
+   * they form the partition key.
+   */
+  readonly partitionKeys: Attribute[];
+
+  /**
+   * Sort key definition
+   *
+   * This array has zero or more entries. Together, they form the sort key.
+   */
+  readonly sortKeys: Attribute[];
+}
+
+/**
+ * A key schema that combines the legacy properties (singular keys) with the modern properties (multi-attribute keys)
+ *
+ * Picking from an existing type is an easy way to get these without having to copy/paste them all, but we could
+ * have also done the copy/pasting. This type is never exported.
+ */
+type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'partitionKeys' | 'sortKey' | 'sortKeys'>;
+
+/**
+ * Parse a backwards compatible key schema to a strictly multi-attribute key schema, and validate the contents
+ */
+export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
+  if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {
+    throw new ValidationError('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
+  }
+  if ((schema.sortKey !== undefined) && (schema.sortKeys !== undefined)) {
+    throw new ValidationError('At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
+  }
+
+  const partitionKeys = schema.partitionKeys ?? (schema.partitionKey ? [schema.partitionKey] : []);
+  const sortKeys = schema.sortKeys ?? (schema.sortKey ? [schema.sortKey] : []);
+
+  if (partitionKeys.length === 0) {
+    throw new ValidationError('\'partitionKeys\' must contain at least one element', scope);
+  }
+
+  if (partitionKeys.length > 4) {
+    throw new ValidationError('Maximum of 4 partition keys allowed', scope);
+  }
+  if (sortKeys.length > 4) {
+    throw new ValidationError('Maximum of 4 sort keys allowed', scope);
+  }
+
+  return { partitionKeys, sortKeys };
 }

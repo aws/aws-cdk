@@ -1,7 +1,8 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import type { Construct } from 'constructs';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {

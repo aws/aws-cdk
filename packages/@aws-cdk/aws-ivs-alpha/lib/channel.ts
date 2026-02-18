@@ -1,11 +1,11 @@
+import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import * as core from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
-import { StreamKey } from './stream-key';
-import { IRecordingConfiguration } from './recording-configuration';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IRecordingConfiguration } from './recording-configuration';
+import { StreamKey } from './stream-key';
 
 /**
  * Represents an IVS Channel

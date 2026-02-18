@@ -1,7 +1,7 @@
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LambdaRestApi } from 'aws-cdk-lib/aws-apigateway';
 
 class LambdaApiIntegrationOptionsStack extends Stack {
@@ -19,7 +19,7 @@ class LambdaApiIntegrationOptionsStack extends Stack {
           headers: { 'Content-Type': '*/*' }
         };
       }`),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
     });
 

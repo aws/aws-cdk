@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-docdb-cluster-serverless-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-docdb-cluster-serverless"
+      ],
+      "assertionStack": "aws-cdk-docdb-cluster-serverless-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdocdbclusterserverlessintegDefaultTestDeployAssert24E176B3"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

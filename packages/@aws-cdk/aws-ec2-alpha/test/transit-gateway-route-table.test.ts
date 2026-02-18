@@ -1,11 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { TransitGateway } from '../lib/transit-gateway';
-import * as vpc from '../lib/vpc-v2';
-import * as subnet from '../lib/subnet-v2';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import * as subnet from '../lib/subnet-v2';
+import { TransitGateway } from '../lib/transit-gateway';
 import { TransitGatewayRouteTable } from '../lib/transit-gateway-route-table';
 import { TransitGatewayVpcAttachment } from '../lib/transit-gateway-vpc-attachment';
+import * as vpc from '../lib/vpc-v2';
 
 describe('Transit Gateway Route Table', () => {
   let stack: cdk.Stack;

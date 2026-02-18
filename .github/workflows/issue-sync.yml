@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'yarn'
@@ -19,7 +19,7 @@ jobs:
 
       # Cache node_modules
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-modules
         with:
           path: |
@@ -37,7 +37,7 @@ jobs:
 
       # Cache build output
       - name: Cache build output
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-build
         with:
           path: |

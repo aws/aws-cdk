@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "49.0.0",
   "artifacts": {
     "EKSStandardAccessEntry.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de7e2b7e9f4f2e1c76387ae7d9037673500cba03e60edf896588ee6f67d1dde3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4df42053b748e7457b2b289181e896879d03c80b9244a626baad32fde9536a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -328,12 +328,6 @@
             }
           }
         ],
-        "/EKSStandardAccessEntry/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EKSStandardAccessEntry/Cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -486,12 +480,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EKSStandardAccessEntry/Cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EKSStandardAccessEntry/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -656,12 +644,6 @@
             }
           }
         ],
-        "/EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EKSStandardAccessEntry/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -771,12 +753,6 @@
             }
           }
         ],
-        "/EKSStandardAccessEntry/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EKSStandardAccessEntry/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -869,19 +845,10 @@
       "properties": {
         "module": "aws-cdk-lib",
         "flags": {
-          "@aws-cdk/core:enableStackNameDuplicates": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "Allow multiple stacks with the same name",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "aws-cdk:enableDiffNoFail": {
-            "recommendedValue": true,
-            "explanation": "Make `cdk diff` not fail when there are differences",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
           "@aws-cdk/core:newStyleStackSynthesis": {
             "recommendedValue": true,
@@ -897,40 +864,10 @@
               "v2": true
             }
           },
-          "@aws-cdk/aws-ecr-assets:dockerIgnoreSupport": {
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
-            "explanation": "DockerImageAsset properly supports `.dockerignore` files by default",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-secretsmanager:parseOwnedSecretName": {
-            "recommendedValue": true,
-            "explanation": "Fix the referencing of SecretsManager names from ARNs",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-kms:defaultKeyPolicies": {
-            "recommendedValue": true,
-            "explanation": "Tighten default KMS key policies",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-s3:grantWriteWithoutAcl": {
-            "recommendedValue": true,
-            "explanation": "Remove `PutObjectAcl` from Bucket.grantWrite",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount": {
-            "recommendedValue": true,
-            "explanation": "Do not specify a default DesiredCount for ECS services",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -942,13 +879,6 @@
           "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
             "recommendedValue": true,
             "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-efs:defaultEncryptionAtRest": {
-            "recommendedValue": true,
-            "explanation": "Enable this feature flag to have elastic file systems encrypted at rest by default.",
             "unconfiguredBehavesLike": {
               "v2": true
             }
@@ -1047,7 +977,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1233,16 +1163,6 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
-          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
             "recommendedValue": true,
@@ -1349,10 +1269,7 @@
           },
           "@aws-cdk/cognito:logUserPoolClientSecretValue": {
             "recommendedValue": false,
-            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs.",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs."
           },
           "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
             "recommendedValue": true,
@@ -1378,10 +1295,7 @@
           },
           "@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration": {
             "recommendedValue": false,
-            "explanation": "When enabled, use resource IDs for VPC V2 migration",
-            "unconfiguredBehavesLike": {
-              "v2": false
-            }
+            "explanation": "When enabled, use resource IDs for VPC V2 migration"
           },
           "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
             "userValue": true,
@@ -1391,14 +1305,32 @@
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
             "userValue": false,
             "recommendedValue": true,
-            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function",
+            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
             "unconfiguredBehavesLike": {
-              "v2": false
+              "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1100.3"
 }

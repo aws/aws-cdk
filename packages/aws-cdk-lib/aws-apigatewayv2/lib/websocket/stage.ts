@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
 import { CfnStage } from '.././index';
-import { Grant, IGrantable } from '../../../aws-iam';
+import { AccessLogField, AccessLogFormat } from '../../../aws-apigateway';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant } from '../../../aws-iam';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { StageOptions, IApi, IStage, StageAttributes } from '../common';
+import type { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
 /**
@@ -77,6 +79,20 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       get callbackUrl(): string {
         throw new ValidationError('callback url is not available for imported stages.', scope);
       }
+
+      /**
+       * CLF Log format for WebSocket API Stage.
+       *
+       * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+       */
+      defaultAccessLogFormat(): AccessLogFormat {
+        const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+        const requestTime = AccessLogField.contextRequestTime();
+        const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+        const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+        return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
+      }
     }
     return new Import(scope, id);
   }
@@ -113,6 +129,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       } : undefined,
       description: props.description,
       stageVariables: Lazy.any({ produce: () => this._stageVariables }),
+      accessLogSettings: this._validateAccessLogSettings(props.accessLogSettings),
     });
 
     if (props.domainMapping) {
@@ -141,6 +158,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
   /**
    * Grant access to the API Gateway management API for this WebSocket API Stage to an IAM
    * principal (Role/Group/User).
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    */
@@ -156,5 +174,19 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       actions: ['execute-api:ManageConnections'],
       resourceArns: [`${arn}/${this.stageName}/*/@connections/*`],
     });
+  }
+
+  /**
+   * CLF Log format for WebSocket API Stage.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-logging.html
+   */
+  defaultAccessLogFormat(): AccessLogFormat {
+    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
+    const requestTime = AccessLogField.contextRequestTime();
+    const request = [AccessLogField.contextEventType(), AccessLogField.contextRouteKey(), AccessLogField.contextConnectionId()].join(' ');
+    const status = [AccessLogField.contextStatus(), AccessLogField.contextRequestId()].join(' ');
+
+    return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
   }
 }

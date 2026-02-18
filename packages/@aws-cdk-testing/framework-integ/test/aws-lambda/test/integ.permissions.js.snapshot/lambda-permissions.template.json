@@ -155,6 +155,26 @@
      "Statement": [
       {
        "Action": "lambda:InvokeFunctionUrl",
+       "Condition": {
+        "StringEquals": {
+         "lambda:FunctionUrlAuthType": "AWS_IAM"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyLambdaCCE802FB",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Condition": {
+        "Bool": {
+         "lambda:InvokedViaFunctionUrl": true
+        }
+       },
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

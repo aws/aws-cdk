@@ -1,0 +1,516 @@
+{
+ "Resources": {
+  "TestFunctionServiceRole6ABD93C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestFunction22AD90FC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => ({ statusCode: 200, body: \"Hello\" });"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestFunctionServiceRole6ABD93C7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
+   },
+   "DependsOn": [
+    "TestFunctionServiceRole6ABD93C7"
+   ]
+  },
+  "TestFunctionLogGroupE7744A08": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TestFunction22AD90FC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TestFunctionFunctionUrlF8C7B1A2": {
+   "Type": "AWS::Lambda::Url",
+   "Properties": {
+    "AuthType": "AWS_IAM",
+    "TargetFunctionArn": {
+     "Fn::GetAtt": [
+      "TestFunction22AD90FC",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "DistributionWithoutIpAddressTypePropIPv4Origin1FunctionUrlOriginAccessControl24C1DA23": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "FunctionUrlOriginIpAddressTynctionUrlOriginAccessControl7A3061EB",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D68C10388": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithoutIpAddressTypePropIPv457500ACB"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithoutIpAddressTypePropIPv457500ACB": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "FunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "TestFunctionFunctionUrlF8C7B1A2",
+             "FunctionUrl"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "FunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionWithoutIpAddressTypePropIPv4Origin1FunctionUrlOriginAccessControl24C1DA23",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "DistributionWithIPv4Origin1FunctionUrlOriginAccessControl26099520": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "FunctionUrlOriginIpAddressTynctionUrlOriginAccessControl4B1A12BA",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionWithIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D09790128D49D13": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithIPv467452C1E"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithIPv467452C1E": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "FunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D097901",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "IpAddressType": "ipv4",
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "TestFunctionFunctionUrlF8C7B1A2",
+             "FunctionUrl"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "FunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D097901",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionWithIPv4Origin1FunctionUrlOriginAccessControl26099520",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "DistributionWithIPv6Origin1FunctionUrlOriginAccessControl37121DA6": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "FunctionUrlOriginIpAddressTynctionUrlOriginAccessControlAE4766D1",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionWithIPv6Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92367EAB99": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithIPv69F24DA5D"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithIPv69F24DA5D": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "FunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "IpAddressType": "ipv6",
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "TestFunctionFunctionUrlF8C7B1A2",
+             "FunctionUrl"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "FunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionWithIPv6Origin1FunctionUrlOriginAccessControl37121DA6",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  },
+  "DistributionWithDualstackOrigin1FunctionUrlOriginAccessControl41F65825": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "FunctionUrlOriginIpAddressTynctionUrlOriginAccessControl0F9C797B",
+     "OriginAccessControlOriginType": "lambda",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistributionWithDualstackOrigin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08C93B3E02": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunctionUrl",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithDualstackCB183339"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DistributionWithDualstackCB183339": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "FunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "IpAddressType": "dualstack",
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Fn::GetAtt": [
+             "TestFunctionFunctionUrlF8C7B1A2",
+             "FunctionUrl"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       "Id": "FunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionWithDualstackOrigin1FunctionUrlOriginAccessControl41F65825",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDistributionWithIPv467452C1EFE039C9B": {
+   "Value": {
+    "Ref": "DistributionWithIPv467452C1E"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv467452C1EFE039C9B"
+   }
+  },
+  "ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011": {
+   "Value": {
+    "Ref": "DistributionWithIPv69F24DA5D"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011"
+   }
+  },
+  "ExportsOutputRefDistributionWithDualstackCB18333921C95B2A": {
+   "Value": {
+    "Ref": "DistributionWithDualstackCB183339"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithDualstackCB18333921C95B2A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

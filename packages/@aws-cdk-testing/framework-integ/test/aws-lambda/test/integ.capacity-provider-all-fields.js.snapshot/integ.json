@@ -1,0 +1,25 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "CapacityProviderAllFieldsTest/DefaultTest": {
+      "stacks": [
+        "CapacityProviderAllFieldsStack"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "eu-west-1",
+        "eu-central-1",
+        "eu-north-1",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ap-northeast-1"
+      ],
+      "assertionStack": "CapacityProviderAllFieldsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityProviderAllFieldsTestDefaultTestDeployAssert66FA2D60"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

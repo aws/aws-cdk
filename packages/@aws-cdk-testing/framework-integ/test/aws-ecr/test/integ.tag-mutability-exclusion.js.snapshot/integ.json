@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-ecr-tag-mutability-exclusion-test/DefaultTest": {
+      "stacks": [
+        "aws-ecr-tag-mutability-exclusion-stack"
+      ],
+      "assertionStack": "cdk-ecr-tag-mutability-exclusion-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkecrtagmutabilityexclusiontestDefaultTestDeployAssertD78326B1"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

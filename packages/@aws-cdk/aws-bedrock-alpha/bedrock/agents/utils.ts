@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import * as cdk from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
 import { ValidationError } from 'aws-cdk-lib';
+import type { IConstruct } from 'constructs';
 
 /**
  * The CFN NAG suppress rule interface
@@ -78,7 +78,7 @@ export interface GeneratePhysicalNameV2Options extends cdk.UniqueResourceNameOpt
 
   /**
    * This object is hashed for uniqueness and can force a destroy instead of a replace.
-   * @default: undefined
+   * @default undefined
    */
   destroyCreate?: any;
 }

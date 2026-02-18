@@ -1,5 +1,5 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
 import { App, CustomResource, Stack } from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { ActualResult, ExpectedResult, InvocationType, LogType } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 import { IntegTest } from '../../lib/test-case';

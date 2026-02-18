@@ -1,6 +1,6 @@
-import { MessageLanguage } from './common';
-import * as iam from '../../aws-iam';
-import * as cdk from '../../core';
+import type { MessageLanguage } from './common';
+import type * as iam from '../../aws-iam';
+import type * as cdk from '../../core';
 
 /**
  * Properties for governance mechanisms and constraints.
@@ -39,7 +39,7 @@ export interface StackSetsConstraintOptions extends CommonConstraintOptions {
   /**
    * IAM role used to administer the StackSets configuration.
    */
-  readonly adminRole: iam.IRole;
+  readonly adminRole: iam.IRoleRef;
 
   /**
    * IAM role used to provision the products in the Stacks.

@@ -22,9 +22,9 @@ class GlueDataBrewJobStack extends cdk.Stack {
     });
 
     const role = new iam.Role(this, 'DataBrew Role', {
-      managedPolicies: [{
-        managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole',
-      }],
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueDataBrewServiceRole'),
+      ],
       path: '/',
       assumedBy: new iam.ServicePrincipal('databrew.amazonaws.com'),
       inlinePolicies: {

@@ -1,5 +1,6 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { ECR, ImageIdentifier, ListImagesRequest } from '@aws-sdk/client-ecr';
+
+import type { ImageIdentifier, ListImagesRequest } from '@aws-sdk/client-ecr';
+import { ECR } from '@aws-sdk/client-ecr';
 import { makeHandler } from '../../nodejs-entrypoint';
 
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';

@@ -125,6 +125,102 @@ const s3Destination = new firehose.S3Bucket(bucket, {
 });
 ```
 
+## Data Format Conversion
+
+Data format conversion allows automatic conversion of inputs from JSON to either Parquet or ORC.
+Converting JSON records to columnar formats like Parquet or ORC can help speed up analytical querying while also increasing compression efficiency.
+When data format conversion is specified, it automatically enables Snappy compression on the output.
+
+Only S3 Destinations support data format conversion.
+
+An example of defining an S3 destination configured with data format conversion:
+
+```ts
+declare const bucket: s3.Bucket;
+declare const schemaGlueTable: glue.CfnTable;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dataFormatConversion: {
+    schemaConfiguration: firehose.SchemaConfiguration.fromCfnTable(schemaGlueTable),
+    inputFormat: firehose.InputFormat.OPENX_JSON,
+    outputFormat: firehose.OutputFormat.PARQUET,
+  }
+});
+```
+
+When data format conversion is enabled, the Delivery Stream's buffering size must be at least 64 MiB. 
+Additionally, the default buffering size is changed from 5 MiB to 128 MiB. This mirrors the Cloudformation behavior.
+
+You can only parse JSON and transform it into either Parquet or ORC:
+- to read JSON using OpenX parser, choose `InputFormat.OPENX_JSON`.
+- to read JSON using Hive parser, choose `InputFormat.HIVE_JSON`.
+- to transform into Parquet, choose `OutputFormat.PARQUET`.
+- to transform into ORC, choose `OutputFormat.ORC`.
+
+The following subsections explain how to specify advanced configuration options for each input and output format if the defaults are not desirable
+
+### Input Format: OpenX JSON
+
+Example creation of custom OpenX JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.OpenXJsonInputFormat({
+  lowercaseColumnNames: false,
+  columnToJsonKeyMappings: {"ts": "timestamp"},
+  convertDotsInJsonKeysToUnderscores: true,
+})
+```
+
+### Input Format: Hive JSON
+
+Example creation of custom Hive JSON InputFormat:
+
+```ts
+const inputFormat = new firehose.HiveJsonInputFormat({
+  timestampParsers: [
+    firehose.TimestampParser.fromFormatString('yyyy-MM-dd'),
+    firehose.TimestampParser.EPOCH_MILLIS,
+  ]
+})
+```
+
+Hive JSON allows you to specify custom timestamp formats to parse. The syntax of the format string is Joda Time.
+
+To parse timestamps formatted as milliseconds since epoch, use the convenience constant `TimestampParser.EPOCH_MILLIS`.
+
+### Output Format: Parquet
+
+Example of a custom Parquet OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.ParquetOutputFormat({
+  blockSize: Size.mebibytes(512),
+  compression: firehose.ParquetCompression.UNCOMPRESSED,
+  enableDictionaryCompression: true,
+  maxPadding: Size.bytes(10),
+  pageSize: Size.mebibytes(2),
+  writerVersion: firehose.ParquetWriterVersion.V2,
+})
+```
+
+### Output Format: ORC
+
+Example creation of custom ORC OutputFormat, with all values changed from the defaults.
+
+```ts
+const outputFormat = new firehose.OrcOutputFormat({
+  formatVersion: firehose.OrcFormatVersion.V0_11,
+  blockSize: Size.mebibytes(256),
+  compression: firehose.OrcCompression.NONE,
+  bloomFilterColumns: ['columnA'],
+  bloomFilterFalsePositiveProbability: 0.1,
+  dictionaryKeyThreshold: 0.7,
+  enablePadding: true,
+  paddingTolerance: 0.2,
+  rowIndexStride: 9000,
+  stripeSize: Size.mebibytes(32),
+})
+```
+
 ## Server-side Encryption
 
 Enabling server-side encryption (SSE) requires Amazon Data Firehose to encrypt all data
@@ -387,8 +483,11 @@ Data can be transformed before being delivered to destinations. There are two ty
 data processing for delivery streams: record transformation with AWS Lambda, and record
 format conversion using a schema stored in an AWS Glue table. If both types of data
 processing are configured, then the Lambda transformation is performed first. By default,
-no data processing occurs. This construct library currently only supports data
-transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+no data processing occurs.
+
+This construct library currently only supports data
+transformation with AWS Lambda and some built-in data processors.
+See [#15501](https://github.com/aws/aws-cdk/issues/15501)
 to track the status of adding support for record format conversion.
 
 ### Data transformation with AWS Lambda
@@ -401,6 +500,7 @@ result that contains records in a specific format, including the following field
 - `result` -- the status of the transformation of the record: "Ok" (success), "Dropped"
   (not processed intentionally), or "ProcessingFailed" (not processed due to an error).
 - `data` -- the transformed data, Base64-encoded.
+- `metadata` -- the metadata used by dynamic partitioning.
 
 The data is buffered up to 1 minute and up to 3 MiB by default before being sent to the
 function, but can be configured using `bufferInterval` and `bufferSize`
@@ -424,7 +524,7 @@ const lambdaProcessor = new firehose.LambdaFunctionProcessor(lambdaFunction, {
 });
 declare const bucket: s3.Bucket;
 const s3Destination = new firehose.S3Bucket(bucket, {
-  processor: lambdaProcessor,
+  processors: [lambdaProcessor],
 });
 new firehose.DeliveryStream(this, 'Delivery Stream', {
   destination: s3Destination,
@@ -435,6 +535,144 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 
 See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Amazon Data Firehose Developer Guide*.
+
+### Add a new line delimiter when delivering data to Amazon S3
+
+You can specify the `AppendDelimiterToRecordProcessor` built-in processor to add a new line delimiter between records in objects that are delivered to Amazon S3. This can be helpful for parsing objects in Amazon S3.
+For details, see [Use Amazon S3 bucket prefix to deliver data](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning-s3bucketprefix.html).
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.AppendDelimiterToRecordProcessor(),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
+### Decompress and extract message of CloudWatch Logs
+
+CloudWatch Logs events are sent to Firehose in compressed gzip format. If you want to deliver decompressed log events to Firehose destinations, you can use the `DecompressionProcessor` to automatically decompress CloudWatch Logs.
+For details, see [Send CloudWatch Logs to Firehose](https://docs.aws.amazon.com/firehose/latest/dev/writing-with-cloudwatch-logs.html).
+
+You may also needed to specify `AppendDelimiterToRecordProcessor`
+because decompressed log events record has no trailing newline.
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.DecompressionProcessor(),
+    new firehose.AppendDelimiterToRecordProcessor(),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
+When you enable decompression, you have the option to also enable message extraction. When using message extraction, Firehose filters out all metadata, such as owner, loggroup, logstream, and others from the decompressed CloudWatch Logs records and delivers only the content inside the message fields.
+
+```ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  processors: [
+    new firehose.DecompressionProcessor(),
+    new firehose.CloudWatchLogProcessor({ dataMessageExtraction: true }),
+  ],
+});
+new firehose.DeliveryStream(this, 'Delivery Stream', {
+  destination: s3Destination,
+});
+```
+
+## Dynamic Partitioning
+
+Dynamic partitioning enables you to continuously partition streaming data in Firehose by using keys within data (for example, `customer_id` or `transaction_id`) and then deliver the data grouped by these keys into corresponding Amazon S3 prefixes.
+
+For details, see [Partition streaming data in Amazon Data Firehose](https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html).
+
+### Create partitioning keys with inline parsing
+
+To enable dynamic partitioning with inline parsing, specify `MetadataExtractionProcessor` data processor in `processors`.
+
+Only supported mechanism currently is [jq 1.6 parser](https://stedolan.github.io/jq/).
+
+The partition keys can be referred as `!{partitionKeyFromQuery:key}` in `dataOutputPrefix`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.MetadataExtractionProcessor.jq16({
+      customer_id: '.customer_id',
+      device: '.type.device',
+      year: '.event_timestamp|strftime("%Y")',
+    }),
+  ],
+  dataOutputPrefix: '!{partitionKeyFromQuery:year}/!{partitionKeyFromQuery:device}/!{partitionKeyFromQuery:customer_id}/',
+});
+new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: s3Destination,
+});
+```
+
+### Create partitioning keys with an AWS Lambda function
+
+For compressed or encrypted data records, or data that is in any file format other than JSON, you can use the `LambdaFunctionDataProcessor` with your own custom code to decompress, decrypt, or transform the records in order to extract and return the data fields needed for partitioning.
+
+The lambda function must return `metadata` in your result records.
+
+The partition keys can be referred as `!{partitionKeyFromLambda:key}` in `dataOutputPrefix`.
+
+``` ts
+declare const bucket: s3.Bucket;
+declare const lambdaFunction: lambda.Function;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    new firehose.LambdaFunctionProcessor(lambdaFunction),
+  ],
+  dataOutputPrefix: '!{partitionKeyFromLambda:year}/!{partitionKeyFromLambda:device}/!{partitionKeyFromLambda:customer_id}/',
+});
+new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: s3Destination,
+});
+```
+
+### Multi record deaggregation
+
+To apply dynamic partitioning to aggregated data (for example, multiple events, logs, or records aggregated into a single PutRecord and PutRecordBatch API call), use `RecordDeAggregationProcessor`.
+
+When the input data is JSON objects on a single line with no delimiter or newline-delimited (JSONL), specify `RecordDeAggregationProcessor.json()`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.RecordDeAggregationProcessor.json(),
+  ],
+});
+```
+
+You can also specify custom delimiter using `RecordDeAggregationProcessor.delimited()`.
+
+``` ts
+declare const bucket: s3.Bucket;
+const s3Destination = new firehose.S3Bucket(bucket, {
+  dynamicPartitioning: { enabled: true },
+  processors: [
+    firehose.RecordDeAggregationProcessor.delimited('####'),
+  ],
+});
+```
+
+Record deaggregation by JSON or by delimiter is capped at 500 per record.
 
 ## Specifying an IAM role
 

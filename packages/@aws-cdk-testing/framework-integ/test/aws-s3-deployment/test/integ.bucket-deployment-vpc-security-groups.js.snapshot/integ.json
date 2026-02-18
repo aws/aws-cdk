@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-vpc-security-groups/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-vpc-security-groups"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-vpc-security-groups/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentvpcsecuritygroupsDefaultTestDeployAssert9F968A00"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

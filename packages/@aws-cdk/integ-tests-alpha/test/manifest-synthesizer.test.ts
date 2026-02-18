@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 import { App, Stack } from 'aws-cdk-lib';
+import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssemblyBuilder } from 'aws-cdk-lib/cx-api';
 import { IntegTestCase, IntegTest, IntegTestCaseStack } from '../lib';
 import { IntegManifestSynthesizer } from '../lib/manifest-synthesizer';
@@ -18,6 +18,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  fs.rmSync(tmpDir, { force: true, recursive: true });
   jest.restoreAllMocks();
 });
 

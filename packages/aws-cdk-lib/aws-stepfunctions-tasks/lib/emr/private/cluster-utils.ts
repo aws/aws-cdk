@@ -1,7 +1,7 @@
 import * as cdk from '../../../../core';
 import { UnscopedValidationError } from '../../../../core';
 import { EmrCreateCluster } from '../emr-create-cluster';
-import { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
+import type { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
 
 /**
  * Render the KerberosAttributesProperty as JSON
@@ -322,5 +322,29 @@ function InstanceResizePolicyPropertyToJson(property: EmrModifyInstanceGroupByNa
     InstancesToProtect: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToProtect),
     InstancesToTerminate: cdk.listMapper(cdk.stringToCloudFormation)(property.instancesToTerminate),
     InstanceTerminationTimeout: cdk.numberToCloudFormation(property.instanceTerminationTimeout?.toSeconds()),
+  };
+}
+
+/**
+ * Render the ManagedScalingPolicyProperty to JSON
+ */
+export function ManagedScalingPolicyPropertyToJson(property: EmrCreateCluster.ManagedScalingPolicyProperty) {
+  return {
+    ComputeLimits: property.computeLimits
+      ? ManagedScalingComputeLimitsPropertyToJson(property.computeLimits)
+      : undefined,
+  };
+}
+
+/**
+ * Render the ManagedScalingComputeLimitsProperty to JSON
+ */
+export function ManagedScalingComputeLimitsPropertyToJson(property: EmrCreateCluster.ManagedScalingComputeLimitsProperty) {
+  return {
+    UnitType: property.unitType,
+    MinimumCapacityUnits: cdk.numberToCloudFormation(property.minimumCapacityUnits),
+    MaximumCapacityUnits: cdk.numberToCloudFormation(property.maximumCapacityUnits),
+    MaximumOnDemandCapacityUnits: cdk.numberToCloudFormation(property.maximumOnDemandCapacityUnits),
+    MaximumCoreCapacityUnits: cdk.numberToCloudFormation(property.maximumCoreCapacityUnits),
   };
 }

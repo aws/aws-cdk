@@ -1,12 +1,14 @@
-import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
-import { Construct, IDependable } from 'constructs';
-import { Annotations, Duration, FeatureFlags, IResource, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
-import { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
-import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
-import { ISubnetV2 } from './subnet-v2';
-import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { cx_api } from 'aws-cdk-lib';
+import type { IRouteTable, IVpcEndpoint } from 'aws-cdk-lib/aws-ec2';
+import { CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnVPCPeeringConnection, CfnRoute, CfnRouteTable, CfnVPCGatewayAttachment, CfnVPNGateway, CfnVPNGatewayRoutePropagation, GatewayVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Annotations, Duration, FeatureFlags, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct, IDependable } from 'constructs';
+import type { ISubnetV2 } from './subnet-v2';
+import { NetworkUtils, allRouteTableIds, CidrBlock } from './util';
+import type { IVpcV2, VPNGatewayV2Options } from './vpc-v2-base';
 
 /**
  * Indicates whether the NAT gateway supports public or private connectivity.
@@ -115,7 +117,7 @@ export interface NatGatewayOptions {
    * The maximum amount of time to wait before forcibly releasing the
    * IP addresses if connections are still in progress.
    *
-   * @default 350seconds
+   * @default Duration.seconds(350)
    */
   readonly maxDrainDuration?: Duration;
 
@@ -879,5 +881,6 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
+    [RouterType.CORE_NETWORK]: 'coreNetworkArn',
   })[routerType];
 }

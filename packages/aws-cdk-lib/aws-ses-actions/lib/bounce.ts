@@ -1,5 +1,5 @@
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 
 /**
  * Construction properties for a BounceTemplate.
@@ -94,7 +94,7 @@ export class Bounce implements ses.IReceiptRuleAction {
   constructor(private readonly props: BounceProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       bounceAction: {
         sender: this.props.sender,

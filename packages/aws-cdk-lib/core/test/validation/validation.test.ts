@@ -1,10 +1,10 @@
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
 import * as core from '../../lib';
-import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
+import type { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
 let consoleLogMock: jest.SpyInstance;

@@ -468,16 +468,6 @@
          "Arn"
         ]
        }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsCWIAMRole017AD736",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -572,16 +562,6 @@
        "Resource": {
         "Fn::GetAtt": [
          "FlowLogsAllFormatCWLogGroup3DAB6837",
-         "Arn"
-        ]
-       }
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "FlowLogsAllFormatCWIAMRoleAF92546B",
          "Arn"
         ]
        }

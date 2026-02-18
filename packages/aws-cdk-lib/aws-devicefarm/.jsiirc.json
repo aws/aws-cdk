@@ -1,10 +1,10 @@
 {
   "targets": {
-    "dotnet": {
-      "namespace": "Amazon.CDK.AWS.DeviceFarm"
-    },
     "java": {
       "package": "software.amazon.awscdk.services.devicefarm"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.DeviceFarm"
     },
     "python": {
       "module": "aws_cdk.aws_devicefarm"

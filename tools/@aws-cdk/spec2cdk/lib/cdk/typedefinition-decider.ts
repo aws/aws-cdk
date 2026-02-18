@@ -1,10 +1,11 @@
-import { Property, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { PropertySpec, Type } from '@cdklabs/typewriter';
-import { PropertyMapping } from './cloudformation-mapping';
+import type { Property, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { Expression, PropertySpec, Type } from '@cdklabs/typewriter';
+import type { PropertyMapping } from './cloudformation-mapping';
+import type { RelationshipDecider } from './relationship-decider';
+import { ResolverBuilder } from './resolver-builder';
 import { deprecationMessage } from './resource-decider';
-import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
-import { TypeConverter } from './type-converter';
-import { cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
+import type { TypeConverter } from './type-converter';
+import { cloudFormationDocLink } from '../naming';
 import { splitDocumentation } from '../util';
 
 /**
@@ -12,12 +13,15 @@ import { splitDocumentation } from '../util';
  */
 export class TypeDefinitionDecider {
   public readonly properties = new Array<TypeDefProperty>();
+  private readonly resolverBuilder: ResolverBuilder;
 
   constructor(
     private readonly resource: Resource,
     private readonly typeDefinition: TypeDefinition,
     private readonly converter: TypeConverter,
+    private readonly relationshipDecider: RelationshipDecider,
   ) {
+    this.resolverBuilder = new ResolverBuilder(this.converter, this.relationshipDecider, this.converter.module);
     this.convertProperties();
     this.properties.sort((p1, p2) => p1.propertySpec.name.localeCompare(p2.propertySpec.name));
   }
@@ -32,19 +36,14 @@ export class TypeDefinitionDecider {
    * Default mapping for a property
    */
   private handlePropertyDefault(cfnName: string, prop: Property) {
-    const name = propertyNameFromCloudFormation(cfnName);
-    const baseType = this.converter.typeFromProperty(prop);
-
-    // Whether or not a property is made `IResolvable` originally depended on
-    // the name of the property. These conditions were probably expected to coincide,
-    // but didn't.
-    const type = cfnName in NON_RESOLVABLE_PROPERTY_NAMES ? baseType : this.converter.makeTypeResolvable(baseType);
     const optional = !prop.required;
+
+    const resolverResult = this.resolverBuilder.buildResolver(prop, cfnName, true);
 
     this.properties.push({
       propertySpec: {
-        name,
-        type,
+        name: resolverResult.name,
+        type: resolverResult.propType,
         optional,
         docs: {
           ...splitDocumentation(prop.documentation),
@@ -57,13 +56,14 @@ export class TypeDefinitionDecider {
           deprecated: deprecationMessage(prop),
         },
       },
-      baseType,
+      baseType: resolverResult.baseType,
       cfnMapping: {
         cfnName,
-        propName: name,
-        baseType,
+        propName: resolverResult.name,
+        baseType: resolverResult.baseType,
         optional,
       },
+      resolver: resolverResult.resolver,
     });
   }
 }
@@ -73,4 +73,5 @@ export interface TypeDefProperty {
   /** The type that was converted (does not have the IResolvable union) */
   readonly baseType: Type;
   readonly cfnMapping: PropertyMapping;
+  readonly resolver: (_: Expression) => Expression;
 }

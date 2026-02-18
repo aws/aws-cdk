@@ -165,6 +165,33 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 });
 ```
 
+### Browser Type Configuration
+
+You can configure which browsers your canary uses for testing by specifying the `browserConfigs` property. This allows you to test your application across different browsers to ensure compatibility.
+
+Available browser types:
+- `BrowserType.CHROME` - Google Chrome browser
+- `BrowserType.FIREFOX` - Mozilla Firefox browser
+
+You can specify up to 2 browser configurations. When multiple browsers are configured, the canary will run tests on each browser sequentially.
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_9_1,
+  browserConfigs: [
+    synthetics.BrowserType.CHROME,
+    synthetics.BrowserType.FIREFOX,
+  ],
+});
+```
+
+> **Note:** Firefox support is available for Node.js runtimes (Puppeteer and Playwright) but not for Python Selenium runtimes. When using Firefox, ensure your runtime version supports it.
+
 ### Deleting underlying resources on canary deletion
 
 When you delete a lambda, the following underlying resources are isolated in your AWS account:
@@ -240,7 +267,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
 ```
 
 > **Note:** Synthetics have a specified folder structure for canaries.
-> For Node with puppeteer scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+> For Node with puppeteer scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure for runtime versions older than `syn-nodejs-puppeteer-11.0`:
 >
 > ```plaintext
 > canary/
@@ -248,6 +275,22 @@ new synthetics.Canary(this, 'Bucket Canary', {
 >    ├── node_modules/
 >         ├── <filename>.js
 > ```
+>
+> For puppeteer based runtime versions newer than or equal to `syn-nodejs-puppeteer-11.0`, `nodjs/node_modules` is not necessary but supported. 
+>
+> Both
+> ```plaintext
+> canary/
+> ├── nodejs/
+>    ├── node_modules/
+>         ├── <filename>.js
+> ```
+> And 
+> ```plaintext
+> canary/
+>  ├── <filename>.js
+> ```
+> are supported.
 >
 > For Node with playwright scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >

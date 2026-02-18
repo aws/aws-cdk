@@ -1138,7 +1138,7 @@
   "InstanceRotationSingleUserSARMappingFEA0C86E": {
    "aws": {
     "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-    "semanticVersion": "1.1.367"
+    "semanticVersion": "1.1.618"
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSOracleRotationSingleUser",

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
-import { SecretValue } from '../../../core';
+import type { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -61,7 +61,7 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: 'Google', // must be 'Google' when the type is 'Google'
       providerType: 'Google',
       providerDetails: {
@@ -73,5 +73,6 @@ export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }

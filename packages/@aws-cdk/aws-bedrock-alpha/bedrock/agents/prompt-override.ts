@@ -1,7 +1,7 @@
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import * as validation from './validation-helpers';
-import { IBedrockInvokable } from '../models';
+import type { IBedrockInvokable } from '../models';
 
 /**
  * The step in the agent sequence that this prompt configuration applies to.

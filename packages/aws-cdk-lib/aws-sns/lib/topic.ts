@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
-import { ITopic, TopicBase } from './topic-base';
-import { IRole } from '../../aws-iam';
-import { IKey, Key } from '../../aws-kms';
+import type { ITopic } from './topic-base';
+import { TopicBase } from './topic-base';
+import type { IRoleRef } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
 import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -147,14 +150,14 @@ export interface LoggingConfig {
    *
    * @default None
    */
-  readonly failureFeedbackRole?: IRole;
+  readonly failureFeedbackRole?: IRoleRef;
 
   /**
    * The IAM role to be used when logging successful message deliveries in Amazon CloudWatch.
    *
    * @default None
    */
-  readonly successFeedbackRole?: IRole;
+  readonly successFeedbackRole?: IRoleRef;
 
   /**
    * The percentage of successful message deliveries to be logged in Amazon CloudWatch.
@@ -288,13 +291,25 @@ export class Topic extends TopicBase {
     });
   }
 
-  public readonly topicArn: string;
-  public readonly topicName: string;
+  @memoizedGetter
+  public get topicArn(): string {
+    return this.getResourceArnAttribute(this._resource.ref, {
+      service: 'sns',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get topicName(): string {
+    return this.getResourceNameAttribute(this._resource.attrTopicName);
+  }
   public readonly masterKey?: IKey;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 
   protected readonly autoCreatePolicy: boolean = true;
+
+  private readonly _resource: CfnTopic;
 
   private readonly loggingConfigs: LoggingConfig[] = [];
 
@@ -370,11 +385,7 @@ export class Topic extends TopicBase {
       fifoThroughputScope: props.fifoThroughputScope,
     });
 
-    this.topicArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'sns',
-      resource: this.physicalName,
-    });
-    this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
+    this._resource = resource;
     this.masterKey = props.masterKey;
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
@@ -394,8 +405,8 @@ export class Topic extends TopicBase {
       }
       return {
         protocol: spec.protocol,
-        failureFeedbackRoleArn: spec.failureFeedbackRole?.roleArn,
-        successFeedbackRoleArn: spec.successFeedbackRole?.roleArn,
+        failureFeedbackRoleArn: spec.failureFeedbackRole?.roleRef.roleArn,
+        successFeedbackRoleArn: spec.successFeedbackRole?.roleRef.roleArn,
         successFeedbackSampleRate: spec.successFeedbackSampleRate?.toString(),
       };
     };

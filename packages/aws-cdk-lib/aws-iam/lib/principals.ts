@@ -1,10 +1,11 @@
-import { IDependable } from 'constructs';
-import { IOpenIdConnectProvider } from './oidc-provider';
-import { PolicyDocument } from './policy-document';
-import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import type { IDependable } from 'constructs';
+import type { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
+import type { PolicyDocument } from './policy-document';
+import type { Condition, Conditions } from './policy-statement';
+import { PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
-import { ISamlProvider } from './saml-provider';
+import type { ISamlProvider } from './saml-provider';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
 import { RegionInfo } from '../../region-info';
@@ -225,11 +226,14 @@ export abstract class PrincipalBase implements IAssumeRolePrincipal, IComparable
  * Base class for Principals that wrap other principals
  */
 abstract class PrincipalAdapter extends PrincipalBase {
-  public readonly assumeRoleAction = this.wrapped.assumeRoleAction;
-  public readonly principalAccount = this.wrapped.principalAccount;
+  public readonly assumeRoleAction: IPrincipal['assumeRoleAction'];
+  public readonly principalAccount: IPrincipal['principalAccount'];
 
   constructor(protected readonly wrapped: IPrincipal) {
     super();
+
+    this.assumeRoleAction = this.wrapped.assumeRoleAction;
+    this.principalAccount = this.wrapped.principalAccount;
   }
 
   public get policyFragment(): PrincipalPolicyFragment { return this.wrapped.policyFragment; }
@@ -267,7 +271,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -381,7 +385,7 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -756,8 +760,8 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
    * @param conditions The conditions under which the policy is in effect.
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
    */
-  constructor(openIdConnectProvider: IOpenIdConnectProvider, conditions: Conditions = {}) {
-    super(openIdConnectProvider.openIdConnectProviderArn, conditions ?? {});
+  constructor(openIdConnectProvider: IOIDCProviderRef, conditions: Conditions = {}) {
+    super(openIdConnectProvider.oidcProviderRef.oidcProviderArn, conditions ?? {});
   }
 
   public get policyFragment(): PrincipalPolicyFragment {
@@ -773,8 +777,8 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
  * Principal entity that represents a SAML federated identity provider
  */
 export class SamlPrincipal extends FederatedPrincipal {
-  constructor(samlProvider: ISamlProvider, conditions: Conditions) {
-    super(samlProvider.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
+  constructor(samlProvider: ISAMLProviderRef, conditions: Conditions) {
+    super(samlProvider.samlProviderRef.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
   }
 
   public toString() {
@@ -791,7 +795,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
+        'SAML:aud': RegionInfo.get(cdk.Stack.of(samlProvider).region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
       },
     });
   }

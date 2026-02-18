@@ -1,23 +1,45 @@
-import { Construct } from 'constructs';
-import { ApiDefinition } from './api-definition';
-import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
+import type { Construct } from 'constructs';
+import type { ApiDefinition } from './api-definition';
+import type { ApiKeyOptions, IApiKey } from './api-key';
+import { ApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
+import type { IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
-import { CorsOptions } from './cors';
+import type { CorsOptions } from './cors';
 import { Deployment } from './deployment';
-import { DomainName, DomainNameOptions } from './domain-name';
-import { GatewayResponse, GatewayResponseOptions } from './gateway-response';
-import { Integration } from './integration';
-import { Method, MethodOptions } from './method';
-import { Model, ModelOptions } from './model';
-import { RequestValidator, RequestValidatorOptions } from './requestvalidator';
-import { IResource, ResourceBase, ResourceOptions } from './resource';
-import { Stage, StageOptions } from './stage';
-import { UsagePlan, UsagePlanProps } from './usage-plan';
+import type { DomainNameOptions } from './domain-name';
+import { DomainName } from './domain-name';
+import type { GatewayResponseOptions } from './gateway-response';
+import { GatewayResponse } from './gateway-response';
+import type { Integration } from './integration';
+import type { Method, MethodOptions } from './method';
+import type { ModelOptions } from './model';
+import { Model } from './model';
+import type { RequestValidatorOptions } from './requestvalidator';
+import { RequestValidator } from './requestvalidator';
+import type { IResource, ResourceOptions } from './resource';
+import { ResourceBase } from './resource';
+import type { StageOptions } from './stage';
+import { Stage } from './stage';
+import type { UsagePlanProps } from './usage-plan';
+import { UsagePlan } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack, Token, FeatureFlags, RemovalPolicy, Size, Lazy } from '../../core';
+import type {
+  IResource as IResourceBase,
+  Size,
+} from '../../core';
+import {
+  ArnFormat,
+  CfnOutput,
+  FeatureFlags,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+} from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -27,7 +49,7 @@ import { APIGATEWAY_DISABLE_CLOUDWATCH_ROLE } from '../../cx-api';
 const RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApiBase');
 const APIGATEWAY_RESTAPI_SYMBOL = Symbol.for('@aws-cdk/aws-apigateway.RestApi');
 
-export interface IRestApi extends IResourceBase {
+export interface IRestApi extends IResourceBase, IRestApiRef {
   /**
    * The ID of this API Gateway RestApi.
    * @attribute
@@ -290,6 +312,14 @@ export interface SpecRestApiProps extends RestApiBaseProps {
   readonly apiDefinition: ApiDefinition;
 
   /**
+   * The list of binary media mime-types that are supported by the SpecRestApi
+   * resource, such as "image/png" or "application/octet-stream"
+   *
+   * @default - SpecRestApi supports only UTF-8-encoded text payloads.
+   */
+  readonly binaryMediaTypes?: string[];
+
+  /**
    * A Size(in bytes, kibibytes, mebibytes etc) that is used to enable compression (with non-negative
    * between 0 and 10485760 (10M) bytes, inclusive) or disable compression
    * (when undefined) on an API. When compression is enabled, compression or
@@ -393,7 +423,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVpcEndpoint> = new Set();
+  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -495,7 +525,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
     const endpoints = Lazy.list({
       produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointId);
+        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
       },
     });
 
@@ -738,6 +768,12 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       ...props,
     }).attachTo(this);
   }
+
+  public get restApiRef(): RestApiReference {
+    return {
+      restApiId: this.restApiId,
+    };
+  }
 }
 
 /**
@@ -785,6 +821,7 @@ export class SpecRestApi extends RestApiBase {
       policy: Lazy.any({ produce: () => this.resourcePolicy }),
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minCompressionSize?.toBytes(),
+      binaryMediaTypes: props.binaryMediaTypes,
       body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),

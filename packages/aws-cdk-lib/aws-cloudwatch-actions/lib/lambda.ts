@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags, Names, Stack } from '../../core';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
 
@@ -52,7 +52,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
     // If the Lambda permission has already been added to this function
     // we skip adding it to avoid an exception being thrown
     // see https://github.com/aws/aws-cdk/issues/29514
-    if (permissionNode?.sourceArn !== alarm.alarmArn) {
+    if (permissionNode?.sourceArn !== alarm.alarmRef.alarmArn) {
       if (permissionNode !== undefined && !this.props?.useUniquePermissionId) {
         Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudwatch-actions:LambdaActionPermissionId', `Please use \'useUniquePermissionId\' on LambdaAction ${this.lambdaFunction.functionName} to generate unique Lambda Permission Id`);
       }
@@ -60,7 +60,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
       this.lambdaFunction.addPermission(permissionId, {
         sourceAccount: Stack.of(scope).account,
         action: 'lambda:InvokeFunction',
-        sourceArn: alarm.alarmArn,
+        sourceArn: alarm.alarmRef.alarmArn,
         principal: new iam.ServicePrincipal('lambda.alarms.cloudwatch.amazonaws.com'),
       });
     }

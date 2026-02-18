@@ -122,4 +122,34 @@ describe('layers', () => {
       CompatibleArchitectures: ['arm64'],
     });
   });
+
+  test.each([
+    ['Runtime.ALL is handled correctly', { compatibleRuntimes: lambda.Runtime.ALL }],
+    ['undefined compatibleRuntimes is handled correctly', {}],
+  ])('%s by omitting compatibleRuntimes', (_, props) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    // WHEN
+    new lambda.LayerVersion(stack, 'LayerVersion', {
+      code,
+      ...props,
+    });
+
+    // THEN - CompatibleRuntimes should be omitted from CloudFormation template
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::LayerVersion', {
+      Content: {
+        S3Bucket: stack.resolve(bucket.bucketName),
+        S3Key: 'ObjectKey',
+      },
+    });
+
+    // Verify that CompatibleRuntimes is NOT present in the template
+    const resources = template.findResources('AWS::Lambda::LayerVersion');
+    const layerResource = Object.values(resources)[0];
+    expect(layerResource.Properties).not.toHaveProperty('CompatibleRuntimes');
+  });
 });

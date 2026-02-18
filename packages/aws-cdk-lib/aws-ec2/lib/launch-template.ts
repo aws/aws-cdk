@@ -1,28 +1,31 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
 import { CfnLaunchTemplate } from './ec2.generated';
-import { InstanceType } from './instance-types';
-import { IKeyPair } from './key-pair';
-import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
-import { IPlacementGroup } from './placement-group';
+import type { InstanceType } from './instance-types';
+import type { IKeyPair } from './key-pair';
+import type { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
-import { ISecurityGroup } from './security-group';
-import { UserData } from './user-data';
-import { BlockDevice } from './volume';
+import type { ISecurityGroup } from './security-group';
+import type { UserData } from './user-data';
+import type { BlockDevice } from './volume';
 import * as iam from '../../aws-iam';
-import {
-  Annotations,
+import type {
   Duration,
   Expiration,
-  Fn,
   IResource,
+} from '../../core';
+import {
+  Annotations,
+  FeatureFlags,
+  Fn,
   Lazy,
   Resource,
   TagManager,
-  TagType,
   Tags,
+  TagType,
   Token,
-  FeatureFlags,
   ValidationError,
 } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -75,7 +78,7 @@ export enum InstanceInitiatedShutdownBehavior {
 /**
  * Interface for LaunchTemplate-like objects.
  */
-export interface ILaunchTemplate extends IResource {
+export interface ILaunchTemplate extends IResource, ILaunchTemplateRef {
   /**
    * The version number of this launch template to use
    *
@@ -200,6 +203,7 @@ export interface LaunchTemplateSpotOptions {
 /**
  * The state of token usage for your instance metadata requests.
  *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance-metadataoptions.html#cfn-ec2-instance-metadataoptions-httptokens
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httptokens
  */
 export enum LaunchTemplateHttpTokens {
@@ -450,7 +454,7 @@ export interface LaunchTemplateProps {
    *
    * @default - no placement group will be used for this launch template.
    */
-  readonly placementGroup?: IPlacementGroup;
+  readonly placementGroup?: IPlacementGroupRef;
 }
 
 /**
@@ -527,6 +531,16 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
+
+      public get launchTemplateRef(): LaunchTemplateReference {
+        if (!this.launchTemplateId) {
+          throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
+        }
+
+        return {
+          launchTemplateId: this.launchTemplateId,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -534,7 +548,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   // ============================================
   //   Members for ILaunchTemplate interface
 
-  public readonly versionNumber: string;
   public readonly launchTemplateId?: string;
   public readonly launchTemplateName?: string;
 
@@ -609,6 +622,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * TagManager for tagging support.
    */
   protected readonly tags: TagManager;
+
+  private resource?: CfnLaunchTemplate;
 
   // =============================================
 
@@ -800,7 +815,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         metadataOptions: this.renderMetadataOptions(props),
         networkInterfaces,
         placement: props.placementGroup ? {
-          groupName: props.placementGroup.placementGroupName,
+          groupName: props.placementGroup.placementGroupRef.groupName,
         } : undefined,
 
         // Fields not yet implemented:
@@ -838,18 +853,31 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       tagSpecifications: ltTagsToken,
     });
 
+    this.resource = resource;
+
+    this.resource = resource;
+
     if (this.role) {
-      resource.node.addDependency(this.role);
+      this.resource.node.addDependency(this.role);
     } else if (props.instanceProfile?.role) {
-      resource.node.addDependency(props.instanceProfile.role);
+      this.resource.node.addDependency(props.instanceProfile.role);
     }
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
-    this.defaultVersionNumber = resource.attrDefaultVersionNumber;
-    this.latestVersionNumber = resource.attrLatestVersionNumber;
-    this.launchTemplateId = resource.ref;
-    this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+    this.defaultVersionNumber = this.resource.attrDefaultVersionNumber;
+    this.latestVersionNumber = this.resource.attrLatestVersionNumber;
+    this.launchTemplateId = this.resource.ref;
+  }
+
+  public get versionNumber(): string {
+    return Token.asString(this.resource!.getAtt('LatestVersionNumber'));
+  }
+
+  public get launchTemplateRef(): LaunchTemplateReference {
+    return {
+      launchTemplateId: this.launchTemplateId!,
+    };
   }
 
   private renderMetadataOptions(props: LaunchTemplateProps) {

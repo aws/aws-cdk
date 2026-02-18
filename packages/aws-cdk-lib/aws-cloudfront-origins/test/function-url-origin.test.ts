@@ -1,15 +1,14 @@
 import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
+import { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import { Duration, Stack } from '../../core';
 import { FunctionUrlOrigin } from '../lib';
 
 let stack: Stack;
-let otherStack: Stack;
 
 beforeEach(() => {
   stack = new Stack();
-  otherStack = new Stack();
 });
 
 test('Correctly renders the origin for a Lambda Function URL', () => {
@@ -440,5 +439,156 @@ describe('FunctionUrlOriginAccessControl', () => {
         },
       });
     }).toThrow('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.');
+  });
+
+  test('renders responseCompletionTimeout in origin property', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      responseCompletionTimeout: Duration.seconds(120),
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+      id: 'StackOriginLambdaFunctionURL',
+      domainName: {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [
+              '/',
+              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
+            ],
+          },
+        ],
+      },
+      responseCompletionTimeout: 120,
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+        originSslProtocols: ['TLSv1.2'],
+      },
+    });
+  });
+
+  test('configure both responseCompletionTimeout and readTimeout', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      responseCompletionTimeout: Duration.seconds(60),
+      readTimeout: Duration.seconds(60),
+    });
+
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+
+    expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+      id: 'StackOriginLambdaFunctionURL',
+      domainName: {
+        'Fn::Select': [
+          2,
+          {
+            'Fn::Split': [
+              '/',
+              { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
+            ],
+          },
+        ],
+      },
+      responseCompletionTimeout: 60,
+      customOriginConfig: {
+        originProtocolPolicy: 'https-only',
+        originSslProtocols: ['TLSv1.2'],
+        originReadTimeout: 60,
+      },
+    });
+  });
+
+  test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+
+    expect(() => {
+      new FunctionUrlOrigin(fnUrl, {
+        responseCompletionTimeout: Duration.seconds(30),
+        readTimeout: Duration.seconds(60),
+      });
+    }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
+  });
+});
+
+describe('ipAddressType', () => {
+  test.each([OriginIpAddressType.DUALSTACK, OriginIpAddressType.IPV4, OriginIpAddressType.IPV6])('Correctly sets ipAddressType to %s', (ipAddressType) => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.NONE,
+    });
+    const origin = new FunctionUrlOrigin(fnUrl, {
+      ipAddressType,
+    });
+    const originBindConfig = origin.bind(stack, { originId: 'StackOriginLambdaFunctionURL' });
+    expect(stack.resolve(originBindConfig.originProperty)).toMatchObject({
+      customOriginConfig: {
+        ipAddressType,
+      },
+    });
+  });
+
+  test('Correctly sets ipAddressType with OAC', () => {
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('exports.handler = async () => {};'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl, {
+          ipAddressType: OriginIpAddressType.DUALSTACK,
+        }),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            CustomOriginConfig: Match.objectLike({
+              IpAddressType: OriginIpAddressType.DUALSTACK,
+            }),
+          }),
+        ]),
+      },
+    });
   });
 });

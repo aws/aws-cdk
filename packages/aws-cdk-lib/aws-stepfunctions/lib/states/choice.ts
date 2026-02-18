@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { AssignableStateOptions, ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
+import type { AssignableStateOptions, ChoiceTransitionOptions, JsonataCommonOptions, JsonPathCommonOptions, StateBaseProps } from './state';
+import { State } from './state';
 import { UnscopedValidationError } from '../../../core';
 import { Chain } from '../chain';
-import { Condition } from '../condition';
-import { IChainable, INextable, QueryLanguage } from '../types';
+import type { Condition } from '../condition';
+import type { IChainable, INextable } from '../types';
+import { QueryLanguage } from '../types';
 
 /**
  * Properties for defining a Choice state that using JSONPath

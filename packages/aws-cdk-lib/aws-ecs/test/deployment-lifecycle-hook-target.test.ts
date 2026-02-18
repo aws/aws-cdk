@@ -3,7 +3,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { App, Stack } from '../../core';
 import * as ecs from '../lib';
 
 describe('DeploymentLifecycleHookTarget', () => {
@@ -24,7 +23,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     lambdaFunction = new lambda.Function(stack, 'TestFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
     });
@@ -220,7 +219,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     });
 
     const secondLambda = new lambda.Function(stack, 'SecondFunction', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => { return { hookStatus: "SUCCEEDED" }; }'),
     });

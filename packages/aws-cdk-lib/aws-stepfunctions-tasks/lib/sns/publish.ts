@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import * as sns from '../../../aws-sns';
+import type * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, ValidationError } from '../../../core';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';

@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.codeconnections"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.CodeConnections"
+      "namespace": "Amazon.CDK.AWS.CodeConnections"
     },
     "python": {
       "module": "aws_cdk.aws_codeconnections"

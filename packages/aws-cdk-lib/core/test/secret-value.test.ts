@@ -61,6 +61,20 @@ describe('secret value', () => {
     expect(stack.resolve(v)).toEqual('{{resolve:secretsmanager:secret-id:SecretString:json-key:version-stage:}}');
   });
 
+  test('secretsManager with jsonField and versionId', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager('secret-id', {
+      jsonField: 'json-key',
+      versionId: 'version-id',
+    });
+
+    // THEN
+    expect(stack.resolve(v)).toEqual('{{resolve:secretsmanager:secret-id:SecretString:json-key::version-id}}');
+  });
+
   test('secretsManager with secret-id from token', () => {
     // GIVEN
     const stack = new Stack();
@@ -131,6 +145,104 @@ describe('secret value', () => {
 
   test('secretsManager with a non-ARN ID that has colon', () => {
     expect(() => SecretValue.secretsManager('not:an:arn')).toThrow(/is not an ARN but contains ":"/);
+  });
+
+  test('cfnDynamicReferenceKey with jsonField and versionStage', () => {
+    // WHEN
+    const secretId = 'secret-id';
+    const options = {
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+    };
+    const v = SecretValue.cfnDynamicReferenceKey(secretId, options);
+
+    // THEN
+    expect(v).toEqual(`${secretId}:SecretString:${options.jsonField}:${options.versionStage}:`);
+  });
+
+  test('cfnDynamicReferenceKey with jsonField and versionId', () => {
+    // WHEN
+    const secretId = 'secret-id';
+    const options = {
+      jsonField: 'json-key',
+      versionId: 'version-id',
+    };
+    const v = SecretValue.cfnDynamicReferenceKey(secretId, options);
+
+    // THEN
+    expect(v).toEqual(`${secretId}:SecretString:${options.jsonField}::${options.versionId}`);
+  });
+
+  test('cfnDynamicReferenceKey with secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const secretId = 'secret-id';
+    const secretIdToken = Token.asString({ Ref: secretId });
+    const options = {
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+    };
+    const v = SecretValue.cfnDynamicReferenceKey(secretIdToken, options);
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          { Ref: secretId },
+          `:SecretString:${options.jsonField}:${options.versionStage}:`,
+        ],
+      ],
+    });
+  });
+
+  test('cfnDynamicReferenceKey with defaults', () => {
+    // WHEN
+    const secretId = 'secret-id';
+    const v = SecretValue.cfnDynamicReferenceKey(secretId);
+
+    // THEN
+    expect(v).toEqual(`${secretId}:SecretString:::`);
+  });
+
+  test('cfnDynamicReferenceKey with defaults, secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const secretId = 'secret-id';
+    const v = SecretValue.cfnDynamicReferenceKey(Token.asString({ Ref: secretId }));
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          { Ref: secretId },
+          ':SecretString:::',
+        ],
+      ],
+    });
+  });
+
+  test('cfnDynamicReferenceKey with an empty ID', () => {
+    expect(() => SecretValue.cfnDynamicReferenceKey('')).toThrow(/secretId cannot be empty/);
+  });
+
+  test('cfnDynamicReferenceKey with versionStage and versionId', () => {
+    expect(() => {
+      SecretValue.cfnDynamicReferenceKey('secret-id',
+        {
+          versionStage: 'version-stage',
+          versionId: 'version-id',
+        });
+    }).toThrow(/were both provided but only one is allowed/);
+  });
+
+  test('cfnDynamicReferenceKey with a non-ARN ID that has colon', () => {
+    expect(() => SecretValue.cfnDynamicReferenceKey('not:an:arn')).toThrow(/is not an ARN but contains ":"/);
   });
 
   test('ssmSecure', () => {

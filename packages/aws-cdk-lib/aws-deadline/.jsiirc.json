@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.deadline"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Deadline"
+      "namespace": "Amazon.CDK.AWS.Deadline"
     },
     "python": {
       "module": "aws_cdk.aws_deadline"

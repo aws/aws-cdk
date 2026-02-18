@@ -1,12 +1,7 @@
-import { Construct } from 'constructs';
-import {
-  Arn,
-  CustomResource,
-  FeatureFlags,
-  IResource,
-  Resource,
-  Token,
-} from '../../core';
+import type { Construct } from 'constructs';
+import type { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Arn, CustomResource, FeatureFlags, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
@@ -18,7 +13,7 @@ const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
  * Represents an IAM OpenID Connect provider.
  *
  */
-export interface IOpenIdConnectProvider extends IResource {
+export interface IOpenIdConnectProvider extends IResource, IOIDCProviderRef {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
@@ -87,6 +82,13 @@ export interface OpenIdConnectProviderProps {
    * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
   readonly thumbprints?: string[];
+
+  /**
+   * The removal policy to apply to the OpenID Connect Provider
+   *
+   * @default - RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -137,22 +139,17 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     class Import extends Resource implements IOpenIdConnectProvider {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
       public readonly openIdConnectProviderIssuer = resourceName;
+      public get oidcProviderRef(): OIDCProviderReference {
+        return {
+          oidcProviderArn: this.openIdConnectProviderArn,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
 
-  /**
-   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
-   */
-  public readonly openIdConnectProviderArn: string;
-
-  public readonly openIdConnectProviderIssuer: string;
-
-  /**
-   * The thumbprints configured for this provider.
-   */
-  public readonly openIdConnectProviderthumbprints: string;
+  private readonly resource: CustomResource;
 
   /**
    * Defines an OpenID Connect provider.
@@ -168,7 +165,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     const rejectUnauthorized = FeatureFlags.of(this).isEnabled(IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS) ?? false;
 
     const provider = this.getOrCreateProvider();
-    const resource = new CustomResource(this, 'Resource', {
+    this.resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
@@ -182,11 +179,32 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         // thus updating the thumbprint if necessary.
         CodeHash: provider.codeHash,
       },
+      removalPolicy: props.removalPolicy,
     });
+  }
 
-    this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
-    this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
+  /**
+   * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   */
+  public get openIdConnectProviderArn(): string {
+    return Token.asString(this.resource.ref);
+  }
+
+  public get openIdConnectProviderIssuer(): string {
+    return Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
+  }
+
+  /**
+   * The thumbprints configured for this provider.
+   */
+  public get openIdConnectProviderthumbprints(): string {
+    return Token.asString(this.resource.getAtt('Thumbprints'));
+  }
+
+  public get oidcProviderRef(): OIDCProviderReference {
+    return {
+      oidcProviderArn: this.openIdConnectProviderArn,
+    };
   }
 
   private getOrCreateProvider() {

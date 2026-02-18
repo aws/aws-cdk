@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "lambda-python/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-python"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "lambda-python/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdapythonDefaultTestDeployAssert2872AEEC"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

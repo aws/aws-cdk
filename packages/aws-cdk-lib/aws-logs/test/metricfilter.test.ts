@@ -207,4 +207,62 @@ describe('metric filter', () => {
       LogGroupName: { Ref: 'LogGroupF5B46931' },
     });
   });
+
+  test('without apply to transformed logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    new MetricFilter(stack, 'Subscription', {
+      logGroup,
+      metricNamespace: 'AWS/Test',
+      metricName: 'Latency',
+      filterName: 'FooBazBar',
+      metricValue: '$.latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
+      MetricTransformations: [{
+        MetricNamespace: 'AWS/Test',
+        MetricName: 'Latency',
+        MetricValue: '$.latency',
+      }],
+      FilterPattern: '{ $.latency = "*" }',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
+      FilterName: 'FooBazBar',
+    });
+  });
+
+  test('with apply to transformed logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logGroup = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    new MetricFilter(stack, 'Subscription', {
+      logGroup,
+      metricNamespace: 'AWS/Test',
+      metricName: 'Latency',
+      filterName: 'FooBazBar',
+      metricValue: '$.latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+      applyOnTransformedLogs: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
+      MetricTransformations: [{
+        MetricNamespace: 'AWS/Test',
+        MetricName: 'Latency',
+        MetricValue: '$.latency',
+      }],
+      FilterPattern: '{ $.latency = "*" }',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
+      FilterName: 'FooBazBar',
+      ApplyOnTransformedLogs: true,
+    });
+  });
 });

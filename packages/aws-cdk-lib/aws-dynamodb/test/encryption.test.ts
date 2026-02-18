@@ -1,4 +1,5 @@
-import { IKey, Key } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
 import { Stack } from '../../core';
 import { TableEncryption, TableEncryptionV2 } from '../lib';
 
@@ -98,18 +99,8 @@ describe('customer managed keys', () => {
   test('can render replica SSE specification in deployment region', () => {
     // WHEN / THEN
     expect(encryption._renderReplicaSseSpecification(stack, stack.region)).toEqual({
-      kmsMasterKeyId: tableKey.keyId,
+      kmsMasterKeyId: tableKey.keyArn,
     });
-  });
-
-  test('replica SSE specification uses key ID format not ARN format', () => {
-    // WHEN
-    const result = encryption._renderReplicaSseSpecification(stack, stack.region);
-
-    // THEN
-    expect(result.kmsMasterKeyId).toBe(tableKey.keyId);
-    expect(result.kmsMasterKeyId).not.toBe(tableKey.keyArn);
-    expect(result.kmsMasterKeyId).not.toContain('arn:aws:kms');
   });
 
   test('can render replica SSE specification in replica region', () => {

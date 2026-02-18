@@ -28,7 +28,7 @@ For example, let's say the minimum version your library needs is `2.38.0`. Your 
 {
   "peerDependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "devDependencies": {
     /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
@@ -43,7 +43,7 @@ For CDK apps, declare them under the `dependencies` section. Use a caret so you 
 {
   "dependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   }
 }
 ```
@@ -480,6 +480,8 @@ CloudFormation to re-read the secret.
 `SecretValue.ssmSecure()` is only supported for a limited set of resources.
 [Click here for a list of supported resources and properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#template-parameters-dynamic-patterns-resources).
 
+`SecretValue.cfnDynamicReferenceKey` takes the same parameters as `SecretValue.secretsManager` and returns a key which can be used within a [dynamic reference](#dynamic-references) to dynamically load a secret from AWS Secrets Manager.
+
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names
@@ -521,6 +523,12 @@ functions, it is important to know the format of the ARN you are dealing with.
 For an exhaustive list of ARN formats used in AWS, see [AWS ARNs and
 Namespaces](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
 in the AWS General Reference.
+
+Some L1 constructs also have an auto-generated static `arnFor<ResourceName>()`
+method that can be used to generate ARNs for resources of that type. For example, 
+`sns.Topic.arnForTopic(topic)` can be used to generate an ARN for a given topic.
+Note that the parameter to this method is of type `ITopicRef`, which means that
+it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 
 ## Dependencies
 
@@ -1059,7 +1067,7 @@ The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance
 `aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
 `autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
 
-The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The CfnWaitCondition resource from the `aws-cloudformation` module supports the `resourceSignal`.
 The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
 3 success signals to occur within 15 minutes before the status of the resource will be set to
 `CREATE_COMPLETE`.
@@ -1483,6 +1491,8 @@ To do this for all templates, set the context key `@aws-cdk/core:suppressTemplat
 To do this for a specific stack, add a `suppressTemplateIndentation: true` property to the
 stack's `StackProps` parameter. You can also set this property to `false` to override
 the context key setting.
+
+Similarly, to do this for a specific nested stack, add a `suppressTemplateIndentation: true` property to its `NestedStackProps` parameter. You can also set this property to `false` to override the context key setting.
 
 ## App Context
 

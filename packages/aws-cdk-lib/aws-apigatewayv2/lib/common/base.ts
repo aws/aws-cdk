@@ -1,11 +1,11 @@
-import { IApi } from './api';
+import type { IApi } from './api';
 import { ApiMapping } from './api-mapping';
-import { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
-import { AccessLogFormat } from '../../../aws-apigateway/lib';
+import type { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
+import type { AccessLogFormat } from '../../../aws-apigateway/lib';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Resource, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
-import { CfnStage } from '../apigatewayv2.generated';
+import type { CfnStage, IApiRef, StageReference } from '../apigatewayv2.generated';
 
 /**
  * Base class representing an API
@@ -22,6 +22,10 @@ export abstract class ApiBase extends Resource implements IApi {
       dimensionsMap: { ApiId: this.apiId },
       ...props,
     }).attachTo(this);
+  }
+
+  public get apiRef(): IApiRef['apiRef'] {
+    return { apiId: this.apiId };
   }
 }
 
@@ -44,6 +48,11 @@ export abstract class StageBase extends Resource implements IStage {
    * The URL to this stage.
    */
   abstract get url(): string;
+
+  /**
+   * The default Access Logging format of this stage.
+   */
+  abstract defaultAccessLogFormat(): AccessLogFormat;
 
   /**
    * @internal
@@ -79,7 +88,7 @@ export abstract class StageBase extends Resource implements IStage {
 
     return {
       destinationArn: props.destination.bind(this).destinationArn,
-      format: format ? format.toString() : AccessLogFormat.clf().toString(),
+      format: format ? format.toString() : this.defaultAccessLogFormat().toString(),
     };
   }
 
@@ -99,5 +108,9 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected get _stageVariables(): { [key: string]: string } | undefined {
     return Object.keys(this.stageVariables).length > 0 ? { ...this.stageVariables } : undefined;
+  }
+
+  public get stageRef(): StageReference {
+    return { stageName: this.stageName };
   }
 }

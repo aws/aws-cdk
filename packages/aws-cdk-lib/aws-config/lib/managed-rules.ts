@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
+import type { Construct } from 'constructs';
+import type { RuleProps } from './rule';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleScope } from './rule';
 import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
-import { Duration, Lazy, Stack, ValidationError } from '../../core';
+import type * as sns from '../../aws-sns';
+import type { Duration } from '../../core';
+import { Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -67,7 +69,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    *
    * @default - A role will be created
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 }
 
 /**
@@ -82,14 +84,14 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
 export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-config.CloudFormationStackDriftDetectionCheck';
-  private readonly role: iam.IRole;
+  private readonly role: iam.IRoleRef;
 
   constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
       inputParameters: {
-        cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleArn }),
+        cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleRef.roleArn }),
       },
     });
     // Enhanced CDK Analytics Telemetry

@@ -28,7 +28,7 @@
     "Role": {
      "Ref": "referencetoawscdkeksclusterbottlerocketngtestClusterKubectlHandlerRoleF0C5857AArn"
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [

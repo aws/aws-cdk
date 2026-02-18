@@ -1,6 +1,6 @@
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
-import { IAgentAlias } from './agent-alias';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
+import type { IAgentAlias } from './agent-alias';
 import { ValidationError } from './validation-helpers';
 
 /**
@@ -132,6 +132,7 @@ export class AgentCollaborator {
 
   /**
    * Grants the given identity permissions to collaborate with the agent
+   * [disable-awslint:no-grants]
    * @param grantee The principal to grant permissions to
    * @returns The Grant object
    */
