@@ -218,6 +218,49 @@ export class Bundling implements cdk.BundlingOptions {
   }
 
   /**
+   * Builds esbuild command-line arguments array
+   * Used by both Docker and local bundling paths
+   */
+  private buildEsbuildArgs(
+    scope: IConstruct,
+    relativeEntryPath: string,
+    outFile: string,
+    inputDir: string,
+    outputDir: string,
+    pathJoin: (...paths: string[]) => string,
+    loaders: [string, string][],
+    defines: [string, any][],
+    sourceMapEnabled: boolean | SourceMapMode | undefined,
+    sourceMapValue: string,
+    sourcesContent: boolean,
+  ): string[] {
+    return [
+      '--bundle', relativeEntryPath,
+      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
+      '--platform=node',
+      ...this.props.format ? [`--format=${this.props.format}`] : [],
+      `--outfile=${pathJoin(outputDir, outFile)}`,
+      ...this.props.minify ? ['--minify'] : [],
+      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
+      ...this.externals.map(external => `--external:${external}`),
+      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
+      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
+        v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
+      ) : [],
+    ];
+  }
+
+  /**
    * Validates all user-controlled bundling properties to prevent command injection
    * This is called by both Docker and local bundling paths for defense-in-depth
    */
@@ -298,30 +341,19 @@ export class Bundling implements cdk.BundlingOptions {
     const sourcesContent = this.props.sourcesContent ?? true;
 
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const esbuildArgs: string[] = [
-      '--bundle', relativeEntryPath,
-      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-      '--platform=node',
-      ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile=${pathJoin(options.outputDir, outFile)}`,
-      ...this.props.minify ? ['--minify'] : [],
-      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-      ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
-      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-      ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
-      ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
-        v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
-      ) : [],
-    ];
+    const esbuildArgs = this.buildEsbuildArgs(
+      scope,
+      relativeEntryPath,
+      outFile,
+      options.inputDir,
+      options.outputDir,
+      pathJoin,
+      loaders,
+      defines,
+      sourceMapEnabled,
+      sourceMapValue,
+      sourcesContent,
+    );
 
     let tscCommand = '';
     if (this.props.preCompilation && options.tscRunner) {
@@ -415,30 +447,19 @@ export class Bundling implements cdk.BundlingOptions {
       const sourcesContent = this.props.sourcesContent ?? true;
 
       const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-      const esbuildArgs: string[] = [
-        '--bundle', relativeEntryPath,
-        `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-        '--platform=node',
-        ...this.props.format ? [`--format=${this.props.format}`] : [],
-        `--outfile=${pathJoin(outputDir, outFile)}`,
-        ...this.props.minify ? ['--minify'] : [],
-        ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-        ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-        ...this.externals.map(external => `--external:${external}`),
-        ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-        ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
-        ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-        ...this.props.keepNames ? ['--keep-names'] : [],
-        ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(this.projectRoot, this.relativeTsconfigPath)}`] : [],
-        ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
-        ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-        ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-        ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-        ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
-        ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
-          v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
-        ) : [],
-      ];
+      const esbuildArgs = this.buildEsbuildArgs(
+        scope,
+        relativeEntryPath,
+        outFile,
+        this.projectRoot,
+        outputDir,
+        pathJoin,
+        loaders,
+        defines,
+        sourceMapEnabled,
+        sourceMapValue,
+        sourcesContent,
+      );
 
       return {
         tscCmd,
