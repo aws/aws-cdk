@@ -6,7 +6,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, escapeShellArg, SHELL_METACHARACTERS } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, escapeShellArg, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -232,7 +232,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Validate loader keys
     const loaders = Object.entries(this.props.loader ?? {});
     for (const [ext] of loaders) {
-      if (!/^\.[a-z0-9]+$/i.test(ext)) {
+      if (!FILE_EXTENSION_PATTERN.test(ext)) {
         throw new ValidationError(`Invalid loader extension: "${ext}". Extensions must start with . and contain only alphanumeric characters.`, scope);
       }
     }
@@ -240,7 +240,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Validate define keys
     const defines = Object.entries(this.props.define ?? {});
     for (const [key] of defines) {
-      if (!/^[a-zA-Z_$][a-zA-Z0-9_$.]*$/.test(key)) {
+      if (!JS_IDENTIFIER_PATTERN.test(key)) {
         throw new ValidationError(`Invalid define key: "${key}". Keys must be valid JavaScript identifiers.`, scope);
       }
     }
@@ -257,7 +257,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Validate esbuildArgs
     if (this.props.esbuildArgs) {
       for (const [key, value] of Object.entries(this.props.esbuildArgs)) {
-        if (!/^[a-z][a-z0-9-]*$/i.test(key)) {
+        if (!CLI_FLAG_NAME_PATTERN.test(key)) {
           throw new ValidationError(`Invalid esbuildArgs key: "${key}". Keys must be valid CLI flag names (alphanumeric and hyphens only).`, scope);
         }
         if (typeof value === 'string' && SHELL_METACHARACTERS.test(value)) {

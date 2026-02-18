@@ -7,8 +7,45 @@ import { UnscopedValidationError } from '../../core';
 
 /**
  * Shell metacharacters that could be used for command injection
+ * Covers: ; & | ` $ ( ) < > \ ' "
  */
 export const SHELL_METACHARACTERS = /[;&|`$()<>\\'"]/;
+
+/**
+ * Valid npm package name pattern
+ * - Must start with alphanumeric or @
+ * - Can contain: alphanumeric, @, /, -, _, .
+ * - Examples: lodash, @aws-sdk/client-s3, @types/node
+ * - Rejects: names with spaces, shell metacharacters, or starting with . or -
+ */
+export const NPM_PACKAGE_NAME_PATTERN = /^[@a-z0-9][a-z0-9._\/-]*$/i;
+
+/**
+ * Valid file extension pattern for esbuild loaders
+ * - Must start with a dot
+ * - Followed by alphanumeric characters only
+ * - Examples: .txt, .json, .css, .png
+ * - Rejects: extensions with special characters or spaces
+ */
+export const FILE_EXTENSION_PATTERN = /^\.[a-z0-9]+$/i;
+
+/**
+ * Valid JavaScript identifier pattern for esbuild define keys
+ * - Must start with letter, underscore, or dollar sign
+ * - Can contain: letters, digits, underscores, dollar signs, dots
+ * - Examples: FOO, process.env.NODE_ENV, __dirname, $jQuery
+ * - Rejects: identifiers starting with digits or containing spaces/special chars
+ */
+export const JS_IDENTIFIER_PATTERN = /^[a-zA-Z_$][a-zA-Z0-9_$.]*$/;
+
+/**
+ * Valid CLI flag name pattern for esbuild arguments
+ * - Must start with a letter
+ * - Can contain: letters, digits, hyphens
+ * - Examples: minify, source-map, keep-names
+ * - Rejects: flags with underscores, special characters, or starting with digits
+ */
+export const CLI_FLAG_NAME_PATTERN = /^[a-z][a-z0-9-]*$/i;
 
 export interface CallSite {
   getThis(): any;
@@ -99,17 +136,12 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
  * Rejects values containing shell metacharacters
  */
 export function validatePackageName(name: string, fieldName: string): void {
-  // npm package name pattern: @scope/name or name
-  // Allowed: alphanumeric, @, /, -, _, .
-  const validPattern = /^[@a-z0-9][a-z0-9._\/-]*$/i;
-  
-  if (!validPattern.test(name)) {
+  if (!NPM_PACKAGE_NAME_PATTERN.test(name)) {
     throw new UnscopedValidationError(
       `Invalid ${fieldName}: "${name}". Package names must contain only alphanumeric characters, @, /, -, _, and . to prevent command injection.`
     );
   }
   
-  // Additional check for shell metacharacters
   if (SHELL_METACHARACTERS.test(name)) {
     throw new UnscopedValidationError(
       `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + `) to prevent command injection.`
