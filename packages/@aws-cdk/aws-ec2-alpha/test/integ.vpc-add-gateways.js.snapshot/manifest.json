@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bb7702b108a2f2411f85e69f0dfa86c16ef5886f36aaf6d404c4451be12578c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/268c276ca412d4a19eb0d433d6aebbaafda03058594a7f052f0ae8b5a4ba14d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,10 +159,7 @@
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet3/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet3NATGateway4198D6F2"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2": [
@@ -180,10 +177,7 @@
         "/aws-cdk-ec2-alpha-gateways/VPC-integ-test-gateway/NATGateway-testsubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "VPCintegtestgatewayNATGatewaytestsubnet2NATGateway27C66096"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/TestRouteTable": [
@@ -207,19 +201,13 @@
         "/aws-cdk-ec2-alpha-gateways/testsubnet/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetSubnetDD417829",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetSubnetDD417829"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnetRouteTableAssociationC106676D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnetRouteTableAssociationC106676D"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/TestRouteTable2": [
@@ -243,19 +231,13 @@
         "/aws-cdk-ec2-alpha-gateways/testsubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnet2SubnetDA462F5A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnet2SubnetDA462F5A"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnet2RouteTableAssociation2ABEB97D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnet2RouteTableAssociation2ABEB97D"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet3": [
@@ -267,19 +249,13 @@
         "/aws-cdk-ec2-alpha-gateways/testsubnet3/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnet3Subnet09F1B369",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnet3Subnet09F1B369"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/testsubnet3/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "testsubnet3RouteTableAssociation97F126C9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "testsubnet3RouteTableAssociation97F126C9"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtestgatewayInternetGatewayIGWBF8CBB67\",\"InternetGatewayId\"]}": [
@@ -300,16 +276,16 @@
             "data": "ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
           }
         ],
-        "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTable2RouteTableB32AE314\",\"RouteTableId\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
-          }
-        ],
         "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTableC34C2E1C\",\"RouteTableId\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+          }
+        ],
+        "/aws-cdk-ec2-alpha-gateways/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTable2RouteTableB32AE314\",\"RouteTableId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
           }
         ],
         "/aws-cdk-ec2-alpha-gateways/BootstrapVersion": [
@@ -344,7 +320,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/acd38da887821835beb2db2b5d33bed4c72bf76341e50b1259e83ae087fda41b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8023d98352d18348743d25ebc9a56c3db247a837a15482e73ace77bbcd79125b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -425,7 +401,7 @@
             "data": "AssertionResultsAwsApiCallec2DescribeEgressOnlyInternetGatewaysCommandfafd20bbb6fce097385389c7d7123e98"
           }
         ],
-        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default": [
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -439,16 +415,42 @@
             "data": "*"
           }
         ],
-        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/Default/Default": [
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603"
+            "data": "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3"
           }
         ],
-        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603/AssertionResults": [
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603"
+            "data": "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf"
+          }
+        ],
+        "/VpcSameAccountInteg/DefaultTest/DeployAssert/AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf"
           }
         ],
         "/VpcSameAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -961,12 +963,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1105.0"
 }

@@ -449,17 +449,6 @@
     "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
    }
   },
-  "ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777": {
-   "Value": {
-    "Fn::GetAtt": [
-     "TestRouteTable2RouteTableB32AE314",
-     "RouteTableId"
-    ]
-   },
-   "Export": {
-    "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
-   }
-  },
   "ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39": {
    "Value": {
     "Fn::GetAtt": [
@@ -469,6 +458,17 @@
    },
    "Export": {
     "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+   }
+  },
+  "ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestRouteTable2RouteTableB32AE314",
+     "RouteTableId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
    }
   }
  },

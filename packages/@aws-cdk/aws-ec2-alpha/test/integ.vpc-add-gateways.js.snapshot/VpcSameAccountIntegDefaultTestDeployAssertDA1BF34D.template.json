@@ -42,7 +42,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770747738659"
+    "salt": "1771423584928"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,6 +99,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "ec2:DescribeRouteTables"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -114,7 +123,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
+     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -168,12 +177,12 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770747738661"
+    "salt": "1771423584930"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
+  "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3": {
    "Type": "Custom::DeployAssert@SdkCallec2DescribeRouteTablesCommand",
    "Properties": {
     "ServiceToken": {
@@ -188,19 +197,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"RouteTables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"RouteTableId\":\"",
-       {
-        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
-       },
-       "\",\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"192.168.0.0/16\",\"GatewayId\":\"",
-       {
-        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
-       },
-       "\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"2600:1f00::/24\",\"EgressOnlyInternetGatewayId\":\"",
-       {
-        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
-       },
-       "\"}}]}}},{\"$ObjectLike\":{\"RouteTableId\":\"",
+       "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"RouteTableId\":\"",
        {
         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
        },
@@ -212,7 +209,7 @@
        {
         "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
        },
-       "\"}}]}}}]}}}"
+       "\"}}]}}}]}}"
       ]
      ]
     },
@@ -225,7 +222,54 @@
         {
          "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
         },
-        "\",\"",
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1771423584930"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf": {
+   "Type": "Custom::DeployAssert@SdkCallec2DescribeRouteTablesCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ec2",
+    "api": "DescribeRouteTablesCommand",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"RouteTables\":[{\"$ObjectLike\":{\"RouteTableId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
+       },
+       "\",\"Routes\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"DestinationCidrBlock\":\"192.168.0.0/16\",\"GatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayInternetGatewayIGWBF8CBB67InternetGatewayIdBCA9BCBE"
+       },
+       "\"}},{\"$ObjectLike\":{\"DestinationIpv6CidrBlock\":\"2600:1f00::/24\",\"EgressOnlyInternetGatewayId\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttVPCintegtestgatewayEgressOnlyGWEIGW686FDB04IdEA72DCCD"
+       },
+       "\"}}]}}}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "RouteTableIds": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
         {
          "Fn::ImportValue": "aws-cdk-ec2-alpha-gateways:ExportsOutputFnGetAttTestRouteTable2RouteTableB32AE314RouteTableId897B0777"
         },
@@ -235,7 +279,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1770747738661"
+    "salt": "1771423584930"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -258,10 +302,18 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603": {
+  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallec2DescribeRouteTablesCommand8686a775330f1ad1a2074c06c730c603",
+     "AwsApiCallec2DescribeRouteTablesCommand12b9b6cc894f4fb271c8783896ec62c3",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallec2DescribeRouteTablesCommand08c8c1ed6590ad9897f31d6f62bf92cf",
      "assertion"
     ]
    }

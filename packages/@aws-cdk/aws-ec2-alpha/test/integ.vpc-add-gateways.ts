@@ -130,37 +130,34 @@ eigwassertion.expect(ExpectedResult.objectLike({
 }));
 
 // Verify that the Gateways route is restricted to destination and given subnet's route table.
-const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
-  RouteTableIds: [routeTable1.routeTableId, routeTable2.routeTableId],
-});
+// Split into separate assertions per route table to avoid order-dependent arrayWith matching.
+const expectedRoutes = [
+  Match.objectLike({
+    DestinationCidrBlock: '192.168.0.0/16',
+    GatewayId: vpc.internetGatewayId,
+  }),
+  Match.objectLike({
+    DestinationIpv6CidrBlock: '2600:1f00::/24',
+    EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
+  }),
+];
 
-rtbassertion.expect(ExpectedResult.objectLike({
-  RouteTables: Match.arrayWith([
-    Match.objectLike({
-      RouteTableId: routeTable2.routeTableId,
-      Routes: Match.arrayWith([
-        Match.objectLike({
-          DestinationCidrBlock: '192.168.0.0/16',
-          GatewayId: vpc.internetGatewayId,
-        }),
-        Match.objectLike({
-          DestinationIpv6CidrBlock: '2600:1f00::/24',
-          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
-        }),
-      ]),
-    }),
-    Match.objectLike({
-      RouteTableId: routeTable1.routeTableId,
-      Routes: Match.arrayWith([
-        Match.objectLike({
-          DestinationCidrBlock: '192.168.0.0/16',
-          GatewayId: vpc.internetGatewayId,
-        }),
-        Match.objectLike({
-          DestinationIpv6CidrBlock: '2600:1f00::/24',
-          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
-        }),
-      ]),
-    }),
-  ]),
+const rt1assertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
+  RouteTableIds: [routeTable1.routeTableId],
+});
+rt1assertion.expect(ExpectedResult.objectLike({
+  RouteTables: [Match.objectLike({
+    RouteTableId: routeTable1.routeTableId,
+    Routes: Match.arrayWith(expectedRoutes),
+  })],
+}));
+
+const rt2assertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
+  RouteTableIds: [routeTable2.routeTableId],
+});
+rt2assertion.expect(ExpectedResult.objectLike({
+  RouteTables: [Match.objectLike({
+    RouteTableId: routeTable2.routeTableId,
+    Routes: Match.arrayWith(expectedRoutes),
+  })],
 }));
