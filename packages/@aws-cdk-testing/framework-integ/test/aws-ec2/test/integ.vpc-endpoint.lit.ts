@@ -58,8 +58,8 @@ class VpcEndpointStack extends cdk.Stack {
 
     // Add a cross-region interface endpoint
     vpc.addInterfaceEndpoint('CrossRegionEndpoint', {
-      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-123456', 443),
-      serviceRegion: 'us-east-1', // Cross-region service
+      service: new ec2.InterfaceVpcEndpointService('com.amazonaws.eu-west-1.s3'),
+      serviceRegion: 'eu-west-1',
     });
   }
 }
