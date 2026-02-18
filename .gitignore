@@ -60,3 +60,6 @@ read*lock
 
 # jsii-rosetta files
 type-fingerprints.txt
+
+# Kiro-specific files
+.kiro/

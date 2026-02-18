@@ -5,10 +5,16 @@ import type * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import type { DestinationS3BackupProps } from '../common';
+import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
+import type { CommonDestinationProps, DestinationS3BackupProps } from '../common';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import type { ILoggingConfig } from '../logging-config';
-import type { IDataProcessor } from '../processor';
+import type { DataProcessorBindOptions, IDataProcessor } from '../processor';
+import type { DynamicPartitioningProps } from '../s3-bucket';
+
+export const PARTITION_KEY_QUERY = 'partitionKeyFromQuery';
+export const PARTITION_KEY_LAMBDA = 'partitionKeyFromLambda';
+export const ERROR_OUTPUT_TYPE = '!{firehose:error-output-type}';
 
 export interface DestinationLoggingProps {
   /**
@@ -73,25 +79,41 @@ export function createBufferingHints(
   scope: Construct,
   interval?: cdk.Duration,
   size?: cdk.Size,
-  dataFormatConversionConfiguration?: CfnDeliveryStream.DataFormatConversionConfigurationProperty,
+  dataFormatConversionEnabled?: boolean,
+  dynamicPartitioningEnabled?: boolean,
 ): CfnDeliveryStream.BufferingHintsProperty | undefined {
-  if (!interval && !size) {
+  if (!interval && !size && !dataFormatConversionEnabled && !dynamicPartitioningEnabled) {
     return undefined;
   }
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
-  if (intervalInSeconds > 900) {
-    throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`, scope);
-  }
-  const defaultSizeInMBs = dataFormatConversionConfiguration?.enabled ? 128 : 5;
-  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
-  if (sizeInMBs < 1 || sizeInMBs > 128) {
-    throw new cdk.ValidationError(`Buffering size must be between 1 and 128 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
+  if (!cdk.Token.isUnresolved(intervalInSeconds)) {
+    if (intervalInSeconds > 900) {
+      throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
+    }
+    if (dynamicPartitioningEnabled && intervalInSeconds < 60) {
+      // From testing, CFN deployment will fail if `BufferingHints.IntervalInSeconds` is less than 60.
+      // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got ${intervalInSeconds} seconds.`, scope);
+    }
   }
 
-  if (dataFormatConversionConfiguration?.enabled && sizeInMBs < 64) {
-    throw new cdk.ValidationError(`When data format conversion is enabled, buffering size must be at least 64 MiBs. Buffering size provided was ${sizeInMBs} MiBs.`, scope);
+  const defaultSizeInMBs = (dataFormatConversionEnabled || dynamicPartitioningEnabled) ? 128 : 5;
+  const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
+  if (!cdk.Token.isUnresolved(sizeInMBs)) {
+    if (sizeInMBs > 128) {
+      throw new cdk.ValidationError(`Buffering size must be at most 128 MiBs, got ${sizeInMBs} MiBs.`, scope);
+    }
+    if ((dataFormatConversionEnabled || dynamicPartitioningEnabled) && sizeInMBs < 64) {
+      // From testing, CFN deployment will fail if `BufferingHints.SizeInMBs` is less than 64.
+      // The message is: "BufferingHints.SizeInMBs must be at least 64 when Dynamic Partitioning is enabled."
+      throw new cdk.ValidationError(`When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got ${sizeInMBs} MiBs.`, scope);
+    }
+    if (sizeInMBs < 1) {
+      throw new cdk.ValidationError(`Buffering size must be at least 1 MiB, got ${sizeInMBs} MiBs.`, scope);
+    }
   }
+
   return { intervalInSeconds, sizeInMBs };
 }
 
@@ -107,17 +129,45 @@ export function createEncryptionConfig(
 
 export function createProcessingConfig(
   scope: Construct,
-  role: iam.IRole,
-  dataProcessors?: IDataProcessor[],
+  props: CommonDestinationProps,
+  options: DataProcessorBindOptions,
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
-  if (!dataProcessors?.length) return undefined;
-
-  const processors = dataProcessors.map((dp) => renderDataProcessor(dp, scope, role));
+  if (props.processor && props.processors) {
+    throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+  }
+  const processorsFromProps = props.processor ? [props.processor] : props.processors;
+  const processors = (processorsFromProps ?? []).map((dp) => renderDataProcessor(dp, scope, options));
   const processorTypes = new Set(processors.map((p) => p.type));
 
   if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
     throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
   }
+  if (options.dynamicPartitioningEnabled) {
+    const withLambda = processorTypes.has('Lambda');
+    const withInline = processorTypes.has('MetadataExtraction');
+    // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
+    if (!options.prefix) {
+      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify dataOutputPrefix.', scope);
+    }
+    // CFN validation message: "Processing Configuration is not enabled when DataPartitioning is enabled"
+    if (!withLambda && !withInline) {
+      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor or MetadataExtractionProcessor, or both.', scope);
+    }
+    // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
+    if (withLambda && !withInline && !options.prefix.includes(`!{${PARTITION_KEY_LAMBDA}:`)) {
+      throw new cdk.ValidationError(`When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{${PARTITION_KEY_LAMBDA}:keyID}.`, scope);
+    }
+    // CFN validation message: "Lambda should be present when S3 Prefix contains keys from partitionKeyFromLambda namespace"
+    if (!withLambda && options.prefix.includes(`!{${PARTITION_KEY_LAMBDA}:`)) {
+      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTITION_KEY_LAMBDA}:keyID} when LambdaFunctionProcessor is not specified.`, scope);
+    }
+    // CFN validation message: "MetadataExtraction processor should be present when S3 Prefix has partitionKeyFromQuery namespace"
+    if (!withInline && options.prefix.includes(`!{${PARTITION_KEY_QUERY}:`)) {
+      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTITION_KEY_QUERY}:keyID} when MetadataExtractionProcessor is not specified.`, scope);
+    }
+  }
+
+  if (processors.length === 0) return undefined;
 
   return {
     enabled: true,
@@ -128,9 +178,9 @@ export function createProcessingConfig(
 function renderDataProcessor(
   processor: IDataProcessor,
   scope: Construct,
-  role: iam.IRole,
+  options: DataProcessorBindOptions,
 ): CfnDeliveryStream.ProcessorProperty {
-  const processorConfig = processor.bind(scope, { role });
+  const processorConfig = processor.bind(scope, options);
 
   if (processorConfig.parameters) {
     return {
@@ -139,7 +189,7 @@ function renderDataProcessor(
     };
   }
 
-  const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
+  const parameters = [{ parameterName: 'RoleArn', parameterValue: options.role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);
   if (processor.props.bufferInterval) {
     parameters.push({ parameterName: 'BufferIntervalInSeconds', parameterValue: processor.props.bufferInterval.toSeconds().toString() });
@@ -182,5 +232,24 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
       cloudWatchLoggingOptions: loggingOptions,
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
+  };
+}
+
+export function createDynamicPartitioningConfiguration(
+  scope: Construct,
+  props?: DynamicPartitioningProps,
+): CfnDeliveryStream.DynamicPartitioningConfigurationProperty | undefined {
+  if (!props) return undefined;
+
+  const durationInSeconds = props.retryDuration?.toSeconds();
+  if (durationInSeconds != null && !cdk.Token.isUnresolved(durationInSeconds) && durationInSeconds > 7200) {
+    throw new cdk.ValidationError(`Retry duration must be less than 7200 seconds, got ${durationInSeconds} seconds.`, scope);
+  }
+
+  return {
+    enabled: props.enabled,
+    retryOptions: undefinedIfAllValuesAreEmpty({
+      durationInSeconds,
+    }),
   };
 }

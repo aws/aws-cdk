@@ -28,7 +28,7 @@ For example, let's say the minimum version your library needs is `2.38.0`. Your 
 {
   "peerDependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "devDependencies": {
     /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
@@ -43,7 +43,7 @@ For CDK apps, declare them under the `dependencies` section. Use a caret so you 
 {
   "dependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   }
 }
 ```

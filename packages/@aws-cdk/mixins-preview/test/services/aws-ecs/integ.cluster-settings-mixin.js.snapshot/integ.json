@@ -1,0 +1,13 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "EcsClusterSettingsMixinIntegTest/DefaultTest": {
+      "stacks": [
+        "EcsClusterSettingsMixinTest"
+      ],
+      "assertionStack": "EcsClusterSettingsMixinIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsClusterSettingsMixinIntegTestDefaultTestDeployAssertA26E7ECA"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}

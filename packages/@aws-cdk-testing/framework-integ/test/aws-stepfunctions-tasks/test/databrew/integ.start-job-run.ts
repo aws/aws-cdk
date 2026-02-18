@@ -1,35 +1,15 @@
 import * as databrew from 'aws-cdk-lib/aws-databrew';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import type { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
-import { UnscopedValidationError } from 'aws-cdk-lib';
 import { GlueDataBrewStartJobRun } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import type { Node } from 'constructs';
 
 /*
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  */
-
-function makePolicy(arn: string): IManagedPolicy {
-  return {
-    managedPolicyArn: arn,
-    get managedPolicyRef(): ManagedPolicyReference {
-      return {
-        policyArn: this.managedPolicyArn,
-      };
-    },
-    get node(): Node {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-    },
-    get env(): cdk.ResourceEnvironment {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-    },
-  };
-}
 
 class GlueDataBrewJobStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
@@ -43,7 +23,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
 
     const role = new iam.Role(this, 'DataBrew Role', {
       managedPolicies: [
-        makePolicy('arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueDataBrewServiceRole'),
       ],
       path: '/',
       assumedBy: new iam.ServicePrincipal('databrew.amazonaws.com'),
