@@ -11,7 +11,7 @@ class TestStack extends Stack {
     new ApiKey(this, 'APIKey', {
       apiKeyName: 'my-api-key',
       description: 'my api key for test',
-      expireTime: new Date('2028-01-01T00:00:00Z'),
+      expireTime: new Date('2036-01-01T00:00:00Z'),
       noExpiry: false,
       allowMapsActions: [
         AllowMapsAction.GET_STATIC_MAP,
