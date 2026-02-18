@@ -5,6 +5,11 @@ import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
 
+/**
+ * Shell metacharacters that could be used for command injection
+ */
+export const SHELL_METACHARACTERS = /[;&|`$()<>\\'"]/;
+
 export interface CallSite {
   getThis(): any;
   getTypeName(): string;
@@ -87,6 +92,45 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+/**
+ * Validates that a string conforms to npm package name patterns
+ * Rejects values containing shell metacharacters
+ */
+export function validatePackageName(name: string, fieldName: string): void {
+  // npm package name pattern: @scope/name or name
+  // Allowed: alphanumeric, @, /, -, _, .
+  const validPattern = /^[@a-z0-9][a-z0-9._\/-]*$/i;
+  
+  if (!validPattern.test(name)) {
+    throw new UnscopedValidationError(
+      `Invalid ${fieldName}: "${name}". Package names must contain only alphanumeric characters, @, /, -, _, and . to prevent command injection.`
+    );
+  }
+  
+  // Additional check for shell metacharacters
+  if (SHELL_METACHARACTERS.test(name)) {
+    throw new UnscopedValidationError(
+      `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + `) to prevent command injection.`
+    );
+  }
+}
+
+/**
+ * Escapes a string for safe use in shell commands
+ * Handles both Windows and Unix shells
+ */
+export function escapeShellArg(arg: string, platform: NodeJS.Platform): string {
+  if (platform === 'win32') {
+    // Windows cmd.exe escaping
+    // Escape special characters: & | ( ) < > ^ " % ! and wrap in quotes
+    // Note: cmd.exe is complex, safest approach is to wrap in quotes and escape quotes/percents
+    return `"${arg.replace(/["^%]/g, '^$&')}"`;
+  } else {
+    // Unix shell escaping - wrap in single quotes and escape any single quotes
+    return `'${arg.replace(/'/g, "'\\''")}'`;
+  }
 }
 
 /**

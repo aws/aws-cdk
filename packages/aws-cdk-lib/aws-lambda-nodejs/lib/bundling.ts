@@ -1,11 +1,12 @@
 import * as os from 'os';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
 import type { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, escapeShellArg, SHELL_METACHARACTERS } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -216,10 +217,63 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
+  /**
+   * Validates all user-controlled bundling properties to prevent command injection
+   * This is called by both Docker and local bundling paths for defense-in-depth
+   */
+  private validateBundlingProps(scope: IConstruct): void {
+    // Validate externalModules
+    if (this.props.externalModules) {
+      for (const external of this.props.externalModules) {
+        validatePackageName(external, 'externalModules entry');
+      }
+    }
+
+    // Validate loader keys
+    const loaders = Object.entries(this.props.loader ?? {});
+    for (const [ext] of loaders) {
+      if (!/^\.[a-z0-9]+$/i.test(ext)) {
+        throw new ValidationError(`Invalid loader extension: "${ext}". Extensions must start with . and contain only alphanumeric characters.`, scope);
+      }
+    }
+
+    // Validate define keys
+    const defines = Object.entries(this.props.define ?? {});
+    for (const [key] of defines) {
+      if (!/^[a-zA-Z_$][a-zA-Z0-9_$.]*$/.test(key)) {
+        throw new ValidationError(`Invalid define key: "${key}". Keys must be valid JavaScript identifiers.`, scope);
+      }
+    }
+
+    // Validate inject paths
+    if (this.props.inject) {
+      for (const injectPath of this.props.inject) {
+        if (SHELL_METACHARACTERS.test(injectPath)) {
+          throw new ValidationError(`Invalid inject path: "${injectPath}". Paths cannot contain shell metacharacters.`, scope);
+        }
+      }
+    }
+
+    // Validate esbuildArgs
+    if (this.props.esbuildArgs) {
+      for (const [key, value] of Object.entries(this.props.esbuildArgs)) {
+        if (!/^[a-z][a-z0-9-]*$/i.test(key)) {
+          throw new ValidationError(`Invalid esbuildArgs key: "${key}". Keys must be valid CLI flag names (alphanumeric and hyphens only).`, scope);
+        }
+        if (typeof value === 'string' && SHELL_METACHARACTERS.test(value)) {
+          throw new ValidationError(`Invalid esbuildArgs value for "${key}": "${value}". Values cannot contain shell metacharacters.`, scope);
+        }
+      }
+    }
+  }
+
   private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
+    // Validate all user inputs first
+    this.validateBundlingProps(scope);
+
     const pathJoin = osPathJoin(options.osPlatform);
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
-    let tscCommand = '';
+    const tscArgs: string[] = [];
 
     if (this.props.preCompilation) {
       const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
@@ -227,7 +281,7 @@ export class Bundling implements cdk.BundlingOptions {
         throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
+      tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
@@ -244,13 +298,12 @@ export class Bundling implements cdk.BundlingOptions {
     const sourcesContent = this.props.sourcesContent ?? true;
 
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const esbuildCommand: string[] = [
-      options.esbuildRunner,
-      '--bundle', `"${relativeEntryPath}"`,
+    const esbuildArgs: string[] = [
+      '--bundle', relativeEntryPath,
       `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
+      `--outfile=${pathJoin(options.outputDir, outFile)}`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
@@ -259,14 +312,27 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
+        v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
+      ) : [],
     ];
+
+    let tscCommand = '';
+    if (this.props.preCompilation && options.tscRunner) {
+      // Escape arguments for shell execution (Docker bundling)
+      const escapedTscArgs = tscArgs.map(arg => escapeShellArg(arg, options.osPlatform));
+      tscCommand = `${options.tscRunner} ${escapedTscArgs.join(' ')}`;
+    }
+
+    // Escape arguments for shell execution (Docker bundling)
+    const escapedEsbuildArgs = esbuildArgs.map(arg => escapeShellArg(arg, options.osPlatform));
+    const esbuildCommand = `${options.esbuildRunner} ${escapedEsbuildArgs.join(' ')}`;
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -301,7 +367,7 @@ export class Bundling implements cdk.BundlingOptions {
     return chain([
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
       tscCommand,
-      esbuildCommand.join(' '),
+      esbuildCommand,
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
       ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
@@ -310,13 +376,78 @@ export class Bundling implements cdk.BundlingOptions {
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand(scope, {
-      inputDir: this.projectRoot,
-      outputDir,
-      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-      tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
-      osPlatform,
-    });
+    const createBundlingData = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => {
+      // Validate all user inputs first
+      this.validateBundlingProps(scope);
+
+      const pathJoin = osPathJoin(osPlatform);
+      let relativeEntryPath = pathJoin(this.projectRoot, this.relativeEntryPath);
+      
+      // Get command arrays for direct execution
+      const esbuildCmd = esbuild.isLocal 
+        ? this.packageManager.runBinCommandArray('esbuild')
+        : ['esbuild'];
+      const tscCmd = tsc && (tsc.isLocal 
+        ? this.packageManager.runBinCommandArray('tsc')
+        : ['tsc']);
+
+      const tscArgs: string[] = [];
+      if (this.props.preCompilation) {
+        const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
+        if (!tsconfig) {
+          throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
+        }
+        const compilerOptions = getTsconfigCompilerOptions(tsconfig);
+        tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
+        relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
+      }
+
+      const loaders = Object.entries(this.props.loader ?? {});
+      const defines = Object.entries(this.props.define ?? {});
+
+      if (this.props.sourceMap === false && this.props.sourceMapMode) {
+        throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
+      }
+
+      const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+      const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+      const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+      const sourcesContent = this.props.sourcesContent ?? true;
+
+      const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
+      const esbuildArgs: string[] = [
+        '--bundle', relativeEntryPath,
+        `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
+        '--platform=node',
+        ...this.props.format ? [`--format=${this.props.format}`] : [],
+        `--outfile=${pathJoin(outputDir, outFile)}`,
+        ...this.props.minify ? ['--minify'] : [],
+        ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+        ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
+        ...this.externals.map(external => `--external:${external}`),
+        ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+        ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+        ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+        ...this.props.keepNames ? ['--keep-names'] : [],
+        ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(this.projectRoot, this.relativeTsconfigPath)}`] : [],
+        ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+        ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
+        ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+        ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+        ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+        ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
+          v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
+        ) : [],
+      ];
+
+      return {
+        tscCmd,
+        tscArgs,
+        esbuildCmd,
+        esbuildArgs,
+      };
+    };
+    
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
 
@@ -331,24 +462,47 @@ export class Bundling implements cdk.BundlingOptions {
           throw new ValidationError(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
-        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
-
-        exec(
-          osPlatform === 'win32' ? 'cmd' : 'bash',
-          [
-            osPlatform === 'win32' ? '/c' : '-c',
-            localCommand,
+        const bundlingData = createBundlingData(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
+        
+        const execOptions = {
+          env: { ...process.env, ...environment },
+          stdio: [
+            'ignore' as const,
+            process.stderr,
+            'inherit' as const,
           ],
-          {
-            env: { ...process.env, ...environment },
-            stdio: [ // show output
-              'ignore', // ignore stdio
-              process.stderr, // redirect stdout to stderr
-              'inherit', // inherit stderr
-            ],
-            cwd,
-            windowsVerbatimArguments: osPlatform === 'win32',
-          });
+          cwd,
+        };
+
+        // Execute tsc if preCompilation is enabled
+        if (bundlingData.tscCmd && bundlingData.tscArgs.length > 0) {
+          const [tscCommand, ...tscCmdArgs] = bundlingData.tscCmd;
+          const tscProc = spawnSync(tscCommand, [...tscCmdArgs, ...bundlingData.tscArgs], { ...execOptions, shell: false });
+          
+          if (tscProc.error) {
+            throw tscProc.error;
+          }
+          if (tscProc.status !== 0) {
+            if (tscProc.stdout || tscProc.stderr) {
+              throw new ValidationError(`[Status ${tscProc.status}] stdout: ${tscProc.stdout?.toString().trim()}\n\n\nstderr: ${tscProc.stderr?.toString().trim()}`, scope);
+            }
+            throw new ValidationError(`tsc exited with status ${tscProc.status}`, scope);
+          }
+        }
+
+        // Execute esbuild directly without shell - spawnSync('esbuild', [...args])
+        const [esbuildCommand, ...esbuildCmdArgs] = bundlingData.esbuildCmd;
+        const proc = spawnSync(esbuildCommand, [...esbuildCmdArgs, ...bundlingData.esbuildArgs], { ...execOptions, shell: false });
+        
+        if (proc.error) {
+          throw proc.error;
+        }
+        if (proc.status !== 0) {
+          if (proc.stdout || proc.stderr) {
+            throw new ValidationError(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`, scope);
+          }
+          throw new ValidationError(`esbuild exited with status ${proc.status}`, scope);
+        }
 
         return true;
       },

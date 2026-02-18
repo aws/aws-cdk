@@ -87,4 +87,17 @@ export class PackageManager {
       bin,
     ].join(' ');
   }
+
+  /**
+   * Get the command and arguments as an array for direct process execution
+   */
+  public runBinCommandArray(bin: string): string[] {
+    const [runCommand, ...runArgs] = this.runCommand;
+    return [
+      os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
+      ...runArgs,
+      ...(this.argsSeparator ? [this.argsSeparator] : []),
+      bin,
+    ];
+  }
 }
