@@ -237,7 +237,46 @@ export class FieldAwareEventInput extends RuleTargetInput {
         }
         return resolved;
       } else if (typeof(resolved) === 'string') {
-        return keys.reduce((r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`), resolved);
+        return keys.reduce((r, key) => {
+          // Improved pattern that better handles JSON escaping scenarios
+          // The original regex (?<!\\\\)\"\<${key}\>\" had issues with complex escaping
+          // This approach is more context-aware and handles edge cases better
+
+          // First, find all potential matches
+          const placeholder = `"<${key}>"`;
+          const parts = r.split(placeholder);
+
+          if (parts.length === 1) {
+            return r; // No matches found
+          }
+
+          // Reconstruct the string, deciding whether to unquote each match
+          let result = parts[0];
+          for (let i = 1; i < parts.length; i++) {
+            const beforeMatch = parts[i - 1];
+            const afterMatch = parts[i];
+
+            // Check if the quote before the placeholder is escaped
+            // Count consecutive backslashes at the end of beforeMatch
+            let backslashCount = 0;
+            for (let j = beforeMatch.length - 1; j >= 0 && beforeMatch[j] === '\\'; j--) {
+              backslashCount++;
+            }
+
+            // If there's an odd number of backslashes, the quote is escaped
+            const isEscaped = backslashCount % 2 === 1;
+
+            if (isEscaped) {
+              // Keep the quotes - the placeholder is escaped
+              result += placeholder + afterMatch;
+            } else {
+              // Remove the quotes - unquote the placeholder
+              result += `<${key}>` + afterMatch;
+            }
+          }
+
+          return result;
+        }, resolved);
       }
       return resolved;
     }
