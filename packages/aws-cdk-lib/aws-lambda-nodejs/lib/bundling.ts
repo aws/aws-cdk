@@ -1,12 +1,12 @@
+import { spawnSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { spawnSync } from 'child_process';
 import type { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
+import { extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
