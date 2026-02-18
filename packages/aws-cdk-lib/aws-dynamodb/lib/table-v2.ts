@@ -1384,7 +1384,10 @@ export class TableV2 extends TableBaseV2 {
  *
  * @resource AWS::DynamoDB::GlobalTable
  */
+@propertyInjectable
 export class TableV2MultiAccountReplica extends TableBaseV2 {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.TableV2MultiAccountReplica';
   /**
    * @attribute
    */
@@ -1427,6 +1430,8 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TableV2MultiAccountReplicaProps = {}) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.replicaSourceTable) {
       throw new ValidationError('replicaSourceTable is required for TableV2MultiAccountReplica', this);
@@ -1499,6 +1504,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   /**
    * Adds a statement to the resource policy associated with this table.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.resourcePolicy) {
       this.resourcePolicy = new PolicyDocument({ statements: [] });
