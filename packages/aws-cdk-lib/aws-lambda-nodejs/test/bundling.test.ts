@@ -698,12 +698,19 @@ test('Local bundling', () => {
   const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
   expect(tryBundle).toBe(true);
 
+  // After security fix: local bundling uses direct spawnSync without shell
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    'bash',
-    expect.arrayContaining(['-c', expect.stringContaining(entry)]),
+    expect.stringMatching(/^(yarn|npm|pnpm|bun)$/), // Package manager command
+    expect.arrayContaining([
+      expect.stringMatching(/^(run|exec|x)?$/), // run command (may be empty for some package managers)
+      'esbuild',
+      '--bundle',
+      expect.stringContaining(entry),
+    ]),
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
       cwd: '/project',
+      shell: false, // Security fix: no shell interpretation
     }),
   );
 
@@ -1169,6 +1176,84 @@ test('Node 16 runtimes warn about sdk v2 upgrades', () => {
   Annotations.fromStack(stack).hasWarning('*',
     'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
   );
+});
+
+test('rejects externalModules with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      externalModules: ['lodash; rm -rf /'],
+    });
+  }).toThrow(/Invalid externalModules entry/);
+});
+
+test('rejects loader keys with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      loader: { '.png$(evil)': 'dataurl' },
+    });
+  }).toThrow(/Invalid loader extension/);
+});
+
+test('rejects define keys with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      define: { 'process.env;whoami': 'true' },
+    });
+  }).toThrow(/Invalid define key/);
+});
+
+test('rejects esbuildArgs keys with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      esbuildArgs: { '--flag;inject': 'value' },
+    });
+  }).toThrow(/Invalid esbuildArgs key/);
+});
+
+test('rejects esbuildArgs values with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      esbuildArgs: { '--log-limit': '0; rm -rf /' },
+    });
+  }).toThrow(/Invalid esbuildArgs value/);
+});
+
+test('rejects inject paths with shell metacharacters', () => {
+  expect(() => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      inject: ['./shim.js; cat /etc/passwd'],
+    });
+  }).toThrow(/Invalid inject path/);
 });
 
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {

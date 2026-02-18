@@ -150,22 +150,6 @@ export function validatePackageName(name: string, fieldName: string): void {
 }
 
 /**
- * Escapes a string for safe use in shell commands
- * Handles both Windows and Unix shells
- */
-export function escapeShellArg(arg: string, platform: NodeJS.Platform): string {
-  if (platform === 'win32') {
-    // Windows cmd.exe escaping
-    // Escape special characters: & | ( ) < > ^ " % ! and wrap in quotes
-    // Note: cmd.exe is complex, safest approach is to wrap in quotes and escape quotes/percents
-    return `"${arg.replace(/["^%]/g, '^$&')}"`;
-  } else {
-    // Unix shell escaping - wrap in single quotes and escape any single quotes
-    return `'${arg.replace(/'/g, "'\\''")}'`;
-  }
-}
-
-/**
  * Returns a module version by requiring its package.json file
  */
 export function tryGetModuleVersionFromRequire(mod: string): string | undefined {

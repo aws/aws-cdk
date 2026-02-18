@@ -6,7 +6,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, escapeShellArg, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -235,11 +235,11 @@ export class Bundling implements cdk.BundlingOptions {
     sourcesContent: boolean,
   ): string[] {
     return [
-      '--bundle', relativeEntryPath,
+      '--bundle', `"${relativeEntryPath}"`,
       `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile=${pathJoin(outputDir, outFile)}`,
+      `--outfile="${pathJoin(outputDir, outFile)}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
@@ -248,15 +248,13 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(inputDir, this.relativeTsconfigPath)}"`] : [],
+      ...this.props.metafile ? [`--metafile="${pathJoin(outputDir, 'index.meta.json')}"`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
-      ...this.props.esbuildArgs ? Object.entries(this.props.esbuildArgs).flatMap(([k, v]) => 
-        v === true ? [`--${k}`] : v === false ? [] : [`--${k}=${v}`]
-      ) : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
+      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
   }
 
@@ -300,7 +298,9 @@ export class Bundling implements cdk.BundlingOptions {
     // Validate esbuildArgs
     if (this.props.esbuildArgs) {
       for (const [key, value] of Object.entries(this.props.esbuildArgs)) {
-        if (!CLI_FLAG_NAME_PATTERN.test(key)) {
+        // Strip leading -- if present for validation
+        const normalizedKey = key.startsWith('--') ? key.slice(2) : key;
+        if (!CLI_FLAG_NAME_PATTERN.test(normalizedKey)) {
           throw new ValidationError(`Invalid esbuildArgs key: "${key}". Keys must be valid CLI flag names (alphanumeric and hyphens only).`, scope);
         }
         if (typeof value === 'string' && SHELL_METACHARACTERS.test(value)) {
@@ -324,7 +324,7 @@ export class Bundling implements cdk.BundlingOptions {
         throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
+      tscArgs.push(`"${relativeEntryPath}"`, ...compilerOptions.split(' ').filter(arg => arg));
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
@@ -357,14 +357,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     let tscCommand = '';
     if (this.props.preCompilation && options.tscRunner) {
-      // Escape arguments for shell execution (Docker bundling)
-      const escapedTscArgs = tscArgs.map(arg => escapeShellArg(arg, options.osPlatform));
-      tscCommand = `${options.tscRunner} ${escapedTscArgs.join(' ')}`;
+      tscCommand = `${options.tscRunner} ${tscArgs.join(' ')}`;
     }
 
-    // Escape arguments for shell execution (Docker bundling)
-    const escapedEsbuildArgs = esbuildArgs.map(arg => escapeShellArg(arg, options.osPlatform));
-    const esbuildCommand = `${options.esbuildRunner} ${escapedEsbuildArgs.join(' ')}`;
+    const esbuildCommand = `${options.esbuildRunner} ${esbuildArgs.join(' ')}`;
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -430,7 +426,7 @@ export class Bundling implements cdk.BundlingOptions {
           throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
         }
         const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-        tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
+        tscArgs.push(`"${relativeEntryPath}"`, ...compilerOptions.split(' ').filter(arg => arg));
         relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       }
 
