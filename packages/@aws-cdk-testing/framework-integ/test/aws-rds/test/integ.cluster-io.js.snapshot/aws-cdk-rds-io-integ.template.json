@@ -508,7 +508,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.6",
+    "EngineVersion": "17.7",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MasterUsername": "adminuser",
     "Port": 5432,

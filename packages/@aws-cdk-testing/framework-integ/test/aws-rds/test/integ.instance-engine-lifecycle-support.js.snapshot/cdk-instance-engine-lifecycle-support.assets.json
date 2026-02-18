@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "1a7a62929ed764f6e853100b2a2b1b2241410c0be4f9d5eef26e487dfafd2dea": {
       "displayName": "Snapshoter/OnEventHandler/Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "2a239bc5dfdb83ffc6d58bd87c68ff7619dd47737fd138319dc8404e5a8cd880": {
+    "a9ec7c118249cd460b4398fcfadd24ab687399644d17ce7b5f46753b2d845f7c": {
       "displayName": "cdk-instance-engine-lifecycle-support Template",
       "source": {
         "path": "cdk-instance-engine-lifecycle-support.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8483c087": {
+        "current_account-current_region-cb2c3bc0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2a239bc5dfdb83ffc6d58bd87c68ff7619dd47737fd138319dc8404e5a8cd880.json",
+          "objectKey": "a9ec7c118249cd460b4398fcfadd24ab687399644d17ce7b5f46753b2d845f7c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

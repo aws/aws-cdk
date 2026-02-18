@@ -990,7 +990,7 @@
      "Ref": "dbClusterSubnets03B9B0E1"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.6",
+    "EngineVersion": "17.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1506,7 +1506,7 @@
      "Ref": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.6",
+    "EngineVersion": "17.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

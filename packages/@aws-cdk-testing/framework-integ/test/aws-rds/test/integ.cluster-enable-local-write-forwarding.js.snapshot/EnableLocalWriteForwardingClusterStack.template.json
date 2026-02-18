@@ -801,7 +801,7 @@
     },
     "EnableLocalWriteForwarding": true,
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.6",
+    "EngineVersion": "17.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

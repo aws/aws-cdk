@@ -531,7 +531,7 @@
      "Ref": "InstanceSubnetGroupF2CBA54F"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.4.7",
+    "EngineVersion": "8.4.8",
     "Iops": 1000,
     "MasterUserPassword": {
      "Fn::Join": [

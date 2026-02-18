@@ -692,7 +692,7 @@
      "Ref": "Role1ABCC5F0"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.4.7",
+    "EngineVersion": "8.4.8",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
