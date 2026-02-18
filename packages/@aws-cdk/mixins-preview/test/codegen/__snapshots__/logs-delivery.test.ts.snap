@@ -46,6 +46,19 @@ export class CfnThingApplicationLogs {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
+
+  /**
+   * Delivers logs to a pre-created delivery destination
+   *
+   * Supported destinations are S3, CWL, FH
+   * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
+   * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   */
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
+    }
+  }
 }
 
 /**
@@ -85,6 +98,19 @@ export class CfnThingAccessLogs {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
     }
   }
+
+  /**
+   * Delivers logs to a pre-created delivery destination
+   *
+   * Supported destinations are S3, CWL, FH
+   * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
+   * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   */
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+    {
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
+    }
+  }
 }
 
 /**
@@ -118,19 +144,18 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
    * Check if this mixin supports the given construct (has vendedLogs property)
    */
   public supports(construct: constructs.IConstruct): construct is service.CfnThing {
-    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+    return (cdk.CfnResource.isCfnResource(construct) && service.CfnThing.isCfnThing(construct));
   }
 
   /**
    * Apply vended logs configuration to the construct
    */
-  public applyTo(resource: constructs.IConstruct): constructs.IConstruct {
+  public applyTo(resource: constructs.IConstruct): void {
     if (!this.supports(resource)) {
-      return resource;
+      return;
     }
     const sourceArn = service.CfnThing.arnForThing(resource);
     this.logDelivery.bind(resource, this.logType, sourceArn);
-    return resource;
   }
 }"
 `;

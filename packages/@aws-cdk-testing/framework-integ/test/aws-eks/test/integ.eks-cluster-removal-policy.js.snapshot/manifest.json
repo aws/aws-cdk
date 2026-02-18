@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "EksClusterRemovalPolicyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12faad803a9abe89102738630c13dfe1a9d5b6e3146f29b9ff065b4f44c819b9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08f1a3bca21ffe1545b196cdc80c3b01cef8a10a8710bada9faff920a69530b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,262 @@
         "EksClusterRemovalPolicyStack.assets"
       ],
       "metadata": {
+        "/EksClusterRemovalPolicyStack/Vpc": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "maxAzs": "*",
+              "natGateways": "*",
+              "restrictDefaultSecurityGroup": false
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": true,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet1": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "availabilityZone": "*",
+              "vpcId": "*",
+              "cidrBlock": "*",
+              "mapPublicIpOnLaunch": false,
+              "ipv6CidrBlock": "*",
+              "assignIpv6AddressOnCreation": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {}
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
         "/EksClusterRemovalPolicyStack/KubectlLayer": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -51,303 +307,13 @@
             "type": "aws:cdk:analytics:construct",
             "data": {
               "version": "*",
-              "kubectlLayer": "*"
+              "kubectlLayer": "*",
+              "removalPolicy": "destroy",
+              "prune": false,
+              "vpc": "*",
+              "defaultCapacity": "*",
+              "authenticationMode": "API"
             }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNodegroupCapacity": [
-                "*",
-                {
-                  "minSize": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcFA9F2722"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1Subnet3BFE1BDA"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTable1DCCDD98"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1RouteTableAssociationAFBE6789"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1DefaultRouteCF22EF6E"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1EIP498E2BD2"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet1NATGateway6E21013E"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2SubnetC4E9A966"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTable6F1F5F47"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2RouteTableAssociationA8539C50"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2DefaultRoute1FA8621E"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2EIP265F4810"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPublicSubnet2NATGateway4AF4B728"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1Subnet03F39409"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTable7844020C"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1RouteTableAssociationF8A67D95"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet1DefaultRouteD624C8BD"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2SubnetA526AEA7"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTable1F9A5298"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2RouteTableAssociationE1240DF2"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcPrivateSubnet2DefaultRouteAB55737C"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcIGW756BE43E"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcVPCGWC1D00388"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/DefaultVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultVpcRestrictDefaultSecurityGroupCustomResource59F333B7"
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/KubectlHandlerRole": [
@@ -426,12 +392,6 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/Cluster/KubectlHandlerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -496,12 +456,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/Role/Resource": [
@@ -655,12 +609,14 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/Resource/CreationRole/ImportCreationRole": [
+          },
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/Resource/CreationRole/Resource": [
@@ -687,6 +643,14 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -773,10 +737,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/Cluster/Resource/Resource/Default": [
@@ -791,109 +751,57 @@
             "data": "ClusterKubectlReadyBarrier200052AF"
           }
         ],
+        "/EksClusterRemovalPolicyStack/Cluster/ClusterSecurityGroup/from {IndirectPeer}:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterClusterSecurityGroupfromIndirectPeer443F03F2A0D"
+          }
+        ],
         "/EksClusterRemovalPolicyStack/Cluster/HasEcrPublic": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterHasEcrPublic8EE1114E"
           }
         ],
-        "/EksClusterRemovalPolicyStack/Cluster/NodegroupDefaultCapacity": [
+        "/EksClusterRemovalPolicyStack/Cluster/OpenIdConnectProvider": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "url": "*"
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Cluster/OpenIdConnectProvider/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Cluster/OpenIdConnectProvider/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterOpenIdConnectProviderE7EB0530"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Cluster/EksPodIdentityAgentAddon": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "cluster": "*",
-              "instanceTypes": "*",
-              "minSize": "*"
+              "addonName": "*"
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
+        "/EksClusterRemovalPolicyStack/Cluster/EksPodIdentityAgentAddon/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/NodegroupDefaultCapacity/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupDefaultCapacityDA0920A3"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/AwsAuth/manifest/Resource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Cluster/AwsAuth/manifest/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterAwsAuthmanifestFE51F8AE"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+            "data": "ClusterEksPodIdentityAgentAddonEF717E32"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
@@ -962,12 +870,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
@@ -1050,12 +952,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
@@ -1202,12 +1098,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -1407,12 +1297,6 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1602,12 +1486,6 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1735,12 +1613,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
@@ -1997,12 +1869,6 @@
             }
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2073,12 +1939,6 @@
             "data": "ProviderframeworkonEventLogGroup683073A3"
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/EksClusterRemovalPolicyStackawscdkawseksKubectlProviderframeworkonEventC6B93F26Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EksClusterRemovalPolicyStackawscdkawseksKubectlProviderframeworkonEventC6B93F26Arn"
-          }
-        ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackKubectlLayer5846BA58Ref": [
           {
             "type": "aws:cdk:logicalId",
@@ -2091,16 +1951,16 @@
             "data": "referencetoEksClusterRemovalPolicyStackClusterKubectlHandlerRoleDA1C9C27Arn"
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet1Subnet7CF01B26Ref": [
+        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackVpcPrivateSubnet1Subnet3F552771Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet1Subnet7CF01B26Ref"
+            "data": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet1Subnet3F552771Ref"
           }
         ],
-        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet2SubnetEAB03B98Ref": [
+        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackVpcPrivateSubnet2Subnet4FFDAC43Ref": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet2SubnetEAB03B98Ref"
+            "data": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet2Subnet4FFDAC43Ref"
           }
         ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EksClusterRemovalPolicyStackCluster93E70873ClusterSecurityGroupId": [
@@ -2109,10 +1969,687 @@
             "data": "referencetoEksClusterRemovalPolicyStackCluster93E70873ClusterSecurityGroupId"
           }
         ],
+        "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/EksClusterRemovalPolicyStackawscdkawseksKubectlProviderframeworkonEventC6B93F26Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EksClusterRemovalPolicyStackawscdkawseksKubectlProviderframeworkonEventC6B93F26Arn"
+          }
+        ],
         "/EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AccessEntry": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "principal": "*",
+              "accessPolicies": [
+                {
+                  "accessScope": {
+                    "type": "cluster"
+                  },
+                  "policy": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AccessEntry/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AccessEntry5263FF03"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Addon": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "addonName": "*"
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Addon/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddonF8C56F86"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbControllerConstructalbsaConditionJson766F08BF"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbControllerConstructalbsaRoleC6E245FC"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbControllerConstructalbsaRoleDefaultPolicyE0452BBC"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/manifest-alb-saServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbControllerConstructalbsamanifestalbsaServiceAccountResourceC1E23635"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/Resource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AlbControllerConstruct/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbControllerConstruct0D542B18"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Nodegroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*"
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Nodegroup/NodeGroupRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Nodegroup/NodeGroupRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NodegroupNodeGroupRole038A128B"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/Nodegroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nodegroup62B4B2C1"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/PodExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grantPassRole": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/PodExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateProfileConstructPodExecutionRole03537AE0"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/FargateProfileConstruct/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateProfileConstruct951D7B76"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountRole63ABADA7"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/Association": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountAssociationDB15A073"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/PodIdentityServiceAccount/manifest-PodIdentityServiceAccountServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PodIdentityServiceAccountmanifestPodIdentityServiceAccountServiceAccountResource6089A15C"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/ConditionJson/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/ConditionJson/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceAccountConditionJson6C40D905"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceAccountRoleFA0EEF4F"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/ServiceAccount/manifest-ServiceAccountServiceAccountResource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceAccountmanifestServiceAccountServiceAccountResourceB533ED3E"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/HelmChart/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/HelmChart/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelmChart6800A2F9"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sManifest/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sManifest/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "K8sManifest97067E41"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sObjectValue/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sObjectValue/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "K8sObjectValue73D325F4"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sPatch/Resource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/EksClusterRemovalPolicyStack/K8sPatch/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "K8sPatch9D1B42CC"
           }
         ],
         "/EksClusterRemovalPolicyStack/BootstrapVersion": [
@@ -2190,6 +2727,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -2208,6 +2746,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -2319,7 +2858,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -2473,6 +3012,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -2504,16 +3047,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -2658,10 +3191,31 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1101.0"
 }

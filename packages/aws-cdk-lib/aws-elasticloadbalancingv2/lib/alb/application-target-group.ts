@@ -1,18 +1,21 @@
-import { IConstruct, Construct } from 'constructs';
-import { IApplicationListener } from './application-listener';
-import { HttpCodeTarget } from './application-load-balancer';
+import type { IConstruct, Construct } from 'constructs';
+import type { IApplicationListener } from './application-listener';
+import type { HttpCodeTarget } from './application-load-balancer';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
-import { Aws, Annotations, Duration, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { Aws, Annotations, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 as elbv2 } from '../../../interfaces';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
-import {
-  BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
-  TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
+import type {
+  BaseTargetGroupProps, ITargetGroup, LoadBalancerTargetProps,
+  TargetGroupAttributes, TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
+import { loadBalancerNameFromListenerArn, TargetGroupBase } from '../shared/base-target-group';
+import type { ApplicationProtocol, ApplicationProtocolVersion } from '../shared/enums';
+import { Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort, parseLoadBalancerFullName, parseTargetGroupFullName } from '../shared/util';
 

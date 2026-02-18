@@ -45,6 +45,9 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     'jsdoc/require-returns-description': ['error'],
     'jsdoc/check-alignment': ['error'],
 
+    // Require all imports to use the type keyword if the import only exists in the type system
+    '@typescript-eslint/consistent-type-imports': 'error',
+
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
       'error',
@@ -83,8 +86,8 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
       },
     ],
 
-    // Cannot import from the same module twice
-    'no-duplicate-imports': ['error'],
+    // Cannot import from the same module twice (we prefer `import/no-duplicates` over `no-duplicate-imports` since the former can handle type imports)
+    'import/no-duplicates': ['error'],
 
     // Cannot shadow names
     'no-shadow': ['off'],

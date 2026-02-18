@@ -329,12 +329,6 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/eks-auto-mode-stack/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -423,12 +417,6 @@
             }
           }
         ],
-        "/eks-auto-mode-stack/hello-eks/cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/eks-auto-mode-stack/hello-eks/cluster/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -467,12 +455,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-stack/hello-eks/cluster/clusternodePoolRole/ImportclusternodePoolRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/cluster/clusternodePoolRole/Resource": [
@@ -612,12 +594,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -780,12 +756,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -1253,12 +1223,6 @@
             }
           }
         ],
-        "/eks-auto-mode-empty-nodepools-stack/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/eks-auto-mode-empty-nodepools-stack/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1345,12 +1309,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/Role/Resource": [
@@ -1505,12 +1463,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Handler/ServiceRole/Resource": [
@@ -1673,12 +1625,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/eks-auto-mode-empty-nodepools-stack/hello-eks/cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [

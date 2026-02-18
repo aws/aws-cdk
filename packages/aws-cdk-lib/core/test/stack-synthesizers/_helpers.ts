@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
 
 export function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {

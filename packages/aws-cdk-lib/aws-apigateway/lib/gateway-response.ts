@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
-import {
-  CfnGatewayResponse,
+import type { Construct } from 'constructs';
+import type {
   CfnGatewayResponseProps,
   GatewayResponseReference,
   IGatewayResponseRef,
 } from './apigateway.generated';
-import { IRestApi } from './restapi';
-import { IResource, Resource } from '../../core';
+import {
+  CfnGatewayResponse,
+} from './apigateway.generated';
+import type { IRestApi } from './restapi';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

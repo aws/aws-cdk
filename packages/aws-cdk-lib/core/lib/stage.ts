@@ -1,12 +1,14 @@
-import { IConstruct, Construct, Node } from 'constructs';
-import { Environment } from './environment';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import { type IConstruct, Construct, Node } from 'constructs';
+import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
-import { PermissionsBoundary } from './permissions-boundary';
+import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import { IPolicyValidationPluginBeta1 } from './validation';
-import * as cxapi from '../../cx-api';
+import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
+import type { IPolicyValidationPluginBeta1 } from './validation';
+import * as public_cxapi from '../../cx-api';
+import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -149,7 +151,7 @@ export class Stage extends Construct {
    *
    * @internal
    */
-  public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
+  public readonly _assemblyBuilder: public_cxapi.CloudAssemblyBuilder;
 
   /**
    * The name of the stage. Based on names of the parent stages separated by
@@ -167,7 +169,7 @@ export class Stage extends Construct {
   /**
    * The cached assembly if it was already built
    */
-  private assembly?: cxapi.CloudAssembly;
+  private assembly?: public_cxapi.CloudAssembly;
 
   /**
    * The cached set of construct paths. Empty if assembly was not yet built.
@@ -243,16 +245,16 @@ export class Stage extends Construct {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
+  public synth(options: StageSynthesisOptions = { }): public_cxapi.CloudAssembly {
     let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
     if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
-      this.assembly = synthesize(this, {
+      this.assembly = _convertCloudAssembly(synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
-        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
-      });
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(public_cxapi.ASPECT_STABILIZATION) ?? false,
+      }));
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
     }
@@ -311,7 +313,7 @@ export class Stage extends Construct {
     // synthesize() phase).
     return this.parentStage
       ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path)
-      : new cxapi.CloudAssemblyBuilder(outdir);
+      : _convertCloudAssemblyBuilder(new private_cxapi.CloudAssemblyBuilder(outdir));
   }
 }
 

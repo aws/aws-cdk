@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Connections } from './connections';
-import { CfnPrefixList, IPrefixListRef, PrefixListReference } from './ec2.generated';
-import { IPeer } from './peer';
+import type { IPrefixListRef, PrefixListReference } from './ec2.generated';
+import { CfnPrefixList } from './ec2.generated';
+import type { IPeer } from './peer';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { ContextProvider, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

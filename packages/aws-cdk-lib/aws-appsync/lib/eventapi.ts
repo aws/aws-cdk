@@ -1,25 +1,34 @@
-import { Construct } from 'constructs';
-import { IApi, ApiBase } from './api-base';
-import {
+import type { Construct } from 'constructs';
+import type { IApi } from './api-base';
+import { ApiBase } from './api-base';
+import type {
   AppSyncLogConfig,
-  AppSyncFieldLogLevel,
   AppSyncDomainOptions,
+} from './appsync-common';
+import {
+  AppSyncFieldLogLevel,
   AppSyncEventResource,
 } from './appsync-common';
-import { CfnApi, CfnApiKey, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
-import {
+import type { CfnApiKey } from './appsync.generated';
+import { CfnApi, CfnDomainName, CfnDomainNameApiAssociation } from './appsync.generated';
+import type {
   IAppSyncAuthConfig,
-  createAPIKey,
   AppSyncCognitoConfig,
   AppSyncLambdaAuthorizerConfig,
   AppSyncOpenIdConnectConfig,
-  AppSyncAuthorizationType,
   AppSyncAuthProvider,
 } from './auth-config';
-import { ChannelNamespace, ChannelNamespaceOptions } from './channel-namespace';
 import {
+  createAPIKey,
+  AppSyncAuthorizationType,
+} from './auth-config';
+import type { ChannelNamespaceOptions } from './channel-namespace';
+import { ChannelNamespace } from './channel-namespace';
+import type {
   AppSyncDataSourceOptions,
   AppSyncHttpDataSourceOptions,
+} from './data-source-common';
+import {
   AppSyncDynamoDbDataSource,
   AppSyncHttpDataSource,
   AppSyncLambdaDataSource,
@@ -27,14 +36,16 @@ import {
   AppSyncOpenSearchDataSource,
   AppSyncEventBridgeDataSource,
 } from './data-source-common';
-import { ITable } from '../../aws-dynamodb';
-import { IEventBus } from '../../aws-events';
-import { Grant, IGrantable, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
-import { IFunction } from '../../aws-lambda';
-import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { IDomain } from '../../aws-opensearchservice';
-import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
-import { ISecret } from '../../aws-secretsmanager';
+import type { ITable } from '../../aws-dynamodb';
+import type { IEventBus } from '../../aws-events';
+import type { IGrantable } from '../../aws-iam';
+import { Grant, ManagedPolicy, ServicePrincipal, Role } from '../../aws-iam';
+import type { IFunction } from '../../aws-lambda';
+import type { ILogGroup } from '../../aws-logs';
+import { LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
+import type { IDomain } from '../../aws-opensearchservice';
+import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
+import type { ISecret } from '../../aws-secretsmanager';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

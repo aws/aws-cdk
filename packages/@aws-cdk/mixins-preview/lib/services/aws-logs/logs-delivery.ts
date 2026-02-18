@@ -1,5 +1,5 @@
 import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
@@ -8,7 +8,7 @@ import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFind
 import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -220,13 +220,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     const existingKeyPolicy = key.keyPolicy;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
     const sid = 'AWS CDK: Allow Logs Delivery to use the key';
-    // Check if a statement with this SID already exists
-    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
-    if (hasDuplicateSid) {
-      return;
-    }
-
-    existingKeyPolicy.addStatements(new PolicyStatement({
+    const keyStatement = new PolicyStatement({
       sid,
       effect: Effect.ALLOW,
       principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
@@ -240,7 +234,20 @@ export class S3LogsDelivery implements ILogsDelivery {
           'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${key.env.account}:${sourceArnPostfix}`],
         },
       },
-    }));
+    });
+    if (!existingKeyPolicy) {
+      key.keyPolicy = new PolicyDocument({
+        statements: [keyStatement],
+      });
+      return;
+    }
+    // Check if a statement with this SID already exists
+    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
+    if (hasDuplicateSid) {
+      return;
+    }
+
+    existingKeyPolicy.addStatements(keyStatement);
   }
 }
 
@@ -464,6 +471,43 @@ export class XRayLogsDelivery implements ILogsDelivery {
         },
       },
     }));
+  }
+}
+
+/**
+ * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
+ */
+export class DestinationLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new Destination delivery.
+   */
+  private readonly destination: logs.IDeliveryDestinationRef;
+  constructor(destination: logs.IDeliveryDestinationRef) {
+    this.destination = destination;
+  }
+
+  /**
+   * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   */
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
+    const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination',
+      this.destination.deliveryDestinationRef.deliveryDestinationName);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
   }
 }
 

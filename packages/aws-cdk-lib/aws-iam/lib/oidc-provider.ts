@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
-import { Arn, CustomResource, FeatureFlags, IResource, RemovalPolicy, Resource, Token } from '../../core';
+import type { Construct } from 'constructs';
+import type { IOIDCProviderRef, OIDCProviderReference } from './iam.generated';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Arn, CustomResource, FeatureFlags, Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
@@ -166,7 +167,6 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
     const provider = this.getOrCreateProvider();
     this.resource = new CustomResource(this, 'Resource', {
       resourceType: RESOURCE_TYPE,
-      removalPolicy: props.removalPolicy,
       serviceToken: provider.serviceToken,
       properties: {
         ClientIDList: props.clientIds,
@@ -179,6 +179,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
         // thus updating the thumbprint if necessary.
         CodeHash: provider.codeHash,
       },
+      removalPolicy: props.removalPolicy,
     });
   }
 

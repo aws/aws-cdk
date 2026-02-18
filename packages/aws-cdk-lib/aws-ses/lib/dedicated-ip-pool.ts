@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
-import { IResource, Resource, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IDedicatedIpPoolRef, DedicatedIpPoolReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IDedicatedIpPoolRef, DedicatedIpPoolReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * Scaling mode to use for this IP pool.

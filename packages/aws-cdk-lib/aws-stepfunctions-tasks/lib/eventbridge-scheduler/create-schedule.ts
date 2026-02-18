@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
-import * as sqs from '../../../aws-sqs';
+import type * as kms from '../../../aws-kms';
+import type * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack, Duration, Token, ValidationError, UnscopedValidationError } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
-import { Schedule } from '../schedule';
+import type { Schedule } from '../schedule';
 
 /**
  * The action that EventBridge Scheduler applies to the schedule after the schedule completes invoking the target.

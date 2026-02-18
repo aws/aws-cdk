@@ -1,8 +1,9 @@
 import { SourceWithDeadLetterTarget } from '@aws-cdk/aws-pipes-alpha';
-import { Duration, Token } from 'aws-cdk-lib';
-import { ITopic } from 'aws-cdk-lib/aws-sns';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
-import { OnPartialBatchItemFailure } from './enums';
+import type { Duration } from 'aws-cdk-lib';
+import { Token } from 'aws-cdk-lib';
+import type { ITopic } from 'aws-cdk-lib/aws-sns';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
+import type { OnPartialBatchItemFailure } from './enums';
 
 /**
  * Base parameters for streaming sources.

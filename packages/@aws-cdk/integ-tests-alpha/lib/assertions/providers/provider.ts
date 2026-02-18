@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import type { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import type { Reference } from 'aws-cdk-lib/core';
 import {
   Duration,
   CfnResource,
@@ -8,7 +9,6 @@ import {
   FileAssetPackaging,
   Token,
   Lazy,
-  Reference,
   determineLatestNodeRuntimeName,
 } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';

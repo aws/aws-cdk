@@ -1,6 +1,7 @@
 import { Template, Match } from '../../assertions';
 import { Bucket } from '../../aws-s3';
-import { Aws, Stack, CfnResource } from '../../core';
+import type { CfnResource } from '../../core';
+import { Aws, Stack } from '../../core';
 import * as ec2 from '../lib';
 
 describe('user data', () => {

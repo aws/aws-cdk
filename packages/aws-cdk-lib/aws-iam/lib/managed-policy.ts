@@ -1,18 +1,21 @@
-import { Construct } from 'constructs';
-import {
-  CfnManagedPolicy,
+import type { Construct } from 'constructs';
+import type {
   IGroupRef,
   IManagedPolicyRef,
   IRoleRef,
   IUserRef,
   ManagedPolicyReference,
 } from './iam.generated';
+import {
+  CfnManagedPolicy,
+} from './iam.generated';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
 import { undefinedIfEmpty } from './private/util';
-import { IRole } from './role';
-import { IUser } from './user';
+import type { IRole } from './role';
+import type { IUser } from './user';
 import { Arn, ArnFormat, Aws, Resource, Stack, ValidationError, Lazy } from '../../core';
 import { getCustomizeRolesConfig, memoizedGetter, PolicySynthesizer } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';

@@ -1,9 +1,9 @@
 /// !cdk-integ *
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as log from 'aws-cdk-lib/aws-logs';
+import type * as log from 'aws-cdk-lib/aws-logs';
 import { App, CustomResource, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 
 class TestStack extends Stack {

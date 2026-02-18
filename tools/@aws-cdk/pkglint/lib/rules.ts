@@ -643,7 +643,7 @@ export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
  */
 export class ConstructsVersion extends ValidationRule {
   public static readonly VERSION = cdkMajorVersion() === 2
-    ? '^10.0.0'
+    ? '^10.5.0'
     : '^3.3.69';
 
   public readonly name = 'deps/constructs';
@@ -1032,6 +1032,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/cloud-assembly-api',
       '@aws-cdk/region-info',
       // Private packages
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),

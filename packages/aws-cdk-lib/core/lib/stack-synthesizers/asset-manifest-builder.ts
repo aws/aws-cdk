@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { ISynthesisSession } from './types';
+import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
+import type { FileAssetSource, DockerImageAssetSource } from '../assets';
+import { FileAssetPackaging } from '../assets';
 import { UnscopedValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 import { contentHash } from './_shared';
 
