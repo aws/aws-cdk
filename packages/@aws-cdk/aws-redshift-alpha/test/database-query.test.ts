@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as customresources from 'aws-cdk-lib/custom-resources';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as redshift from '../lib';
@@ -250,5 +251,26 @@ describe('database query', () => {
       .filter(([k, v]) => v === 'AWS::IAM::Role' && k.toString().includes('InvokerRole'));
 
     expect(iamRoles.length === 1);
+  });
+
+  it('uses frameworkOnEventRole instead of deprecated role when creating Provider', () => {
+    const providerSpy = jest.spyOn(customresources, 'Provider');
+
+    new DatabaseQuery(stack, 'Query', {
+      ...minimalProps,
+    });
+
+    expect(providerSpy).toHaveBeenCalledWith(
+      expect.anything(),
+      'Provider',
+      expect.objectContaining({
+        onEventHandler: expect.anything(),
+        frameworkOnEventRole: expect.anything(),
+      }),
+    );
+    const providerProps = providerSpy.mock.calls[0][2];
+    expect(providerProps).not.toHaveProperty('role');
+
+    providerSpy.mockRestore();
   });
 });
