@@ -46,7 +46,8 @@
     "@types/babel__traverse": "7.18.2",
     "@smithy/types": "3.5.0",
     "@types/minimatch": "^5.1.2",
-    "tar": "^7.5.7"
+    "tar": "^7.5.7",
+    "ajv": "8.18.0"
   },
   "repository": {
     "type": "git",
