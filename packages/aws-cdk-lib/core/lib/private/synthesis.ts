@@ -1,23 +1,25 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IConstruct } from 'constructs';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import type { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
-import { CloudAssembly } from '../../../cx-api';
-import * as cxapi from '../../../cx-api';
+import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../stack-synthesizers/types';
-import { Stage, StageSynthesisOptions } from '../stage';
-import { IPolicyValidationPluginBeta1 } from '../validation';
+import type { ISynthesisSession } from '../stack-synthesizers/types';
+import type { StageSynthesisOptions } from '../stage';
+import { Stage } from '../stage';
+import type { IPolicyValidationPluginBeta1 } from '../validation';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+import type { NamedValidationPluginReport } from '../validation/private/report';
+import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
@@ -34,7 +36,7 @@ export interface SynthesisOptions extends StageSynthesisOptions {
   readonly outdir?: string;
 }
 
-export function synthesize(root: IConstruct, options: SynthesisOptions = { }): cxapi.CloudAssembly {
+export function synthesize(root: IConstruct, options: SynthesisOptions = { }): private_cxapi.CloudAssembly {
   // add the TreeMetadata resource to the App first
   injectTreeMetadata(root);
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
@@ -59,8 +61,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // in unit tests, we support creating free-standing stacks, so we create the
   // assembly builder here.
   const builder = Stage.isStage(root)
-    ? root._assemblyBuilder
-    : new cxapi.CloudAssemblyBuilder(options.outdir);
+    ? _convertCloudAssemblyBuilder(root._assemblyBuilder)
+    : new private_cxapi.CloudAssemblyBuilder(options.outdir);
 
   // next, we invoke "onSynthesize" on all of our children. this will allow
   // stacks to add themselves to the synthesized cloud assembly.
@@ -79,8 +81,8 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
  * Find all the assemblies in the app, including all levels of nested assemblies
  * and return a map where the assemblyId is the key
  */
-function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, CloudAssembly> {
-  const assemblies = new Map<string, CloudAssembly>();
+function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Map<string, private_cxapi.CloudAssembly> {
+  const assemblies = new Map<string, private_cxapi.CloudAssembly>();
   assemblies.set(root.artifactId, rootAssembly);
   visitAssemblies(root, 'pre', construct => {
     const stage = construct as Stage;
@@ -97,7 +99,7 @@ function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, Clou
 /**
  * Invoke validation plugins for all stages in an App.
  */
-function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
+function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
@@ -437,11 +439,11 @@ function injectTreeMetadata(root: IConstruct) {
  *
  * Stop at Assembly boundaries.
  */
-function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
+function synthesizeTree(root: IConstruct, builder: private_cxapi.CloudAssemblyBuilder, validateOnSynth: boolean = false) {
   visit(root, 'post', construct => {
     const session = {
       outdir: builder.outdir,
-      assembly: builder,
+      assembly: _convertCloudAssemblyBuilder(builder),
       validateOnSynth,
     };
 

@@ -1,4 +1,4 @@
-import { IReceiptRuleRef } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IReceiptRuleRef } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An abstract action for a receipt rule.

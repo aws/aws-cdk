@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { App, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
-import * as cxapi from '../../cx-api';
+import type { GetContextValueOptions, GetContextValueResult } from '../../core';
+import { App, ContextProvider, Lazy, Stack } from '../../core';
+import type * as cxapi from '../../cx-api';
 import { Key } from '../lib';
 
 test('requires concrete values', () => {

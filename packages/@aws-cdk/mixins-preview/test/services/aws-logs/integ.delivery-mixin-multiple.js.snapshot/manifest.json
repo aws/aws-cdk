@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "VendedLogsMixinTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25147b5f6bdce0150146e35923f7fb589205e140868690ed347d0d44e57c036.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa3411adc42cc099cb4e955b8615cfff045d013c6077296d54c92b59bd31c239.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EventBus7B8748AA"
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.core.Mixin"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.core.Mixin"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.core.Mixin"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.core.Mixin"
+            }
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Dest": [
@@ -64,22 +88,16 @@
             "data": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
           }
         ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Dest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B"
-          }
-        ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery69196BA3"
-          }
-        ],
         "/VendedLogsMixinTest/EventBus/Resource/CDKSourceINFO_LOGSVendedLogsMixinTestEventBus050202CA": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+          }
+        ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EF/Delivery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryA29B2652"
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Dest": [
@@ -92,6 +110,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery2E928457"
+          }
+        ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Dest": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870"
+          }
+        ],
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Delivery": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery76F6DBB2"
           }
         ],
         "/VendedLogsMixinTest/DeliveryLogGroup": [
@@ -108,13 +138,27 @@
             "data": "DeliveryLogGroup2A53FD53"
           }
         ],
+        "/VendedLogsMixinTest/DeliveryBucketKey": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "enabled": true
+            }
+          }
+        ],
+        "/VendedLogsMixinTest/DeliveryBucketKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryBucketKey146CC85D"
+          }
+        ],
         "/VendedLogsMixinTest/DeliveryBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "removalPolicy": "destroy",
               "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
+              "encryptionKey": "*"
             }
           }
         ],
@@ -136,6 +180,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeliveryBucketPolicyB86375F3"
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.aws_s3.mixins.BucketPolicyStatementsMixin"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:mixin",
+            "data": {
+              "mixin": "@aws-cdk/mixins-preview.aws_s3.mixins.BucketPolicyStatementsMixin"
+            }
           }
         ],
         "/VendedLogsMixinTest/DeliveryBucket/AutoDeleteObjectsCustomResource": [
@@ -166,6 +222,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/VendedLogsMixinTest/DeliveryDestination": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryDestination"
           }
         ],
         "/VendedLogsMixinTest/CdkLogGroupLogsDeliveryPolicy": [
@@ -540,6 +602,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -571,16 +637,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -727,6 +783,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -738,12 +795,17 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

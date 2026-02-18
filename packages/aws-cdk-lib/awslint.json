@@ -1,6 +1,8 @@
 {
   "exclude": [
     "construct-ctor-props-optional:aws-cdk-lib.aws_dynamodb.Table",
+    "props-physical-name:aws-cdk-lib.aws_dynamodb.TableV2MultiAccountReplicaProps",
+    "prefer-ref-interface:aws-cdk-lib.aws_dynamodb.TableV2MultiAccountReplicaProps.kinesisStream",
     "integ-return-type:aws-cdk-lib.IBoundStackSynthesizer.bind",
     "integ-return-type:aws-cdk-lib.IReusableStackSynthesizer.bind",
     "integ-return-type:aws-cdk-lib.IStackSynthesizer.bind",
@@ -115,6 +117,7 @@
     "props-physical-name:aws-cdk-lib.aws_ecs.TaskDefinitionProps",
     "props-physical-name:aws-cdk-lib.aws_efs.AccessPointProps",
     "props-physical-name:aws-cdk-lib.aws_eks.OpenIdConnectProviderProps",
+    "props-physical-name:aws-cdk-lib.aws_eks.OidcProviderNativeProps",
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancerProps",
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancingv2.ApplicationListenerProps",
     "props-physical-name:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListenerProps",
@@ -1892,6 +1895,8 @@
     "interface-extends-ref:aws-cdk-lib.aws_iam.IEncryptedResource",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IIdentity",
     "interface-extends-ref:aws-cdk-lib.aws_iam.IResourceWithPolicy",
-    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace"
+    "interface-extends-ref:aws-cdk-lib.aws_servicediscovery.INamespace",
+    "props-physical-name:aws-cdk-lib.aws_dynamodb.TableV2CrossAccountReplicaProps",
+    "prefer-ref-interface:aws-cdk-lib.aws_dynamodb.TableV2CrossAccountReplicaProps.kinesisStream"
   ]
 }

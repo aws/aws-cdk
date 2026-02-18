@@ -4,27 +4,41 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnCluster } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Tags, Token, Duration, ArnComponents, Stack } from 'aws-cdk-lib/core';
+import type { IResource, Duration, ArnComponents, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Annotations, CfnOutput, CfnResource, Resource, Tags, Token, Stack, UnscopedValidationError, FeatureFlags, RemovalPolicies } from 'aws-cdk-lib/core';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, Node } from 'constructs';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
-import { IAddon, Addon } from './addon';
-import { AlbController, AlbControllerOptions } from './alb-controller';
-import { FargateProfile, FargateProfileOptions } from './fargate-profile';
-import { HelmChart, HelmChartOptions } from './helm-chart';
+import type { IAccessPolicy, IAccessEntry, AccessEntryType } from './access-entry';
+import { AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import type { IAddon } from './addon';
+import { Addon } from './addon';
+import type { AlbControllerOptions } from './alb-controller';
+import { AlbController } from './alb-controller';
+import type { FargateProfileOptions } from './fargate-profile';
+import { FargateProfile } from './fargate-profile';
+import type { HelmChartOptions } from './helm-chart';
+import { HelmChart } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
+import type { KubernetesManifestOptions } from './k8s-manifest';
+import { KubernetesManifest } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
-import { IKubectlProvider, KubectlProvider, KubectlProviderOptions } from './kubectl-provider';
-import { Nodegroup, NodegroupOptions } from './managed-nodegroup';
-import { OpenIdConnectProvider } from './oidc-provider';
+import type { IKubectlProvider, KubectlProviderOptions } from './kubectl-provider';
+import { KubectlProvider } from './kubectl-provider';
+import type { NodegroupOptions } from './managed-nodegroup';
+import { Nodegroup } from './managed-nodegroup';
+import { OpenIdConnectProvider, OidcProviderNative } from './oidc-provider';
 import { BottleRocketImage } from './private/bottlerocket';
-import { ServiceAccount, ServiceAccountOptions } from './service-account';
+import type { ServiceAccountOptions } from './service-account';
+import { ServiceAccount } from './service-account';
 import { renderAmazonLinuxUserData, renderBottlerocketUserData } from './user-data';
 
 // defaults are based on https://eksctl.io
@@ -420,6 +434,35 @@ export interface ClusterCommonOptions {
    * If not defined, kubectl provider will not be created by default.
    */
   readonly kubectlProviderOptions?: KubectlProviderOptions;
+
+  /**
+   * IPv4 CIDR blocks defining the expected address range of hybrid nodes
+   * that will join the cluster.
+   * @default - none
+   */
+  readonly remoteNodeNetworks?: RemoteNodeNetwork[];
+
+  /**
+   * IPv4 CIDR blocks for Pods running Kubernetes webhooks on hybrid nodes.
+   * @default - none
+   */
+  readonly remotePodNetworks?: RemotePodNetwork[];
+
+  /**
+   * The removal policy applied to all CloudFormation resources created by this construct
+   * when they are no longer managed by CloudFormation.
+   *
+   * This can happen in one of three situations:
+     - The resource is removed from the template, so CloudFormation stops managing it;
+     - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it;
+     - The stack is deleted, so CloudFormation stops managing all resources in it.
+   *
+   * This affects the EKS cluster itself, associated IAM roles, node groups, security groups, VPC
+   * and any other CloudFormation resources managed by this construct.
+   *
+   * @default - Resources will be deleted.
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -490,7 +533,7 @@ export class EndpointAccess {
      */
     public readonly _config: EndpointAccessConfig) {
     if (!_config.publicAccess && _config.publicCidrs && _config.publicCidrs.length > 0) {
-      throw new Error('CIDR blocks can only be configured when public access is enabled');
+      throw new UnscopedValidationError('CIDR blocks can only be configured when public access is enabled');
     }
   }
 
@@ -504,7 +547,7 @@ export class EndpointAccess {
     if (!this._config.privateAccess) {
       // when private access is disabled, we can't restric public
       // access since it will render the kubectl provider unusable.
-      throw new Error('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
+      throw new UnscopedValidationError('Cannot restric public access to endpoint when private access is disabled. Use PUBLIC_AND_PRIVATE.onlyFrom() instead.');
     }
     return new EndpointAccess({
       ...this._config,
@@ -512,6 +555,26 @@ export class EndpointAccess {
       publicCidrs: cidr,
     });
   }
+}
+
+/**
+ * Remote network configuration for hybrid nodes
+ */
+export interface RemoteNodeNetwork {
+  /**
+   * IPv4 CIDR blocks for the remote node network
+   */
+  readonly cidrs: string[];
+}
+
+/**
+ * Remote network configuration for pods on hybrid nodes
+ */
+export interface RemotePodNetwork {
+  /**
+   * IPv4 CIDR blocks for the remote pod network
+   */
+  readonly cidrs: string[];
 }
 
 /**
@@ -588,6 +651,17 @@ export interface ClusterProps extends ClusterCommonOptions {
    * @default true
    */
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
+
+  /**
+   * If you set this value to False when creating a cluster, the default networking add-ons will not be installed.
+   * The default networking addons include vpc-cni, coredns, and kube-proxy.
+   * Use this option when you plan to install third-party alternative add-ons or self-manage the default networking add-ons.
+   *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
+   * @default true if the mode is not EKS Auto Mode
+   */
+  readonly bootstrapSelfManagedAddons?: boolean;
 
   /**
    * Determines whether a CloudFormation output with the `aws eks
@@ -797,7 +871,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     // see https://github.com/awslabs/cdk8s/blob/master/packages/cdk8s/src/chart.ts#L84
     if (typeof cdk8sChart.toJson !== 'function') {
-      throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
+      throw new UnscopedValidationError(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
     const manifest = new KubernetesManifest(this, id, {
@@ -851,7 +925,7 @@ abstract class ClusterBase extends Resource implements ICluster {
 
     const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
-      throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
+      throw new UnscopedValidationError('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
 
     if (bootstrapEnabled) {
@@ -915,6 +989,35 @@ export interface ServiceLoadBalancerAddressOptions {
 export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {}
 
 /**
+ * Internal helper interface for adding access entries to a cluster.
+ */
+interface AddAccessEntryOptions {
+  readonly id: string;
+  readonly principal: string;
+  readonly policies: IAccessPolicy[];
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
+ * Options for granting access to a cluster.
+ */
+export interface GrantAccessOptions {
+  /**
+   * The type of the access entry.
+   *
+   * Specify `AccessEntryType.EC2` for EKS Auto Mode node roles,
+   * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
+   * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
+   *
+   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * have access policies attached per AWS EKS API constraints.
+   *
+   * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
+   */
+  readonly accessEntryType?: AccessEntryType;
+}
+
+/**
  * A Cluster represents a managed Kubernetes Service (EKS)
  *
  * This is a fully managed cluster of API Servers (control-plane)
@@ -947,14 +1050,20 @@ export class Cluster extends ClusterBase {
   /**
    * The Name of the created EKS Cluster
    */
-  public readonly clusterName: string;
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The AWS generated ARN for the Cluster resource
    *
    * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
-  public readonly clusterArn: string;
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, clusterArnComponents(this.physicalName));
+  }
 
   /**
    * The endpoint URL for the Cluster
@@ -1047,7 +1156,7 @@ export class Cluster extends ClusterBase {
    */
   public readonly albController?: AlbController;
 
-  private readonly _clusterResource: CfnCluster;
+  private readonly resource: CfnCluster;
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
@@ -1080,6 +1189,8 @@ export class Cluster extends ClusterBase {
 
   private readonly _clusterAdminAccess?: AccessEntry;
 
+  private readonly _removalPolicy?: RemovalPolicy;
+
   /**
    * Initiates an EKS Cluster with the supplied arguments
    *
@@ -1097,10 +1208,11 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
-
     this._kubectlProviderOptions = props.kubectlProviderOptions;
-
+    this._removalPolicy = props.removalPolicy;
     this.tagSubnets();
+
+    this.validateRemoteNetworkConfig(props);
 
     // this is the role used by EKS when interacting with AWS resources
     this.role = props.role || new iam.Role(this, 'Role', {
@@ -1114,6 +1226,10 @@ export class Cluster extends ClusterBase {
     const autoModeEnabled = this.isValidAutoModeConfig(props);
 
     if (autoModeEnabled) {
+      if (props.bootstrapSelfManagedAddons === true) {
+        throw new ValidationError('bootstrapSelfManagedAddons cannot be true when using EKS Auto Mode', this);
+      }
+
       // attach required managed policy for the cluster role in EKS Auto Mode
       // see - https://docs.aws.amazon.com/eks/latest/userguide/auto-cluster-iam-role.html
       ['AmazonEKSComputePolicy',
@@ -1146,7 +1262,7 @@ export class Cluster extends ClusterBase {
 
     const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
     if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
-      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+      throw new UnscopedValidationError('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
     }
 
     // Get subnetIds for all selected subnets
@@ -1171,19 +1287,19 @@ export class Cluster extends ClusterBase {
 
     if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
     if (privateSubnets.length === 0 && publicAccessRestricted) {
       // no private subnets and public access is restricted, no good.
-      throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
+      throw new UnscopedValidationError('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
     if (props.serviceIpv4Cidr && props.ipFamily == IpFamily.IP_V6) {
-      throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
+      throw new UnscopedValidationError('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
-    const resource = this._clusterResource = new CfnCluster(this, 'Resource', {
+    const resource = this.resource = new CfnCluster(this, 'Resource', {
       name: this.physicalName,
       roleArn: this.role.roleArn,
       version: props.version.version,
@@ -1213,6 +1329,14 @@ export class Cluster extends ClusterBase {
           enabled: autoModeEnabled,
         },
       },
+      ...(props.remoteNodeNetworks ? {
+        remoteNetworkConfig: {
+          remoteNodeNetworks: props.remoteNodeNetworks,
+          ...(props.remotePodNetworks ? {
+            remotePodNetworks: props.remotePodNetworks,
+          }: {}),
+        },
+      } : {}),
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
@@ -1230,6 +1354,7 @@ export class Cluster extends ClusterBase {
       } : {}),
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
+      bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
     });
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;
@@ -1240,14 +1365,14 @@ export class Cluster extends ClusterBase {
 
       // validate VPC properties according to: https://docs.aws.amazon.com/eks/latest/userguide/cluster-endpoint.html
       if (this.vpc instanceof ec2.Vpc && !(this.vpc.dnsHostnamesEnabled && this.vpc.dnsSupportEnabled)) {
-        throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
+        throw new UnscopedValidationError('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
       kubectlSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
-      this._clusterResource.node.addDependency(this.vpc);
+      this.resource.node.addDependency(this.vpc);
     }
 
     // we use an SSM parameter as a barrier because it's free and fast.
@@ -1260,10 +1385,7 @@ export class Cluster extends ClusterBase {
     });
 
     // add the cluster resource itself as a dependency of the barrier
-    this._kubectlReadyBarrier.node.addDependency(this._clusterResource);
-
-    this.clusterName = this.getResourceNameAttribute(resource.ref);
-    this.clusterArn = this.getResourceArnAttribute(resource.attrArn, clusterArnComponents(this.physicalName));
+    this._kubectlReadyBarrier.node.addDependency(this.resource);
 
     this.clusterEndpoint = resource.attrEndpoint;
     this.clusterCertificateAuthorityData = resource.attrCertificateAuthorityData;
@@ -1296,6 +1418,9 @@ export class Cluster extends ClusterBase {
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
       this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+
+      // Ensure kubectl is marked as ready only after admin access has been granted
+      this._kubectlReadyBarrier.node.addDependency(this._clusterAdminAccess);
     }
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
@@ -1345,6 +1470,11 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
       new CfnOutput(this, 'GetTokenCommand', { value: `${getTokenCommandPrefix} ${postfix}` });
     }
+
+    // Apply removal policy to all CFN resources created under this construct.
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**
@@ -1358,10 +1488,16 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the `AccessEntry` construct to be created.
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM principal.
+   * @param options - Additional options for granting access.
    */
   @MethodMetadata()
-  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
-    this.addToAccessEntry(id, principal, accessPolicies);
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[], options?: GrantAccessOptions) {
+    this.addToAccessEntry({
+      id,
+      principal,
+      policies: accessPolicies,
+      accessEntryType: options?.accessEntryType,
+    });
   }
 
   /**
@@ -1445,7 +1581,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addAutoScalingGroupCapacity(id: string, options: AutoScalingGroupCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImageType === MachineImageType.BOTTLEROCKET && options.bootstrapOptions !== undefined) {
-      throw new Error('bootstrapOptions is not supported for Bottlerocket');
+      throw new UnscopedValidationError('bootstrapOptions is not supported for Bottlerocket');
     }
     const asg = new autoscaling.AutoScalingGroup(this, id, {
       ...options,
@@ -1508,7 +1644,7 @@ export class Cluster extends ClusterBase {
    * @attribute
    */
   public get clusterOpenIdConnectIssuerUrl(): string {
-    return this._clusterResource.attrOpenIdConnectIssuerUrl;
+    return this.resource.attrOpenIdConnectIssuerUrl;
   }
 
   /**
@@ -1516,12 +1652,21 @@ export class Cluster extends ClusterBase {
    * to link this cluster to AWS IAM.
    *
    * A provider will only be defined if this property is accessed (lazy initialization).
+   *
    */
-  public get openIdConnectProvider() {
+  public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this._openIdConnectProvider) {
-      this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
-        url: this.clusterOpenIdConnectIssuerUrl,
-      });
+      if (FeatureFlags.of(this).isEnabled(EKS_USE_NATIVE_OIDC_PROVIDER)) {
+        this._openIdConnectProvider = new OidcProviderNative(this, 'OidcProviderNative', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
+        });
+      } else {
+        this._openIdConnectProvider = new OpenIdConnectProvider(this, 'OpenIdConnectProvider', {
+          url: this.clusterOpenIdConnectIssuerUrl,
+          removalPolicy: this._removalPolicy,
+        });
+      }
     }
 
     return this._openIdConnectProvider;
@@ -1545,6 +1690,7 @@ export class Cluster extends ClusterBase {
       this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
         addonName: 'eks-pod-identity-agent',
+        removalPolicy: this._removalPolicy,
       });
     }
 
@@ -1599,23 +1745,98 @@ export class Cluster extends ClusterBase {
         const validNodePools = ['general-purpose', 'system'];
         const invalidPools = props.compute.nodePools.filter(pool => !validNodePools.includes(pool));
         if (invalidPools.length > 0) {
-          throw new Error(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
+          throw new UnscopedValidationError(`Invalid node pool values: ${invalidPools.join(', ')}. Valid values are: ${validNodePools.join(', ')}`);
         }
       }
 
       // When using AUTOMODE, defaultCapacity and defaultCapacityInstance cannot be specified
       if (props.defaultCapacity !== undefined || props.defaultCapacityInstance !== undefined) {
-        throw new Error('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
+        throw new UnscopedValidationError('Cannot specify defaultCapacity or defaultCapacityInstance when using Auto Mode. Auto Mode manages compute resources automatically.');
       }
     } else {
       // if NOT using AUTOMODE
       if (props.compute) {
         // When not using AUTOMODE, compute must be undefined
-        throw new Error('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
+        throw new UnscopedValidationError('Cannot specify compute without using DefaultCapacityType.AUTOMODE');
       }
     }
 
     return autoModeEnabled;
+  }
+
+  private validateRemoteNetworkConfig(props: ClusterProps) {
+    if (!props.remoteNodeNetworks) {
+      if (props.remotePodNetworks) {
+        throw new ValidationError('remotePodNetworks cannot be specified without remoteNodeNetworks also being specified', this);
+      }
+      return;
+    }
+
+    this.validateNetworkCidrs(props.remoteNodeNetworks, 'node');
+
+    if (!props.remotePodNetworks) return;
+
+    this.validateNetworkCidrs(props.remotePodNetworks, 'pod');
+    this.validateCrossNetworkOverlap(props.remoteNodeNetworks, props.remotePodNetworks);
+  }
+
+  /**
+   * Validates all CIDR rules for a single network type (within same network + across networks).
+   */
+  private validateNetworkCidrs(networks: RemoteNodeNetwork[] | RemotePodNetwork[], networkType: 'node' | 'pod') {
+    const resolvedCidrs = networks.map(n => n.cidrs.filter(c => !Token.isUnresolved(c)));
+
+    // Within same network
+    resolvedCidrs.forEach((cidrs, index) => {
+      for (let i = 0; i < cidrs.length; i++) {
+        for (let j = i + 1; j < cidrs.length; j++) {
+          if (ec2.NetworkUtils.validateCidrPairOverlap(cidrs[i], cidrs[j])) {
+            throw new ValidationError(
+              `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
+              this,
+            );
+          }
+        }
+      }
+    });
+
+    // Across different networks
+    for (let i = 0; i < resolvedCidrs.length; i++) {
+      if (resolvedCidrs[i].length === 0) continue;
+      for (let j = i + 1; j < resolvedCidrs.length; j++) {
+        if (resolvedCidrs[j].length === 0) continue;
+        const [overlap, cidr1, cidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(resolvedCidrs[i], resolvedCidrs[j]);
+        if (overlap) {
+          throw new ValidationError(
+            `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
+            this,
+          );
+        }
+      }
+    }
+  }
+
+  /**
+   * Validates that node network CIDRs do not overlap with pod network CIDRs.
+   */
+  private validateCrossNetworkOverlap(nodeNetworks: RemoteNodeNetwork[], podNetworks: RemotePodNetwork[]) {
+    for (const nodeNetwork of nodeNetworks) {
+      const nodeCidrs = nodeNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+      if (nodeCidrs.length === 0) continue;
+
+      for (const podNetwork of podNetworks) {
+        const podCidrs = podNetwork.cidrs.filter(c => !Token.isUnresolved(c));
+        if (podCidrs.length === 0) continue;
+
+        const [overlap, nodeCidr, podCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeCidrs, podCidrs);
+        if (overlap) {
+          throw new ValidationError(
+            `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
+            this,
+          );
+        }
+      }
+    }
   }
 
   private addNodePoolRole(id: string): iam.Role {
@@ -1638,24 +1859,24 @@ export class Cluster extends ClusterBase {
    * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
    * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
    *
-   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
+   * @param props - Options for adding the access entry.
    *
    * @throws {Error} If the uniqueName generated for the new access entry is not unique.
    *
    * @returns {void}
    */
-  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
-    const entry = this.accessEntries.get(principal);
+  private addToAccessEntry(props: AddAccessEntryOptions) {
+    const entry = this.accessEntries.get(props.principal);
     if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
+      (entry as AccessEntry).addAccessPolicies(props.policies);
     } else {
-      const newEntry = new AccessEntry(this, id, {
-        principal,
+      const newEntry = new AccessEntry(this, props.id, {
+        principal: props.principal,
         cluster: this,
-        accessPolicies: policies,
+        accessPolicies: props.policies,
+        accessEntryType: props.accessEntryType,
       });
-      this.accessEntries.set(principal, newEntry);
+      this.accessEntries.set(props.principal, newEntry);
     }
   }
 
@@ -1952,49 +2173,49 @@ class ImportedCluster extends ClusterBase {
 
   public get vpc() {
     if (!this.props.vpc) {
-      throw new Error('"vpc" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
   }
 
   public get clusterSecurityGroup(): ec2.ISecurityGroup {
     if (!this._clusterSecurityGroup) {
-      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroup" is not defined for this imported cluster');
     }
     return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
     if (!this.props.clusterSecurityGroupId) {
-      throw new Error('"clusterSecurityGroupId" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterSecurityGroupId" is not defined for this imported cluster');
     }
     return this.props.clusterSecurityGroupId;
   }
 
   public get clusterEndpoint(): string {
     if (!this.props.clusterEndpoint) {
-      throw new Error('"clusterEndpoint" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEndpoint" is not defined for this imported cluster');
     }
     return this.props.clusterEndpoint;
   }
 
   public get clusterCertificateAuthorityData(): string {
     if (!this.props.clusterCertificateAuthorityData) {
-      throw new Error('"clusterCertificateAuthorityData" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterCertificateAuthorityData" is not defined for this imported cluster');
     }
     return this.props.clusterCertificateAuthorityData;
   }
 
   public get clusterEncryptionConfigKeyArn(): string {
     if (!this.props.clusterEncryptionConfigKeyArn) {
-      throw new Error('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"clusterEncryptionConfigKeyArn" is not defined for this imported cluster');
     }
     return this.props.clusterEncryptionConfigKeyArn;
   }
 
   public get openIdConnectProvider(): iam.IOpenIdConnectProvider {
     if (!this.props.openIdConnectProvider) {
-      throw new Error('"openIdConnectProvider" is not defined for this imported cluster');
+      throw new UnscopedValidationError('"openIdConnectProvider" is not defined for this imported cluster');
     }
     return this.props.openIdConnectProvider;
   }

@@ -1,6 +1,6 @@
 import { UnscopedValidationError } from '../../../core';
-import { IConnection } from '../connection';
-import { IConnectionRef } from '../events.generated';
+import type { IConnection } from '../connection';
+import type { IConnectionRef } from '../events.generated';
 
 /**
  * Convert an IConnectionRef to IConnection, validating that it implements the full interface

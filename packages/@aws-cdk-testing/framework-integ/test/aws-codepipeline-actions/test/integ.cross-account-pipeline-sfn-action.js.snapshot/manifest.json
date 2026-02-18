@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "CrossAccountStepFunctionStack.assets": {
       "type": "cdk:asset-manifest",
@@ -54,12 +54,6 @@
             }
           }
         ],
-        "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -106,12 +100,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/CrossAccountStepFunctionStack/CrossAccountRole/ImportCrossAccountRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CrossAccountStepFunctionStack/CrossAccountRole/Resource": [
@@ -208,12 +196,6 @@
             }
           }
         ],
-        "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/ImportCdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -296,7 +278,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/8cc6c5b3c72fa64b34a0263a0e8877fa8fd34a8fbbc32cb5c2df3d58642932d0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/868da4c2fcaf5c7faab809aad6e0d0bd7c51f162dc33fe836db899ffe944b863.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -566,12 +548,6 @@
             }
           }
         ],
-        "/CdkPipelineStepFunctionsActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CdkPipelineStepFunctionsActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -801,12 +777,6 @@
             }
           }
         ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -954,12 +924,6 @@
             }
           }
         ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Source/Source/CodePipelineActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1075,12 +1039,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Build/BuildAction/CodePipelineActionRole/ImportCodePipelineActionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/CrossAccountStepFunctionsPipeline/Build/BuildAction/CodePipelineActionRole/Resource": [
@@ -1205,12 +1163,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/CdkPipelineStepFunctionsActionStack/BuildProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/CdkPipelineStepFunctionsActionStack/BuildProject/Role/Resource": [
@@ -1855,5 +1807,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

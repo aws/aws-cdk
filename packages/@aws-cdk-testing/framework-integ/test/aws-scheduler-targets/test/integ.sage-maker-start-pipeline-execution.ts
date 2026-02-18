@@ -1,11 +1,13 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-targets';
+import type { SageMakerPipelineParameter } from 'aws-cdk-lib/aws-scheduler-targets';
+import { SageMakerStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-targets';
 
 interface FakePipelineProps {
   readonly pipelineName: string;

@@ -1,5 +1,5 @@
-import { HttpMethod, IVpcLink, ParameterMapping } from '../../../aws-apigatewayv2';
-import { Duration } from '../../../core';
+import type { HttpMethod, IVpcLink, ParameterMapping } from '../../../aws-apigatewayv2';
+import type { Duration } from '../../../core';
 
 /**
  * Base options for private integration

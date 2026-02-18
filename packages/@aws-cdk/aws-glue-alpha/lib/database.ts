@@ -1,8 +1,10 @@
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 export interface IDatabase extends IResource {
   /**
@@ -86,19 +88,11 @@ export class Database extends Resource implements IDatabase {
   public readonly catalogId: string;
 
   /**
-   * ARN of this database.
-   */
-  public readonly databaseArn: string;
-
-  /**
-   * Name of this database.
-   */
-  public readonly databaseName: string;
-
-  /**
    * Location URI of this database.
    */
-  public readonly locationUri?: string;
+  public locationUri?: string;
+
+  private resource: CfnDatabase;
 
   constructor(scope: Construct, id: string, props: DatabaseProps = {}) {
     super(scope, id, {
@@ -129,23 +123,29 @@ export class Database extends Resource implements IDatabase {
     }
 
     this.catalogId = Stack.of(this).account;
-    const resource = new CfnDatabase(this, 'Resource', {
+    this.resource = new CfnDatabase(this, 'Resource', {
       catalogId: this.catalogId,
       databaseInput,
-    });
-
-    // see https://docs.aws.amazon.com/glue/latest/dg/glue-specifying-resource-arns.html#data-catalog-resource-arns
-    this.databaseName = this.getResourceNameAttribute(resource.ref);
-    this.databaseArn = this.stack.formatArn({
-      service: 'glue',
-      resource: 'database',
-      resourceName: this.databaseName,
     });
 
     // catalogId is implicitly the accountId, which is why we don't pass the catalogId here
     this.catalogArn = Stack.of(this).formatArn({
       service: 'glue',
       resource: 'catalog',
+    });
+  }
+
+  @memoizedGetter
+  public get databaseName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get databaseArn(): string {
+    return this.stack.formatArn({
+      service: 'glue',
+      resource: 'database',
+      resourceName: this.databaseName,
     });
   }
 }

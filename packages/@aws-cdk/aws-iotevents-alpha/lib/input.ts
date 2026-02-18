@@ -1,9 +1,11 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnInput } from 'aws-cdk-lib/aws-iotevents';
-import { Resource, IResource, Aws } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Aws } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Represents an AWS IoT Events input.
@@ -106,9 +108,7 @@ export class Input extends InputBase {
     }(scope, id);
   }
 
-  public readonly inputName: string;
-
-  public readonly inputArn: string;
+  private resource: CfnInput;
 
   constructor(scope: Construct, id: string, props: InputProps) {
     super(scope, id, {
@@ -121,15 +121,22 @@ export class Input extends InputBase {
       throw new Error('attributeJsonPaths property cannot be empty');
     }
 
-    const resource = new CfnInput(this, 'Resource', {
+    this.resource = new CfnInput(this, 'Resource', {
       inputName: this.physicalName,
       inputDefinition: {
         attributes: props.attributeJsonPaths.map(path => ({ jsonPath: path })),
       },
     });
+  }
 
-    this.inputName = this.getResourceNameAttribute(resource.ref);
-    this.inputArn = this.getResourceArnAttribute(arnForInput(resource.ref), {
+  @memoizedGetter
+  public get inputName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get inputArn(): string {
+    return this.getResourceArnAttribute(arnForInput(this.resource.ref), {
       service: 'iotevents',
       resource: 'input',
       resourceName: this.physicalName,

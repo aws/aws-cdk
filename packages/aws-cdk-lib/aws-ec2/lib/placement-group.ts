@@ -1,6 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
-import { IResource, Resource, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
+import { CfnPlacementGroup } from './ec2.generated';
+import type { IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -174,7 +177,16 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
   public readonly spreadLevel?: PlacementGroupSpreadLevel;
   public readonly strategy?: PlacementGroupStrategy;
 
-  public readonly placementGroupName: string;
+  private readonly resource: CfnPlacementGroup;
+
+  @memoizedGetter
+  public get placementGroupName(): string {
+    return this.getResourceArnAttribute(this.resource.attrGroupName, {
+      service: 'batch',
+      resource: 'compute-environment',
+      resourceName: this.physicalName,
+    });
+  }
 
   constructor(scope: Construct, id: string, props?: PlacementGroupProps) {
     super(scope, id, {
@@ -204,16 +216,10 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
       }
     }
 
-    const resource = new CfnPlacementGroup(this, 'Resource', {
+    this.resource = new CfnPlacementGroup(this, 'Resource', {
       partitionCount: this.partitions,
       spreadLevel: this.spreadLevel,
       strategy: this.strategy,
-    });
-
-    this.placementGroupName = this.getResourceArnAttribute(resource.attrGroupName, {
-      service: 'batch',
-      resource: 'compute-environment',
-      resourceName: this.physicalName,
     });
   }
 

@@ -1,13 +1,15 @@
-import { Construct, IDependable } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
-import { EnvironmentType } from './environment-type';
+import type { EnvironmentType } from './environment-type';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, IResource, PhysicalName, Resource, Size, Token, UnscopedValidationError, ValidationError } from '../../core';
+import type { IResource, Size } from '../../core';
+import { Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
+import type { IFleetRef, FleetReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 /**
  * Construction properties of a CodeBuild Fleet.
@@ -257,12 +259,23 @@ export class Fleet extends Resource implements IFleet {
   /**
    * The ARN of the fleet.
    */
-  public readonly fleetArn: string;
+  @memoizedGetter
+  get fleetArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codebuild',
+      resource: 'fleet',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
 
   /**
    * The name of the fleet.
    */
-  public readonly fleetName: string;
+  @memoizedGetter
+  get fleetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * The compute type of the fleet.
@@ -285,6 +298,7 @@ export class Fleet extends Resource implements IFleet {
 
   // Lazily created connections. Only created if `vpc` is provided in props.
   private _connections?: ec2.Connections;
+  private readonly resource: CfnFleet;
 
   /**
    * The network connections associated with this Fleet's security group(s) in
@@ -408,13 +422,7 @@ export class Fleet extends Resource implements IFleet {
       resource.node.addDependency(...props.vpc.node.findAll());
     }
 
-    this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'codebuild',
-      resource: 'fleet',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
-    this.fleetName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
     this.computeType = props.computeType;
     this.environmentType = props.environmentType;
   }

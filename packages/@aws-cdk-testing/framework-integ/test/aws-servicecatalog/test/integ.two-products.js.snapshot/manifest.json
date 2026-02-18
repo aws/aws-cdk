@@ -1,5 +1,5 @@
 {
-  "version": "49.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "integ-servicecatalog-two-products.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/b3a1e018176a96b2d1ae609789e0634827f2aac4982e9a712d091263d54f45df.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/66eee377d668580a54c815469f5f6de59c4248107dcce075136de7c592f6ea08.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -303,12 +303,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/integ-servicecatalog-two-products/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C256MiB/ServiceRole/Resource": [
@@ -992,5 +986,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1101.0"
 }

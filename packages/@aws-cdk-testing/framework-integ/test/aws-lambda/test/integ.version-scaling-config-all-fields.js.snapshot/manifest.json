@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "VersionScalingConfigAllFieldsStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a3e13153b40e82f20b72aa5be5ae66454df227ca3223cd2974263b92dfc1cf9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/801c08b1597d6145f7bcd44c449412b506f567936bcce43ae5c5bfdf98521232.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,7 +355,23 @@
         "/VersionScalingConfigAllFieldsStack/CapacityProvider": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "subnets": [
+                "*",
+                "*"
+              ],
+              "securityGroups": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addFunction": [
+                "*"
+              ]
+            }
           }
         ],
         "/VersionScalingConfigAllFieldsStack/CapacityProvider/OperatorRole": [
@@ -366,14 +382,12 @@
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
               },
-              "inlinePolicies": "*"
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
             }
-          }
-        ],
-        "/VersionScalingConfigAllFieldsStack/CapacityProvider/OperatorRole/ImportOperatorRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/VersionScalingConfigAllFieldsStack/CapacityProvider/OperatorRole/Resource": [
@@ -395,7 +409,10 @@
               "runtime": "*",
               "handler": "*",
               "code": "*",
-              "currentVersionOptions": {}
+              "currentVersionOptions": {
+                "minExecutionEnvironments": "*",
+                "maxExecutionEnvironments": "*"
+              }
             }
           },
           {
@@ -405,14 +422,18 @@
         ],
         "/VersionScalingConfigAllFieldsStack/Function/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsStack/Function/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/VersionScalingConfigAllFieldsStack/Function/ServiceRole/Resource": [
@@ -427,25 +448,13 @@
             "data": "Function76856677"
           }
         ],
-        "/VersionScalingConfigAllFieldsStack/Function/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/VersionScalingConfigAllFieldsStack/Function/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionLogGroup55B80E27"
-          }
-        ],
         "/VersionScalingConfigAllFieldsStack/Function/CurrentVersion": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "lambda": "*"
+              "lambda": "*",
+              "minExecutionEnvironments": "*",
+              "maxExecutionEnvironments": "*"
             }
           }
         ],
@@ -453,12 +462,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionCurrentVersion4E2B2261e1bf7b68d638a60aed4afc940f32d651"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsStack/Exports/Output{\"Ref\":\"FunctionCurrentVersion4E2B2261e1bf7b68d638a60aed4afc940f32d651\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFunctionCurrentVersion4E2B2261e1bf7b68d638a60aed4afc940f32d65141E6FE4E"
           }
         ],
         "/VersionScalingConfigAllFieldsStack/BootstrapVersion": [
@@ -473,28 +476,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "CapacityProviderInstanceRole55CC3394": [
+        "FunctionLogGroup55B80E27": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CapacityProviderInstanceRole55CC3394",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CapacityProviderInstanceProfile78521F45": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CapacityProviderInstanceProfile78521F45",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Version6A868472": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Version6A868472",
+            "data": "FunctionLogGroup55B80E27",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -520,7 +505,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0ab857b8d002401c2ef2a36a98f15a4a3597a4a4ebffff8dbf41b7c7ef30c598.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -533,48 +518,9 @@
         }
       },
       "dependencies": [
-        "VersionScalingConfigAllFieldsStack",
         "VersionScalingConfigAllFieldsTestDefaultTestDeployAssertA35D59D9.assets"
       ],
       "metadata": {
-        "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/AwsApiCallLambdalistVersionsByFunction04cc6be1ace3e0490df31651eebb1044/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/AwsApiCallLambdalistVersionsByFunction04cc6be1ace3e0490df31651eebb1044/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallLambdalistVersionsByFunction04cc6be1ace3e0490df31651eebb1044"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/AwsApiCallLambdalistVersionsByFunction04cc6be1ace3e0490df31651eebb1044/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallLambdalistVersionsByFunction04cc6be1ace3e0490df31651eebb1044"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
         "/VersionScalingConfigAllFieldsTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -887,6 +833,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -918,16 +868,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1069,11 +1009,12 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": true,
+            "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1085,12 +1026,17 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

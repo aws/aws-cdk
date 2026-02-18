@@ -1,14 +1,15 @@
-import { Construct, IConstruct } from 'constructs';
-import { IArtifacts } from './artifacts';
+import type { Construct, IConstruct } from 'constructs';
+import type { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
-import { ComputeType, DockerServerComputeType } from './compute-type';
+import type { DockerServerComputeType } from './compute-type';
+import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
-import { IFileSystemLocation } from './file-location';
-import { IFleet } from './fleet';
+import type { IFileSystemLocation } from './file-location';
+import type { IFleet } from './fleet';
 import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
@@ -16,24 +17,27 @@ import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
-import { LoggingOptions } from './project-logs';
+import type { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
-import { ISource } from './source';
+import type { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as notifications from '../../aws-codestarnotifications';
 import * as ec2 from '../../aws-ec2';
-import * as ecr from '../../aws-ecr';
-import { DockerImageAsset, DockerImageAssetProps } from '../../aws-ecr-assets';
+import type * as ecr from '../../aws-ecr';
+import type { DockerImageAssetProps } from '../../aws-ecr-assets';
+import { DockerImageAsset } from '../../aws-ecr-assets';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import type * as s3 from '../../aws-s3';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration, IResource } from '../../core';
+import { Annotations, ArnFormat, Aws, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
+import type { IProjectRef, ProjectReference } from '../../interfaces/generated/aws-codebuild-interfaces.generated';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -1056,17 +1060,28 @@ export class Project extends ProjectBase {
   /**
    * The ARN of the project.
    */
-  public readonly projectArn: string;
+  @memoizedGetter
+  get projectArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'codebuild',
+      resource: 'project',
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The name of the project.
    */
-  public readonly projectName: string;
+  @memoizedGetter
+  get projectName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   private readonly source: ISource;
   private readonly buildImage: IBuildImage;
   private readonly _secondarySources: CfnProject.SourceProperty[];
   private readonly _secondarySourceVersions: CfnProject.ProjectSourceVersionProperty[];
+  private readonly resource: CfnProject;
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
@@ -1179,12 +1194,7 @@ export class Project extends ProjectBase {
 
     this.addVpcRequiredPermissions(props, resource);
 
-    this.projectArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'codebuild',
-      resource: 'project',
-      resourceName: this.physicalName,
-    });
-    this.projectName = this.getResourceNameAttribute(resource.ref);
+    this.resource = resource;
 
     this.addToRolePolicy(this.createLoggingPermission());
     // add permissions to create and use test report groups

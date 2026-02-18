@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c": {
+      "source": {
+        "path": "asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-601aff7a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "2e3893194c226c8fe86bfe2e822d92cd7682a7fd08f7ace3247264d98afd824c": {
+      "displayName": "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC Template",
+      "source": {
+        "path": "NestedSuppressIndentationTestDefaultTestDeployAssert7A6B52FC.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-07b0b54c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2e3893194c226c8fe86bfe2e822d92cd7682a7fd08f7ace3247264d98afd824c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,7 +1,8 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { App, Stack } from 'aws-cdk-lib/core';
-import { Cluster, FargateCluster, ClusterProps, KubernetesVersion } from '../lib';
+import type { ClusterProps } from '../lib';
+import { Cluster, FargateCluster, KubernetesVersion } from '../lib';
 
 const CLUSTER_VERSION = KubernetesVersion.V1_25;
 const DEFAULT_REGION = 'us-east-1';

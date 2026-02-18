@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
-import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
+import type { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
-import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Duration, Resource, Stack, ValidationError } from '../../core';
-import { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { TrafficRouting } from './traffic-routing-config';
+import type { Duration } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { DeploymentConfigReference, IDeploymentConfigRef, IDeploymentGroupRef } from '../../interfaces/generated/aws-codedeploy-interfaces.generated';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
@@ -165,17 +167,22 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     return new Import(scope, `${id}:Imported`);
   }
 
-  /**
-   * The name of the deployment config
-   * @attribute
-   */
-  public readonly deploymentConfigName: string;
+  private readonly resource: CfnDeploymentConfig;
 
-  /**
-   * The arn of the deployment config
-   * @attribute
-   */
-  public readonly deploymentConfigArn: string;
+  @memoizedGetter
+  public get deploymentConfigName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get deploymentConfigArn(): string {
+    return this.getResourceArnAttribute(arnForDeploymentConfig(this.resource.ref), {
+      service: 'codedeploy',
+      resource: 'deploymentconfig',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   public get deploymentConfigRef(): DeploymentConfigReference {
     return {
@@ -207,7 +214,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       }
     }
 
-    const resource = new CfnDeploymentConfig(this, 'Resource', {
+    this.resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: props?.computePlatform,
       trafficRoutingConfig: props?.trafficRouting?.bind(this),
@@ -217,14 +224,6 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
         firstZoneMonitorDurationInSeconds: props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
         minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
       } : undefined,
-    });
-
-    this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
-    this.deploymentConfigArn = this.getResourceArnAttribute(arnForDeploymentConfig(resource.ref), {
-      service: 'codedeploy',
-      resource: 'deploymentconfig',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });

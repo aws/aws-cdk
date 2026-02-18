@@ -1,15 +1,17 @@
-import { Construct } from 'constructs';
-import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
+import type { Construct } from 'constructs';
+import type { IHttpApi, IHttpApiRef } from './api';
+import { toIHttpApi } from './api';
 import { AccessLogFormat } from '../../../aws-apigateway';
-import { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { StageOptions, IStage, StageAttributes } from '../common';
-import { IApi } from '../common/api';
+import type { StageOptions, IStage, StageAttributes } from '../common';
+import type { IApi } from '../common/api';
 import { StageBase } from '../common/base';
-import { CfnStage, IStageRef } from '../index';
+import type { IStageRef } from '../index';
+import { CfnStage } from '../index';
 
 const DEFAULT_STAGE_NAME = '$default';
 

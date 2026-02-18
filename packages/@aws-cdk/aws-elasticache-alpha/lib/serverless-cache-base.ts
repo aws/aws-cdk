@@ -1,14 +1,15 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { IResource, Resource, Duration } from 'aws-cdk-lib/core';
-import {
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Duration } from 'aws-cdk-lib/core';
+import type {
   IServerlessCacheRef,
   ServerlessCacheReference,
 } from 'aws-cdk-lib/interfaces/generated/aws-elasticache-interfaces.generated';
 import { ServerlessCacheGrants } from './elasticache-grants.generated';
-import { IUserGroup } from './user-group';
+import type { IUserGroup } from './user-group';
 
 /**
  * Supported cache engines together with available versions.
@@ -44,6 +45,11 @@ export enum CacheEngine {
    * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   MEMCACHED_LATEST = 'memcached',
+  /**
+   * Memcached engine, minor version 1.6, patch version is selected automatically
+   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   */
+  MEMCACHED_1_6 = 'memcached_1.6',
 }
 
 /**

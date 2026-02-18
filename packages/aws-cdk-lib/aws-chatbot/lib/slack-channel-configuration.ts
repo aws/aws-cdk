@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration, ISlackChannelConfigurationRef, SlackChannelConfigurationReference } from './chatbot.generated';
+import type { Construct } from 'constructs';
+import type { ISlackChannelConfigurationRef, SlackChannelConfigurationReference } from './chatbot.generated';
+import { CfnSlackChannelConfiguration } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
