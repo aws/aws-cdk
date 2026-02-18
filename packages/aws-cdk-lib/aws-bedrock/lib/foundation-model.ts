@@ -272,6 +272,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-6-v1". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new FoundationModelIdentifier('anthropic.claude-opus-4-6-v1');
 
+  /** Base model "anthropic.claude-sonnet-4-6". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
+
   /**
    * Base model "anthropic.claude-instant-v1".
    * @deprecated use latest version of the model
