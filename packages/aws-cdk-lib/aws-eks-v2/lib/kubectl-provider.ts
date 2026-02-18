@@ -194,7 +194,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
         ...props.environment,
       },
       role: props.role,
-      code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-eks-v2', 'kubectl-handler')),
       handler: 'index.handler',
       runtime: lambda.Runtime.determineLatestPythonRuntime(this),
       // defined only when using private access
