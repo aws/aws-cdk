@@ -220,6 +220,12 @@ export class Bundling implements cdk.BundlingOptions {
   /**
    * Builds esbuild command-line arguments array
    * Used by both Docker and local bundling paths
+   *
+   * IMPORTANT: Do NOT include quotes in array elements. This array is used in two ways:
+   * 1. Local bundling: Passed directly to spawnSync() with shell=false - quotes would become part of the literal argument
+   * 2. Docker bundling: Joined with spaces into a shell command string - shell handles quoting automatically
+   *
+   * Only use JSON.stringify() for values that need JSON encoding (banner, footer, define values).
    */
   private buildEsbuildArgs(
     scope: IConstruct,
@@ -235,25 +241,25 @@ export class Bundling implements cdk.BundlingOptions {
     sourcesContent: boolean,
   ): string[] {
     return [
-      '--bundle', `"${relativeEntryPath}"`,
+      '--bundle', relativeEntryPath,
       `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(outputDir, outFile)}"`,
+      `--outfile=${pathJoin(outputDir, outFile)}`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`), // JSON.stringify for define values
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(outputDir, 'index.meta.json')}"`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [], // JSON.stringify for banner content
+      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [], // JSON.stringify for footer content
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
       ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
   }
@@ -324,7 +330,8 @@ export class Bundling implements cdk.BundlingOptions {
         throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscArgs.push(`"${relativeEntryPath}"`, ...compilerOptions.split(' ').filter(arg => arg));
+      // No quotes in array - will be joined into shell command string later
+      tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
@@ -426,7 +433,8 @@ export class Bundling implements cdk.BundlingOptions {
           throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
         }
         const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-        tscArgs.push(`"${relativeEntryPath}"`, ...compilerOptions.split(' ').filter(arg => arg));
+        // No quotes in array - passed directly to spawnSync with shell=false
+        tscArgs.push(relativeEntryPath, ...compilerOptions.split(' ').filter(arg => arg));
         relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       }
 
