@@ -552,7 +552,7 @@
      "Ref": "SqlServerDbInstanceSubnetGroupAE46487C"
     },
     "Engine": "sqlserver-ex",
-    "EngineVersion": "15.00",
+    "EngineVersion": "16.00.4215.2.v1",
     "LicenseModel": "license-included",
     "MasterUserPassword": {
      "Fn::Join": [

@@ -813,7 +813,7 @@
    "Type": "AWS::RDS::OptionGroup",
    "Properties": {
     "EngineName": "sqlserver-se",
-    "MajorEngineVersion": "15.00",
+    "MajorEngineVersion": "16.00",
     "OptionConfigurations": [
      {
       "OptionName": "SQLSERVER_BACKUP_RESTORE",
@@ -830,7 +830,7 @@
       ]
      }
     ],
-    "OptionGroupDescription": "Option group for sqlserver-se 15.00"
+    "OptionGroupDescription": "Option group for sqlserver-se 16.00"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -895,7 +895,7 @@
     },
     "DeletionProtection": false,
     "Engine": "sqlserver-se",
-    "EngineVersion": "15.00",
+    "EngineVersion": "16.00.4215.2.v1",
     "LicenseModel": "license-included",
     "MasterUserPassword": {
      "Fn::Join": [

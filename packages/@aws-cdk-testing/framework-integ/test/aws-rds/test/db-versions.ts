@@ -1,10 +1,48 @@
 import * as rds from 'aws-cdk-lib/aws-rds';
 
-export const INTEG_TEST_LATEST_AURORA_MYSQL = rds.AuroraMysqlEngineVersion.VER_3_11_1;
-export const INTEG_TEST_LATEST_AURORA_POSTGRES = rds.AuroraPostgresEngineVersion.VER_17_6;
-export const INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS = rds.AuroraPostgresEngineVersion.VER_16_9_LIMITLESS;
-export const INTEG_TEST_LATEST_MYSQL = rds.MysqlEngineVersion.VER_8_4_7;
-export const INTEG_TEST_LATEST_POSTGRES = rds.PostgresEngineVersion.VER_18_1;
-export const INTEG_TEST_LATEST_MARIADB = rds.MariaDbEngineVersion.VER_11_8_5;
-export const INTEG_TEST_LATEST_SQLSERVER = rds.SqlServerEngineVersion.VER_15;
-export const INTEG_TEST_LATEST_ORACLE = rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1;
+/**
+ * Extracts the full version string from an engine version object.
+ */
+function getFullVersion(version: unknown): string {
+  if (typeof version !== 'object' || version === null) {
+    throw new Error('Invalid version object');
+  }
+
+  for (const key of Object.keys(version)) {
+    if (key.endsWith('FullVersion')) {
+      const value = (version as Record<string, unknown>)[key];
+      if (typeof value === 'string') {
+        return value;
+      }
+    }
+  }
+
+  throw new Error('No FullVersion property found');
+}
+
+/**
+ * Extracts the latest version from an engine version class by sorting keys
+ * based on their actual version strings and returning the highest one.
+ */
+function getLatestVersion<T extends object>(versionClass: T, substring?: string) {
+  const keys = (Object.keys(versionClass) as Array<keyof T>)
+    .filter(key => typeof versionClass[key] !== 'function')
+    .filter(key => !substring || String(key).includes(substring));
+
+  keys.sort((a, b) => {
+    const fullVersionA = getFullVersion(versionClass[a]);
+    const fullVersionB = getFullVersion(versionClass[b]);
+    return fullVersionA.localeCompare(fullVersionB, undefined, { numeric: true });
+  });
+
+  return versionClass[keys[keys.length - 1]] as Exclude<T[keyof T], Function>;
+}
+
+export const INTEG_TEST_LATEST_AURORA_MYSQL = getLatestVersion(rds.AuroraMysqlEngineVersion);
+export const INTEG_TEST_LATEST_AURORA_POSTGRES = getLatestVersion(rds.AuroraPostgresEngineVersion);
+export const INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS = getLatestVersion(rds.AuroraPostgresEngineVersion, 'LIMITLESS');
+export const INTEG_TEST_LATEST_MYSQL = getLatestVersion(rds.MysqlEngineVersion);
+export const INTEG_TEST_LATEST_POSTGRES = getLatestVersion(rds.PostgresEngineVersion);
+export const INTEG_TEST_LATEST_MARIADB = getLatestVersion(rds.MariaDbEngineVersion);
+export const INTEG_TEST_LATEST_SQLSERVER = getLatestVersion(rds.SqlServerEngineVersion);
+export const INTEG_TEST_LATEST_ORACLE = getLatestVersion(rds.OracleEngineVersion);
