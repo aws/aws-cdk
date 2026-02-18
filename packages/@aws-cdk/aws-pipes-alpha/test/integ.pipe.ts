@@ -2,7 +2,8 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, InputTransformation, Pipe, SourceConfig, TargetConfig } from '../lib';
+import type { EnrichmentParametersConfig, IEnrichment, IPipe, ISource, ITarget, SourceConfig, TargetConfig } from '../lib';
+import { DynamicInput, InputTransformation, Pipe } from '../lib';
 import { name } from '../package.json';
 
 const app = new cdk.App({

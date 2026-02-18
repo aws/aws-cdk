@@ -1,11 +1,14 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
-import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
+import type { IBucket, EventType, NotificationKeyFilter } from '../bucket';
+import { Bucket } from '../bucket';
+import type { IBucketNotificationDestination } from '../destination';
+import { BucketNotificationDestinationType } from '../destination';
 
 interface NotificationsProps {
   /**

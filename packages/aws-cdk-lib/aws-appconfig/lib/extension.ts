@@ -1,16 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnExtension, CfnExtensionAssociation } from './appconfig.generated';
 import { getHash, stringifyObjects } from './private/hash';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as sns from '../../aws-sns';
-import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type * as sns from '../../aws-sns';
+import type * as sqs from '../../aws-sqs';
+import type { IResource } from '../../core';
+import { ArnFormat, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Defines Extension action points.

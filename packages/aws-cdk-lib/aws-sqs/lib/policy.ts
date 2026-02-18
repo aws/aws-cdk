@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IQueue } from './queue-base';
+import type { Construct } from 'constructs';
+import type { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';

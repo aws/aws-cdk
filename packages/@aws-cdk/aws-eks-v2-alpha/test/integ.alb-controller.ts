@@ -22,6 +22,9 @@ class EksClusterAlbControllerStack extends Stack {
       version: eks.KubernetesVersion.V1_33,
       albController: {
         version: LATEST_VERSION,
+        additionalHelmChartValues: {
+          enableWafv2: false,
+        },
       },
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),

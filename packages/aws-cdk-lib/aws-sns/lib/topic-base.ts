@@ -1,15 +1,15 @@
-import * as constructs from 'constructs';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { TopicPolicy } from './policy';
 import { TopicGrants } from './sns-grants.generated';
-import { ITopicRef, TopicReference } from './sns.generated';
-import { ITopicSubscription } from './subscriber';
+import type { ITopicRef, TopicReference } from './sns.generated';
+import type { ITopicSubscription } from './subscriber';
 import { Subscription } from './subscription';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
-import { IResource, Resource, ResourceProps, Token } from '../../core';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
+import type { IResource, ResourceProps } from '../../core';
+import { Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
@@ -225,6 +225,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   /**
    * Grant topic publishing permissions to the given identity
+   *
+   * The use of this method is discouraged. Please use `grants.publish()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPublish(grantee: iam.IGrantable) {
@@ -233,6 +236,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 
   /**
    * Grant topic subscribing permissions to the given identity
+   *
+   * The use of this method is discouraged. Please use `grants.subscribe()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantSubscribe(grantee: iam.IGrantable) {
@@ -243,7 +249,7 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
    * Represents a notification target
    * That allows SNS topic to associate with this rule target.
    */
-  public bindAsNotificationRuleTarget(_scope: constructs.Construct): notifications.NotificationRuleTargetConfig {
+  public bindAsNotificationRuleTarget(_scope: Construct): notifications.NotificationRuleTargetConfig {
     // SNS topic need to grant codestar-notifications service to publish
     // @see https://docs.aws.amazon.com/dtconsole/latest/userguide/set-up-sns.html
     this.grantPublish(new iam.ServicePrincipal('codestar-notifications.amazonaws.com'));

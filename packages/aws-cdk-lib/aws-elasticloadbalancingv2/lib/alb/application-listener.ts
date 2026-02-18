@@ -1,23 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ListenerAction } from './application-listener-action';
 import { ApplicationListenerCertificate } from './application-listener-certificate';
-import { ApplicationListenerRule, FixedResponse, RedirectResponse } from './application-listener-rule';
-import { IApplicationLoadBalancer } from './application-load-balancer';
-import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
-import { ListenerCondition } from './conditions';
+import type { FixedResponse, RedirectResponse } from './application-listener-rule';
+import { ApplicationListenerRule } from './application-listener-rule';
+import type { IApplicationLoadBalancer } from './application-load-balancer';
+import type { IApplicationLoadBalancerTarget, IApplicationTargetGroup } from './application-target-group';
+import { ApplicationTargetGroup } from './application-target-group';
+import type { ListenerCondition } from './conditions';
 
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Annotations, Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import type { Duration } from '../../../core';
+import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
-import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
-import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, IpAddressType, SslPolicy } from '../shared/enums';
-import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
+import type { HealthCheck } from '../shared/base-target-group';
+import type { ApplicationProtocolVersion, TargetGroupLoadBalancingAlgorithmType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, IpAddressType } from '../shared/enums';
+import type { IListenerCertificate } from '../shared/listener-certificate';
+import { ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 
 /**

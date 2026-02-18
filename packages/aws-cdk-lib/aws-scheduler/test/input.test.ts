@@ -2,7 +2,8 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { App, Stack } from '../../core';
-import { ContextAttribute, IScheduleTarget, ScheduleExpression, ScheduleTargetConfig, ScheduleTargetInput } from '../lib';
+import type { IScheduleTarget, ScheduleTargetConfig } from '../lib';
+import { ContextAttribute, ScheduleExpression, ScheduleTargetInput } from '../lib';
 import { Schedule } from '../lib/schedule';
 
 class SomeLambdaTarget implements IScheduleTarget {

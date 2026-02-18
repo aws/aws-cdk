@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '../../../core';
-import { ThrottleSettings } from '../common';
-import { QuotaSettings, UsagePlan, UsagePlanPerApiStage } from './usage-plan';
-import { ApiKeyReference, CfnApiKey, IApiKeyRef } from '../../../aws-apigateway/lib';
+import type { Construct } from 'constructs';
+import type { IResource as IResourceBase } from '../../../core';
+import { ArnFormat, Resource, Stack } from '../../../core';
+import type { ThrottleSettings } from '../common';
+import type { QuotaSettings, UsagePlanPerApiStage } from './usage-plan';
+import { UsagePlan } from './usage-plan';
+import type { ApiKeyReference, IApiKeyRef } from '../../../aws-apigateway/lib';
+import { CfnApiKey } from '../../../aws-apigateway/lib';
 import * as iam from '../../../aws-iam';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';

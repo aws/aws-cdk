@@ -1,15 +1,16 @@
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster } from './cluster';
-import { DatabaseOptions } from './database-options';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
 import { HandlerName } from './private/database-query-provider/handler-name';
-import { UserHandlerProps } from './private/handler-props';
+import type { UserHandlerProps } from './private/handler-props';
 import { UserTablePrivileges } from './private/privileges';
-import { ITable, TableAction } from './table';
+import type { ITable, TableAction } from './table';
 
 /**
  * Properties for configuring a Redshift user.

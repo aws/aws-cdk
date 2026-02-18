@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import * as cloudwatch from '../../../aws-cloudwatch';
+import type * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';

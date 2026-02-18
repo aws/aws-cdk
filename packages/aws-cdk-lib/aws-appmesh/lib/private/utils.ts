@@ -1,12 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Token, TokenComparison, ValidationError } from '../../../core';
-import { CfnVirtualNode } from '../appmesh.generated';
-import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
-import { HeaderMatch } from '../header-match';
-import { ListenerTlsOptions } from '../listener-tls-options';
-import { QueryParameterMatch } from '../query-parameter-match';
-import { GrpcRouteMatch } from '../route-spec';
-import { TlsClientPolicy } from '../tls-client-policy';
+import type { CfnVirtualNode } from '../appmesh.generated';
+import type { GrpcGatewayRouteMatch } from '../gateway-route-spec';
+import type { HeaderMatch } from '../header-match';
+import type { ListenerTlsOptions } from '../listener-tls-options';
+import type { QueryParameterMatch } from '../query-parameter-match';
+import type { GrpcRouteMatch } from '../route-spec';
+import type { TlsClientPolicy } from '../tls-client-policy';
 
 /**
  * Generated Connection pool config

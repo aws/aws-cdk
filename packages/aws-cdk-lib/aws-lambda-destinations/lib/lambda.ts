@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { EventBridgeDestination } from './event-bridge';
 import * as events from '../../aws-events';
 import * as targets from '../../aws-events-targets';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { ValidationError } from '../../core';
 
 /**

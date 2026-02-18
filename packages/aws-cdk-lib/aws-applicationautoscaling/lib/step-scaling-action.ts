@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
+import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
  * Properties for a scaling policy

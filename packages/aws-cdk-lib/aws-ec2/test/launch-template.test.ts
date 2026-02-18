@@ -1,7 +1,7 @@
 import { stringLike } from './util';
 import { Annotations, Template, Match } from '../../assertions';
+import type { CfnInstanceProfile } from '../../aws-iam';
 import {
-  CfnInstanceProfile,
   Role,
   ServicePrincipal,
   InstanceProfile,
@@ -15,9 +15,9 @@ import {
   Tags,
 } from '../../core';
 import * as cxapi from '../../cx-api';
+import type { BlockDevice } from '../lib';
 import {
   AmazonLinuxImage,
-  BlockDevice,
   BlockDeviceVolume,
   CpuCredits,
   EbsDeviceVolumeType,

@@ -1,12 +1,13 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Stack } from '../stack';
-import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import type { ConstructInfo } from './runtime-info';
+import { constructInfoFromConstruct } from './runtime-info';
 import { App } from '../app';
 import { RESOURCE_SYMBOL } from '../constants';
 import { MetadataType } from '../metadata-type';
 import type { Resource } from '../resource';
 import { Stage } from '../stage';
-import { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPluginBeta1 } from '../validation';
 
 // We filter to only ever report on these constructs
 const ALLOWED_FQN_PREFIXES: ReadonlyArray<string> = [

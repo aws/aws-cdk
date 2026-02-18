@@ -1,20 +1,23 @@
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource, SecretValue } from 'aws-cdk-lib/core';
+import { ArnFormat, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
-import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
+import type { IClusterParameterGroup } from './parameter-group';
+import { ClusterParameterGroup } from './parameter-group';
+import type { IClusterSubnetGroup } from './subnet-group';
+import { ClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
@@ -283,7 +286,7 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default `NodeType.DC2_LARGE`
+   * @default `NodeType.RA3_LARGE`
    */
   readonly nodeType?: NodeType;
 
@@ -650,7 +653,7 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+    const nodeType = props.nodeType || NodeType.RA3_LARGE;
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
