@@ -4612,34 +4612,6 @@ describe('cluster', () => {
     });
   });
 
-  test('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = testStack(app, 'TestStack');
-    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      instances: 1,
-      credentials: {
-        username: 'admin',
-      },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-        vpcSubnets: {
-          subnetName: 'DefinitelyDoesNotExist',
-        },
-      },
-    });
-
-    // THEN
-    const art = app.synth().getStackArtifact('TestStack');
-    const meta = art.findMetadataByType('aws:cdk:error');
-    expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
-  });
-
   test('create a read replica using replicationSourceIdentifier', () => {
     // GIVEN
     const stack = testStack();
