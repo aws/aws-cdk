@@ -724,27 +724,73 @@ export class AuroraMysqlEngineVersion {
    *
    * @param auroraMysqlFullVersion the full version string,
    *   for example "5.7.mysql_aurora.2.78.3.6"
-   * @param auroraMysqlMajorVersion the major version of the engine,
-   *   defaults to "5.7"
+   * @param auroraMysqlMajorVersion the major version of the engine.
+   *   If not provided, the major version will be inferred from the full version string.
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
+    const resolvedMajorVersion = auroraMysqlMajorVersion ??
+      AuroraMysqlEngineVersion.majorVersionFromFullVersion(auroraMysqlFullVersion);
     // Detects whether the auto-pause feature is supported.
     // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
-    const coercedVersion = semver.valid(semver.coerce(auroraMysqlMajorVersion));
-    const serverlessV2AutoPauseSupported = auroraMysqlMajorVersion === '8.0'
+    const coercedVersion = semver.valid(semver.coerce(resolvedMajorVersion));
+    const serverlessV2AutoPauseSupported = resolvedMajorVersion === '8.0'
       ? auroraMysqlFullVersion >= '8.0.mysql_aurora.3.08.0'
       : (coercedVersion != null && semver.satisfies(coercedVersion, '>=8.1'));
     return new AuroraMysqlEngineVersion(
-      auroraMysqlFullVersion, auroraMysqlMajorVersion,
+      auroraMysqlFullVersion, resolvedMajorVersion,
       {
-        combineImportAndExportRoles: (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
+        combineImportAndExportRoles: resolvedMajorVersion !== '5.7',
         serverlessV2AutoPauseSupported,
       },
     );
   }
 
+  /**
+   * Create a new AuroraMysqlEngineVersion specifying only the major version.
+   *
+   * This allows CloudFormation to select the default minor version for the
+   * given major version at deployment time, rather than pinning to a specific
+   * full version.
+   *
+   * @param auroraMysqlMajorVersion the major version of the engine,
+   *   for example "8.0"
+   */
+  public static ofMajorVersion(auroraMysqlMajorVersion: string): AuroraMysqlEngineVersion {
+    const coercedVersion = semver.valid(semver.coerce(auroraMysqlMajorVersion));
+    const serverlessV2AutoPauseSupported = coercedVersion != null
+      && semver.satisfies(coercedVersion, '>=8.0');
+    return new AuroraMysqlEngineVersion(
+      undefined, auroraMysqlMajorVersion,
+      {
+        combineImportAndExportRoles: auroraMysqlMajorVersion !== '5.7',
+        serverlessV2AutoPauseSupported,
+      },
+    );
+  }
+
+  /**
+   * Infer the major version from a full Aurora MySQL version string.
+   *
+   * Examples:
+   *   "8.0.mysql_aurora.3.07.1" -> "8.0"
+   *   "5.7.mysql_aurora.2.12.3" -> "5.7"
+   *   "5.7.12"                  -> "5.7"
+   */
+  private static majorVersionFromFullVersion(fullVersion: string): string {
+    const mysqlAuroraIndex = fullVersion.indexOf('.mysql_aurora.');
+    if (mysqlAuroraIndex !== -1) {
+      return fullVersion.substring(0, mysqlAuroraIndex);
+    }
+    // Fallback: take first two dot-separated segments (e.g., "5.7" from "5.7.12")
+    const parts = fullVersion.split('.');
+    if (parts.length >= 2) {
+      return `${parts[0]}.${parts[1]}`;
+    }
+    return fullVersion;
+  }
+
   private static builtIn_5_7(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
+    return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`, '5.7');
   }
 
   private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
@@ -772,16 +818,24 @@ export class AuroraMysqlEngineVersion {
    * @internal
    */
   public readonly _serverlessV2AutoPauseSupported?: boolean;
+  /**
+   * Whether this version was created with only a major version (no full version pinned).
+   * When true, CloudFormation will select the default minor version at deployment time.
+   *
+   * @internal
+   */
+  public readonly _isMajorVersionOnly?: boolean;
 
   private constructor(
     auroraMysqlFullVersion: string,
-    auroraMysqlMajorVersion: string = '5.7',
+    auroraMysqlMajorVersion: string,
     auroraMysqlEngineVersionOptions?: AuroraMysqlEngineVersionOptions,
   ) {
     this.auroraMysqlFullVersion = auroraMysqlFullVersion;
     this.auroraMysqlMajorVersion = auroraMysqlMajorVersion;
     this._combineImportAndExportRoles = auroraMysqlEngineVersionOptions?.combineImportAndExportRoles;
     this._serverlessV2AutoPauseSupported = auroraMysqlEngineVersionOptions?.serverlessV2AutoPauseSupported;
+    this._isMajorVersionOnly = auroraMysqlEngineVersionOptions?.isMajorVersionOnly;
   }
 }
 

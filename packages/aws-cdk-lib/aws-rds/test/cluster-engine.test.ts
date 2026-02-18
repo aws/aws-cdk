@@ -76,6 +76,8 @@ describe('cluster engine', () => {
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._combineImportAndExportRoles).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._combineImportAndExportRoles).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
+    // Inferred major version for 8.0 should also set combineImportAndExportRoles to true
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1')._combineImportAndExportRoles).toEqual(true);
   });
 
   test('AuroraMysqlEngineVersion.of() determines serverlessV2AutoPauseSupported', () => {
@@ -250,5 +252,72 @@ describe('cluster engine', () => {
     expect(engine_ver_3_10_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_11_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
     expect(engine_ver_3_11_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
+  });
+
+  test('AuroraMysqlEngineVersion.of() infers major version from full version string', () => {
+    // 8.0 full version without explicit major version
+    const ver80 = AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1');
+    expect(ver80.auroraMysqlMajorVersion).toEqual('8.0');
+    expect(ver80._combineImportAndExportRoles).toEqual(true);
+
+    // 5.7 full version without explicit major version
+    const ver57 = AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3');
+    expect(ver57.auroraMysqlMajorVersion).toEqual('5.7');
+    expect(ver57._combineImportAndExportRoles).toEqual(false);
+
+    // Legacy format without mysql_aurora prefix
+    const verLegacy = AuroraMysqlEngineVersion.of('5.7.12');
+    expect(verLegacy.auroraMysqlMajorVersion).toEqual('5.7');
+  });
+
+  test('AuroraMysqlEngineVersion.of() respects explicit major version over inference', () => {
+    const ver = AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0');
+    expect(ver.auroraMysqlMajorVersion).toEqual('8.0');
+    expect(ver.auroraMysqlFullVersion).toEqual('8.0.mysql_aurora.3.07.1');
+  });
+
+  test('AuroraMysqlEngineVersion.of() with inferred major version determines serverlessV2AutoPauseSupported', () => {
+    // 8.0 below threshold
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1')._serverlessV2AutoPauseSupported).toEqual(false);
+    // 8.0 at/above threshold
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.0')._serverlessV2AutoPauseSupported).toEqual(true);
+    // 5.7 always false
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._serverlessV2AutoPauseSupported).toEqual(false);
+  });
+
+  test('AuroraMysqlEngineVersion.ofMajorVersion() creates version with undefined fullVersion', () => {
+    const ver = AuroraMysqlEngineVersion.ofMajorVersion('8.0');
+    expect(ver.auroraMysqlFullVersion).toBeUndefined();
+    expect(ver.auroraMysqlMajorVersion).toEqual('8.0');
+    expect(ver._combineImportAndExportRoles).toEqual(true);
+    expect(ver._serverlessV2AutoPauseSupported).toEqual(true);
+  });
+
+  test('AuroraMysqlEngineVersion.ofMajorVersion("5.7") sets correct feature flags', () => {
+    const ver = AuroraMysqlEngineVersion.ofMajorVersion('5.7');
+    expect(ver.auroraMysqlFullVersion).toBeUndefined();
+    expect(ver.auroraMysqlMajorVersion).toEqual('5.7');
+    expect(ver._combineImportAndExportRoles).toEqual(false);
+    expect(ver._serverlessV2AutoPauseSupported).toEqual(false);
+  });
+
+  test('ofMajorVersion() produces correct parameter group family', () => {
+    const engine80 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.ofMajorVersion('8.0'),
+    });
+    expect(engine80.parameterGroupFamily).toEqual('aurora-mysql8.0');
+
+    const engine57 = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.ofMajorVersion('5.7'),
+    });
+    expect(engine57.parameterGroupFamily).toEqual('aurora-mysql5.7');
+  });
+
+  test('ofMajorVersion() produces undefined fullVersion in engine', () => {
+    const engine = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.ofMajorVersion('8.0'),
+    });
+    expect(engine.engineVersion?.fullVersion).toBeUndefined();
+    expect(engine.engineVersion?.majorVersion).toEqual('8.0');
   });
 });
