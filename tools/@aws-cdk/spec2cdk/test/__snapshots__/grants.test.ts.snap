@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`generates grants for methods with and without key actions 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -39,8 +39,8 @@ export class TopicGrants {
   public static fromTopic(resource: sns.ITopicRef): TopicGrants {
     return new TopicGrants({
       resource: resource,
-      encryptedResource: (iam.GrantableResources.isEncryptedResource(resource) ? resource : undefined),
-      policyResource: (iam.GrantableResources.isResourceWithPolicy(resource) ? resource : undefined)
+      encryptedResource: iam.EncryptedResources.of(resource),
+      policyResource: iam.ResourceWithPolicies.of(resource)
     });
   }
 
