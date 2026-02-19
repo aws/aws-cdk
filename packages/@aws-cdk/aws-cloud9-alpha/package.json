@@ -87,14 +87,14 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
   "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "engines": {
     "node": ">= 18.0.0"
