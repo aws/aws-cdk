@@ -1773,7 +1773,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       have no traits defined yet. Traits regulate behaviors such as how to create 
       resource policies, or how to find an encryption key for a given L1 construct.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.239.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
