@@ -443,7 +443,7 @@ describe('fargate', () => {
 
     new eks.FargateCluster(stack, 'FargateCluster', {
       version: CLUSTER_VERSION,
-      secretsEncryptionKey: new kms.Key(stack, 'Key', { policy: new iam.PolicyDocument() }),
+      secretsEncryptionKey: new kms.Key(stack, 'Key'),
       kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
     });
 
