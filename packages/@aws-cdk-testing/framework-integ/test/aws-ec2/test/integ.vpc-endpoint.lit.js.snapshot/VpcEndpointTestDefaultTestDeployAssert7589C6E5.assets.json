@@ -1,16 +1,16 @@
 {
   "version": "50.0.0",
   "files": {
-    "05b7e415f2cab0f7be8af5a40d8c7044290fd56e8f9e1e9f16c9c5386a9521bc": {
-      "displayName": "aws-cdk-ec2-vpc-endpoint Template",
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+      "displayName": "VpcEndpointTestDefaultTestDeployAssert7589C6E5 Template",
       "source": {
-        "path": "aws-cdk-ec2-vpc-endpoint.template.json",
+        "path": "VpcEndpointTestDefaultTestDeployAssert7589C6E5.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8cc5e0b3": {
+        "current_account-current_region-d8d86b35": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "05b7e415f2cab0f7be8af5a40d8c7044290fd56e8f9e1e9f16c9c5386a9521bc.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
