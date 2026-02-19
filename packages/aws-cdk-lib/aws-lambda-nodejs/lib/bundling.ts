@@ -260,7 +260,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [], // JSON.stringify for footer content
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
       ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
+      ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
   }
 
@@ -636,7 +636,14 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
   return `node${match[1]}`;
 }
 
-function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
+/**
+ * Converts esbuildArgs object to CLI arguments array.
+ *
+ * @example
+ * // Input: { '--minify': true, '--log-limit': '0', '--out-extension': '.js=.mjs' }
+ * // Output: ['--minify', '--log-limit=0', '--out-extension:.js=.mjs']
+ */
+function toCliArgsArray(esbuildArgs: { [key: string]: string | boolean }): string[] {
   const args = new Array<string>();
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
@@ -644,13 +651,13 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
     if (value === true || value === '') {
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
-      args.push(`${key}:"${value}"`);
+      args.push(`${key}:${value}`);
     } else if (value) {
-      args.push(`${key}="${value}"`);
+      args.push(`${key}=${value}`);
     }
   }
 
-  return args.join(' ');
+  return args;
 }
 
 /**
