@@ -286,7 +286,7 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default `NodeType.DC2_LARGE`
+   * @default `NodeType.RA3_LARGE`
    */
   readonly nodeType?: NodeType;
 
@@ -653,7 +653,7 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+    const nodeType = props.nodeType || NodeType.RA3_LARGE;
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
