@@ -457,7 +457,7 @@ export class ServerlessCache extends ServerlessCacheBase {
       serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
-      dailySnapshotTime: props.backup?.backupTime,
+      dailySnapshotTime: this.formatBackupTime(props.backup?.backupTime),
       snapshotRetentionLimit: props.backup?.backupRetentionLimit,
       finalSnapshotName: props.backup?.backupNameBeforeDeletion,
       snapshotArnsToRestore: props.backup?.backupArnsToRestore,
@@ -679,3 +679,17 @@ export class ServerlessCache extends ServerlessCacheBase {
       };
     }
   }
+
+  /**
+   * Format schedule to HH:MM format for daily backups
+   *
+   * @param schedule The schedule to format
+   * @returns Time string in HH:MM format
+   */
+  private formatBackupTime(backupTime?: TimeOfDay): string {
+    const hour = backupTime.hour ? backupTime.hour : '0';
+    const minute = backupTime.minute ? backupTime.minute : '0';
+
+    return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+  }
+}
