@@ -9,7 +9,9 @@ class SqsProvisionedPollersTest extends cdk.Stack {
     super(scope, id);
 
     const fn = new TestFunction(this, 'F');
-    const queue = new sqs.Queue(this, 'Q');
+    const queue = new sqs.Queue(this, 'Q', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
 
     fn.addEventSource(new SqsEventSource(queue, {
       batchSize: 5,
