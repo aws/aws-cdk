@@ -31,19 +31,27 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build deployment-integ
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+
       - name: Check for snapshot changes
         id: check_snapshots
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
         run: |
-          # Compare PR head against the merge base to detect snapshot file changes
-          MERGE_BASE=$(git merge-base "$BASE_SHA" "$HEAD_SHA")
-          if git diff --name-only "$MERGE_BASE" "$HEAD_SHA" | grep -q '\.js\.snapshot'; then
-            echo "PR contains snapshot changes"
+          # Reuses getChangedSnapshots() from utils.ts — single source of truth
+          if yarn --cwd tools/@aws-cdk/integration-test-deployment check-snapshots; then
             echo "has_snapshots=true" >> $GITHUB_OUTPUT
           else
-            echo "No snapshot changes detected in this PR"
             echo "has_snapshots=false" >> $GITHUB_OUTPUT
           fi
 
