@@ -1,28 +1,30 @@
 {
-  "version": "21.0.0",
+  "version": "48.0.0",
   "files": {
     "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37": {
+      "displayName": "Build/Content",
       "source": {
         "path": "asset.b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-cc556380": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "b95e4173bc399a8f686a4951aa26e01de1ed1e9d981ee1a7f18a15512dbdcb37.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "2bd5bde6b8c6af8bf7ca2e03bf58bcf2fbd6a755101d9747a72238d65e0d8230": {
+    "2fb73aa50cbf5c02fc85609e8582d1c347691ab354225b0428b071d72326cec0": {
+      "displayName": "aws-gamelift-build Template",
       "source": {
         "path": "aws-gamelift-build.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-591c360c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2bd5bde6b8c6af8bf7ca2e03bf58bcf2fbd6a755101d9747a72238d65e0d8230.json",
+          "objectKey": "2fb73aa50cbf5c02fc85609e8582d1c347691ab354225b0428b071d72326cec0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

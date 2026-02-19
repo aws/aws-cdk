@@ -28,7 +28,7 @@ For example, let's say the minimum version your library needs is `2.38.0`. Your 
 {
   "peerDependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "devDependencies": {
     /* Install the oldest version for testing so we don't accidentally use features from a newer version than we declare */
@@ -43,7 +43,7 @@ For CDK apps, declare them under the `dependencies` section. Use a caret so you 
 {
   "dependencies": {
     "aws-cdk-lib": "^2.38.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   }
 }
 ```
@@ -523,6 +523,12 @@ functions, it is important to know the format of the ARN you are dealing with.
 For an exhaustive list of ARN formats used in AWS, see [AWS ARNs and
 Namespaces](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
 in the AWS General Reference.
+
+Some L1 constructs also have an auto-generated static `arnFor<ResourceName>()`
+method that can be used to generate ARNs for resources of that type. For example, 
+`sns.Topic.arnForTopic(topic)` can be used to generate an ARN for a given topic.
+Note that the parameter to this method is of type `ITopicRef`, which means that
+it can be used with both `Topic` (L2) and `CfnTopic` (L1) constructs.
 
 ## Dependencies
 

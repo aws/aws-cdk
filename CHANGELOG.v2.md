@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.238.0](https://github.com/aws/aws-cdk/compare/v2.237.1...v2.238.0) (2026-02-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bedrock-agentcore:** Interface extensions require new property implementations
+* **aws-bedrock-agentcore-alpha:** 
+*  - IGateway now requires gatewayRef getter
+*  - IGatewayTarget now requires gatewayTargetRef getter
+*  - IMemory now requires memoryRef getter
+*  - IBedrockAgentRuntime now requires runtimeRef getter
+*  - IRuntimeEndpoint now requires runtimeEndpointRef getter
+*  - IBrowserCustom now requires browserCustomRef getter
+*  - ICodeInterpreterCustom now requires codeInterpreterCustomRef getter
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#36834](https://github.com/aws/aws-cdk/issues/36834)) ([5143fdf](https://github.com/aws/aws-cdk/commit/5143fdfb57024ced8d9a2988216c78690f6121b0))
+* **core:** allow indentation suppression in nested stacks ([#35122](https://github.com/aws/aws-cdk/issues/35122)) ([d629b15](https://github.com/aws/aws-cdk/commit/d629b15954bd313876de2df055265e27569af5a4)), closes [#32798](https://github.com/aws/aws-cdk/issues/32798) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/stack.ts#L207](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/stack.ts/issues/L207) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/stack.ts#L207](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/stack.ts/issues/L207) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/nested-stack.ts#L25C18-L25C34](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/nested-stack.ts/issues/L25C18-L25C34)
+* **ec2:** support Firehose `IDeliveryStreamRef` as flow log destination ([#36278](https://github.com/aws/aws-cdk/issues/36278)) ([cd73498](https://github.com/aws/aws-cdk/commit/cd73498af34fcc150c1290c5bd1f21c272239802)), closes [#33883](https://github.com/aws/aws-cdk/issues/33883) [#34596](https://github.com/aws/aws-cdk/issues/34596) [#33757](https://github.com/aws/aws-cdk/issues/33757)
+* **eks:** add removal policy for all constructs ([#35835](https://github.com/aws/aws-cdk/issues/35835)) ([875d9b8](https://github.com/aws/aws-cdk/commit/875d9b8f7dc4e3e1a5187b89303de3645485e3cf))
+* **eks:** add support for EC2, HYBRID_LINUX, and HYPERPOD_LINUX access entry types ([#36350](https://github.com/aws/aws-cdk/issues/36350)) ([cc059c6](https://github.com/aws/aws-cdk/commit/cc059c6dcfe12240057f5fc58bd076083fd77acd)), closes [#34394](https://github.com/aws/aws-cdk/issues/34394)
+* **glue:** typed partition projection ([#35660](https://github.com/aws/aws-cdk/issues/35660)) ([cb1658f](https://github.com/aws/aws-cdk/commit/cb1658f42522ad9abaec4de6ce0c0d43292e73a1)), closes [#35428](https://github.com/aws/aws-cdk/issues/35428)
+
+
+### Bug Fixes
+
+* **core:** intrinsic cfn function tokens are not detected as such in java ([#36843](https://github.com/aws/aws-cdk/issues/36843)) ([3f29f11](https://github.com/aws/aws-cdk/commit/3f29f11d942b3f005732f17c3f606d081b8ba0d7))
+* **events:** restore `Match.anyOf` support for raw strings ([#36908](https://github.com/aws/aws-cdk/issues/36908)) ([6804c7c](https://github.com/aws/aws-cdk/commit/6804c7c75c7e67f1c61dac4aea43af5fa54969e2)), closes [#36902](https://github.com/aws/aws-cdk/issues/36902) [#36602](https://github.com/aws/aws-cdk/issues/36602) [#36602](https://github.com/aws/aws-cdk/issues/36602)
+* **iam:** undeprecate openIdConnectProviderArn and openIdConnectProviderIssuer in IOidcProvider ([#36859](https://github.com/aws/aws-cdk/issues/36859)) ([cbf0b03](https://github.com/aws/aws-cdk/commit/cbf0b03d58559574752b3ebe80e9cb596e0ef6b0))
+
+
+### Miscellaneous Chores
+
+* **bedrock-agentcore:** reference interface ([#36803](https://github.com/aws/aws-cdk/issues/36803)) ([87f1087](https://github.com/aws/aws-cdk/commit/87f1087060e7c15616500e31de6a0603c37b8843))
+
 ## [2.237.1](https://github.com/aws/aws-cdk/compare/v2.237.0...v2.237.1) (2026-02-03)
 
 

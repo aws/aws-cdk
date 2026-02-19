@@ -1928,7 +1928,7 @@ To get started, add the following dependencies to your `package.json` file:
 "dependencies": {
   "cdk8s": "^2.0.0",
   "cdk8s-plus-25": "^2.0.0",
-  "constructs": "^10.0.0"
+  "constructs": "^10.5.0"
 }
 ```
 

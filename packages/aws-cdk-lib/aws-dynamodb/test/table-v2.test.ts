@@ -1,17 +1,26 @@
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
 import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
 } from '../lib';
 import {
-  AttributeType, Billing, Capacity, TableV2, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  AttributeType,
+  Billing,
+  Capacity,
+  TableV2,
+  ProjectionType,
+  StreamViewType,
+  TableClass,
+  TableEncryptionV2,
   MultiRegionConsistency,
   ContributorInsightsMode,
+  GlobalTableSettingsReplicationMode,
+  TableV2MultiAccountReplica,
 } from '../lib';
 
 describe('table', () => {
@@ -215,7 +224,7 @@ describe('table', () => {
     }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
   });
 
-  test('recoveryPeriodInDays set but pitr disabled', () => {
+  test('recoveryPeriodInDays set but pitr ENABLED', () => {
     const stack = new Stack(undefined, 'Stack');
     expect(() => {
       new TableV2(stack, 'Table', {
@@ -3719,7 +3728,427 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
 });
 
-test('can add GSI with multi-attribute partition keys', () => {
+test('grantMultiAccountReplicationTo adds required resource policy statements', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/RemoteTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Sid: 'AllowMultiAccountReplicaAssociation-222222222222',
+                Effect: 'Allow',
+                Action: 'dynamodb:AssociateTableReplica',
+                Resource: '*',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']],
+                  },
+                },
+              },
+              {
+                Sid: 'AllowReplicationServiceReadWrite-222222222222',
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Resource: '*',
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': ['111111111111', '222222222222'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('grantMultiAccountReplicationTo grants KMS permissions for encrypted tables', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const key = new Key(stack, 'Key');
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/RemoteTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: [
+            'kms:Decrypt',
+            'kms:DescribeKey',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 'replication.dynamodb.amazonaws.com',
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+test('grantMultiAccountReplicationFrom adds required resource policy statements', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Sid: 'AllowReplicationService',
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Resource: '*',
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': ['222222222222', '111111111111'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('grantMultiAccountReplicationFrom grants KMS permissions for encrypted tables', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const key = new Key(stack, 'Key');
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: [
+            'kms:Decrypt',
+            'kms:DescribeKey',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 'replication.dynamodb.amazonaws.com',
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+test('TableV2MultiAccountReplica creates replica with permissions', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
+  });
+
+  // Grants are automatically set up - no manual call needed
+
+  // Source table should have resource policy with account principal
+  Template.fromStack(sourceStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: 'dynamodb:AssociateTableReplica',
+              }),
+              Match.objectLike({
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+              }),
+            ]),
+          },
+        },
+      },
+    ],
+  });
+
+  // Replica table should be created with source ARN and replication mode in replicas
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: Stack.of(replicaStack).region,
+        GlobalTableSettingsReplicationMode: 'ENABLED',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Sid: 'AllowReplicationService',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+              }),
+            ]),
+          },
+        },
+      },
+    ],
+  });
+
+  // Verify replica has source ARN reference (using Fn::Join for cross-stack reference)
+  const replicaTemplate = Template.fromStack(replicaStack);
+  const resources = replicaTemplate.findResources('AWS::DynamoDB::GlobalTable');
+  const replicaTable = Object.values(resources)[0];
+  expect(replicaTable.Properties.GlobalTableSourceArn).toBeDefined();
+});
+
+test('TableV2MultiAccountReplica throws when same account', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(stack, 'Replica', {
+      replicaSourceTable: table,
+    });
+  }).toThrow('Multi-account replica must be in a different account than the source table. For same-account replication, use addReplica() instead.');
+});
+
+test('TableV2MultiAccountReplica on imported table does not throw', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  );
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: importedTable,
+  });
+
+  // Should issue a warning about missing resource policy
+  const warnings = Annotations.fromStack(replicaStack).findWarning('*', Match.stringLikeRegexp('.*imported without a resource policy.*'));
+  expect(warnings.length).toBe(1);
+  expect(warnings[0].entry.data).toContain('manually configure multi-account replication permissions');
+});
+
+test('TableV2MultiAccountReplica works with fromTableArn without key schema', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // Import using fromTableArn - no key schema needed
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  );
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: importedTable,
+  });
+
+  // Verify replica is created with globalTableSourceArn
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalTableSourceArn: 'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  });
+});
+
+test('grantMultiAccountReplicationTo validates ARN has account', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1::table/RemoteTable');
+  }).toThrow('Invalid table ARN');
+});
+
+test('grantMultiAccountReplicationFrom validates ARN has account', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2::table/SourceTable');
+  }).toThrow('Invalid table ARN');
+});
+
+test('TableV2MultiAccountReplica throws error when replica is in same region', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-1' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const table = new TableV2(sourceStack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: table,
+    });
+  }).toThrow(/Multi-account replica must be in a different region/);
+});
+
+test('TableV2MultiAccountReplica with all optional parameters', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  const kinesisStream = {
+    streamArn: 'arn:aws:kinesis:us-east-1:222222222222:stream/MyStream',
+  } as any;
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
+    deletionProtection: true,
+    tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+    kinesisStream,
+    contributorInsightsSpecification: { enabled: true },
+    pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+    tags: [{ key: 'Environment', value: 'Test' }],
+    removalPolicy: RemovalPolicy.DESTROY,
+  });
+
+  // Grants are automatically set up - no manual call needed
+
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      Match.objectLike({
+        Region: 'us-east-1',
+        GlobalTableSettingsReplicationMode: 'ENABLED',
+        DeletionProtectionEnabled: true,
+        TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        KinesisStreamSpecification: {
+          StreamArn: 'arn:aws:kinesis:us-east-1:222222222222:stream/MyStream',
+        },
+        ContributorInsightsSpecification: { Enabled: true },
+        PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
+        Tags: [{ Key: 'Environment', Value: 'Test' }],
+      }),
+    ],
+  });
+});
+
+test('TableV2MultiAccountReplica throws when replicaSourceTable is missing', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'Replica', {});
+  }).toThrow('replicaSourceTable is required for TableV2MultiAccountReplica');
+});
+
+test('TableV2MultiAccountReplica with custom encryption', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  const key = new Key(replicaStack, 'Key');
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      Match.objectLike({
+        SSESpecification: {
+          KMSMasterKeyId: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('Key'), 'Arn'],
+          },
+        },
+      }),
+    ],
+  });
+});
+
+test('TableV2MultiAccountReplica does not throw when account/region are tokens', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack');
+  const replicaStack = new Stack(app, 'ReplicaStack');
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  // Should not throw when accounts/regions are unresolved tokens
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: sourceTable,
+    });
+  }).not.toThrow();
+});
+
+test('can add GSI with compound partition keys', () => {
   const stack = new Stack();
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
