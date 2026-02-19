@@ -140,6 +140,18 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new BucketBlockPublicAccess());
 ```
 
+**BucketEncryption**: Configures server-side encryption rules on S3 buckets, including support for blocking encryption types like SSE-C
+
+```typescript
+const bucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(bucket).apply(new BucketEncryption({
+  serverSideEncryptionByDefault: {
+    sseAlgorithm: BucketEncryption.SSEAlgorithm.AWS_KMS,
+  },
+  blockedEncryptionTypes: { encryptionType: [BucketEncryption.EncryptionType.SSE_C] },
+}));
+```
+
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript

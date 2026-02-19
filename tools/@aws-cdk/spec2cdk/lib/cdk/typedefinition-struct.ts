@@ -1,5 +1,5 @@
 import type { Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import type { ClassType, PropertySpec } from '@cdklabs/typewriter';
+import type { ClassType, IScope, PropertySpec } from '@cdklabs/typewriter';
 import { expr, FreeFunction, Module, Stability, stmt, StructType, Type } from '@cdklabs/typewriter';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import type { RelationshipDecider } from './relationship-decider';
@@ -27,6 +27,16 @@ export interface TypeDefinitionStructOptions {
    * @default true
    */
   readonly cfnParser?: boolean;
+  /**
+   * Custom naming function for the struct type.
+   * @default structNameFromTypeDefinition
+   */
+  readonly structNamer?: (typeDef: TypeDefinition) => string;
+  /**
+   * Scope to place the struct in.
+   * @default resourceClass
+   */
+  readonly scope?: IScope;
 }
 
 /**
@@ -43,9 +53,10 @@ export class TypeDefinitionStruct extends StructType {
   private readonly options: TypeDefinitionStructOptions;
 
   constructor(options: TypeDefinitionStructOptions) {
-    super(options.resourceClass, {
+    const namer = options.structNamer ?? structNameFromTypeDefinition;
+    super(options.scope ?? options.resourceClass, {
       export: true,
-      name: structNameFromTypeDefinition(options.typeDefinition),
+      name: namer(options.typeDefinition),
       docs: {
         ...splitDocumentation(options.typeDefinition.documentation),
         stability: Stability.External,

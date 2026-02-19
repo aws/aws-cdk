@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
 import '../../../lib/with';
@@ -247,6 +248,108 @@ describe('S3 Mixins', () => {
       expect(accessConfig.blockPublicPolicy).toBe(true);
       expect(accessConfig.ignorePublicAcls).toBe(true);
       expect(accessConfig.restrictPublicBuckets).toBe(true);
+    });
+  });
+
+  describe('BucketEncryption', () => {
+    test('applies encryption with SSEAlgorithm enum', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketEncryption({
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: s3Mixins.BucketEncryption.SSEAlgorithm.AWS_KMS,
+        },
+      });
+
+      expect(mixin.supports(bucket)).toBe(true);
+      mixin.applyTo(bucket);
+
+      const encryption = bucket.bucketEncryption as any;
+      expect(encryption.serverSideEncryptionConfiguration[0].serverSideEncryptionByDefault.sseAlgorithm).toBe('aws:kms');
+    });
+
+    test('applies encryption with blockedEncryptionTypes enum', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketEncryption({
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: s3Mixins.BucketEncryption.SSEAlgorithm.AES256,
+        },
+        blockedEncryptionTypes: { encryptionType: [s3Mixins.BucketEncryption.EncryptionType.SSE_C] },
+      });
+
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'AES256',
+            },
+            BlockedEncryptionTypes: { EncryptionType: ['SSE-C'] },
+          }],
+        },
+      });
+    });
+
+    test('resolves IKeyRef to key ARN', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const key = new kms.Key(stack, 'Key');
+      const mixin = new s3Mixins.BucketEncryption({
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: s3Mixins.BucketEncryption.SSEAlgorithm.AWS_KMS,
+          kmsMasterKeyId: key,
+        },
+      });
+
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('accepts string for kmsMasterKeyId', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketEncryption({
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: s3Mixins.BucketEncryption.SSEAlgorithm.AWS_KMS,
+          kmsMasterKeyId: 'arn:aws:kms:us-east-1:123456789012:key/my-key-id',
+        },
+      });
+
+      mixin.applyTo(bucket);
+
+      const encryption = bucket.bucketEncryption as any;
+      expect(encryption.serverSideEncryptionConfiguration[0].serverSideEncryptionByDefault.kmsMasterKeyId)
+        .toBe('arn:aws:kms:us-east-1:123456789012:key/my-key-id');
+    });
+
+    test('does not support non-S3 constructs', () => {
+      const construct = new TestConstruct(stack, 'test');
+      const mixin = new s3Mixins.BucketEncryption({});
+
+      expect(mixin.supports(construct)).toBe(false);
+    });
+
+    test('apply encryption on L2 bucket with .with()', () => {
+      const bucket = new s3.Bucket(stack, 'Bucket')
+        .with(new s3Mixins.BucketEncryption({
+          serverSideEncryptionByDefault: {
+            sseAlgorithm: s3Mixins.BucketEncryption.SSEAlgorithm.AWS_KMS,
+          },
+          blockedEncryptionTypes: { encryptionType: [s3Mixins.BucketEncryption.EncryptionType.SSE_C] },
+        }));
+
+      const encryption = (bucket.node.defaultChild as s3.CfnBucket).bucketEncryption as any;
+      expect(encryption.serverSideEncryptionConfiguration[0].blockedEncryptionTypes).toEqual({ encryptionType: ['SSE-C'] });
     });
   });
 });
