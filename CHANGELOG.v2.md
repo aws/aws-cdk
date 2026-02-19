@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [2.239.0](https://github.com/aws/aws-cdk/compare/v2.238.0...v2.239.0) (2026-02-18)
+## [2.239.0](https://github.com/aws/aws-cdk/compare/v2.238.0...v2.239.0) (2026-02-19)
 
 
 ### ⚠ BREAKING CHANGES
@@ -25,6 +25,7 @@ aws-sagemaker: AWS::SageMaker::Cluster: Orchestrator.Eks property is now immutab
 ### Bug Fixes
 
 * **aws-cdk-lib:** update cloud-assembly-schema to resolve peer dependency conflict ([#36953](https://github.com/aws/aws-cdk/issues/36953)) ([f194236](https://github.com/aws/aws-cdk/commit/f194236b086eaf49996e809f616919ee117c7ba1)), closes [#36939](https://github.com/aws/aws-cdk/issues/36939)
+* **ec2:** add VPC endpoint naming conventions for some isolated regions ([#36794](https://github.com/aws/aws-cdk/issues/36794)) ([5a7fca5](https://github.com/aws/aws-cdk/commit/5a7fca5f91b11d572cbc25bf3b0efae1ee70cacd))
 * **rds:** mark deprecated versions and add new engine versions ([#36937](https://github.com/aws/aws-cdk/issues/36937)) ([6e061d0](https://github.com/aws/aws-cdk/commit/6e061d0df410556ffb45eed770436cfe7d0ad3e1))
 
 ## [2.238.0](https://github.com/aws/aws-cdk/compare/v2.237.1...v2.238.0) (2026-02-09)
