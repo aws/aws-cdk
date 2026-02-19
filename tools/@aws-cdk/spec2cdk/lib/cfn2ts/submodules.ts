@@ -2,7 +2,7 @@ import * as path from 'node:path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import { ModuleMap, ModuleMapEntry } from '../module-topology';
+import type { ModuleMap, ModuleMapEntry } from '../module-topology';
 
 /**
  * Make sure that a number of expected files exist for every service submodule

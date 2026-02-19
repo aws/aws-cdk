@@ -1,5 +1,5 @@
-import * as apig from '../../aws-apigateway';
-import * as route53 from '../../aws-route53';
+import type * as apig from '../../aws-apigateway';
+import type * as route53 from '../../aws-route53';
 import { ValidationError } from '../../core/lib/errors';
 
 /**

@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnModel, CfnModelProps } from './apigateway.generated';
-import * as jsonSchema from './json-schema';
-import { IRestApi, RestApi } from './restapi';
+import type { Construct } from 'constructs';
+import type { CfnModelProps } from './apigateway.generated';
+import { CfnModel } from './apigateway.generated';
+import type * as jsonSchema from './json-schema';
+import type { IRestApi } from './restapi';
+import { RestApi } from './restapi';
 import * as util from './util';
 import { Resource } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';

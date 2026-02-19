@@ -3,7 +3,8 @@ import * as fs from 'fs-extra';
 import writeCloudFormationIncludeMapping from '../lib/cfn2ts/cloudformation-include';
 import { generateAll } from '../lib/cfn2ts/index';
 import generateServiceSubmoduleFiles from '../lib/cfn2ts/submodules';
-import { ModuleMap, writeModuleMap, moduleMapPath } from '../lib/module-topology';
+import type { ModuleMap } from '../lib/module-topology';
+import { writeModuleMap, moduleMapPath } from '../lib/module-topology';
 import * as naming from '../lib/naming/index';
 
 const libDir = process.cwd();

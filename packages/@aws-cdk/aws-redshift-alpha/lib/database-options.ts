@@ -1,5 +1,5 @@
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { ICluster } from './cluster';
+import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import type { ICluster } from './cluster';
 
 /**
  * Properties for accessing a Redshift database

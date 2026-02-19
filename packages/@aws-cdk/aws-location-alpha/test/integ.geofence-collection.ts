@@ -1,8 +1,9 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { GeofenceCollection } from '../lib';
+import { LOCATION_SUPPORTED_REGIONS } from './integ-tests-regions';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -24,4 +25,5 @@ const app = new App();
 
 new integ.IntegTest(app, 'GeofenceCollectionTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-geofence-collection')],
+  regions: LOCATION_SUPPORTED_REGIONS,
 });

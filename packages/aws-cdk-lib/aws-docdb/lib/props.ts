@@ -1,6 +1,6 @@
-import * as kms from '../../aws-kms';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Duration, SecretValue } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration, SecretValue } from '../../core';
 
 /**
  * Backup configuration for DocumentDB databases

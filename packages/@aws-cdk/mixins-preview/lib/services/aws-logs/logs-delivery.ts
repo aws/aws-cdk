@@ -8,7 +8,7 @@ import { tryFindBucketPolicyForBucket, tryFindDeliverySourceForResource, tryFind
 import { ConstructSelector, Mixins } from '../../core';
 import * as xray from '../aws-xray/policy';
 import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * The individual elements of a logs delivery integration.
@@ -471,6 +471,43 @@ export class XRayLogsDelivery implements ILogsDelivery {
         },
       },
     }));
+  }
+}
+
+/**
+ * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
+ */
+export class DestinationLogsDelivery implements ILogsDelivery {
+  /**
+   * Creates a new Destination delivery.
+   */
+  private readonly destination: logs.IDeliveryDestinationRef;
+  constructor(destination: logs.IDeliveryDestinationRef) {
+    this.destination = destination;
+  }
+
+  /**
+   * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   */
+  public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
+    const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
+    const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
+    const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+
+    const delivery = new logs.CfnDelivery(container, 'Delivery', {
+      deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
+      deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+    });
+
+    delivery.node.addDependency(deliverySource);
+    const deliveryDestination = logs.CfnDeliveryDestination.fromDeliveryDestinationName(container, 'Destination',
+      this.destination.deliveryDestinationRef.deliveryDestinationName);
+
+    return {
+      deliverySource,
+      deliveryDestination,
+      delivery,
+    };
   }
 }
 

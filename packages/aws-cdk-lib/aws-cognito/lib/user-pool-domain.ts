@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolDomain } from './cognito.generated';
-import { UserPoolClient } from './user-pool-client';
-import { IResource, Resource, Stack, Token } from '../../core';
+import type { UserPoolClient } from './user-pool-client';
+import type { IResource } from '../../core';
+import { Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { AwsCustomResource, AwsCustomResourcePolicy, AwsSdkCall, PhysicalResourceId } from '../../custom-resources';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
-import { IUserPoolDomainRef, IUserPoolRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { AwsSdkCall } from '../../custom-resources';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { IUserPoolDomainRef, IUserPoolRef, UserPoolDomainReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The branding version of managed login for the domain.

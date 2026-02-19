@@ -1,4 +1,5 @@
-import { ChangeObject, diffLines } from 'diff';
+import type { ChangeObject } from 'diff';
+import { diffLines } from 'diff';
 
 expect.extend({
   toContainCode(actual: string, expected: string) {

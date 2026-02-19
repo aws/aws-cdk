@@ -4,9 +4,10 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE } from 'aws-cdk-lib/cx-api';
-import { App, Stack, StackProps, Stage, StageProps, Aws, RemovalPolicy, DefaultStackSynthesizer } from 'aws-cdk-lib';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, Stage, Aws, RemovalPolicy, DefaultStackSynthesizer } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 class TestStack extends Stack {

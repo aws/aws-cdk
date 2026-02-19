@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.238.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.1-alpha.0...v2.238.0-alpha.0) (2026-02-09)
+
+
+### Features
+
+* **eks-v2-alpha:** add support for bootstrapSelfManagedAddons ([#36740](https://github.com/aws/aws-cdk/issues/36740)) ([1ffe38d](https://github.com/aws/aws-cdk/commit/1ffe38dc950a096cb5e1c1ee20f2c49899dc0a23))
+* **eks-v2-alpha:** add support for EKS hybrid nodes ([#36749](https://github.com/aws/aws-cdk/issues/36749)) ([48ace56](https://github.com/aws/aws-cdk/commit/48ace56d82537630fc339cb41962473a97375aea))
+
+
+### Bug Fixes
+
+* **eks-v2-alpha:** ensure kubectl provider and handler functions use the same vpc configuration  ([#36735](https://github.com/aws/aws-cdk/issues/36735)) ([4e02f08](https://github.com/aws/aws-cdk/commit/4e02f0896069105dae83c46f19f1b346a546ad57)), closes [#34878](https://github.com/aws/aws-cdk/issues/34878) [#34877](https://github.com/aws/aws-cdk/issues/34877)
+* **ivs-alpha:** add region constraints to integration tests ([#36851](https://github.com/aws/aws-cdk/issues/36851)) ([d55fec4](https://github.com/aws/aws-cdk/commit/d55fec42357410b8263b814b931daf5dccc5c5e3))
+* **mixins-preview:** apply mixins in order ([#36847](https://github.com/aws/aws-cdk/issues/36847)) ([726060c](https://github.com/aws/aws-cdk/commit/726060c0ea9f57de4c6e13c1f50c330e4fc2608e))
+* **mixins-preview:** apply mixins in order in `MixinApplicator` ([#36877](https://github.com/aws/aws-cdk/issues/36877)) ([09db1c9](https://github.com/aws/aws-cdk/commit/09db1c99710c9f8e91774e767de93fff1a0d2650)), closes [#36847](https://github.com/aws/aws-cdk/issues/36847)
+
+## [2.237.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.0-alpha.0...v2.237.1-alpha.0) (2026-02-03)
+
+## [2.237.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.236.0-alpha.0...v2.237.0-alpha.0) (2026-02-02)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add support for custom claims and scopes to runtime/gateway authorizers ([#36810](https://github.com/aws/aws-cdk/issues/36810)) ([a3abcd0](https://github.com/aws/aws-cdk/commit/a3abcd010648e83bed273dff8f581291b5b3c902))
+* **eks-v2-alpha:** pass additional helm chart values to aws-load-balancer-controller ([#36754](https://github.com/aws/aws-cdk/issues/36754)) ([cf61814](https://github.com/aws/aws-cdk/commit/cf61814ac58448ddd70682e45c07dd8ca58c4fd1)), closes [/github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml#L199](https://github.com/aws//github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/helm/aws-load-balancer-controller/values.yaml/issues/L199)
+* **mixins-preview:** align Mixins API with latest RFC proposal ([#36825](https://github.com/aws/aws-cdk/issues/36825)) ([82c2fdb](https://github.com/aws/aws-cdk/commit/82c2fdb246557fa4804e2dc88ce16c28db52956c))
+* **mixins-preview:** handle destination bucket with KMS keys ([#36776](https://github.com/aws/aws-cdk/issues/36776)) ([950401f](https://github.com/aws/aws-cdk/commit/950401f405751a7634927af0d7667c97ddddd73d))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** construct ID collision when multiple schemas are set ([#36565](https://github.com/aws/aws-cdk/issues/36565)) ([9ebfb62](https://github.com/aws/aws-cdk/commit/9ebfb62d6c6599bee2bf477cdc6b4b6da0a4030a)), closes [#36559](https://github.com/aws/aws-cdk/issues/36559)
+
 ## [2.236.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.235.1-alpha.0...v2.236.0-alpha.0) (2026-01-23)
 
 

@@ -1,5 +1,5 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
-import * as apigateway from '../../aws-apigateway';
+import type * as apigateway from '../../aws-apigateway';
 import * as cloudfront from '../../aws-cloudfront';
 import * as cdk from '../../core';
 

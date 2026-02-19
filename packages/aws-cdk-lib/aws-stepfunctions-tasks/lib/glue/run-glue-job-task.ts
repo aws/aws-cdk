@@ -1,6 +1,7 @@
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Stack, UnscopedValidationError } from '../../../core';
+import type { Duration } from '../../../core';
+import { Stack, UnscopedValidationError } from '../../../core';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**

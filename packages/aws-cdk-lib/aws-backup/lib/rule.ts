@@ -1,6 +1,7 @@
 import * as events from '../../aws-events';
-import { Duration, TimeZone, Token, UnscopedValidationError } from '../../core';
-import { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
+import type { TimeZone } from '../../core';
+import { Duration, Token, UnscopedValidationError } from '../../core';
+import type { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Properties for a BackupPlanRule
