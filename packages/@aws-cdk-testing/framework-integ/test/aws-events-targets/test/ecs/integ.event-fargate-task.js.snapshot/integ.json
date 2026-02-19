@@ -5,11 +5,6 @@
       "stacks": [
         "aws-ecs-integ-fargate"
       ],
-      "cdkCommandOptions": {
-        "destroy": {
-          "expectError": true
-        }
-      },
       "assertionStack": "EcsFargateTest/DefaultTest/DeployAssert",
       "assertionStackName": "EcsFargateTestDefaultTestDeployAssert36341BFB"
     }

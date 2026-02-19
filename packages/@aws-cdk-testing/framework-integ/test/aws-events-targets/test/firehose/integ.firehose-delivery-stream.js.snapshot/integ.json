@@ -5,11 +5,6 @@
       "stacks": [
         "aws-cdk-firehose-event-target"
       ],
-      "cdkCommandOptions": {
-        "destroy": {
-          "expectError": true
-        }
-      },
       "assertionStack": "firehose-event-target-integ/DefaultTest/DeployAssert",
       "assertionStackName": "firehoseeventtargetintegDefaultTestDeployAssert453EDADE"
     }

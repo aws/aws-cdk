@@ -84,14 +84,13 @@ rule.addTarget(
   }),
 );
 
-new integ.IntegTest(app, 'EcsFargateTest', {
+const test = new integ.IntegTest(app, 'EcsFargateTest', {
   testCases: [stack],
-  cdkCommandOptions: {
-    destroy: {
-      // Scheduled rule launches tasks every minute; cluster may still have active tasks during teardown
-      expectError: true,
-    },
-  },
+});
+
+// Disable the rule before teardown to prevent active tasks during cluster deletion
+test.assertions.awsApiCall('EventBridge', 'disableRule', {
+  Name: rule.ruleName,
 });
 
 app.synth();

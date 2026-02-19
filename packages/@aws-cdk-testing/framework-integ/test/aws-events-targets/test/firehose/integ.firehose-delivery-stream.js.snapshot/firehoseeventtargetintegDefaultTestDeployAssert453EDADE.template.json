@@ -31,7 +31,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1770846358234"
+    "salt": "1771536007966"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -196,6 +196,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "events:DisableRule"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -335,6 +344,37 @@
      ]
     }
    }
+  },
+  "AwsApiCallEventBridgedisableRule45b360c5e1bda35c117cf37a4c4197af": {
+   "Type": "Custom::DeployAssert@SdkCallEventBridgedisableRule",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EventBridge",
+    "api": "disableRule",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-firehose-event-target:ExportsOutputRefEveryMinute2BBCEA8F6E6E8AA0"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1771536007969"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

@@ -30,12 +30,6 @@ event.addTarget(new targets.FirehoseDeliveryStream(deliveryStream));
 
 const testCase = new IntegTest(app, 'firehose-event-target-integ', {
   testCases: [stack],
-  cdkCommandOptions: {
-    destroy: {
-      // Bucket deletion may fail due to race condition with autoDeleteObjects custom resource
-      expectError: true,
-    },
-  },
 });
 
 const s3ApiCall = testCase.assertions.awsApiCall('S3', 'listObjectsV2', {
@@ -55,3 +49,8 @@ if (s3ApiCall instanceof AwsApiCall) {
     Resource: ['*'],
   });
 }
+
+// Disable the rule before teardown to prevent race condition with bucket deletion
+testCase.assertions.awsApiCall('EventBridge', 'disableRule', {
+  Name: event.ruleName,
+});
