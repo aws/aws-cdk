@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import type { EksContainerDefinition } from './eks-container-definition';
+import { EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
+import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

@@ -6,7 +6,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 interface AwsCdkSdkJsStackProps {

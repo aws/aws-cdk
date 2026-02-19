@@ -1,5 +1,6 @@
-import { AppMeshProxyConfiguration, AppMeshProxyConfigurationConfigProps } from './app-mesh-proxy-configuration';
-import { ProxyConfiguration } from './proxy-configuration';
+import type { AppMeshProxyConfigurationConfigProps } from './app-mesh-proxy-configuration';
+import { AppMeshProxyConfiguration } from './app-mesh-proxy-configuration';
+import type { ProxyConfiguration } from './proxy-configuration';
 
 /**
  * The base class for proxy configurations.

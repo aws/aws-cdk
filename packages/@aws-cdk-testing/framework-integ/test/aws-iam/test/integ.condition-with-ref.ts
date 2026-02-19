@@ -1,6 +1,6 @@
 import { App, CfnJson, CfnParameter, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 
 class MyStack extends Stack {

@@ -1,5 +1,5 @@
 import * as validation from './private/validation';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import { Lazy, Token, UnscopedValidationError } from '../../core';
 
 /**

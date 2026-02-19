@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 const app = new cdk.App();

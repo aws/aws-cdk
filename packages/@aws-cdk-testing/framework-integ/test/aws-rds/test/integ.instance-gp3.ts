@@ -1,7 +1,7 @@
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion, StorageType } from 'aws-cdk-lib/aws-rds';
 
 class TestStack extends Stack {

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
-import { OriginIpAddressType } from '../../aws-cloudfront';
+import type { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 

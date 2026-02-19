@@ -1,6 +1,6 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
-import * as cdk from '../../core';
+import type * as cdk from '../../core';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.

@@ -1,8 +1,8 @@
-import { BuildSpec } from './build-spec';
+import type { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { isLambdaComputeType } from './is-lambda-compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage } from './project';
+import type { BuildEnvironment, IBuildImage } from './project';
 
 /**
  * Construction properties of `LinuxArmLambdaBuildImage`.

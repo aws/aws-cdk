@@ -1,0 +1,655 @@
+{
+ "Resources": {
+  "TestGatewayServiceRole426CDA0F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/multi-schema-integ-test*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway multi-schema-integ-test"
+   }
+  },
+  "TestGatewayServiceRoleDefaultPolicyCFEDA895": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Lambda1DB8E9965",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Lambda217CFB423",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Lambda1DB8E9965",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Lambda217CFB423",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "Roles": [
+     {
+      "Ref": "TestGatewayServiceRole426CDA0F"
+     }
+    ]
+   }
+  },
+  "TestGatewayUserPool545AA49A": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameConfiguration": {
+     "CaseSensitive": false
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TestGatewayUserPoolResourceServer7A34B6B2": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "BedrockAgentCoreMultipleSchemasIntegTest-TestGateway-42DB1877",
+    "Name": "BedrockAgentCoreMultipleSchemasIntegTest-TestGateway-42DB1877",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDefaultClient3AC9C728": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "client_credentials"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/write"
+       ]
+      ]
+     }
+    ],
+    "GenerateSecret": true,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDomainB64B616E": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "bedrockagentcoremultipleschemasintegtest-testgateway-42db1877",
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGateway7394A071": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedClients": [
+       {
+        "Ref": "TestGatewayUserPoolDefaultClient3AC9C728"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "TestGatewayUserPool545AA49A"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizerType": "CUSTOM_JWT",
+    "Description": "Gateway for testing multiple schema binding",
+    "Name": "multi-schema-integ-test",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestGatewayServiceRole426CDA0F",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "SmithyTarget1FD288533": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "First Smithy target",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "smithy-target-1",
+    "TargetConfiguration": {
+     "Mcp": {
+      "SmithyModel": {
+       "S3": {
+        "Uri": {
+         "Fn::Join": [
+          "",
+          [
+           "s3://",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json"
+          ]
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "SmithyTarget2391491AF": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "Second Smithy target",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "smithy-target-2",
+    "TargetConfiguration": {
+     "Mcp": {
+      "SmithyModel": {
+       "S3": {
+        "Uri": {
+         "Fn::Join": [
+          "",
+          [
+           "s3://",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json"
+          ]
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "Lambda1ServiceRoleF188C4B8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Lambda1DB8E9965": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      return { message: 'Lambda 1 response' };\n    };\n  "
+    },
+    "FunctionName": "integ-multi-schema-lambda1",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambda1ServiceRoleF188C4B8",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "Lambda1ServiceRoleF188C4B8"
+   ]
+  },
+  "Lambda1LogGroup0E97D0DB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Lambda1DB8E9965"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Lambda2ServiceRole31A072E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Lambda217CFB423": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      return { message: 'Lambda 2 response' };\n    };\n  "
+    },
+    "FunctionName": "integ-multi-schema-lambda2",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambda2ServiceRole31A072E1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "Lambda2ServiceRole31A072E1"
+   ]
+  },
+  "Lambda2LogGroup4F31598F": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Lambda217CFB423"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "LambdaTarget1DF82CB67": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "First Lambda target with tool schema",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "lambda-target-1",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Lambda": {
+       "LambdaArn": {
+        "Fn::GetAtt": [
+         "Lambda1DB8E9965",
+         "Arn"
+        ]
+       },
+       "ToolSchema": {
+        "S3": {
+         "Uri": {
+          "Fn::Join": [
+           "",
+           [
+            "s3://",
+            {
+             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+            },
+            "/bd751ca0191815215ea0c76c6bb6abc73eb405e0cb3ae2b8b6d599796c210c0b.json"
+           ]
+          ]
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "LambdaTarget2437803CD": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "Second Lambda target with tool schema",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "lambda-target-2",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Lambda": {
+       "LambdaArn": {
+        "Fn::GetAtt": [
+         "Lambda217CFB423",
+         "Arn"
+        ]
+       },
+       "ToolSchema": {
+        "S3": {
+         "Uri": {
+          "Fn::Join": [
+           "",
+           [
+            "s3://",
+            {
+             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+            },
+            "/ef288645ce3db216180dc71c3cf4cb8a487430d0daf8e0340ed60550eb9aee04.json"
+           ]
+          ]
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

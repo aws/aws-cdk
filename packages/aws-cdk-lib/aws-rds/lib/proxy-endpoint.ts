@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDBProxyEndpoint } from './rds.generated';
-import * as ec2 from '../../aws-ec2';
-import { IResource, Names, Resource, ValidationError } from '../../core';
+import type * as ec2 from '../../aws-ec2';
+import type { IResource } from '../../core';
+import { Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * A DB proxy endpoint.

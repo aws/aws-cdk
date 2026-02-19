@@ -1,7 +1,8 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { App, Stack, StackProps, RemovalPolicy, CfnResource } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, CfnResource } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 
 class TestStack extends Stack {

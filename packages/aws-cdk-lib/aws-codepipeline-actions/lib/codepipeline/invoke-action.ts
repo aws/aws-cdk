@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
-import { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import type { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
 import { Action } from '../action';
 
 /**

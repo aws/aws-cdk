@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { IAsset } from '../../assets';
+import type { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
 

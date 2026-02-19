@@ -1,10 +1,11 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderOptions, CustomResourceProviderRuntime } from '../../lib';
+import type { AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, ISynthesisSession, CustomResourceProviderOptions } from '../../lib';
+import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime } from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 

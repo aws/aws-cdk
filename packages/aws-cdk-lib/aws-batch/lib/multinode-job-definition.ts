@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import { IEcsContainerDefinition } from './ecs-container-definition';
+import type { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Lazy, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
