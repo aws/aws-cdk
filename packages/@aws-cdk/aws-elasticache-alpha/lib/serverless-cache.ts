@@ -72,7 +72,7 @@ export interface CacheUsageLimitsProperty {
   readonly requestRateLimitMaximum?: number;
 }
 
-export interface TimeOfDay {
+interface TimeOfDay {
   /** Hour in UTC (0-23) */
   readonly hour: number;
   /** Minute (0-59) */
