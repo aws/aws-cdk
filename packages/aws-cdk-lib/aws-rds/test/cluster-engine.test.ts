@@ -285,20 +285,22 @@ describe('cluster engine', () => {
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3')._serverlessV2AutoPauseSupported).toEqual(false);
   });
 
-  test('AuroraMysqlEngineVersion.ofMajorVersion() creates version with undefined fullVersion', () => {
+  test('AuroraMysqlEngineVersion.ofMajorVersion() creates version with major version only', () => {
     const ver = AuroraMysqlEngineVersion.ofMajorVersion('8.0');
-    expect(ver.auroraMysqlFullVersion).toBeUndefined();
+    expect(ver.auroraMysqlFullVersion).toEqual('8.0');
     expect(ver.auroraMysqlMajorVersion).toEqual('8.0');
     expect(ver._combineImportAndExportRoles).toEqual(true);
     expect(ver._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(ver._isMajorVersionOnly).toEqual(true);
   });
 
   test('AuroraMysqlEngineVersion.ofMajorVersion("5.7") sets correct feature flags', () => {
     const ver = AuroraMysqlEngineVersion.ofMajorVersion('5.7');
-    expect(ver.auroraMysqlFullVersion).toBeUndefined();
+    expect(ver.auroraMysqlFullVersion).toEqual('5.7');
     expect(ver.auroraMysqlMajorVersion).toEqual('5.7');
     expect(ver._combineImportAndExportRoles).toEqual(false);
     expect(ver._serverlessV2AutoPauseSupported).toEqual(false);
+    expect(ver._isMajorVersionOnly).toEqual(true);
   });
 
   test('ofMajorVersion() produces correct parameter group family', () => {

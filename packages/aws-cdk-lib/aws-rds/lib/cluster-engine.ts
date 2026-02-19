@@ -357,6 +357,13 @@ interface AuroraMysqlEngineVersionOptions {
    * @default false
    */
   readonly serverlessV2AutoPauseSupported?: boolean;
+
+  /**
+   * Whether this version was created with only a major version.
+   *
+   * @default false
+   */
+  readonly isMajorVersionOnly?: boolean;
 }
 
 /**
@@ -760,10 +767,11 @@ export class AuroraMysqlEngineVersion {
     const serverlessV2AutoPauseSupported = coercedVersion != null
       && semver.satisfies(coercedVersion, '>=8.0');
     return new AuroraMysqlEngineVersion(
-      undefined, auroraMysqlMajorVersion,
+      auroraMysqlMajorVersion, auroraMysqlMajorVersion,
       {
         combineImportAndExportRoles: auroraMysqlMajorVersion !== '5.7',
         serverlessV2AutoPauseSupported,
+        isMajorVersionOnly: true,
       },
     );
   }
@@ -854,7 +862,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
       engineType: 'aurora-mysql',
       engineVersion: version
         ? {
-          fullVersion: version.auroraMysqlFullVersion,
+          fullVersion: version._isMajorVersionOnly ? undefined : version.auroraMysqlFullVersion,
           majorVersion: version.auroraMysqlMajorVersion,
         }
         : undefined,
