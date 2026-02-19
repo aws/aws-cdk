@@ -6,8 +6,8 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'StackUnderTest', {
   env: {
-    account: process.env.AWS_ACCOUNT_ID,
-    region: process.env.AWS_REGION,
+    account: process.env.AWS_ACCOUNT_ID ?? process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.AWS_REGION ?? process.env.CDK_DEFAULT_REGION,
   },
 });
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
