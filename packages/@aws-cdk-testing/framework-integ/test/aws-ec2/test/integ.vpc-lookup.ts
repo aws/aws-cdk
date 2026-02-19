@@ -24,4 +24,3 @@ new IntegTest(app, 'VpcLookupTest', {
   testCases: [stack],
   regions: ['us-east-1'], // Snapshot contains region-specific output, must match synth region
 });
-app.synth();

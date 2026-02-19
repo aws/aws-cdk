@@ -1,12 +1,4 @@
 {
- "Outputs": {
-  "OutputFromVpcAttributes": {
-   "Value": "Region fromVpcAttributes: eu-west-1"
-  },
-  "OutputFromLookup": {
-   "Value": "Region fromLookup: eu-west-1"
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
