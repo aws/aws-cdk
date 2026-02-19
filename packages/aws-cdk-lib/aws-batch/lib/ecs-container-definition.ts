@@ -663,6 +663,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         obtainExecutionRole: () => this.executionRole,
       },
     });
+
+    if (this.imageConfig.repositoryCredentials && !this.imageConfig.repositoryCredentials.credentialsParameter) {
+      throw new ValidationError('credentialsParameter is required when repositoryCredentials is set', this);
+    }
   }
 
   /**

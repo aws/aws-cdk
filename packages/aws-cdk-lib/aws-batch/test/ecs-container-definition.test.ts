@@ -839,6 +839,28 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       },
     });
   });
+
+  test('throws error when repository credentials are set without credentialsParameter', () => {
+    // GIVEN
+    const mockImage = {
+      bind: () => ({
+        imageName: 'private.registry.com/my-image:tag',
+        repositoryCredentials: {
+          credentialsParameter: undefined,
+        },
+      }),
+    } as any;
+
+    // WHEN / THEN
+    expect(() => {
+      new EcsJobDefinition(stack, 'ECSJobDefn', {
+        container: new ContainerDefinition(stack, 'EcsContainer', {
+          ...defaultContainerProps,
+          image: mockImage,
+        }),
+      });
+    }).toThrow(/credentialsParameter is required when repositoryCredentials is set/);
+  });
 });
 
 describe('EC2 containers', () => {

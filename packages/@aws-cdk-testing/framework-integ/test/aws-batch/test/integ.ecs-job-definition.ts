@@ -104,6 +104,18 @@ new batch.EcsJobDefinition(stack, 'WindowsJobDefinitio', {
   }),
 });
 
+// can use private registry with credentials
+const registrySecret = new secretsmanager.Secret(stack, 'RegistrySecret');
+new batch.EcsJobDefinition(stack, 'PrivateRegistryJobDefn', {
+  container: new batch.EcsFargateContainerDefinition(stack, 'PrivateRegistryContainer', {
+    image: ecs.ContainerImage.fromRegistry('private.registry.com/my-image:tag', {
+      credentials: registrySecret,
+    }),
+    memory: Size.gibibytes(4),
+    cpu: 1,
+  }),
+});
+
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
