@@ -106,6 +106,7 @@ export class CdkInternalHelpers extends ExternalModule {
   public readonly FromCloudFormation = $T(Type.fromName(this, 'FromCloudFormation'));
   public readonly FromCloudFormationPropertyObject = Type.fromName(this, 'FromCloudFormationPropertyObject');
   public readonly TemplateString = Type.fromName(this, 'TemplateString');
+  public readonly CfnPropsMixin = Type.fromName(this, 'CfnPropsMixin');
 
   constructor(parent: CdkCore) {
     super(`${parent.fqn}/core/lib/helpers-internal`);

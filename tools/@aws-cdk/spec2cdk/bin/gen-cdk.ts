@@ -6,6 +6,7 @@ import generateServiceSubmoduleFiles from '../lib/cfn2ts/submodules';
 import type { ModuleMap } from '../lib/module-topology';
 import { writeModuleMap, moduleMapPath } from '../lib/module-topology';
 import * as naming from '../lib/naming/index';
+import { generateTypeMixins, BucketEncryptionMixin } from '../lib/type-mixins';
 
 const libDir = process.cwd();
 const isStable = libDir.endsWith('aws-cdk-lib');
@@ -39,6 +40,18 @@ async function main() {
       delete generated[nss];
     }
     await generateServiceSubmoduleFiles(generated, libDir);
+
+    // Generate type-based mixins
+    await generateTypeMixins({
+      outputPath: libDir,
+      moduleFqn: 'aws-cdk-lib/aws-s3/mixins',
+      requests: [{
+        resourceType: 'AWS::S3::Bucket',
+        typeName: 'ServerSideEncryptionRule',
+        outputFile: 'aws-s3/lib/mixins/bucket-encryption.generated.ts',
+        mixinClass: BucketEncryptionMixin,
+      }],
+    });
   }
 }
 

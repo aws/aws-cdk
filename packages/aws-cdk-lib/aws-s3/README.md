@@ -1181,3 +1181,18 @@ new s3.CfnBucketPolicy(this, 'Policy', {
   }),
 ]));
 ```
+
+### BucketEncryption
+
+Configures server-side encryption on an S3 bucket. Accepts KMS keys via `IKeyRef`, `IAliasRef`, or a string ARN/ID and automatically resolves the reference:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketEncryption({
+    serverSideEncryptionByDefault: {
+      sseAlgorithm: s3.mixins.BucketEncryption.SSEAlgorithm.AWS_KMS,
+      kmsMasterKeyId: new kms.Key(this, 'Key'),
+    },
+    bucketKeyEnabled: true,
+  }));
+```
