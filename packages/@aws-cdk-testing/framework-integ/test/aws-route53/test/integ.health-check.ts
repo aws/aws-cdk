@@ -155,11 +155,13 @@ new route53.ARecord(stack, 'ARecordRecoveryControl2', {
   weight: 0,
 });
 
+// AWS::Route53RecoveryControl::Cluster and AWS::Route53RecoveryControl::RoutingControl
+// are only available in us-east-1 and us-west-2
 const integ = new IntegTest(app, 'integ-test', {
   testCases: [stack],
   diffAssets: true,
   enableLookups: true,
-  regions: ['us-east-1'],
+  regions: ['us-east-1', 'us-west-2'],
 });
 
 // healthCheckHttp
