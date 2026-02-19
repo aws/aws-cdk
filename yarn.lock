@@ -10222,10 +10222,10 @@ jsii-reflect@1.126.0, jsii-reflect@^1.126.0:
     oo-ascii-tree "^1.126.0"
     yargs "^17.7.2"
 
-jsii-rosetta@~5.9.29:
-  version "5.9.29"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.29.tgz#3baa26b169915775a16a841383978903f20ab6dc"
-  integrity sha512-9XfwiS6puc0wcTLoNFmjEPLRmjLu1HJatZ5Ue9OdSztHrqnrV0IvgT9LiSdVpCw7Q3WCIQeOlOCewf+B2qMA9Q==
+jsii-rosetta@~5.9.31:
+  version "5.9.31"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.9.31.tgz#65d1a203a1545249b8329c86951b23f6a88df7ae"
+  integrity sha512-g0WR8oeFKe0xGtuPy6QU8BFArv5h2OlioKlemnHNAHUvnl+uahVy+I+qOw+HKtzr74LWi6Tv5nOZKhxnwSVuAQ==
   dependencies:
     "@jsii/check-node" "^1.126.0"
     "@jsii/spec" "^1.126.0"
