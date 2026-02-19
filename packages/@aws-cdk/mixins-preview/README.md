@@ -158,6 +158,21 @@ Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
 ]));
 ```
 
+#### ECS-Specific Mixins
+
+**ClusterSettings**: Applies one or more cluster settings to ECS clusters
+
+```typescript
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ClusterSettings } from '@aws-cdk/mixins-preview/aws-ecs/mixins';
+
+const cluster = new ecs.CfnCluster(scope, "Cluster");
+Mixins.of(cluster).apply(new ClusterSettings([{
+  name: "containerInsights",
+  value: "enhanced",
+}]));
+```
+
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:

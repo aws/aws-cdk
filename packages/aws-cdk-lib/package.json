@@ -134,7 +134,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.149",
+    "@aws-cdk/aws-service-spec": "^0.1.151",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -168,7 +168,7 @@
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
     "cdk8s": "2.70.47",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "delay": "5.0.0",
     "esbuild": "^0.27.3",
     "fast-check": "^3.23.2",
@@ -185,7 +185,7 @@
     "typescript-json-schema": "^0.67.1"
   },
   "peerDependencies": {
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
