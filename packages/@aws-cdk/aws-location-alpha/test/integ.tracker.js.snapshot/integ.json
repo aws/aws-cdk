@@ -1,12 +1,28 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
     "TrackerTest/DefaultTest": {
       "stacks": [
         "cdk-integ-location-tracker"
       ],
+      "regions": [
+        "ap-northeast-1",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ca-central-1",
+        "eu-central-1",
+        "eu-north-1",
+        "eu-west-1",
+        "eu-west-2",
+        "sa-east-1",
+        "us-east-1",
+        "us-east-2",
+        "us-west-2"
+      ],
       "assertionStack": "TrackerTest/DefaultTest/DeployAssert",
       "assertionStackName": "TrackerTestDefaultTestDeployAssert0E17BB8B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
