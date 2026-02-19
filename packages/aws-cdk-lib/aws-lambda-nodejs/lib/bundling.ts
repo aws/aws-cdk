@@ -6,7 +6,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
+import { extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validatePackageName, validateExternalModule, SHELL_METACHARACTERS, FILE_EXTENSION_PATTERN, JS_IDENTIFIER_PATTERN, CLI_FLAG_NAME_PATTERN } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -272,7 +272,14 @@ export class Bundling implements cdk.BundlingOptions {
     // Validate externalModules
     if (this.props.externalModules) {
       for (const external of this.props.externalModules) {
-        validatePackageName(external, 'externalModules entry');
+        validateExternalModule(external, 'externalModules entry');
+      }
+    }
+
+    // Validate nodeModules
+    if (this.props.nodeModules) {
+      for (const mod of this.props.nodeModules) {
+        validatePackageName(mod, 'nodeModules entry');
       }
     }
 

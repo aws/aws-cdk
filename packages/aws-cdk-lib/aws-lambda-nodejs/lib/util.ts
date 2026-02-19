@@ -21,13 +21,20 @@ export const SHELL_METACHARACTERS = /[;&|`$()<>\\'"]/;
 export const NPM_PACKAGE_NAME_PATTERN = /^[@a-z0-9][a-z0-9._\/-]*$/i;
 
 /**
+ * Valid external module pattern for esbuild --external flag
+ * Same as NPM_PACKAGE_NAME_PATTERN but allows a trailing * for glob patterns
+/* , lodash
+ */
+export const EXTERNAL_MODULE_PATTERN = /^[@a-z0-9][a-z0-9._\/-]*\*?$/i;
+
+/**
  * Valid file extension pattern for esbuild loaders
- * - Must start with a dot
- * - Followed by alphanumeric characters only
- * - Examples: .txt, .json, .css, .png
+ * - Must start with a dot followed by alphanumeric characters
+ * - Allows multiple dot-separated segments for compound extensions
+ * - Examples: .txt, .json, .css, .d.ts, .module.css, .test.js
  * - Rejects: extensions with special characters or spaces
  */
-export const FILE_EXTENSION_PATTERN = /^\.[a-z0-9]+$/i;
+export const FILE_EXTENSION_PATTERN = /^(\.[a-z0-9]+)+$/i;
 
 /**
  * Valid JavaScript identifier pattern for esbuild define keys
@@ -132,8 +139,9 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Validates that a string conforms to npm package name patterns
- * Rejects values containing shell metacharacters
+ * Validates that a string is a valid npm package name.
+ * Used for fields like `nodeModules` where values must be installable package names.
+ * Does not allow glob wildcards — use `validateExternalModule` for esbuild external patterns.
  */
 export function validatePackageName(name: string, fieldName: string): void {
   if (!NPM_PACKAGE_NAME_PATTERN.test(name)) {
@@ -145,6 +153,18 @@ export function validatePackageName(name: string, fieldName: string): void {
   if (SHELL_METACHARACTERS.test(name)) {
     throw new UnscopedValidationError(
       `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + ') to prevent command injection.',
+    );
+  }
+}
+
+/**
+ * Validates that a string is a valid esbuild external module pattern
+/* ) in addition to standard package names
+ */
+export function validateExternalModule(name: string, fieldName: string): void {
+  if (!EXTERNAL_MODULE_PATTERN.test(name)) {
+    throw new UnscopedValidationError(
+      `Invalid ${fieldName}: "${name}". External modules must be valid package names or glob patterns (e.g. @aws-sdk/*).`,
     );
   }
 }
