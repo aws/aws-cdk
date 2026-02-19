@@ -457,7 +457,7 @@ export class ServerlessCache extends ServerlessCacheBase {
       serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
-      dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup?.backupTime) : undefined,
+      dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup.backupTime) : undefined,
       snapshotRetentionLimit: props.backup?.backupRetentionLimit,
       finalSnapshotName: props.backup?.backupNameBeforeDeletion,
       snapshotArnsToRestore: props.backup?.backupArnsToRestore,
