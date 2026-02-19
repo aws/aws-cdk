@@ -1,12 +1,12 @@
 /// !cdk-integ cdk-route53-ebs-hostedzoneid-integ
-import { App, Stack, Token } from 'aws-cdk-lib';
+import { App, Aws, CfnMapping, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as custom from 'aws-cdk-lib/custom-resources';
-import { RegionInfo } from '@aws-cdk/region-info';
+import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 const app = new App({
@@ -16,56 +16,57 @@ const app = new App({
 });
 const stack = new Stack(app, 'cdk-route53-ebs-hostedzoneid-integ');
 
+// RegionInfo.get() requires a concrete region string at synth time, but stack.region
+// is a Token (AWS::Region) when no explicit env is set. A CfnMapping lets us resolve
+// the EB hosted zone ID at deploy time using Fn::FindInMap with AWS::Region.
+const ebsHostedZoneMapping = new CfnMapping(stack, 'EbsHostedZoneMapping');
+for (const region of RegionInfo.regions) {
+  if (region.ebsEnvEndpointHostedZoneId) {
+    ebsHostedZoneMapping.setValue(region.name, 'hostedZoneId', region.ebsEnvEndpointHostedZoneId);
+  }
+}
+
 const zone = new route53.PublicHostedZone(stack, 'HostedZone', {
   zoneName: 'test.public',
 });
 
-const applicationName = 'MyTestApplication';
+const ebsApp = new elasticbeanstalk.CfnApplication(stack, 'Application', {});
 
-const ebsApp = new elasticbeanstalk.CfnApplication(stack, 'Application', {
-  applicationName,
-});
-
-const instanceRole = new iam.Role(stack, `${applicationName}-aws-elasticbeanstalk-ec2-role`, {
+const instanceRole = new iam.Role(stack, 'EbsEc2Role', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
 });
-
 instanceRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'));
 instanceRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'));
 
-const instanceProfileName = `${applicationName}-aws-elasticbeanstalk-ec2-instance-profile`;
-new iam.CfnInstanceProfile(stack, instanceProfileName, {
-  instanceProfileName: instanceProfileName,
+const instanceProfile = new iam.CfnInstanceProfile(stack, 'EbsInstanceProfile', {
   roles: [instanceRole.roleName],
 });
 
-const optionSettings: elasticbeanstalk.CfnEnvironment.OptionSettingProperty[] = [
-  {
-    namespace: 'aws:autoscaling:launchconfiguration',
-    optionName: 'IamInstanceProfile',
-    value: instanceProfileName,
-  },
-  {
-    namespace: 'aws:autoscaling:launchconfiguration',
-    optionName: 'RootVolumeType',
-    value: 'gp3',
-  },
-  {
-    namespace: 'aws:ec2:instances',
-    optionName: 'InstanceTypes',
-    value: 't3.micro',
-  },
-  {
-    namespace: 'aws:elasticbeanstalk:environment',
-    optionName: 'EnvironmentType',
-    value: 'SingleInstance',
-  },
-];
-
 const ebsEnv = new elasticbeanstalk.CfnEnvironment(stack, 'Environment', {
-  applicationName,
+  applicationName: ebsApp.ref,
   solutionStackName: SOLUTION_STACK_NAME.NODEJS_22,
-  optionSettings,
+  optionSettings: [
+    {
+      namespace: 'aws:autoscaling:launchconfiguration',
+      optionName: 'IamInstanceProfile',
+      value: instanceProfile.ref,
+    },
+    {
+      namespace: 'aws:autoscaling:launchconfiguration',
+      optionName: 'RootVolumeType',
+      value: 'gp3',
+    },
+    {
+      namespace: 'aws:ec2:instances',
+      optionName: 'InstanceTypes',
+      value: 't3.micro',
+    },
+    {
+      namespace: 'aws:elasticbeanstalk:environment',
+      optionName: 'EnvironmentType',
+      value: 'SingleInstance',
+    },
+  ],
 });
 ebsEnv.addDependency(ebsApp);
 
@@ -87,7 +88,7 @@ new route53.ARecord(stack, 'AliasRecord', {
   zone,
   recordName: 'test',
   target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(getEnvironmentUrl.getResponseField('Environments.0.CNAME'), {
-    hostedZoneId: RegionInfo.get('us-east-1').ebsEnvEndpointHostedZoneId,
+    hostedZoneId: ebsHostedZoneMapping.findInMap(Aws.REGION, 'hostedZoneId'),
   })),
 });
 
