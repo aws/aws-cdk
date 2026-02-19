@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)
 
+### ⚠ BREAKING CHANGES
+
+redshift-alpha: update default node type from `DC2_LARGE` to `RA3_LARGE`
 
 ### Features
 
