@@ -22,30 +22,12 @@ class EksClusterStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // Create a specific IAM user for CDK integ test cluster administration instead of using root
-    const eksAdminUser = new iam.User(this, 'CdkIntegTestEksAdminUser');
-
+    // allow all account users to assume this role in order to admin the cluster
     const mastersRole = new iam.Role(this, 'AdminRole', {
-      assumedBy: eksAdminUser,
+      assumedBy: new iam.AccountRootPrincipal(),
     });
 
-    // Add condition to satisfy security guardian without breaking functionality
-    mastersRole.assumeRolePolicy?.addStatements(
-      new iam.PolicyStatement({
-        effect: iam.Effect.ALLOW,
-        principals: [eksAdminUser],
-        actions: ['sts:AssumeRole'],
-        conditions: {
-          StringEquals: {
-            'aws:RequestedRegion': this.region,
-          },
-        },
-      }),
-    );
-
-    const secretsEncryptionKey = new kms.Key(this, 'SecretsKey', {
-      policy: new iam.PolicyDocument(),
-    });
+    const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
 
     // Add metadata to suppress security guardian rule for KMS key
     const cfnKey = secretsEncryptionKey.node.defaultChild as kms.CfnKey;
@@ -123,8 +105,6 @@ class EksClusterStack extends Stack {
 
     this.assertExtendedServiceAccount();
 
-    this.addSecurityGroupIngressRules();
-
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
     new CfnOutput(this, 'ClusterCertificateAuthorityData', { value: this.cluster.clusterCertificateAuthorityData });
@@ -132,25 +112,6 @@ class EksClusterStack extends Stack {
     new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: this.cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: this.cluster.clusterName });
     new CfnOutput(this, 'NodegroupName', { value: this.cluster.defaultNodegroup!.nodegroupName });
-  }
-
-  private addSecurityGroupIngressRules() {
-    this.cluster.clusterSecurityGroup.addIngressRule(
-      ec2.Peer.ipv4(this.vpc.vpcCidrBlock),
-      ec2.Port.tcp(443),
-      'Allow HTTPS from VPC IPv4',
-    );
-    this.cluster.clusterSecurityGroup.addIngressRule(
-      ec2.Peer.ipv6('::/0'),
-      ec2.Port.tcp(443),
-      'Allow HTTPS from IPv6',
-    );
-
-    // Add ingress rules to auto scaling group security groups
-    if (this.cluster.defaultCapacity) {
-      this.cluster.defaultCapacity.connections.allowFromAnyIpv4(ec2.Port.tcp(22), 'SSH access IPv4');
-      this.cluster.defaultCapacity.connections.allowFrom(ec2.Peer.ipv6('::/0'), ec2.Port.tcp(22), 'SSH access IPv6');
-    }
   }
 
   private assertServiceAccount() {
@@ -222,12 +183,14 @@ class EksClusterStack extends Stack {
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
   private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
+    // deploy a dashboard through a helm chart
+    // As Kubernetes dashboard is retired, we will use headlamp instead.
+    // See https://github.com/kubernetes-retired/dashboard?tab=readme-ov-file#important
     this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
-      version: '6.0.8',
-      repository: 'https://kubernetes.github.io/dashboard/',
+      chart: 'headlamp',
+      // https://kubernetes-sigs.github.io/headlamp/
+      version: '0.39.0',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
     });
   }
 
