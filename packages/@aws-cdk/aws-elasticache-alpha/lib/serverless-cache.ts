@@ -72,6 +72,13 @@ export interface CacheUsageLimitsProperty {
   readonly requestRateLimitMaximum?: number;
 }
 
+export interface TimeOfDay {
+  /** Hour in UTC (0-23) */
+  readonly hour: number;
+  /** Minute (0-59) */
+  readonly minute: number;
+}
+
 /**
  * Backup configuration for ServerlessCache
  */
@@ -81,7 +88,7 @@ export interface BackupSettings {
    *
    * @default - No automated backups
    */
-  readonly backupTime?: events.Schedule;
+  readonly backupTime?: TimeOfDay;
   /**
    * Number of days to retain backups (1-35)
    *
@@ -450,7 +457,7 @@ export class ServerlessCache extends ServerlessCacheBase {
       serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
-      dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup.backupTime) : undefined,
+      dailySnapshotTime: props.backup?.backupTime,
       snapshotRetentionLimit: props.backup?.backupRetentionLimit,
       finalSnapshotName: props.backup?.backupNameBeforeDeletion,
       snapshotArnsToRestore: props.backup?.backupArnsToRestore,
@@ -672,28 +679,3 @@ export class ServerlessCache extends ServerlessCacheBase {
       };
     }
   }
-
-  /**
-   * Format schedule to HH:MM format for daily backups
-   *
-   * @param schedule The schedule to format
-   * @returns Time string in HH:MM format
-   */
-  private formatBackupTime(schedule: events.Schedule): string {
-    const WILD_CARD = '*';
-    const [
-      minuteExpression, hourExpression,
-      dayExpression, monthExpression,
-      weekDayExpression, yearExpression,
-    ] = schedule.expressionString.substr(5).slice(0, -1).split(' ');
-
-    if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != '?') {
-      throw new ValidationError('For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
-    }
-
-    const hour = hourExpression == WILD_CARD ? '0' : hourExpression;
-    const minute = minuteExpression == WILD_CARD ? '0' : minuteExpression;
-
-    return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
-  }
-}
