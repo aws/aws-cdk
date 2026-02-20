@@ -709,7 +709,7 @@ describe('cluster', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
       });
-      const key = new kms.Key(stack, 'Key', { policy: new iam.PolicyDocument() });
+      const key = new kms.Key(stack, 'Key');
 
       // WHEN
       cluster.addCapacity('DefaultAutoScalingGroup', {
@@ -4804,7 +4804,7 @@ describe('cluster', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
-    const kmsKey = new kms.Key(stack, 'KmsKey', { policy: new iam.PolicyDocument() });
+    const kmsKey = new kms.Key(stack, 'KmsKey');
 
     const logGroup = new logs.LogGroup(stack, 'LogGroup', {
       encryptionKey: kmsKey,
