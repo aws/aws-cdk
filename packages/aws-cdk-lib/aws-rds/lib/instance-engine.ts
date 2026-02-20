@@ -2980,7 +2980,9 @@ export class SqlServerEngineVersion {
    */
   public static readonly VER_12_00_6449_1_V1 = SqlServerEngineVersion.of('12.00.6449.1.v1', '12.00');
 
-  /** Version "13.00" (only a major version, without a specific minor version). */
+  /** Version "13.00" (only a major version, without a specific minor version). 
+   * @deprecated SQL Server 13.00 is no longer supported by Amazon RDS. See https://repost.aws/articles/ARGkeWligDSU-MQgBwUQj0nA
+  */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
   /**
    * Version "13.00.2164.0.v1".
@@ -3069,8 +3071,6 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_6465_1_V1 = SqlServerEngineVersion.of('13.00.6465.1.v1', '13.00');
   /** Version "13.00.6470.1.v1". */
   public static readonly VER_13_00_6470_1_V1 = SqlServerEngineVersion.of('13.00.6470.1.v1', '13.00');
-  /** Version "13.00.6475.1.v1". */
-  public static readonly VER_13_00_6475_1_V1 = SqlServerEngineVersion.of('13.00.6475.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
