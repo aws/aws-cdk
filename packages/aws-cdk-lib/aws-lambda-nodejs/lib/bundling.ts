@@ -351,33 +351,16 @@ export class Bundling implements cdk.BundlingOptions {
   }
 
   /**
-   * Creates a local bundling provider that executes esbuild directly via spawnSync
-   * with an array of arguments, bypassing shell interpretation.
+   * Creates a local bundling provider that orchestrates esbuild execution.
    *
-   * Previous approach:
-   *   exec('bash', ['-c', commandString])  // Shell interprets metacharacters
-   *
-   * Current approach:
-   *   execDirect(esbuildBinary, argsArray)  // No shell, args passed directly
-   *
-   * The key insight is that spawnSync with shell=false passes each array element
-   * as a separate argument to the process. Shell metacharacters like &, ;, |, etc.
-   * are treated as literal characters, not command separators.
-   *
-   * We still use shell execution for:
-   * - commandHooks (user-defined shell commands - intentionally shell-interpreted)
-   * - tsc preCompilation (compiler options from tsconfig)
-   * - deps installation (package manager commands)
-   *
-   * Only esbuild invocation uses direct execution because it receives
-   * user-provided bundling options.
+   * Esbuild is invoked directly via spawnSync with shell=false so that
+   * shell metacharacters in user-provided bundling options are treated
+   * as literal characters. Hooks and dependency installation still run
+   * via shell since they are user-defined shell commands or trusted
+   * package manager invocations.
    */
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const environment = this.props.environment ?? {};
-    const cwd = this.projectRoot;
-
-    // Capture 'this' for use in the closure
     const bundlingInstance = this;
 
     return {
@@ -394,134 +377,145 @@ export class Bundling implements cdk.BundlingOptions {
         const pathJoin = osPathJoin(osPlatform);
         let relativeEntryPath = pathJoin(bundlingInstance.projectRoot, bundlingInstance.relativeEntryPath);
 
-        // ============================================================
-        // PHASE 1: Pre-esbuild commands (hooks, tsc) - run via shell
-        // These are either user-defined hooks (intentionally shell) or
-        // compiler invocations.
-        // ============================================================
-        const preCommands: string[] = [
-          ...bundlingInstance.props.commandHooks?.beforeBundling(bundlingInstance.projectRoot, outputDir) ?? [],
-        ];
-
-        // Handle TypeScript pre-compilation if enabled
-        if (bundlingInstance.props.preCompilation) {
-          const tsconfig = bundlingInstance.props.tsconfig ?? findUp('tsconfig.json', path.dirname(bundlingInstance.props.entry));
-          if (!tsconfig) {
-            throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
-          }
-          const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-          const tscRunner = Bundling.tscInstallation?.isLocal
-            ? bundlingInstance.packageManager.runBinCommand('tsc')
-            : 'tsc';
-          preCommands.push(`${tscRunner} "${relativeEntryPath}" ${compilerOptions}`);
-          relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
-        }
-
-        // Execute pre-commands via shell if any exist
-        if (preCommands.length > 0) {
-          exec(
-            osPlatform === 'win32' ? 'cmd' : 'bash',
-            [osPlatform === 'win32' ? '/c' : '-c', chain(preCommands)],
-            {
-              env: { ...process.env, ...environment },
-              stdio: ['ignore', process.stderr, 'inherit'],
-              cwd,
-              windowsVerbatimArguments: osPlatform === 'win32',
-            },
-          );
-        }
-
-        // ============================================================
-        // PHASE 2: esbuild execution - run directly without shell
-        // User-provided bundling options are passed as array elements
-        // to spawnSync, bypassing shell interpretation entirely.
-        // ============================================================
-        const esbuildArgs = bundlingInstance.buildEsbuildArgs(scope, {
-          inputDir: bundlingInstance.projectRoot,
-          outputDir,
-          osPlatform,
-          entryPath: relativeEntryPath,
-        });
-
-        // Get the esbuild command as an array for direct execution
-        const esbuildCommandArray = Bundling.esbuildInstallation.isLocal
-          ? bundlingInstance.packageManager.runBinCommandAsArray('esbuild')
-          : ['esbuild'];
-
-        // Execute esbuild directly - args are passed without shell interpretation
-        execDirect(
-          esbuildCommandArray[0],
-          [...esbuildCommandArray.slice(1), ...esbuildArgs],
-          {
-            env: { ...process.env, ...environment },
-            stdio: ['ignore', process.stderr, 'inherit'],
-            cwd,
-          },
-        );
-
-        // ============================================================
-        // PHASE 3: Post-esbuild commands (deps, hooks) - run via shell
-        // These are trusted package manager commands and user-defined hooks.
-        // ============================================================
-        const postCommands: string[] = [];
-
-        // Handle node_modules installation if configured
-        if (bundlingInstance.props.nodeModules) {
-          const pkgPath = findUp('package.json', path.dirname(bundlingInstance.props.entry));
-          if (!pkgPath) {
-            throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
-          }
-
-          const dependencies = extractDependencies(pkgPath, bundlingInstance.props.nodeModules);
-          const osCommand = new OsCommand(osPlatform);
-          const lockFilePath = pathJoin(
-            bundlingInstance.projectRoot,
-            bundlingInstance.relativeDepsLockFilePath ?? bundlingInstance.packageManager.lockFile,
-          );
-
-          const isPnpm = bundlingInstance.packageManager.lockFile === LockFile.PNPM;
-          const isBun = bundlingInstance.packageManager.lockFile === LockFile.BUN_LOCK ||
-                        bundlingInstance.packageManager.lockFile === LockFile.BUN;
-
-          // Add beforeInstall hooks if any
-          if (bundlingInstance.props.commandHooks?.beforeInstall) {
-            postCommands.push(...bundlingInstance.props.commandHooks.beforeInstall(bundlingInstance.projectRoot, outputDir));
-          }
-
-          // Add deps installation commands
-          postCommands.push(...[
-            isPnpm ? osCommand.write(pathJoin(outputDir, 'pnpm-workspace.yaml'), '') : '',
-            osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
-            osCommand.copy(lockFilePath, pathJoin(outputDir, bundlingInstance.packageManager.lockFile)),
-            osCommand.changeDirectory(outputDir),
-            bundlingInstance.packageManager.installCommand.join(' '),
-            isPnpm ? osCommand.remove(pathJoin(outputDir, 'node_modules', '.modules.yaml'), true) : '',
-            isBun ? osCommand.removeDir(pathJoin(outputDir, 'node_modules', '.cache')) : '',
-          ].filter(cmd => cmd));
-        }
-
-        // Add afterBundling hooks
-        if (bundlingInstance.props.commandHooks?.afterBundling) {
-          postCommands.push(...bundlingInstance.props.commandHooks.afterBundling(bundlingInstance.projectRoot, outputDir));
-        }
-
-        // Execute post-commands via shell if any exist
-        if (postCommands.length > 0) {
-          exec(
-            osPlatform === 'win32' ? 'cmd' : 'bash',
-            [osPlatform === 'win32' ? '/c' : '-c', chain(postCommands)],
-            {
-              env: { ...process.env, ...environment },
-              stdio: ['ignore', process.stderr, 'inherit'],
-              cwd,
-              windowsVerbatimArguments: osPlatform === 'win32',
-            },
-          );
-        }
+        relativeEntryPath = bundlingInstance.executePreBundlingCommands(scope, osPlatform, outputDir, relativeEntryPath);
+        bundlingInstance.executeEsbuild(scope, osPlatform, outputDir, relativeEntryPath);
+        bundlingInstance.executePostBundlingCommands(scope, osPlatform, outputDir);
 
         return true;
       },
     };
+  }
+
+  /**
+   * Executes pre-esbuild shell commands: beforeBundling hooks and tsc pre-compilation.
+   * Returns the (possibly modified) entry path — tsc changes .ts to .js.
+   */
+  private executePreBundlingCommands(
+    scope: IConstruct, osPlatform: NodeJS.Platform, outputDir: string, relativeEntryPath: string,
+  ): string {
+    const environment = this.props.environment ?? {};
+    const commands: string[] = [
+      ...this.props.commandHooks?.beforeBundling(this.projectRoot, outputDir) ?? [],
+    ];
+
+    if (this.props.preCompilation) {
+      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
+      if (!tsconfig) {
+        throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
+      }
+      const compilerOptions = getTsconfigCompilerOptions(tsconfig);
+      const tscRunner = Bundling.tscInstallation?.isLocal
+        ? this.packageManager.runBinCommand('tsc')
+        : 'tsc';
+      commands.push(`${tscRunner} "${relativeEntryPath}" ${compilerOptions}`);
+      relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
+    }
+
+    if (commands.length > 0) {
+      exec(
+        osPlatform === 'win32' ? 'cmd' : 'bash',
+        [osPlatform === 'win32' ? '/c' : '-c', chain(commands)],
+        {
+          env: { ...process.env, ...environment },
+          stdio: ['ignore', process.stderr, 'inherit'],
+          cwd: this.projectRoot,
+          windowsVerbatimArguments: osPlatform === 'win32',
+        },
+      );
+    }
+
+    return relativeEntryPath;
+  }
+
+  /**
+   * Executes esbuild directly via spawnSync without shell interpretation.
+   * Arguments are passed as an array so metacharacters are treated as literals.
+   */
+  private executeEsbuild(
+    scope: IConstruct, osPlatform: NodeJS.Platform, outputDir: string, relativeEntryPath: string,
+  ): void {
+    const environment = this.props.environment ?? {};
+    const esbuildArgs = this.buildEsbuildArgs(scope, {
+      inputDir: this.projectRoot,
+      outputDir,
+      osPlatform,
+      entryPath: relativeEntryPath,
+    });
+
+    const esbuildCommand = Bundling.esbuildInstallation!.isLocal
+      ? this.packageManager.runBinCommandAsArray('esbuild')
+      : ['esbuild'];
+
+    execDirect(
+      esbuildCommand[0],
+      [...esbuildCommand.slice(1), ...esbuildArgs],
+      {
+        env: { ...process.env, ...environment },
+        stdio: ['ignore', process.stderr, 'inherit'],
+        cwd: this.projectRoot,
+      },
+    );
+  }
+
+  /**
+   * Executes post-esbuild shell commands: dependency installation, beforeInstall
+   * hooks, and afterBundling hooks.
+   */
+  private executePostBundlingCommands(
+    scope: IConstruct, osPlatform: NodeJS.Platform, outputDir: string,
+  ): void {
+    const environment = this.props.environment ?? {};
+    const pathJoin = osPathJoin(osPlatform);
+    const commands: string[] = [];
+
+    if (this.props.nodeModules) {
+      const pkgPath = findUp('package.json', path.dirname(this.props.entry));
+      if (!pkgPath) {
+        throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
+      }
+
+      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
+      const osCommand = new OsCommand(osPlatform);
+      const lockFilePath = pathJoin(
+        this.projectRoot,
+        this.relativeDepsLockFilePath ?? this.packageManager.lockFile,
+      );
+
+      const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+      const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK ||
+                    this.packageManager.lockFile === LockFile.BUN;
+
+      if (this.props.commandHooks?.beforeInstall) {
+        commands.push(...this.props.commandHooks.beforeInstall(this.projectRoot, outputDir));
+      }
+
+      commands.push(...[
+        isPnpm ? osCommand.write(pathJoin(outputDir, 'pnpm-workspace.yaml'), '') : '',
+        osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
+        osCommand.copy(lockFilePath, pathJoin(outputDir, this.packageManager.lockFile)),
+        osCommand.changeDirectory(outputDir),
+        this.packageManager.installCommand.join(' '),
+        isPnpm ? osCommand.remove(pathJoin(outputDir, 'node_modules', '.modules.yaml'), true) : '',
+        isBun ? osCommand.removeDir(pathJoin(outputDir, 'node_modules', '.cache')) : '',
+      ].filter(cmd => cmd));
+    }
+
+    if (this.props.commandHooks?.afterBundling) {
+      commands.push(...this.props.commandHooks.afterBundling(this.projectRoot, outputDir));
+    }
+
+    if (commands.length > 0) {
+      exec(
+        osPlatform === 'win32' ? 'cmd' : 'bash',
+        [osPlatform === 'win32' ? '/c' : '-c', chain(commands)],
+        {
+          env: { ...process.env, ...environment },
+          stdio: ['ignore', process.stderr, 'inherit'],
+          cwd: this.projectRoot,
+          windowsVerbatimArguments: osPlatform === 'win32',
+        },
+      );
+    }
   }
 }
 
