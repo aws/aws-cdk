@@ -2,7 +2,7 @@ import type { Resource, Service, SpecDatabase, VendedLogs } from '@aws-cdk/servi
 import { naming, util } from '@aws-cdk/spec2cdk';
 import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
-import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T } from '@cdklabs/typewriter';
+import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T, EnumType, InterfaceType } from '@cdklabs/typewriter';
 import { MIXINS_LOGS_DELIVERY } from './helpers';
 import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
@@ -137,6 +137,18 @@ class LogsHelper extends ClassType {
   }
 
   public build(mixin: LogsMixin) {
+    const mandatoryFields = this.log.mandatoryFields && this.log.mandatoryFields.length > 0;
+    let optionalFields: EnumType | undefined;
+    if (this.log.optionalFields && this.log.optionalFields.length > 0) {
+      optionalFields = new EnumType(this.scope, {
+        name: `${this.name}AdditionalFields`,
+        export: true,
+      });
+      for (const field of this.log.optionalFields) {
+        // field names cannot have parentheses () or dashes - and must be all uppper case, value has the actual string value for the field
+        optionalFields.addMember({ name: field.split(/[-()]+/).join('_').toUpperCase(), value: field });
+      }
+    }
     for (const dest of this.log.destinations) {
       switch (dest.destinationType) {
         case 'S3':
@@ -153,17 +165,70 @@ class LogsHelper extends ClassType {
             type: CDK_INTERFACES.IBucketRef,
           });
 
+          const s3Props = new InterfaceType(this.scope, {
+            name: `${this.name}S3Props`,
+            export: true,
+            properties: [{
+              name: 'encryptionKey',
+              type: CDK_INTERFACES.IKeyRef,
+              optional: true,
+              immutable: true,
+              docs: {
+                summary: 'Encrpytion key for your delivery bucket',
+              },
+            }],
+          });
+
+          if (dest.outputFormats && dest.outputFormats.length > 0) {
+            const s3OutputFormat = new EnumType(this.scope, {
+              name: `${this.name}S3OutputFormat`,
+              export: true,
+            });
+            for (const format of dest.outputFormats) {
+              s3OutputFormat.addMember({ name: format.toUpperCase(), value: format });
+            }
+
+            s3Props.addProperty({
+              name: 'outputFormat',
+              type: s3OutputFormat.type,
+              optional: true,
+              immutable: true,
+              docs: {
+                summary: `Format for log output, options are ${dest.outputFormats.join(',')}`,
+              },
+            });
+          }
+
+          if (optionalFields) {
+            s3Props.addProperty({
+              name: 'additionalFields',
+              type: Type.arrayOf(optionalFields.type),
+              optional: true,
+              immutable: true,
+              docs: {
+                summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+              },
+            });
+          }
+
           toS3.addParameter({
             name: 'props',
-            type: MIXINS_LOGS_DELIVERY.S3LogsDestinationProps,
+            type: s3Props.type,
             optional: true,
+            documentation: 'Additional properties that are optionally used in log delivery for S3 destinations',
           });
 
           const permissions = this.log.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
           toS3.addBody(stmt.block(
             stmt.ret(
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
-                expr.object({ permissionsVersion: permissions, kmsKey: expr.directCode('(props && props.encryptionKey) ? props.encryptionKey : undefined') }))),
+                expr.object({
+                  permissionsVersion: permissions,
+                  kmsKey: expr.directCode('props?.encryptionKey'),
+                  outputFormat: expr.directCode('props?.outputFormat'),
+                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
+                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                }))),
             ),
           ));
           break;
@@ -181,9 +246,64 @@ class LogsHelper extends ClassType {
             type: CDK_INTERFACES.ILogGroupRef,
           });
 
+          const hasLogGroupOutputFormats = dest.outputFormats && dest.outputFormats.length > 0;
+          const hasLogGroupProps = hasLogGroupOutputFormats || optionalFields;
+
+          if (hasLogGroupProps) {
+            const logGroupProps = new InterfaceType(this.scope, {
+              name: `${this.name}LogGroupProps`,
+              export: true,
+            });
+
+            if (hasLogGroupOutputFormats) {
+              const lgOutputFormat = new EnumType(this.scope, {
+                name: `${this.name}LogGroupOutputFormat`,
+                export: true,
+              });
+              for (const format of dest.outputFormats!) {
+                lgOutputFormat.addMember({ name: format.toUpperCase(), value: format });
+              }
+
+              logGroupProps.addProperty({
+                name: 'outputFormat',
+                type: lgOutputFormat.type,
+                optional: true,
+                immutable: true,
+                docs: {
+                  summary: `Format for log output, options are ${dest.outputFormats.join(',')}`,
+                },
+              });
+            }
+
+            if (optionalFields) {
+              logGroupProps.addProperty({
+                name: 'additionalFields',
+                type: Type.arrayOf(optionalFields.type),
+                optional: true,
+                immutable: true,
+                docs: {
+                  summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                },
+              });
+            }
+
+            toCWL.addParameter({
+              name: 'props',
+              type: logGroupProps.type,
+              optional: true,
+              documentation: 'Additional properties that are optionally used in log delivery for Log Group destinations',
+            });
+          }
+
           toCWL.addBody(stmt.block(
             stmt.ret(
-              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL)),
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL,
+                expr.object({
+                  outputFormat: expr.directCode('props?.outputFormat'),
+                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
+                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                }),
+              )),
             ),
           ));
           break;
@@ -201,9 +321,65 @@ class LogsHelper extends ClassType {
             type: CDK_INTERFACES.IDeliveryStreamRef,
           });
 
+          const hasFirehoseOutputFormats = dest.outputFormats && dest.outputFormats.length > 0;
+          const hasFirehoseProps = hasFirehoseOutputFormats || optionalFields;
+
+          if (hasFirehoseProps) {
+            const firehoseProps = new InterfaceType(this.scope, {
+              name: `${this.name}FirehoseProps`,
+              export: true,
+            });
+
+            if (hasFirehoseOutputFormats) {
+              const fhOutputFormat = new EnumType(this.scope, {
+                name: `${this.name}FirehoseOutputFormat`,
+                export: true,
+              });
+
+              for (const format of dest.outputFormats!) {
+                fhOutputFormat.addMember({ name: format.toUpperCase(), value: format });
+              }
+
+              firehoseProps.addProperty({
+                name: 'outputFormat',
+                type: fhOutputFormat.type,
+                optional: true,
+                immutable: true,
+                docs: {
+                  summary: `Format for log output, options are ${dest.outputFormats.join(',')}`,
+                },
+              });
+            }
+
+            if (optionalFields) {
+              firehoseProps.addProperty({
+                name: 'additionalFields',
+                type: Type.arrayOf(optionalFields.type),
+                optional: true,
+                immutable: true,
+                docs: {
+                  summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                },
+              });
+            }
+
+            toFH.addParameter({
+              name: 'props',
+              type: firehoseProps.type,
+              optional: true,
+              documentation: 'Additional properties that are optionally used in log delivery for Firehose destinations',
+            });
+          }
+
           toFH.addBody(stmt.block(
             stmt.ret(
-              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH)),
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH,
+                expr.object({
+                  outputFormat: expr.directCode('props?.outputFormat'),
+                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
+                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                }),
+              )),
             ),
           ));
           break;
@@ -216,9 +392,38 @@ class LogsHelper extends ClassType {
             },
           });
 
+          if (optionalFields) {
+            const xrayProps = new InterfaceType(this.scope, {
+              name: `${this.name}XRayProps`,
+              export: true,
+            });
+
+            xrayProps.addProperty({
+              name: 'additionalFields',
+              type: Type.arrayOf(optionalFields.type),
+              optional: true,
+              immutable: true,
+              docs: {
+                summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+              },
+            });
+
+            toXRAY.addParameter({
+              name: 'props',
+              type: xrayProps.type,
+              optional: true,
+              documentation: 'Additional properties that are optionally used in log delivery for XRay destinations',
+            });
+          }
+
           toXRAY.addBody(stmt.block(
             stmt.ret(
-              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery)),
+              mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery,
+                expr.object({
+                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
+                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                }),
+              )),
             ),
           ));
           break;
@@ -240,9 +445,38 @@ class LogsHelper extends ClassType {
       type: CDK_INTERFACES.IDeliveryDestinationRef,
     });
 
+    if (optionalFields) {
+      const destProps = new InterfaceType(this.scope, {
+        name: `${this.name}DestProps`,
+        export: true,
+      });
+
+      destProps.addProperty({
+        name: 'additionalFields',
+        type: Type.arrayOf(optionalFields.type),
+        optional: true,
+        immutable: true,
+        docs: {
+          summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+        },
+      });
+
+      toDest.addParameter({
+        name: 'props',
+        type: destProps.type,
+        optional: true,
+        documentation: 'Additional properties that are optionally used in log delivery for destinations',
+      });
+    }
+
     toDest.addBody(stmt.block(
       stmt.ret(
-        mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest)),
+        mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest,
+          expr.object({
+            optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
+            mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+          }),
+        )),
       ),
     ));
 
