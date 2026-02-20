@@ -3858,6 +3858,37 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Clusterchartdashboard4AA45F3F": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksclusterawscdkawseksKubectlProviderframeworkonEvent775EF8A3Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "awscdkeksclusterclusterchartdashboard864cec4a",
+    "Chart": "headlamp",
+    "Version": "0.39.0",
+    "Namespace": "default",
+    "Repository": "https://kubernetes-sigs.github.io/headlamp/",
+    "CreateNamespace": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Clustercharttestchart9FD698EB": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
@@ -4379,7 +4410,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/862cca191baa23c5dfd7de479f9b47ef0f9fbbaaeee27158402eccf2b437f651.json"
+       "/6dc232add6a062645fabdd7bcc4d54abc79ec7cd75f81ffa688ba876a92cb64d.json"
       ]
      ]
     }
