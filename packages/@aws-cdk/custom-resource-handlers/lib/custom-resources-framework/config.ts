@@ -228,6 +228,40 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
+  'aws-eks-v2': {
+    'kubectl-provider': [
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'index.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'apply', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'get', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'helm', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'patch', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+    ],
+  },
   'aws-events-targets': {
     'aws-api-provider': [
       {
