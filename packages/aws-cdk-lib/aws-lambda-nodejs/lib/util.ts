@@ -71,36 +71,8 @@ export function findUpMultiple(names: string[], directory: string = process.cwd(
 
 /**
  * Spawn sync with error handling.
- *
- * NOTE: This function is typically used with a shell interpreter (bash/cmd) as the command,
- * which means the args are interpreted by the shell. When user input is involved,
- * prefer execDirect() which bypasses shell interpretation.
  */
 export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
-  return spawnSyncWithErrorHandling(cmd, args, options);
-}
-
-/**
- * Execute a command directly without shell interpretation.
- *
- * This function passes arguments directly to the spawned process without
- * going through a shell interpreter. Shell metacharacters (like &, ;, |, etc.)
- * are treated as literal characters.
- *
- * Use this function when:
- * - The command arguments may contain user-provided input
- * - You want to ensure shell metacharacters are not interpreted
- * - You're invoking a binary directly (not a shell script)
- *
- * @param cmd - The command/binary to execute (e.g., 'esbuild', '/usr/bin/node')
- * @param args - Array of arguments to pass to the command
- * @param options - SpawnSync options (cwd, env, etc.)
- */
-export function execDirect(cmd: string, args: string[], options?: SpawnSyncOptions) {
-  return spawnSyncWithErrorHandling(cmd, args, { ...options, shell: false });
-}
-
-function spawnSyncWithErrorHandling(cmd: string, args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(cmd, args, options);
 
   if (proc.error) {

@@ -705,23 +705,15 @@ test('Local bundling', () => {
   const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
   expect(tryBundle).toBe(true);
 
-  // esbuild is now invoked directly without shell interpretation.
-  // The first call should be to the esbuild runner (yarn run esbuild) with args as an array.
-  const esbuildCall = spawnSyncMock.mock.calls.find(
-    (call: any[]) => call[1]?.some((arg: string) => arg?.includes('--bundle')),
+  // esbuild is invoked via shell with escaped arguments.
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'bash',
+    expect.arrayContaining(['-c', expect.stringContaining(entry)]),
+    expect.objectContaining({
+      env: expect.objectContaining({ KEY: 'value' }),
+      cwd: '/project',
+    }),
   );
-  expect(esbuildCall).toBeDefined();
-  // Should be called with yarn (the package manager's run command), not bash
-  expect(esbuildCall[0]).toBe('yarn');
-  // Args should include esbuild arguments as separate array elements
-  expect(esbuildCall[1]).toContain('esbuild');
-  expect(esbuildCall[1]).toContain('--bundle');
-  expect(esbuildCall[1]).toContain(entry);
-  // Environment should be passed through
-  expect(esbuildCall[2]).toMatchObject({
-    env: expect.objectContaining({ KEY: 'value' }),
-    cwd: '/project',
-  });
 
   // Docker image is not built
   expect(DockerImage.fromBuild).not.toHaveBeenCalled();
@@ -1234,11 +1226,11 @@ describe('shell metacharacter handling', () => {
     });
   }
 
-  describe('local bundling - esbuild executed without shell interpretation', () => {
+  describe('local bundling - esbuild args are shell-escaped in command string', () => {
     /**
-     * For local bundling, esbuild is invoked directly via spawnSync
-     * with an array of arguments, bypassing shell interpretation entirely.
-     * Shell metacharacters are passed as literal strings to esbuild.
+     * Local bundling runs all commands in a single shell session.
+     * Esbuild arguments are shell-escaped so metacharacters are treated as
+     * literal characters by the shell, same approach as Docker bundling.
      */
 
     let spawnSyncMock: jest.SpyInstance;
@@ -1258,154 +1250,75 @@ describe('shell metacharacter handling', () => {
       spawnSyncMock.mockRestore();
     });
 
-    test('externalModules with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * externalModules array values are interpolated into --external: flags.
-       * With direct execution, esbuild receives the full value as a single argument.
-       */
+    test('externalModules with shell metacharacters are escaped in local command', () => {
       const bundler = createBundlerWithOptions({
         externalModules: [PAYLOAD_WITH_METACHARACTERS],
       });
 
       bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
 
-      // Verify esbuild is called directly (not through bash)
-      // and the payload appears as a single, uninterpreted argument
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('--external:')),
+      const bashCall = spawnSyncMock.mock.calls.find(
+        (call: any[]) => call[0] === 'bash' && call[1]?.[1]?.includes('--external:'),
       );
-      expect(esbuildCall).toBeDefined();
-
-      // The first argument should NOT be 'bash' - esbuild should be invoked directly
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      // The payload should appear as a single argument element, not split by shell
-      const argsArray = esbuildCall[1] as string[];
-      const externalArg = argsArray.find((arg: string) => arg.includes('--external:'));
-      expect(externalArg).toBe(`--external:${PAYLOAD_WITH_METACHARACTERS}`);
+      expect(bashCall).toBeDefined();
+      // The argument should be quoted to prevent shell interpretation
+      expect(bashCall[1][1]).toContain(`'--external:${PAYLOAD_WITH_METACHARACTERS}'`);
     });
 
-    test('define keys with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * define object keys are interpolated into --define: flags.
-       * With direct execution, esbuild receives the entire --define flag as a single argument.
-       */
+    test('define keys with shell metacharacters are escaped in local command', () => {
       const bundler = createBundlerWithOptions({
-        define: {
-          [PAYLOAD_WITH_METACHARACTERS]: 'bar',
-        },
+        define: { [PAYLOAD_WITH_METACHARACTERS]: 'bar' },
       });
 
       bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
 
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('--define:')),
+      const bashCall = spawnSyncMock.mock.calls.find(
+        (call: any[]) => call[0] === 'bash' && call[1]?.[1]?.includes('--define:'),
       );
-      expect(esbuildCall).toBeDefined();
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      const argsArray = esbuildCall[1] as string[];
-      const defineArg = argsArray.find((arg: string) => arg.includes('--define:'));
-      // The key with shell metacharacters should be in a single argument
-      expect(defineArg).toContain(PAYLOAD_WITH_METACHARACTERS);
+      expect(bashCall).toBeDefined();
+      expect(bashCall[1][1]).toContain(`'--define:${PAYLOAD_WITH_METACHARACTERS}="bar"'`);
     });
 
-    test('loader keys with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * loader object keys (file extensions) are interpolated into --loader: flags.
-       * With direct execution, esbuild receives the entire --loader flag as a single argument.
-       */
+    test('loader keys with shell metacharacters are escaped in local command', () => {
       const bundler = createBundlerWithOptions({
-        loader: {
-          [`.${PAYLOAD_WITH_METACHARACTERS}`]: 'dataurl',
-        },
+        loader: { [`.${PAYLOAD_WITH_METACHARACTERS}`]: 'dataurl' },
       });
 
       bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
 
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('--loader:')),
+      const bashCall = spawnSyncMock.mock.calls.find(
+        (call: any[]) => call[0] === 'bash' && call[1]?.[1]?.includes('--loader:'),
       );
-      expect(esbuildCall).toBeDefined();
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      const argsArray = esbuildCall[1] as string[];
-      const loaderArg = argsArray.find((arg: string) => arg.includes('--loader:'));
-      expect(loaderArg).toContain(PAYLOAD_WITH_METACHARACTERS);
+      expect(bashCall).toBeDefined();
+      expect(bashCall[1][1]).toContain(`'--loader:.${PAYLOAD_WITH_METACHARACTERS}=dataurl'`);
     });
 
-    test('inject paths with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * inject array values are interpolated into --inject: flags.
-       * With direct execution, esbuild receives the path as a single argument.
-       */
+    test('inject paths with shell metacharacters are escaped in local command', () => {
       const bundler = createBundlerWithOptions({
         inject: [`./${PAYLOAD_WITH_METACHARACTERS}.js`],
       });
 
       bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
 
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('--inject:')),
+      const bashCall = spawnSyncMock.mock.calls.find(
+        (call: any[]) => call[0] === 'bash' && call[1]?.[1]?.includes('--inject:'),
       );
-      expect(esbuildCall).toBeDefined();
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      const argsArray = esbuildCall[1] as string[];
-      const injectArg = argsArray.find((arg: string) => arg.includes('--inject:'));
-      expect(injectArg).toContain(PAYLOAD_WITH_METACHARACTERS);
+      expect(bashCall).toBeDefined();
+      expect(bashCall[1][1]).toContain(`'--inject:./${PAYLOAD_WITH_METACHARACTERS}.js'`);
     });
 
-    test('esbuildArgs keys with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * esbuildArgs object keys are used as CLI flags.
-       * With direct execution, esbuild receives the flag as a single argument.
-       */
+    test('esbuildArgs with shell metacharacters are escaped in local command', () => {
       const bundler = createBundlerWithOptions({
-        esbuildArgs: {
-          [`--log-limit & echo PWNED`]: '0',
-        },
+        esbuildArgs: { '--log-limit': '0 & echo PWNED' },
       });
 
       bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
 
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('PWNED')),
+      const bashCall = spawnSyncMock.mock.calls.find(
+        (call: any[]) => call[0] === 'bash' && call[1]?.[1]?.includes('PWNED'),
       );
-      expect(esbuildCall).toBeDefined();
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      // The key should appear as part of a single argument, not executed
-      const argsArray = esbuildCall[1] as string[];
-      const metacharArg = argsArray.find((arg: string) => arg.includes('PWNED'));
-      expect(metacharArg).toBeDefined();
-      // Should not be split - the & should be part of the argument string
-      expect(metacharArg).toContain('&');
-    });
-
-    test('esbuildArgs values with shell metacharacters are passed as literal arguments', () => {
-      /**
-       * esbuildArgs object values are used as CLI flag values.
-       * With direct execution, esbuild receives the value as part of a single argument.
-       */
-      const bundler = createBundlerWithOptions({
-        esbuildArgs: {
-          '--log-limit': `0 & echo PWNED`,
-        },
-      });
-
-      bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingImage });
-
-      const esbuildCall = spawnSyncMock.mock.calls.find(
-        (call: any[]) => call[1]?.some((arg: string) => arg?.includes('PWNED')),
-      );
-      expect(esbuildCall).toBeDefined();
-      expect(esbuildCall[0]).not.toBe('bash');
-
-      const argsArray = esbuildCall[1] as string[];
-      const metacharArg = argsArray.find((arg: string) => arg.includes('PWNED'));
-      expect(metacharArg).toBeDefined();
-      expect(metacharArg).toContain('&');
+      expect(bashCall).toBeDefined();
+      expect(bashCall[1][1]).toContain("'--log-limit=0 & echo PWNED'");
     });
   });
 

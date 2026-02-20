@@ -92,26 +92,4 @@ export class PackageManager {
       bin,
     ].join(' ');
   }
-
-  /**
-   * Returns an array of command parts to run a binary from node_modules/.bin
-   *
-   * This returns an array suitable for use with spawnSync() without
-   * shell interpretation.
-   *
-   * @param bin - The binary name (e.g., 'esbuild', 'tsc')
-   * @returns Array where first element is the command and rest are arguments
-   *
-   * Example for npm: ['npx', '--no-install', 'esbuild']
-   * Example for yarn: ['yarn', 'run', 'esbuild']
-   */
-  public runBinCommandAsArray(bin: string): string[] {
-    const [runCommand, ...runArgs] = this.runCommand;
-    return [
-      os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
-      ...runArgs,
-      ...(this.argsSeparator ? [this.argsSeparator] : []),
-      bin,
-    ];
-  }
 }
