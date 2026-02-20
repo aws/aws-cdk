@@ -1,0 +1,21 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterintegDefaultTestDeployAssertB6AAB3A3"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}
