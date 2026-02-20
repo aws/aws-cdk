@@ -5,55 +5,6 @@ import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
 
-/**
- * Shell metacharacters that could be used for command injection
- * Covers: ; & | ` $ ( ) < > \ ' "
- */
-export const SHELL_METACHARACTERS = /[;&|`$()<>\\'"]/;
-
-/**
- * Valid npm package name pattern
- * - Must start with alphanumeric or @
- * - Can contain: alphanumeric, @, /, -, _, .
- * - Examples: lodash, @aws-sdk/client-s3, @types/node
- * - Rejects: names with spaces, shell metacharacters, or starting with . or -
- */
-export const NPM_PACKAGE_NAME_PATTERN = /^[@a-z0-9][a-z0-9._\/-]*$/i;
-
-/**
- * Valid external module pattern for esbuild --external flag
- * Same as NPM_PACKAGE_NAME_PATTERN but allows a trailing * for glob patterns
-/* , lodash
- */
-export const EXTERNAL_MODULE_PATTERN = /^[@a-z0-9][a-z0-9._\/-]*\*?$/i;
-
-/**
- * Valid file extension pattern for esbuild loaders
- * - Must start with a dot followed by alphanumeric characters
- * - Allows multiple dot-separated segments for compound extensions
- * - Examples: .txt, .json, .css, .d.ts, .module.css, .test.js
- * - Rejects: extensions with special characters or spaces
- */
-export const FILE_EXTENSION_PATTERN = /^(\.[a-z0-9]+)+$/i;
-
-/**
- * Valid JavaScript identifier pattern for esbuild define keys
- * - Must start with letter, underscore, or dollar sign
- * - Can contain: letters, digits, underscores, dollar signs, dots
- * - Examples: FOO, process.env.NODE_ENV, __dirname, $jQuery
- * - Rejects: identifiers starting with digits or containing spaces/special chars
- */
-export const JS_IDENTIFIER_PATTERN = /^[a-zA-Z_$][a-zA-Z0-9_$.]*$/;
-
-/**
- * Valid CLI flag name pattern for esbuild arguments
- * - Must start with a letter
- * - Can contain: letters, digits, hyphens
- * - Examples: minify, source-map, keep-names
- * - Rejects: flags with underscores, special characters, or starting with digits
- */
-export const CLI_FLAG_NAME_PATTERN = /^[a-z][a-z0-9-]*$/i;
-
 export interface CallSite {
   getThis(): any;
   getTypeName(): string;
@@ -119,9 +70,37 @@ export function findUpMultiple(names: string[], directory: string = process.cwd(
 }
 
 /**
- * Spawn sync with error handling
+ * Spawn sync with error handling.
+ *
+ * NOTE: This function is typically used with a shell interpreter (bash/cmd) as the command,
+ * which means the args are interpreted by the shell. When user input is involved,
+ * prefer execDirect() which bypasses shell interpretation.
  */
 export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
+  return spawnSyncWithErrorHandling(cmd, args, options);
+}
+
+/**
+ * Execute a command directly without shell interpretation.
+ *
+ * This function passes arguments directly to the spawned process without
+ * going through a shell interpreter. Shell metacharacters (like &, ;, |, etc.)
+ * are treated as literal characters.
+ *
+ * Use this function when:
+ * - The command arguments may contain user-provided input
+ * - You want to ensure shell metacharacters are not interpreted
+ * - You're invoking a binary directly (not a shell script)
+ *
+ * @param cmd - The command/binary to execute (e.g., 'esbuild', '/usr/bin/node')
+ * @param args - Array of arguments to pass to the command
+ * @param options - SpawnSync options (cwd, env, etc.)
+ */
+export function execDirect(cmd: string, args: string[], options?: SpawnSyncOptions) {
+  return spawnSyncWithErrorHandling(cmd, args, { ...options, shell: false });
+}
+
+function spawnSyncWithErrorHandling(cmd: string, args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(cmd, args, options);
 
   if (proc.error) {
@@ -139,34 +118,73 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 }
 
 /**
- * Validates that a string is a valid npm package name.
- * Used for fields like `nodeModules` where values must be installable package names.
- * Does not allow glob wildcards — use `validateExternalModule` for esbuild external patterns.
+ * Escape a string for safe interpolation into a shell command.
+ *
+ * This function ensures proper quoting of values interpolated into shell command
+ * strings used in the Docker bundling path, where commands are executed via
+ * `bash -c` or `cmd /c`.
+ *
+ * The escaping strategy differs by platform:
+ *
+ * POSIX (Linux/macOS):
+ *   - Wrap the value in single quotes
+ *   - Escape embedded single quotes using the '\'' pattern
+ *   - Single quotes prevent ALL shell interpretation except for the quote itself
+ *   - Example: "foo & bar" becomes "'foo & bar'"
+ *   - Example: "foo'bar" becomes "'foo'\\''bar'"
+ *
+ * Windows (cmd.exe):
+ *   - Wrap the value in double quotes
+ *   - Escape embedded double quotes as ""
+ *   - Escape % as %% (prevents environment variable expansion)
+ *   - Escape ! as ^! (prevents delayed expansion)
+ *   - Example: "foo & bar" becomes '"foo & bar"'
+ *   - Example: 'foo"bar' becomes '"foo""bar"'
+ *
+ * @param value - The string to escape (may contain shell metacharacters)
+ * @param platform - The target platform ('linux', 'darwin', 'win32', etc.)
+ * @returns The escaped string, safe for interpolation into a shell command
  */
-export function validatePackageName(name: string, fieldName: string): void {
-  if (!NPM_PACKAGE_NAME_PATTERN.test(name)) {
-    throw new UnscopedValidationError(
-      `Invalid ${fieldName}: "${name}". Package names must contain only alphanumeric characters, @, /, -, _, and . to prevent command injection.`,
-    );
+export function shellEscapeForBundlingCommand(value: string, platform: NodeJS.Platform): string {
+  if (platform === 'win32') {
+    return escapeForWindowsCmd(value);
   }
-
-  if (SHELL_METACHARACTERS.test(name)) {
-    throw new UnscopedValidationError(
-      `Invalid ${fieldName}: "${name}". Package names cannot contain shell metacharacters (;&|` + '`$()<>\\\'"' + ') to prevent command injection.',
-    );
-  }
+  return escapeForPosixShell(value);
 }
 
 /**
- * Validates that a string is a valid esbuild external module pattern
-/* ) in addition to standard package names
+ * Escape a string for POSIX shell (bash, sh, zsh, etc.)
+ *
+ * Strategy: Wrap in single quotes and escape embedded single quotes.
+ * Single quotes in POSIX shells prevent ALL interpretation of special characters
+ * except for the single quote itself.
+ *
+ * To include a literal single quote, we use the pattern: '\''
+ * This works by: ending the single-quoted string, adding an escaped single quote,
+ * then starting a new single-quoted string.
  */
-export function validateExternalModule(name: string, fieldName: string): void {
-  if (!EXTERNAL_MODULE_PATTERN.test(name)) {
-    throw new UnscopedValidationError(
-      `Invalid ${fieldName}: "${name}". External modules must be valid package names or glob patterns (e.g. @aws-sdk/*).`,
-    );
-  }
+function escapeForPosixShell(value: string): string {
+  // Replace each single quote with: end quote, escaped quote, start quote
+  const escaped = value.replace(/'/g, "'\\''");
+  return `'${escaped}'`;
+}
+
+/**
+ * Escape a string for Windows cmd.exe
+ *
+ * Strategy: Wrap in double quotes and escape special characters.
+ * Double quotes in cmd.exe prevent interpretation of most special characters,
+ * but we still need to handle: ", %, and !
+ */
+function escapeForWindowsCmd(value: string): string {
+  let escaped = value;
+  // Escape double quotes by doubling them
+  escaped = escaped.replace(/"/g, '""');
+  // Escape percent signs (environment variable expansion)
+  escaped = escaped.replace(/%/g, '%%');
+  // Escape exclamation marks (delayed expansion)
+  escaped = escaped.replace(/!/g, '^!');
+  return `"${escaped}"`;
 }
 
 /**

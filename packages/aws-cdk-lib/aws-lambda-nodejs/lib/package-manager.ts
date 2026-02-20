@@ -78,6 +78,11 @@ export class PackageManager {
     this.argsSeparator = props.argsSeparator;
   }
 
+  /**
+   * Returns a shell command string to run a binary from node_modules/.bin
+   *
+   * NOTE: This returns a space-joined string intended for shell execution.
+   */
   public runBinCommand(bin: string): string {
     const [runCommand, ...runArgs] = this.runCommand;
     return [
@@ -89,9 +94,18 @@ export class PackageManager {
   }
 
   /**
-   * Get the command and arguments as an array for direct process execution
+   * Returns an array of command parts to run a binary from node_modules/.bin
+   *
+   * This returns an array suitable for use with spawnSync() without
+   * shell interpretation.
+   *
+   * @param bin - The binary name (e.g., 'esbuild', 'tsc')
+   * @returns Array where first element is the command and rest are arguments
+   *
+   * Example for npm: ['npx', '--no-install', 'esbuild']
+   * Example for yarn: ['yarn', 'run', 'esbuild']
    */
-  public runBinCommandArray(bin: string): string[] {
+  public runBinCommandAsArray(bin: string): string[] {
     const [runCommand, ...runArgs] = this.runCommand;
     return [
       os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
