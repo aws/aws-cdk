@@ -155,7 +155,7 @@ export interface BucketDeploymentProps {
    * If you are deploying large files, you will need to increase this number
    * accordingly.
    *
-   * @default 128
+   * @default 512
    */
   readonly memoryLimit?: number;
 
@@ -391,7 +391,7 @@ export class BucketDeployment extends Construct {
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
-      memorySize: props.memoryLimit,
+      memorySize: props.memoryLimit ?? 512,
       ephemeralStorageSize: props.ephemeralStorageSize,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
