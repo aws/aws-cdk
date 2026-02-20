@@ -1,13 +1,14 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "files": {
     "2e8173d71838d0df985ad644250011d6babb4ddb8f87551daf84c46f34645cb2": {
+      "displayName": "cdk-integ-location-geofence-collection Template",
       "source": {
         "path": "cdk-integ-location-geofence-collection.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7c514880": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "2e8173d71838d0df985ad644250011d6babb4ddb8f87551daf84c46f34645cb2.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

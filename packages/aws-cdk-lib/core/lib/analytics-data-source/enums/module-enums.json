@@ -116,7 +116,19 @@
       "OPENAPI_SCHEMA",
       "SMITHY_MODEL",
       "LAMBDA",
-      "MCP_SERVER"
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-configuration.ts": {
+    "ApiGatewayHttpMethod": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
@@ -2830,6 +2842,9 @@
     "ContributorInsightsMode": [
       "ACCESSED_AND_THROTTLED_KEYS",
       "THROTTLED_KEYS"
+    ],
+    "GlobalTableSettingsReplicationMode": [
+      "ENABLED"
     ],
     "ProjectionType": [
       "KEYS_ONLY",
