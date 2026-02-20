@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
-import { CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
+import { CfnEventBusErrorLogsAdditionalFields as eventBusField, CfnEventBusErrorLogsLogGroupOutputFormat, CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
 import '../../../lib/with';
 
 const app = new cdk.App();
@@ -24,7 +24,10 @@ const logGroup = new logs.LogGroup(stack, 'DeliveryLogGroup', {
 });
 
 // Setup delivery
-eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup));
+eventBus.with(CfnEventBusLogsMixin.ERROR_LOGS.toLogGroup(logGroup, {
+  outputFormat: CfnEventBusErrorLogsLogGroupOutputFormat.JSON,
+  additionalFields: [eventBusField.EVENT_BUS_NAME, eventBusField.LOG_LEVEL, eventBusField.DETAILS, eventBusField.RESOURCE_ARN],
+}));
 
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],
