@@ -393,7 +393,6 @@ export class Bundling implements cdk.BundlingOptions {
   private executePreBundlingCommands(
     scope: IConstruct, osPlatform: NodeJS.Platform, outputDir: string, relativeEntryPath: string,
   ): string {
-    const environment = this.props.environment ?? {};
     const commands: string[] = [
       ...this.props.commandHooks?.beforeBundling(this.projectRoot, outputDir) ?? [],
     ];
@@ -411,19 +410,7 @@ export class Bundling implements cdk.BundlingOptions {
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    if (commands.length > 0) {
-      exec(
-        osPlatform === 'win32' ? 'cmd' : 'bash',
-        [osPlatform === 'win32' ? '/c' : '-c', chain(commands)],
-        {
-          env: { ...process.env, ...environment },
-          stdio: ['ignore', process.stderr, 'inherit'],
-          cwd: this.projectRoot,
-          windowsVerbatimArguments: osPlatform === 'win32',
-        },
-      );
-    }
-
+    this.executeShellCommands(commands, osPlatform);
     return relativeEntryPath;
   }
 
@@ -464,7 +451,6 @@ export class Bundling implements cdk.BundlingOptions {
   private executePostBundlingCommands(
     scope: IConstruct, osPlatform: NodeJS.Platform, outputDir: string,
   ): void {
-    const environment = this.props.environment ?? {};
     const pathJoin = osPathJoin(osPlatform);
     const commands: string[] = [];
 
@@ -504,18 +490,28 @@ export class Bundling implements cdk.BundlingOptions {
       commands.push(...this.props.commandHooks.afterBundling(this.projectRoot, outputDir));
     }
 
-    if (commands.length > 0) {
-      exec(
-        osPlatform === 'win32' ? 'cmd' : 'bash',
-        [osPlatform === 'win32' ? '/c' : '-c', chain(commands)],
-        {
-          env: { ...process.env, ...environment },
-          stdio: ['ignore', process.stderr, 'inherit'],
-          cwd: this.projectRoot,
-          windowsVerbatimArguments: osPlatform === 'win32',
-        },
-      );
+    this.executeShellCommands(commands, osPlatform);
+  }
+
+  /**
+   * Runs a list of shell commands chained with &&, using the platform-appropriate shell.
+   * No-op if the commands list is empty.
+   */
+  private executeShellCommands(commands: string[], osPlatform: NodeJS.Platform): void {
+    if (commands.length === 0) {
+      return;
     }
+    const isWindows = osPlatform === 'win32';
+    exec(
+      isWindows ? 'cmd' : 'bash',
+      [isWindows ? '/c' : '-c', chain(commands)],
+      {
+        env: { ...process.env, ...this.props.environment },
+        stdio: ['ignore', process.stderr, 'inherit'],
+        cwd: this.projectRoot,
+        windowsVerbatimArguments: isWindows,
+      },
+    );
   }
 }
 
