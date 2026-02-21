@@ -128,7 +128,7 @@ export abstract class NatProvider {
    *
    * Don't call this directly, the VPC will call it automatically.
    */
-  public abstract configureNat(options: ConfigureRegionalNatOptions): void;
+  public abstract configureNat(options: ConfigureNatOptions): void;
 
   /**
    * Configures subnet with the gateway
@@ -139,16 +139,23 @@ export abstract class NatProvider {
 }
 
 /**
- * Options passed by the VPC when Regional NAT Gateway needs to be configured
+ * Options passed by the VPC when NAT needs to be configured
  *
- * This is the base interface for NAT configuration, containing only the
- * properties needed for Regional NAT Gateways.
+ * Don't use this directly, the VPC will pass it automatically.
  */
-export interface ConfigureRegionalNatOptions {
+export interface ConfigureNatOptions {
   /**
    * The VPC we're configuring NAT for
    */
   readonly vpc: Vpc;
+
+  /**
+   * The public subnets where the NAT providers need to be placed.
+   *
+   * For Regional NAT Gateways, this should be an empty array as they
+   * don't require public subnets.
+   */
+  readonly natSubnets: PublicSubnet[];
 
   /**
    * The private subnets that need to route through the NAT providers.
@@ -156,19 +163,6 @@ export interface ConfigureRegionalNatOptions {
    * There may be more private subnets than public subnets with NAT providers.
    */
   readonly privateSubnets: PrivateSubnet[];
-}
-
-/**
- * Options passed by the VPC when NAT needs to be configured
- *
- * Extends ConfigureRegionalNatOptions with natSubnets for zonal NAT Gateways
- * and NAT instances.
- */
-export interface ConfigureNatOptions extends ConfigureRegionalNatOptions {
-  /**
-   * The public subnets where the NAT providers need to be placed.
-   */
-  readonly natSubnets: PublicSubnet[];
 }
 
 /**
@@ -504,7 +498,15 @@ export class RegionalNatGatewayProvider extends NatProvider {
     }
   }
 
-  public configureNat(options: ConfigureRegionalNatOptions) {
+  public configureNat(options: ConfigureNatOptions) {
+    // Warn if natSubnets is provided - Regional NAT Gateway doesn't use public subnets
+    if (options.natSubnets.length > 0) {
+      Annotations.of(options.vpc).addWarningV2(
+        '@aws-cdk/aws-ec2:regionalNatGatewayNatSubnetsIgnored',
+        '`natSubnets` is ignored for Regional NAT Gateway. Regional NAT Gateways do not require public subnets.',
+      );
+    }
+
     // Warn if availabilityZoneAddresses is specified with allocationId/eip
     // allocationId/eip will be ignored in that case
     if (this.props.availabilityZoneAddresses && (this.props.allocationId || this.props.eip)) {

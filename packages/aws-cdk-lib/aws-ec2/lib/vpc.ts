@@ -1830,6 +1830,7 @@ export class Vpc extends VpcBase {
     if (provider instanceof RegionalNatGatewayProvider) {
       provider.configureNat({
         vpc: this,
+        natSubnets: [],
         privateSubnets: this.privateSubnets as PrivateSubnet[],
       });
 
