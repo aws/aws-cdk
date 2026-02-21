@@ -133,6 +133,13 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new BucketVersioning());
 ```
 
+**BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
+
+```typescript
+const bucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(bucket).apply(new BucketBlockPublicAccess());
+```
+
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
@@ -149,6 +156,21 @@ Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
     principals: [new iam.AnyPrincipal()],
   }),
 ]));
+```
+
+#### ECS-Specific Mixins
+
+**ClusterSettings**: Applies one or more cluster settings to ECS clusters
+
+```typescript
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ClusterSettings } from '@aws-cdk/mixins-preview/aws-ecs/mixins';
+
+const cluster = new ecs.CfnCluster(scope, "Cluster");
+Mixins.of(cluster).apply(new ClusterSettings([{
+  name: "containerInsights",
+  value: "enhanced",
+}]));
 ```
 
 ### Logs Delivery
