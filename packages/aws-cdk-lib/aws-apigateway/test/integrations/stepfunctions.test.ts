@@ -541,7 +541,7 @@ describe('StepFunctionsIntegration', () => {
     const template = Template.fromStack(stack);
     const methodResource = template.findResources('AWS::ApiGateway::Method');
     const requestTemplate = JSON.stringify(methodResource);
-    
+
     // Verify the template contains conditional logic for Cognito claims
     expect(requestTemplate).toContain('$context.authorizer.claims');
     expect(requestTemplate).toContain('$context.authorizer.claims.keySet()');
