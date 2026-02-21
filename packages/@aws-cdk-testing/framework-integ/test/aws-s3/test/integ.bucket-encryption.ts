@@ -19,14 +19,16 @@ new s3.Bucket(stack, 'MySSES3Bucket', {
 
 const kmsBucket = new s3.Bucket(stack, 'MyKMSBucket', {
   encryption: s3.BucketEncryption.KMS,
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 kmsBucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 new s3.Bucket(stack, 'MySSECBlockedBucket', {
-  encryption: s3.BucketEncryption.S3_MANAGED,
+  encryption: s3.BucketEncryption.UNENCRYPTED,
   blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new integ.IntegTest(app, 'IntegTestDSSEBucket', {

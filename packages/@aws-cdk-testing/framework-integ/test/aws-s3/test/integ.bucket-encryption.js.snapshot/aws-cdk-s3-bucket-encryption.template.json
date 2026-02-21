@@ -76,6 +76,11 @@
     "BucketEncryption": {
      "ServerSideEncryptionConfiguration": [
       {
+       "BlockedEncryptionTypes": {
+        "EncryptionType": [
+         "NONE"
+        ]
+       },
        "ServerSideEncryptionByDefault": {
         "KMSMasterKeyID": {
          "Fn::GetAtt": [
@@ -102,16 +107,13 @@
         "EncryptionType": [
          "SSE-C"
         ]
-       },
-       "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
        }
       }
      ]
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

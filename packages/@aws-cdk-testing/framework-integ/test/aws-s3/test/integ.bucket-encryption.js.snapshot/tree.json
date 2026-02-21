@@ -163,6 +163,11 @@
                                 "Arn"
                               ]
                             }
+                          },
+                          "blockedEncryptionTypes": {
+                            "encryptionType": [
+                              "NONE"
+                            ]
                           }
                         }
                       ]
@@ -193,9 +198,6 @@
                     "bucketEncryption": {
                       "serverSideEncryptionConfiguration": [
                         {
-                          "serverSideEncryptionByDefault": {
-                            "sseAlgorithm": "AES256"
-                          },
                           "blockedEncryptionTypes": {
                             "encryptionType": [
                               "SSE-C"
