@@ -278,6 +278,30 @@ describe('function hash', () => {
 
       expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
     });
+
+    test('adding unattached layer to the stack does not impact hash', () => {
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+      const stack = new Stack(app, 'stack');
+
+      const fn = new lambda.Function(stack, 'MyFunction', {
+        runtime: THE_RUNTIME,
+        code: lambda.Code.fromInline('foo'),
+        handler: 'index.handler',
+        layers: [layer1],
+      });
+
+      const hashBefore = calculateFunctionHash(fn);
+
+      // Create another layer in the stack but don't attach it to the function
+      new lambda.LayerVersion(stack, 'UnattachedLayer', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+        compatibleRuntimes: [THE_RUNTIME],
+      });
+
+      const hashAfter = calculateFunctionHash(fn);
+
+      expect(hashAfter).toEqual(hashBefore);
+    });
   });
 
   describe('impact of env variables order on hash', () => {
