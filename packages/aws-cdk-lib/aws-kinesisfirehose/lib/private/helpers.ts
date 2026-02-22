@@ -268,21 +268,30 @@ export function createTimezoneName(scope: Construct, timezone?: cdk.TimeZone): s
   if (!timezone) return undefined;
 
   const timezoneName = timezone.timezoneName;
+
+  if (cdk.Token.isUnresolved(timezoneName)) return timezoneName;
+  if (timezoneName === 'UTC') return timezoneName;
+
+  // This list may not be exhaustive - AWS maintains a service-side allowlist.
+  // See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html
   const invalidTimezoneNames = [
     cdk.TimeZone.ETC_UTC,
     cdk.TimeZone.ETC_GMT,
     cdk.TimeZone.FACTORY,
   ].map((_timezone) => _timezone.timezoneName);
-  if (
-    !cdk.Token.isUnresolved(timezoneName) && timezoneName != 'UTC' &&
-      (/^[A-Z]{3}$/.test(timezoneName) || invalidTimezoneNames.includes(timezoneName) || !/^$|^[a-zA-Z/_]+$/.test(timezoneName))
-  ) {
+
+  const isEmpty = timezoneName === '';
+  const isThreeLetterTimezone = /^[A-Za-z]{3}$/.test(timezoneName);
+  const isInvalidTimezone = invalidTimezoneNames.includes(timezoneName);
+  const hasInvalidCharacters = !/^[a-zA-Z/_]+$/.test(timezoneName);
+
+  if (isEmpty || isThreeLetterTimezone || isInvalidTimezone || hasInvalidCharacters) {
     throw new cdk.ValidationError(
-      `Invalid timezone format '${timezoneName}'. Use standard IANA timezone identifiers ` +
-      '(e.g., \'America/New_York\', \'Europe/London\'). ' +
-      'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details',
-      scope,
-    );
+        `Invalid timezone format '${timezoneName}'. Use standard IANA timezone identifiers ` +
+        '(e.g., \'America/New_York\', \'Europe/London\'). ' +
+        'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details',
+        scope,
+      );
   }
 
   return timezoneName;
