@@ -10,7 +10,7 @@ const app = new cdk.App({
 });
 
 const stack = new cdk.Stack(app, 'ecs-external-service-imported-taskdef');
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
 // Create an owned ExternalTaskDefinition to get a real ARN

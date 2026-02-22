@@ -1,0 +1,13 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "integ-ecs-external-service-imported-taskdef/DefaultTest": {
+      "stacks": [
+        "ecs-external-service-imported-taskdef"
+      ],
+      "assertionStack": "integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert",
+      "assertionStackName": "integecsexternalserviceimportedtaskdefDefaultTestDeployAssert7985348A"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}
