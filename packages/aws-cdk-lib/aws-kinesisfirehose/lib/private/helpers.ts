@@ -287,11 +287,11 @@ export function createTimezoneName(scope: Construct, timezone?: cdk.TimeZone): s
 
   if (isEmpty || isThreeLetterTimezone || isInvalidTimezone || hasInvalidCharacters) {
     throw new cdk.ValidationError(
-        `Invalid timezone format '${timezoneName}'. Use standard IANA timezone identifiers ` +
-        '(e.g., \'America/New_York\', \'Europe/London\'). ' +
-        'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details',
-        scope,
-      );
+      `Invalid timezone format '${timezoneName}'. Use standard IANA timezone identifiers ` +
+      '(e.g., \'America/New_York\', \'Europe/London\'). ' +
+      'See https://docs.aws.amazon.com/firehose/latest/dev/s3-object-name.html for more details',
+      scope,
+    );
   }
 
   return timezoneName;
