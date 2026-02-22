@@ -14,7 +14,8 @@
     "test": "jest --passWithNoTests --updateSnapshot --coverage=false",
     "test:watch": "jest --watch",
     "watch": "tsc --build -w tsconfig.json",
-    "integration-test-deployment": "node bin/index.js"
+    "integration-test-deployment": "node bin/index.js",
+    "check-snapshots": "node -e \"require('./lib/utils').getChangedSnapshots().then(s => { console.log(JSON.stringify(s)); process.exit(s.length > 0 ? 0 : 1); })\""
   },
   "dependencies": {
     "@aws-sdk/client-sts": "3.632.0",
