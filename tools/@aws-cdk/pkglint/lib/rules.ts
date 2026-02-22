@@ -643,7 +643,7 @@ export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
  */
 export class ConstructsVersion extends ValidationRule {
   public static readonly VERSION = cdkMajorVersion() === 2
-    ? '^10.0.0'
+    ? '^10.5.0'
     : '^3.3.69';
 
   public readonly name = 'deps/constructs';

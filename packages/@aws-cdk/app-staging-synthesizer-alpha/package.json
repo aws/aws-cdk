@@ -92,13 +92,13 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "publishConfig": {
     "tag": "latest"
