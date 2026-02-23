@@ -78,7 +78,8 @@
  * • ✅ Factory methods (driversLicense, phoneNumber, etc.) work correctly
  */
 
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
 import { Topic, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier } from 'aws-cdk-lib/aws-sns';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
