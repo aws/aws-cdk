@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b8b5451bdcf08372982d7058d521bdcb4d845043e84c9823bf4e965ab1d76d3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d13252447f6da5c34f187da139bf69374af5165430ec57e13cfde2588d2dee4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -329,8 +329,7 @@
               "writer": "*",
               "serverlessV2MinCapacity": "*",
               "serverlessV2MaxCapacity": "*",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
@@ -446,8 +445,7 @@
               "writer": "*",
               "serverlessV2MinCapacity": "*",
               "serverlessV2MaxCapacity": "*",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
@@ -543,6 +541,18 @@
             "data": "DatabaseClusterPostgresqlwriterAD8947A3"
           }
         ],
+        "/CloudWatchLogsExportsStack/Exports/Output{\"Ref\":\"DatabaseClusterMysqlB6D501E4\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328"
+          }
+        ],
+        "/CloudWatchLogsExportsStack/Exports/Output{\"Ref\":\"DatabaseClusterPostgresql0775776E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E"
+          }
+        ],
         "/CloudWatchLogsExportsStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -575,7 +585,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8e86e8dcccc3cad69f4c98ab0c60fda8748f3b7bb4e6474f3e747e4f2a163a8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -588,9 +598,74 @@
         }
       },
       "dependencies": [
+        "CloudWatchLogsExportsStack",
         "clustercloudwatchlogsexportsintegtestDefaultTestDeployAssert99B00960.assets"
       ],
       "metadata": {
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392"
+          }
+        ],
+        "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392"
+          }
+        ],
         "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

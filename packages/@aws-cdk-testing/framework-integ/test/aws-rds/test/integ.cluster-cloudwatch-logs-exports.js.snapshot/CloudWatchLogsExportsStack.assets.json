@@ -1,16 +1,16 @@
 {
   "version": "50.0.0",
   "files": {
-    "8b8b5451bdcf08372982d7058d521bdcb4d845043e84c9823bf4e965ab1d76d3": {
+    "2d13252447f6da5c34f187da139bf69374af5165430ec57e13cfde2588d2dee4": {
       "displayName": "CloudWatchLogsExportsStack Template",
       "source": {
         "path": "CloudWatchLogsExportsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-af7217d5": {
+        "current_account-current_region-dc9ad24c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b8b5451bdcf08372982d7058d521bdcb4d845043e84c9823bf4e965ab1d76d3.json",
+          "objectKey": "2d13252447f6da5c34f187da139bf69374af5165430ec57e13cfde2588d2dee4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

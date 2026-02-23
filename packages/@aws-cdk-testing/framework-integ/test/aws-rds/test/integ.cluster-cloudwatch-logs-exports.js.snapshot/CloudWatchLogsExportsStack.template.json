@@ -521,10 +521,12 @@
      "error",
      "general",
      "slowquery",
-     "audit"
+     "audit",
+     "instance",
+     "iam-db-auth-error"
     ],
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.08.0",
+    "EngineVersion": "8.0.mysql_aurora.3.11.1",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -660,15 +662,17 @@
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql15",
+    "DBClusterParameterGroupName": "default.aurora-postgresql17",
     "DBSubnetGroupName": {
      "Ref": "DatabaseClusterPostgresqlSubnetsE0173DAA"
     },
     "EnableCloudwatchLogsExports": [
-     "postgresql"
+     "postgresql",
+     "iam-db-auth-error",
+     "instance"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "15.14",
+    "EngineVersion": "17.7",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -728,6 +732,24 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328": {
+   "Value": {
+    "Ref": "DatabaseClusterMysqlB6D501E4"
+   },
+   "Export": {
+    "Name": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterMysqlB6D501E494AA5328"
+   }
+  },
+  "ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E": {
+   "Value": {
+    "Ref": "DatabaseClusterPostgresql0775776E"
+   },
+   "Export": {
+    "Name": "CloudWatchLogsExportsStack:ExportsOutputRefDatabaseClusterPostgresql0775776E85EBE50E"
+   }
   }
  },
  "Parameters": {

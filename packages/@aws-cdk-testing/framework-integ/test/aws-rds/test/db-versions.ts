@@ -10,10 +10,7 @@ function getFullVersion(version: unknown): string {
 
   for (const key of Object.keys(version)) {
     if (key.endsWith('FullVersion')) {
-      const value = (version as Record<string, unknown>)[key];
-      if (typeof value === 'string') {
-        return value;
-      }
+      return (version as Record<string, string>)[key];
     }
   }
 
