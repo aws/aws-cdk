@@ -158,11 +158,6 @@ export class ConnectionType {
   public static readonly ZOHOCRM = new ConnectionType('ZOHOCRM');
 
   /**
-   * Designates a connection to Snowflake.
-   */
-  public static readonly SNOWFLAKE = new ConnectionType('SNOWFLAKE');
-
-  /**
    * Designates a connection to Google BigQuery.
    */
   public static readonly BIGQUERY = new ConnectionType('BIGQUERY');
@@ -221,11 +216,6 @@ export class ConnectionType {
    * Designates a connection to Amazon DynamoDB.
    */
   public static readonly DYNAMODB = new ConnectionType('DYNAMODB');
-
-  /**
-   * Designates a connection via SFTP.
-   */
-  public static readonly SFTP = new ConnectionType('SFTP');
 
   /**
    * The name of this ConnectionType, as expected by Connection resource.
