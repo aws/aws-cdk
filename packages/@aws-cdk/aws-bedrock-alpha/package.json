@@ -79,17 +79,17 @@
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "jest": "^29.7.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "engines": {
     "node": ">= 18.0.0"
@@ -111,6 +111,25 @@
     "exclude": [
       "naming/package-matches-directory",
       "assert/assert-dependency"
+    ]
+  },
+  "awslint": {
+    "exclude": [
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.Agent.addGuardrail.guardrail",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.existingRole",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.guardrail",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentProps.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentAliasAttributes.agent",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.AgentAliasProps.agent",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.GuardrailAttributes.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.GuardrailProps.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptAttributes.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptProps.kmsKey",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-alpha.PromptVersionProps.prompt",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgent",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IAgentAlias",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IGuardrail",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-alpha.IPrompt"
     ]
   }
 }

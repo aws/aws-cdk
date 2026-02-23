@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
-import { IApplicationListener } from './application-listener';
+import type { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
-import { IApplicationTargetGroup } from './application-target-group';
-import { ListenerCondition } from './conditions';
+import type { IApplicationTargetGroup } from './application-target-group';
+import type { ListenerCondition } from './conditions';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * Basic properties for defining a rule on a listener

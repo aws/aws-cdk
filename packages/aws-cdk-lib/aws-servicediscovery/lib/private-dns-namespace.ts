@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { BaseNamespaceProps, INamespace, NamespaceType } from './namespace';
-import { DnsServiceProps, Service } from './service';
+import type { Construct } from 'constructs';
+import type { BaseNamespaceProps, INamespace } from './namespace';
+import { NamespaceType } from './namespace';
+import type { DnsServiceProps } from './service';
+import { Service } from './service';
 import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
-import * as ec2 from '../../aws-ec2';
+import type * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IPrivateDnsNamespaceRef, PrivateDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
+import type { IPrivateDnsNamespaceRef, PrivateDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
 export interface PrivateDnsNamespaceProps extends BaseNamespaceProps {
   /**

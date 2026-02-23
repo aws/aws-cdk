@@ -1,17 +1,19 @@
 import { createHash } from 'crypto';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { ConfigRuleReference, IConfigRuleRef } from './config.generated';
 import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import { IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Interface representing an AWS Config rule
  */
-export interface IRule extends IResource {
+export interface IRule extends IResource, IConfigRuleRef {
   /**
    * The name of the rule.
    *
@@ -102,6 +104,14 @@ abstract class RuleBase extends Resource implements IRule {
     });
     return rule;
   }
+
+  public get configRuleRef(): ConfigRuleReference {
+    const self = this;
+    return {
+      get configRuleArn(): string { throw new ValidationError('Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
+      configRuleName: this.configRuleName,
+    };
+  }
 }
 
 /**
@@ -139,6 +149,20 @@ abstract class RuleNew extends RuleBase {
   protected ruleScope?: RuleScope;
   protected isManaged?: boolean;
   protected isCustomWithChanges?: boolean;
+
+  public get configRuleRef(): ConfigRuleReference {
+    return {
+      configRuleArn: Stack.of(this).formatArn({
+        service: 'config',
+        account: this.env.account,
+        region: this.env.region,
+        resource: 'config-rule',
+        resourceName: this.configRuleId,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      }),
+      configRuleName: this.configRuleName,
+    };
+  }
 }
 
 /**

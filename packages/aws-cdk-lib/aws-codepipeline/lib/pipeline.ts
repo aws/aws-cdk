@@ -1,33 +1,37 @@
-import { Construct } from 'constructs';
-import {
-  ActionCategory,
+import type { Construct } from 'constructs';
+import type {
   IAction,
   IPipeline,
   IStage,
-  PipelineNotificationEvents,
   PipelineNotifyOnOptions,
 } from './action';
-import { CfnPipeline, PipelineReference } from './codepipeline.generated';
+import {
+  ActionCategory,
+  PipelineNotificationEvents,
+} from './action';
+import type { PipelineReference } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
-import { Rule } from './rule';
-import { Trigger, TriggerProps } from './trigger';
-import { Variable } from './variable';
+import type { Rule } from './rule';
+import type { TriggerProps } from './trigger';
+import { Trigger } from './trigger';
+import type { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
+import type { IStackSynthesizer } from '../../core';
 import {
   Annotations,
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
   FeatureFlags,
-  IStackSynthesizer,
   Lazy,
   Names,
   PhysicalName,
@@ -38,6 +42,7 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -564,23 +569,6 @@ export class Pipeline extends PipelineBase {
   public readonly role: iam.IRole;
 
   /**
-   * ARN of this pipeline
-   */
-  public readonly pipelineArn: string;
-
-  /**
-   * The name of the pipeline
-   */
-  public readonly pipelineName: string;
-
-  /**
-   * The version of the pipeline
-   *
-   * @attribute
-   */
-  public readonly pipelineVersion: string;
-
-  /**
    * Bucket used to store output artifacts
    */
   public readonly artifactBucket: s3.IBucket;
@@ -597,6 +585,35 @@ export class Pipeline extends PipelineBase {
   private readonly usePipelineRoleForActions: boolean;
   private readonly variables = new Array<Variable>();
   private readonly triggers = new Array<Trigger>();
+
+  /**
+   * ARN of this pipeline
+   */
+  @memoizedGetter
+  public get pipelineArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'codepipeline',
+      resource: this.pipelineName,
+    });
+  }
+
+  /**
+   * The name of the pipeline
+   */
+  @memoizedGetter
+  public get pipelineName(): string {
+    return this.getResourceNameAttribute(this.codePipeline.ref);
+  }
+
+  /**
+   * The version of the pipeline
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get pipelineVersion(): string {
+    return this.codePipeline.attrVersion;
+  }
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -697,8 +714,6 @@ export class Pipeline extends PipelineBase {
     this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
-    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -707,12 +722,6 @@ export class Pipeline extends PipelineBase {
         stack: Stack.of(replicationBucket),
       };
     }
-
-    // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = Stack.of(this).formatArn({
-      service: 'codepipeline',
-      resource: this.pipelineName,
-    });
 
     for (const stage of props.stages || []) {
       this.addStage(stage);

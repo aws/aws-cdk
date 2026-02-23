@@ -45,6 +45,17 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/common/types.ts": {
+    "CustomClaimValueType": [
+      "STRING",
+      "STRING_ARRAY"
+    ],
+    "CustomClaimOperator": [
+      "EQUALS",
+      "CONTAINS",
+      "CONTAINS_ANY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts": {
     "GatewayExceptionLevel": [
       "DEBUG"
@@ -54,6 +65,12 @@
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
       "AWS_IAM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
@@ -99,7 +116,19 @@
       "OPENAPI_SCHEMA",
       "SMITHY_MODEL",
       "LAMBDA",
-      "MCP_SERVER"
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-configuration.ts": {
+    "ApiGatewayHttpMethod": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
@@ -107,6 +136,7 @@
       "SUMMARIZATION",
       "SEMANTIC",
       "USER_PREFERENCE",
+      "EPISODIC",
       "CUSTOM"
     ]
   },
@@ -309,7 +339,10 @@
       "STANDARD",
       "FARGATE_LINUX",
       "EC2_LINUX",
-      "EC2_WINDOWS"
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
@@ -418,7 +451,8 @@
       "valkey_8",
       "redis",
       "redis_7",
-      "memcached"
+      "memcached",
+      "memcached_1.6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
@@ -539,6 +573,23 @@
       "SUCCEEDED",
       "FAILED",
       "ERROR"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/partition-projection.ts": {
+    "PartitionProjectionType": [
+      "integer",
+      "date",
+      "enum",
+      "injected"
+    ],
+    "DateIntervalUnit": [
+      "YEARS",
+      "MONTHS",
+      "WEEKS",
+      "DAYS",
+      "HOURS",
+      "MINUTES",
+      "SECONDS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
@@ -2792,6 +2843,9 @@
       "ACCESSED_AND_THROTTLED_KEYS",
       "THROTTLED_KEYS"
     ],
+    "GlobalTableSettingsReplicationMode": [
+      "ENABLED"
+    ],
     "ProjectionType": [
       "KEYS_ONLY",
       "INCLUDE",
@@ -2857,7 +2911,8 @@
     "AcceleratorType": [
       "gpu",
       "fpga",
-      "inference"
+      "inference",
+      "media"
     ],
     "AcceleratorManufacturer": [
       "amazon-web-services",
@@ -2878,7 +2933,14 @@
       "h100",
       "inferentia",
       "k520",
-      "t4g"
+      "t4g",
+      "l40s",
+      "l4",
+      "gaudi-hl-205",
+      "inferentia2",
+      "trainium",
+      "trainium2",
+      "u30"
     ],
     "BareMetal": [
       "included",
@@ -4115,7 +4177,9 @@
     ],
     "DeploymentStrategy": [
       "ROLLING",
-      "BLUE_GREEN"
+      "BLUE_GREEN",
+      "LINEAR",
+      "CANARY"
     ],
     "PropagatedTagSource": [
       "SERVICE",
@@ -4189,6 +4253,10 @@
     "PropagateManagedInstancesTags": [
       "CAPACITY_PROVIDER",
       "NONE"
+    ],
+    "CapacityOptionType": [
+      "ON_DEMAND",
+      "SPOT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4417,7 +4485,10 @@
       "STANDARD",
       "FARGATE_LINUX",
       "EC2_LINUX",
-      "EC2_WINDOWS"
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.ts": {
@@ -4845,7 +4916,8 @@
       "SM2",
       "ML_DSA_44",
       "ML_DSA_65",
-      "ML_DSA_87"
+      "ML_DSA_87",
+      "ECC_NIST_EDWARDS25519"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4924,8 +4996,15 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
+    "EventSourceMappingLogLevel": [
+      "INFO",
+      "DEBUG",
+      "WARN"
+    ],
     "MetricType": [
-      "EventCount"
+      "EventCount",
+      "ErrorCount",
+      "KafkaMetrics"
     ],
     "StartingPosition": [
       "TRIM_HORIZON",
@@ -5179,7 +5258,8 @@
     ],
     "NetworkType": [
       "IPV4",
-      "DUAL"
+      "DUAL",
+      "IPV6"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts": {
@@ -5228,6 +5308,10 @@
       "POSTGRES_MD5",
       "SQL_SERVER_AUTHENTICATION",
       "MYSQL_CACHING_SHA2_PASSWORD"
+    ],
+    "DefaultAuthScheme": [
+      "IAM_AUTH",
+      "NONE"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/serverless-cluster.ts": {
@@ -6086,11 +6170,12 @@
       1
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-type.ts": {
     "MetadataType": [
       "aws:cdk:analytics:construct",
       "aws:cdk:analytics:method",
-      "aws:cdk:analytics:featureflag"
+      "aws:cdk:analytics:featureflag",
+      "aws:cdk:analytics:mixin"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {
@@ -6133,25 +6218,21 @@
       "failure"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/load-balancer.ts": {
-    "LoadBalancerIpAddressType": [
-      "ipv4",
-      "dualstack",
-      "dualstack-without-public-ipv4"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/vpc.ts": {
-    "VpcSubnetGroupType": [
-      "Public",
-      "Private",
-      "Isolated"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/metadata.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/legacy-moved.ts": {
     "SynthesisMessageLevel": [
       "info",
       "warning",
       "error"
+    ],
+    "VpcSubnetGroupType": [
+      "Public",
+      "Private",
+      "Isolated"
+    ],
+    "LoadBalancerIpAddressType": [
+      "ipv4",
+      "dualstack",
+      "dualstack-without-public-ipv4"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/cx-api/lib/private/flag-modeling.ts": {

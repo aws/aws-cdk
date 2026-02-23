@@ -2,7 +2,7 @@ import type { Resource, Service, SpecDatabase, VendedLogs } from '@aws-cdk/servi
 import { naming, util } from '@aws-cdk/spec2cdk';
 import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
-import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E } from '@cdklabs/typewriter';
+import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T } from '@cdklabs/typewriter';
 import { MIXINS_LOGS_DELIVERY } from './helpers';
 import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
@@ -153,11 +153,17 @@ class LogsHelper extends ClassType {
             type: CDK_INTERFACES.IBucketRef,
           });
 
+          toS3.addParameter({
+            name: 'props',
+            type: MIXINS_LOGS_DELIVERY.S3LogsDestinationProps,
+            optional: true,
+          });
+
           const permissions = this.log.permissionsVersion === 'V2' ? MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V2 : MIXINS_LOGS_DELIVERY.S3LogsDeliveryPermissionsVersion.V1;
           toS3.addBody(stmt.block(
             stmt.ret(
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
-                expr.object({ permissionsVersion: permissions }))),
+                expr.object({ permissionsVersion: permissions, kmsKey: expr.directCode('(props && props.encryptionKey) ? props.encryptionKey : undefined') }))),
             ),
           ));
           break;
@@ -218,6 +224,27 @@ class LogsHelper extends ClassType {
           break;
       }
     }
+    const toDest = this.addMethod({
+      name: 'toDestination',
+      returnType: mixin.type,
+      docs: {
+        summary: 'Delivers logs to a pre-created delivery destination',
+        remarks: `Supported destinations are ${this.log.destinations.map(d => d.destinationType).join(', ')}\n` +
+        'You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.\n' +
+        'Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().',
+      },
+    });
+
+    const paramDest = toDest.addParameter({
+      name: 'destination',
+      type: CDK_INTERFACES.IDeliveryDestinationRef,
+    });
+
+    toDest.addBody(stmt.block(
+      stmt.ret(
+        mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest)),
+      ),
+    ));
 
     mixin.addProperty({
       name: this.log.logType,
@@ -328,7 +355,7 @@ class LogsMixin extends ClassType {
         expr.binOp(
           CallableProxy.fromName('CfnResource.isCfnResource', CDK_CORE).invoke(construct),
           '&&',
-          expr.eq(expr.get(construct, 'cfnResourceType'), expr.lit(this.resource.cloudFormationType)),
+          $T(this.resourceType)[`is${this.resourceType.symbol}`](construct),
         ),
       ),
     );
@@ -339,7 +366,7 @@ class LogsMixin extends ClassType {
   private makeApplyToMethod(supports: Method) {
     const method = this.addMethod({
       name: 'applyTo',
-      returnType: CONSTRUCTS.IConstruct,
+      returnType: Type.VOID,
       docs: {
         summary: 'Apply vended logs configuration to the construct',
       },
@@ -356,12 +383,10 @@ class LogsMixin extends ClassType {
     method.addBody(
       stmt
         .if_(expr.not(CallableProxy.fromMethod(supports).invoke(resource)))
-        .then(stmt.block(stmt.ret(resource))),
+        .then(stmt.block(stmt.ret())),
 
       stmt.constVar(sourceArn, arnBuilder),
       $this.logDelivery.callMethod('bind', resource, $this.logType, sourceArn),
-
-      stmt.ret(resource),
     );
   }
 }

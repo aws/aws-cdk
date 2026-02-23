@@ -29,18 +29,29 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "h100",
     "inferentia",
     "k520",
-    "t4g"
+    "t4g",
+    "l40s",
+    "l4",
+    "gaudi-hl-205",
+    "inferentia2",
+    "trainium",
+    "trainium2",
+    "u30"
   ],
   "AcceleratorType": [
     "gpu",
     "fpga",
-    "inference"
+    "inference",
+    "media"
   ],
   "AccessEntryType": [
     "STANDARD",
     "FARGATE_LINUX",
     "EC2_LINUX",
-    "EC2_WINDOWS"
+    "EC2_WINDOWS",
+    "EC2",
+    "HYBRID_LINUX",
+    "HYPERPOD_LINUX"
   ],
   "AccessKeyStatus": [
     "Active",
@@ -236,6 +247,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "GPU",
     "ARM64",
     "Neuron"
+  ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
   ],
   "ApiKeyCredentialLocationType": [
     "HEADER",
@@ -541,7 +561,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "valkey_8",
     "redis",
     "redis_7",
-    "memcached"
+    "memcached",
+    "memcached_1.6"
   ],
   "Capability": [
     "ALL",
@@ -590,6 +611,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "CapacityMode": [
     "FIXED",
     "AUTOSCALED"
+  ],
+  "CapacityOptionType": [
+    "ON_DEMAND",
+    "SPOT"
   ],
   "CapacityType": [
     "SPOT",
@@ -1047,6 +1072,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FIRST_ROW",
     "GIVEN"
   ],
+  "CustomClaimOperator": [
+    "EQUALS",
+    "CONTAINS",
+    "CONTAINS_ANY"
+  ],
+  "CustomClaimValueType": [
+    "STRING",
+    "STRING_ARRAY"
+  ],
   "CustomControl": [
     "RETURN_CONTROL"
   ],
@@ -1099,6 +1133,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "standard",
     "advanced"
   ],
+  "DateIntervalUnit": [
+    "YEARS",
+    "MONTHS",
+    "WEEKS",
+    "DAYS",
+    "HOURS",
+    "MINUTES",
+    "SECONDS"
+  ],
   "DateTimeFormat": [
     "yyyy-MM-dd'T'HH:mm:ss'Z'",
     "epoch",
@@ -1117,6 +1160,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "DeduplicationScope": [
     "messageGroup",
     "queue"
+  ],
+  "DefaultAuthScheme": [
+    "IAM_AUTH",
+    "NONE"
   ],
   "DefaultCapacityType": [
     0,
@@ -1179,7 +1226,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DeploymentStrategy": [
     "ROLLING",
-    "BLUE_GREEN"
+    "BLUE_GREEN",
+    "LINEAR",
+    "CANARY"
   ],
   "DesiredState": [
     "RUNNING",
@@ -1393,6 +1442,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "EventSource": [
     "aws.config"
   ],
+  "EventSourceMappingLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN"
+  ],
   "EventType": [
     "s3:ObjectCreated:*",
     "s3:ObjectCreated:Put",
@@ -1596,6 +1650,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPEN",
     "UPDATED",
     "CLOSED"
+  ],
+  "GlobalTableSettingsReplicationMode": [
+    "ENABLED"
   ],
   "GlueVersion": [
     "0.9",
@@ -2250,6 +2307,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SingleUse",
     "Storage"
   ],
+  "InterceptionPoint": [
+    "REQUEST",
+    "RESPONSE"
+  ],
   "IntrospectionConfig": [
     "ENABLED",
     "DISABLED"
@@ -2410,7 +2471,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SM2",
     "ML_DSA_44",
     "ML_DSA_65",
-    "ML_DSA_87"
+    "ML_DSA_87",
+    "ECC_NIST_EDWARDS25519"
   ],
   "KeyUsage": [
     "ENCRYPT_DECRYPT",
@@ -2670,12 +2732,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPENAPI_SCHEMA",
     "SMITHY_MODEL",
     "LAMBDA",
-    "MCP_SERVER"
+    "MCP_SERVER",
+    "API_GATEWAY"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
     "SEMANTIC",
     "USER_PREFERENCE",
+    "EPISODIC",
     "CUSTOM"
   ],
   "MemoryType": [
@@ -2709,7 +2773,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "MetadataType": [
     "aws:cdk:analytics:construct",
     "aws:cdk:analytics:method",
-    "aws:cdk:analytics:featureflag"
+    "aws:cdk:analytics:featureflag",
+    "aws:cdk:analytics:mixin"
   ],
   "MethodLoggingLevel": [
     "OFF",
@@ -2722,7 +2787,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Maximum"
   ],
   "MetricType": [
-    "EventCount"
+    "EventCount",
+    "ErrorCount",
+    "KafkaMetrics"
   ],
   "MetricsLevel": [
     "APPLICATION",
@@ -2792,7 +2859,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "NetworkType": [
     "IPV4",
-    "DUAL"
+    "DUAL",
+    "IPV6"
   ],
   "NodeType": [
     "coordinator"
@@ -3015,6 +3083,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "PartitionDateSource": [
     "EventTime",
     "DeliveryTime"
+  ],
+  "PartitionProjectionType": [
+    "integer",
+    "date",
+    "enum",
+    "injected"
   ],
   "PasskeyUserVerification": [
     "preferred",

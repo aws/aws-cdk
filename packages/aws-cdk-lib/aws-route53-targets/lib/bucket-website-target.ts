@@ -1,6 +1,6 @@
-import { IAliasRecordTargetProps } from './shared';
-import * as route53 from '../../aws-route53';
-import * as s3 from '../../aws-s3';
+import type { IAliasRecordTargetProps } from './shared';
+import type * as route53 from '../../aws-route53';
+import type * as s3 from '../../aws-s3';
 import { Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { RegionInfo } from '../../region-info';

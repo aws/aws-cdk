@@ -1,4 +1,5 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { InstanceType, InstanceClass, InstanceSize } from 'aws-cdk-lib/aws-ec2';
 import { SageMakerCreateTransformJob, S3DataType } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { StateMachine, IntegrationPattern, DefinitionBody } from 'aws-cdk-lib/aws-stepfunctions';

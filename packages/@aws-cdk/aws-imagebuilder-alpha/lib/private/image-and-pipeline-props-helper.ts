@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
-import { Construct } from 'constructs';
-import { ImageProps } from '../image';
-import { ImagePipelineProps } from '../image-pipeline';
+import type { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
+import type { Construct } from 'constructs';
+import type { ImageProps } from '../image';
+import type { ImagePipelineProps } from '../image-pipeline';
 
 /**
  * Generates the image tests configuration property into the `ImageTestsConfiguration` type in the CloudFormation L1

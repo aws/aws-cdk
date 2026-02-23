@@ -2,13 +2,14 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
-import { LogOptions, WaiterStateMachine } from './waiter-state-machine';
-import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
-import * as ec2 from '../../../aws-ec2';
+import type { LogOptions } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
+import type { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
-import * as logs from '../../../aws-logs';
+import type * as logs from '../../../aws-logs';
 import { Duration, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
@@ -86,7 +87,7 @@ export interface ProviderProps {
    *
    * @default - a default log group created by AWS Lambda
    */
-  readonly logGroup?: logs.ILogGroup;
+  readonly logGroup?: logs.ILogGroupRef;
 
   /**
    * The vpc to provision the lambda functions in.
@@ -217,7 +218,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
-  private readonly logGroup?: logs.ILogGroup;
+  private readonly logGroup?: logs.ILogGroupRef;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];

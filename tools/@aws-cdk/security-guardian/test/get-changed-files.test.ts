@@ -43,7 +43,7 @@ describe('Changed Files Detection', () => {
   const verifyGitCommands = () => {
     expect(mockExec.exec).toHaveBeenCalledWith(
       'git',
-      ['diff', '--name-status', 'main..HEAD'],
+      ['diff', '--name-status', 'main...HEAD'],
       expect.any(Object)
     );
     expect(mockExec.getExecOutput).toHaveBeenCalledWith(

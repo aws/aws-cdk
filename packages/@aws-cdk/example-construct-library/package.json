@@ -76,7 +76,7 @@
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0"
@@ -84,7 +84,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "separate-module": false,
   "engines": {
@@ -99,5 +99,20 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "awslint": {
+    "exclude": [
+      "prefer-ref-interface:@aws-cdk/example-construct-library.ExampleResourceProps.bucket",
+      "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionDestinationProps.bucket",
+      "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionDestinationProps.encryptionKey",
+      "prefer-ref-interface:aws-cdk-lib.aws_s3.GrantReplicationPermissionProps.sourceDecryptionKey",
+      "prefer-ref-interface:@aws-cdk/example-construct-library.ExampleResourceProps.role",
+      "prefer-ref-interface:@aws-cdk/example-construct-library.ExampleResourceProps.securityGroups",
+      "prefer-ref-interface:@aws-cdk/example-construct-library.ExampleResourceProps.vpc",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+      "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups"
+    ]
   }
 }

@@ -1,5 +1,12 @@
 {
   "exclude": [
-    "construct-ctor:@aws-cdk/aws-servicecatalogappregistry-alpha.ApplicationAssociator.<initializer>.params[0]"
+    "construct-ctor:@aws-cdk/aws-servicecatalogappregistry-alpha.ApplicationAssociator.<initializer>.params[0]",
+    "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.IApplication.associateAttributeGroup.attributeGroup",
+    "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.IAttributeGroup.associateWith.application",
+    "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.ShareOptions.roles",
+    "prefer-ref-interface:@aws-cdk/aws-servicecatalogappregistry-alpha.ShareOptions.users",
+    "prefer-ref-interface:aws-cdk-lib.aws_iam.IUser.addToGroup.group",
+    "interface-extends-ref:@aws-cdk/aws-servicecatalogappregistry-alpha.IApplication",
+    "interface-extends-ref:@aws-cdk/aws-servicecatalogappregistry-alpha.IAttributeGroup"
   ]
 }

@@ -68,7 +68,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ec2": "3.632.0",
@@ -85,12 +85,12 @@
     "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",
     "@types/node-fetch": "^2.6.13",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "dependencies": {},
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

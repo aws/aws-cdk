@@ -4,6 +4,26 @@
     "props-physical-name:@aws-cdk/aws-neptune-alpha.ParameterGroupProps",
     "props-physical-name:@aws-cdk/aws-neptune-alpha.SubnetGroupProps",
     "docs-public-apis:@aws-cdk/aws-neptune-alpha.ServerlessScalingConfiguration",
-    "props-no-undefined-default:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.autoMinorVersionUpgrade"
+    "props-no-undefined-default:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.autoMinorVersionUpgrade",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterAttributes.securityGroup",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.associatedRoles",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.cloudwatchLogsRetentionRole",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.clusterParameterGroup",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.parameterGroup",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.subnetGroup",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.cluster",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.parameterGroup",
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.SubnetGroupProps.vpc",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IClusterParameterGroup",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IDatabaseCluster",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IDatabaseInstance",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IParameterGroup",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.ISubnetGroup"
   ]
 }

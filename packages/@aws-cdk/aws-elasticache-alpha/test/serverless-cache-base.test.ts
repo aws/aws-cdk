@@ -143,7 +143,12 @@ describe('serverless cache base', () => {
                 'elasticache:Connect',
                 'elasticache:DescribeServerlessCaches',
               ],
-              Resource: { 'Fn::GetAtt': ['Cache18F6EE16', 'ARN'] },
+              Resource: {
+                'Fn::GetAtt': [
+                  'Cache18F6EE16',
+                  'ARN',
+                ],
+              },
             },
           ]),
         },

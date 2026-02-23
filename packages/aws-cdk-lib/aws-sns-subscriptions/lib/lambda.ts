@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { SubscriptionProps } from './subscription';
+import type { SubscriptionProps } from './subscription';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import { Names, ValidationError } from '../../core';
 import { regionFromArn } from './private/util';

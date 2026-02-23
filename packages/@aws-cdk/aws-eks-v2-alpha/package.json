@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-eks-v2-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::EKS",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-eks-v2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -85,7 +85,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
@@ -98,9 +98,9 @@
     "@types/jest": "^29.5.14",
     "aws-sdk": "^2.1693.0",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "sinon": "^9.2.4",
-    "cdk8s": "2.70.42",
+    "cdk8s": "2.70.47",
     "cdk8s-plus-27": "2.9.5"
   },
   "dependencies": {
@@ -108,7 +108,7 @@
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "bundledDependencies": [
     "yaml"
@@ -116,8 +116,8 @@
   "engines": {
     "node": ">= 18.0.0"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awslint": {
     "exclude": [
       "*:*"

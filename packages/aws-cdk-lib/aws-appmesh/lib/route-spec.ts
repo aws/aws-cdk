@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import { CfnRoute } from './appmesh.generated';
-import { HeaderMatch } from './header-match';
-import { HttpRouteMethod } from './http-route-method';
+import type { Construct } from 'constructs';
+import type { CfnRoute } from './appmesh.generated';
+import type { HeaderMatch } from './header-match';
+import type { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
 import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
-import { QueryParameterMatch } from './query-parameter-match';
-import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
-import { IVirtualNode } from './virtual-node';
+import type { QueryParameterMatch } from './query-parameter-match';
+import type { GrpcTimeout, HttpTimeout, TcpTimeout } from './shared-interfaces';
+import { Protocol } from './shared-interfaces';
+import type { IVirtualNode } from './virtual-node';
 import * as cdk from '../../core';
 
 /**

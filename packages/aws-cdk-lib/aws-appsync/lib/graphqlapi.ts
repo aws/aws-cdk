@@ -1,17 +1,22 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
-import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
-import { ISchema, SchemaFile } from './schema';
+import type { IGraphqlApi } from './graphqlapi-base';
+import { GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
+import type { ISchema } from './schema';
+import { SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
-import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal, IRoleRef } from '../../aws-iam';
-import { IFunction } from '../../aws-lambda';
-import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token, ValidationError } from '../../core';
+import type { IUserPool } from '../../aws-cognito';
+import type { IRole, IRoleRef } from '../../aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import type { IFunction } from '../../aws-lambda';
+import type { ILogGroup } from '../../aws-logs';
+import { LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
+import type { CfnResource, Expiration, IResolvable } from '../../core';
+import { Duration, FeatureFlags, Lazy, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Interface to specify default or additional authorization(s)

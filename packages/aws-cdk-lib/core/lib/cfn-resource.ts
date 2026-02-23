@@ -1,21 +1,24 @@
 import { Annotations } from './annotations';
-import { CfnCondition } from './cfn-condition';
+import type { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
-import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, Node } from 'constructs';
+import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
+import { CfnDeletionPolicy } from './cfn-resource-policy';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-import { Reference } from './reference';
-import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
+import type { Reference } from './reference';
+import type { RemovalPolicyOptions } from './removal-policy';
+import { RemovalPolicy } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
-import { ResolutionTypeHint } from './type-hints';
+import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
 import { AssumptionError, ValidationError } from './errors';
-import { ResourceEnvironment } from './environment';
+import type { ResourceEnvironment } from './environment';
 
 export interface CfnResourceProps {
   /**
@@ -78,7 +81,7 @@ export class CfnResource extends CfnRefElement {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<CfnResource>();
+  private dependsOn: Set<CfnResource> | undefined;
 
   /**
    * Creates a resource construct.
@@ -402,6 +405,9 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _addResourceDependency(target: CfnResource) {
+    if (!this.dependsOn) {
+      this.dependsOn = new Set();
+    }
     this.dependsOn.add(target);
   }
 
@@ -410,7 +416,7 @@ export class CfnResource extends CfnRefElement {
    * in the same stack.
    */
   public obtainResourceDependencies() {
-    return Array.from(this.dependsOn.values());
+    return Array.from(this.dependsOn?.values() ?? []);
   }
 
   /**
@@ -420,7 +426,7 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _removeResourceDependency(target: CfnResource) {
-    this.dependsOn.delete(target);
+    this.dependsOn?.delete(target);
   }
 
   /**
@@ -482,7 +488,11 @@ export class CfnResource extends CfnRefElement {
 
     // returns the set of logical ID (tokens) this resource depends on
     // sorted by construct paths to ensure test determinism
-    function renderDependsOn(dependsOn: Set<CfnResource>) {
+    function renderDependsOn(dependsOn: Iterable<CfnResource> | undefined) {
+      if (!dependsOn) {
+        return [];
+      }
+
       return Array
         .from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))

@@ -1,4 +1,4 @@
-import { CfnDeploymentConfig } from './codedeploy.generated';
+import type { CfnDeploymentConfig } from './codedeploy.generated';
 import { UnscopedValidationError } from '../../core';
 
 /**

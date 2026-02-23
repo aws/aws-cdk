@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
-import { IBucket } from '../../aws-s3';
+import type { IKey } from '../../aws-kms';
+import type { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
-import { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
+import type { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 interface BucketPolicyAction {
   readonly action: string;

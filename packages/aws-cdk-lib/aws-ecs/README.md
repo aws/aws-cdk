@@ -1291,6 +1291,7 @@ Currently Supported Log Drivers:
 - syslog
 - awsfirelens
 - Generic
+- none
 
 ### awslogs Log Driver
 
@@ -1466,6 +1467,20 @@ taskDefinition.addContainer('TheContainer', {
       tag: 'example-tag',
     },
   }),
+});
+```
+
+### none Log Driver
+
+The none log driver disables logging for the container (Docker `none` driver).
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.none(),
 });
 ```
 
@@ -1663,6 +1678,8 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
+Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand or Spot instances. Valid values are `ON_DEMAND` and `SPOT`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
+
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 #### IAM Roles Setup
@@ -1674,8 +1691,15 @@ declare const vpc: ec2.Vpc;
 
 const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
   instanceRequirements: {
     vCpuCountMin: 1,
     memoryMin: Size.gibibytes(2),
@@ -1748,10 +1772,16 @@ customInfrastructureRole.addToPolicy(new iam.PolicyStatement({
   },
 }));
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProviderCustom = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProviderCustomRoles', {
   infrastructureRole: customInfrastructureRole,
   ec2InstanceProfile: customInstanceProfile,
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
 });
 
 // Add the capacity provider to the cluster
@@ -1789,8 +1819,14 @@ You can specify detailed instance requirements to control which types of instanc
 ```ts
 declare const vpc: ec2.Vpc;
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
   subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
   instanceRequirements: {
     // Required: CPU and memory constraints
     vCpuCountMin: 2,
@@ -2319,6 +2355,84 @@ const target = service.loadBalancerTarget({
 
 target.attachToApplicationTargetGroup(blueTargetGroup);
 ```
+
+## Buil-in Linear and Canary Deployments
+
+Amazon ECS supports progressive deployment strategies that allow you to validate new service revisions before shifting all production traffic. Both strategies require an Application Load Balancer (ALB) with target groups for traffic routing.
+
+### Linear Deployment
+
+Linear deployment strategy shifts production traffic in equal percentage increments with configurable wait times between each step:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.LINEAR,
+  linearConfiguration: {
+    stepPercent: 10.0,
+    stepBakeTime: Duration.minutes(5),
+  },
+});
+
+const target = service.loadBalancerTarget({
+  containerName: 'web',
+  containerPort: 80,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
+```
+
+Valid values:
+- `stepPercent`: 3.0 to 100.0 (multiples of 0.1). Default: 10.0
+- `stepBakeTime`: 0 to 1440 minutes (24 hours). Default: 6 minutes
+
+### Canary Deployment
+
+Canary deployment strategy shifts a fixed percentage of traffic to the new service revision for testing, then shifts the remaining traffic after a bake period:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const blueTargetGroup: elbv2.ApplicationTargetGroup;
+declare const greenTargetGroup: elbv2.ApplicationTargetGroup;
+declare const prodListenerRule: elbv2.ApplicationListenerRule;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentStrategy: ecs.DeploymentStrategy.CANARY,
+  canaryConfiguration: {
+    stepPercent: 5.0,
+    stepBakeTime: Duration.minutes(10),
+  },
+});
+
+const target = service.loadBalancerTarget({
+  containerName: 'web',
+  containerPort: 80,
+  alternateTarget: new ecs.AlternateTarget('AlternateTarget', {
+    alternateTargetGroup: greenTargetGroup,
+    productionListener: ecs.ListenerRuleConfiguration.applicationListenerRule(prodListenerRule),
+  }),
+});
+
+target.attachToApplicationTargetGroup(blueTargetGroup);
+```
+
+Valid values:
+- `stepPercent`: 0.1 to 100.0 (multiples of 0.1). Default: 5.0
+- `stepBakeTime`: 0 to 1440 minutes (24 hours). Default: 10 minutes
 
 ## Daemon Scheduling Strategy
 You can specify whether service use Daemon scheduling strategy by specifying `daemon` option in Service constructs. See [differences between Daemon and Replica scheduling strategy](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs_services.html)

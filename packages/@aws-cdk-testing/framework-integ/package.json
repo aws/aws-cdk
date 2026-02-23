@@ -30,13 +30,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-runner": "^2.195.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-rds": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cognito-identity-provider": "3.632.0",
-    "axios": "^1.13.2",
+    "axios": "^1.13.5",
     "delay": "5.0.0"
   },
   "dependencies": {
@@ -50,9 +50,9 @@
     "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.70.42",
+    "cdk8s": "2.70.47",
     "cdk8s-plus-27": "2.9.5",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

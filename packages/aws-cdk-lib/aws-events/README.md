@@ -54,7 +54,12 @@ declare const project: codebuild.Project;
 
 const onCommitRule = repo.onCommit('OnCommit', {
   target: new targets.CodeBuildProject(project),
-  branches: ['master']
+  eventPattern: {
+    detail: {
+      referenceType: ['branch'],
+    }
+  },
+  branches: events.Match.prefix('main')
 });
 ```
 

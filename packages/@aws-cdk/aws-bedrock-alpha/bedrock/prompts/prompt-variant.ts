@@ -1,11 +1,14 @@
 // Internal Libs
-import { IBedrockInvokable } from '../models';
-import { AgentPromptVariantProps, createAgentPromptVariant } from './agent-prompt-variant';
-import { ChatPromptVariantProps, createChatPromptVariant } from './chat-prompt-variant';
-import { PromptGenAiResource } from './prompt-genai-resource';
-import { PromptInferenceConfiguration } from './prompt-inference-configuration';
-import { PromptTemplateConfiguration } from './prompt-template-configuration';
-import { TextPromptVariantProps, createTextPromptVariant } from './text-prompt-variant';
+import type { IBedrockInvokable } from '../models';
+import type { AgentPromptVariantProps } from './agent-prompt-variant';
+import { createAgentPromptVariant } from './agent-prompt-variant';
+import type { ChatPromptVariantProps } from './chat-prompt-variant';
+import { createChatPromptVariant } from './chat-prompt-variant';
+import type { PromptGenAiResource } from './prompt-genai-resource';
+import type { PromptInferenceConfiguration } from './prompt-inference-configuration';
+import type { PromptTemplateConfiguration } from './prompt-template-configuration';
+import type { TextPromptVariantProps } from './text-prompt-variant';
+import { createTextPromptVariant } from './text-prompt-variant';
 
 /******************************************************************************
  *                              COMMON
