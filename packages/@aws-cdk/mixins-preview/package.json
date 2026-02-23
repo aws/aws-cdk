@@ -674,7 +674,7 @@
     "tsx": "^4.21.0"
   },
   "dependencies": {
-    "minimatch": "^3.1.2"
+    "minimatch": "^10.2.1"
   },
   "bundleDependencies": [
     "minimatch"
