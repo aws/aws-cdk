@@ -205,14 +205,14 @@ export class TableGrants {
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
-      sid: `AllowMultiAccountReplicaAssociation-${arnComponents.account}`,
+      sid: `AllowMultiAccountReplicaAssociation${arnComponents.account}`,
       actions: ['dynamodb:AssociateTableReplica'],
       resources: ['*'],
       principals: [new iam.AccountPrincipal(arnComponents.account)],
     }));
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
-      sid: `AllowReplicationServiceReadWrite-${arnComponents.account}`,
+      sid: `AllowReplicationServiceReadWrite${arnComponents.account}`,
       actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
       resources: ['*'],
       principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],

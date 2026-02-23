@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "48.0.0",
   "testCases": {
     "VolumeTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "VolumeTest/DefaultTest/DeployAssert",
       "assertionStackName": "VolumeTestDefaultTestDeployAssert896AAE82"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

@@ -665,10 +665,7 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_04_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.3');
   /** Version "8.0.mysql_aurora.3.04.4". */
   public static readonly VER_3_04_4 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.4');
-  /**
-   * Version "8.0.mysql_aurora.3.04.6"
-   * @deprecated Aurora MySQL 8.0.mysql_aurora.3.04.6 is no longer supported by Amazon RDS.
-   */
+  /** Version "8.0.mysql_aurora.3.04.6". */
   public static readonly VER_3_04_6 = AuroraMysqlEngineVersion.builtIn_8_0('3.04.6');
   /**
    * Version "8.0.mysql_aurora.3.05.0"
@@ -719,15 +716,14 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_10_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.1');
   /** Version "8.0.mysql_aurora.3.10.2". */
   public static readonly VER_3_10_2 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.2');
-  /**
-   * Version "8.0.mysql_aurora.3.10.3"
-   * @deprecated Aurora MySQL 8.0.mysql_aurora.3.10.3 is no longer supported by Amazon RDS.
-   */
+  /** Version "8.0.mysql_aurora.3.10.3". */
   public static readonly VER_3_10_3 = AuroraMysqlEngineVersion.builtIn_8_0('3.10.3');
   /** Version "8.0.mysql_aurora.3.11.0". */
   public static readonly VER_3_11_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.11.0');
   /** Version "8.0.mysql_aurora.3.11.1". */
   public static readonly VER_3_11_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.11.1');
+  /** Version "8.0.mysql_aurora.3.12.0". */
+  public static readonly VER_3_12_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.12.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
