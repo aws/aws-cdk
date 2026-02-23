@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { IDataProtectionPolicy } from './data-protection-policy';
+import type { IDataProtectionPolicy } from './data-protection-policy';
 import { CfnTopic } from './sns.generated';
 import type { ITopic } from './topic-base';
 import { TopicBase } from './topic-base';

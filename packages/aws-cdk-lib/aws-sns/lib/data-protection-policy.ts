@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnLogGroup, ILogGroup } from '../../aws-logs';
-import { IBucket } from '../../aws-s3';
+import type { Construct } from 'constructs';
+import type { CfnLogGroup, ILogGroup } from '../../aws-logs';
+import type { IBucket } from '../../aws-s3';
 import { Arn, Stack, UnscopedValidationError, Token } from '../../core';
 
 /**
