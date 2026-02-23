@@ -30,7 +30,8 @@ import {
   IpAddresses,
   Ipv6Addresses,
 } from './ip-addresses';
-import { ConfigureNatOptions, NatProvider, RegionalNatGatewayProvider } from './nat';
+import type { ConfigureNatOptions } from './nat';
+import { NatProvider, RegionalNatGatewayProvider } from './nat';
 import type { INetworkAcl } from './network-acl';
 import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';

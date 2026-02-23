@@ -15,8 +15,9 @@ import { UserData } from './user-data';
 import type { PrivateSubnet, PublicSubnet, Vpc } from './vpc';
 import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
-import { Annotations, Duration, Fn, Token, UnscopedValidationError } from '../../core';
-import { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
+import type { Duration } from '../../core';
+import { Annotations, Fn, Token, UnscopedValidationError } from '../../core';
+import type { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
 /**
  * Direction of traffic to allow all by default.
