@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)
+
+### ⚠ BREAKING CHANGES
+
+redshift-alpha: update default node type from `DC2_LARGE` to `RA3_LARGE`
+
+### Features
+
+* **bedrock-agentcore-alpha:** add `fromCodeAsset` method to create runtime artifact with local code assets ([#36472](https://github.com/aws/aws-cdk/issues/36472)) ([c5a87e6](https://github.com/aws/aws-cdk/commit/c5a87e6682a3668de849d4c7a0913fdee3eb170c)), closes [#36473](https://github.com/aws/aws-cdk/issues/36473)
+* **bedrock-agentcore-alpha:** added new target type (api gateway) in agentcore gateway target. ([#36841](https://github.com/aws/aws-cdk/issues/36841)) ([0842754](https://github.com/aws/aws-cdk/commit/0842754ec56412a9b22f2e92f5aea7c86129ec52)), closes [#36817](https://github.com/aws/aws-cdk/issues/36817)
+* **mixins-preview:** add ECS ClusterSettingsMixin ([#36796](https://github.com/aws/aws-cdk/issues/36796)) ([b8ab5be](https://github.com/aws/aws-cdk/commit/b8ab5be8f2e0733433a55dd48b26e7f56f6e0393))
+* **mixins-preview:** add s3 bucket mixin for publicAccessBlock ([#36905](https://github.com/aws/aws-cdk/issues/36905)) ([feed4b2](https://github.com/aws/aws-cdk/commit/feed4b2690bd481e464dd3ececa4cba0997a03db))
+* **mixins-preview:** send Vended Logs to pre-created DeliveryDestination using `toDestination()` ([#36896](https://github.com/aws/aws-cdk/issues/36896)) ([48f1fe6](https://github.com/aws/aws-cdk/commit/48f1fe6aa86473a25ffdcf53cfecb5e1169b54db))
+
+
+### Bug Fixes
+
+* **redshift-alpha:** update default node type from `DC2_LARGE` to `RA3_LARGE` ([#36516](https://github.com/aws/aws-cdk/issues/36516)) ([ea19e5c](https://github.com/aws/aws-cdk/commit/ea19e5cde2e64d5cdcdfa3af41764542e77e221c)), closes [#36416](https://github.com/aws/aws-cdk/issues/36416)
+
 ## [2.238.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.1-alpha.0...v2.238.0-alpha.0) (2026-02-09)
 
 
