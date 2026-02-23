@@ -175,6 +175,7 @@ If you need to restrict the `s3:ListBucket` action to specific paths, you can ad
 
 You can enable ABAC (Attribute-Based Access Control) for an S3 general purpose bucket.
 When ABAC is enabled for the general purpose bucket, you can use tags to manage access to the general purpose buckets as well as for cost tracking purposes.
+When ABAC is disabled for the general purpose buckets, you can only use tags for cost tracking purposes.
 
 To enable ABAC on a bucket:
 
