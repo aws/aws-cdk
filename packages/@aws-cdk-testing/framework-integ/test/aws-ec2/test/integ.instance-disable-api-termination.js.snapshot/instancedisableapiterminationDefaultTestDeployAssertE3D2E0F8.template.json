@@ -28,7 +28,7 @@
      "Attribute": "\"disableApiTermination\""
     },
     "flattenResponse": "false",
-    "salt": "1759420872315"
+    "salt": "1770763701974"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -67,6 +67,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "ec2:ModifyInstanceAttribute"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -82,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4e818c462cf84c112f84262d376efd099d66da03f7a2aabae64c50c0511de276.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -93,6 +102,41 @@
      ]
     }
    }
+  },
+  "AwsApiCallEC2modifyInstanceAttribute65e55a4c9782e77e22002b0ac98f5b67": {
+   "Type": "Custom::DeployAssert@SdkCallEC2modifyInstanceAttribute",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "EC2",
+    "api": "modifyInstanceAttribute",
+    "parameters": {
+     "InstanceId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ec2-disable-api-termination:ExportsOutputRefTestInstance44016A9EE5FA7C7B"
+        },
+        "\""
+       ]
+      ]
+     },
+     "DisableApiTermination": "{\"Value\":false}"
+    },
+    "flattenResponse": "false",
+    "salt": "1770763701975"
+   },
+   "DependsOn": [
+    "AwsApiCallEC2describeInstanceAttribute2c89966e1079a06a88462d65ec0c5787"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
