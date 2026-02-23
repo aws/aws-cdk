@@ -1781,7 +1781,7 @@ export interface BucketProps {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
    *
-   * @default - ABAC is not enabled
+   * @default - The ABAC status is not set 
    */
   readonly abacStatus?: boolean;
 
