@@ -7,8 +7,8 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as bedrock from '../../../bedrock';
 import { BEDROCK_AGENT_INTEG_TEST_REGIONS } from './integ-tests-regions';
+import * as bedrock from '../../../bedrock';
 
 const app = new cdk.App();
 
