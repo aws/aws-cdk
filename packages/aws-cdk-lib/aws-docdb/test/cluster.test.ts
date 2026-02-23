@@ -1274,11 +1274,14 @@ describe('DatabaseCluster', () => {
           MaxCapacity: 1,
         },
       });
-      // Should not create any instances
-      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 0);
+      // Should create instances with db.serverless instance class
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceClass: 'db.serverless',
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 1);
     });
 
-    test('serverless cluster has empty instance arrays', () => {
+    test('serverless cluster creates instances with db.serverless class', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1296,8 +1299,33 @@ describe('DatabaseCluster', () => {
       });
 
       // THEN
-      expect(cluster.instanceIdentifiers).toEqual([]);
-      expect(cluster.instanceEndpoints).toEqual([]);
+      expect(cluster.instanceIdentifiers.length).toBe(1);
+      expect(cluster.instanceEndpoints.length).toBe(1);
+    });
+
+    test('serverless cluster respects instanceCount', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        instances: 3,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 2,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 3);
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceClass: 'db.serverless',
+      });
     });
 
     test('cannot specify instanceType with serverless configuration', () => {
