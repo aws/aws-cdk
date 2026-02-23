@@ -11,6 +11,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as bedrock from '../../../bedrock';
+import { BEDROCK_AGENT_INTEG_TEST_REGIONS } from './integ-tests-regions';
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');
@@ -198,6 +199,7 @@ agent.node.addDependency(schemaDeployment);
 
 new integ.IntegTest(app, 'BedrockApiSchema', {
   testCases: [stack],
+  regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
 
 app.synth();
