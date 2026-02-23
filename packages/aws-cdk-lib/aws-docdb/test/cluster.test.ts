@@ -1418,6 +1418,136 @@ describe('DatabaseCluster', () => {
       });
     });
   });
+
+  describe('manageMasterUserPassword', () => {
+    test('can create cluster with manageMasterUserPassword enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUsername: 'admin',
+        MasterUserPassword: Match.absent(),
+      });
+    });
+
+    test('can specify KMS key for managed master user password', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        masterUserSecretKmsKey: key,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ManageMasterUserPassword: true,
+        MasterUserSecretKmsKeyId: {
+          'Fn::GetAtt': ['Key961B73FD', 'Arn'],
+        },
+      });
+    });
+
+    test('can enable password rotation for managed master user password', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        manageMasterUserPassword: true,
+        masterUser: {
+          username: 'admin',
+        },
+        rotateMasterUserPassword: true,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ManageMasterUserPassword: true,
+        RotateMasterUserPassword: true,
+      });
+    });
+
+    test('throws error when manageMasterUserPassword is true but masterUser.password is specified', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          manageMasterUserPassword: true,
+          masterUser: {
+            username: 'admin',
+            password: cdk.SecretValue.unsafePlainText('password'),
+          },
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        });
+      }).toThrow('You can\'t manage the master user password with AWS Secrets Manager if masterUser.password is specified');
+    });
+
+    test('throws error when masterUserSecretKmsKey is specified but manageMasterUserPassword is false', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const key = new kms.Key(stack, 'Key');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          masterUserSecretKmsKey: key,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        });
+      }).toThrow('masterUserSecretKmsKey is valid only if manageMasterUserPassword is true');
+    });
+
+    test('throws error when rotateMasterUserPassword is specified but manageMasterUserPassword is false', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          rotateMasterUserPassword: true,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+          vpc,
+        });
+      }).toThrow('rotateMasterUserPassword is valid only if manageMasterUserPassword is true');
+    });
+  });
 });
 
 function testStack() {
