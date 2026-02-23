@@ -1,6 +1,6 @@
-import * as cdk from 'aws-cdk-lib';
-import * as cr from 'aws-cdk-lib/custom-resources';
+import type * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cr from 'aws-cdk-lib/custom-resources';
 
 /**
  * Creates an AwsCustomResource that enables Amazon Inspector for the given resource types.
