@@ -1779,7 +1779,7 @@ export interface BucketProps {
    * Enables Amazon S3 to evaluate the ABAC policy in the request.
    * Set to true to enable ABAC, false to explicitly disable it.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
    *
    * @default - The ABAC status is not set 
    */
