@@ -15,7 +15,7 @@ class EksFargateClusterStack extends Stack {
 
     new eks.FargateCluster(this, 'FargateTestCluster', {
       vpc: props?.vpc,
-      version: eks.KubernetesVersion.V1_34,
+      version: eks.KubernetesVersion.V1_35,
       prune: false,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV35Layer(this, 'kubectlLayer'),

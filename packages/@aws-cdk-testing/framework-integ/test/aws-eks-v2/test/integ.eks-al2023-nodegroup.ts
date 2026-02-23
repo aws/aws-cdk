@@ -22,7 +22,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
-      version: eks.KubernetesVersion.V1_34,
+      version: eks.KubernetesVersion.V1_35,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV35Layer(this, 'kubectlLayer'),
       },
