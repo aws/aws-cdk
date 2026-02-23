@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file. See [standa
 * **eks-v2:** graduate to stable 🚀 ([#36950](https://github.com/aws/aws-cdk/issues/36950)) ([a7de51c](https://github.com/aws/aws-cdk/commit/a7de51c33497b0c4db26c344da19e72eeb9327a7))
 * update L1 CloudFormation resource definitions ([#37034](https://github.com/aws/aws-cdk/issues/37034)) ([62d40f8](https://github.com/aws/aws-cdk/commit/62d40f85388bfb78ad7997b75c094b5dfd52347d))
 
+### Bug Fixes
+
+* bump minimatch to ^10.2.1 to resolve ReDoS vulnerability (GHSA-3ppc-4f35-3m26) ([#37027](https://github.com/aws/aws-cdk/issues/37027)) ([e48ea41](https://github.com/aws/aws-cdk/commit/e48ea41cc049264cb3d64ac99b8250202de96c29))
+
 ## [2.239.0](https://github.com/aws/aws-cdk/compare/v2.238.0...v2.239.0) (2026-02-19)
 
 
