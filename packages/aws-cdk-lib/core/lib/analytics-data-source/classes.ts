@@ -12732,6 +12732,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         },
         'resourcePolicy': '*'
       },
+      'globalTableSettingsReplicationMode': 'GlobalTableSettingsReplicationMode',
       'witnessRegion': '*',
       'multiRegionConsistency': 'MultiRegionConsistency',
       'globalSecondaryIndexes': {
@@ -12867,6 +12868,64 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ],
       'replica': [
+        '*'
+      ]
+    },
+    'TableV2MultiAccountReplica': {
+      'replicaSourceTable': {
+        'tableId': '*',
+        'grants': '*',
+        'tableArn': '*',
+        'tableName': '*',
+        'tableStreamArn': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'tableName': '*',
+      'encryption': '*',
+      'removalPolicy': 'RemovalPolicy',
+      'globalTableSettingsReplicationMode': 'GlobalTableSettingsReplicationMode',
+      'grantIndexPermissions': 'boolean',
+      'contributorInsights': 'boolean',
+      'contributorInsightsSpecification': {
+        'enabled': 'boolean',
+        'mode': 'ContributorInsightsMode'
+      },
+      'deletionProtection': 'boolean',
+      'pointInTimeRecovery': 'boolean',
+      'pointInTimeRecoverySpecification': {
+        'pointInTimeRecoveryEnabled': 'boolean',
+        'recoveryPeriodInDays': '*'
+      },
+      'tableClass': 'TableClass',
+      'kinesisStream': {
+        'streamArn': '*',
+        'streamName': '*',
+        'encryptionKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      },
+      'tags': {
+        'key': '*',
+        'value': '*'
+      },
+      'resourcePolicy': '*',
+      'addToResourcePolicy': [
         '*'
       ]
     },
@@ -24004,6 +24063,88 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'endpoint': '*',
           'credentialProviderConfigurations': {
             'credentialProviderType': 'CredentialProviderType'
+          }
+        }
+      ],
+      'addApiGatewayTarget': [
+        '*',
+        {
+          'gatewayTargetName': '*',
+          'description': '*',
+          'restApi': {
+            'restApiId': '*',
+            'restApiName': '*',
+            'restApiRootResourceId': '*',
+            'latestDeployment': '*',
+            'deploymentStage': '*',
+            'root': {
+              'restApi': '*',
+              'resourceId': '*',
+              'path': '*',
+              'defaultIntegration': '*',
+              'defaultMethodOptions': {
+                'operationName': '*',
+                'authorizationType': 'AuthorizationType',
+                'authorizer': {
+                  'authorizerId': '*',
+                  'authorizationType': 'AuthorizationType'
+                },
+                'apiKeyRequired': 'boolean',
+                'methodResponses': {
+                  'statusCode': '*',
+                  'responseParameters': '*',
+                  'responseModels': '*'
+                },
+                'requestParameters': '*',
+                'requestModels': '*',
+                'requestValidator': {
+                  'requestValidatorId': '*',
+                  'stack': '*',
+                  'node': '*',
+                  'env': {
+                    'account': '*',
+                    'region': '*'
+                  }
+                },
+                'authorizationScopes': '*',
+                'requestValidatorOptions': {
+                  'requestValidatorName': '*',
+                  'validateRequestBody': 'boolean',
+                  'validateRequestParameters': 'boolean'
+                }
+              },
+              'defaultCorsPreflightOptions': {
+                'statusCode': '*',
+                'allowOrigins': '*',
+                'allowHeaders': '*',
+                'allowMethods': '*',
+                'allowCredentials': 'boolean',
+                'maxAge': '*',
+                'disableCache': 'boolean',
+                'exposeHeaders': '*'
+              }
+            }
+          },
+          'stage': '*',
+          'apiGatewayToolConfiguration': {
+            'toolFilters': {
+              'filterPath': '*',
+              'methods': 'ApiGatewayHttpMethod'
+            },
+            'toolOverrides': {
+              'path': '*',
+              'method': 'ApiGatewayHttpMethod',
+              'name': '*',
+              'description': '*'
+            }
+          },
+          'credentialProviderConfigurations': {
+            'credentialProviderType': 'CredentialProviderType'
+          },
+          'metadataConfiguration': {
+            'allowedQueryParameters': '*',
+            'allowedRequestHeaders': '*',
+            'allowedResponseHeaders': '*'
           }
         }
       ],
