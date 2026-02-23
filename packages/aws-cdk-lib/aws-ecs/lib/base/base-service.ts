@@ -194,6 +194,52 @@ export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTa
 }
 
 /**
+ * The format of Service Connect access logs.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export enum ServiceConnectAccessLogFormat {
+  /**
+   * Human-readable text format for access logs.
+   */
+  TEXT = 'TEXT',
+
+  /**
+   * Structured JSON format for access logs.
+   * This format is well-suited for integration with log analysis tools.
+   */
+  JSON = 'JSON',
+}
+
+/**
+ * Configuration for Service Connect access logs.
+ *
+ * Service Connect access logs provide detailed telemetry about individual requests processed by the Service Connect proxy,
+ * including HTTP methods, paths, response codes, and timing information.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export interface ServiceConnectAccessLogConfiguration {
+  /**
+   * The format for Service Connect access log output.
+   *
+   * - TEXT: Human-readable text format
+   * - JSON: Structured JSON format for log analysis tools
+   */
+  readonly format: ServiceConnectAccessLogFormat;
+
+  /**
+   * Whether to include query parameters in Service Connect access logs.
+   *
+   * When enabled, query parameters from HTTP requests are included in the access logs.
+   * Consider security and privacy implications as query parameters may contain sensitive information such as request IDs and tokens.
+   *
+   * @default undefined - AWS ECS default is false, which means that query parameters are not included in access logs
+   */
+  readonly includeQueryParameters?: boolean;
+}
+
+/**
  * Interface for Service Connect configuration.
  */
 export interface ServiceConnectProps {
@@ -219,6 +265,15 @@ export interface ServiceConnectProps {
    * @default - none
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * The configuration for Service Connect access logs.
+   *
+   * Access logs provide detailed telemetry about individual requests processed by the　Service Connect proxy.
+   *
+   * @default undefined - AWS ECS default is disabled, which means that access logs are not recorded
+   */
+  readonly accessLogConfiguration?: ServiceConnectAccessLogConfiguration;
 }
 
 /**
@@ -1127,6 +1182,10 @@ export abstract class BaseService extends Resource
       logConfiguration: logConfig,
       namespace: namespace,
       services: services,
+      accessLogConfiguration: cfg.accessLogConfiguration ? {
+        format: cfg.accessLogConfiguration.format,
+        includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
+      } : undefined,
     };
   }
 
