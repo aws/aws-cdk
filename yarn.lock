@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.198"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@^0.1.152":
-  version "0.1.152"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.152.tgz#acaa6fc836b54638b0ae745427ef44df868f8826"
-  integrity sha512-NcplhfPPClcWWR9cm/Ph85c/3Mh9GVRikbHt6ZJY1ocUHqQqruiSw5OYaTfgXl0X9YvHboJgw7NvneYN5NK9Lw==
+"@aws-cdk/aws-service-spec@^0.1.154":
+  version "0.1.154"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.154.tgz#625f621947457f32acd84e60cee1a0899c8555fe"
+  integrity sha512-xLaGNrgLyCLi2ii8xDm2A9hoS5c7wq4TZWsWyYO5BmEC/kyNupP/dL0zh6Lh4XspDKbEFr/5LDYgo0tf2y+9lA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.218"
+    "@aws-cdk/service-spec-types" "^0.0.220"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.0.1":
@@ -125,12 +125,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v34/-/lambda-layer-kubectl-v34-2.0.0.tgz#c2694ba861eef980f477a3e93c91fddac936b36d"
   integrity sha512-cof6aOHsVtf3xvg/QENnkOdELHDpsq4HDc3NAB5O4c285YsORvP/FFphLS338ZvuYRveI690mQSatg3891lOzQ==
 
-"@aws-cdk/service-spec-importers@^0.0.109":
-  version "0.0.109"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.109.tgz#1aec0a9e4aafc82bb41b27695c0f1e8d7ad6a8dd"
-  integrity sha512-fymzHZZC3NseeQ1ziLjTH49S5bI3Hi1E4/vgwORP+K0aIILo2MNpp2fqrDoJhuIbhjXy1BC0knz/6SuSt5Y8OA==
+"@aws-cdk/service-spec-importers@^0.0.111":
+  version "0.0.111"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.111.tgz#2ec0ee5eae7b17c5c6146a2ab16e554f34fddb6d"
+  integrity sha512-ZUB68yMXUAcfEq4ZjvA7d3rm2y+5j4bClHPrP7quRPDl+9RE2TEM48caAEym8273fXpzoM6YXF7/STW5Ky2TLA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.214"
+    "@aws-cdk/service-spec-types" "^0.0.220"
     "@cdklabs/tskb" "^0.0.4"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -148,17 +148,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.214":
-  version "0.0.214"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.214.tgz#88456be638b2541b195f4573d70cc4293eb8d2f6"
-  integrity sha512-mVAnTNSd+iooBSwnCB6xzlu9pqqXlrpwzSPVigk3JImXQlzIkMf1Kx14Td3ybUNRJdmvf5bnJN3xBI6H3V54pg==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.218":
-  version "0.0.218"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.218.tgz#a3c0903cd3c88910bd7db0f50a592d96efe1e64b"
-  integrity sha512-ZsdQEUwDHc38tHD5mMJ2hDXnfP5HYeG+xj3VZESfGwbRZHHSUOIqNE0wRRnmD2MY0m9w6D6j/08M3ylB74Oh0w==
+"@aws-cdk/service-spec-types@^0.0.220":
+  version "0.0.220"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.220.tgz#a99b8ff396e86b813c58519eaeb38e95006d9c75"
+  integrity sha512-VrZ/EYHvf97ejzNrnchAB7ytwcIO05xqTcWVl7fwqWHkxDqtc2zoUwyov7M6sjgTXF6DSDtOyoNcRfOJg/kGyQ==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -6359,6 +6352,11 @@ balanced-match@^1.0.0:
   resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"
   integrity sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==
 
+balanced-match@^4.0.2:
+  version "4.0.4"
+  resolved "https://registry.npmjs.org/balanced-match/-/balanced-match-4.0.4.tgz#bfb10662feed8196a2c62e7c68e17720c274179a"
+  integrity sha512-BLrgEcRTwX2o6gGxGOCNyMvGSp35YofuYzw9h1IMTRmKqttAZZVU67bdb9Pr2vUHA8+j3i2tJfjO6C6+4myGTA==
+
 base64-js@^1.0.2, base64-js@^1.3.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz#1b1b440160a5bf7ad40b650f095963481903930a"
@@ -6422,6 +6420,13 @@ brace-expansion@^2.0.1:
   integrity sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ==
   dependencies:
     balanced-match "^1.0.0"
+
+brace-expansion@^5.0.2:
+  version "5.0.3"
+  resolved "https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.3.tgz#6a9c6c268f85b53959ec527aeafe0f7300258eef"
+  integrity sha512-fy6KJm2RawA5RcHkLa1z/ScpBeA762UF9KmZQxwIbDtRJrgLzM10depAiEQ+CXYcoiqW1/m96OAAoke2nE9EeA==
+  dependencies:
+    balanced-match "^4.0.2"
 
 braces@^3.0.3:
   version "3.0.3"
@@ -11196,6 +11201,13 @@ minimatch@9.0.3:
   integrity sha512-RHiac9mvaRw0x3AYRgDC1CxAP7HTcNrrECeA8YYJeWnpo+2Q5CegtZjaotWTWxDG3UeGA1coE05iH1mPjT/2mg==
   dependencies:
     brace-expansion "^2.0.1"
+
+minimatch@^10.2.1:
+  version "10.2.2"
+  resolved "https://registry.npmjs.org/minimatch/-/minimatch-10.2.2.tgz#361603ee323cfb83496fea2ae17cc44ea4e1f99f"
+  integrity sha512-+G4CpNBxa5MprY+04MbgOw1v7So6n5JY166pFi9KfYwT78fxScCeSNQSNzp6dpPSW2rONOps6Ocam1wFhCgoVw==
+  dependencies:
+    brace-expansion "^5.0.2"
 
 minimatch@^3.0.4, minimatch@^3.1.1, minimatch@^3.1.2:
   version "3.1.2"

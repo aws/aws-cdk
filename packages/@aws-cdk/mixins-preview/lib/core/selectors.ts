@@ -100,7 +100,7 @@ class ResourceTypeSelector implements IConstructSelector {
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 
 class IdPatternSelector implements IConstructSelector {
   constructor(private readonly pattern: string, private field: keyof Node) {}

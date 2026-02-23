@@ -4476,6 +4476,114 @@
       "elasticfilesystem:ClientRootAccess"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.ts": {
+    "AccessScopeType": [
+      "namespace",
+      "cluster"
+    ],
+    "AccessEntryType": [
+      "STANDARD",
+      "FARGATE_LINUX",
+      "EC2_LINUX",
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.ts": {
+    "AlbScheme": [
+      "internal",
+      "internet-facing"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "ClusterLoggingTypes": [
+      "api",
+      "audit",
+      "authenticator",
+      "controllerManager",
+      "scheduler"
+    ],
+    "IpFamily": [
+      "ipv4",
+      "ipv6"
+    ],
+    "NodeType": [
+      "Standard",
+      "GPU",
+      "INFERENTIA",
+      "TRAINIUM"
+    ],
+    "CpuArch": [
+      "arm64",
+      "x86_64"
+    ],
+    "CoreDnsComputeType": [
+      "ec2",
+      "fargate"
+    ],
+    "DefaultCapacityType": [
+      0,
+      1,
+      2
+    ],
+    "MachineImageType": [
+      0,
+      1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-patch.ts": {
+    "PatchType": [
+      "json",
+      "merge",
+      "strategic"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.ts": {
+    "NodegroupAmiType": [
+      "AL2_x86_64",
+      "AL2_x86_64_GPU",
+      "AL2_ARM_64",
+      "BOTTLEROCKET_ARM_64",
+      "BOTTLEROCKET_x86_64",
+      "BOTTLEROCKET_ARM_64_NVIDIA",
+      "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
+      "WINDOWS_CORE_2019_x86_64",
+      "WINDOWS_CORE_2022_x86_64",
+      "WINDOWS_FULL_2019_x86_64",
+      "WINDOWS_FULL_2022_x86_64",
+      "AL2023_x86_64_STANDARD",
+      "AL2023_x86_64_NEURON",
+      "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
+      "AL2023_ARM_64_STANDARD"
+    ],
+    "CapacityType": [
+      "SPOT",
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
+    ],
+    "TaintEffect": [
+      "NO_SCHEDULE",
+      "PREFER_NO_SCHEDULE",
+      "NO_EXECUTE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.ts": {
+    "IdentityType": [
+      "IRSA",
+      "POD_IDENTITY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/user-data.ts": {
+    "LifecycleLabel": [
+      "OnDemand",
+      "Ec2Spot"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessScopeType": [
       "namespace",
@@ -4887,6 +4995,12 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
+    "SubRecordType": [
+      "JSON",
+      "DELIMITED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {

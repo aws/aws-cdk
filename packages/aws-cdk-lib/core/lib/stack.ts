@@ -29,7 +29,7 @@ import * as cxapi from '../../cx-api';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');

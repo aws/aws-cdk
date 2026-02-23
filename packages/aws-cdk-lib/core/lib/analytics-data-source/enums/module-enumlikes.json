@@ -799,6 +799,7 @@
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -2112,6 +2113,72 @@
       "WINDOWS_SERVER_2025_CORE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.ts": {
+    "AccessPolicyArn": [
+      "AMAZON_EKS_ADMIN_POLICY",
+      "AMAZON_EKS_CLUSTER_ADMIN_POLICY",
+      "AMAZON_EKS_ADMIN_VIEW_POLICY",
+      "AMAZON_EKS_EDIT_POLICY",
+      "AMAZON_EKS_VIEW_POLICY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.ts": {
+    "AlbControllerVersion": [
+      "V2_0_0",
+      "V2_0_1",
+      "V2_1_0",
+      "V2_1_1",
+      "V2_1_2",
+      "V2_1_3",
+      "V2_2_0",
+      "V2_2_1",
+      "V2_2_2",
+      "V2_2_3",
+      "V2_2_4",
+      "V2_3_0",
+      "V2_3_1",
+      "V2_4_1",
+      "V2_4_2",
+      "V2_4_3",
+      "V2_4_4",
+      "V2_4_5",
+      "V2_4_6",
+      "V2_4_7",
+      "V2_5_0",
+      "V2_5_1",
+      "V2_5_2",
+      "V2_5_3",
+      "V2_5_4",
+      "V2_6_0",
+      "V2_6_1",
+      "V2_6_2",
+      "V2_7_0",
+      "V2_7_1",
+      "V2_7_2",
+      "V2_8_0",
+      "V2_8_1",
+      "V2_8_2"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "EndpointAccess": [
+      "PUBLIC",
+      "PRIVATE",
+      "PUBLIC_AND_PRIVATE"
+    ],
+    "KubernetesVersion": [
+      "V1_25",
+      "V1_26",
+      "V1_27",
+      "V1_28",
+      "V1_29",
+      "V1_30",
+      "V1_31",
+      "V1_32",
+      "V1_33",
+      "V1_34"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -2676,6 +2743,7 @@
       "VER_3_04_2",
       "VER_3_04_3",
       "VER_3_04_4",
+      "VER_3_04_6",
       "VER_3_05_0",
       "VER_3_05_1",
       "VER_3_05_2",
@@ -2690,6 +2758,7 @@
       "VER_3_10_0",
       "VER_3_10_1",
       "VER_3_10_2",
+      "VER_3_10_3",
       "VER_3_11_0",
       "VER_3_11_1"
     ],
@@ -2770,6 +2839,7 @@
       "VER_13_20",
       "VER_13_21",
       "VER_13_22",
+      "VER_13_23",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2799,6 +2869,7 @@
       "VER_15_12",
       "VER_15_13",
       "VER_15_14",
+      "VER_15_15",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2818,7 +2889,8 @@
       "VER_17_2",
       "VER_17_4",
       "VER_17_5",
-      "VER_17_6"
+      "VER_17_6",
+      "VER_17_7"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2999,6 +3071,7 @@
       "VER_5_7_44_RDS_20250213",
       "VER_5_7_44_RDS_20250508",
       "VER_5_7_44_RDS_20250818",
+      "VER_5_7_44_RDS_20251212",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -3028,11 +3101,13 @@
       "VER_8_0_42",
       "VER_8_0_43",
       "VER_8_0_44",
+      "VER_8_0_45",
       "VER_8_4_3",
       "VER_8_4_4",
       "VER_8_4_5",
       "VER_8_4_6",
-      "VER_8_4_7"
+      "VER_8_4_7",
+      "VER_8_4_8"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -3125,8 +3200,10 @@
       "VER_11_22_RDS_20240509",
       "VER_11_22_RDS_20240808",
       "VER_11_22_RDS_20241121",
+      "VER_11_22_RDS_20250220",
       "VER_11_22_RDS_20250508",
       "VER_11_22_RDS_20250814",
+      "VER_11_22_RDS_20251114",
       "VER_12",
       "VER_12_2",
       "VER_12_3",
@@ -3152,6 +3229,7 @@
       "VER_12_22_RDS_20250220",
       "VER_12_22_RDS_20250508",
       "VER_12_22_RDS_20250814",
+      "VER_12_22_RDS_20251114",
       "VER_13",
       "VER_13_1",
       "VER_13_2",
