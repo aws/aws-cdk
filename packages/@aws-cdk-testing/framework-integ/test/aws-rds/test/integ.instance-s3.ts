@@ -20,10 +20,8 @@ new DatabaseInstance(stack, 'Database', {
   licenseModel: LicenseModel.LICENSE_INCLUDED,
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
-  deletionProtection: false,
 });
 
 new IntegTest(app, 'integ.instance-s3', {
   testCases: [stack],
 });
-

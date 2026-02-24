@@ -555,18 +555,16 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseInstance1844F58FD": {
+  "Databasewriter2462CC03": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
     "DBInstanceClass": "db.t3.medium",
-    "DBInstanceIdentifier": "instanceidentifierbase1",
-    "DBSubnetGroupName": {
-     "Ref": "DatabaseSubnets56F17B9A"
-    },
-    "Engine": "aurora-mysql"
+    "DBInstanceIdentifier": "instanceidentifierbase-0",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 0
    },
    "DependsOn": [
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
@@ -577,20 +575,19 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseInstance2AA380DEE": {
+  "Databasereader13B43287": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
     "DBInstanceClass": "db.t3.medium",
-    "DBInstanceIdentifier": "instanceidentifierbase2",
-    "DBSubnetGroupName": {
-     "Ref": "DatabaseSubnets56F17B9A"
-    },
-    "Engine": "aurora-mysql"
+    "DBInstanceIdentifier": "instanceidentifierbase-1",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 2
    },
    "DependsOn": [
+    "Databasewriter2462CC03",
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
     "VPCPrivateSubnet1RouteTableAssociation347902D1",
     "VPCPrivateSubnet2DefaultRouteF4F5CFD2",

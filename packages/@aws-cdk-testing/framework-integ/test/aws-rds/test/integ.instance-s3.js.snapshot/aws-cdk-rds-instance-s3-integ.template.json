@@ -893,7 +893,6 @@
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnetGroup7D60F180"
     },
-    "DeletionProtection": false,
     "Engine": "sqlserver-se",
     "EngineVersion": "16.00.4215.2.v1",
     "LicenseModel": "license-included",

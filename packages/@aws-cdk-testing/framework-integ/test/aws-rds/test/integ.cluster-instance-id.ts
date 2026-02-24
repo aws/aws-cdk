@@ -15,12 +15,17 @@ new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
-  instanceProps: {
+  vpc,
+  writer: rds.ClusterInstance.provisioned('writer', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
-    vpc,
-  },
-  instances: 2,
-  instanceIdentifierBase: 'instanceidentifierbase',
+    instanceIdentifier: 'instanceidentifierbase-0',
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('reader', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      instanceIdentifier: 'instanceidentifierbase-1',
+    }),
+  ],
 });
 
 new IntegTest(app, 'instanceIdentifiersTest', {
