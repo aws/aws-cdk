@@ -556,6 +556,17 @@
     }
    }
   },
+  "ASGWithInstanceLifecyclePolicyRetainLifecycleHookTerminationHookAD416103": {
+   "Type": "AWS::AutoScaling::LifecycleHook",
+   "Properties": {
+    "AutoScalingGroupName": {
+     "Ref": "ASGWithInstanceLifecyclePolicyRetainASG2E89703B"
+    },
+    "DefaultResult": "ABANDON",
+    "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
+   }
+  },
   "ASGWithInstanceLifecyclePolicyTerminateInstanceSecurityGroup415BC540": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -719,6 +730,17 @@
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
     }
+   }
+  },
+  "ASGWithInstanceLifecyclePolicyTerminateLifecycleHookTerminationHook313B6095": {
+   "Type": "AWS::AutoScaling::LifecycleHook",
+   "Properties": {
+    "AutoScalingGroupName": {
+     "Ref": "ASGWithInstanceLifecyclePolicyTerminateASG933BF3D1"
+    },
+    "DefaultResult": "ABANDON",
+    "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING"
    }
   }
  },

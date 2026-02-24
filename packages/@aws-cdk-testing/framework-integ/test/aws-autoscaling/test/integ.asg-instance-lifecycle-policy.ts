@@ -12,7 +12,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   restrictDefaultSecurityGroup: false,
 });
 
-new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyRetain', {
+const asgRetain = new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyRetain', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
@@ -23,7 +23,13 @@ new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyRetain', 
   },
 });
 
-new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyTerminate', {
+asgRetain.addLifecycleHook('TerminationHook', {
+  lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+  defaultResult: autoscaling.DefaultResult.ABANDON,
+  heartbeatTimeout: cdk.Duration.seconds(300),
+});
+
+const asgTerminate = new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyTerminate', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
@@ -34,8 +40,13 @@ new autoscaling.AutoScalingGroup(stack, 'ASGWithInstanceLifecyclePolicyTerminate
   },
 });
 
+asgTerminate.addLifecycleHook('TerminationHook', {
+  lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+  defaultResult: autoscaling.DefaultResult.ABANDON,
+  heartbeatTimeout: cdk.Duration.seconds(300),
+});
+
 new integ.IntegTest(app, 'InstanceLifecyclePolicyTest', {
   testCases: [stack],
 });
 
-app.synth();
