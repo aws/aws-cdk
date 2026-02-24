@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "2f2eb98c1455fd3dc05e9c0797491eff430f53b17eb52c714aa91a17e6dc744e": {
+    "da146fb4987fe3b28ae871bd8f3b52c115caa0d8aca8f58b78bf572979c05139": {
       "displayName": "cluster-kerberos Template",
       "source": {
         "path": "cluster-kerberos.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7f571e88": {
+        "current_account-current_region-d46a235f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2f2eb98c1455fd3dc05e9c0797491eff430f53b17eb52c714aa91a17e6dc744e.json",
+          "objectKey": "da146fb4987fe3b28ae871bd8f3b52c115caa0d8aca8f58b78bf572979c05139.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

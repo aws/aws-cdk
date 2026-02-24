@@ -638,7 +638,7 @@
      "Ref": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.11.1",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -823,7 +823,7 @@
      "Ref": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.11.1",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1048,7 +1048,7 @@
      "Ref": "integauroraserverlessv22IntegClusterSubnets241DB50C"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.11.1",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

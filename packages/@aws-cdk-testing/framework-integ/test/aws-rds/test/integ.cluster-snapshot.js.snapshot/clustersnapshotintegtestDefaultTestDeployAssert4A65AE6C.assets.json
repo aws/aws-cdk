@@ -1,16 +1,10 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-data-api.js.snapshot/clusterdataapiintegtestDefaultTestDeployAssert4141457D.assets.json
-      "displayName": "clusterdataapiintegtestDefaultTestDeployAssert4141457D Template",
-      "source": {
-        "path": "clusterdataapiintegtestDefaultTestDeployAssert4141457D.template.json",
-========
       "displayName": "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C Template",
       "source": {
         "path": "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.template.json",
->>>>>>>> 164da68db54c125c1d7806d9b2566d91f2e70eff:packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-snapshot.js.snapshot/clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.assets.json
         "packaging": "file"
       },
       "destinations": {

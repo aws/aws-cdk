@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2": {
       "displayName": "ClusterSnapshoter/OnEventHandler/Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "53b70a884be34872442de94a3129c0a51b0c23f6fbd5da8c544a4ae6b465bbd4": {
+    "022a03493c8a163ed02cba912952a9d5eab041d166baa75abbe51b8470e63ae0": {
       "displayName": "aws-cdk-rds-cluster-snapshot Template",
       "source": {
         "path": "aws-cdk-rds-cluster-snapshot.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-071506d5": {
+        "current_account-current_region-be2d52c7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "53b70a884be34872442de94a3129c0a51b0c23f6fbd5da8c544a4ae6b465bbd4.json",
+          "objectKey": "022a03493c8a163ed02cba912952a9d5eab041d166baa75abbe51b8470e63ae0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

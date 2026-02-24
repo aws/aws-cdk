@@ -526,7 +526,7 @@
      "iam-db-auth-error"
     ],
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.11.1",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
