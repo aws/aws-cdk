@@ -1,13 +1,15 @@
 import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
-import { WebSocketRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteResponse, RouteReference } from '.././index';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketRouteAuthorizer } from './authorizer';
+import { WebSocketNoneAuthorizer } from './authorizer';
+import type { WebSocketRouteIntegration } from './integration';
+import type { RouteReference } from '.././index';
+import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IRoute } from '../common';
+import type { IRoute } from '../common';
 
 /**
  * Represents a Route for an WebSocket API.

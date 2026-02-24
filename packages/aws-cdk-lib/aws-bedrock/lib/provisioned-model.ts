@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IModel } from './model-base';
+import type { Construct } from 'constructs';
+import type { IModel } from './model-base';
 
 /**
  * A Bedrock provisioned model

@@ -1,7 +1,9 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
-import { IInferenceProfile, InferenceProfileType } from './inference-profile';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileType } from './inference-profile';
 
 /**
  * Error thrown when cross-region inference profile validation fails.

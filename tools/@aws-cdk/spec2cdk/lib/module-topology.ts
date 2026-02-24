@@ -1,7 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
-import { namespaceToModuleDefinition, PackageBaseNames } from './util/jsii';
+import type { PackageBaseNames } from './util/jsii';
+import { namespaceToModuleDefinition } from './util/jsii';
 
 /**
  * A data structure holding information about a single scope in a generated module.

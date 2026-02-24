@@ -3,17 +3,16 @@
 
 ---
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-eks-v2.
+
 
 The eks-v2-alpha module is a rewrite of the existing aws-eks module (https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks-readme.html). This new iteration leverages native L1 CFN resources, replacing the previous custom resource approach for creating EKS clusters and Fargate Profiles.
 
@@ -451,6 +450,34 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+To provide additional Helm chart values supported by `albController` in CDK, use the `additionalHelmChartValues` property. For example, the following code snippet shows how to set the `enableWafV2` flag:
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  albController: {
+    version: eks.AlbControllerVersion.V2_8_2,
+    additionalHelmChartValues: {
+      enableWafv2: false
+    }
+  },
+});
+```
+
+To overwrite an existing ALB controller service account, use the `overwriteServiceAccount` property:
+
+```ts
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_34,
+  albController: {
+    version: eks.AlbControllerVersion.V2_8_2,
+    overwriteServiceAccount: true,
+  },
+});
+```
+
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.
 
@@ -683,6 +710,36 @@ declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
+### Hybrid Nodes
+
+When you create an Amazon EKS cluster, you can configure it to leverage the [EKS Hybrid Nodes](https://aws.amazon.com/eks/hybrid-nodes/) feature, allowing you to use your on-premises and edge infrastructure as nodes in your EKS cluster. Refer to the Hyrid Nodes [networking documentation](https://docs.aws.amazon.com/eks/latest/userguide/hybrid-nodes-networking.html) to configure your on-premises network, node and pod CIDRs, access control, etc before creating your EKS Cluster.
+
+Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
+
+```ts
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+new eks.Cluster(this, 'Cluster', {
+  version: eks.KubernetesVersion.V1_34,
+  remoteNodeNetworks: [
+    {
+      cidrs: ['10.0.0.0/16'],
+    },
+  ],
+  remotePodNetworks: [
+    {
+      cidrs: ['192.168.0.0/16'],
+    },
+  ],
+});
+```
+
+### Self-Managed Add-ons
+
+Amazon EKS automatically installs self-managed add-ons such as the Amazon VPC CNI plugin for Kubernetes, kube-proxy, and CoreDNS for every cluster. You can change the default configuration of the add-ons and update them when desired. If you wish to create a cluster without the default add-ons, set `bootstrapSelfManagedAddons` as `false`. When this is set to false, make sure to install the necessary alternatives which provide functionality that enables pod and service operations for your EKS cluster.
+
+> Changing the value of `bootstrapSelfManagedAddons` after the EKS cluster creation will result in a replacement of the cluster.
+
 ## Permissions and Security
 
 In the new EKS module, `ConfigMap` is deprecated. Clusters created by the new module will use `API` as authentication mode. Access Entry will be the only way for granting permissions to specific IAM users and roles.
@@ -750,10 +807,205 @@ cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
 ]);
 ```
 
+#### Access Entry Types
+
+You can optionally specify an access entry type when granting access. This is particularly useful for EKS Auto Mode clusters with custom node roles, which require the `EC2` type:
+
+```ts
+declare const cluster: eks.Cluster;
+declare const nodeRole: iam.Role;
+
+// Grant access with EC2 type for Auto Mode node role
+cluster.grantAccess('nodeAccess', nodeRole.roleArn, [
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAutoNodePolicy', {
+    accessScopeType: eks.AccessScopeType.CLUSTER,
+  }),
+], { accessEntryType: eks.AccessEntryType.EC2 });
+```
+
+The following access entry types are supported:
+
+- `STANDARD` - Default type for standard IAM principals (default when not specified)
+- `FARGATE_LINUX` - For Fargate profiles
+- `EC2_LINUX` - For EC2 Linux worker nodes
+- `EC2_WINDOWS` - For EC2 Windows worker nodes
+- `EC2` - For EKS Auto Mode node roles
+- `HYBRID_LINUX` - For EKS Hybrid Nodes
+- `HYPERPOD_LINUX` - For Amazon SageMaker HyperPod
+
+**Note**: Access entries with type `EC2`, `HYBRID_LINUX`, or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
+
 By default, the cluster creator role will be granted the cluster admin permissions. You can disable it by setting 
 `bootstrapClusterCreatorAdminPermissions` to false. 
 
 > **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
+
+
+### Service Accounts
+
+With services account you can provide Kubernetes Pods access to AWS resources.
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+declare const cluster: eks.Cluster;
+// add service account
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new s3.Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+
+const mypod = cluster.addManifest('mypod', {
+  apiVersion: 'v1',
+  kind: 'Pod',
+  metadata: { name: 'mypod' },
+  spec: {
+    serviceAccountName: serviceAccount.serviceAccountName,
+    containers: [
+      {
+        name: 'hello',
+        image: 'paulbouwer/hello-kubernetes:1.5',
+        ports: [ { containerPort: 8080 } ],
+      },
+    ],
+  },
+});
+
+// create the resource after the service account.
+mypod.node.addDependency(serviceAccount);
+
+// print the IAM role arn for this service account
+new CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleArn });
+```
+
+Note that using `serviceAccount.serviceAccountName` above **does not** translate into a resource dependency.
+This is why an explicit dependency is needed. See <https://github.com/aws/aws-cdk/issues/9910> for more details.
+
+It is possible to pass annotations and labels to the service account.
+
+```ts
+declare const cluster: eks.Cluster;
+// add service account with annotations and labels
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount', {
+  annotations: {
+    'eks.amazonaws.com/sts-regional-endpoints': 'false',
+  },
+  labels: {
+    'some-label': 'with-some-value',
+  },
+});
+```
+
+You can also add service accounts to existing clusters.
+To do so, pass the `openIdConnectProvider` property when you import the cluster into the application.
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+// you can import an existing provider
+const provider = eks.OidcProviderNative.fromOidcProviderArn(this, 'Provider', 'arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC');
+
+// or create a new one using an existing issuer url
+declare const issuerUrl: string;
+const provider2 = new eks.OidcProviderNative(this, 'Provider', {
+  url: issuerUrl,
+});
+
+import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+  clusterName: 'Cluster',
+  openIdConnectProvider: provider,
+  kubectlProviderOptions: {
+    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+  }});
+	
+const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
+
+const bucket = new s3.Bucket(this, 'Bucket');
+bucket.grantReadWrite(serviceAccount);
+```
+
+Note that adding service accounts requires running `kubectl` commands against the cluster which requires you to provide `kubectlProviderOptions` in the cluster props to create the `kubectl` provider. See [Kubectl Support](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-eks-v2-alpha-readme.html#kubectl-support)
+
+
+#### Migrating from the deprecated eks.OpenIdConnectProvider to eks.OidcProviderNative
+
+`eks.OpenIdConnectProvider` creates an IAM OIDC (OpenId Connect) provider using a custom resource while `eks.OidcProviderNative` uses the CFN L1 (AWS::IAM::OidcProvider) to create the provider. It is recommended for new and existing projects to use `eks.OidcProviderNative`. 
+
+To migrate without temporarily removing the OIDCProvider, follow these steps:
+
+1. Set the `removalPolicy` of `cluster.openIdConnectProvider` to `RETAIN`.
+
+   ```ts
+   import * as cdk from 'aws-cdk-lib';
+   declare const cluster: eks.Cluster;
+
+   cdk.RemovalPolicies.of(cluster.openIdConnectProvider).apply(cdk.RemovalPolicy.RETAIN);
+   ```
+
+2. Run `cdk diff` to verify the changes are expected then `cdk deploy`.
+
+3. Add the following to the `context` field of your `cdk.json` to enable the feature flag that creates the native oidc provider.
+
+   ```json
+   "@aws-cdk/aws-eks:useNativeOidcProvider": true,
+   ```
+
+4. Run `cdk diff` and ensure the changes are expected. Example of an expected diff:
+
+   ```bash
+   Resources
+   [-] Custom::AWSCDKOpenIdConnectProvider TestCluster/OpenIdConnectProvider/Resource TestClusterOpenIdConnectProviderE18F0FD0 orphan
+   [-] AWS::IAM::Role Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65 destroy
+   [-] AWS::Lambda::Function Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0 destroy
+   [+] AWS::IAM::OIDCProvider TestCluster/OidcProviderNative TestClusterOidcProviderNative0BE3F155
+   ```
+
+5. Run `cdk import --force` and provide the ARN of the existing OpenIdConnectProvider when prompted. You will get a warning about pending changes to existing resources which is expected.
+
+6. Run `cdk deploy` to apply any pending changes. This will apply the destroy/orphan changes in the above example.
+
+If you are creating the OpenIdConnectProvider manually via `new eks.OpenIdConnectProvider`, follow these steps:
+
+1. Set the `removalPolicy` of the existing `OpenIdConnectProvider` to `RemovalPolicy.RETAIN`.
+
+   ```ts
+   import * as cdk from 'aws-cdk-lib';
+   // Step 1: Add retain policy to existing provider
+   const existingProvider = new eks.OpenIdConnectProvider(this, 'Provider', {
+     url: 'https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLE',
+     removalPolicy: cdk.RemovalPolicy.RETAIN, // Add this line
+   });
+   ```
+
+2. Deploy with the retain policy to avoid deletion of the underlying resource.
+
+   ```bash
+   cdk deploy
+   ```
+
+3. Replace `OpenIdConnectProvider` with `OidcProviderNative` in your code.
+
+   ```ts
+   // Step 3: Replace with native provider
+   const nativeProvider = new eks.OidcProviderNative(this, 'Provider', {
+     url: 'https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLE',
+   });
+   ```
+
+4. Run `cdk diff` and verify the changes are expected. Example of an expected diff:
+
+   ```bash
+   Resources
+   [-] Custom::AWSCDKOpenIdConnectProvider TestCluster/OpenIdConnectProvider/Resource TestClusterOpenIdConnectProviderE18F0FD0 orphan
+   [-] AWS::IAM::Role Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65 destroy
+   [-] AWS::Lambda::Function Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0 destroy
+   [+] AWS::IAM::OIDCProvider TestCluster/OidcProviderNative TestClusterOidcProviderNative0BE3F155
+   ```
+
+5. Run `cdk import --force` to import the existing OIDC provider resource by providing the existing ARN.
+
+6. Run `cdk deploy` to apply any pending changes. This will apply the destroy/orphan operations in the example diff above.
+
 
 ### Cluster Security Group
 

@@ -1,8 +1,9 @@
 import type { IConstruct } from 'constructs';
 import { CfnResource } from 'aws-cdk-lib/core';
-import { type IBucketRef, type CfnBucketPolicy, CfnBucket } from 'aws-cdk-lib/aws-s3';
-import { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
-import { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { CfnBucket } from 'aws-cdk-lib/aws-s3';
+import { type IBucketRef, type CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import type { CfnDeliverySource } from 'aws-cdk-lib/aws-logs';
+import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 
 /**
  * Finds the closest related resource in the construct tree.

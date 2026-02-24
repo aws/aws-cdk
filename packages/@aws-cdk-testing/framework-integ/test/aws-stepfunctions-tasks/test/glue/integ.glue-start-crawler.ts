@@ -4,8 +4,9 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

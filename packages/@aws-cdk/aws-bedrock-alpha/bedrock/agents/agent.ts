@@ -5,22 +5,25 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 // Internal Libs
 import { AgentActionGroup } from './action-group';
-import { AgentAlias, IAgentAlias } from './agent-alias';
-import { AgentCollaboration } from './agent-collaboration';
-import { AgentCollaborator } from './agent-collaborator';
+import type { IAgentAlias } from './agent-alias';
+import { AgentAlias } from './agent-alias';
+import type { AgentCollaboration } from './agent-collaboration';
+import type { AgentCollaborator } from './agent-collaborator';
 import { AssetApiSchema, S3ApiSchema } from './api-schema';
-import { Memory } from './memory';
-import { CustomOrchestrationExecutor, OrchestrationType } from './orchestration-executor';
-import { PromptOverrideConfiguration } from './prompt-override';
+import type { Memory } from './memory';
+import type { CustomOrchestrationExecutor } from './orchestration-executor';
+import { OrchestrationType } from './orchestration-executor';
+import type { PromptOverrideConfiguration } from './prompt-override';
 import * as validation from './validation-helpers';
-import { IBedrockInvokable } from '.././models';
-import { IGuardrail } from '../guardrails/guardrails';
+import type { IBedrockInvokable } from '.././models';
+import type { IGuardrail } from '../guardrails/guardrails';
 
 /******************************************************************************
  *                              CONSTANTS

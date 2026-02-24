@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { ISecret, Secret } from './secret';
+import type { Construct } from 'constructs';
+import type { ISecret } from './secret';
+import { Secret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 import * as ec2 from '../../aws-ec2';
 import { Schedule } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

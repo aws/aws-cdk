@@ -1,5 +1,5 @@
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as semver from 'semver';
 import {
   ApplicationConfigPropertyToJson,

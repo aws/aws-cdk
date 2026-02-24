@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
-import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { ISchedulingPolicyRef, SchedulingPolicyReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a Scheduling Policy. Scheduling Policies tell the Batch

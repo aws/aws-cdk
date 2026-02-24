@@ -57,40 +57,6 @@
     }
    }
   },
-  "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B": {
-   "Type": "AWS::Logs::DeliveryDestination",
-   "Properties": {
-    "DeliveryDestinationType": "CWL",
-    "DestinationResourceArn": {
-     "Fn::GetAtt": [
-      "DeliveryLogGroup2A53FD53",
-      "Arn"
-     ]
-    },
-    "Name": "cdk-cwl-info-logs-dest-VendedLogsMixigGroupD06F335FC36F4D1E"
-   },
-   "DependsOn": [
-    "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-   ]
-  },
-  "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery69196BA3": {
-   "Type": "AWS::Logs::Delivery",
-   "Properties": {
-    "DeliveryDestinationArn": {
-     "Fn::GetAtt": [
-      "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B",
-      "Arn"
-     ]
-    },
-    "DeliverySourceName": {
-     "Ref": "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
-    }
-   },
-   "DependsOn": [
-    "EventBusCdkLogGroupInfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDest512D2F7B",
-    "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
-   ]
-  },
   "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F": {
    "Type": "AWS::Logs::DeliverySource",
    "Properties": {
@@ -103,6 +69,23 @@
      ]
     }
    }
+  },
+  "EventBusCdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryA29B2652": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": {
+     "Fn::GetAtt": [
+      "DeliveryDestination",
+      "Arn"
+     ]
+    },
+    "DeliverySourceName": {
+     "Ref": "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+    }
+   },
+   "DependsOn": [
+    "EventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CA7ECF7D3F"
+   ]
   },
   "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4DestE59F2AF8": {
    "Type": "AWS::Logs::DeliveryDestination",
@@ -476,6 +459,19 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
+  "DeliveryDestination": {
+   "Type": "AWS::Logs::DeliveryDestination",
+   "Properties": {
+    "DeliveryDestinationType": "CWL",
+    "DestinationResourceArn": {
+     "Fn::GetAtt": [
+      "DeliveryLogGroup2A53FD53",
+      "Arn"
+     ]
+    },
+    "Name": "my-log-group-destination"
+   }
+  },
   "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857": {
    "Type": "AWS::Logs::ResourcePolicy",
    "Properties": {
@@ -484,29 +480,6 @@
       "",
       [
        "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       "\"},\"ArnLike\":{\"aws:SourceArn\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":logs:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "DeliveryLogGroup2A53FD53",
-         "Arn"
-        ]
-       },
-       ":log-stream:*\"},{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
        {
         "Ref": "AWS::AccountId"
        },

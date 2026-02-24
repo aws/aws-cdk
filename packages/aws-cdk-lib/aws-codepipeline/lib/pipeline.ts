@@ -1,33 +1,37 @@
-import { Construct } from 'constructs';
-import {
-  ActionCategory,
+import type { Construct } from 'constructs';
+import type {
   IAction,
   IPipeline,
   IStage,
-  PipelineNotificationEvents,
   PipelineNotifyOnOptions,
 } from './action';
-import { CfnPipeline, PipelineReference } from './codepipeline.generated';
+import {
+  ActionCategory,
+  PipelineNotificationEvents,
+} from './action';
+import type { PipelineReference } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
-import { Rule } from './rule';
-import { Trigger, TriggerProps } from './trigger';
-import { Variable } from './variable';
+import type { Rule } from './rule';
+import type { TriggerProps } from './trigger';
+import { Trigger } from './trigger';
+import type { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
+import type { IStackSynthesizer } from '../../core';
 import {
   Annotations,
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
   FeatureFlags,
-  IStackSynthesizer,
   Lazy,
   Names,
   PhysicalName,

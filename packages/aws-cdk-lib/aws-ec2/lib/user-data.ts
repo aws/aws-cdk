@@ -1,6 +1,7 @@
 import { OperatingSystemType } from './machine-image';
-import { IBucketRef } from '../../aws-s3';
-import { Fn, Resource, Stack, CfnResource, UnscopedValidationError } from '../../core';
+import type { IBucketRef } from '../../aws-s3';
+import type { Resource, CfnResource } from '../../core';
+import { Fn, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * Options when constructing UserData for Linux

@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as route53 from '../../aws-route53';
-import { IResource, Token, Tags, ValidationError } from '../../core';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as route53 from '../../aws-route53';
+import type { IResource } from '../../core';
+import { Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Name tag constant

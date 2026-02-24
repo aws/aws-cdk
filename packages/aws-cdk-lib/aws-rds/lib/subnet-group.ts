@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
-import { IResource, RemovalPolicy, Resource, Token } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, Token } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Interface for a subnet group.

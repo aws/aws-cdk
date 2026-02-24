@@ -1,13 +1,15 @@
-import {
-  HttpIntegrationType,
+import type {
   HttpRouteIntegrationBindOptions,
   HttpRouteIntegrationConfig,
+  ParameterMapping,
+} from '../../../aws-apigatewayv2';
+import {
+  HttpIntegrationType,
   HttpMethod,
   HttpRouteIntegration,
-  ParameterMapping,
   PayloadFormatVersion,
 } from '../../../aws-apigatewayv2';
-import { Duration } from '../../../core';
+import type { Duration } from '../../../core';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.

@@ -1,26 +1,31 @@
+import type {
+  IResource,
+  ResourceProps,
+} from 'aws-cdk-lib';
 import {
   Arn,
   ArnFormat,
-  IResource,
   Lazy,
   Names,
   Resource,
-  ResourceProps,
   ValidationError,
 } from 'aws-cdk-lib';
 import * as agent_core from 'aws-cdk-lib/aws-bedrockagentcore';
-import {
+import type { ICodeInterpreterCustomRef, CodeInterpreterCustomReference } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type {
   DimensionsMap,
-  Metric,
   MetricOptions,
   MetricProps,
+} from 'aws-cdk-lib/aws-cloudwatch';
+import {
+  Metric,
   Stats,
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
@@ -60,7 +65,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
 /**
  * Interface for CodeInterpreterCustom resources
  */
-export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable {
+export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable, ICodeInterpreterCustomRef {
   /**
    * The ARN of the code interpreter resource
    * @attribute
@@ -180,6 +185,16 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
+   * A reference to a CodeInterpreterCustom resource.
+   */
+  public get codeInterpreterCustomRef(): CodeInterpreterCustomReference {
+    return {
+      codeInterpreterId: this.codeInterpreterId,
+      codeInterpreterArn: this.codeInterpreterArn,
+    };
+  }
+
+  /**
    * An accessor for the Connections object that will fail if this Browser does not have a VPC
    * configured.
    */
@@ -212,7 +227,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.codeInterpreterArn],
+      resourceArns: [this.codeInterpreterCustomRef.codeInterpreterArn],
       actions: actions,
     });
   }
@@ -290,7 +305,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterArn },
+      dimensionsMap: { ...dimensions, Resource: this.codeInterpreterCustomRef.codeInterpreterArn },
       ...props,
     };
     return this.configureMetric(metricProps);

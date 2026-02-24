@@ -1,9 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnFargateProfile } from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Annotations, ITaggable, TagManager, TagType } from 'aws-cdk-lib/core';
+import type { ITaggable, RemovalPolicy } from 'aws-cdk-lib/core';
+import { Annotations, RemovalPolicies, TagManager, TagType, ValidationError } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { Cluster } from './cluster';
+import type { Cluster } from './cluster';
 
 /**
  * Options for defining EKS Fargate Profiles.
@@ -55,6 +56,20 @@ export interface FargateProfileOptions {
    * @default - all private subnets of the VPC are selected.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Fargate profile.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -157,11 +172,11 @@ export class FargateProfile extends Construct implements ITaggable {
     }
 
     if (props.selectors.length < 1) {
-      throw new Error('Fargate profile requires at least one selector');
+      throw new ValidationError('Fargate profile requires at least one selector', this);
     }
 
     if (props.selectors.length > 5) {
-      throw new Error('Fargate profile supports up to five selectors');
+      throw new ValidationError('Fargate profile supports up to five selectors', this);
     }
 
     this.tags = new TagManager(TagType.MAP, 'AWS::EKS::FargateProfile');
@@ -183,6 +198,10 @@ export class FargateProfile extends Construct implements ITaggable {
 
     this.fargateProfileArn = resource.attrArn;
     this.fargateProfileName = resource.ref;
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
 
     // Fargate profiles must be created sequentially. If other profile(s) already
     // exist on the same cluster, create a dependency to force sequential creation.

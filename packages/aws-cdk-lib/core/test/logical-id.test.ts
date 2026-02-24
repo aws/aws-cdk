@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
-import { App, CfnElement, CfnResource, Stack } from '../lib';
+import type { CfnElement } from '../lib';
+import { App, CfnResource, Stack } from '../lib';
 
 /**
  * These tests are executed once (for specific ID schemes)

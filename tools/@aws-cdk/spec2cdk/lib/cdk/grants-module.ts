@@ -1,9 +1,9 @@
-import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Expression } from '@cdklabs/typewriter';
 import {
   $E,
   ClassType,
   expr,
-  Expression,
   ExternalModule,
   InterfaceType,
   MemberVisibility,
@@ -11,9 +11,9 @@ import {
   stmt,
   Type,
 } from '@cdklabs/typewriter';
-import { PropertySpec } from '@cdklabs/typewriter/lib/property';
+import type { PropertySpec } from '@cdklabs/typewriter/lib/property';
 import { classNameFromResource } from '../naming';
-import { Referenceable } from './resource-class';
+import type { Referenceable } from './resource-class';
 
 const $this = $E(expr.this_());
 
@@ -181,19 +181,11 @@ export class GrantsModule extends Module {
       };
 
       if (hasKeyActions) {
-        props[encryptedResourcePropName] = expr.cond(
-          $E(expr.ident('iam.GrantableResources')).isEncryptedResource(staticResourceParam),
-          staticResourceParam,
-          expr.UNDEFINED,
-        );
+        props[encryptedResourcePropName] = $E(expr.ident('iam.EncryptedResources')).of(staticResourceParam);
       }
 
       if (hasPolicy) {
-        props.policyResource = expr.cond(
-          $E(expr.ident('iam.GrantableResources')).isResourceWithPolicy(staticResourceParam),
-          staticResourceParam,
-          expr.UNDEFINED,
-        );
+        props.policyResource = $E(expr.ident('iam.ResourceWithPolicies')).of(staticResourceParam);
       }
 
       factoryMethod.addBody(
