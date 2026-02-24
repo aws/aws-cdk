@@ -37,7 +37,8 @@
     "RecordingGroup": {
      "AllSupported": false,
      "ResourceTypes": [
-      "AWS::DynamoDB::Table"
+      "AWS::CloudFormation::Stack",
+      "AWS::EC2::Instance"
      ]
     },
     "RoleARN": {
@@ -240,21 +241,94 @@
     }
    }
   },
+  "CustomFunctionServiceRoleD3F73B79": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSConfigRulesExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomFunctionBADD59E7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = (event) => console.log(event);"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomFunctionServiceRoleD3F73B79",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "CustomFunctionServiceRoleD3F73B79"
+   ]
+  },
+  "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CustomFunctionBADD59E7",
+      "Arn"
+     ]
+    },
+    "Principal": "config.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    }
+   }
+  },
   "Custom8166710A": {
    "Type": "AWS::Config::ConfigRule",
    "Properties": {
     "Scope": {
      "ComplianceResourceTypes": [
-      "AWS::DynamoDB::Table"
+      "AWS::EC2::Instance"
      ]
     },
     "Source": {
-     "CustomPolicyDetails": {
-      "EnableDebugLogDelivery": true,
-      "PolicyRuntime": "guard-2.x.x",
-      "PolicyText": "\n# This rule checks if point in time recovery (PITR) is enabled on active Amazon DynamoDB tables\nlet status = ['ACTIVE']\n\nrule tableisactive when\n    resourceType == \"AWS::DynamoDB::Table\" {\n    configuration.tableStatus == %status\n}\n\nrule checkcompliance when\n    resourceType == \"AWS::DynamoDB::Table\"\n    tableisactive {\n        let pitr = supplementaryConfiguration.ContinuousBackupsDescription.pointInTimeRecoveryDescription.pointInTimeRecoveryStatus\n        %pitr == \"ENABLED\"\n}\n"
-     },
-     "Owner": "CUSTOM_POLICY",
+     "Owner": "CUSTOM_LAMBDA",
      "SourceDetails": [
       {
        "EventSource": "aws.config",
@@ -264,51 +338,145 @@
        "EventSource": "aws.config",
        "MessageType": "OversizedConfigurationItemChangeNotification"
       }
-     ]
+     ],
+     "SourceIdentifier": {
+      "Fn::GetAtt": [
+       "CustomFunctionBADD59E7",
+       "Arn"
+      ]
+     }
     }
    },
    "DependsOn": [
     "ConfigDeliveryChannel",
-    "ConfigRecorder"
+    "ConfigRecorder",
+    "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8",
+    "CustomFunctionBADD59E7",
+    "CustomFunctionServiceRoleD3F73B79"
    ]
   },
-  "sampleuser2D3A0B43": {
-   "Type": "AWS::IAM::User"
-  },
-  "Customlazy5E6C8AE4": {
+  "Drift34D3210F": {
    "Type": "AWS::Config::ConfigRule",
    "Properties": {
+    "InputParameters": {
+     "cloudformationRoleArn": {
+      "Fn::GetAtt": [
+       "DriftRole8A5FB833",
+       "Arn"
+      ]
+     }
+    },
     "Scope": {
-     "ComplianceResourceId": {
-      "Ref": "sampleuser2D3A0B43"
-     },
      "ComplianceResourceTypes": [
-      "AWS::IAM::User"
+      "AWS::CloudFormation::Stack"
      ]
     },
     "Source": {
-     "CustomPolicyDetails": {
-      "EnableDebugLogDelivery": true,
-      "PolicyRuntime": "guard-2.x.x",
-      "PolicyText": "rule check_iam_user { resourceType == \"AWS::IAM::User\" }"
-     },
-     "Owner": "CUSTOM_POLICY",
-     "SourceDetails": [
-      {
-       "EventSource": "aws.config",
-       "MessageType": "ConfigurationItemChangeNotification"
-      },
-      {
-       "EventSource": "aws.config",
-       "MessageType": "OversizedConfigurationItemChangeNotification"
-      }
-     ]
+     "Owner": "AWS",
+     "SourceIdentifier": "CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK"
     }
    },
    "DependsOn": [
     "ConfigDeliveryChannel",
     "ConfigRecorder"
    ]
+  },
+  "DriftRole8A5FB833": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "config.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/ReadOnlyAccess"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "ConfigDeliveryChannel",
+    "ConfigRecorder"
+   ]
+  },
+  "DriftComplianceChange4C0F2B82": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.config"
+     ],
+     "detail": {
+      "configRuleName": [
+       {
+        "Ref": "Drift34D3210F"
+       }
+      ]
+     },
+     "detail-type": [
+      "Config Rules Compliance Change"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "ComplianceTopic0229448B"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ConfigDeliveryChannel",
+    "ConfigRecorder"
+   ]
+  },
+  "ComplianceTopic0229448B": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "ComplianceTopicPolicyF8BC46F0": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "ComplianceTopic0229448B"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "ComplianceTopic0229448B"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

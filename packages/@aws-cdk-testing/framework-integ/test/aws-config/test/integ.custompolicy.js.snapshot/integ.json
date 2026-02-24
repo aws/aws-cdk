@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "50.0.0",
   "testCases": {
     "aws-cdk-config-custompolicy-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-config-custompolicy-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkconfigcustompolicyintegDefaultTestDeployAssert4EE21D3A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }
