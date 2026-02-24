@@ -240,7 +240,7 @@ const destinationAccount = '123456789012';
 const sourceAccount = '234567890123';
 const region = 'us-east-1';
 
-const app = App();
+const app = new App();
 
 const destStack = new Stack(app, 'destination-stack', {
   env: {
