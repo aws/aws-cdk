@@ -3,11 +3,9 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
-stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, false);
 
 const lt = new ec2.LaunchTemplate(stack, 'MainLT', {
   instanceType: new ec2.InstanceType('t3.micro'),
@@ -82,9 +80,11 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
   maxCapacity: 10,
   desiredCapacity: 5,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
-  machineImage: new ec2.AmazonLinuxImage(),
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
   blockDevices: [{
-    deviceName: 'ebs',
+    deviceName: '/dev/xvdf',
     mappingEnabled: true,
     volume: autoscaling.BlockDeviceVolume.ebs(15, {
       deleteOnTermination: true,

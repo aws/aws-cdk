@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "50.0.0",
   "testCases": {
     "AsgFromLaunchConfigTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AsgFromLaunchConfigTest/DefaultTest/DeployAssert",
       "assertionStackName": "AsgFromLaunchConfigTestDefaultTestDeployAssert4F0C1C7C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }
