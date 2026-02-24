@@ -704,7 +704,7 @@ const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
 });
 ```
 
-Using Google identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
+Using Google/OIDC identity provider is possible to use clientSecretValue with SecretValue from secrets manager.
 
 ```ts
 const userpool = new cognito.UserPool(this, 'Pool');

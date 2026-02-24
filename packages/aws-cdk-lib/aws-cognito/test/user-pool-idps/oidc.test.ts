@@ -1,10 +1,10 @@
 import { Template } from '../../../assertions';
-import { Stack } from '../../../core';
+import { SecretValue, Stack } from '../../../core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('oidc', () => {
-    test('defaults', () => {
+    test('defaults with clientSecret', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'userpool');
@@ -28,6 +28,48 @@ describe('UserPoolIdentityProvider', () => {
           oidc_issuer: 'https://my-issuer-url.com',
         },
       });
+    });
+
+    test('defaults with clientSecretValue', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        clientId: 'client-id',
+        clientSecretValue: SecretValue.unsafePlainText('client-secret'),
+        issuerUrl: 'https://my-issuer-url.com',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'OIDC',
+        ProviderDetails: {
+          client_id: 'client-id',
+          client_secret: 'client-secret',
+          authorize_scopes: 'openid',
+          attributes_request_method: 'GET',
+          oidc_issuer: 'https://my-issuer-url.com',
+        },
+      });
+    });
+
+    test('throws when both clientSecret and clientSecretValue are provided', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // THEN
+      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        name: 'xy',
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('client-secret'),
+        issuerUrl: 'https://my-issuer-url.com',
+      })).toThrow(/Exactly one of "clientSecret" or "clientSecretValue" must be configured/);
     });
 
     test('endpoints', () => {
