@@ -240,7 +240,9 @@ const destinationAccount = '123456789012';
 const sourceAccount = '234567890123';
 const region = 'us-east-1';
 
-const destStack = new cdk.Stack(app, 'destination-stack', {
+const app = App();
+
+const destStack = new Stack(app, 'destination-stack', {
   env: {
     account: destinationAccount,
     region,
@@ -254,7 +256,7 @@ new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
   sourceAccountId: sourceAccount,
 });
 
-const sourceStack = new cdk.Stack(app, 'source-stack', {
+const sourceStack = new Stack(app, 'source-stack', {
   env: {
     account: sourceAccount,
     region,
