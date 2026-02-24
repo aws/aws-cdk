@@ -143,7 +143,7 @@ env:
             {"area":"@aws-cdk/aws-ecs-patterns","keywords":["aws-ecs-patterns","ecs-patterns"],"labels":["@aws-cdk/aws-ecs-patterns"]},
             {"area":"@aws-cdk/aws-efs","keywords":["aws-efs","efs","accesspoint"],"labels":["@aws-cdk/aws-efs"]},
             {"area":"@aws-cdk/aws-eks","keywords":["aws-eks","eks","fargateprofile","fargatecluster"],"labels":["@aws-cdk/aws-eks"]},
-            {"area":"@aws-cdk/aws-eks-v2-alpha", "keywords":["aws-eks-v2", "eks-v2", "aws-eks-v2-alpha"],"labels":["@aws-cdk/aws-eks-v2-alpha"]},
+            {"area":"@aws-cdk/aws-eks-v2", "keywords":["aws-eks-v2", "eks-v2", "aws-eks-v2-alpha"],"labels":["@aws-cdk/aws-eks-v2"]},
             {"area":"@aws-cdk/aws-elasticache","keywords":["aws-elasticache","elastic-cache"],"labels":["@aws-cdk/aws-elasticache"]},
             {"area":"@aws-cdk/aws-elasticbeanstalk","keywords":["aws-elasticbeanstalk","elastic-beanstalk"],"labels":["@aws-cdk/aws-elasticbeanstalk"]},
             {"area":"@aws-cdk/aws-elasticloadbalancing","keywords":["aws-elasticloadbalancing","elastic-loadbalancing","elb"],"labels":["@aws-cdk/aws-elasticloadbalancing"]},
