@@ -342,7 +342,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * ```
    */
   public metricIncomingLogEvents(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IncomingLogs', props);
+    return this.metric('IncomingLogEvents', props);
   }
 
   /**
