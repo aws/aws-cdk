@@ -29,6 +29,12 @@ class EksClusterStack extends Stack {
 
     const secretsEncryptionKey = new kms.Key(this, 'SecretsKey');
 
+    // Add metadata to suppress security guardian rule for KMS key
+    const cfnKey = secretsEncryptionKey.node.defaultChild as kms.CfnKey;
+    cfnKey.addMetadata('guard', {
+      SuppressedRules: ['NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS'],
+    });
+
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefaultSecurityGroup: false });
 
@@ -54,6 +60,9 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+      controlPlaneScalingConfig: {
+        tier: 'standard',
+      },
     });
 
     this.assertFargateProfile();
@@ -79,6 +88,8 @@ class EksClusterStack extends Stack {
     this.assertNodeGroupGpu();
 
     this.assertSimpleManifest();
+
+    this.assertControlPlaneScaling();
 
     this.assertManifestWithoutValidation();
 
@@ -172,12 +183,14 @@ class EksClusterStack extends Stack {
     this.cluster.addCdk8sChart('cdk8s-chart', chart);
   }
   private assertSimpleHelmChart() {
-    // deploy the Kubernetes dashboard through a helm chart
+    // deploy a dashboard through a helm chart
+    // As Kubernetes dashboard is retired, we will use headlamp instead.
+    // See https://github.com/kubernetes-retired/dashboard?tab=readme-ov-file#important
     this.cluster.addHelmChart('dashboard', {
-      chart: 'kubernetes-dashboard',
-      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
-      version: '6.0.8',
-      repository: 'https://kubernetes.github.io/dashboard/',
+      chart: 'headlamp',
+      // https://kubernetes-sigs.github.io/headlamp/
+      version: '0.39.0',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
     });
   }
 
@@ -195,6 +208,15 @@ class EksClusterStack extends Stack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
+
+  private assertControlPlaneScaling() {
+    // verify that controlPlaneScalingConfig is set
+    new CfnOutput(this, 'ControlPlaneScalingTier', {
+      value: 'standard',
+      description: 'Control plane scaling tier configured',
+    });
+  }
+
   private assertManifestWithoutValidation() {
     // apply a kubernetes manifest
     new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
