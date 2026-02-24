@@ -38,4 +38,10 @@ export const READ_STREAM_DATA_ACTIONS = [
   'dynamodb:GetShardIterator',
 ];
 
+export const MULTI_ACCOUNT_REPLICATION_ACTIONS = [
+  'dynamodb:ReadDataForReplication',
+  'dynamodb:WriteDataForReplication',
+  'dynamodb:ReplicateSettings',
+];
+
 export const DESCRIBE_TABLE = 'dynamodb:DescribeTable';

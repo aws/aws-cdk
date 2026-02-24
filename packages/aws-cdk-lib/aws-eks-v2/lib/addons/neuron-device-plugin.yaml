@@ -1,0 +1,74 @@
+# source: https://github.com/aws/aws-neuron-sdk/blob/master/docs/neuron-container-tools/k8s-neuron-device-plugin.yml
+# https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: neuron-device-plugin-daemonset
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name:  neuron-device-plugin-ds
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+      labels:
+        name: neuron-device-plugin-ds
+    spec:
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - key: aws.amazon.com/neuron
+        operator: Exists
+        effect: NoSchedule
+      # Mark this pod as a critical add-on; when enabled, the critical add-on
+      # scheduler reserves resources for critical add-on pods so that they can
+      # be rescheduled after a failure.
+      # See https://kubernetes.io/docs/tasks/administer-cluster/guaranteed-scheduling-critical-addon-pods/
+      priorityClassName: "system-node-critical"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: "beta.kubernetes.io/instance-type"
+                    operator: In
+                    values:
+                      - inf1.xlarge
+                      - inf1.2xlarge
+                      - inf1.6xlarge
+                      - inf1.24xlarge
+                      - inf2.xlarge
+                      - inf2.8xlarge
+                      - inf2.24xlarge
+                      - inf2.48xlarge
+              - matchExpressions:
+                  - key: "node.kubernetes.io/instance-type"
+                    operator: In
+                    values:
+                      - inf1.xlarge
+                      - inf1.2xlarge
+                      - inf1.6xlarge
+                      - inf1.24xlarge
+                      - inf2.xlarge
+                      - inf2.8xlarge
+                      - inf2.24xlarge
+                      - inf2.48xlarge
+      containers:
+        - image: 790709498068.dkr.ecr.us-west-2.amazonaws.com/neuron-device-plugin:1.0.9043.0
+          imagePullPolicy: Always
+          name: k8s-neuron-device-plugin-ctr
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: device-plugin
+              mountPath: /var/lib/kubelet/device-plugins
+      volumes:
+        - name: device-plugin
+          hostPath:
+            path: /var/lib/kubelet/device-plugins
