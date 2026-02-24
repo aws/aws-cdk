@@ -999,13 +999,13 @@ export class GraphqlApi extends GraphqlApiBase {
     if (!config) return undefined;
     const dataSourceLevelMetricsBehavior = config.dataSourceLevelMetricsBehavior;
     if (dataSourceLevelMetricsBehavior === DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS ) {
-      Annotations.of(this).addWarningV2(this.node.id, 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-appsync:fullRequestDataSourceMetrics', 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
     }
     const operationLevelMetricsEnabled = config.operationLevelMetricsConfig
       ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
     const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
     if (resolverLevelMetricsBehavior === ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS ) {
-      Annotations.of(this).addWarningV2(this.node.id, 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-appsync:fullRequestResolverMetrics', 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');
     }
     return {
       dataSourceLevelMetricsBehavior: dataSourceLevelMetricsBehavior,
