@@ -28,7 +28,7 @@ export class CfnThingApplicationLogs {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
         kmsKey: props?.encryptionKey,
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: undefined
       }));
     }
@@ -43,7 +43,7 @@ export class CfnThingApplicationLogs {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup, {
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: undefined
       }));
     }
@@ -58,7 +58,7 @@ export class CfnThingApplicationLogs {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream, {
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: undefined
       }));
     }
@@ -76,7 +76,7 @@ export class CfnThingApplicationLogs {
   public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef, props?: CfnThingApplicationLogsDestProps): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination, {
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: undefined
       }));
     }
@@ -102,7 +102,7 @@ export class CfnThingAccessLogs {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
         kmsKey: props?.encryptionKey,
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: ["resource-id","body"]
       }));
     }
@@ -117,7 +117,7 @@ export class CfnThingAccessLogs {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup, {
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: ["resource-id","body"]
       }));
     }
@@ -132,7 +132,7 @@ export class CfnThingAccessLogs {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream, {
         outputFormat: props?.outputFormat,
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: ["resource-id","body"]
       }));
     }
@@ -150,7 +150,7 @@ export class CfnThingAccessLogs {
   public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef, props?: CfnThingAccessLogsDestProps): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination, {
-        optionalFields: props?.additionalFields,
+        providedFields: props?.recordFields,
         mandatoryFields: ["resource-id","body"]
       }));
     }
@@ -203,7 +203,34 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
   }
 }
 
-export enum CfnThingApplicationLogsAdditionalFields {
+/**
+ * Output Format options for each destination of CfnThingApplicationLogs.
+ */
+export class CfnThingApplicationLogsOutputFormat {
+
+}
+
+export namespace CfnThingApplicationLogsOutputFormat {
+  export enum S3 {
+    JSON = "json",
+    PLAIN = "plain",
+    W3C = "w3c",
+    PARQUET = "parquet",
+  }
+
+  export enum LogGroup {
+    PLAIN = "plain",
+    JSON = "json",
+  }
+
+  export enum Firehose {
+    JSON = "json",
+    RAW = "raw",
+    PLAIN = "plain",
+  }
+}
+
+export enum CfnThingApplicationLogsRecordFields {
   RESOURCE_ID = "resource_id",
   ACCOUNT_ID = "account_id",
   EVENT_TYPE = "event_type",
@@ -218,67 +245,78 @@ export interface CfnThingApplicationLogsS3Props {
   /**
    * Format for log output, options are json,plain,w3c,parquet
    */
-  readonly outputFormat?: CfnThingApplicationLogsS3OutputFormat;
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.S3;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingApplicationLogsAdditionalFields>;
-}
-
-export enum CfnThingApplicationLogsS3OutputFormat {
-  JSON = "json",
-  PLAIN = "plain",
-  W3C = "w3c",
-  PARQUET = "parquet",
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
 }
 
 export interface CfnThingApplicationLogsLogGroupProps {
   /**
    * Format for log output, options are plain,json
    */
-  readonly outputFormat?: CfnThingApplicationLogsLogGroupOutputFormat;
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.LogGroup;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingApplicationLogsAdditionalFields>;
-}
-
-export enum CfnThingApplicationLogsLogGroupOutputFormat {
-  PLAIN = "plain",
-  JSON = "json",
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
 }
 
 export interface CfnThingApplicationLogsFirehoseProps {
   /**
    * Format for log output, options are json,raw,plain
    */
-  readonly outputFormat?: CfnThingApplicationLogsFirehoseOutputFormat;
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.Firehose;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingApplicationLogsAdditionalFields>;
-}
-
-export enum CfnThingApplicationLogsFirehoseOutputFormat {
-  JSON = "json",
-  RAW = "raw",
-  PLAIN = "plain",
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
 }
 
 export interface CfnThingApplicationLogsDestProps {
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingApplicationLogsAdditionalFields>;
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
 }
 
-export enum CfnThingAccessLogsAdditionalFields {
+/**
+ * Output Format options for each destination of CfnThingAccessLogs.
+ */
+export class CfnThingAccessLogsOutputFormat {
+
+}
+
+export namespace CfnThingAccessLogsOutputFormat {
+  export enum S3 {
+    JSON = "json",
+    PLAIN = "plain",
+    W3C = "w3c",
+    PARQUET = "parquet",
+  }
+
+  export enum LogGroup {
+    PLAIN = "plain",
+    JSON = "json",
+  }
+
+  export enum Firehose {
+    JSON = "json",
+    RAW = "raw",
+    PLAIN = "plain",
+  }
+}
+
+export enum CfnThingAccessLogsRecordFields {
   ACCOUNT_ID = "account-id",
   TRACE_ID = "trace-id",
   SPAN_ID = "span-id",
+  RESOURCE_ID = "resource-id",
+  BODY = "body",
 }
 
 export interface CfnThingAccessLogsS3Props {
@@ -290,60 +328,42 @@ export interface CfnThingAccessLogsS3Props {
   /**
    * Format for log output, options are json,plain,w3c,parquet
    */
-  readonly outputFormat?: CfnThingAccessLogsS3OutputFormat;
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.S3;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingAccessLogsAdditionalFields>;
-}
-
-export enum CfnThingAccessLogsS3OutputFormat {
-  JSON = "json",
-  PLAIN = "plain",
-  W3C = "w3c",
-  PARQUET = "parquet",
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
 }
 
 export interface CfnThingAccessLogsLogGroupProps {
   /**
    * Format for log output, options are plain,json
    */
-  readonly outputFormat?: CfnThingAccessLogsLogGroupOutputFormat;
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.LogGroup;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingAccessLogsAdditionalFields>;
-}
-
-export enum CfnThingAccessLogsLogGroupOutputFormat {
-  PLAIN = "plain",
-  JSON = "json",
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
 }
 
 export interface CfnThingAccessLogsFirehoseProps {
   /**
    * Format for log output, options are json,raw,plain
    */
-  readonly outputFormat?: CfnThingAccessLogsFirehoseOutputFormat;
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.Firehose;
 
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingAccessLogsAdditionalFields>;
-}
-
-export enum CfnThingAccessLogsFirehoseOutputFormat {
-  JSON = "json",
-  RAW = "raw",
-  PLAIN = "plain",
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
 }
 
 export interface CfnThingAccessLogsDestProps {
   /**
-   * Record fields that can optionally be provided to a log delivery alongside the mandatory fields
+   * Record fields that can be provided to a log delivery
    */
-  readonly additionalFields?: Array<CfnThingAccessLogsAdditionalFields>;
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
 }"
 `;

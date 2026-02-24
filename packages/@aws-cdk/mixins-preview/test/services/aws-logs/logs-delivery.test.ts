@@ -78,10 +78,10 @@ describe('S3 Delivery', () => {
     });
   });
 
-  test('creates S3 delivery with optionalFields', () => {
+  test('creates S3 delivery with providedFields', () => {
     const bucket = new Bucket(stack, 'Destination');
 
-    const s3Logs = new S3LogsDelivery(bucket, { optionalFields: ['field1', 'field2'] });
+    const s3Logs = new S3LogsDelivery(bucket, { providedFields: ['field1', 'field2'] });
     s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -89,11 +89,11 @@ describe('S3 Delivery', () => {
     });
   });
 
-  test('creates S3 delivery with both optionalFields and mandatoryFields', () => {
+  test('creates S3 delivery with both providedFields and mandatoryFields', () => {
     const bucket = new Bucket(stack, 'Destination');
 
     const s3Logs = new S3LogsDelivery(bucket, {
-      optionalFields: ['field1', 'field2'],
+      providedFields: ['field1', 'field2'],
       mandatoryFields: ['field3', 'field4'],
     });
     s3Logs.bind(source, logType, source.bucketArn);
@@ -863,10 +863,10 @@ describe('Cloudwatch Logs Delivery', () => {
     });
   });
 
-  test('creates LogGroup delivery with optionalFields', () => {
+  test('creates LogGroup delivery with providedFields', () => {
     const logGroup = new LogGroup(stack, 'LogGroupDelivery');
 
-    const cwlLogs = new LogGroupLogsDelivery(logGroup, { optionalFields: ['field1', 'field2'] });
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, { providedFields: ['field1', 'field2'] });
     cwlLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -874,11 +874,11 @@ describe('Cloudwatch Logs Delivery', () => {
     });
   });
 
-  test('creates LogGroup delivery with both optionalFields and mandatoryFields', () => {
+  test('creates LogGroup delivery with both providedFields and mandatoryFields', () => {
     const logGroup = new LogGroup(stack, 'LogGroupDelivery');
 
     const cwlLogs = new LogGroupLogsDelivery(logGroup, {
-      optionalFields: ['field1', 'field2'],
+      providedFields: ['field1', 'field2'],
       mandatoryFields: ['field3', 'field4'],
     });
     cwlLogs.bind(source, logType, source.bucketArn);
@@ -1131,7 +1131,7 @@ describe('Firehose Stream Delivery', () => {
     });
   });
 
-  test('creates Firehose delivery with optionalFields', () => {
+  test('creates Firehose delivery with providedFields', () => {
     const streamBucket = new Bucket(stack, 'DeliveryBucket');
     const firehoseRole = new Role(stack, 'FirehoseRole', {
       assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
@@ -1141,7 +1141,7 @@ describe('Firehose Stream Delivery', () => {
       role: firehoseRole,
     });
 
-    const fhLogs = new FirehoseLogsDelivery(stream, { optionalFields: ['field1', 'field2'] });
+    const fhLogs = new FirehoseLogsDelivery(stream, { providedFields: ['field1', 'field2'] });
     fhLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -1149,7 +1149,7 @@ describe('Firehose Stream Delivery', () => {
     });
   });
 
-  test('creates Firehose delivery with both optionalFields and mandatoryFields', () => {
+  test('creates Firehose delivery with both providedFields and mandatoryFields', () => {
     const streamBucket = new Bucket(stack, 'DeliveryBucket');
     const firehoseRole = new Role(stack, 'FirehoseRole', {
       assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
@@ -1160,7 +1160,7 @@ describe('Firehose Stream Delivery', () => {
     });
 
     const fhLogs = new FirehoseLogsDelivery(stream, {
-      optionalFields: ['field1', 'field2'],
+      providedFields: ['field1', 'field2'],
       mandatoryFields: ['field3', 'field4'],
     });
     fhLogs.bind(source, logType, source.bucketArn);
@@ -1266,8 +1266,8 @@ describe('XRay Delivery', () => {
     });
   });
 
-  test('creates XRay delivery with optionalFields', () => {
-    const xrayLogs = new XRayLogsDelivery({ optionalFields: ['field1', 'field2'] });
+  test('creates XRay delivery with providedFields', () => {
+    const xrayLogs = new XRayLogsDelivery({ providedFields: ['field1', 'field2'] });
     xrayLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -1275,9 +1275,9 @@ describe('XRay Delivery', () => {
     });
   });
 
-  test('creates XRay delivery with both optionalFields and mandatoryFields', () => {
+  test('creates XRay delivery with both providedFields and mandatoryFields', () => {
     const xrayLogs = new XRayLogsDelivery({
-      optionalFields: ['field1', 'field2'],
+      providedFields: ['field1', 'field2'],
       mandatoryFields: ['field3', 'field4'],
     });
     xrayLogs.bind(source, logType, source.bucketArn);
@@ -1411,13 +1411,13 @@ describe('Destination Delivery', () => {
     });
   });
 
-  test('creates Destination delivery with optionalFields', () => {
+  test('creates Destination delivery with providedFields', () => {
     const destination = new CfnDeliveryDestination(stack, 'Dest', {
       name: 'my-cool-xray-dest',
       deliveryDestinationType: 'XRAY',
     });
 
-    const destLogs = new DestinationLogsDelivery(destination, { optionalFields: ['field1', 'field2'] });
+    const destLogs = new DestinationLogsDelivery(destination, { providedFields: ['field1', 'field2'] });
     destLogs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
@@ -1425,14 +1425,14 @@ describe('Destination Delivery', () => {
     });
   });
 
-  test('creates Destination delivery with both optionalFields and mandatoryFields', () => {
+  test('creates Destination delivery with both providedFields and mandatoryFields', () => {
     const destination = new CfnDeliveryDestination(stack, 'Dest', {
       name: 'my-cool-xray-dest',
       deliveryDestinationType: 'XRAY',
     });
 
     const destLogs = new DestinationLogsDelivery(destination, {
-      optionalFields: ['field1', 'field2'],
+      providedFields: ['field1', 'field2'],
       mandatoryFields: ['field3', 'field4'],
     });
     destLogs.bind(source, logType, source.bucketArn);

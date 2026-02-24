@@ -137,16 +137,26 @@ class LogsHelper extends ClassType {
   }
 
   public build(mixin: LogsMixin) {
-    const mandatoryFields = this.log.mandatoryFields && this.log.mandatoryFields.length > 0;
-    let optionalFields: EnumType | undefined;
-    if (this.log.optionalFields && this.log.optionalFields.length > 0) {
-      optionalFields = new EnumType(this.scope, {
-        name: `${this.name}AdditionalFields`,
+    const logsNamespace = new ClassType(this.scope, {
+      name: `${this.name}OutputFormat`,
+      export: true,
+      docs: {
+        summary: `Output Format options for each destination of ${this.name}.`,
+      },
+    });
+
+    let recordFields: EnumType | undefined;
+    if (this.log.optionalFields || this.log.mandatoryFields) {
+      recordFields = new EnumType(this.scope, {
+        name: `${this.name}RecordFields`,
         export: true,
       });
-      for (const field of this.log.optionalFields) {
-        // field names cannot have parentheses () or dashes - and must be all uppper case, value has the actual string value for the field
-        optionalFields.addMember({ name: field.split(/[-()]+/).join('_').toUpperCase(), value: field });
+      if (this.log.optionalFields && this.log.optionalFields.length > 0) {
+        populateRecordFieldsEnum(this.log.optionalFields, recordFields);
+      }
+
+      if (this.log.mandatoryFields && this.log.mandatoryFields.length > 0) {
+        populateRecordFieldsEnum(this.log.mandatoryFields, recordFields);
       }
     }
     for (const dest of this.log.destinations) {
@@ -180,8 +190,8 @@ class LogsHelper extends ClassType {
           });
 
           if (dest.outputFormats && dest.outputFormats.length > 0) {
-            const s3OutputFormat = new EnumType(this.scope, {
-              name: `${this.name}S3OutputFormat`,
+            const s3OutputFormat = new EnumType(logsNamespace, {
+              name: 'S3',
               export: true,
             });
             for (const format of dest.outputFormats) {
@@ -199,14 +209,14 @@ class LogsHelper extends ClassType {
             });
           }
 
-          if (optionalFields) {
+          if (recordFields) {
             s3Props.addProperty({
-              name: 'additionalFields',
-              type: Type.arrayOf(optionalFields.type),
+              name: 'recordFields',
+              type: Type.arrayOf(recordFields.type),
               optional: true,
               immutable: true,
               docs: {
-                summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                summary: 'Record fields that can be provided to a log delivery',
               },
             });
           }
@@ -226,8 +236,8 @@ class LogsHelper extends ClassType {
                   permissionsVersion: permissions,
                   kmsKey: expr.directCode('props?.encryptionKey'),
                   outputFormat: expr.directCode('props?.outputFormat'),
-                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
-                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                  providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
+                  mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
                 }))),
             ),
           ));
@@ -247,7 +257,7 @@ class LogsHelper extends ClassType {
           });
 
           const hasLogGroupOutputFormats = dest.outputFormats && dest.outputFormats.length > 0;
-          const hasLogGroupProps = hasLogGroupOutputFormats || optionalFields;
+          const hasLogGroupProps = hasLogGroupOutputFormats || recordFields;
 
           if (hasLogGroupProps) {
             const logGroupProps = new InterfaceType(this.scope, {
@@ -256,8 +266,8 @@ class LogsHelper extends ClassType {
             });
 
             if (hasLogGroupOutputFormats) {
-              const lgOutputFormat = new EnumType(this.scope, {
-                name: `${this.name}LogGroupOutputFormat`,
+              const lgOutputFormat = new EnumType(logsNamespace, {
+                name: 'LogGroup',
                 export: true,
               });
               for (const format of dest.outputFormats!) {
@@ -275,14 +285,14 @@ class LogsHelper extends ClassType {
               });
             }
 
-            if (optionalFields) {
+            if (recordFields) {
               logGroupProps.addProperty({
-                name: 'additionalFields',
-                type: Type.arrayOf(optionalFields.type),
+                name: 'recordFields',
+                type: Type.arrayOf(recordFields.type),
                 optional: true,
                 immutable: true,
                 docs: {
-                  summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                  summary: 'Record fields that can be provided to a log delivery',
                 },
               });
             }
@@ -300,8 +310,8 @@ class LogsHelper extends ClassType {
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.LogGroupLogsDelivery, paramCWL,
                 expr.object({
                   outputFormat: expr.directCode('props?.outputFormat'),
-                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
-                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                  providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
+                  mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
                 }),
               )),
             ),
@@ -322,7 +332,7 @@ class LogsHelper extends ClassType {
           });
 
           const hasFirehoseOutputFormats = dest.outputFormats && dest.outputFormats.length > 0;
-          const hasFirehoseProps = hasFirehoseOutputFormats || optionalFields;
+          const hasFirehoseProps = hasFirehoseOutputFormats || recordFields;
 
           if (hasFirehoseProps) {
             const firehoseProps = new InterfaceType(this.scope, {
@@ -331,8 +341,8 @@ class LogsHelper extends ClassType {
             });
 
             if (hasFirehoseOutputFormats) {
-              const fhOutputFormat = new EnumType(this.scope, {
-                name: `${this.name}FirehoseOutputFormat`,
+              const fhOutputFormat = new EnumType(logsNamespace, {
+                name: 'Firehose',
                 export: true,
               });
 
@@ -351,14 +361,14 @@ class LogsHelper extends ClassType {
               });
             }
 
-            if (optionalFields) {
+            if (recordFields) {
               firehoseProps.addProperty({
-                name: 'additionalFields',
-                type: Type.arrayOf(optionalFields.type),
+                name: 'recordFields',
+                type: Type.arrayOf(recordFields.type),
                 optional: true,
                 immutable: true,
                 docs: {
-                  summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                  summary: 'Record fields that can be provided to a log delivery',
                 },
               });
             }
@@ -376,8 +386,8 @@ class LogsHelper extends ClassType {
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.FirehoseLogsDelivery, paramFH,
                 expr.object({
                   outputFormat: expr.directCode('props?.outputFormat'),
-                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
-                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                  providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
+                  mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
                 }),
               )),
             ),
@@ -392,19 +402,19 @@ class LogsHelper extends ClassType {
             },
           });
 
-          if (optionalFields) {
+          if (recordFields) {
             const xrayProps = new InterfaceType(this.scope, {
               name: `${this.name}XRayProps`,
               export: true,
             });
 
             xrayProps.addProperty({
-              name: 'additionalFields',
-              type: Type.arrayOf(optionalFields.type),
+              name: 'recordFields',
+              type: Type.arrayOf(recordFields.type),
               optional: true,
               immutable: true,
               docs: {
-                summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+                summary: 'Record fields that can be provided to a log delivery',
               },
             });
 
@@ -420,8 +430,8 @@ class LogsHelper extends ClassType {
             stmt.ret(
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.XRayLogsDelivery,
                 expr.object({
-                  optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
-                  mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+                  providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
+                  mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
                 }),
               )),
             ),
@@ -445,19 +455,19 @@ class LogsHelper extends ClassType {
       type: CDK_INTERFACES.IDeliveryDestinationRef,
     });
 
-    if (optionalFields) {
+    if (recordFields) {
       const destProps = new InterfaceType(this.scope, {
         name: `${this.name}DestProps`,
         export: true,
       });
 
       destProps.addProperty({
-        name: 'additionalFields',
-        type: Type.arrayOf(optionalFields.type),
+        name: 'recordFields',
+        type: Type.arrayOf(recordFields.type),
         optional: true,
         immutable: true,
         docs: {
-          summary: 'Record fields that can optionally be provided to a log delivery alongside the mandatory fields',
+          summary: 'Record fields that can be provided to a log delivery',
         },
       });
 
@@ -473,8 +483,8 @@ class LogsHelper extends ClassType {
       stmt.ret(
         mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.DestLogsDelivery, paramDest,
           expr.object({
-            optionalFields: optionalFields ? expr.directCode('props?.additionalFields') : expr.UNDEFINED,
-            mandatoryFields: mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
+            providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
+            mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
           }),
         )),
       ),
@@ -622,5 +632,12 @@ class LogsMixin extends ClassType {
       stmt.constVar(sourceArn, arnBuilder),
       $this.logDelivery.callMethod('bind', resource, $this.logType, sourceArn),
     );
+  }
+}
+
+function populateRecordFieldsEnum(fieldArray: string[], recordFields: EnumType) {
+  for (const field of fieldArray) {
+    // field names cannot have parentheses () or dashes - and must be all uppper case, value has the actual string value for the field
+    recordFields.addMember({ name: field.split(/[-()]+/).join('_').toUpperCase(), value: field });
   }
 }
