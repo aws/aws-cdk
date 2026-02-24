@@ -93,7 +93,7 @@ igw_assertion.expect(ExpectedResult.objectLike({
       Tags: Match.arrayWith([
         Match.objectLike({
           Key: 'Name',
-          Value: 'CDKIntegTestTagIGW',
+          Value: 'CDKintegTestVPC',
         }),
       ]),
     }),
