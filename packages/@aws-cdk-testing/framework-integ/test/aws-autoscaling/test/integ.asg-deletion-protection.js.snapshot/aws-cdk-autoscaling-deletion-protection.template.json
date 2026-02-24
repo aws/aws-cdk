@@ -340,7 +340,7 @@
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "AutoScalingGroupName": "test-asg-deletion-protection",
-    "DeletionProtection": "prevent-all-deletion",
+    "DeletionProtection": "none",
     "DesiredCapacity": "0",
     "LaunchTemplate": {
      "LaunchTemplateId": {

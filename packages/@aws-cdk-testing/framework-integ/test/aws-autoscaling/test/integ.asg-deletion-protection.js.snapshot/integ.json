@@ -5,12 +5,6 @@
       "stacks": [
         "aws-cdk-autoscaling-deletion-protection"
       ],
-      "hooks": {
-        "preDestroy": [
-          "aws autoscaling update-auto-scaling-group --auto-scaling-group-name test-asg-deletion-protection --deletion-protection none --region us-east-1"
-        ]
-      },
-      "stackUpdateWorkflow": false,
       "assertionStack": "DeletionProtectionTest/DefaultTest/DeployAssert",
       "assertionStackName": "DeletionProtectionTestDefaultTestDeployAssert40122E2E"
     }

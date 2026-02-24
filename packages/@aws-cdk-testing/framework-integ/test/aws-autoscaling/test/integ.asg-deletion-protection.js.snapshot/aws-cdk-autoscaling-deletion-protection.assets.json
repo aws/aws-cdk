@@ -1,16 +1,16 @@
 {
   "version": "50.0.0",
   "files": {
-    "ee3f55c0193f4fb3f47d4d91be6514b3b2106e0f92f09f69f2f010ce0d45297e": {
+    "d908bcc001e2f2efc6b7c2160e0250c9750df2b8cc6896201652ff306387cef6": {
       "displayName": "aws-cdk-autoscaling-deletion-protection Template",
       "source": {
         "path": "aws-cdk-autoscaling-deletion-protection.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a307a6a1": {
+        "current_account-current_region-1a4bf49c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ee3f55c0193f4fb3f47d4d91be6514b3b2106e0f92f09f69f2f010ce0d45297e.json",
+          "objectKey": "d908bcc001e2f2efc6b7c2160e0250c9750df2b8cc6896201652ff306387cef6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
