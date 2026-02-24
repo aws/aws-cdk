@@ -70,6 +70,18 @@ export class ChannelInputSwitching extends Mixin {
       return;
     }
 
+    // Lazy validation: MQCS input switching is only valid for CMAF input type.
+    // Deferred to synthesis time because inputType may be set after this mixin is applied.
+    construct.node.addValidation({
+      validate: () => {
+        const inputType = construct.inputType;
+        if (inputType && inputType !== 'CMAF') {
+          return [`ChannelInputSwitching requires CMAF input type, but channel has inputType '${inputType}'.`];
+        }
+        return [];
+      },
+    });
+
     construct.inputSwitchConfiguration = {
       mqcsInputSwitching: true,
       preferredInput: this.props.preferredInput,
