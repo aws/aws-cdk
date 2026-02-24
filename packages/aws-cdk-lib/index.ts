@@ -100,6 +100,7 @@ export * as aws_ecs from './aws-ecs';
 export * as aws_ecs_patterns from './aws-ecs-patterns';
 export * as aws_efs from './aws-efs';
 export * as aws_eks from './aws-eks';
+export * as aws_eks_v2 from './aws-eks-v2';
 export * as aws_elasticache from './aws-elasticache';
 export * as aws_elasticbeanstalk from './aws-elasticbeanstalk';
 export * as aws_elasticloadbalancing from './aws-elasticloadbalancing';
