@@ -660,13 +660,13 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.195.0",
+    "@aws-cdk/integ-runner": "^2.196.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/service-spec-types": "^0.0.220",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
-    "@cdklabs/typewriter": "^0.0.15",
+    "@cdklabs/typewriter": "^0.0.16",
     "@types/jest": "^29.5.14",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.5.0",
@@ -674,7 +674,7 @@
     "tsx": "^4.21.0"
   },
   "dependencies": {
-    "minimatch": "^10.2.1"
+    "minimatch": "^10.2.2"
   },
   "bundleDependencies": [
     "minimatch"
