@@ -2086,7 +2086,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
-      aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
+      aimlOptions: props.s3VectorsEngineEnabled ? {
+        s3VectorsEngine: {
+          enabled: props.s3VectorsEngineEnabled,
+        },
+      } : undefined,
         s3VectorsEngine: {
           enabled: props.s3VectorsEngineEnabled,
         },
