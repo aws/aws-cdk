@@ -98,6 +98,8 @@ export interface Conditions {
    * The conditions that are configured as entry conditions, making check to succeed the stage, or fail the stage.
    *
    * @default - No conditions are configured
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   readonly conditions?: Condition[];
 }
