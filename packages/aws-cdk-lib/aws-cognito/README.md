@@ -628,10 +628,18 @@ This is useful for modifying large group attributes from external SAML or OIDC p
 For details, see [Inbound Federation Lambda Trigger](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-inbound-federation.html).
 
 ```ts
-declare const userpool: cognito.UserPool;
 declare const inboundFederationFn: lambda.Function;
 
-userpool.addTrigger(cognito.UserPoolOperation.INBOUND_FEDERATION, inboundFederationFn);
+// Using lambdaTriggers property
+const userpool = new cognito.UserPool(this, 'myuserpool', {
+  lambdaTriggers: {
+    inboundFederation: inboundFederationFn,
+  },
+});
+
+// Or using addTrigger method
+declare const userpool2: cognito.UserPool;
+userpool2.addTrigger(cognito.UserPoolOperation.INBOUND_FEDERATION, inboundFederationFn);
 ```
 
 Note: The inbound federation trigger only supports V1_0 lambda version.
