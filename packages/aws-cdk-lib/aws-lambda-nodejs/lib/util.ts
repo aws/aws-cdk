@@ -5,6 +5,32 @@ import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
 
+/**
+ * Allowlist pattern for valid bundling option values.
+ * Only characters that are known to be safe are permitted.
+ * Covers: alphanumeric, common path characters (. / \ - _ ~ space),
+ * npm scope (@), glob (*), quotes (' "), hash (#), and punctuation (= : , +).
+ */
+const ALLOWED_CHARACTERS = /^[a-zA-Z0-9@/*._\-\\ \t~'"#=:,+]*$/;
+
+/**
+ * Validates that a value contains only allowed characters for use in
+ * shell commands. Only known-safe characters are permitted; everything
+ * else is rejected.
+ *
+ * @param value - The value to validate
+ * @param propertyName - Name of the property for error messages
+ */
+export function validateShellSafe(value: string, propertyName: string): void {
+  if (!ALLOWED_CHARACTERS.test(value)) {
+    throw new UnscopedValidationError(
+      `Invalid characters in ${propertyName}: "${value}". ` +
+      // eslint-disable-next-line quotes
+      `Values may only contain alphanumeric characters, spaces, and the following: @ / * . _ - \\ ~ ' " # = : , +`,
+    );
+  }
+}
+
 export interface CallSite {
   getThis(): any;
   getTypeName(): string;
@@ -184,9 +210,11 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
         compilerOptionsString += option + ' false ';
       }
     } else if (type === 'string') {
+      validateShellSafe(value, `tsconfig compilerOption '${key}'`);
       compilerOptionsString += option + ' ' + value + ' ';
     } else if (type === 'object') {
       if (Array.isArray(value)) {
+        value.forEach((v: string) => validateShellSafe(String(v), `tsconfig compilerOption '${key}'`));
         compilerOptionsString += option + ' ' + value.join(',') + ' ';
       }
     } else {
