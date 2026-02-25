@@ -5,6 +5,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 import type { Construct } from 'constructs';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
@@ -19,6 +20,7 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
   '1.32': KubectlV32Layer,
   '1.33': KubectlV33Layer,
   '1.34': KubectlV34Layer,
+  '1.35': KubectlV35Layer,
 };
 
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
