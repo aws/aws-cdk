@@ -1,13 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "CloudWatchLogsExportsStackInteg/DefaultTest": {
+    "cluster-cloudwatch-logs-exports-integ-test/DefaultTest": {
       "stacks": [
         "CloudWatchLogsExportsStack"
       ],
-      "assertionStack": "CloudWatchLogsExportsStackInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "CloudWatchLogsExportsStackIntegDefaultTestDeployAssertF6E85D5D"
+      "assertionStack": "cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clustercloudwatchlogsexportsintegtestDefaultTestDeployAssert99B00960"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1107.0"
 }

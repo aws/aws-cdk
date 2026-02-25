@@ -1,28 +1,28 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
-    "cdk-integ-cluster-snapshot.assets": {
+    "aws-cdk-rds-cluster-snapshot.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-integ-cluster-snapshot.assets.json",
+        "file": "aws-cdk-rds-cluster-snapshot.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-integ-cluster-snapshot": {
+    "aws-cdk-rds-cluster-snapshot": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-integ-cluster-snapshot.template.json",
+        "templateFile": "aws-cdk-rds-cluster-snapshot.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9f7c7200f5f754ec58a01d40f546448650fb6db0ce14b5e5043039106e38be1b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/022a03493c8a163ed02cba912952a9d5eab041d166baa75abbe51b8470e63ae0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-integ-cluster-snapshot.assets"
+          "aws-cdk-rds-cluster-snapshot.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,26 +31,25 @@
         }
       },
       "dependencies": [
-        "cdk-integ-cluster-snapshot.assets"
+        "aws-cdk-rds-cluster-snapshot.assets"
       ],
       "metadata": {
-        "/cdk-integ-cluster-snapshot/Vpc": [
+        "/aws-cdk-rds-cluster-snapshot/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "maxAzs": "*",
-              "natGateways": "*",
               "restrictDefaultSecurityGroup": false
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
+            "data": "VPCB9E5F0B4"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -86,43 +85,43 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/Subnet": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+            "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/EIP": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
+            "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -148,33 +147,53 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addNatGateway": [
+                "*"
+              ]
+            }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/Subnet": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
+            "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -202,31 +221,31 @@
             "data": {}
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -254,43 +273,43 @@
             "data": {}
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/IGW": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
+            "data": "VPCIGWB7E252D3"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Vpc/VPCGW": [
+        "/aws-cdk-rds-cluster-snapshot/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
+            "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -307,13 +326,11 @@
                 "combineImportAndExportRoles": true
               },
               "writer": "*",
-              "readers": "*",
-              "vpc": "*",
-              "removalPolicy": "destroy"
+              "vpc": "*"
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Subnets": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -324,13 +341,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Subnets/Default": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSubnetsDCFA5CB7"
+            "data": "SourceClusterSubnetsA3F9E0D8"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/SecurityGroup": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -339,13 +356,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/SecurityGroup/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecurityGroup0921994B"
+            "data": "SourceClusterSecurityGroup37BA323A"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Secret": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -366,13 +383,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Secret/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecret6368BD0F"
+            "data": "SourceClusterSecret60A70349"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Secret/Attachment": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -381,43 +398,31 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Secret/Attachment/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterSecretAttachment769E6258"
+            "data": "SourceClusterSecretAttachmentF1D38ADD"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7"
+            "data": "SourceCluster32940E28"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Instance1Wrapper": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/writer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Instance1": [
+        "/aws-cdk-rds-cluster-snapshot/SourceCluster/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterInstance1448F06E4"
+            "data": "SourceClusterwriterE72946A4"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Cluster/Instance2Wrapper": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/Cluster/Instance2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterInstance2C3E0561B"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -428,7 +433,7 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -468,13 +473,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterOnEventHandlerServiceRole7F84B26D"
+            "data": "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -504,19 +509,33 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57"
+            "data": "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/OnEventHandler/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterOnEventHandlerDF82DF85"
+            "data": "ClusterSnapshoterOnEventHandler2EFCD3AF"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/OnEventHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSnapshoterOnEventHandlerLogGroup90039F17"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -527,7 +546,7 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -567,13 +586,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
+            "data": "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -603,19 +622,33 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222"
+            "data": "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/IsCompleteHandler/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterIsCompleteHandler93DE2591"
+            "data": "ClusterSnapshoterIsCompleteHandlerBB5051A9"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/IsCompleteHandler/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -663,7 +696,7 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -735,13 +768,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -803,19 +836,33 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onEvent/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonEventF0C0D052"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onEvent/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -854,7 +901,7 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -918,13 +965,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -978,19 +1025,33 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-isComplete/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkisComplete803B4F1B"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-isComplete/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1029,7 +1090,7 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1093,13 +1154,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1153,19 +1214,33 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/framework-onTimeout/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderframeworkonTimeout04342B00"
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/framework-onTimeout/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A"
+          }
+        ],
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/waiter-state-machine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1208,13 +1283,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/waiter-state-machine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5"
+            "data": "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1252,19 +1327,19 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/waiter-state-machine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2"
+            "data": "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F"
+            "data": "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/Snapshot": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/Snapshot": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1278,18 +1353,16 @@
             "data": "*"
           }
         ],
-        "/cdk-integ-cluster-snapshot/Snapshoter/Snapshot/Default": [
+        "/aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/Snapshot/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SnapshoterSnapshotAA1755BE"
+            "data": "ClusterSnapshoterSnapshot4EBB28EE"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "snapshotIdentifier": "*",
-              "snapshotCredentials": "*",
               "engine": {
                 "engineType": "*",
                 "engineVersion": {
@@ -1303,13 +1376,13 @@
                 "combineImportAndExportRoles": true
               },
               "writer": "*",
-              "readers": "*",
               "vpc": "*",
-              "removalPolicy": "destroy"
+              "snapshotIdentifier": "*",
+              "snapshotCredentials": "*"
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Subnets": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1320,13 +1393,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Subnets/Default": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSubnets9ED4B8EE"
+            "data": "RestoredClusterSubnets60C7DFFD"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SecurityGroup": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1346,19 +1419,19 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SecurityGroup/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecurityGroup72F11E81"
+            "data": "RestoredClusterSecurityGroup8469D544"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SecurityGroup/from cdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219:{IndirectPort}": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SecurityGroup/from awscdkrdsclustersnapshotRestoredClusterRotationSingleUserSecurityGroupAAF1D148:{IndirectPort}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecurityGroupfromcdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219IndirectPort7C6DDFDF"
+            "data": "RestoredClusterSecurityGroupfromawscdkrdsclustersnapshotRestoredClusterRotationSingleUserSecurityGroupAAF1D148IndirectPort23278485"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1378,13 +1451,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "cdkintegclustersnapshotFromSnapshotSnapshotSecretD93327943fdaad7efa858a3daf9490cf0a702aeb"
+            "data": "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1401,13 +1474,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSnapshotSecretAttachmentA3F619B8"
+            "data": "RestoredClusterSnapshotSecretAttachment5F29CAA0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/RotationSchedule": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Attachment/RotationSchedule": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1418,13 +1491,13 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Attachment/RotationSchedule/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Attachment/RotationSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSnapshotSecretAttachmentRotationSchedule102BDEB3"
+            "data": "RestoredClusterSnapshotSecretAttachmentRotationScheduleEBC4DA76"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Policy": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1432,43 +1505,31 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Policy/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/SnapshotSecret/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSnapshotSecretPolicyA5C332BE"
+            "data": "RestoredClusterSnapshotSecretPolicy18A6F5D5"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotEE0682C5"
+            "data": "RestoredClusterBDABFB2B"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance1Wrapper": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/writer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance1": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotInstance167EFB569"
+            "data": "RestoredClusterwriterB63A5284"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance2Wrapper": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Instance2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotInstance2CD342D07"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SecurityGroup": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/RotationSingleUser/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1487,52 +1548,52 @@
             }
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SecurityGroup/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/RotationSingleUser/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotRotationSingleUserSecurityGroupF78A9956"
+            "data": "RestoredClusterRotationSingleUserSecurityGroup55C528B0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/SARMapping": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/RotationSingleUser/SARMapping": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotRotationSingleUserSARMapping4464D796"
+            "data": "RestoredClusterRotationSingleUserSARMappingD8A0064F"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/RotationSingleUser/Resource": [
+        "/aws-cdk-rds-cluster-snapshot/RestoredCluster/RotationSingleUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotRotationSingleUserEBCAA50C"
+            "data": "RestoredClusterRotationSingleUser48DDFFD0"
           }
         ],
-        "/cdk-integ-cluster-snapshot/BootstrapVersion": [
+        "/aws-cdk-rds-cluster-snapshot/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-cluster-snapshot/CheckBootstrapVersion": [
+        "/aws-cdk-rds-cluster-snapshot/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-cluster-snapshot"
+      "displayName": "aws-cdk-rds-cluster-snapshot"
     },
-    "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.assets": {
+    "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.assets.json",
+        "file": "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ClusterSnapshotIntegDefaultTestDeployAssert647D4685": {
+    "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.template.json",
+        "templateFile": "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -1541,7 +1602,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.assets"
+          "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -1550,23 +1611,23 @@
         }
       },
       "dependencies": [
-        "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.assets"
+        "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C.assets"
       ],
       "metadata": {
-        "/ClusterSnapshotInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cluster-snapshot-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ClusterSnapshotInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cluster-snapshot-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ClusterSnapshotInteg/DefaultTest/DeployAssert"
+      "displayName": "cluster-snapshot-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -2041,7 +2102,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
@@ -2063,12 +2124,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }
