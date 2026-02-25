@@ -200,8 +200,8 @@ distribution
       cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
       cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
       cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
-      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL
-    ]
+      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+    ],
   }));
 ```
 
