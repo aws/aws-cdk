@@ -336,6 +336,32 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
+There are two ways cross-region references can be implemented:
+
+### 1. Using Fn::GetStackOutput (Recommended)
+
+When the `@aws-cdk/core:useGetStackOutput` feature flag is enabled, cross-region references use the
+CloudFormation intrinsic function `Fn::GetStackOutput`. This is the simpler and more efficient 
+approach:
+
+```ts
+const app = new App({
+  context: {
+    '@aws-cdk/core:useGetStackOutput': true,
+  },
+});
+```
+
+With this method:
+- The producing stack creates a CloudFormation Output.
+- The consuming stack uses `Fn::GetStackOutput` to retrieve the value directly.
+- The reference is resolved at deployment time by CloudFormation.
+- A weak reference is established between consumer and producer: the output can be deleted before
+the call to `Fn::GetStackOutput` in the consumer.
+- No additional resources are created.
+
+### 2. Using Custom Resources (Legacy)
+
 When the AWS CDK determines that the resource is in a different stack *and* is in a different
 region, it will "export" the value by creating a custom resource in the producing stack which
 creates SSM Parameters in the consuming region for each exported value. The parameters will be
