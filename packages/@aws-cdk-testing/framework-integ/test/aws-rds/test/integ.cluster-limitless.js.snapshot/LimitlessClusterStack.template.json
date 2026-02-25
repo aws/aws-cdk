@@ -557,10 +557,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessSubnets2FA5CA29": {
+  "DatabaseCluster1611limitlessSubnetsE45F41D5": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.9-limitless database",
+    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.11-limitless database",
     "SubnetIds": [
      {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -573,7 +573,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessSecurityGroup092DF9D2": {
+  "DatabaseCluster1611limitlessSecurityGroupA3056B4A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -591,7 +591,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessMonitoringRole751B52C2": {
+  "DatabaseCluster1611limitlessMonitoringRole9BA03B7A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -624,7 +624,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessSecret6EC679E9": {
+  "DatabaseCluster1611limitlessSecretCD89479D": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -648,41 +648,41 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessSecretAttachment1EF19F0E": {
+  "DatabaseCluster1611limitlessSecretAttachment652DA295": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
+     "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
     },
     "TargetId": {
-     "Ref": "DatabaseCluster169limitlessE9A42B52"
+     "Ref": "DatabaseCluster1611limitlessAB5788A6"
     },
     "TargetType": "AWS::RDS::DBCluster"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster169limitlessE9A42B52": {
+  "DatabaseCluster1611limitlessAB5788A6": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "ClusterScalabilityType": "limitless",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-postgresql16",
     "DBSubnetGroupName": {
-     "Ref": "DatabaseCluster169limitlessSubnets2FA5CA29"
+     "Ref": "DatabaseCluster1611limitlessSubnetsE45F41D5"
     },
     "EnableCloudwatchLogsExports": [
      "postgresql"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "16.9-limitless",
+    "EngineVersion": "16.11-limitless",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
+        "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
        },
        ":SecretString:password::}}"
       ]
@@ -694,7 +694,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster169limitlessSecret6EC679E9"
+        "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
        },
        ":SecretString:username::}}"
       ]
@@ -703,7 +703,7 @@
     "MonitoringInterval": 60,
     "MonitoringRoleArn": {
      "Fn::GetAtt": [
-      "DatabaseCluster169limitlessMonitoringRole751B52C2",
+      "DatabaseCluster1611limitlessMonitoringRole9BA03B7A",
       "Arn"
      ]
     },
@@ -714,7 +714,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "DatabaseCluster169limitlessSecurityGroup092DF9D2",
+       "DatabaseCluster1611limitlessSecurityGroupA3056B4A",
        "GroupId"
       ]
      }

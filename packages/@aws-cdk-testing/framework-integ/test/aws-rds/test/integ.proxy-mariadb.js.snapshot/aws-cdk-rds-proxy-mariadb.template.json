@@ -668,7 +668,7 @@
      "Ref": "mariaDBInstanceSubnetGroupA17E5651"
     },
     "Engine": "mariadb",
-    "EngineVersion": "11.8.5",
+    "EngineVersion": "11.8.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

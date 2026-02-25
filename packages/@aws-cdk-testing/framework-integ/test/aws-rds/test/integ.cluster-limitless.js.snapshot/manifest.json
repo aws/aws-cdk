@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "LimitlessClusterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/857a3a8acb8ff92a65935bedbb92bcc9a69d837274f3cd33aa5da97745acac0f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94d4967b0136d8c339c0dff7378c0da0f3c0c70c6cbe2e4deb2c8e1416f58569.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -336,7 +336,7 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -363,7 +363,7 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Subnets": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -374,13 +374,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Subnets/Default": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessSubnets2FA5CA29"
+            "data": "DatabaseCluster1611limitlessSubnetsE45F41D5"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/SecurityGroup": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -389,13 +389,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/SecurityGroup/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessSecurityGroup092DF9D2"
+            "data": "DatabaseCluster1611limitlessSecurityGroupA3056B4A"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/MonitoringRole": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/MonitoringRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -411,13 +411,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/MonitoringRole/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/MonitoringRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessMonitoringRole751B52C2"
+            "data": "DatabaseCluster1611limitlessMonitoringRole9BA03B7A"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Secret": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -438,13 +438,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Secret/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessSecret6EC679E9"
+            "data": "DatabaseCluster1611limitlessSecretCD89479D"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Secret/Attachment": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -453,16 +453,16 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Secret/Attachment/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessSecretAttachment1EF19F0E"
+            "data": "DatabaseCluster1611limitlessSecretAttachment652DA295"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.9-limitless/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster169limitlessE9A42B52"
+            "data": "DatabaseCluster1611limitlessAB5788A6"
           }
         ],
         "/LimitlessClusterStack/BootstrapVersion": [
@@ -475,6 +475,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DatabaseCluster169limitlessSubnets2FA5CA29": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSubnets2FA5CA29",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecurityGroup092DF9D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecurityGroup092DF9D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessMonitoringRole751B52C2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessMonitoringRole751B52C2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecret6EC679E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecret6EC679E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecretAttachment1EF19F0E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecretAttachment1EF19F0E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessE9A42B52": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessE9A42B52",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -1038,5 +1092,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1106.1"
 }
