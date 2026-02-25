@@ -262,7 +262,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     }
 
     if (this.removalPolicy) {
-      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy);
+      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
     }
 
     return this.instanceCfnGroup.ref;
@@ -284,7 +284,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     }
 
     if (this.removalPolicy) {
-      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy);
+      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
     }
 
     return this.clusterCfnGroup.ref;
