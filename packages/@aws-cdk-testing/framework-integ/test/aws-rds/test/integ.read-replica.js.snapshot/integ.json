@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "read-replica-integ-test/DefaultTest": {
+      "stacks": [
+        "cdk-rds-read-replica"
+      ],
+      "assertionStack": "read-replica-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "readreplicaintegtestDefaultTestDeployAssert4DA59FD1"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
