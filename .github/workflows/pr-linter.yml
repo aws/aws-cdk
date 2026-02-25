@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: 'Download workflow_run artifact'
         if: github.event_name == 'workflow_run'
-        uses: dawidd6/action-download-artifact@v14
+        uses: dawidd6/action-download-artifact@v15
         continue-on-error: true
         with:
           run_id: ${{ github.event.workflow_run.id }}

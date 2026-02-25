@@ -116,16 +116,16 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.0.1",
+    "@aws-cdk/cloud-assembly-api": "^2.1.1",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^50.3.0",
+    "@aws-cdk/cloud-assembly-schema": "^52.1.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
-    "minimatch": "^10.2.1",
+    "minimatch": "^10.2.2",
     "punycode": "^2.3.1",
     "semver": "^7.7.4",
     "table": "^6.9.0",
@@ -134,7 +134,7 @@
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.0",
+    "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
     "@aws-cdk/aws-service-spec": "^0.1.154",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
@@ -162,13 +162,13 @@
     "@smithy/util-stream": "3.3.4",
     "@types/aws-lambda": "^8.10.160",
     "@types/jest": "^29.5.14",
-    "@types/lodash": "^4.17.23",
+    "@types/lodash": "^4.17.24",
     "@types/punycode": "^2.1.4",
     "@types/mime-types": "^2.1.4",
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.70.47",
+    "cdk8s": "2.70.48",
     "constructs": "^10.5.0",
     "delay": "5.0.0",
     "esbuild": "^0.27.3",
@@ -545,7 +545,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v35": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-glue-alpha": "^0.0.0"
     }
