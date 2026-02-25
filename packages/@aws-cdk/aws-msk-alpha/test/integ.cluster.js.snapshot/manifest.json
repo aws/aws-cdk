@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-msk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02e768a6fbffa85b20236cd74133d0bcf839656a7923e3c17c0af5eb49ef5719.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b7a576490cfd705185f5240045021c1930a0046cddbb0e4956925d6fc5c30a04.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -655,12 +655,6 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-msk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -981,13 +975,13 @@
             "data": "BootstrapBrokers5"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/SecurityGroup": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -996,19 +990,19 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/SecurityGroup/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311SecurityGroupABBE5779"
+            "data": "ClusterV351SecurityGroupBF18BD0B"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311F7E1C843"
+            "data": "ClusterV351B0879C2F"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1045,7 +1039,7 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1059,13 +1053,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7"
+            "data": "ClusterV351BootstrapBrokersBootstrapBrokerStringTls880C43C4"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1097,10 +1091,10 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_5_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C"
+            "data": "ClusterV351BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicyF8D456ED"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers6": [
@@ -1109,13 +1103,13 @@
             "data": "BootstrapBrokers6"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/SecurityGroup": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1124,19 +1118,19 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/SecurityGroup/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320SecurityGroup6CF1C0F9"
+            "data": "ClusterV360SecurityGroupFACC2304"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320997D57C6"
+            "data": "ClusterV3600880E9A3"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1173,7 +1167,7 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1187,13 +1181,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F"
+            "data": "ClusterV360BootstrapBrokersBootstrapBrokerStringTls668D93E3"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1225,10 +1219,10 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_6_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812"
+            "data": "ClusterV360BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicyF4590C82"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers7": [
@@ -1237,13 +1231,13 @@
             "data": "BootstrapBrokers7"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/SecurityGroup": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1252,19 +1246,19 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/SecurityGroup/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV331SecurityGroup332504D8"
+            "data": "ClusterV37XSecurityGroup7365BAA2"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV33111A3F7AB"
+            "data": "ClusterV37X6822B1DB"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1301,7 +1295,7 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1315,13 +1309,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93"
+            "data": "ClusterV37XBootstrapBrokersBootstrapBrokerStringTls8E80DCF0"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1353,10 +1347,10 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_7_X/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08"
+            "data": "ClusterV37XBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicyE0EFB2A9"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers8": [
@@ -1365,13 +1359,13 @@
             "data": "BootstrapBrokers8"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/SecurityGroup": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1380,19 +1374,19 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/SecurityGroup/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332SecurityGroupDDA33760"
+            "data": "ClusterV38XSecurityGroup254A84B4"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332929A761F"
+            "data": "ClusterV38XCFA03FFB"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/BootstrapBrokersBootstrapBrokerStringTls/Provider": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1429,7 +1423,7 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/BootstrapBrokersBootstrapBrokerStringTls/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -1443,13 +1437,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A"
+            "data": "ClusterV38XBootstrapBrokersBootstrapBrokerStringTlsF3453805"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -1481,10 +1475,10 @@
             }
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_8_X/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
+            "data": "ClusterV38XBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy75E0C11B"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers9": [
@@ -1503,6 +1497,150 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterV311SecurityGroupABBE5779": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV311SecurityGroupABBE5779",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV311F7E1C843": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV311F7E1C843",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV320SecurityGroup6CF1C0F9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV320SecurityGroup6CF1C0F9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV320997D57C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV320997D57C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV331SecurityGroup332504D8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV331SecurityGroup332504D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV33111A3F7AB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV33111A3F7AB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV332SecurityGroupDDA33760": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332SecurityGroupDDA33760",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV332929A761F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332929A761F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -1525,7 +1663,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a5b38c90c149a394b2d850fb3b138d9e328615576dacf1f47675341dc97b053.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f9a18b107127d3fbfd5db615e53d701e9ad95e225760e0cc113a4dc9197e6e29.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1607,6 +1745,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -1625,6 +1764,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -1736,7 +1876,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -1890,6 +2030,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1921,16 +2065,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -2075,10 +2209,32 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1105.0"
 }
