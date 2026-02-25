@@ -1,7 +1,6 @@
 /* istanbul ignore file */
 import type { X509Certificate } from 'node:crypto';
 import * as tls from 'tls';
-import * as url from 'url';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as sdk from '@aws-sdk/client-iam';
 
@@ -20,22 +19,22 @@ function defaultLogger(fmt: string, ...args: any[]) {
  */
 async function downloadThumbprint(issuerUrl: string, rejectUnauthorized: boolean) {
   return new Promise<string>((ok, ko) => {
-    const purl = url.parse(issuerUrl);
+    const purl = new URL(issuerUrl);
     const port = purl.port ? parseInt(purl.port, 10) : 443;
 
-    if (!purl.host) {
+    if (!purl.hostname) {
       return ko(new Error(`unable to determine host from issuer url ${issuerUrl}`));
     }
 
     external.log(`Fetching x509 certificate chain from issuer ${issuerUrl}`);
 
-    const socket = tls.connect(port, purl.host, { rejectUnauthorized, servername: purl.host });
+    const socket = tls.connect(port, purl.hostname, { rejectUnauthorized, servername: purl.hostname });
     socket.once('error', ko);
 
     socket.once('secureConnect', () => {
       let cert = socket.getPeerX509Certificate();
       if (!cert) {
-        throw new Error(`Unable to retrieve X509 certificate from host ${purl.host}`);
+        throw new Error(`Unable to retrieve X509 certificate from host ${purl.hostname}`);
       }
       while (cert.issuerCertificate) {
         printCertificate(cert);
