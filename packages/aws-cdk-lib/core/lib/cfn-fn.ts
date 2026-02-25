@@ -215,6 +215,22 @@ export class Fn {
   }
 
   /**
+   * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+   * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+   * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+   * you typically use this function to create cross-stack references.
+   * @param stackName The name of the producer stack.
+   * @param outputName The name of the output to get the value from.
+   * @param region The region where the producer stack is deployed. If not provided,
+   * it will default to the same region as the consumer stack.
+   * @param roleArn The role to be used when describing the producer stack. If not
+   * provided, it will default to the role used to create the producer stack.
+   */
+  public static getStackOutput(stackName: string, outputName: string, region?: string, roleArn?: string): string {
+    return new FnGetStackOutput(stackName, outputName, region, roleArn).toString();
+  }
+
+  /**
    * Like `Fn.importValue`, but import a list with a known length
    *
    * If you explicitly want a list with an unknown length, call `Fn.split(',',
@@ -585,6 +601,23 @@ class FnImportValue extends FnBase {
    */
   constructor(sharedValueToImport: string) {
     super('Fn::ImportValue', sharedValueToImport);
+  }
+}
+
+/**
+ * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+ * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+ * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+ * you typically use this function to create cross-stack references.
+ */
+class FnGetStackOutput extends FnBase {
+  constructor(stackName: string, outputName: string, region?: string, roleArn?: string) {
+    super('Fn::GetStackOutput', {
+      StackName: stackName,
+      Region: region,
+      RoleArn: roleArn,
+      OutputName: outputName,
+    });
   }
 }
 

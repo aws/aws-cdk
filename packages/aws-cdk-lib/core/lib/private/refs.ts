@@ -3,6 +3,7 @@
 // ----------------------------------------------------
 
 import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
@@ -14,6 +15,7 @@ import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable } from '../resolvable';
@@ -126,6 +128,10 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     }
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
+
+    if (FeatureFlags.of(consumer).isEnabled(cxapi.USE_GET_STACK_OUTPUT) ?? false) {
+      return createGetStackOutput(reference);
+    }
     return createCrossRegionImportValue(reference, consumer);
   }
 
@@ -248,6 +254,36 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
     return createNestedStackParameter(importStack, (exported as CfnReference), exported);
   }
   return exported;
+}
+
+function createGetStackOutput(reference: Reference): Intrinsic {
+  const exportingStack = Stack.of(reference.target);
+
+  const resolved = exportingStack.resolve(reference);
+  const id = 'Output' + JSON.stringify(resolved);
+
+  function createScope(stack: Stack) {
+    const scopeName = 'Publish';
+    let scope = stack.node.tryFindChild(scopeName) as Construct;
+    if (scope === undefined) {
+      scope = new Construct(stack, scopeName);
+    }
+
+    return scope;
+  }
+
+  const scope = createScope(exportingStack);
+
+  let output = scope.node.tryFindChild(id) as CfnOutput;
+  if (output == null) {
+    output = new CfnOutput(scope, id, {
+      value: Token.asString(reference),
+    });
+  }
+
+  return Tokenization.reverseCompleteString(
+    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region),
+  ) as Intrinsic;
 }
 
 /**
