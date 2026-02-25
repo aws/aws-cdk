@@ -353,6 +353,7 @@ const app = new App({
 ```
 
 With this method:
+
 - The producing stack creates a CloudFormation Output.
 - The consuming stack uses `Fn::GetStackOutput` to retrieve the value directly.
 - The reference is resolved at deployment time by CloudFormation.

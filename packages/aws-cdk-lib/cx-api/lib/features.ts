@@ -1791,8 +1791,10 @@ export const FLAGS: Record<string, FlagInfo> = {
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
-    unconfiguredBehavesLike: { v2: false },
-    compatibilityWithOldBehaviorMd: 'Generates cross-region references using Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter',
+    compatibilityWithOldBehaviorMd: `
+      Disable the feature flat so that cross-region references are generated using 
+      Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter
+      `,
   },
 };
 

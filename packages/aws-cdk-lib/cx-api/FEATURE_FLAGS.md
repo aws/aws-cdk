@@ -2376,7 +2376,10 @@ crossRegionReferences=false, this flag has no effect.
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
-**Compatibility with old behavior:** Generates cross-region references using Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter
+**Compatibility with old behavior:** 
+      Disable the feature flat so that cross-region references are generated using 
+      Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter
+      
 
 
 <!-- END details -->
