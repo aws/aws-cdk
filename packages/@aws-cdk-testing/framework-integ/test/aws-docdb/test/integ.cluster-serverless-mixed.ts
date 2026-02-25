@@ -20,7 +20,8 @@ class TestStack extends cdk.Stack {
         maxCapacity: 2,
       },
       serverlessInstances: 1,
-      instances: 0,
+      instances: 1,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       engineVersion: '5.0.0',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
@@ -29,7 +30,7 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-const stack = new TestStack(app, 'aws-cdk-docdb-cluster-serverless');
+const stack = new TestStack(app, 'aws-cdk-docdb-cluster-serverless-mixed');
 
 new IntegTest(app, 'aws-cdk-docdb-cluster-serverless-integ', {
   testCases: [stack],

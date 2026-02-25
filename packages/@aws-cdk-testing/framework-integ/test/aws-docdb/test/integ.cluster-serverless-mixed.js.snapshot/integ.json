@@ -3,7 +3,7 @@
   "testCases": {
     "aws-cdk-docdb-cluster-serverless-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-docdb-cluster-serverless"
+        "aws-cdk-docdb-cluster-serverless-mixed"
       ],
       "assertionStack": "aws-cdk-docdb-cluster-serverless-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkdocdbclusterserverlessintegDefaultTestDeployAssert24E176B3"
