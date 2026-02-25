@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "testCases": {
     "rds-instance-with-parameter-group-integ-test/DefaultTest": {
       "stacks": [
@@ -15,5 +15,6 @@
       "assertionStack": "rds-instance-with-parameter-group-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "rdsinstancewithparametergroupintegtestDefaultTestDeployAssert833FEF6C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }
