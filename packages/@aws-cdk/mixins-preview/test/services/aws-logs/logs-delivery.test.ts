@@ -1564,13 +1564,13 @@ describe('Destination Delivery', () => {
     });
   });
 
-    test('creates Destination delivery with only mandatoryFields if they are provided', () => {
-     const destination = new CfnDeliveryDestination(stack, 'Dest', {
+  test('creates Destination delivery with only mandatoryFields if they are provided', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
       name: 'my-cool-xray-dest',
       deliveryDestinationType: 'XRAY',
     });
 
-    const destLogs = new DestinationLogsDelivery(destination,{
+    const destLogs = new DestinationLogsDelivery(destination, {
       providedFields: ['field1', 'field2'],
       mandatoryFields: ['field1', 'field2'],
     });
@@ -1582,12 +1582,12 @@ describe('Destination Delivery', () => {
   });
 
   test('adds missing mandatoryFields if providedFields are missing some', () => {
-     const destination = new CfnDeliveryDestination(stack, 'Dest', {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
       name: 'my-cool-xray-dest',
       deliveryDestinationType: 'XRAY',
     });
 
-    const destLogs = new DestinationLogsDelivery(destination,{
+    const destLogs = new DestinationLogsDelivery(destination, {
       providedFields: ['field1', 'field2'],
       mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
     });
