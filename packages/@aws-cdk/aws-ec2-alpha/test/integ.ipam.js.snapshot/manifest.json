@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8bf8bfa42cac579cf355bcafefd920bffc58bcaf91f202abbeaa1a39838efdfd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29ed3acc6ec00a84d6f3230d7be5eb79385342bcdb19315d8e66e9a9c94b3651.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -146,143 +146,6 @@
             "data": "testsbubnetRouteTableAssociationD6D083FA"
           }
         ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "initialPolicy": "*",
-              "code": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "initialPolicy": "*"
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnServiceRole58DCCBDE"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFn5E044491"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamCleanupFn/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamCleanupFnLogGroup57CF72FE"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-vpcv2-alpha-integ-ipam/IpamPoolCleanup/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "IpamPoolCleanup"
-          }
-        ],
         "/aws-cdk-vpcv2-alpha-integ-ipam/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -293,6 +156,51 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "IpamCleanupFnServiceRole58DCCBDE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamCleanupFnServiceRole58DCCBDE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamCleanupFnServiceRoleDefaultPolicyA090BBB0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IpamCleanupFn5E044491": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamCleanupFn5E044491",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IpamCleanupFnLogGroup57CF72FE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamCleanupFnLogGroup57CF72FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "IpamPoolCleanup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IpamPoolCleanup",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -843,6 +751,13 @@
           "@aws-cdk/aws-route53-patterns:useDistribution": {
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }

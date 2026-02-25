@@ -5,6 +5,11 @@
       "stacks": [
         "aws-cdk-vpcv2-alpha-integ-ipam"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "integtest-model/DefaultTest/DeployAssert",
       "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
     }
