@@ -2,9 +2,9 @@
   "version": "50.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202 Template",
+      "displayName": "integvpcDefaultTestDeployAssert82D0F8F7 Template",
       "source": {
-        "path": "SyntheticsCanaryProvisionedResourceCleanupDefaultTestDeployAssert3003A202.template.json",
+        "path": "integvpcDefaultTestDeployAssert82D0F8F7.template.json",
         "packaging": "file"
       },
       "destinations": {
