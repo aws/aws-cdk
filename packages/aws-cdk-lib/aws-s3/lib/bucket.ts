@@ -1751,6 +1751,9 @@ export interface BucketProps {
    * Encryption types that should be blocked for this bucket. Use `NONE` to allow all
    * encryption types.
    *
+   * At least one `BlockedEncryptionType` must be given. If `NONE` is given, it must be
+   * the only `BlockedEncryptionType` in the list.
+   *
    * @default - Amazon S3 determines which encryption types to block.
    */
   readonly blockedEncryptionTypes?: BlockedEncryptionType[];
