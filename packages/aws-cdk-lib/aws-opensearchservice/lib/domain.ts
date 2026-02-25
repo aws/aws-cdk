@@ -764,7 +764,7 @@ export interface DomainProps {
    *
    * Requirements:
    * - OpenSearch version 2.19 or later
-   * - OpenSearch Optimized instance types (OR*, OM*) for data nodes
+   * - OpenSearch Optimized instance types (OR*, OM, OI*) for data nodes
    * - Encryption at rest must be enabled
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
