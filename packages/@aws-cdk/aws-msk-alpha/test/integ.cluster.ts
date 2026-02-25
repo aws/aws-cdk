@@ -30,7 +30,7 @@ class FeatureFlagStack extends cdk.Stack {
 
     const cluster = new msk.Cluster(this, 'Cluster', {
       clusterName: 'integ-test',
-      kafkaVersion: msk.KafkaVersion.V2_8_1,
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
       vpc,
       logging: {
         s3: {
@@ -48,7 +48,7 @@ class FeatureFlagStack extends cdk.Stack {
     // iam authenticated msk cluster integ test
     const cluster2 = new msk.Cluster(this, 'ClusterIAM', {
       clusterName: 'integ-test-iam-auth',
-      kafkaVersion: msk.KafkaVersion.V2_8_1,
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
       vpc,
       logging: {
         s3: {
@@ -119,7 +119,7 @@ class FeatureFlagStack extends cdk.Stack {
 
     const cluster3 = new msk.Cluster(this, 'ClusterIAMTLS', {
       clusterName: 'integ-test-iam-tls-auth',
-      kafkaVersion: msk.KafkaVersion.V2_8_1,
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
       vpc,
       logging: {
         s3: {
@@ -148,9 +148,9 @@ class FeatureFlagStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'BootstrapBrokers4', { value: cluster3.bootstrapBrokersTls });
     new cdk.CfnOutput(this, 'BootstrapBrokers5', { value: cluster3.bootstrapBrokersSaslIam });
 
-    const cluster4 = new msk.Cluster(this, 'Cluster_V3_1_1', {
-      clusterName: 'integ-test-v3-1-1',
-      kafkaVersion: msk.KafkaVersion.V3_1_1,
+    const cluster4 = new msk.Cluster(this, 'Cluster_V3_5_1', {
+      clusterName: 'integ-test-v3-5-1',
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
       vpc,
       logging: {
         s3: {
@@ -161,9 +161,9 @@ class FeatureFlagStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers6', { value: cluster4.bootstrapBrokersTls });
 
-    const cluster5 = new msk.Cluster(this, 'Cluster_V3_2_0', {
-      clusterName: 'integ-test-v3-2-0',
-      kafkaVersion: msk.KafkaVersion.V3_2_0,
+    const cluster5 = new msk.Cluster(this, 'Cluster_V3_6_0', {
+      clusterName: 'integ-test-v3-6-0',
+      kafkaVersion: msk.KafkaVersion.V3_6_0,
       vpc,
       logging: {
         s3: {
@@ -174,9 +174,9 @@ class FeatureFlagStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers7', { value: cluster5.bootstrapBrokersTls });
 
-    const cluster6 = new msk.Cluster(this, 'Cluster_V3_3_1', {
-      clusterName: 'integ-test-v3-3-1',
-      kafkaVersion: msk.KafkaVersion.V3_3_1,
+    const cluster6 = new msk.Cluster(this, 'Cluster_V3_7_X', {
+      clusterName: 'integ-test-v3-7-x',
+      kafkaVersion: msk.KafkaVersion.V3_7_X,
       vpc,
       logging: {
         s3: {
@@ -187,9 +187,9 @@ class FeatureFlagStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers8', { value: cluster6.bootstrapBrokersTls });
 
-    const cluster7 = new msk.Cluster(this, 'Cluster_V3_3_2', {
-      clusterName: 'integ-test-v3-3-2',
-      kafkaVersion: msk.KafkaVersion.V3_3_2,
+    const cluster7 = new msk.Cluster(this, 'Cluster_V3_8_X', {
+      clusterName: 'integ-test-v3-8-x',
+      kafkaVersion: msk.KafkaVersion.V3_8_X,
       vpc,
       logging: {
         s3: {
