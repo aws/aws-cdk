@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { CfnRoute } from './index';
+import type { Construct } from 'constructs';
+import type { CfnRoute } from './index';
 
 /**
  * Configuration for `HeaderMatch`

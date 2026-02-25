@@ -1,5 +1,6 @@
 import { App, SecretValue, Stack } from 'aws-cdk-lib';
-import { AssertionsProvider, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Authorization, Connection, HttpParameter } from 'aws-cdk-lib/aws-events';
 
 const app = new App();

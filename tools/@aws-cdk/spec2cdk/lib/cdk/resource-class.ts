@@ -1,5 +1,12 @@
 
-import { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { PropertyType, Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type {
+  Expression,
+  Initializer,
+  IScope,
+  Statement,
+  Property,
+} from '@cdklabs/typewriter';
 import {
   $E,
   $T,
@@ -9,17 +16,13 @@ import {
   code,
   DummyScope,
   expr,
-  Expression,
-  Initializer,
   InterfaceType,
-  IScope,
   IsNotNullish,
   Lambda,
   MemberVisibility,
   Module,
   ObjectLiteral,
   Stability,
-  Statement,
   stmt,
   StructType,
   SuperInitializer,
@@ -27,12 +30,11 @@ import {
   TruthyOr,
   Type,
   TypeDeclarationStatement,
-  Property,
   SelectiveModuleImport,
   $this,
 } from '@cdklabs/typewriter';
 import { extractVariablesFromArnFormat, findNonIdentifierArnProperty } from './arn';
-import { ImportPaths } from './aws-cdk-lib';
+import type { ImportPaths } from './aws-cdk-lib';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
 import { CloudFormationMapping } from './cloudformation-mapping';
 import { ResourceDecider } from './resource-decider';
@@ -214,16 +216,13 @@ export class ResourceClass extends ClassType implements Referenceable {
       });
     }
 
-    for (const prop of this.decider.classAttributeProperties) {
-      this.addProperty(prop.propertySpec);
-    }
-
     for (const prop of this.decider.classProperties) {
       this.addProperty(prop.propertySpec);
     }
 
     // Copy properties onto class and props type
     this.makeConstructor();
+    this.makeAttributeGetters();
     this.makeInspectMethod();
     this.makeCfnProperties();
     this.makeRenderProperties();
@@ -233,6 +232,17 @@ export class ResourceClass extends ClassType implements Referenceable {
     cfnMapping.makeCfnParser(this.module, this.propsType);
 
     this.makeMustRenderStructs();
+  }
+
+  private makeAttributeGetters() {
+    for (const prop of this.decider.classAttributeProperties) {
+      this.addProperty({
+        ...prop.propertySpec,
+        // Turn initializer into a getter
+        initializer: undefined,
+        getterBody: Block.with(stmt.ret(prop.initializer)),
+      });
+    }
   }
 
   /**
@@ -734,11 +744,6 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
 
     init.addBody(
-      // Attributes
-      ...this.decider.classAttributeProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer),
-      ),
-
       // Props
       ...this.decider.classProperties.map(({ propertySpec: { name }, initializer }) =>
         stmt.assign($this[name], initializer(props)),

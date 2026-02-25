@@ -1,5 +1,5 @@
 import { Resource } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
 
 /**
  * These are the values used by the API when using aws bedrock get-inference-profile --inference-profile-identifier XXXXXXX
@@ -77,6 +77,8 @@ export abstract class InferenceProfileBase extends Resource implements IInferenc
    *
    * Note: This does not grant permissions to use the underlying model in the profile.
    * For comprehensive model invocation permissions, use the grantInvoke method instead.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

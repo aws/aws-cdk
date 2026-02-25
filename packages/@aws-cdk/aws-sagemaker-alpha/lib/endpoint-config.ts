@@ -1,13 +1,15 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { EOL } from 'os';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { AcceleratorType } from './accelerator-type';
+import type { Construct } from 'constructs';
+import type { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
-import { IModel } from './model';
+import type { IModel } from './model';
 import { sameEnv } from './private/util';
 
 /**
@@ -73,6 +75,12 @@ export interface InstanceProductionVariantProps extends ProductionVariantProps {
    * @default InstanceType.T2_MEDIUM
    */
   readonly instanceType?: InstanceType;
+  /**
+   * The timeout value, in seconds, for your inference container to pass health check.
+   * Range between 60 and 3600 seconds.
+   * @default - none
+   */
+  readonly containerStartupHealthCheckTimeout?: cdk.Duration;
 }
 
 /**
@@ -142,6 +150,12 @@ export interface InstanceProductionVariant extends ProductionVariant {
    * Instance type of the production variant.
    */
   readonly instanceType: InstanceType;
+  /**
+   * The timeout value, in seconds, for your inference container to pass health check.
+   * Range between 60 and 3600 seconds.
+   * @default - none
+   */
+  readonly containerStartupHealthCheckTimeoutInSeconds?: number;
 }
 
 /**
@@ -254,14 +268,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     });
   }
 
-  /**
-   * The ARN of the endpoint configuration.
-   */
-  public readonly endpointConfigArn: string;
-  /**
-   * The name of the endpoint configuration.
-   */
-  public readonly endpointConfigName: string;
+  private readonly resource: CfnEndpointConfig;
 
   private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
   private serverlessProductionVariant?: ServerlessProductionVariant;
@@ -285,13 +292,27 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     }
 
     // create the endpoint configuration resource
-    const endpointConfig = new CfnEndpointConfig(this, 'EndpointConfig', {
+    this.resource = new CfnEndpointConfig(this, 'EndpointConfig', {
       kmsKeyId: (props.encryptionKey) ? props.encryptionKey.keyRef.keyArn : undefined,
       endpointConfigName: this.physicalName,
       productionVariants: cdk.Lazy.any({ produce: () => this.renderProductionVariants() }),
     });
-    this.endpointConfigName = this.getResourceNameAttribute(endpointConfig.attrEndpointConfigName);
-    this.endpointConfigArn = this.getResourceArnAttribute(endpointConfig.ref, {
+  }
+
+  /**
+   * The name of the endpoint configuration.
+   */
+  @memoizedGetter
+  public get endpointConfigName(): string {
+    return this.getResourceNameAttribute(this.resource.attrEndpointConfigName);
+  }
+
+  /**
+   * The ARN of the endpoint configuration.
+   */
+  @memoizedGetter
+  public get endpointConfigArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
       service: 'sagemaker',
       resource: 'endpoint-config',
       resourceName: this.physicalName,
@@ -319,6 +340,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: props.instanceType || InstanceType.T2_MEDIUM,
       modelName: props.model.modelName,
       variantName: props.variantName,
+      containerStartupHealthCheckTimeoutInSeconds: props.containerStartupHealthCheckTimeout?.toSeconds(),
     };
   }
 
@@ -399,6 +421,14 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
     // check variant weight is not negative
     if (props.initialVariantWeight && props.initialVariantWeight < 0) {
       errors.push('Cannot have negative variant weight');
+    }
+
+    // check container startup health check timeout range
+    if (props.containerStartupHealthCheckTimeout) {
+      const timeoutInSeconds = props.containerStartupHealthCheckTimeout.toSeconds();
+      if (timeoutInSeconds < 60 || timeoutInSeconds > 3600) {
+        errors.push('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+      }
     }
 
     // check environment compatibility with model
@@ -484,6 +514,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
       instanceType: v.instanceType.toString(),
       modelName: v.modelName,
       variantName: v.variantName,
+      containerStartupHealthCheckTimeoutInSeconds: v.containerStartupHealthCheckTimeoutInSeconds,
     }) );
   }
 

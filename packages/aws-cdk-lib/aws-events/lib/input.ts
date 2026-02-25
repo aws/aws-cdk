@@ -1,9 +1,12 @@
-import { IRule } from './rule-ref';
+import type {
+  IResolvable,
+  IResolveContext,
+} from '../../core';
 import {
-  captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  captureStackTrace, DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
   UnscopedValidationError,
 } from '../../core';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The input to send to the event target
@@ -61,7 +64,7 @@ export abstract class RuleTargetInput {
   /**
    * Return the input properties for this input object
    */
-  public abstract bind(rule: IRule): RuleTargetInputProperties;
+  public abstract bind(rule: IRuleRef): RuleTargetInputProperties;
 }
 
 /**
@@ -109,7 +112,7 @@ class LiteralEventInput extends RuleTargetInput {
   /**
    * Return the input properties for this input object
    */
-  public bind(_rule: IRule): RuleTargetInputProperties {
+  public bind(_rule: IRuleRef): RuleTargetInputProperties {
     return this.props;
   }
 }
@@ -145,7 +148,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
     super();
   }
 
-  public bind(rule: IRule): RuleTargetInputProperties {
+  public bind(rule: IRuleRef): RuleTargetInputProperties {
     let fieldCounter = 0;
     const pathToKey = new Map<string, string>();
     const inputPathsMap: {[key: string]: string} = {};

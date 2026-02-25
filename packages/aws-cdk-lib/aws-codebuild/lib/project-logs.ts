@@ -1,5 +1,5 @@
-import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as logs from '../../aws-logs';
+import type * as s3 from '../../aws-s3';
 
 /**
  * Information about logs built to an S3 bucket for a build project.

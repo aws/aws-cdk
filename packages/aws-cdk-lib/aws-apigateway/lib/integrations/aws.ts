@@ -1,9 +1,10 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as cdk from '../../../core';
 import { ArnFormat } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { Integration, IntegrationConfig, IntegrationOptions, IntegrationType } from '../integration';
-import { Method } from '../method';
+import type { IntegrationConfig, IntegrationOptions } from '../integration';
+import { Integration, IntegrationType } from '../integration';
+import type { Method } from '../method';
 import { parseAwsApiCall } from '../util';
 
 export interface AwsIntegrationProps {

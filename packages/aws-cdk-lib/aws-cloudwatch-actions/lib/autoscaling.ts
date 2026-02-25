@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as autoscaling from '../../aws-autoscaling';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as autoscaling from '../../aws-autoscaling';
+import type * as cloudwatch from '../../aws-cloudwatch';
 
 /**
  * Use an AutoScaling StepScalingAction as an Alarm Action
@@ -13,7 +13,7 @@ export class AutoScalingAction implements cloudwatch.IAlarmAction {
    * Returns an alarm action configuration to use an AutoScaling StepScalingAction
    * as an alarm action
    */
-  public bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }

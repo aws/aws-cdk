@@ -1,5 +1,6 @@
-import { Construct, IConstruct, Node } from 'constructs';
-import * as lambda from '../../aws-lambda';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
+import type * as lambda from '../../aws-lambda';
 import { CustomResource, Duration } from '../../core';
 import { TriggerProvider } from '../../custom-resource-handlers/dist/triggers/trigger-provider.generated';
 

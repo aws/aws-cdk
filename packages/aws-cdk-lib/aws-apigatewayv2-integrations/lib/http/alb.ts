@@ -1,7 +1,7 @@
-import { HttpPrivateIntegrationOptions } from './base-types';
+import type { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
-import * as ec2 from '../../../aws-ec2';
+import type { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import type * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { ValidationError } from '../../../core/lib/errors';
 

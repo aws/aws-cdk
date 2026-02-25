@@ -1,9 +1,9 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
-import * as constructs from "constructs";
 import { IEnvironmentAware } from "aws-cdk-lib/interfaces/environment-aware";
+import * as constructs from "constructs";
 
 /**
  * Indicates that this resource can be referenced as a Resource.
@@ -398,13 +398,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
    * Create a new \`AWS::Some::Resource\`.
    *
    * @param scope Scope in which this resource is defined
@@ -417,13 +410,21 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -551,20 +552,6 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
-   * The arn for something
-   *
-   * @cloudformationAttribute SomethingArn
-   */
-  public readonly attrSomethingArn: string;
-
-  /**
    * Create a new \`AWS::Some::Something\`.
    *
    * @param scope Scope in which this resource is defined
@@ -577,8 +564,6 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
-    this.attrSomethingArn = cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get somethingRef(): SomethingReference {
@@ -586,6 +571,24 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
       somethingId: this.ref,
       somethingArn: this.attrSomethingArn
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The arn for something
+   *
+   * @cloudformationAttribute SomethingArn
+   */
+  public get attrSomethingArn(): string {
+    return cdk.Token.asString(this.getAtt("SomethingArn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -713,20 +716,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The arn for the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  public readonly attrArn: string;
-
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
    * Create a new \`AWS::Some::Resource\`.
    *
    * @param scope Scope in which this resource is defined
@@ -739,8 +728,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
@@ -748,6 +735,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       resourceId: this.ref,
       resourceArn: this.attrArn
     };
+  }
+
+  /**
+   * The arn for the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  public get attrArn(): string {
+    return cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -871,13 +876,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
    * The arn for the resource.
    */
   public arn?: string;
@@ -895,7 +893,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
     this.arn = props.arn;
   }
 
@@ -903,6 +900,15 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1041,13 +1047,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * The arn of the resource
-   *
-   * @cloudformationAttribute Arn
-   */
-  public readonly attrArn: string;
-
-  /**
    * Create a new \`AWS::Some::Resource\`.
    *
    * @param scope Scope in which this resource is defined
@@ -1060,13 +1059,21 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrArn = cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceArn: this.ref
     };
+  }
+
+  /**
+   * The arn of the resource
+   *
+   * @cloudformationAttribute Arn
+   */
+  public get attrArn(): string {
+    return cdk.Token.asString(this.getAtt("Arn", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1190,20 +1197,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   /**
-   * Another identifier of the resource
-   *
-   * @cloudformationAttribute Another
-   */
-  public readonly attrAnother: string;
-
-  /**
-   * The identifier of the resource
-   *
-   * @cloudformationAttribute Id
-   */
-  public readonly attrId: string;
-
-  /**
    * Create a new \`AWS::Some::Resource\`.
    *
    * @param scope Scope in which this resource is defined
@@ -1216,8 +1209,6 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.attrAnother = cdk.Token.asString(this.getAtt("Another", cdk.ResolutionTypeHint.STRING));
-    this.attrId = cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   public get resourceRef(): ResourceReference {
@@ -1225,6 +1216,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       resourceId: cdk.Fn.select(0, cdk.Fn.split("|", this.ref)),
       another: cdk.Fn.select(1, cdk.Fn.split("|", this.ref))
     };
+  }
+
+  /**
+   * Another identifier of the resource
+   *
+   * @cloudformationAttribute Another
+   */
+  public get attrAnother(): string {
+    return cdk.Token.asString(this.getAtt("Another", cdk.ResolutionTypeHint.STRING));
+  }
+
+  /**
+   * The identifier of the resource
+   *
+   * @cloudformationAttribute Id
+   */
+  public get attrId(): string {
+    return cdk.Token.asString(this.getAtt("Id", cdk.ResolutionTypeHint.STRING));
   }
 
   protected get cfnProperties(): Record<string, any> {

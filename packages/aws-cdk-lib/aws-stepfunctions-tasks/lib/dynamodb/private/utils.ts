@@ -1,7 +1,7 @@
 import * as sfn from '../../../../aws-stepfunctions';
 import { UnscopedValidationError } from '../../../../core';
 import { integrationResourceArn } from '../../private/task-utils';
-import { DynamoAttributeValue } from '../shared-types';
+import type { DynamoAttributeValue } from '../shared-types';
 
 export enum DynamoMethod {
   GET = 'Get',

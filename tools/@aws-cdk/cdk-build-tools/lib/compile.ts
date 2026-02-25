@@ -1,6 +1,7 @@
 import { makeExecutable, shell } from './os';
-import { CDKBuildOptions, CompilerOverrides, currentPackageJson, packageCompiler } from './package-info';
-import { Timers } from './timer';
+import type { CDKBuildOptions, CompilerOverrides } from './package-info';
+import { currentPackageJson, packageCompiler } from './package-info';
+import type { Timers } from './timer';
 
 /**
  * Run the compiler on the current package

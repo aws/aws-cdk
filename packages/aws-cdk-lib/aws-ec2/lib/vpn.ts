@@ -1,16 +1,19 @@
 import * as net from 'net';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type {
+  IVPNConnectionRef,
+  IVPNGatewayRef, VPNConnectionReference, VPNGatewayReference,
+} from './ec2.generated';
 import {
   CfnCustomerGateway,
   CfnVPNConnection,
   CfnVPNConnectionRoute,
   CfnVPNGateway,
-  IVPNConnectionRef,
-  IVPNGatewayRef, VPNConnectionReference, VPNGatewayReference,
 } from './ec2.generated';
-import { IVpc, SubnetSelection } from './vpc';
+import type { IVpc, SubnetSelection } from './vpc';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { IResource, Resource, SecretValue, Token, ValidationError } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

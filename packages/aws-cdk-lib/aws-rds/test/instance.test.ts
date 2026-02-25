@@ -782,6 +782,40 @@ describe('instance', () => {
     });
   });
 
+  test('can use metricReadIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricReadIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'ReadIOPS',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
+  test('can use metricWriteIOPS', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      vpc,
+    });
+
+    // THEN
+    expect(stack.resolve(instance.metricWriteIOPS())).toEqual({
+      dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
+      namespace: 'AWS/RDS',
+      metricName: 'WriteIOPS',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
   test('can resolve endpoint port and socket address', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {

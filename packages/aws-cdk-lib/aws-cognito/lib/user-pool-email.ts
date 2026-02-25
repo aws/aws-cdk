@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';

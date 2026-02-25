@@ -1,14 +1,18 @@
-import { Construct } from 'constructs';
-import { CfnDomainName, DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
-import { BasePathMapping, BasePathMappingOptions } from './base-path-mapping';
-import { EndpointType, IRestApi } from './restapi';
+import type { Construct } from 'constructs';
+import type { DomainNameReference, IDomainNameRef, IRestApiRef, IStageRef } from './apigateway.generated';
+import { CfnDomainName } from './apigateway.generated';
+import type { BasePathMappingOptions } from './base-path-mapping';
+import { BasePathMapping } from './base-path-mapping';
+import type { IRestApi } from './restapi';
+import { EndpointType } from './restapi';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import { IBucket } from '../../aws-s3';
-import { Arn, IResource, Names, Resource, Stack, Token } from '../../core';
+import type { IBucket } from '../../aws-s3';
+import type { IResource } from '../../core';
+import { Arn, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Options for creating an api mapping

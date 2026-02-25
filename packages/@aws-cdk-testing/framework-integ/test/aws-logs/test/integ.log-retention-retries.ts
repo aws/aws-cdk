@@ -1,7 +1,8 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class LogRetentionRetriesStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

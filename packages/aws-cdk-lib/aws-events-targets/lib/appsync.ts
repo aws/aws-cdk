@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as appsync from '../../aws-appsync';
-import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
+import type * as events from '../../aws-events';
+import type * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
 
 /**
@@ -41,7 +42,7 @@ export class AppSync implements events.IRuleTarget {
    * Returns a RuleTarget that can be used to trigger this AppSync GraphQL API
    * as a result from an EventBridge event.
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     if (this.props.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }

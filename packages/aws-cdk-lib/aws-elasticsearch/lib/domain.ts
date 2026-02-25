@@ -1,24 +1,28 @@
 import { URL } from 'url';
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ElasticsearchAccessPolicy } from './elasticsearch-access-policy';
 import { DomainGrants } from './elasticsearch-grants.generated';
-import { CfnDomain, DomainReference, IDomainRef } from './elasticsearch.generated';
+import type { DomainReference, IDomainRef } from './elasticsearch.generated';
+import { CfnDomain } from './elasticsearch.generated';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import * as perms from './perms';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Elasticsearch version
@@ -306,7 +310,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if slow search logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly slowSearchLogGroup?: logs.ILogGroup;
+  readonly slowSearchLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if slow index logging should be set up.
@@ -323,7 +327,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if slow index logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly slowIndexLogGroup?: logs.ILogGroup;
+  readonly slowIndexLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if Elasticsearch application logging should be set up.
@@ -340,7 +344,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if app logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly appLogGroup?: logs.ILogGroup;
+  readonly appLogGroup?: logs.ILogGroupRef;
 
   /**
    * Specify if Elasticsearch audit logging should be set up.
@@ -357,7 +361,7 @@ export interface LoggingOptions {
    * @default - a new log group is created if audit logging is enabled
    * @deprecated use opensearchservice module instead
    */
-  readonly auditLogGroup?: logs.ILogGroup;
+  readonly auditLogGroup?: logs.ILogGroupRef;
 }
 
 /**
@@ -971,6 +975,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
    */
@@ -981,6 +987,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -993,6 +1001,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read/write permissions for this domain and its contents to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param identity The principal
    * @deprecated use opensearchservice module instead
    */
@@ -1003,6 +1013,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1021,6 +1033,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param index The index to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1037,6 +1051,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for an index in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param index The index to grant permissions for
    * @param identity The principal
@@ -1055,6 +1071,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant read permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1071,6 +1089,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    * Grant write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
    *
+   * [disable-awslint:no-grants]
+   *
    * @param path The path to grant permissions for
    * @param identity The principal
    * @deprecated use opensearchservice module instead
@@ -1086,6 +1106,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
   /**
    * Grant read/write permissions for a specific path in this domain to an IAM
    * principal (Role/Group/User).
+   *
+   * [disable-awslint:no-grants]
    *
    * @param path The path to grant permissions for
    * @param identity The principal
@@ -1408,17 +1430,23 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   /**
    * @deprecated use opensearchservice module instead
    */
-  public readonly domainArn: string;
-
-  /**
-   * @deprecated use opensearchservice module instead
-   */
-  public readonly domainName: string;
-
-  /**
-   * @deprecated use opensearchservice module instead
-   */
   public readonly domainEndpoint: string;
+
+  private readonly domain: CfnDomain;
+
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
 
   /**
    * Log group that slow searches are logged to.
@@ -1426,7 +1454,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @attribute
    * @deprecated use opensearchservice module instead
    */
-  public readonly slowSearchLogGroup?: logs.ILogGroup;
+  public get slowSearchLogGroup(): logs.ILogGroup | undefined {
+    return this._slowSearchLogGroup ? toILogGroup(this._slowSearchLogGroup) : undefined;
+  }
 
   /**
    * Log group that slow indices are logged to.
@@ -1434,7 +1464,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @attribute
    * @deprecated use opensearchservice module instead
    */
-  public readonly slowIndexLogGroup?: logs.ILogGroup;
+  public get slowIndexLogGroup(): logs.ILogGroup | undefined {
+    return this._slowIndexLogGroup ? toILogGroup(this._slowIndexLogGroup) : undefined;
+  }
 
   /**
    * Log group that application logs are logged to.
@@ -1442,7 +1474,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @attribute
    * @deprecated use opensearchservice module instead
    */
-  public readonly appLogGroup?: logs.ILogGroup;
+  public get appLogGroup(): logs.ILogGroup | undefined {
+    return this._appLogGroup ? toILogGroup(this._appLogGroup) : undefined;
+  }
 
   /**
    * Log group that audit logs are logged to.
@@ -1450,7 +1484,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    * @attribute
    * @deprecated use opensearchservice module instead
    */
-  public readonly auditLogGroup?: logs.ILogGroup;
+  public get auditLogGroup(): logs.ILogGroup | undefined {
+    return this._auditLogGroup ? toILogGroup(this._auditLogGroup) : undefined;
+  }
 
   /**
    * Master user password if fine grained access control is configured.
@@ -1459,7 +1495,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public readonly masterUserPassword?: cdk.SecretValue;
 
-  private readonly domain: CfnDomain;
+  private readonly _slowSearchLogGroup?: logs.ILogGroupRef;
+  private readonly _slowIndexLogGroup?: logs.ILogGroupRef;
+  private readonly _appLogGroup?: logs.ILogGroupRef;
+  private readonly _auditLogGroup?: logs.ILogGroupRef;
 
   private accessPolicy?: ElasticsearchAccessPolicy;
   private encryptionAtRestOptions?: EncryptionAtRestOptions;
@@ -1704,42 +1743,42 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     // Setup logging
-    const logGroups: logs.ILogGroup[] = [];
+    const logGroups: logs.ILogGroupRef[] = [];
 
     if (props.logging?.slowSearchLogEnabled) {
-      this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
+      this._slowSearchLogGroup = props.logging.slowSearchLogGroup ??
         new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.slowSearchLogGroup);
+      logGroups.push(this._slowSearchLogGroup);
     }
 
     if (props.logging?.slowIndexLogEnabled) {
-      this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
+      this._slowIndexLogGroup = props.logging.slowIndexLogGroup ??
         new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.slowIndexLogGroup);
+      logGroups.push(this._slowIndexLogGroup);
     }
 
     if (props.logging?.appLogEnabled) {
-      this.appLogGroup = props.logging.appLogGroup ??
+      this._appLogGroup = props.logging.appLogGroup ??
         new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.appLogGroup);
+      logGroups.push(this._appLogGroup);
     }
 
     if (props.logging?.auditLogEnabled) {
-      this.auditLogGroup = props.logging.auditLogGroup ??
+      this._auditLogGroup = props.logging.auditLogGroup ??
         new logs.LogGroup(this, 'AuditLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
-      logGroups.push(this.auditLogGroup);
+      logGroups.push(this._auditLogGroup);
     }
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
@@ -1747,7 +1786,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-        resources: logGroups.map((lg) => lg.logGroupArn),
+        resources: logGroups.map((lg) => lg.logGroupRef.logGroupArn),
         principals: [new iam.ServicePrincipal('es.amazonaws.com')],
       });
 
@@ -1762,31 +1801,31 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     const logPublishing: Record<string, any> = {};
 
-    if (this.appLogGroup) {
+    if (this._appLogGroup) {
       logPublishing.ES_APPLICATION_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._appLogGroup.logGroupRef.logGroupArn,
       };
     }
 
-    if (this.slowSearchLogGroup) {
+    if (this._slowSearchLogGroup) {
       logPublishing.SEARCH_SLOW_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._slowSearchLogGroup.logGroupRef.logGroupArn,
       };
     }
 
-    if (this.slowIndexLogGroup) {
+    if (this._slowIndexLogGroup) {
       logPublishing.INDEX_SLOW_LOGS = {
         enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+        cloudWatchLogsLogGroupArn: this._slowIndexLogGroup.logGroupRef.logGroupArn,
       };
     }
 
-    if (this.auditLogGroup) {
+    if (this._auditLogGroup) {
       logPublishing.AUDIT_LOGS = {
-        enabled: this.auditLogGroup != null,
-        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+        enabled: this._auditLogGroup != null,
+        cloudWatchLogsLogGroupArn: this._auditLogGroup?.logGroupRef.logGroupArn,
       };
     }
 
@@ -1903,15 +1942,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {

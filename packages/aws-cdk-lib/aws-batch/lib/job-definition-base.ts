@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnJobDefinitionProps } from './batch.generated';
-import { Duration, IResource, Lazy, Resource } from '../../core';
-import { IJobDefinitionRef, JobDefinitionReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { Construct } from 'constructs';
+import type { CfnJobDefinitionProps } from './batch.generated';
+import type { Duration, IResource } from '../../core';
+import { Lazy, Resource } from '../../core';
+import type { IJobDefinitionRef, JobDefinitionReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a JobDefinition

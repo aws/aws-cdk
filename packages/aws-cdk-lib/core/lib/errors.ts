@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import { constructInfoFromConstruct } from './helpers-internal';
+import { constructInfoFromConstruct } from './private/runtime-info';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 

@@ -1,18 +1,25 @@
-import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { ICluster } from './cluster';
+import { Cluster, IpFamily, AuthenticationMode } from './cluster';
+import type { INodegroupRef, NodegroupReference } from './eks.generated';
 import { CfnNodegroup } from './eks.generated';
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved, FeatureFlags, ValidationError } from '../../core';
+import type { ISecurityGroup, SubnetSelection } from '../../aws-ec2';
+import { InstanceType, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
+import type { IRole } from '../../aws-iam';
+import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies } from '../../core';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * NodeGroup interface
  */
-export interface INodegroup extends IResource {
+export interface INodegroup extends IResource, INodegroupRef {
   /**
    * Name of the nodegroup
    * @attribute
@@ -371,6 +378,20 @@ export interface NodegroupOptions {
    * @default - disabled
    */
   readonly enableNodeAutoRepair?: boolean;
+
+  /**
+   * The removal policy applied to the managed node group.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -397,21 +418,14 @@ export class Nodegroup extends Resource implements INodegroup {
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
     class Import extends Resource implements INodegroup {
       public readonly nodegroupName = nodegroupName;
+
+      public get nodegroupRef(): NodegroupReference {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot use Nodegroup.fromNodegroupName() in this API');
+      }
     }
     return new Import(scope, id);
   }
-  /**
-   * ARN of the nodegroup
-   *
-   * @attribute
-   */
-  public readonly nodegroupArn: string;
-  /**
-   * Nodegroup name
-   *
-   * @attribute
-   */
-  public readonly nodegroupName: string;
   /**
    * the Amazon EKS cluster resource
    *
@@ -426,6 +440,16 @@ export class Nodegroup extends Resource implements INodegroup {
   private readonly desiredSize: number;
   private readonly maxSize: number;
   private readonly minSize: number;
+  private readonly resource: CfnNodegroup;
+
+  @memoizedGetter
+  public get nodegroupName(): string {
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      return this.getResourceNameAttribute(this.resource.attrNodegroupName);
+    } else {
+      return this.getResourceNameAttribute(this.resource.ref);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: NodegroupProps) {
     super(scope, id, {
@@ -569,6 +593,10 @@ export class Nodegroup extends Resource implements INodegroup {
       } : undefined,
     });
 
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
+
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
@@ -590,18 +618,21 @@ export class Nodegroup extends Resource implements INodegroup {
         Node.of(this.cluster.albController).addDependency(this);
       }
     }
+    this.resource = resource;
+  }
 
-    this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
+  /**
+   * ARN of the nodegroup
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get nodegroupArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'eks',
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
-      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
-    } else {
-      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
-    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
@@ -620,6 +651,16 @@ export class Nodegroup extends Resource implements INodegroup {
         throw new ValidationError(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
+  }
+
+  public get nodegroupRef(): NodegroupReference {
+    return {
+      nodegroupArn: this.nodegroupArn,
+      get nodegroupId(): string {
+        // eslint-disable-next-line @cdklabs/no-throw-default-error
+        throw new Error('Cannot get nodegroupId from this NodeGroup');
+      },
+    };
   }
 }
 

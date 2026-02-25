@@ -1,7 +1,7 @@
 import * as ec2 from '../../aws-ec2';
-import * as ecr from '../../aws-ecr';
+import type * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
+import type * as secretsmanager from '../../aws-secretsmanager';
 import { Fn, UnscopedValidationError } from '../../core';
 
 /**

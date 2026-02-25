@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Action } from './action';
 import * as codepipeline from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
-import { Duration, UnscopedValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Construction properties of the `ManualApprovalAction`.
@@ -82,6 +83,8 @@ export class ManualApprovalAction extends Action {
    *
    * For more info see:
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/approvals-iam-permissions.html
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantable the grantable to attach the permissions to
    */

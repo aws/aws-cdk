@@ -1,20 +1,12 @@
-import { Construct } from 'constructs';
-import { isPredefinedDeploymentConfig } from './predefined-deployment-config';
+import type { Construct } from 'constructs';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
-import { Resource, IResource, ArnFormat, Arn, Aws } from '../../../core';
+import { Resource, ArnFormat, Arn, Aws } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
-
-/**
- * Structural typing, not jsii compatible but doesn't need to be
- */
-interface IApplicationLike extends IResource {
-  readonly applicationArn: string;
-  readonly applicationName: string;
-}
+import type { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { CfnDeploymentGroup } from '../codedeploy.generated';
+import { isIBindableDeploymentConfig } from './predefined-deployment-config';
 
 /**
  */
@@ -22,7 +14,7 @@ export interface ImportedDeploymentGroupBaseProps {
   /**
    * The reference to the CodeDeploy Application that this Deployment Group belongs to.
    */
-  readonly application: IApplicationLike;
+  readonly application: IApplicationRef;
 
   /**
    * The physical, human-readable name of the CodeDeploy Deployment Group
@@ -43,6 +35,12 @@ export class ImportedDeploymentGroupBase extends Resource {
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
+  public get deploymentGroupRef(): DeploymentGroupReference {
+    return {
+      deploymentGroupName: this.deploymentGroupName,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ImportedDeploymentGroupBaseProps) {
     const deploymentGroupName = props.deploymentGroupName;
     const deploymentGroupArn = Arn.format({
@@ -51,7 +49,7 @@ export class ImportedDeploymentGroupBase extends Resource {
       region: props.application.env.region,
       service: 'codedeploy',
       resource: 'deploymentgroup',
-      resourceName: `${props.application.applicationName}/${deploymentGroupName}`,
+      resourceName: `${props.application.applicationRef.applicationName}/${deploymentGroupName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
@@ -67,8 +65,8 @@ export class ImportedDeploymentGroupBase extends Resource {
    *
    * @internal
    */
-  protected _bindDeploymentConfig(config: IBaseDeploymentConfig) {
-    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config;
+  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IDeploymentConfigRef {
+    return isIBindableDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 }
 
@@ -114,6 +112,15 @@ export class DeploymentGroupBase extends Resource {
   public readonly deploymentGroupArn!: string;
 
   /**
+   * A reference to a DeploymentGroup resource.
+   */
+  public get deploymentGroupRef(): DeploymentGroupReference {
+    return {
+      deploymentGroupName: this.deploymentGroupName,
+    };
+  }
+
+  /**
    * The service Role of this Deployment Group.
    *
    * (Can't make `role` properly public here, as it's typed as optional in one
@@ -142,8 +149,8 @@ export class DeploymentGroupBase extends Resource {
    *
    * @internal
    */
-  protected _bindDeploymentConfig(config: IBaseDeploymentConfig) {
-    return isPredefinedDeploymentConfig(config) ? config.bindEnvironment(this) : config;
+  protected _bindDeploymentConfig(config: IDeploymentConfigRef): IDeploymentConfigRef {
+    return isIBindableDeploymentConfig(config) ? config.bindEnvironment(this) : config;
   }
 
   /**
@@ -153,17 +160,17 @@ export class DeploymentGroupBase extends Resource {
    *
    * @internal
    */
-  protected _setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationLike) {
+  protected _setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationRef) {
     (this as any).deploymentGroupName = this.getResourceNameAttribute(resource.ref);
     (this as any).deploymentGroupArn = this.getResourceArnAttribute(this.stack.formatArn({
       service: 'codedeploy',
       resource: 'deploymentgroup',
-      resourceName: `${application.applicationName}/${resource.ref}`,
+      resourceName: `${application.applicationRef.applicationName}/${resource.ref}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     }), {
       service: 'codedeploy',
       resource: 'deploymentgroup',
-      resourceName: `${application.applicationName}/${this.physicalName}`,
+      resourceName: `${application.applicationRef.applicationName}/${this.physicalName}`,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
