@@ -8,7 +8,7 @@ import type { IQueueRef } from 'aws-cdk-lib/aws-sqs/lib/sqs.generated';
 /**
  * Dead letter queue settings
  */
-export interface DeadLetterQueue {
+export interface DeadLetterQueueProps {
   readonly queue: IQueueRef;
   readonly maxReceiveCount: number;
 }
@@ -17,8 +17,8 @@ export interface DeadLetterQueue {
  * Queue-specific mixin for redrive policy
  * @mixin true
  */
-export class RedrivePolicyMixin implements IMixin {
-  constructor(private readonly deadLetterQueue: DeadLetterQueue) {}
+export class DeadLetterQueue implements IMixin {
+  constructor(private readonly deadLetterQueue: DeadLetterQueueProps) {}
 
   public supports(construct: IConstruct): construct is sqs.CfnQueue {
     return sqs.CfnQueue.isCfnQueue(construct);
@@ -45,7 +45,7 @@ export interface RedriveAllowPolicy {
  * Queue-specific mixin for redrive permissions
  * @mixin true
  */
-export class RedriveAllowPolicyMixin implements IMixin {
+export class AllowUseAsDeadLetterQueue implements IMixin {
   private readonly redriveAllowPolicy: RedriveAllowPolicy;
 
   constructor(redriveAllowPolicy: RedriveAllowPolicy) {
@@ -97,7 +97,7 @@ export class RedriveAllowPolicyMixin implements IMixin {
  * Queue-specific mixin for FIFO queue configuration.
  * @mixin true
  */
-export class FifoMixin implements IMixin {
+export class Fifo implements IMixin {
   private readonly fifoProps: sqs.QueueProps;
   private readonly isFifo: boolean;
 

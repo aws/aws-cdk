@@ -7,7 +7,7 @@ import type * as kms from 'aws-cdk-lib/aws-kms';
 import { KeyGrants } from 'aws-cdk-lib/aws-kms';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IMixin } from '../../core';
-import { RedrivePolicyMixin, RedriveAllowPolicyMixin, FifoMixin } from './queue-mixins';
+import { DeadLetterQueue, AllowUseAsDeadLetterQueue, Fifo } from './queue-mixins';
 import { CfnQueuePropsMixin } from './cfn-props-mixins.generated';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
@@ -124,10 +124,7 @@ export class Queue2 extends QueueBase2 {
 
   @memoizedGetter
   public get queueArn(): string {
-    return this.getResourceArnAttribute(this.cfnQueue.attrArn, {
-      service: 'sqs',
-      resource: this.physicalName,
-    });
+    return this.cfnQueue.queueRef.queueArn;
   }
 
   @memoizedGetter
@@ -157,12 +154,11 @@ export class Queue2 extends QueueBase2 {
       physicalName: props.queueName,
     });
 
-    const queue = new sqs.CfnQueue(this, 'Resource', {
+    this.cfnQueue = new sqs.CfnQueue(this, 'Resource', {
       queueName: this.physicalName,
     });
 
-    this.cfnQueue = queue;
-    this.queueUrl = queue.ref;
+    this.queueUrl = this.cfnQueue.queueRef.queueUrl;
     this.encryptionMasterKey = props.encryptionMasterKey; // check
 
     const mixins: IMixin[] = [
@@ -173,15 +169,15 @@ export class Queue2 extends QueueBase2 {
         visibilityTimeout: props.visibilityTimeout?.toSeconds(),
         receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime?.toSeconds(),
       }),
-      new FifoMixin(props),
+      new Fifo(props),
     ];
 
     if (props.deadLetterQueue) {
-      mixins.push(new RedrivePolicyMixin(props.deadLetterQueue));
+      mixins.push(new DeadLetterQueue(props.deadLetterQueue));
     }
 
     if (props.redriveAllowPolicy) {
-      mixins.push(new RedriveAllowPolicyMixin(props.redriveAllowPolicy));
+      mixins.push(new AllowUseAsDeadLetterQueue(props.redriveAllowPolicy));
     }
 
     mixins.forEach(mixin => mixin.applyTo(this.cfnQueue));
