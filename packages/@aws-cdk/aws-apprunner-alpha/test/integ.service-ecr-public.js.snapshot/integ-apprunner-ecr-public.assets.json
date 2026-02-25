@@ -1,15 +1,16 @@
 {
-  "version": "32.0.0",
+  "version": "50.0.0",
   "files": {
-    "2181f59f2645e4bd58941c645d6d82a03c41c276ad3e6fd67609d6a733a7248e": {
+    "53346c74d391dd0bcb5df5b8d0854537eef2cbe81db61b92d753b19be36c9c5d": {
+      "displayName": "integ-apprunner-ecr-public Template",
       "source": {
         "path": "integ-apprunner-ecr-public.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d7469f8e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2181f59f2645e4bd58941c645d6d82a03c41c276ad3e6fd67609d6a733a7248e.json",
+          "objectKey": "53346c74d391dd0bcb5df5b8d0854537eef2cbe81db61b92d753b19be36c9c5d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
