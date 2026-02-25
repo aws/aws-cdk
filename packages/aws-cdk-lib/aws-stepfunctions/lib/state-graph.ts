@@ -1,9 +1,10 @@
-import { StateMachine } from './state-machine';
+import type { StateMachine } from './state-machine';
 import { DistributedMap } from './states/distributed-map';
-import { State } from './states/state';
-import { QueryLanguage } from './types';
+import type { State } from './states/state';
+import type { QueryLanguage } from './types';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, Duration, Stack, UnscopedValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { Arn, ArnFormat, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * A collection of connected states

@@ -1,4 +1,4 @@
-import * as iam from '../../../aws-iam';
+import type * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { UnscopedValidationError } from '../../../core';
 

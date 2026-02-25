@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as sns from '../../aws-sns';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as sns from '../../aws-sns';
 
 /**
  * Use an SNS topic as an alarm action
@@ -12,7 +12,7 @@ export class SnsAction implements cloudwatch.IAlarmAction {
   /**
    * Returns an alarm action configuration to use an SNS topic as an alarm action
    */
-  public bind(_scope: Construct, _alarm: cloudwatch.IAlarmRef): cloudwatch.AlarmActionConfig {
+  public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.topic.topicArn };
   }
 }

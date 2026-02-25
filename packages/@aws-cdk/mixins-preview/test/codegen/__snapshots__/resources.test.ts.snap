@@ -38,13 +38,13 @@ export class CfnThingPropsMixin extends core.Mixin implements core.IMixin {
    * Check if this mixin supports the given construct
    */
   public supports(construct: constructs.IConstruct): construct is service.CfnThing {
-    return (cdk.CfnResource.isCfnResource(construct) && (construct.cfnResourceType === "AWS::Some::Resource"));
+    return (cdk.CfnResource.isCfnResource(construct) && service.CfnThing.isCfnThing(construct));
   }
 
   /**
    * Apply the mixin properties to the construct
    */
-  public applyTo(construct: constructs.IConstruct): constructs.IConstruct {
+  public applyTo(construct: constructs.IConstruct): void {
     if (this.supports(construct)) {
       if ((this.strategy === mixins.PropertyMergeStrategy.MERGE)) {
         helpers.deepMerge(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
@@ -52,7 +52,6 @@ export class CfnThingPropsMixin extends core.Mixin implements core.IMixin {
         helpers.shallowAssign(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
       }
     }
-    return construct;
   }
 }
 

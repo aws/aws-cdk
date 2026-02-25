@@ -1,11 +1,12 @@
 
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { BuildSpec, ComputeType, LinuxBuildImage, Project, ProjectProps } from 'aws-cdk-lib/aws-codebuild';
+import type { ProjectProps } from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, ComputeType, LinuxBuildImage, Project } from 'aws-cdk-lib/aws-codebuild';
 import { CompositePrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CodeBuildStartBuild } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*

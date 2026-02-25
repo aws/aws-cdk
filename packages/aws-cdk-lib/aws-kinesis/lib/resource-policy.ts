@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnResourcePolicy } from './kinesis.generated';
-import { IStream } from './stream';
-import { IStreamConsumer } from './stream-consumer';
+import type { IStream } from './stream';
+import type { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

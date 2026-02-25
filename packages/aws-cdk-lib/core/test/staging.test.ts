@@ -7,7 +7,8 @@ import * as fs from 'fs-extra';
 import * as sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { App, AssetHashType, AssetStaging, DockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, NestedStack, Stage, BundlingFileAccess } from '../lib';
+import type { BundlingOptions } from '../lib';
+import { App, AssetHashType, AssetStaging, DockerImage, BundlingOutput, FileSystem, Stack, NestedStack, Stage, BundlingFileAccess } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';

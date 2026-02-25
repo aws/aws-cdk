@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { IServerApplication, ServerApplication } from './application';
-import { IServerDeploymentConfig, ServerDeploymentConfig } from './deployment-config';
-import { LoadBalancer, LoadBalancerGeneration } from './load-balancer';
-import * as autoscaling from '../../../aws-autoscaling';
+import type { Construct } from 'constructs';
+import type { IServerApplication } from './application';
+import { ServerApplication } from './application';
+import type { IServerDeploymentConfig } from './deployment-config';
+import { ServerDeploymentConfig } from './deployment-config';
+import type { LoadBalancer } from './load-balancer';
+import { LoadBalancerGeneration } from './load-balancer';
+import type * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
@@ -10,13 +13,15 @@ import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IDeploymentGroupRef, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
+import { toIServerApplication, toIServerDeploymentConfig } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
-import { AutoRollbackConfig } from '../rollback-config';
+import type { AutoRollbackConfig } from '../rollback-config';
 
-export interface IServerDeploymentGroup extends cdk.IResource {
+export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupRef {
   readonly application: IServerApplication;
   readonly role?: iam.IRole;
   /**
@@ -42,7 +47,7 @@ export interface ServerDeploymentGroupAttributes {
    * The reference to the CodeDeploy EC2/on-premise Application
    * that this Deployment Group belongs to.
    */
-  readonly application: IServerApplication;
+  readonly application: IApplicationRef;
 
   /**
    * The physical, human-readable name of the CodeDeploy EC2/on-premise Deployment Group
@@ -55,17 +60,17 @@ export interface ServerDeploymentGroupAttributes {
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  readonly deploymentConfig?: IServerDeploymentConfig;
+  readonly deploymentConfig?: IDeploymentConfigRef;
 }
 
 @propertyInjectable
 class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implements IServerDeploymentGroup {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedServerDeploymentGroup';
-  public readonly application: IServerApplication;
+  private readonly _application: IApplicationRef;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
   public readonly role?: iam.Role = undefined;
   public readonly autoScalingGroups?: autoscaling.AutoScalingGroup[] = undefined;
-  public readonly deploymentConfig: IServerDeploymentConfig;
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupAttributes) {
     super(scope, id, {
@@ -75,8 +80,16 @@ class ImportedServerDeploymentGroup extends ImportedDeploymentGroupBase implemen
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.application = props.application;
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
+    this._application = props.application;
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
+  }
+
+  public get application(): IServerApplication {
+    return toIServerApplication(this._application);
+  }
+
+  public get deploymentConfig(): IServerDeploymentConfig {
+    return toIServerDeploymentConfig(this._deploymentConfig);
   }
 }
 
@@ -123,7 +136,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default - A new Application will be created.
    */
-  readonly application?: IServerApplication;
+  readonly application?: IApplicationRef;
 
   /**
    * The service Role of this Deployment Group.
@@ -144,7 +157,7 @@ export interface ServerDeploymentGroupProps {
    *
    * @default ServerDeploymentConfig#OneAtATime
    */
-  readonly deploymentConfig?: IServerDeploymentConfig;
+  readonly deploymentConfig?: IDeploymentConfigRef;
 
   /**
    * The auto-scaling groups belonging to this Deployment Group.
@@ -269,8 +282,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     return new ImportedServerDeploymentGroup(scope, id, attrs);
   }
 
-  public readonly application: IServerApplication;
-  public readonly deploymentConfig: IServerDeploymentConfig;
+  private readonly _application: IApplicationRef;
+  private readonly _deploymentConfig: IDeploymentConfigRef;
   /**
    * The service Role of this Deployment Group.
    */
@@ -292,10 +305,10 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     addConstructMetadata(this, props);
     this.role = this._role;
 
-    this.application = props.application || new ServerApplication(this, 'Application', {
+    this._application = props.application || new ServerApplication(this, 'Application', {
       applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
     });
-    this.deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
+    this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
     this._autoScalingGroups = props.autoScalingGroups || [];
@@ -320,7 +333,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       deploymentGroupName: this.physicalName,
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
-        props.deploymentConfig.deploymentConfigName,
+        props.deploymentConfig.deploymentConfigRef.deploymentConfigName,
       autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancersInfo(this.loadBalancers),
       deploymentStyle: this.loadBalancers === undefined
@@ -343,6 +356,14 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     });
 
     this._setNameAndArn(resource, this.application);
+  }
+
+  public get application(): IServerApplication {
+    return toIServerApplication(this._application);
+  }
+
+  public get deploymentConfig(): IServerDeploymentConfig {
+    return this._deploymentConfig as IServerDeploymentConfig;
   }
 
   /**

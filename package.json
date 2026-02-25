@@ -23,17 +23,17 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.40",
+    "cdk-generate-synthetic-examples": "^0.2.43",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
     "jest-junit": "^13.2.0",
-    "jsii-diff": "1.125.0",
-    "jsii-pacmak": "1.125.0",
-    "jsii-reflect": "1.125.0",
+    "jsii-diff": "1.126.0",
+    "jsii-pacmak": "1.126.0",
+    "jsii-reflect": "1.126.0",
     "lerna": "^8.2.4",
     "nx": "^20",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
@@ -45,7 +45,8 @@
     "string-width": "^4.2.3",
     "@types/babel__traverse": "7.18.2",
     "@smithy/types": "3.5.0",
-    "@types/minimatch": "^5.1.2"
+    "@types/minimatch": "^5.1.2",
+    "tar": "^7.5.7"
   },
   "repository": {
     "type": "git",
@@ -113,10 +114,6 @@
       "@aws-cdk/aws-cognito/punycode/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
       "@aws-cdk/aws-ecr-assets/minimatch/**",
-      "@aws-cdk/aws-eks-v2-alpha/semver",
-      "@aws-cdk/aws-eks-v2-alpha/semver/**",
-      "@aws-cdk/aws-eks-v2-alpha/yaml",
-      "@aws-cdk/aws-eks-v2-alpha/yaml/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
       "@aws-cdk/aws-imagebuilder-alpha/yaml",
@@ -147,6 +144,8 @@
       "@aws-cdk/core/yaml/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
+      "@aws-cdk/cx-api/@aws-cdk/cloud-assembly-api",
+      "@aws-cdk/cx-api/@aws-cdk/cloud-assembly-api/**",
       "@aws-cdk/mixins-preview/minimatch",
       "@aws-cdk/mixins-preview/minimatch/**",
       "@aws-cdk/pipelines/aws-sdk",
@@ -155,6 +154,8 @@
       "@aws-cdk/yaml-cfn/yaml/**",
       "aws-cdk-lib/@balena/dockerignore",
       "aws-cdk-lib/@balena/dockerignore/**",
+      "aws-cdk-lib/@aws-cdk/cloud-assembly-api",
+      "aws-cdk-lib/@aws-cdk/cloud-assembly-api/**",
       "aws-cdk-lib/case",
       "aws-cdk-lib/case/**",
       "aws-cdk-lib/chalk",
@@ -186,6 +187,7 @@
     ]
   },
   "dependencies": {
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "tar": "^7.5.7"
   }
 }

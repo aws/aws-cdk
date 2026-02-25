@@ -1,12 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as yaml from 'yaml';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
@@ -429,6 +430,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant put permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -438,6 +440,7 @@ export abstract class S3WorkflowData extends WorkflowData {
 
   /**
    * Grant read permissions to the given grantee for the workflow data in S3
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -582,6 +585,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant custom actions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -597,6 +601,7 @@ abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
 
   /**
    * Grant read permissions to the given grantee for the workflow
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -709,16 +714,6 @@ export class Workflow extends WorkflowBase {
   }
 
   /**
-   * The ARN of the workflow
-   */
-  public readonly workflowArn: string;
-
-  /**
-   * The name of the workflow
-   */
-  public readonly workflowName: string;
-
-  /**
    * The type of the workflow
    */
   public readonly workflowType: string;
@@ -727,6 +722,8 @@ export class Workflow extends WorkflowBase {
    * The version of the workflow
    */
   public readonly workflowVersion: string;
+
+  private resource: CfnWorkflow;
 
   public constructor(scope: Construct, id: string, props: WorkflowProps) {
     super(scope, id, {
@@ -749,7 +746,7 @@ export class Workflow extends WorkflowBase {
     this.validateWorkflowName();
 
     const workflowVersion = props.workflowVersion ?? '1.0.0';
-    const workflow = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       version: workflowVersion,
       type: props.workflowType,
@@ -760,10 +757,18 @@ export class Workflow extends WorkflowBase {
       ...props.data.render(),
     });
 
-    this.workflowName = this.getResourceNameAttribute(workflow.getAtt('Name').toString());
-    this.workflowArn = workflow.attrArn;
     this.workflowVersion = workflowVersion;
     this.workflowType = props.workflowType;
+  }
+
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.getAtt('Name').toString());
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.resource.attrArn;
   }
 
   private validateWorkflowName() {

@@ -1,5 +1,5 @@
 import { CidrBlock, NetworkUtils } from './network-util';
-import { ISubnet } from './vpc';
+import type { ISubnet } from './vpc';
 import { Token, UnscopedValidationError } from '../../core';
 /**
  * Contains logic which chooses a set of subnets from a larger list, in conjunction

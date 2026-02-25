@@ -1,9 +1,11 @@
-import { Construct, IConstruct, Node } from 'constructs';
+import type { IConstruct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as sqs from '../../aws-sqs';
-import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type * as sqs from '../../aws-sqs';
+import type { Duration } from '../../core';
+import { Annotations, Names, Token, TokenComparison, PhysicalName, ValidationError } from '../../core';
 
 /**
  * The generic properties for an RuleTarget
@@ -84,7 +86,7 @@ export function singletonEventRole(scope: IConstruct): iam.IRole {
  * Allows a Lambda function to be called from a rule
  * @internal
  */
-export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
+export function addLambdaPermission(rule: events.IRuleRef, handler: lambda.IFunction): void {
   let scope: Construct | undefined;
   let node: Node = handler.permissionsNode;
   let permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
@@ -100,7 +102,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
       scope,
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('events.amazonaws.com'),
-      sourceArn: rule.ruleArn,
+      sourceArn: events.CfnRule.arnForRule(rule),
     });
   }
 }
@@ -109,7 +111,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
  * Allow a rule to send events with failed invocation to an Amazon SQS queue.
  * @internal
  */
-export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue) {
+export function addToDeadLetterQueueResourcePolicy(rule: events.IRuleRef, queue: sqs.IQueue) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
     throw new ValidationError(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
   }
@@ -128,12 +130,12 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
       resources: [queue.queueArn],
       conditions: {
         ArnEquals: {
-          'aws:SourceArn': rule.ruleArn,
+          'aws:SourceArn': events.CfnRule.arnForRule(rule),
         },
       },
     }));
   } else {
-    Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy', `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleName} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
+    Annotations.of(rule).addWarningV2('@aws-cdk/aws-events-targets:manuallyAddDLQResourcePolicy', `Cannot add a resource policy to your dead letter queue associated with rule ${rule.ruleRef.ruleArn} because the queue is in a different account. You must add the resource policy manually to the dead letter queue in account ${queue.env.account}.`);
   }
 }
 

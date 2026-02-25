@@ -1,7 +1,8 @@
 import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { evaluateCFN } from './evaluate-cfn';
 import { toCloudFormation } from './util';
-import { Arn, ArnComponents, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
+import type { ArnComponents } from '../lib';
+import { Arn, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 
 describe('arn', () => {

@@ -222,6 +222,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - Either [Docker >= 19.03](https://docs.docker.com/get-docker/), [Finch >= 0.3.0](https://runfinch.com/), or another Docker replacement
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
+  - For some Docker replacements like Podman, you may also need to set the `DOCKER_HOST` environment variable to specify the socket path
+    - For Podman: `export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
   - The Docker or replacement daemon must be running
 - [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
   - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
@@ -986,37 +988,37 @@ finalized, will be added to the AWS CDK with a specific suffix: `BetaX`. APIs
 with the preview suffix will never be removed, instead they will be deprecated
 and replaced by either the stable version (without the suffix), or by a newer
 preview version. For example, assume we add the method
-`grantAwesomePowerBeta1`:
+`addSecondaryResourceBeta1()` to a class:
 
 ```ts
 /**
- * This method grants awesome powers
+ * This method adds a secondary resource to the main one
  */
-grantAwesomePowerBeta1();
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accepts a `Principal`. Since adding a required property is a breaking
-change, we will add `grantAwesomePowerBeta2()` and deprecate
-`grantAwesomePowerBeta1`:
+if it accepts an additional required `options` parameter. Since adding a required 
+parameter to a method is a breaking change, we will add `addSecondaryResourceBeta2()`
+and deprecate `addSecondaryResourceBeta1`:
 
 ```ts
 /**
-* This method grants awesome powers to the given principal
+* This method adds a secondary resource, with more options
 *
 * @param grantee The principal to grant powers to
 */
-grantAwesomePowerBeta2(grantee: iam.IGrantable)
+addSecondaryResourceBeta2(res: SomeResource, options: SecondaryResourceOptions);
 
 /**
-* This method grants awesome powers
-* @deprecated use grantAwesomePowerBeta2
+ * This method adds a secondary resource to the main one
+* @deprecated use addSecondaryResourceBeta1
 */
-grantAwesomePowerBeta1()
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 When we decide it's time to graduate the API, the latest preview version will
-be deprecated and the final version - `grantAwesomePower` will be added.
+be deprecated and the final version - `addSecondaryResource` will be added.
 
 ## Documentation
 
