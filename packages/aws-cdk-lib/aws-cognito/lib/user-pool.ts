@@ -1186,11 +1186,12 @@ export class UserPool extends UserPoolBase {
               throw new ValidationError('you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
             }
             trigger = props.lambdaTriggers[t];
+            const version = 'V1_0';
             if (trigger !== undefined) {
               this.addLambdaPermission(trigger as lambda.IFunction, t);
               (this.triggers as any)[t] = {
                 lambdaArn: trigger.functionArn,
-                lambdaVersion: LambdaVersion.V1_0,
+                lambdaVersion: version,
               };
             }
             break;
