@@ -764,7 +764,7 @@ export interface DomainProps {
    *
    * Requirements:
    * - OpenSearch version 2.19 or later
-   * - OpenSearch Optimized instance types (OR*, OM, OI*) for data nodes
+   * - OpenSearch Optimized instance types (OR*, OM*, OI*) for data nodes
    * - Encryption at rest must be enabled
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
@@ -1820,10 +1820,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         throw new ValidationError(`S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version ${versionNum}.`, this);
       }
 
-      // S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*)
-      const isOpenSearchOptimizedInstance = instanceType.startsWith('or') || instanceType.startsWith('om');
+      // S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*)
+      const isOpenSearchOptimizedInstance = instanceType.startsWith('or') || instanceType.startsWith('om') || instanceType.startsWith('oi');
       if (!cdk.Token.isUnresolved(instanceType) && !isOpenSearchOptimizedInstance) {
-        throw new ValidationError(`S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*). Got ${instanceType}.`, this);
+        throw new ValidationError(`S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*). Got ${instanceType}.`, this);
       }
 
       // S3 Vectors Engine requires encryption at rest
@@ -2086,11 +2086,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
-      aimlOptions: props.s3VectorsEngineEnabled ? {
-        s3VectorsEngine: {
-          enabled: props.s3VectorsEngineEnabled,
-        },
-      } : undefined,
+      aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
         s3VectorsEngine: {
           enabled: props.s3VectorsEngineEnabled,
         },

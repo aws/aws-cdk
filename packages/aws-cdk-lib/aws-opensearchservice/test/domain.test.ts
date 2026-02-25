@@ -2301,7 +2301,7 @@ describe('S3 Vectors Engine', () => {
       encryptionAtRest: {
         enabled: true,
       },
-    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*). Got t3.small.search.');
+    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*). Got t3.small.search.');
   });
 
   test('throws error when encryption at rest is disabled', () => {
