@@ -10,7 +10,7 @@
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttSomeParameterB1EDD45BValue6B655EF1": {
+  "PublishOutputFnGetAttSomeParameterB1EDD45BValueA1B1111C": {
    "Value": {
     "Fn::GetAtt": [
      "SomeParameterB1EDD45B",

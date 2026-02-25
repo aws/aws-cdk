@@ -9,7 +9,7 @@
      "Fn::GetStackOutput": {
       "StackName": "CrossRegionRefProducerInteg",
       "Region": "us-east-1",
-      "OutputName": "ExportsOutputFnGetAttSomeParameterB1EDD45BValue6B655EF1"
+      "OutputName": "PublishOutputFnGetAttSomeParameterB1EDD45BValueA1B1111C"
      }
     }
    }
