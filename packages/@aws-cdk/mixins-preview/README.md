@@ -195,12 +195,12 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 // Configure log delivery using the mixin
 distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup, {
-    outputFormat: cloudFrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
+    outputFormat: cloudfrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
     recordFields: [
-      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
-      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
-      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
-      cloudFrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
     ],
   }));
 ```
