@@ -23,7 +23,7 @@
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.42",
+    "cdk-generate-synthetic-examples": "^0.2.43",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
@@ -114,10 +114,6 @@
       "@aws-cdk/aws-cognito/punycode/**",
       "@aws-cdk/aws-ecr-assets/minimatch",
       "@aws-cdk/aws-ecr-assets/minimatch/**",
-      "@aws-cdk/aws-eks-v2-alpha/semver",
-      "@aws-cdk/aws-eks-v2-alpha/semver/**",
-      "@aws-cdk/aws-eks-v2-alpha/yaml",
-      "@aws-cdk/aws-eks-v2-alpha/yaml/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
       "@aws-cdk/aws-imagebuilder-alpha/yaml",
@@ -191,6 +187,7 @@
     ]
   },
   "dependencies": {
-    "string-width": "^4.2.3"
+    "string-width": "^4.2.3",
+    "tar": "^7.5.7"
   }
 }
