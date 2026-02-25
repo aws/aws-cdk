@@ -1,12 +1,26 @@
 import type { Construct } from 'constructs';
 import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
-import type { IResource } from '../../core';
-import { Lazy, RemovalPolicy, Resource } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { aws_rds } from '../../interfaces';
+
+/**
+ * The type of parameter group to create.
+ */
+export enum ParameterGroupType {
+  /**
+   * Instance parameter group (AWS::RDS::DBParameterGroup)
+   */
+  INSTANCE = 'instance',
+  /**
+   * Cluster parameter group (AWS::RDS::DBClusterParameterGroup)
+   */
+  CLUSTER = 'cluster',
+}
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -44,6 +58,15 @@ export interface ParameterGroupInstanceConfig {
  * and an instance parameter group.
  */
 export interface IParameterGroup extends IResource, aws_rds.IDBParameterGroupRef, aws_rds.IDBClusterParameterGroupRef {
+  /**
+   * This method allows you to explicitly create a standalone parameter group
+   * without binding it to a database instance or cluster.
+   *
+   * @param type - The type of parameter group to create (instance or cluster)
+   * @returns parameter group name
+   */
+  create(type: ParameterGroupType): string;
+
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */
@@ -124,6 +147,10 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
+      public create(_type: ParameterGroupType): string {
+        return parameterGroupName;
+      }
+
       public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
         return { parameterGroupName };
       }
@@ -177,41 +204,33 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.removalPolicy = props.removalPolicy;
   }
 
+  /**
+   * This method allows you to explicitly create a standalone parameter group
+   * without binding it to a database instance or cluster.
+   *
+   * @param type - The type of parameter group to create (instance or cluster)
+   * @returns parameter group name
+   */
+  @MethodMetadata()
+  public create(type: ParameterGroupType): string {
+    if (type === ParameterGroupType.INSTANCE) {
+      return this.createInstanceParameterGroup();
+    } else {
+      return this.createClusterParameterGroup();
+    }
+  }
+
   @MethodMetadata()
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
-    if (!this.clusterCfnGroup) {
-      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
-      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
-        description: this.description || `Cluster parameter group for ${this.family}`,
-        family: this.family,
-        dbClusterParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
-      });
-    }
-    if (this.removalPolicy) {
-      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
-    }
     return {
-      parameterGroupName: this.clusterCfnGroup.ref,
+      parameterGroupName: this.createClusterParameterGroup(),
     };
   }
 
   @MethodMetadata()
   public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
-    if (!this.instanceCfnGroup) {
-      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
-      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
-        description: this.description || `Parameter group for ${this.family}`,
-        family: this.family,
-        dbParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
-      });
-    }
-    if (this.removalPolicy) {
-      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
-    }
     return {
-      parameterGroupName: this.instanceCfnGroup.ref,
+      parameterGroupName: this.createInstanceParameterGroup(),
     };
   }
 
@@ -225,6 +244,50 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   public addParameter(key: string, value: string): boolean {
     this.parameters[key] = value;
     return true;
+  }
+
+  /**
+   * Creates the instance parameter group CloudFormation resource if it doesn't exist.
+   * @returns parameter group name
+   */
+  private createInstanceParameterGroup(): string {
+    if (!this.instanceCfnGroup) {
+      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
+      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
+        description: this.description || `Parameter group for ${this.family}`,
+        family: this.family,
+        dbParameterGroupName: this.name,
+        parameters: Lazy.any({ produce: () => this.parameters }),
+      });
+    }
+
+    if (this.removalPolicy) {
+      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy);
+    }
+
+    return this.instanceCfnGroup.ref;
+  }
+
+  /**
+   * Creates the cluster parameter group CloudFormation resource if it doesn't exist.
+   * @returns parameter group name
+   */
+  private createClusterParameterGroup(): string {
+    if (!this.clusterCfnGroup) {
+      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
+      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
+        description: this.description || `Cluster parameter group for ${this.family}`,
+        family: this.family,
+        dbClusterParameterGroupName: this.name,
+        parameters: Lazy.any({ produce: () => this.parameters }),
+      });
+    }
+
+    if (this.removalPolicy) {
+      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy);
+    }
+
+    return this.clusterCfnGroup.ref;
   }
 
   /**

@@ -1373,7 +1373,7 @@ of a database instance or cluster.
 
 By default, `ParameterGroup` uses a lazy creation pattern and only generates the
 resource when bound to an instance or cluster. To create a standalone parameter group,
-explicitly call the relevant bind method:
+explicitly call the `create` method:
 
 **For instance parameter group (AWS::RDS::DBParameterGroup):**
 
@@ -1390,7 +1390,7 @@ const parameterGroup = new rds.ParameterGroup(this, 'InstanceParameterGroup', {
 });
 
 // Explicitly create the resource
-parameterGroup.bindToInstance({});
+parameterGroup.create(rds.ParameterGroupType.INSTANCE);
 ```
 
 **For cluster parameter group (AWS::RDS::DBClusterParameterGroup):**
@@ -1407,7 +1407,7 @@ const clusterParameterGroup = new rds.ParameterGroup(this, 'ClusterParameterGrou
 });
 
 // Explicitly create the resource
-clusterParameterGroup.bindToCluster({});
+parameterGroup.create(rds.ParameterGroupType.CLUSTER);
 ```
 
 ## Serverless v1
