@@ -149,6 +149,7 @@ export class DomainName extends Resource implements IDomainName {
     return new Import(scope, id);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly domainName: string;
   public readonly domainNameRef: DomainNameReference;
   public readonly domainNameAliasDomainName: string;
