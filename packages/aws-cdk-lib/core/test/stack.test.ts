@@ -810,9 +810,9 @@ describe('stack', () => {
     });
   });
 
-  test('cross-region stack references with useGetStackOutput feature flag', () => {
+  test('cross-region stack references with nativeCrossAccountRegionReferences feature flag', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.USE_GET_STACK_OUTPUT]: true } });
+    const app = new App({ context: { [cxapi.NATIVE_CROSS_ACCOUNT_REGION_REFERENCES]: true } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',

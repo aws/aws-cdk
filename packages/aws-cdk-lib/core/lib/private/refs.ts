@@ -129,7 +129,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-    if (FeatureFlags.of(consumer).isEnabled(cxapi.USE_GET_STACK_OUTPUT) ?? false) {
+    if (FeatureFlags.of(consumer).isEnabled(cxapi.NATIVE_CROSS_ACCOUNT_REGION_REFERENCES) ?? false) {
       return createGetStackOutput(reference);
     }
     return createCrossRegionImportValue(reference, consumer);

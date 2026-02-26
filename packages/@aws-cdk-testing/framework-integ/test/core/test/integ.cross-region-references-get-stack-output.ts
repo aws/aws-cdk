@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib/core';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { USE_GET_STACK_OUTPUT } from 'aws-cdk-lib/cx-api';
+import { NATIVE_CROSS_ACCOUNT_REGION_REFERENCES } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
-  context: { [USE_GET_STACK_OUTPUT]: true },
+  context: { [NATIVE_CROSS_ACCOUNT_REGION_REFERENCES]: true },
 });
 
 const producingStack = new cdk.Stack(app, 'CrossRegionRefProducerInteg', {
