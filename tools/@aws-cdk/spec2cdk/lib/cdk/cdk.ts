@@ -90,6 +90,7 @@ export class Interfaces extends ExternalModule {
   public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
 
   public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
+  public readonly IKeyRef = Type.fromName(this, 'aws_kms.IKeyRef');
   public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
   public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
   public readonly IDeliveryDestinationRef = Type.fromName(this, 'aws_logs.IDeliveryDestinationRef');
