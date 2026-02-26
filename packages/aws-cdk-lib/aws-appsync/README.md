@@ -950,7 +950,7 @@ new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-If you wish to enable enhanced monitoring only for subset of data sources or resolvers you are use following configuration
+If you wish to enable enhanced metrics only for subset of data sources or resolvers you can use the following configuration.
 
 ```ts
 const schema = new appsync.SchemaFile({ filePath: 'mySchemaFile' })
