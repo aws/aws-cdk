@@ -1,5 +1,5 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { App, RemovalPolicy, Stack, type StackProps } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
