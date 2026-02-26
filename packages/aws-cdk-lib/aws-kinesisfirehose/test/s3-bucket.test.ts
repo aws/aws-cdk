@@ -916,10 +916,15 @@ describe('S3 destination', () => {
   });
 
   describe('customTimeZone', () => {
-    it('sets customTimeZone', () => {
+    test.each([
+      cdk.TimeZone.ASIA_TOKYO,
+      cdk.TimeZone.AMERICA_LOS_ANGELES,
+      cdk.TimeZone.AMERICA_PORT_MINUS_AU_MINUS_PRINCE,
+      cdk.TimeZone.of('UTC'),
+    ])('sets customTimeZone: %s', (timezone: cdk.TimeZone) => {
       const destination = new firehose.S3Bucket(bucket, {
         role: destinationRole,
-        timeZone: cdk.TimeZone.ASIA_TOKYO,
+        timeZone: timezone,
       });
       new firehose.DeliveryStream(stack, 'DeliveryStream', {
         destination: destination,
@@ -927,23 +932,7 @@ describe('S3 destination', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         ExtendedS3DestinationConfiguration: {
-          CustomTimeZone: 'Asia/Tokyo',
-        },
-      });
-    });
-
-    it('sets customTimeZone UTC', () => {
-      const destination = new firehose.S3Bucket(bucket, {
-        role: destinationRole,
-        timeZone: cdk.TimeZone.of('UTC'),
-      });
-      new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destination: destination,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-        ExtendedS3DestinationConfiguration: {
-          CustomTimeZone: 'UTC',
+          CustomTimeZone: timezone.timezoneName,
         },
       });
     });

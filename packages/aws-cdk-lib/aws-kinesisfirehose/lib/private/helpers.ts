@@ -283,7 +283,7 @@ export function createTimezoneName(scope: Construct, timezone?: cdk.TimeZone): s
   const isEmpty = timezoneName === '';
   const isThreeLetterTimezone = /^[A-Za-z]{3}$/.test(timezoneName);
   const isInvalidTimezone = invalidTimezoneNames.includes(timezoneName);
-  const hasInvalidCharacters = !/^[a-zA-Z/_]+$/.test(timezoneName);
+  const hasInvalidCharacters = !/^[a-zA-Z/_\-]+$/.test(timezoneName);
 
   if (isEmpty || isThreeLetterTimezone || isInvalidTimezone || hasInvalidCharacters) {
     throw new cdk.ValidationError(
