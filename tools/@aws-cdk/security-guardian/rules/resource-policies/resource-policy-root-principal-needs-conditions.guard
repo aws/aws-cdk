@@ -31,12 +31,14 @@
 # - AWS::KMS::Key - Key policies commonly use :root to delegate to IAM
 # - AWS::SecretsManager::Secret - Similar delegation pattern to KMS
 # - AWS::Logs::ResourcePolicy - Policy stored as string, not JSON
+# - AWS::XRay::ResourcePolicy - Policy stored as string, not JSON
 # - AWS::IAM::Role - Covered by IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS rule
 
 let resources_with_policies = Resources.*[
   Type != 'AWS::KMS::Key'
   Type != 'AWS::SecretsManager::Secret'
   Type != 'AWS::Logs::ResourcePolicy'
+  Type != 'AWS::XRay::ResourcePolicy'
   Type != 'AWS::IAM::Role'
   Metadata.guard.SuppressedRules not exists or
   Metadata.guard.SuppressedRules.* != "RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS"

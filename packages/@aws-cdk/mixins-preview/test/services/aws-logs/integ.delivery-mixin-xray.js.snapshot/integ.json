@@ -3,7 +3,7 @@
   "testCases": {
     "DeliveryTest/DefaultTest": {
       "stacks": [
-        "VendedLogsMultiplesTest"
+        "VendedLogsMixinTest"
       ],
       "assertionStack": "DeliveryTest/DefaultTest/DeployAssert",
       "assertionStackName": "DeliveryTestDefaultTestDeployAssert48416031"

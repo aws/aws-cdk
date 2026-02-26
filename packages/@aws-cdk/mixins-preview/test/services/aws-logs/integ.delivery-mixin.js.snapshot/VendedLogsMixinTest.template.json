@@ -10,7 +10,7 @@
     "Name": "vended-logs-mixin-event-bus"
    }
   },
-  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E": {
+  "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -20,7 +20,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44",
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMiroupD06F335FDE18FD44",
     "OutputFormat": "json"
    },
    "DependsOn": [
@@ -32,7 +32,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
+      "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813",
       "Arn"
      ]
     },
@@ -47,7 +47,7 @@
     ]
    },
    "DependsOn": [
-    "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
+    "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813",
     "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
    ]
   },

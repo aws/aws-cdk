@@ -3,11 +3,12 @@
   "testCases": {
     "DeliveryTest/DefaultTest": {
       "stacks": [
-        "VendedLogsMultiplesTest"
+        "destination-stack",
+        "source-stack"
       ],
       "assertionStack": "DeliveryTest/DefaultTest/DeployAssert",
       "assertionStackName": "DeliveryTestDefaultTestDeployAssert48416031"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
