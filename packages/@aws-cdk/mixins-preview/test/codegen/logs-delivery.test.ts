@@ -56,7 +56,7 @@ test('Logs Delivery Mixin for a resource', () => {
             outputFormats: ['json', 'raw', 'plain'],
           },
         ],
-        optionalFields: ['resource_id', 'account_id', 'event_type'],
+        optionalFields: ['resource_id', 'account_id', 'event_type', 'phase1_state'],
       },
       {
         permissionsVersion: 'V2',
@@ -76,7 +76,7 @@ test('Logs Delivery Mixin for a resource', () => {
           },
         ],
         mandatoryFields: ['resource-id', 'body'],
-        optionalFields: ['account.id', 'trace/id', 'span\id'],
+        optionalFields: ['account.id', 'trace/id', 'span*id', '1phase_state', '200version'],
       },
     ],
   });
