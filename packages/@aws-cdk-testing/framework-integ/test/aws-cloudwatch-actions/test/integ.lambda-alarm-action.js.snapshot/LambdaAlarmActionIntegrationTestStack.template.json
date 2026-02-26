@@ -45,7 +45,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "inAlarmLambdaFeatureServiceRoleA2CD21D1"
@@ -57,7 +57,7 @@
     "ActionsEnabled": true,
     "AlarmActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
@@ -81,7 +81,7 @@
     "EvaluationPeriods": 1,
     "InsufficientDataActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
@@ -97,7 +97,7 @@
     "Namespace": "AWS/Lambda",
     "OKActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
@@ -160,13 +160,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "alarmLambdaFeatureServiceRole853A864D"
    ]
   },
-  "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b": {
+  "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -182,7 +182,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+     "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
     },
     "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
     "SourceAccount": {
@@ -201,7 +201,7 @@
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
-     "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+     "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
     },
     "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
     "SourceAccount": {
@@ -223,7 +223,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b",
+      "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e",
       "Version"
      ]
     },
@@ -318,7 +318,7 @@
     "ActionsEnabled": true,
     "AlarmActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
@@ -342,7 +342,7 @@
     "EvaluationPeriods": 1,
     "InsufficientDataActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
@@ -358,7 +358,7 @@
     "Namespace": "AWS/Lambda",
     "OKActions": [
      {
-      "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+      "Ref": "alarmLambdaFeatureCurrentVersionCF397519fbe002bd720e539c34188734c426102e"
      },
      {
       "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"

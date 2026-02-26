@@ -129,7 +129,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AuthorizerFunctionServiceRole5B2A061B"
@@ -594,7 +594,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4bd7add6ba4e30f916295c54d92f3a9ab263dbad02f9f256b589191b2c5e3e8e.zip"
+     "S3Key": "46c12e1936b105919ea2f28aabd2fcd71c9af68ce59b8f8d3ae7fc9bdb87162c.zip"
     },
     "Environment": {
      "Variables": {

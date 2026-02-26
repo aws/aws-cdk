@@ -23,7 +23,7 @@
       ]
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    }
   },
   "Bucket83908E77": {

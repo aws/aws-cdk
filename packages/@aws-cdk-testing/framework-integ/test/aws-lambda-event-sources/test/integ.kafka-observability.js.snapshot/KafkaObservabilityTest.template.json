@@ -78,7 +78,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "SMKLoggingFunctionServiceRoleDefaultPolicyB1668236",
@@ -194,7 +194,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "SMKMetricsFunctionServiceRoleDefaultPolicy2EB14F79",

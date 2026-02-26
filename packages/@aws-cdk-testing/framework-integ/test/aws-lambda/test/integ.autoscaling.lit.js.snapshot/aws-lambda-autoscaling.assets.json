@@ -1,16 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "52.0.0",
   "files": {
-    "b5cd4061f9f1fdab8a90e980a826e770ca41bc8521961ed977ed17acd2623cfa": {
+    "6c4783f1d341d891443ba39e037166be3002376690d82b874e314569ca7ead8b": {
       "displayName": "aws-lambda-autoscaling Template",
       "source": {
         "path": "aws-lambda-autoscaling.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-c93a08f5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b5cd4061f9f1fdab8a90e980a826e770ca41bc8521961ed977ed17acd2623cfa.json",
+          "objectKey": "6c4783f1d341d891443ba39e037166be3002376690d82b874e314569ca7ead8b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

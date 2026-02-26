@@ -37,7 +37,7 @@
     "Code": {
      "ZipFile": "exports.handler = async () => { console.log('hello world'); };"
     },
-    "Description": "version-hash:0b9cb8a47f6ac9ffda0262eb768e70b8",
+    "Description": "version-hash:1003e41b9c7ba689888715a74f87be23",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -45,13 +45,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
    ]
   },
-  "MyLambdaCurrentVersionE7A382CCe371c9697d7882d1bd7bf42e0dece697": {
+  "MyLambdaCurrentVersionE7A382CC0b443f0ce3e6dec47f2309872512121c": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -70,7 +70,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCe371c9697d7882d1bd7bf42e0dece697",
+      "MyLambdaCurrentVersionE7A382CC0b443f0ce3e6dec47f2309872512121c",
       "Version"
      ]
     },

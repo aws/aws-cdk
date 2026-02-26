@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "files": {
-    "eef90159d78303ea33772534372980c26ba3c0d64d320279a7c48940a5a5ebab": {
+    "69bb789afaadb3f105da65472ff36870f0e095450e084a40c62c232662891a60": {
+      "displayName": "lambda-event-source-kinesis Template",
       "source": {
         "path": "lambda-event-source-kinesis.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-08313038": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "eef90159d78303ea33772534372980c26ba3c0d64d320279a7c48940a5a5ebab.json",
+          "objectKey": "69bb789afaadb3f105da65472ff36870f0e095450e084a40c62c232662891a60.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

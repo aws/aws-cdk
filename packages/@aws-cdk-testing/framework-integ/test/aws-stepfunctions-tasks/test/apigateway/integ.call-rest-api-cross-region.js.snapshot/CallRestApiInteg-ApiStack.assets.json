@@ -1,31 +1,31 @@
 {
-  "version": "44.0.0",
+  "version": "52.0.0",
   "files": {
-    "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b": {
+    "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4": {
       "displayName": "CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider Code",
       "source": {
-        "path": "asset.bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b",
+        "path": "asset.60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-west-2": {
+        "current_account-us-west-2-10366f96": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b.zip",
+          "objectKey": "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4.zip",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
       }
     },
-    "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4": {
+    "d260056665698c39b67e80a8d9debc3d9afd32ecf3ac7949c2820c035f7c478c": {
       "displayName": "CallRestApiInteg-ApiStack Template",
       "source": {
         "path": "CallRestApiInteg-ApiStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2": {
+        "current_account-us-west-2-def286c4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4.json",
+          "objectKey": "d260056665698c39b67e80a8d9debc3d9afd32ecf3ac7949c2820c035f7c478c.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

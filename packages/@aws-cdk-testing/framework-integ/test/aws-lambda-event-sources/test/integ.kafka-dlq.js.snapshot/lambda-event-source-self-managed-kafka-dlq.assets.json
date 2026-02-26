@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "457d39b8f4743fd62862658c4f58c720dc89747080bbaf6c68a824ea08e5e731": {
+    "fc792d576cb1207f0672450737629126d41efdae4f452fe5abe68264e7fd46f6": {
       "displayName": "lambda-event-source-self-managed-kafka-dlq Template",
       "source": {
         "path": "lambda-event-source-self-managed-kafka-dlq.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-01826928": {
+        "current_account-current_region-1442bcf8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "457d39b8f4743fd62862658c4f58c720dc89747080bbaf6c68a824ea08e5e731.json",
+          "objectKey": "fc792d576cb1207f0672450737629126d41efdae4f452fe5abe68264e7fd46f6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

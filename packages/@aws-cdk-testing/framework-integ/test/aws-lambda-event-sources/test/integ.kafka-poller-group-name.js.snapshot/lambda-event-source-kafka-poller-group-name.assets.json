@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "ac34b1bd2925039e18b6b7d53e3c3735bd06babcd38d102d92ec2270b3469bb9": {
+    "53aecf17c95df9a5ad12196ab026819508ddede67cecd4da27e5594580b6c999": {
       "displayName": "lambda-event-source-kafka-poller-group-name Template",
       "source": {
         "path": "lambda-event-source-kafka-poller-group-name.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-579bad8a": {
+        "current_account-current_region-13cc5d56": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ac34b1bd2925039e18b6b7d53e3c3735bd06babcd38d102d92ec2270b3469bb9.json",
+          "objectKey": "53aecf17c95df9a5ad12196ab026819508ddede67cecd4da27e5594580b6c999.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
