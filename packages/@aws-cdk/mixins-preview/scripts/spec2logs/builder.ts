@@ -639,7 +639,7 @@ function populateRecordFieldsEnum(fieldArray: string[], recordFields: EnumType) 
   for (let field of fieldArray) {
     // field names must be valid typescript identifiers, which means they cannot have a number as their first character and the only special character they can have are $ or _
     const leadingNumbers = field.match(/^(\d+)/);
-    const fieldName = leadingNumbers ? field.slice(leadingNumbers[0].length) : field;
+    const fieldName = leadingNumbers ? '_' + field.slice(leadingNumbers[0].length) : field;
     recordFields.addMember({ name: fieldName.split(/[^a-zA-Z0-9$_]+/).join('_').toUpperCase(), value: field });
   }
 }
