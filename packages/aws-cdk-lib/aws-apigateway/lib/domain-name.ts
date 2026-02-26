@@ -238,6 +238,7 @@ export class DomainName extends Resource implements IDomainName {
     SecurityPolicy.TLS12_2018_EDGE,
   ];
 
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly domainName: string;
   public readonly domainNameRef: DomainNameReference;
   public readonly domainNameAliasDomainName: string;
