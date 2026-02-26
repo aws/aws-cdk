@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "ConfigRecorderRoleC4E33AA3": {
+  "ConfigPrerequisitesRoleAB65121E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "ConfigRecorder": {
+  "ConfigPrerequisitesRecorderF50F1E3E": {
    "Type": "AWS::Config::ConfigurationRecorder",
    "Properties": {
     "RecordingGroup": {
@@ -43,13 +43,13 @@
     },
     "RoleARN": {
      "Fn::GetAtt": [
-      "ConfigRecorderRoleC4E33AA3",
+      "ConfigPrerequisitesRoleAB65121E",
       "Arn"
      ]
     }
    }
   },
-  "ConfigDeliveryBucket004ED7F3": {
+  "ConfigPrerequisitesDeliveryBucketC25E0643": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -62,11 +62,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ConfigDeliveryBucketPolicy210B6CAB": {
+  "ConfigPrerequisitesDeliveryBucketPolicy19A7503F": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "ConfigDeliveryBucket004ED7F3"
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
     },
     "PolicyDocument": {
      "Statement": [
@@ -89,7 +89,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "ConfigDeliveryBucket004ED7F3",
+          "ConfigPrerequisitesDeliveryBucketC25E0643",
           "Arn"
          ]
         },
@@ -99,7 +99,7 @@
           [
            {
             "Fn::GetAtt": [
-             "ConfigDeliveryBucket004ED7F3",
+             "ConfigPrerequisitesDeliveryBucketC25E0643",
              "Arn"
             ]
            },
@@ -120,7 +120,7 @@
        },
        "Resource": {
         "Fn::GetAtt": [
-         "ConfigDeliveryBucket004ED7F3",
+         "ConfigPrerequisitesDeliveryBucketC25E0643",
          "Arn"
         ]
        }
@@ -142,7 +142,7 @@
          [
           {
            "Fn::GetAtt": [
-            "ConfigDeliveryBucket004ED7F3",
+            "ConfigPrerequisitesDeliveryBucketC25E0643",
             "Arn"
            ]
           },
@@ -156,7 +156,7 @@
     }
    }
   },
-  "ConfigDeliveryBucketAutoDeleteObjectsCustomResourceCB369B77": {
+  "ConfigPrerequisitesDeliveryBucketAutoDeleteObjectsCustomResource0F5D7204": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -166,14 +166,22 @@
      ]
     },
     "BucketName": {
-     "Ref": "ConfigDeliveryBucket004ED7F3"
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
     }
    },
    "DependsOn": [
-    "ConfigDeliveryBucketPolicy210B6CAB"
+    "ConfigPrerequisitesDeliveryBucketPolicy19A7503F"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "ConfigPrerequisitesDeliveryChannelF524911C": {
+   "Type": "AWS::Config::DeliveryChannel",
+   "Properties": {
+    "S3BucketName": {
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
+    }
+   }
   },
   "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
    "Type": "AWS::IAM::Role",
@@ -222,7 +230,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "ConfigDeliveryBucket004ED7F3"
+        "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
        },
        " S3 bucket."
       ]
@@ -232,14 +240,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "ConfigDeliveryChannel": {
-   "Type": "AWS::Config::DeliveryChannel",
-   "Properties": {
-    "S3BucketName": {
-     "Ref": "ConfigDeliveryBucket004ED7F3"
-    }
-   }
   },
   "CustomFunctionServiceRoleD3F73B79": {
    "Type": "AWS::IAM::Role",
@@ -348,8 +348,8 @@
     }
    },
    "DependsOn": [
-    "ConfigDeliveryChannel",
-    "ConfigRecorder",
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E",
     "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8",
     "CustomFunctionBADD59E7",
     "CustomFunctionServiceRoleD3F73B79"
@@ -377,8 +377,8 @@
     }
    },
    "DependsOn": [
-    "ConfigDeliveryChannel",
-    "ConfigRecorder"
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
    ]
   },
   "DriftRole8A5FB833": {
@@ -412,8 +412,8 @@
     ]
    },
    "DependsOn": [
-    "ConfigDeliveryChannel",
-    "ConfigRecorder"
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
    ]
   },
   "DriftComplianceChange4C0F2B82": {
@@ -445,8 +445,8 @@
     ]
    },
    "DependsOn": [
-    "ConfigDeliveryChannel",
-    "ConfigRecorder"
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
    ]
   },
   "ComplianceTopic0229448B": {
