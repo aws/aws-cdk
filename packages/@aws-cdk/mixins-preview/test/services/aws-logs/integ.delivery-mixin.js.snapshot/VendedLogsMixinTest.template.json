@@ -20,7 +20,8 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44"
+    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44",
+    "OutputFormat": "json"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -37,7 +38,13 @@
     },
     "DeliverySourceName": {
      "Ref": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
-    }
+    },
+    "RecordFields": [
+     "event_bus_name",
+     "log_level",
+     "details",
+     "resource_arn"
+    ]
    },
    "DependsOn": [
     "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E",
