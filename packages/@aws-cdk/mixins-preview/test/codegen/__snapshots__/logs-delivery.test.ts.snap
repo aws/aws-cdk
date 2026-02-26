@@ -19,31 +19,48 @@ import * as service from "aws-cdk-lib/aws-some";
 export class CfnThingApplicationLogs {
   /**
    * Send logs to an S3 Bucket
+   *
+   * @param props Additional properties that are optionally used in log delivery for S3 destinations
    */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: CfnThingApplicationLogsS3Props): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
-        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
+        kmsKey: props?.encryptionKey,
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: undefined
       }));
     }
   }
 
   /**
    * Send logs to a CloudWatch Log Group
+   *
+   * @param props Additional properties that are optionally used in log delivery for Log Group destinations
    */
-  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
+  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef, props?: CfnThingApplicationLogsLogGroupProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup, {
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: undefined
+      }));
     }
   }
 
   /**
    * Send logs to a Firehose Delivery Stream
+   *
+   * @param props Additional properties that are optionally used in log delivery for Firehose destinations
    */
-  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
+  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef, props?: CfnThingApplicationLogsFirehoseProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream, {
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: undefined
+      }));
     }
   }
 
@@ -53,10 +70,15 @@ export class CfnThingApplicationLogs {
    * Supported destinations are S3, CWL, FH
    * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
    * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   *
+   * @param props Additional properties that are optionally used in log delivery for destinations
    */
-  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef, props?: CfnThingApplicationLogsDestProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
+      return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.DestinationLogsDelivery(destination, {
+        providedFields: props?.recordFields,
+        mandatoryFields: undefined
+      }));
     }
   }
 }
@@ -71,31 +93,48 @@ export class CfnThingApplicationLogs {
 export class CfnThingAccessLogs {
   /**
    * Send logs to an S3 Bucket
+   *
+   * @param props Additional properties that are optionally used in log delivery for S3 destinations
    */
-  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: logsDelivery.IS3LogsDestinationProps): CfnThingLogsMixin {
+  public toS3(bucket: interfaces.aws_s3.IBucketRef, props?: CfnThingAccessLogsS3Props): CfnThingLogsMixin {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
-        kmsKey: (props && props.encryptionKey) ? props.encryptionKey : undefined
+        kmsKey: props?.encryptionKey,
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: ["resource-id","body"]
       }));
     }
   }
 
   /**
    * Send logs to a CloudWatch Log Group
+   *
+   * @param props Additional properties that are optionally used in log delivery for Log Group destinations
    */
-  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef): CfnThingLogsMixin {
+  public toLogGroup(logGroup: interfaces.aws_logs.ILogGroupRef, props?: CfnThingAccessLogsLogGroupProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.LogGroupLogsDelivery(logGroup, {
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: ["resource-id","body"]
+      }));
     }
   }
 
   /**
    * Send logs to a Firehose Delivery Stream
+   *
+   * @param props Additional properties that are optionally used in log delivery for Firehose destinations
    */
-  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef): CfnThingLogsMixin {
+  public toFirehose(deliveryStream: interfaces.aws_kinesisfirehose.IDeliveryStreamRef, props?: CfnThingAccessLogsFirehoseProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.FirehoseLogsDelivery(deliveryStream, {
+        outputFormat: props?.outputFormat,
+        providedFields: props?.recordFields,
+        mandatoryFields: ["resource-id","body"]
+      }));
     }
   }
 
@@ -105,10 +144,15 @@ export class CfnThingAccessLogs {
    * Supported destinations are S3, CWL, FH
    * You are responsible for setting up the correct permissions for your delivery destination, toDestination() does not set up any permissions for you.
    * Delivery destinations that are imported from another stack using CfnDeliveryDestination.fromDeliveryDestinationArn() or CfnDeliveryDestination.fromDeliveryDestinationName() are supported by toDestination().
+   *
+   * @param props Additional properties that are optionally used in log delivery for destinations
    */
-  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef): CfnThingLogsMixin {
+  public toDestination(destination: interfaces.aws_logs.IDeliveryDestinationRef, props?: CfnThingAccessLogsDestProps): CfnThingLogsMixin {
     {
-      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination));
+      return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.DestinationLogsDelivery(destination, {
+        providedFields: props?.recordFields,
+        mandatoryFields: ["resource-id","body"]
+      }));
     }
   }
 }
@@ -157,5 +201,169 @@ export class CfnThingLogsMixin extends core.Mixin implements core.IMixin {
     const sourceArn = service.CfnThing.arnForThing(resource);
     this.logDelivery.bind(resource, this.logType, sourceArn);
   }
+}
+
+/**
+ * Output Format options for each destination of CfnThingApplicationLogs.
+ */
+export class CfnThingApplicationLogsOutputFormat {
+
+}
+
+export namespace CfnThingApplicationLogsOutputFormat {
+  export enum S3 {
+    JSON = "json",
+    PLAIN = "plain",
+    W3C = "w3c",
+    PARQUET = "parquet",
+  }
+
+  export enum LogGroup {
+    PLAIN = "plain",
+    JSON = "json",
+  }
+
+  export enum Firehose {
+    JSON = "json",
+    RAW = "raw",
+    PLAIN = "plain",
+  }
+}
+
+export enum CfnThingApplicationLogsRecordFields {
+  RESOURCE_ID = "resource_id",
+  ACCOUNT_ID = "account_id",
+  EVENT_TYPE = "event_type",
+}
+
+export interface CfnThingApplicationLogsS3Props {
+  /**
+   * Encrpytion key for your delivery bucket
+   */
+  readonly encryptionKey?: interfaces.aws_kms.IKeyRef;
+
+  /**
+   * Format for log output, options are json,plain,w3c,parquet
+   */
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.S3;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
+}
+
+export interface CfnThingApplicationLogsLogGroupProps {
+  /**
+   * Format for log output, options are plain,json
+   */
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.LogGroup;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
+}
+
+export interface CfnThingApplicationLogsFirehoseProps {
+  /**
+   * Format for log output, options are json,raw,plain
+   */
+  readonly outputFormat?: CfnThingApplicationLogsOutputFormat.Firehose;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
+}
+
+export interface CfnThingApplicationLogsDestProps {
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingApplicationLogsRecordFields>;
+}
+
+/**
+ * Output Format options for each destination of CfnThingAccessLogs.
+ */
+export class CfnThingAccessLogsOutputFormat {
+
+}
+
+export namespace CfnThingAccessLogsOutputFormat {
+  export enum S3 {
+    JSON = "json",
+    PLAIN = "plain",
+    W3C = "w3c",
+    PARQUET = "parquet",
+  }
+
+  export enum LogGroup {
+    PLAIN = "plain",
+    JSON = "json",
+  }
+
+  export enum Firehose {
+    JSON = "json",
+    RAW = "raw",
+    PLAIN = "plain",
+  }
+}
+
+export enum CfnThingAccessLogsRecordFields {
+  ACCOUNT_ID = "account-id",
+  TRACE_ID = "trace-id",
+  SPAN_ID = "span-id",
+  RESOURCE_ID = "resource-id",
+  BODY = "body",
+}
+
+export interface CfnThingAccessLogsS3Props {
+  /**
+   * Encrpytion key for your delivery bucket
+   */
+  readonly encryptionKey?: interfaces.aws_kms.IKeyRef;
+
+  /**
+   * Format for log output, options are json,plain,w3c,parquet
+   */
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.S3;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
+}
+
+export interface CfnThingAccessLogsLogGroupProps {
+  /**
+   * Format for log output, options are plain,json
+   */
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.LogGroup;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
+}
+
+export interface CfnThingAccessLogsFirehoseProps {
+  /**
+   * Format for log output, options are json,raw,plain
+   */
+  readonly outputFormat?: CfnThingAccessLogsOutputFormat.Firehose;
+
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
+}
+
+export interface CfnThingAccessLogsDestProps {
+  /**
+   * Record fields that can be provided to a log delivery
+   */
+  readonly recordFields?: Array<CfnThingAccessLogsRecordFields>;
 }"
 `;
