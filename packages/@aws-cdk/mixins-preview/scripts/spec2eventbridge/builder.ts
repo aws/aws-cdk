@@ -216,6 +216,10 @@ class EventBridgeEventsClass extends ClassType {
       const defaultDoc = resolver ?
         `Filter with the ${this.resource.name} reference` :
         'Do not filter on this field';
+      // Suppress JSII5019 when property name conflicts with the declaring type name
+      const docTags = camelCaseName.toLowerCase() === target.name.toLowerCase()
+        ? { jsii: 'suppress JSII5019 Generated code' }
+        : undefined;
       // Always add property to interface (even if it has a resolver)
       target.addProperty({
         name: camelCaseName,
@@ -226,6 +230,7 @@ class EventBridgeEventsClass extends ClassType {
           summary: propSpec.documentation || `${propName} property`,
           remarks: `Specify an array of string values to match this event if the actual value of ${propName} is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.`,
           default: defaultDoc,
+          docTags,
         },
       });
     }
