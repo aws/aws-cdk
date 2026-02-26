@@ -312,9 +312,9 @@ export namespace CfnThingAccessLogsOutputFormat {
 }
 
 export enum CfnThingAccessLogsRecordFields {
-  ACCOUNT_ID = "account-id",
-  TRACE_ID = "trace-id",
-  SPAN_ID = "span-id",
+  ACCOUNT_ID = "account.id",
+  TRACE_ID = "trace/id",
+  SPANID = "spanid",
   RESOURCE_ID = "resource-id",
   BODY = "body",
 }
