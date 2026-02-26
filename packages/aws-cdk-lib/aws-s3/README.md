@@ -216,6 +216,23 @@ will still be limited to the resources defined in your pattern.
 
 If you need to restrict the `s3:ListBucket` action to specific paths, you can add a `Condition` to your policy that limits the `objectsKeyPattern` to specific folders. For more details and examples, see the [AWS documentation on bucket policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-folders).
 
+## Attribute-Based Access Control (ABAC)
+
+You can enable ABAC (Attribute-Based Access Control) for an S3 general purpose bucket.
+When ABAC is enabled for the general purpose bucket, you can use tags to manage access to the general purpose buckets as well as for cost tracking purposes.
+When ABAC is disabled for the general purpose buckets, you can only use tags for cost tracking purposes.
+
+To enable ABAC on a bucket:
+
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  abacStatus: true,
+});
+```
+
+By default, if `abacStatus` is not specified, ABAC will not be enabled for the bucket.
+
+For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/AmazonS3/latest/userguide/buckets-tagging.html).
 
 ## AWS Foundational Security Best Practices
 

@@ -1167,7 +1167,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
   ],
   "DefaultInstanceClass": [
     "default_x86_64",
@@ -3898,6 +3899,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataStandardDark",
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
+  ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
   ],
   "SubnetType": [
     "Isolated",

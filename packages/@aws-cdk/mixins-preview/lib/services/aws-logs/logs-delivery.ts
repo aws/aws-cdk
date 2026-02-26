@@ -40,6 +40,36 @@ export interface ILogsDelivery {
 }
 
 /**
+ * Props for RecordFields involved in log delivery
+ */
+export interface RecordFieldDeliveryProps {
+  /**
+   * RecordFields the user has defined to be used in log delivery
+   *
+   * @defualt - no fields were provided
+   */
+  readonly providedFields?: string[];
+  /**
+   * Any recordFields that a mandatory to be included in a log delivery of a certain log type
+   *
+   * @default - log type has no mandatory fields
+   */
+  readonly mandatoryFields?: string[];
+}
+
+/**
+ * Props for Log Deliveries
+ */
+export interface DeliveryProps extends RecordFieldDeliveryProps {
+  /**
+   * Format of the logs that are sent to the delivery destination specified
+   *
+   * @defualt - undefined, use whatever default the delivery destination specifies
+   */
+  readonly outputFormat?: string;
+}
+
+/**
  * S3 Vended Logs Permissions version.
  */
 export enum S3LogsDeliveryPermissionsVersion {
@@ -54,21 +84,9 @@ export enum S3LogsDeliveryPermissionsVersion {
 }
 
 /**
- * Properties for S3 logs destination configuration.
- */
-export interface IS3LogsDestinationProps {
-  /**
-   * KMS key to use for encrypting logs in the S3 bucket.
-   *
-   * @default - No encryption key is configured
-   */
-  readonly encryptionKey?: IKeyRef;
-}
-
-/**
  * Props for S3LogsDelivery
  */
-export interface S3LogsDeliveryProps {
+export interface S3LogsDeliveryProps extends DeliveryProps {
   /**
    * The permissions version ('V1' or 'V2') to be used for this delivery.
    * Depending on the source of the logs, different permissions are required.
@@ -92,6 +110,9 @@ export class S3LogsDelivery implements ILogsDelivery {
   private readonly bucket: s3.IBucketRef;
   private readonly permissions: S3LogsDeliveryPermissionsVersion;
   private readonly kmsKey: IKeyRef | undefined;
+  private readonly outputFormat: string | undefined;
+  private readonly providedFields: string[] | undefined;
+  private readonly mandatoryFields: string[] | undefined;
 
   /**
    * Creates a new S3 Bucket delivery.
@@ -100,6 +121,9 @@ export class S3LogsDelivery implements ILogsDelivery {
     this.bucket = bucket;
     this.permissions = props.permissionsVersion ?? S3LogsDeliveryPermissionsVersion.V2;
     this.kmsKey = props.kmsKey;
+    this.outputFormat = props.outputFormat;
+    this.providedFields = props.providedFields;
+    this.mandatoryFields = props.mandatoryFields;
   }
 
   /**
@@ -117,9 +141,12 @@ export class S3LogsDelivery implements ILogsDelivery {
       encryptionKey: this.kmsKey,
     });
 
+    const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
+
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
       deliverySourceName: deliverySourceRef.deliverySourceName,
+      recordFields,
     });
 
     delivery.node.addDependency(deliverySource);
@@ -138,13 +165,19 @@ export class S3LogsDelivery implements ILogsDelivery {
  */
 export class FirehoseLogsDelivery implements ILogsDelivery {
   private readonly deliveryStream: IDeliveryStreamRef;
+  private readonly outputFormat: string | undefined;
+  private readonly providedFields: string[] | undefined;
+  private readonly mandatoryFields: string[] | undefined;
 
   /**
    * Creates a new Firehose delivery.
    * @param stream - The Kinesis Data Firehose delivery stream
    */
-  constructor(stream: IDeliveryStreamRef) {
+  constructor(stream: IDeliveryStreamRef, props: DeliveryProps = {}) {
     this.deliveryStream = stream;
+    this.outputFormat = props.outputFormat;
+    this.providedFields = props.providedFields;
+    this.mandatoryFields = props.mandatoryFields;
   }
 
   /**
@@ -159,9 +192,12 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
       deliveryStream: this.deliveryStream,
     });
 
+    const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
+
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      recordFields,
     });
 
     delivery.node.addDependency(deliverySource);
@@ -180,13 +216,19 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
  */
 export class LogGroupLogsDelivery implements ILogsDelivery {
   private readonly logGroup: logs.ILogGroupRef;
+  private readonly outputFormat: string | undefined;
+  private readonly providedFields: string[] | undefined;
+  private readonly mandatoryFields: string[] | undefined;
 
   /**
    * Creates a new log group delivery.
    * @param logGroup - The CloudWatch Logs log group reference
    */
-  constructor(logGroup: logs.ILogGroupRef) {
+  constructor(logGroup: logs.ILogGroupRef, props: DeliveryProps = {}) {
     this.logGroup = logGroup;
+    this.outputFormat = props.outputFormat;
+    this.providedFields = props.providedFields;
+    this.mandatoryFields = props.mandatoryFields;
   }
 
   /**
@@ -202,9 +244,12 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
       logGroup: this.logGroup,
     });
 
+    const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
+
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.deliveryDestinationRef.deliveryDestinationArn,
       deliverySourceName: deliverySourceRef.deliverySourceName,
+      recordFields,
     });
 
     delivery.node.addDependency(deliverySource);
@@ -222,10 +267,16 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
  * Delivers vended logs to AWS X-Ray.
  */
 export class XRayLogsDelivery implements ILogsDelivery {
+  private readonly providedFields: string[] | undefined;
+  private readonly mandatoryFields: string[] | undefined;
+
   /**
    * Creates a new X-Ray delivery.
    */
-  constructor() {}
+  constructor(props: RecordFieldDeliveryProps = {}) {
+    this.providedFields = props.providedFields;
+    this.mandatoryFields = props.mandatoryFields;
+  }
 
   /**
    * Binds X-Ray Destination to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
@@ -234,13 +285,16 @@ export class XRayLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const container = new Construct(scope, deliveryId('XRay', logType, scope, deliverySource));
 
-    const deliveryDestination= new XRayDeliveryDestination(container, makeDestId(logType), {
+    const deliveryDestination = new XRayDeliveryDestination(container, makeDestId(logType), {
       sourceResource: sourceResourceArn,
     });
+
+    const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: deliveryDestination.attrArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      recordFields,
     });
 
     delivery.node.addDependency(deliverySource);
@@ -258,12 +312,17 @@ export class XRayLogsDelivery implements ILogsDelivery {
  * Delivers vended logs to a CfnDeliveryDestination specified by an arn.
  */
 export class DestinationLogsDelivery implements ILogsDelivery {
+  private readonly providedFields: string[] | undefined;
+  private readonly mandatoryFields: string[] | undefined;
+
   /**
    * Creates a new Destination delivery.
    */
   private readonly destination: logs.IDeliveryDestinationRef;
-  constructor(destination: logs.IDeliveryDestinationRef) {
+  constructor(destination: logs.IDeliveryDestinationRef, props: RecordFieldDeliveryProps = {}) {
     this.destination = destination;
+    this.providedFields = props.providedFields;
+    this.mandatoryFields = props.mandatoryFields;
   }
 
   /**
@@ -273,10 +332,12 @@ export class DestinationLogsDelivery implements ILogsDelivery {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
     const uniqueName = `Dest${Names.nodeUniqueId(this.destination.node)}`;
     const container = new Construct(scope, deliveryId(uniqueName, logType, scope, deliverySource));
+    const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
 
     const delivery = new logs.CfnDelivery(container, 'Delivery', {
       deliveryDestinationArn: this.destination.deliveryDestinationRef.deliveryDestinationArn,
       deliverySourceName: deliverySource.deliverySourceRef.deliverySourceName,
+      recordFields,
     });
 
     delivery.node.addDependency(deliverySource);
@@ -296,6 +357,20 @@ function deliveryId(destType: string, logType: string, ...scopes: IConstruct[]) 
 
 function makeDestId(logType: string) {
   return 'Dest' + logType.split('_').map(word => word.toLowerCase()).join('-');
+}
+
+function computeRecordFields(providedFields: string[] | undefined, mandatoryFields: string[] | undefined) {
+  if (!providedFields) {
+    // if providedFields is undefined, use default behavior
+    return undefined;
+  } else if (!mandatoryFields) {
+    // if this log type has no mandatory fields, just use the providedFields
+    return providedFields;
+  }
+  // remove any mandatory fields we got from the providedFields array, return a concatination of the providedFields array without the mandatory fields and the mandatory fields
+  // covers instances where a log type has both optional and mandatory fields and instances when an incomplete set of mandatory fields is passed in
+  const onlyOptionalFields = providedFields.filter((field) => {return !mandatoryFields?.includes(field);});
+  return onlyOptionalFields.concat(mandatoryFields);
 }
 
 function getOrCreateDeliverySource(logType: string, resource: IConstruct, sourceArn: string) {
