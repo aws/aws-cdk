@@ -133,6 +133,13 @@ const bucket = new s3.CfnBucket(scope, "Bucket");
 Mixins.of(bucket).apply(new BucketVersioning());
 ```
 
+**BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
+
+```typescript
+const bucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(bucket).apply(new BucketBlockPublicAccess());
+```
+
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
@@ -149,6 +156,21 @@ Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
     principals: [new iam.AnyPrincipal()],
   }),
 ]));
+```
+
+#### ECS-Specific Mixins
+
+**ClusterSettings**: Applies one or more cluster settings to ECS clusters
+
+```typescript
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { ClusterSettings } from '@aws-cdk/mixins-preview/aws-ecs/mixins';
+
+const cluster = new ecs.CfnCluster(scope, "Cluster");
+Mixins.of(cluster).apply(new ClusterSettings([{
+  name: "containerInsights",
+  value: "enhanced",
+}]));
 ```
 
 ### Logs Delivery
@@ -172,7 +194,95 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 
 // Configure log delivery using the mixin
 distribution
-  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup, {
+    outputFormat: cloudfrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
+    recordFields: [
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+    ],
+  }));
+```
+
+Configures vended logs delivery for supported resources when a pre-created destination is provided:
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
+
+// Create CloudFront distribution
+declare const bucket: s3.Bucket;
+const distribution = new cloudfront.Distribution(scope, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+  },
+});
+
+// Create destination bucket
+const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
+// Add permissions to bucket to facilitate log delivery
+const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
+  bucket: destBucket,
+  document: new iam.PolicyDocument(),
+});
+// Create S3 delivery destination for logs
+const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
+  destinationResourceArn: destBucket.bucketArn,
+  name: 'unique-destination-name',
+  deliveryDestinationType: 'S3',
+});
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
+```
+
+Vended Logs Configuration for Cross Account delivery (only supported for S3 and Firehose destinations)
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+import * as logDestinations from '@aws-cdk/mixins-preview/aws-logs';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
+
+const destinationAccount = '123456789012';
+const sourceAccount = '234567890123';
+const region = 'us-east-1';
+
+const app = new App();
+
+const destStack = new Stack(app, 'destination-stack', {
+  env: {
+    account: destinationAccount,
+    region,
+  },
+});
+
+// Create destination bucket
+const destBucket = new s3.Bucket(destStack, 'DeliveryBucket');
+new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
+  bucket: destBucket,
+  sourceAccountId: sourceAccount,
+});
+
+const sourceStack = new Stack(app, 'source-stack', {
+  env: {
+    account: sourceAccount,
+    region,
+  },
+});
+
+// Create CloudFront distribution
+declare const bucket: s3.Bucket;
+const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+  },
+});
+
+const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourceStack, 'Destination', `arn of Delivery Destination in destinationAccount`);
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
 ### L1 Property Mixins

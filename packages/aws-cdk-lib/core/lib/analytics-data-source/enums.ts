@@ -248,6 +248,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ARM64",
     "Neuron"
   ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
+  ],
   "ApiKeyCredentialLocationType": [
     "HEADER",
     "QUERY_PARAMETER"
@@ -1158,7 +1167,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
   ],
   "DefaultInstanceClass": [
     "default_x86_64",
@@ -1641,6 +1651,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPEN",
     "UPDATED",
     "CLOSED"
+  ],
+  "GlobalTableSettingsReplicationMode": [
+    "ENABLED"
   ],
   "GlueVersion": [
     "0.9",
@@ -2720,7 +2733,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPENAPI_SCHEMA",
     "SMITHY_MODEL",
     "LAMBDA",
-    "MCP_SERVER"
+    "MCP_SERVER",
+    "API_GATEWAY"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
@@ -3885,6 +3899,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataStandardDark",
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
+  ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
   ],
   "SubnetType": [
     "Isolated",

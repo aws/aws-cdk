@@ -9,7 +9,7 @@ import { UnscopedValidationError } from '../errors';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 
 /**
  * Represents file path ignoring behavior.
