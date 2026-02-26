@@ -5,6 +5,13 @@
       "stacks": [
         "aws-ecs-integ-alb"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
       "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A"
     }

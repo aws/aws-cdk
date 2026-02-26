@@ -1,4 +1,4 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Port, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -49,6 +49,8 @@ const networkMultipleTargetGroupsFargateService = new NetworkMultipleTargetGroup
 networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({});
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
+
+networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => networkMultipleTargetGroupsFargateService.service.connections.allowFrom(lb, Port.allTcp()));
 
 new IntegTest(app, 'Integ', { testCases: [stack] });
 

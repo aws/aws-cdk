@@ -1,4 +1,4 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Port, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -10,7 +10,7 @@ const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: fal
 const cluster = new Cluster(stack, 'Cluster', { vpc });
 
 // Two load balancers with two listeners and two target groups.
-new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
+const myService = new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
   cluster,
   memoryLimitMiB: 512,
   taskImageOptions: {
@@ -45,6 +45,7 @@ new NetworkMultipleTargetGroupsFargateService(stack, 'myService', {
     },
   ],
 });
+myService.loadBalancers.forEach(lb => myService.service.connections.allowFrom(lb, Port.allTcp()));
 
 new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
   testCases: [stack],
