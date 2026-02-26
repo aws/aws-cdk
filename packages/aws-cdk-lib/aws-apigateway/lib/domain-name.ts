@@ -101,9 +101,9 @@ export enum EndpointAccessMode {
   STRICT = 'STRICT',
 
   /**
-   * Standard mode - default for legacy security policies (TLS_1_0, TLS_1_2).
+   * Basic mode - default for legacy security policies (TLS_1_0, TLS_1_2).
    */
-  STANDARD = 'STANDARD',
+  BASIC = 'BASIC',
 }
 
 export interface DomainNameOptions {
@@ -222,6 +222,21 @@ export class DomainName extends Resource implements IDomainName {
 
     return new Import(scope, id);
   }
+
+  /** Policies that only support non-edge (regional/private) endpoints */
+  private static readonly NON_EDGE_ONLY_POLICIES = [
+    SecurityPolicy.TLS13_1_3_2025_09,
+    SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+    SecurityPolicy.TLS13_1_2_PQ_2025_09,
+    SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+  ];
+
+  /** Policies that only support edge endpoints */
+  private static readonly EDGE_ONLY_POLICIES = [
+    SecurityPolicy.TLS13_2025_EDGE,
+    SecurityPolicy.TLS12_PFS_2025_EDGE,
+    SecurityPolicy.TLS12_2018_EDGE,
+  ];
 
   public readonly domainName: string;
   public readonly domainNameRef: DomainNameReference;
@@ -426,22 +441,7 @@ export class DomainName extends Resource implements IDomainName {
       return;
     }
 
-    // Policies that only support non-edge (regional/private) endpoints
-    const nonEdgeOnlyPolicies = [
-      SecurityPolicy.TLS13_1_3_2025_09,
-      SecurityPolicy.TLS13_1_3_FIPS_2025_09,
-      SecurityPolicy.TLS13_1_2_PQ_2025_09,
-      SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
-    ];
-
-    // Policies that only support edge endpoints
-    const edgeOnlyPolicies = [
-      SecurityPolicy.TLS13_2025_EDGE,
-      SecurityPolicy.TLS12_PFS_2025_EDGE,
-      SecurityPolicy.TLS12_2018_EDGE,
-    ];
-
-    if (endpointType === EndpointType.EDGE && nonEdgeOnlyPolicies.includes(policy)) {
+    if (endpointType === EndpointType.EDGE && DomainName.NON_EDGE_ONLY_POLICIES.includes(policy)) {
       throw new ValidationError(
         `Security policy ${policy} is not supported for edge-optimized endpoints. ` +
         'Use a security policy that supports edge-optimized endpoints. ' +
@@ -450,7 +450,7 @@ export class DomainName extends Resource implements IDomainName {
       );
     }
 
-    if (endpointType !== EndpointType.EDGE && edgeOnlyPolicies.includes(policy)) {
+    if (endpointType !== EndpointType.EDGE && DomainName.EDGE_ONLY_POLICIES.includes(policy)) {
       throw new ValidationError(
         `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
         'Use a policy that supports non-edge endpoints. ' +

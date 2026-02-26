@@ -1072,7 +1072,7 @@ describe('domains', () => {
           domainName: 'example.com',
           certificate: cert,
           securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
-          endpointAccessMode: apigw.EndpointAccessMode.STANDARD, // Wrong value
+          endpointAccessMode: apigw.EndpointAccessMode.BASIC, // Wrong value
         });
       }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
     });
