@@ -301,10 +301,8 @@ export interface EnhancedMetricsConfig {
   readonly dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior;
   /**
    * Controls how operation metrics will be emitted to CloudWatch.
-   *
-   * @default disabled
    */
-  readonly operationLevelMetricsConfig?: OperationLevelMetricsConfig;
+  readonly operationLevelMetricsConfig: OperationLevelMetricsConfig;
   /**
    * Controls how resolver metrics will be emitted to CloudWatch.
    */
@@ -1001,8 +999,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (dataSourceLevelMetricsBehavior === DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS ) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-appsync:fullRequestDataSourceMetrics', 'When DataSourceLevelMetricsBehavior is set to FULL_REQUEST_DATA_SOURCE_METRICS, metrics are sent to CloudWatch for all data sources used in the request, regardless of whether a data source’s MetricsConfig is set to ENABLED or DISABLED.');
     }
-    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig
-      ? config.operationLevelMetricsConfig: OperationLevelMetricsConfig.DISABLED;
+    const operationLevelMetricsEnabled = config.operationLevelMetricsConfig;
     const resolverLevelMetricsBehavior = config.resolverLevelMetricsBehavior;
     if (resolverLevelMetricsBehavior === ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS ) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-appsync:fullRequestResolverMetrics', 'When ResolverLevelMetricsBehavior is set to FULL_REQUEST_RESOLVER_METRICS, metrics are sent to CloudWatch for all resolvers used in the request, regardless of whether a resolver’s MetricsConfig is set to ENABLED or DISABLED.');

@@ -443,6 +443,7 @@ test('GraphqlApi with attach enhanced metrics', () => {
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     enhancedMetricsConfig: {
       dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+      operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.DISABLED,
       resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS,
     },
   });
