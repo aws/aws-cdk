@@ -45,14 +45,18 @@ test('Logs Delivery Mixin for a resource', () => {
         destinations: [
           {
             destinationType: 'S3',
+            outputFormats: ['json', 'plain', 'w3c', 'parquet'],
           },
           {
             destinationType: 'CWL',
+            outputFormats: ['plain', 'json'],
           },
           {
             destinationType: 'FH',
+            outputFormats: ['json', 'raw', 'plain'],
           },
         ],
+        optionalFields: ['resource_id', 'account_id', 'event_type'],
       },
       {
         permissionsVersion: 'V2',
@@ -60,14 +64,19 @@ test('Logs Delivery Mixin for a resource', () => {
         destinations: [
           {
             destinationType: 'S3',
+            outputFormats: ['json', 'plain', 'w3c', 'parquet'],
           },
           {
             destinationType: 'CWL',
+            outputFormats: ['plain', 'json'],
           },
           {
             destinationType: 'FH',
+            outputFormats: ['json', 'raw', 'plain'],
           },
         ],
+        mandatoryFields: ['resource-id', 'body'],
+        optionalFields: ['account-id', 'trace-id', 'span-id'],
       },
     ],
   });

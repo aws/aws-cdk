@@ -194,7 +194,15 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 
 // Configure log delivery using the mixin
 distribution
-  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup, {
+    outputFormat: cloudfrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
+    recordFields: [
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+    ],
+  }));
 ```
 
 Configures vended logs delivery for supported resources when a pre-created destination is provided:

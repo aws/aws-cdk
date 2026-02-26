@@ -67,6 +67,70 @@ describe('S3 Delivery', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(bucketPolicyLogicalId);
   });
 
+  test('creates S3 delivery with outputFormat', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, { outputFormat: 'json' });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates S3 delivery with providedFields', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, { providedFields: ['field1', 'field2'] });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates S3 delivery with both providedFields and mandatoryFields', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates S3 delivery with only mandatoryFields if they are provided', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
   test('creates S3 Delivery when bucket is an L1', () => {
     const bucket = new CfnBucket(stack, 'Destination');
 
@@ -816,6 +880,70 @@ describe('Cloudwatch Logs Delivery', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(cwlPolicyLogicalId);
   });
 
+  test('creates LogGroup delivery with outputFormat', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, { outputFormat: 'json' });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates LogGroup delivery with providedFields', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, { providedFields: ['field1', 'field2'] });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates LogGroup delivery with both providedFields and mandatoryFields', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates LogGroup delivery with only mandatoryFields if they are provided', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
   test('creates Cloudwatch delivery destination when given an L1 Log Group', () => {
     const logGroup = new CfnLogGroup(stack, 'LogGroup', {
       retentionInDays: 7,
@@ -1041,6 +1169,105 @@ describe('Firehose Stream Delivery', () => {
     });
   });
 
+  test('creates Firehose delivery with outputFormat', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, { outputFormat: 'json' });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates Firehose delivery with providedFields', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, { providedFields: ['field1', 'field2'] });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates Firehose delivery with both providedFields and mandatoryFields', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates Firehose delivery with only mandatoryFields if they are provided', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
   test('creates Firehose Delivery with an L1 Delivery Stream', () => {
     const streamBucket = new Bucket(stack, 'DeliveryBucket', {});
     const firehoseRole = new Role(stack, 'FirehoseRole', {
@@ -1134,6 +1361,51 @@ describe('XRay Delivery', () => {
         'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
       },
       Name: Match.stringLikeRegexp('cdk-traces-source-.*'),
+    });
+  });
+
+  test('creates XRay delivery with providedFields', () => {
+    const xrayLogs = new XRayLogsDelivery({ providedFields: ['field1', 'field2'] });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates XRay delivery with both providedFields and mandatoryFields', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates XRay delivery with only mandatoryFields if they are provided', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
     });
   });
 
@@ -1258,6 +1530,71 @@ describe('Destination Delivery', () => {
       DeliverySourceName: {
         Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
       },
+    });
+  });
+
+  test('creates Destination delivery with providedFields', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, { providedFields: ['field1', 'field2'] });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates Destination delivery with both providedFields and mandatoryFields', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates Destination delivery with only mandatoryFields if they are provided', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
     });
   });
 
