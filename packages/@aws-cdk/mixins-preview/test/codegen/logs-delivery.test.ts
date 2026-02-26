@@ -76,7 +76,7 @@ test('Logs Delivery Mixin for a resource', () => {
           },
         ],
         mandatoryFields: ['resource-id', 'body'],
-        optionalFields: ['account-id', 'trace-id', 'span-id'],
+        optionalFields: ['account.id', 'trace/id', 'span\id'],
       },
     ],
   });

@@ -638,6 +638,6 @@ class LogsMixin extends ClassType {
 function populateRecordFieldsEnum(fieldArray: string[], recordFields: EnumType) {
   for (const field of fieldArray) {
     // field names cannot have parentheses () or dashes - and must be all uppper case, value has the actual string value for the field
-    recordFields.addMember({ name: field.split(/[-()]+/).join('_').toUpperCase(), value: field });
+    recordFields.addMember({ name: field.split(/[\-()./]+/).join('_').toUpperCase(), value: field });
   }
 }
