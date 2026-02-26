@@ -19,7 +19,7 @@ class LambdaPermissionConsolidationStack extends Stack {
           headers: { 'Content-Type': 'application/json' }
         };
       }`),
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_24_X,
       handler: 'index.handler',
     });
 

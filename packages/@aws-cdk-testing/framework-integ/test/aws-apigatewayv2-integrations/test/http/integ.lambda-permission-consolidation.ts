@@ -14,7 +14,7 @@ const stack = new Stack(app, 'integ-lambda-permission-consolidation');
 const httpApi = new HttpApi(stack, 'HttpApi');
 
 const lambdaHandler = new lambda.Function(stack, 'Handler', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_24_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: JSON.stringify({ message: \'Hello from \' + event.requestContext.http.path }) }; };'),
 });

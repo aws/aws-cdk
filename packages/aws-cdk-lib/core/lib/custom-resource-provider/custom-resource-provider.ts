@@ -155,5 +155,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
  * The name of the latest Lambda node runtime available by AWS region.
  */
 export function determineLatestNodeRuntimeName(scope: Construct): string {
-  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs18.x');
+  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs22.x');
 }
