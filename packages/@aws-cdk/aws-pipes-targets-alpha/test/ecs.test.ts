@@ -10,6 +10,7 @@ import {
   FargatePlatformVersion,
   PlacementConstraint,
   PlacementStrategy,
+  PropagatedTagSource,
   TaskDefinition,
 } from 'aws-cdk-lib/aws-ecs';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
@@ -627,6 +628,74 @@ describe('ecs-task', () => {
           target,
         });
       }).toThrow(/You can specify ENABLED only when LaunchType in EcsParameters is set to FARGATE/);
+    });
+
+    it('should not have NetworkConfiguration for EC2 bridge mode task', () => {
+      const ec2TaskDef = new TaskDefinition(stack, 'Ec2TaskDef', {
+        compatibility: Compatibility.EC2,
+      });
+      ec2TaskDef.addContainer('Container', {
+        image: ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+        memoryLimitMiB: 512,
+      });
+
+      const target = new EcsTaskTarget(cluster, { taskDefinition: ec2TaskDef });
+
+      new Pipe(stack, 'Pipe', {
+        source: new TestSource(),
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Pipes::Pipe', {
+        TargetParameters: {
+          EcsTaskParameters: {
+            NetworkConfiguration: Match.absent(),
+          },
+        },
+      });
+    });
+
+    it('should have propagateTags when specified', () => {
+      const target = new EcsTaskTarget(cluster, {
+        taskDefinition,
+        propagateTags: PropagatedTagSource.TASK_DEFINITION,
+      });
+
+      new Pipe(stack, 'Pipe', {
+        source: new TestSource(),
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Pipes::Pipe', {
+        TargetParameters: {
+          EcsTaskParameters: {
+            PropagateTags: 'TASK_DEFINITION',
+          },
+        },
+      });
+    });
+
+    it('should have referenceId when specified', () => {
+      const target = new EcsTaskTarget(cluster, {
+        taskDefinition,
+        referenceId: 'my-reference-id',
+      });
+
+      new Pipe(stack, 'Pipe', {
+        source: new TestSource(),
+        target,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Pipes::Pipe', {
+        TargetParameters: {
+          EcsTaskParameters: {
+            ReferenceId: 'my-reference-id',
+          },
+        },
+      });
     });
   });
 });

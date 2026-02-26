@@ -1,24 +1,31 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import * as cdk from 'aws-cdk-lib';
-import {
-  Connections,
+import type {
   IConnectable,
   ISecurityGroup,
   IVpc,
-  SecurityGroup,
   SubnetSelection,
 } from 'aws-cdk-lib/aws-ec2';
 import {
+  Connections,
+  SecurityGroup,
+} from 'aws-cdk-lib/aws-ec2';
+import type {
   CapacityProviderStrategy,
-  Compatibility,
   FargatePlatformVersion,
   ICluster,
   ITaskDefinition,
   PlacementConstraint,
   PlacementStrategy,
+  PropagatedTagSource,
 } from 'aws-cdk-lib/aws-ecs';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import {
+  Compatibility,
+  NetworkMode,
+} from 'aws-cdk-lib/aws-ecs';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 
 /**
  * Configuration returned from binding compute to the pipe
@@ -58,47 +65,22 @@ enum LaunchType {
   EXTERNAL = 'EXTERNAL',
 }
 abstract class LaunchTypeCompute implements IEcsTaskTargetCompute {
-  constructor(private readonly launchType: LaunchType) {}
+  constructor(private readonly launchType: LaunchType) { }
   bind(
     _pipe: IPipe,
     ecsTaskParameters: CfnPipe.PipeTargetEcsTaskParametersProperty,
   ): IEcsTaskTargetComputeConfig {
-    ecsTaskParameters = {
-      ...ecsTaskParameters,
-      launchType: this.launchType,
-    } satisfies CfnPipe.PipeTargetEcsTaskParametersProperty;
-    return { ecsTaskParameters };
-  }
-
-  protected isAssignPublicIp(
-    ecsTaskParameters: CfnPipe.PipeTargetEcsTaskParametersProperty,
-  ) {
-    return (
-      ecsTaskParameters.networkConfiguration &&
-      'awsvpcConfiguration' in ecsTaskParameters.networkConfiguration &&
-      ecsTaskParameters.networkConfiguration.awsvpcConfiguration &&
-      'assignPublicIp' in
-        ecsTaskParameters.networkConfiguration.awsvpcConfiguration &&
-      ecsTaskParameters.networkConfiguration.awsvpcConfiguration
-        ?.assignPublicIp === 'ENABLED'
-    );
+    return {
+      ecsTaskParameters: {
+        ...ecsTaskParameters,
+        launchType: this.launchType,
+      } satisfies CfnPipe.PipeTargetEcsTaskParametersProperty,
+    };
   }
 }
 class Ec2LaunchTypeCompute extends LaunchTypeCompute {
   constructor() {
     super(LaunchType.EC2);
-  }
-  bind(
-    pipe: IPipe,
-    ecsTaskParameters: CfnPipe.PipeTargetEcsTaskParametersProperty,
-  ): IEcsTaskTargetComputeConfig {
-    if (this.isAssignPublicIp(ecsTaskParameters)) {
-      throw new cdk.ValidationError(
-        "Specifies whether the task's elastic network interface receives a public IP address. You can specify ENABLED only when LaunchType in EcsParameters is set to FARGATE.",
-        pipe,
-      );
-    }
-    return super.bind(pipe, ecsTaskParameters);
   }
 }
 /**
@@ -136,24 +118,12 @@ class ExternalLaunchTypeCompute extends LaunchTypeCompute {
   constructor() {
     super(LaunchType.EXTERNAL);
   }
-  bind(
-    pipe: IPipe,
-    ecsTaskParameters: CfnPipe.PipeTargetEcsTaskParametersProperty,
-  ): IEcsTaskTargetComputeConfig {
-    if (this.isAssignPublicIp(ecsTaskParameters)) {
-      throw new cdk.ValidationError(
-        "Specifies whether the task's elastic network interface receives a public IP address. You can specify ENABLED only when LaunchType in EcsParameters is set to FARGATE.",
-        pipe,
-      );
-    }
-    return super.bind(pipe, ecsTaskParameters);
-  }
 }
 
 class CapacityProviderStrategyCompute implements IEcsTaskTargetCompute {
   constructor(
     private readonly capacityProviderStrategy: CapacityProviderStrategy[],
-  ) {}
+  ) { }
   bind(
     _pipe: IPipe,
     ecsTaskParameters: CfnPipe.PipeTargetEcsTaskParametersProperty,
@@ -354,6 +324,20 @@ export interface EcsTaskTargetProps {
    */
   readonly placementStrategies?: PlacementStrategy[];
   /**
+   * Specifies whether to propagate the tags from the task definition to the task.
+   *
+   * Only `TASK_DEFINITION` is supported for EventBridge Pipes.
+   *
+   * @default - Tags are not propagated
+   */
+  readonly propagateTags?: PropagatedTagSource;
+  /**
+   * The reference ID to use for the task.
+   *
+   * @default - No reference ID
+   */
+  readonly referenceId?: string;
+  /**
    * The cpu override for the task.
    *
    * @default - No override
@@ -405,6 +389,8 @@ export class EcsTaskTarget implements ITarget, IConnectable {
   private readonly group?: string;
   private readonly placementConstraints?: PlacementConstraint[];
   private readonly placementStrategies?: PlacementStrategy[];
+  private readonly propagateTags?: PropagatedTagSource;
+  private readonly referenceId?: string;
   private readonly cpu?: string;
   private readonly memory?: string;
   private readonly ephemeralStorage?: cdk.Size;
@@ -426,6 +412,8 @@ export class EcsTaskTarget implements ITarget, IConnectable {
     this.group = props.group;
     this.placementConstraints = props.placementConstraints;
     this.placementStrategies = props.placementStrategies;
+    this.propagateTags = props.propagateTags;
+    this.referenceId = props.referenceId;
     this.cpu = props.cpu;
     this.memory = props.memory;
     this.ephemeralStorage = props.ephemeralStorage;
@@ -435,7 +423,7 @@ export class EcsTaskTarget implements ITarget, IConnectable {
     this.connections = new Connections({
       securityGroups: props.securityGroups ?? [
         (this.taskDefinition.node.tryFindChild('SecurityGroup') as ISecurityGroup)
-          ?? this.createDefaultSecurityGroup(cluster.vpc),
+        ?? this.createDefaultSecurityGroup(cluster.vpc),
       ],
     });
   }
@@ -443,10 +431,17 @@ export class EcsTaskTarget implements ITarget, IConnectable {
     return this.cluster.clusterArn;
   }
   bind(pipe: IPipe): TargetConfig {
+    if (this.assignPublicIp && this.taskDefinition.networkMode !== NetworkMode.AWS_VPC) {
+      throw new cdk.ValidationError(
+        "Specifies whether the task's elastic network interface receives a public IP address. You can specify ENABLED only when LaunchType in EcsParameters is set to FARGATE.",
+        pipe,
+      );
+    }
+    const useAwsvpc = this.taskDefinition.networkMode === NetworkMode.AWS_VPC;
     const ecsTaskParameters = {
       taskDefinitionArn: this.taskDefinition.taskDefinitionArn,
       taskCount: this.taskCount,
-      networkConfiguration: {
+      networkConfiguration: useAwsvpc ? {
         awsvpcConfiguration: {
           assignPublicIp: this.assignPublicIp ? 'ENABLED' : 'DISABLED',
           subnets: this.cluster.vpc.selectSubnets(this.subnetSelection)
@@ -456,12 +451,14 @@ export class EcsTaskTarget implements ITarget, IConnectable {
               this.connections.securityGroups.map((sg) => sg.securityGroupId),
           }),
         },
-      },
+      } : undefined,
       enableEcsManagedTags: this.enableECSManagedTags,
       enableExecuteCommand: this.enableExecuteCommand,
       group: this.group,
       placementConstraints: this.placementConstraints?.flatMap((c) => c.toJson()),
       placementStrategy: this.placementStrategies?.flatMap((s) => s.toJson()),
+      propagateTags: this.propagateTags,
+      referenceId: this.referenceId,
       overrides: {
         containerOverrides: this.containerOverrides?.map(
           ({ containerName, memory, memoryReservation, ...overrides }) => ({

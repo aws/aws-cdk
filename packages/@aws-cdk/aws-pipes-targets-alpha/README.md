@@ -216,6 +216,25 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
+You can propagate tags from the task definition to the task and set a reference ID:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const ecsTarget = new targets.EcsTaskTarget(cluster, {
+  taskDefinition,
+  propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+  referenceId: 'my-reference-id',
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SqsSource(sourceQueue),
+  target: ecsTarget,
+});
+```
+
 ### Amazon EventBridge Event Bus
 
 An EventBridge event bus can be used as a target for a pipe.

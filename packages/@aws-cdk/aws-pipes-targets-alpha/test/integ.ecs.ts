@@ -1,31 +1,15 @@
-import { IPipe, ISource, Pipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { Construct } from 'constructs';
 import { EcsTaskTarget } from '../lib';
-
-/**
- * Stack verification steps:
- * 1. A message "updated" is sent to the SQS queue, which triggers the ECS task from the pipe.
- * 2. The ECS task updates the SSM Parameter with the value from the SQS message.
- * 3. The assertion verifies that the SSM Parameter value is "updated".
- */
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-ecs');
-
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, natGateways: 1 });
-const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
-
-const parameterName = '/pipes/ecs/test-value';
-const parameter = new ssm.StringParameter(stack, 'Parameter', {
-  parameterName,
-  stringValue: 'initial',
-});
 
 class TestSource implements ISource {
   sourceArn: string;
@@ -44,64 +28,150 @@ class TestSource implements ISource {
   }
 }
 
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
-  cpu: 256,
-  memoryLimitMiB: 512,
-});
+/**
+ * Fargate (awsvpc) scenario:
+ * SQS -> Pipe -> Fargate Task -> SSM Parameter
+ */
+class FargateScenario extends Construct {
+  readonly sourceQueue: sqs.Queue;
+  readonly parameterName: string;
 
-taskDefinition.addContainer('Container', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-cli/aws-cli:latest'),
-  entryPoint: ['sh', '-c'],
-  command: [
-    `aws ssm put-parameter --name ${parameterName} --value "$MESSAGE" --overwrite --region ${stack.region}`,
-  ],
-  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ecs' }),
-});
+  constructor(scope: Construct, id: string, props: { cluster: ecs.ICluster }) {
+    super(scope, id);
 
-parameter.grantWrite(taskDefinition.taskRole);
+    this.parameterName = '/pipes/ecs/fargate-test-value';
+    this.sourceQueue = new sqs.Queue(this, 'SourceQueue');
 
-const target = new EcsTaskTarget(cluster, {
-  taskDefinition,
-  containerOverrides: [
-    {
-      containerName: 'Container',
-      environment: [
-        { name: 'MESSAGE', value: '$.body' },
+    const parameter = new ssm.StringParameter(this, 'Parameter', {
+      parameterName: this.parameterName,
+      stringValue: 'initial',
+    });
+
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+    });
+
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-cli/aws-cli:latest'),
+      entryPoint: ['sh', '-c'],
+      command: [
+        `aws ssm put-parameter --name ${this.parameterName} --value "$MESSAGE" --overwrite --region ${cdk.Stack.of(this).region}`,
       ],
-    },
-  ],
-});
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'fargate' }),
+    });
 
-new Pipe(stack, 'Pipe', {
-  source: new TestSource(sourceQueue),
-  target,
-});
+    parameter.grantWrite(taskDefinition.taskRole);
+
+    new Pipe(this, 'Pipe', {
+      source: new TestSource(this.sourceQueue),
+      target: new EcsTaskTarget(props.cluster, {
+        taskDefinition,
+        containerOverrides: [{
+          containerName: 'Container',
+          environment: [{ name: 'MESSAGE', value: '$.body' }],
+        }],
+      }),
+    });
+  }
+}
+
+/**
+ * EC2 bridge mode scenario:
+ * SQS -> Pipe -> EC2 Task (bridge) -> SSM Parameter
+ */
+class Ec2BridgeScenario extends Construct {
+  readonly sourceQueue: sqs.Queue;
+  readonly parameterName: string;
+
+  constructor(scope: Construct, id: string, props: { vpc: ec2.IVpc; cluster: ecs.Cluster }) {
+    super(scope, id);
+
+    this.parameterName = '/pipes/ecs/ec2-test-value';
+    this.sourceQueue = new sqs.Queue(this, 'SourceQueue');
+
+    const asgProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(this, 'Asg', {
+        vpc: props.vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.ARM),
+      }),
+      enableManagedTerminationProtection: false,
+    });
+    props.cluster.addAsgCapacityProvider(asgProvider);
+
+    const parameter = new ssm.StringParameter(this, 'Parameter', {
+      parameterName: this.parameterName,
+      stringValue: 'initial',
+    });
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/aws-cli/aws-cli:latest'),
+      entryPoint: ['sh', '-c'],
+      command: [
+        `aws ssm put-parameter --name ${this.parameterName} --value "$MESSAGE" --overwrite --region ${cdk.Stack.of(this).region}`,
+      ],
+      memoryLimitMiB: 512,
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'ec2' }),
+    });
+
+    parameter.grantWrite(taskDefinition.taskRole);
+
+    new Pipe(this, 'Pipe', {
+      source: new TestSource(this.sourceQueue),
+      target: new EcsTaskTarget(props.cluster, {
+        taskDefinition,
+        containerOverrides: [{
+          containerName: 'Container',
+          environment: [{ name: 'MESSAGE', value: '$.body' }],
+        }],
+      }),
+    });
+  }
+}
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-targets-ecs');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, natGateways: 1 });
+const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+const fargate = new FargateScenario(stack, 'Fargate', { cluster });
+const ec2Bridge = new Ec2BridgeScenario(stack, 'Ec2Bridge', { vpc, cluster });
 
 const test = new IntegTest(app, 'integtest-pipe-target-ecs', {
   testCases: [stack],
 });
 
-const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
-  QueueUrl: sourceQueue.queueUrl,
-  MessageBody: 'updated',
+// Fargate assertion
+test.assertions.awsApiCall('SQS', 'sendMessage', {
+  QueueUrl: fargate.sourceQueue.queueUrl,
+  MessageBody: 'fargate-updated',
+}).next(
+  test.assertions.awsApiCall('SSM', 'getParameter', {
+    Name: fargate.parameterName,
+  }),
+).expect(
+  ExpectedResult.objectLike({ Parameter: { Value: 'fargate-updated' } }),
+).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(5),
+  interval: cdk.Duration.seconds(15),
 });
 
-putMessageOnQueue
-  .next(
-    test.assertions.awsApiCall('SSM', 'getParameter', {
-      Name: parameterName,
-    }),
-  )
-  .expect(
-    ExpectedResult.objectLike({
-      Parameter: {
-        Value: 'updated',
-      },
-    }),
-  )
-  .waitForAssertions({
-    totalTimeout: cdk.Duration.minutes(5),
-    interval: cdk.Duration.seconds(15),
-  });
+// EC2 bridge assertion
+test.assertions.awsApiCall('SQS', 'sendMessage', {
+  QueueUrl: ec2Bridge.sourceQueue.queueUrl,
+  MessageBody: 'ec2-updated',
+}).next(
+  test.assertions.awsApiCall('SSM', 'getParameter', {
+    Name: ec2Bridge.parameterName,
+  }),
+).expect(
+  ExpectedResult.objectLike({ Parameter: { Value: 'ec2-updated' } }),
+).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(10),
+  interval: cdk.Duration.seconds(30),
+});
 
 app.synth();

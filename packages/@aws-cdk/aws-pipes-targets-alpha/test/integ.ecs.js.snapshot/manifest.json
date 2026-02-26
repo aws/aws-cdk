@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "aws-cdk-pipes-targets-ecs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c50c31ceab54c8db90f94675b99b58d1d72b8a7f1269a60938a9e8d96161751.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28bc03343b27388fe4711074799f6ff1b5597090b60a5e30bdf3b2ebbb6e4591.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -221,6 +221,14 @@
             "data": {
               "vpc": "*"
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addAsgCapacityProvider": [
+                "*"
+              ]
+            }
           }
         ],
         "/aws-cdk-pipes-targets-ecs/Cluster/Resource": [
@@ -229,19 +237,25 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/SourceQueue": [
+        "/aws-cdk-pipes-targets-ecs/Cluster/Cluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Cluster3DA9CCBA"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Fargate/SourceQueue": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/SourceQueue/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/SourceQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceQueue6E809DF0"
+            "data": "FargateSourceQueue3701107C"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Parameter": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Parameter": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -250,13 +264,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Parameter/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Parameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Parameter9E1B4FBA"
+            "data": "FargateParameter178B00C8"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -274,7 +288,7 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/TaskRole": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/TaskRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -309,19 +323,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/TaskRole/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefTaskRole1EDB4A67"
+            "data": "FargateTaskDefTaskRoleF85FDA60"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/TaskRole/DefaultPolicy": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/TaskRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -351,19 +359,19 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/TaskRole/DefaultPolicy/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/TaskRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefTaskRoleDefaultPolicyA592CB18"
+            "data": "FargateTaskDefTaskRoleDefaultPolicy8D8EB177"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "FargateTaskDefE154CC34"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/Container/LogGroup": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/Container/LogGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -371,13 +379,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/Container/LogGroup/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/Container/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefContainerLogGroupB60E6F44"
+            "data": "FargateTaskDefContainerLogGroup3BCA1A57"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/ExecutionRole": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/ExecutionRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -413,19 +421,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/ExecutionRole/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefExecutionRoleB4775C97"
+            "data": "FargateTaskDefExecutionRoleFD5D2CFD"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/ExecutionRole/DefaultPolicy": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/ExecutionRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -455,13 +457,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
+            "data": "FargateTaskDefExecutionRoleDefaultPolicyE59DE053"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/SecurityGroup": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -469,19 +471,19 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/TaskDef/SecurityGroup/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/TaskDef/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDefSecurityGroupD50E7CF0"
+            "data": "FargateTaskDefSecurityGroupE8FB2B57"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Role": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -532,19 +534,13 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Role/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipeRole7D4AFC73"
+            "data": "FargatePipeRole926C0AA7"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Role/DefaultPolicy": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -590,22 +586,919 @@
             }
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipeRoleDefaultPolicy56E6A74D"
+            "data": "FargatePipeRoleDefaultPolicy17F92BDF"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Pipe/Resource": [
+        "/aws-cdk-pipes-targets-ecs/Fargate/Pipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Pipe7793F8A1"
+            "data": "FargatePipeC9EE880A"
           }
         ],
-        "/aws-cdk-pipes-targets-ecs/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}": [
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/SourceQueue": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/SourceQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefSourceQueue6E809DF09604904F"
+            "data": "Ec2BridgeSourceQueue92747C92"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "instanceType": "*",
+              "machineImage": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addUserData": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceSecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "allowAllOutbound": true
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgInstanceSecurityGroupCA5BDE7C"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "roleName": "*",
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgInstanceRole8459FD04"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgInstanceRoleDefaultPolicyEF40C1EF"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgInstanceProfile95EF4DE1"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LaunchTemplate": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "machineImage": "*",
+              "instanceType": "*",
+              "detailedMonitoring": false,
+              "securityGroup": "*",
+              "userData": "*",
+              "associatePublicIpAddress": "*",
+              "spotOptions": "*",
+              "blockDevices": "*",
+              "instanceProfile": "*",
+              "keyPair": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LaunchTemplate/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgLaunchTemplateC3C4C335"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgASG1D367D40"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "code": "*",
+              "handler": "*",
+              "runtime": "*",
+              "timeout": "*",
+              "environment": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addEnvironment": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunctionServiceRole4156964E"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/ServiceRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunctionServiceRoleDefaultPolicy18B8F752"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunction60642FFE"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunctionLogGroupBA46924A"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/AllowInvoke:awscdkpipestargetsecsEc2BridgeAsgLifecycleHookDrainHookTopicCEAF1246": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunctionAllowInvokeawscdkpipestargetsecsEc2BridgeAsgLifecycleHookDrainHookTopicCEAF1246AF4A3C17"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "topic": "*",
+              "endpoint": "*",
+              "protocol": "lambda",
+              "filterPolicy": "*",
+              "filterPolicyWithMessageBody": "*",
+              "region": "*",
+              "deadLetterQueue": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgDrainECSHookFunctionTopicD25F583A"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "autoScalingGroup": "*",
+              "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+              "defaultResult": "CONTINUE",
+              "notificationTarget": "*",
+              "heartbeatTimeout": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Topic": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "masterKey": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgLifecycleHookDrainHookRole74DA8845"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgLifecycleHookDrainHookRoleDefaultPolicyF8336E5B"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgLifecycleHookDrainHook72DF81DE"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/AsgCapacityProvider/AsgCapacityProvider": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeAsgCapacityProvider80AF0BEB"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Parameter": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "parameterName": "*",
+              "stringValue": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Parameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeParameterE2A1F280"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/TaskRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefTaskRole3281696D"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/TaskRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefTaskRoleDefaultPolicy6415C3B1"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDef611F37BE"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/Container/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "retention": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/Container/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefContainerLogGroupDCD3F05A"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/ExecutionRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "roleName": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefExecutionRole9A1525B1"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/ExecutionRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefExecutionRoleDefaultPolicyE7F82073"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*"
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgeTaskDefSecurityGroup6B13FA9A"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgePipeRoleC6524A06"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe/Role/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgePipeRoleDefaultPolicy7860197D"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Ec2Bridge/Pipe/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2BridgePipeF46B86F5"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2023--arm64--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Exports/Output{\"Ref\":\"FargateSourceQueue3701107C\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFargateSourceQueue3701107C92A9AD85"
+          }
+        ],
+        "/aws-cdk-pipes-targets-ecs/Exports/Output{\"Ref\":\"Ec2BridgeSourceQueue92747C92\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEc2BridgeSourceQueue92747C928706DB13"
           }
         ],
         "/aws-cdk-pipes-targets-ecs/BootstrapVersion": [
@@ -640,7 +1533,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00cfb8a21aef539d04915c277a586612503bfc4026252a26db80f230f6fd870b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1521d7d482a564c19f736c193ded10f4d21a1b57211d1abd0b38437171b32244.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -657,16 +1550,16 @@
         "integtestpipetargetecsDefaultTestDeployAssert4443D371.assets"
       ],
       "metadata": {
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4b56c755d381d5fc462374ae3f9afbae/Default": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage463d2acb330f6ddf620a35c9a71223f7/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4b56c755d381d5fc462374ae3f9afbae/Default/Default": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage463d2acb330f6ddf620a35c9a71223f7/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSsendMessage4b56c755d381d5fc462374ae3f9afbae"
+            "data": "AwsApiCallSQSsendMessage463d2acb330f6ddf620a35c9a71223f7"
           }
         ],
         "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -681,7 +1574,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/Default": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -695,40 +1588,40 @@
             "data": "*"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/Default/Default": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1"
+            "data": "AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/WaitFor/IsCompleteProvider/Invoke": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1WaitForIsCompleteProviderInvokeB474B442"
+            "data": "AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97WaitForIsCompleteProviderInvoke00331C71"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/WaitFor/TimeoutProvider/Invoke": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1WaitForTimeoutProviderInvoke91B871B9"
+            "data": "AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97WaitForTimeoutProviderInvoke2E7333A0"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/WaitFor/Role": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1WaitForRoleECD41749"
+            "data": "AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97WaitForRole61F9ABB4"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/WaitFor/Resource": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1WaitFor19A1CCE2"
+            "data": "AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97WaitForE8EED7DA"
           }
         ],
-        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1/AssertionResults": [
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameter67ba5baf137f01593fae2e0b77118dd1"
+            "data": "AssertionResultsAwsApiCallSSMgetParameteraed8cd210097bc54455961582af4af97"
           }
         ],
         "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
@@ -753,6 +1646,68 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage0ec549498af59a4e3bee3019096c8238/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage0ec549498af59a4e3bee3019096c8238/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSsendMessage0ec549498af59a4e3bee3019096c8238"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352WaitForIsCompleteProviderInvoke54F5779C"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352WaitForTimeoutProviderInvoke883950AD"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352WaitForRole15AAC6D0"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352WaitForFE8D02A8"
+          }
+        ],
+        "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetParameter37fa0e943944abfb3a6c3cdd5d2ad352"
           }
         ],
         "/integtest-pipe-target-ecs/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -1067,6 +2022,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1098,16 +2057,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1254,6 +2203,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1265,12 +2215,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1106.1"
 }

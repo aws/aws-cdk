@@ -312,7 +312,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -333,20 +333,34 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
-  "SourceQueue6E809DF0": {
+  "Cluster3DA9CCBA": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     {
+      "Ref": "Ec2BridgeAsgCapacityProvider80AF0BEB"
+     }
+    ],
+    "Cluster": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "DefaultCapacityProviderStrategy": []
+   }
+  },
+  "FargateSourceQueue3701107C": {
    "Type": "AWS::SQS::Queue",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "Parameter9E1B4FBA": {
+  "FargateParameter178B00C8": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
-    "Name": "/pipes/ecs/test-value",
+    "Name": "/pipes/ecs/fargate-test-value",
     "Type": "String",
     "Value": "initial"
    }
   },
-  "TaskDefTaskRole1EDB4A67": {
+  "FargateTaskDefTaskRoleF85FDA60": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -363,7 +377,7 @@
     }
    }
   },
-  "TaskDefTaskRoleDefaultPolicyA592CB18": {
+  "FargateTaskDefTaskRoleDefaultPolicy8D8EB177": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -389,7 +403,7 @@
           },
           ":parameter",
           {
-           "Ref": "Parameter9E1B4FBA"
+           "Ref": "FargateParameter178B00C8"
           }
          ]
         ]
@@ -398,15 +412,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TaskDefTaskRoleDefaultPolicyA592CB18",
+    "PolicyName": "FargateTaskDefTaskRoleDefaultPolicy8D8EB177",
     "Roles": [
      {
-      "Ref": "TaskDefTaskRole1EDB4A67"
+      "Ref": "FargateTaskDefTaskRoleF85FDA60"
      }
     ]
    }
   },
-  "TaskDef54694570": {
+  "FargateTaskDefE154CC34": {
    "Type": "AWS::ECS::TaskDefinition",
    "Properties": {
     "ContainerDefinitions": [
@@ -416,7 +430,7 @@
         "Fn::Join": [
          "",
          [
-          "aws ssm put-parameter --name /pipes/ecs/test-value --value \"$MESSAGE\" --overwrite --region ",
+          "aws ssm put-parameter --name /pipes/ecs/fargate-test-value --value \"$MESSAGE\" --overwrite --region ",
           {
            "Ref": "AWS::Region"
           }
@@ -434,9 +448,9 @@
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "TaskDefContainerLogGroupB60E6F44"
+         "Ref": "FargateTaskDefContainerLogGroup3BCA1A57"
         },
-        "awslogs-stream-prefix": "ecs",
+        "awslogs-stream-prefix": "fargate",
         "awslogs-region": {
          "Ref": "AWS::Region"
         }
@@ -448,11 +462,11 @@
     "Cpu": "256",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
-      "TaskDefExecutionRoleB4775C97",
+      "FargateTaskDefExecutionRoleFD5D2CFD",
       "Arn"
      ]
     },
-    "Family": "awscdkpipestargetsecsTaskDef3DE36175",
+    "Family": "awscdkpipestargetsecsFargateTaskDefE3DBDF43",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -460,18 +474,18 @@
     ],
     "TaskRoleArn": {
      "Fn::GetAtt": [
-      "TaskDefTaskRole1EDB4A67",
+      "FargateTaskDefTaskRoleF85FDA60",
       "Arn"
      ]
     }
    }
   },
-  "TaskDefContainerLogGroupB60E6F44": {
+  "FargateTaskDefContainerLogGroup3BCA1A57": {
    "Type": "AWS::Logs::LogGroup",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "TaskDefExecutionRoleB4775C97": {
+  "FargateTaskDefExecutionRoleFD5D2CFD": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -488,7 +502,7 @@
     }
    }
   },
-  "TaskDefExecutionRoleDefaultPolicy0DBB737A": {
+  "FargateTaskDefExecutionRoleDefaultPolicyE59DE053": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -501,7 +515,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "TaskDefContainerLogGroupB60E6F44",
+         "FargateTaskDefContainerLogGroup3BCA1A57",
          "Arn"
         ]
        }
@@ -509,18 +523,18 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
+    "PolicyName": "FargateTaskDefExecutionRoleDefaultPolicyE59DE053",
     "Roles": [
      {
-      "Ref": "TaskDefExecutionRoleB4775C97"
+      "Ref": "FargateTaskDefExecutionRoleFD5D2CFD"
      }
     ]
    }
   },
-  "TaskDefSecurityGroupD50E7CF0": {
+  "FargateTaskDefSecurityGroupE8FB2B57": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-cdk-pipes-targets-ecs/TaskDef/SecurityGroup",
+    "GroupDescription": "aws-cdk-pipes-targets-ecs/Fargate/TaskDef/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -533,7 +547,7 @@
     }
    }
   },
-  "PipeRole7D4AFC73": {
+  "FargatePipeRole926C0AA7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -550,7 +564,7 @@
     }
    }
   },
-  "PipeRoleDefaultPolicy56E6A74D": {
+  "FargatePipeRoleDefaultPolicy17F92BDF": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -566,7 +580,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "SourceQueue6E809DF0",
+         "FargateSourceQueue3701107C",
          "Arn"
         ]
        }
@@ -575,7 +589,7 @@
        "Action": "ecs:RunTask",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "TaskDef54694570"
+        "Ref": "FargateTaskDefE154CC34"
        }
       },
       {
@@ -589,13 +603,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "TaskDefExecutionRoleB4775C97",
+          "FargateTaskDefExecutionRoleFD5D2CFD",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "TaskDefTaskRole1EDB4A67",
+          "FargateTaskDefTaskRoleF85FDA60",
           "Arn"
          ]
         }
@@ -604,26 +618,26 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PipeRoleDefaultPolicy56E6A74D",
+    "PolicyName": "FargatePipeRoleDefaultPolicy17F92BDF",
     "Roles": [
      {
-      "Ref": "PipeRole7D4AFC73"
+      "Ref": "FargatePipeRole926C0AA7"
      }
     ]
    }
   },
-  "Pipe7793F8A1": {
+  "FargatePipeC9EE880A": {
    "Type": "AWS::Pipes::Pipe",
    "Properties": {
     "RoleArn": {
      "Fn::GetAtt": [
-      "PipeRole7D4AFC73",
+      "FargatePipeRole926C0AA7",
       "Arn"
      ]
     },
     "Source": {
      "Fn::GetAtt": [
-      "SourceQueue6E809DF0",
+      "FargateSourceQueue3701107C",
       "Arn"
      ]
     },
@@ -644,7 +658,7 @@
         "SecurityGroups": [
          {
           "Fn::GetAtt": [
-           "TaskDefSecurityGroupD50E7CF0",
+           "FargateTaskDefSecurityGroupE8FB2B57",
            "GroupId"
           ]
          }
@@ -671,28 +685,903 @@
       },
       "TaskCount": 1,
       "TaskDefinitionArn": {
-       "Ref": "TaskDef54694570"
+       "Ref": "FargateTaskDefE154CC34"
+      }
+     }
+    }
+   }
+  },
+  "Ec2BridgeSourceQueue92747C92": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Ec2BridgeAsgInstanceSecurityGroupCA5BDE7C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "Ec2BridgeAsgInstanceRole8459FD04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgInstanceRoleDefaultPolicyEF40C1EF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecs:DeregisterContainerInstance",
+        "ecs:RegisterContainerInstance",
+        "ecs:Submit*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ClusterEB0386A7",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecs:Poll",
+        "ecs:StartTelemetrySession"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecs:DiscoverPollEndpoint",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgeAsgInstanceRoleDefaultPolicyEF40C1EF",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeAsgInstanceRole8459FD04"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgInstanceProfile95EF4DE1": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeAsgInstanceRole8459FD04"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgLaunchTemplateC3C4C335": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "Ec2BridgeAsgInstanceProfile95EF4DE1",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t4g.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "Ec2BridgeAsgInstanceSecurityGroupCA5BDE7C",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg/LaunchTemplate"
+       }
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "Ec2BridgeAsgInstanceRoleDefaultPolicyEF40C1EF",
+    "Ec2BridgeAsgInstanceRole8459FD04"
+   ]
+  },
+  "Ec2BridgeAsgASG1D367D40": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "Ec2BridgeAsgLaunchTemplateC3C4C335"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "Ec2BridgeAsgLaunchTemplateC3C4C335",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "1",
+    "MinSize": "1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "PropagateAtLaunch": true,
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ],
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
+  "Ec2BridgeAsgDrainECSHookFunctionServiceRole4156964E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgDrainECSHookFunctionServiceRoleDefaultPolicy18B8F752": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeHosts",
+        "ec2:DescribeInstanceAttribute",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInstances"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": "autoscaling:CompleteLifecycleAction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":autoscaling:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":autoScalingGroup:*:autoScalingGroupName/",
+          {
+           "Ref": "Ec2BridgeAsgASG1D367D40"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "ecs:DescribeContainerInstances",
+        "ecs:DescribeTasks",
+        "ecs:ListTasks",
+        "ecs:UpdateContainerInstancesState"
+       ],
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "ecs:ListContainerInstances",
+        "ecs:SubmitContainerStateChange",
+        "ecs:SubmitTaskStateChange"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ClusterEB0386A7",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgeAsgDrainECSHookFunctionServiceRoleDefaultPolicy18B8F752",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeAsgDrainECSHookFunctionServiceRole4156964E"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgDrainECSHookFunction60642FFE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print(f\"Got event without EC2InstanceId: { json.dumps(dict(event, ResponseURL='...')) }\")\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
+    },
+    "Environment": {
+     "Variables": {
+      "CLUSTER": {
+       "Ref": "ClusterEB0386A7"
+      }
+     }
+    },
+    "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Ec2BridgeAsgDrainECSHookFunctionServiceRole4156964E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.13",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ],
+    "Timeout": 310
+   },
+   "DependsOn": [
+    "Ec2BridgeAsgDrainECSHookFunctionServiceRoleDefaultPolicy18B8F752",
+    "Ec2BridgeAsgDrainECSHookFunctionServiceRole4156964E"
+   ]
+  },
+  "Ec2BridgeAsgDrainECSHookFunctionLogGroupBA46924A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "Ec2BridgeAsgDrainECSHookFunction60642FFE"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731,
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Ec2BridgeAsgDrainECSHookFunctionAllowInvokeawscdkpipestargetsecsEc2BridgeAsgLifecycleHookDrainHookTopicCEAF1246AF4A3C17": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Ec2BridgeAsgDrainECSHookFunction60642FFE",
+      "Arn"
+     ]
+    },
+    "Principal": "sns.amazonaws.com",
+    "SourceArn": {
+     "Ref": "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A"
+    }
+   }
+  },
+  "Ec2BridgeAsgDrainECSHookFunctionTopicD25F583A": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": {
+     "Fn::GetAtt": [
+      "Ec2BridgeAsgDrainECSHookFunction60642FFE",
+      "Arn"
+     ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A"
+    }
+   }
+  },
+  "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgLifecycleHookDrainHookRole74DA8845": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "autoscaling.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-pipes-targets-ecs/Ec2Bridge/Asg"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgLifecycleHookDrainHookRoleDefaultPolicyF8336E5B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgeAsgLifecycleHookDrainHookRoleDefaultPolicyF8336E5B",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeAsgLifecycleHookDrainHookRole74DA8845"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeAsgLifecycleHookDrainHook72DF81DE": {
+   "Type": "AWS::AutoScaling::LifecycleHook",
+   "Properties": {
+    "AutoScalingGroupName": {
+     "Ref": "Ec2BridgeAsgASG1D367D40"
+    },
+    "DefaultResult": "CONTINUE",
+    "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
+    "NotificationTargetARN": {
+     "Ref": "Ec2BridgeAsgLifecycleHookDrainHookTopicDA13DC7A"
+    },
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "Ec2BridgeAsgLifecycleHookDrainHookRole74DA8845",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "Ec2BridgeAsgLifecycleHookDrainHookRoleDefaultPolicyF8336E5B",
+    "Ec2BridgeAsgLifecycleHookDrainHookRole74DA8845"
+   ]
+  },
+  "Ec2BridgeAsgCapacityProvider80AF0BEB": {
+   "Type": "AWS::ECS::CapacityProvider",
+   "Properties": {
+    "AutoScalingGroupProvider": {
+     "AutoScalingGroupArn": {
+      "Ref": "Ec2BridgeAsgASG1D367D40"
+     },
+     "ManagedScaling": {
+      "Status": "ENABLED",
+      "TargetCapacity": 100
+     },
+     "ManagedTerminationProtection": "DISABLED"
+    },
+    "Name": "cp-aws-cdk-pipes-targets-ecsEc2BridgeAsgCapacityProvider38B9927C"
+   }
+  },
+  "Ec2BridgeParameterE2A1F280": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "/pipes/ecs/ec2-test-value",
+    "Type": "String",
+    "Value": "initial"
+   }
+  },
+  "Ec2BridgeTaskDefTaskRole3281696D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Ec2BridgeTaskDefTaskRoleDefaultPolicy6415C3B1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:PutParameter",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ssm:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":parameter",
+          {
+           "Ref": "Ec2BridgeParameterE2A1F280"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgeTaskDefTaskRoleDefaultPolicy6415C3B1",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeTaskDefTaskRole3281696D"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeTaskDef611F37BE": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Command": [
+       {
+        "Fn::Join": [
+         "",
+         [
+          "aws ssm put-parameter --name /pipes/ecs/ec2-test-value --value \"$MESSAGE\" --overwrite --region ",
+          {
+           "Ref": "AWS::Region"
+          }
+         ]
+        ]
+       }
+      ],
+      "EntryPoint": [
+       "sh",
+       "-c"
+      ],
+      "Essential": true,
+      "Image": "public.ecr.aws/aws-cli/aws-cli:latest",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "Ec2BridgeTaskDefContainerLogGroupDCD3F05A"
+        },
+        "awslogs-stream-prefix": "ec2",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Memory": 512,
+      "Name": "Container"
+     }
+    ],
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "Ec2BridgeTaskDefExecutionRole9A1525B1",
+      "Arn"
+     ]
+    },
+    "Family": "awscdkpipestargetsecsEc2BridgeTaskDef2ADE7B1C",
+    "NetworkMode": "bridge",
+    "RequiresCompatibilities": [
+     "EC2"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "Ec2BridgeTaskDefTaskRole3281696D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "Ec2BridgeTaskDefContainerLogGroupDCD3F05A": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Ec2BridgeTaskDefExecutionRole9A1525B1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Ec2BridgeTaskDefExecutionRoleDefaultPolicyE7F82073": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Ec2BridgeTaskDefContainerLogGroupDCD3F05A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgeTaskDefExecutionRoleDefaultPolicyE7F82073",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgeTaskDefExecutionRole9A1525B1"
+     }
+    ]
+   }
+  },
+  "Ec2BridgeTaskDefSecurityGroup6B13FA9A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-pipes-targets-ecs/Ec2Bridge/TaskDef/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "Ec2BridgePipeRoleC6524A06": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Ec2BridgePipeRoleDefaultPolicy7860197D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Ec2BridgeSourceQueue92747C92",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecs:RunTask",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "Ec2BridgeTaskDef611F37BE"
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringLike": {
+         "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Ec2BridgeTaskDefExecutionRole9A1525B1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "Ec2BridgeTaskDefTaskRole3281696D",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Ec2BridgePipeRoleDefaultPolicy7860197D",
+    "Roles": [
+     {
+      "Ref": "Ec2BridgePipeRoleC6524A06"
+     }
+    ]
+   }
+  },
+  "Ec2BridgePipeF46B86F5": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "Ec2BridgePipeRoleC6524A06",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "Ec2BridgeSourceQueue92747C92",
+      "Arn"
+     ]
+    },
+    "SourceParameters": {},
+    "Target": {
+     "Fn::GetAtt": [
+      "ClusterEB0386A7",
+      "Arn"
+     ]
+    },
+    "TargetParameters": {
+     "EcsTaskParameters": {
+      "EnableECSManagedTags": true,
+      "LaunchType": "EC2",
+      "Overrides": {
+       "ContainerOverrides": [
+        {
+         "Environment": [
+          {
+           "Name": "MESSAGE",
+           "Value": "$.body"
+          }
+         ],
+         "Name": "Container"
+        }
+       ]
+      },
+      "TaskCount": 1,
+      "TaskDefinitionArn": {
+       "Ref": "Ec2BridgeTaskDef611F37BE"
       }
      }
     }
    }
   }
  },
- "Outputs": {
-  "ExportsOutputRefSourceQueue6E809DF09604904F": {
-   "Value": {
-    "Ref": "SourceQueue6E809DF0"
-   },
-   "Export": {
-    "Name": "aws-cdk-pipes-targets-ecs:ExportsOutputRefSourceQueue6E809DF09604904F"
-   }
-  }
- },
  "Parameters": {
+  "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2023arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2023/arm64/recommended/image_id"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefFargateSourceQueue3701107C92A9AD85": {
+   "Value": {
+    "Ref": "FargateSourceQueue3701107C"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-targets-ecs:ExportsOutputRefFargateSourceQueue3701107C92A9AD85"
+   }
+  },
+  "ExportsOutputRefEc2BridgeSourceQueue92747C928706DB13": {
+   "Value": {
+    "Ref": "Ec2BridgeSourceQueue92747C92"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-targets-ecs:ExportsOutputRefEc2BridgeSourceQueue92747C928706DB13"
+   }
   }
  },
  "Rules": {
