@@ -194,7 +194,15 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 
 // Configure log delivery using the mixin
 distribution
-  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup, {
+    outputFormat: cloudfrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
+    recordFields: [
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+    ],
+  }));
 ```
 
 Configures vended logs delivery for supported resources when a pre-created destination is provided:
@@ -224,6 +232,54 @@ const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
   name: 'unique-destination-name',
   deliveryDestinationType: 'S3',
 });
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
+```
+
+Vended Logs Configuration for Cross Account delivery (only supported for S3 and Firehose destinations)
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+import * as logDestinations from '@aws-cdk/mixins-preview/aws-logs';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
+
+const destinationAccount = '123456789012';
+const sourceAccount = '234567890123';
+const region = 'us-east-1';
+
+const app = new App();
+
+const destStack = new Stack(app, 'destination-stack', {
+  env: {
+    account: destinationAccount,
+    region,
+  },
+});
+
+// Create destination bucket
+const destBucket = new s3.Bucket(destStack, 'DeliveryBucket');
+new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
+  bucket: destBucket,
+  sourceAccountId: sourceAccount,
+});
+
+const sourceStack = new Stack(app, 'source-stack', {
+  env: {
+    account: sourceAccount,
+    region,
+  },
+});
+
+// Create CloudFront distribution
+declare const bucket: s3.Bucket;
+const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+  },
+});
+
+const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourceStack, 'Destination', `arn of Delivery Destination in destinationAccount`);
 
 distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
