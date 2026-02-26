@@ -440,6 +440,46 @@ describe('Firehose destination', () => {
       })]),
     });
   });
+
+  test('uses outputFormat when provided', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket', {});
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+      inlinePolicies: {
+        S3Access: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
+              resources: [streamBucket.bucketArn, `${streamBucket.bucketArn}/*`],
+            }),
+          ],
+        }),
+      },
+    });
+    const stream = new CfnDeliveryStream(stack, 'Firehose', {
+      s3DestinationConfiguration: {
+        bucketArn: streamBucket.bucketArn,
+        roleArn: firehoseRole.roleArn,
+      },
+    });
+
+    new FirehoseDeliveryDestination(stream, 'FHDest', {
+      deliveryStream: stream,
+      outputFormat: 'raw',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'FH',
+      DestinationResourceArn: {
+        'Fn::GetAtt': [
+          'Firehose',
+          'Arn',
+        ],
+      },
+      OutputFormat: 'raw',
+      Name: Match.stringLikeRegexp('cdk-fh-FHDest-dest-.*'),
+    });
+  });
 });
 
 describe('Cloudwatch destination', () => {
@@ -581,6 +621,30 @@ describe('Cloudwatch destination', () => {
     const cwlPolicyLogicalId = Object.keys(resourcePolicies)[0];
 
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(cwlPolicyLogicalId);
+  });
+
+  test('uses outputFormat when provided', () => {
+    const logGroup = new CfnLogGroup(stack, 'LogGroup', {
+      retentionInDays: 7,
+      logGroupName: 'myCoolLogGroup',
+    });
+
+    new CloudwatchDeliveryDestination(logGroup, 'CWLDest', {
+      logGroup,
+      outputFormat: 'json',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: {
+        'Fn::GetAtt': [
+          'LogGroup',
+          'Arn',
+        ],
+      },
+      OutputFormat: 'json',
+      Name: Match.stringLikeRegexp('cdk-cwl-CWLDest-dest-.*'),
+    });
   });
 });
 
@@ -819,6 +883,27 @@ describe('S3 Destination', () => {
           }),
         ]),
       },
+    });
+  });
+
+  test('uses outputFormat when provided', () => {
+    const bucket = new Bucket(stack, 'Bucket', {});
+
+    new S3DeliveryDestination(bucket, 'Dest', {
+      bucket,
+      outputFormat: 'w3c',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'S3',
+      DestinationResourceArn: {
+        'Fn::GetAtt': [
+          'Bucket83908E77',
+          'Arn',
+        ],
+      },
+      OutputFormat: 'w3c',
+      Name: Match.stringLikeRegexp('cdk-s3-Dest-dest-.*'),
     });
   });
 });

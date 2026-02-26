@@ -13,9 +13,19 @@ import * as xray from '../aws-xray/policy';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**
+ * Properties that are shared between most delivery destinations
+ */
+interface DeliveryDestinationProps {
+  /**
+   * Format of the logs that are sent to this delivery destination
+   */
+  readonly outputFormat?: string;
+}
+
+/**
  * Properties for Delivery Destinations the participate in Cross Account Delivery
  */
-interface CrossAccountDestinationProps {
+interface CrossAccountDestinationProps extends DeliveryDestinationProps {
   /**
    * Optional acount id for account the delivery source is in for cross account Vended Logs
    */
@@ -59,7 +69,7 @@ export interface FirehoseDeliveryDestinationProps extends CrossAccountDestinatio
 /**
  * Properties for Cloudwatch delivery destination
  */
-export interface CloudwatchDeliveryDestinationProps {
+export interface CloudwatchDeliveryDestinationProps extends DeliveryDestinationProps {
   /**
    * Log group to deliver logs to
    */
@@ -90,6 +100,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
       destinationResourceArn: props.bucket.bucketRef.bucketArn,
       name: deliveryDestName('s3', id, scope),
       deliveryDestinationType: 'S3',
+      outputFormat: props.outputFormat,
       deliveryDestinationPolicy: props.sourceAccountId ? {
         deliveryDestinationPolicy: deliveryDestCrossAccPolicy(props.sourceAccountId, props.bucket),
       } : undefined,
@@ -226,6 +237,7 @@ export class FirehoseDeliveryDestination extends logs.CfnDeliveryDestination {
       destinationResourceArn: props.deliveryStream.deliveryStreamRef.deliveryStreamArn,
       name: deliveryDestName('fh', id, scope),
       deliveryDestinationType: 'FH',
+      outputFormat: props.outputFormat,
       deliveryDestinationPolicy: props.sourceAccountId ? {
         deliveryDestinationPolicy: deliveryDestCrossAccPolicy(props.sourceAccountId, props.deliveryStream),
       } : undefined,
@@ -246,6 +258,7 @@ export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
       destinationResourceArn: props.logGroup.logGroupRef.logGroupArn,
       name: deliveryDestName('cwl', id, scope),
       deliveryDestinationType: 'CWL',
+      outputFormat: props.outputFormat,
     });
     this.logGroup = props.logGroup;
 

@@ -139,6 +139,7 @@ export class S3LogsDelivery implements ILogsDelivery {
       bucket: this.bucket,
       permissionsVersion: this.permissions,
       encryptionKey: this.kmsKey,
+      outputFormat: this.outputFormat,
     });
 
     const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
@@ -190,6 +191,7 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
 
     const deliveryDestination = new FirehoseDeliveryDestination(container, makeDestId(logType), {
       deliveryStream: this.deliveryStream,
+      outputFormat: this.outputFormat,
     });
 
     const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);
@@ -242,6 +244,7 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
 
     const deliveryDestination= new CloudwatchDeliveryDestination(container, makeDestId(logType), {
       logGroup: this.logGroup,
+      outputFormat: this.outputFormat,
     });
 
     const recordFields = computeRecordFields(this.providedFields, this.mandatoryFields);

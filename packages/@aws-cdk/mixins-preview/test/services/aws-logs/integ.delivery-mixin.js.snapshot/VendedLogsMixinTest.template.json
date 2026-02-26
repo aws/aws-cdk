@@ -20,7 +20,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMixigGroupD06F335FDE18FD44",
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMiroupD06F335FDE18FD44",
     "OutputFormat": "json"
    },
    "DependsOn": [
