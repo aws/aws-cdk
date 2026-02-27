@@ -5,6 +5,11 @@
       "stacks": [
         "aws-ecs-runtime-integ"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "Integ/DefaultTest/DeployAssert",
       "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }

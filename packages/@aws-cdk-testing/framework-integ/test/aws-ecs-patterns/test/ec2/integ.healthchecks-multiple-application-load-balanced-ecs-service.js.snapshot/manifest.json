@@ -568,10 +568,7 @@
         "/aws-ecs-integ-multiple-alb-healthchecks/MyProvider/MyProvider": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyProvider82D075B0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyProvider82D075B0"
           }
         ],
         "/aws-ecs-integ-multiple-alb-healthchecks/myService/lb1": [

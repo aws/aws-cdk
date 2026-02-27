@@ -395,10 +395,7 @@
         "/aws-ecs-integ-fargate-special-listener/FargateNlbService/LB/PublicListener/ECSGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateNlbServiceLBPublicListenerECSGroup7501571D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateNlbServiceLBPublicListenerECSGroup7501571D"
           }
         ],
         "/aws-ecs-integ-fargate-special-listener/FargateNlbService/LoadBalancerDNS": [
@@ -449,10 +446,7 @@
         "/aws-ecs-integ-fargate-special-listener/FargateNlbService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateNlbServiceTaskDef03021E9A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateNlbServiceTaskDef03021E9A"
           }
         ],
         "/aws-ecs-integ-fargate-special-listener/FargateNlbService/TaskDef/web/LogGroup": [
@@ -742,10 +736,7 @@
         "/aws-ecs-integ-fargate-special-listener/FargateAlbService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateAlbServiceTaskDef291471C0",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FargateAlbServiceTaskDef291471C0"
           }
         ],
         "/aws-ecs-integ-fargate-special-listener/FargateAlbService/TaskDef/web/LogGroup": [
@@ -909,24 +900,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "FargateAlbServiceLBSecurityGrouptoawsecsintegfargatespeciallistenerFargateAlbServiceSecurityGroupAB131FAF20155DCA13D5": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateAlbServiceLBSecurityGrouptoawsecsintegfargatespeciallistenerFargateAlbServiceSecurityGroupAB131FAF20155DCA13D5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FargateAlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateAlbServiceLBSecurityGroup0327D42E20157F514694": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FargateAlbServiceSecurityGroupfromawsecsintegfargatespeciallistenerFargateAlbServiceLBSecurityGroup0327D42E20157F514694",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
