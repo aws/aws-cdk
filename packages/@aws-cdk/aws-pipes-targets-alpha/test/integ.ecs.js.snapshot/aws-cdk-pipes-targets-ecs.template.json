@@ -349,6 +349,9 @@
   },
   "FargateSourceQueue3701107C": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -624,6 +627,13 @@
       "Ref": "FargatePipeRole926C0AA7"
      }
     ]
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "IAM_NO_OVERLY_PERMISSIVE_PASSROLE"
+     ]
+    }
    }
   },
   "FargatePipeC9EE880A": {
@@ -693,6 +703,9 @@
   },
   "Ec2BridgeSourceQueue92747C92": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -1505,6 +1518,13 @@
       "Ref": "Ec2BridgePipeRoleC6524A06"
      }
     ]
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "IAM_NO_OVERLY_PERMISSIVE_PASSROLE"
+     ]
+    }
    }
   },
   "Ec2BridgePipeF46B86F5": {

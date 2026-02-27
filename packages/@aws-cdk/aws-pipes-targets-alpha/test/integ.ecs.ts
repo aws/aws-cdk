@@ -40,7 +40,9 @@ class FargateScenario extends Construct {
     super(scope, id);
 
     this.parameterName = '/pipes/ecs/fargate-test-value';
-    this.sourceQueue = new sqs.Queue(this, 'SourceQueue');
+    this.sourceQueue = new sqs.Queue(this, 'SourceQueue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
 
     const parameter = new ssm.StringParameter(this, 'Parameter', {
       parameterName: this.parameterName,
@@ -63,7 +65,7 @@ class FargateScenario extends Construct {
 
     parameter.grantWrite(taskDefinition.taskRole);
 
-    new Pipe(this, 'Pipe', {
+    const pipe = new Pipe(this, 'Pipe', {
       source: new TestSource(this.sourceQueue),
       target: new EcsTaskTarget(props.cluster, {
         taskDefinition,
@@ -72,6 +74,13 @@ class FargateScenario extends Construct {
           environment: [{ name: 'MESSAGE', value: '$.body' }],
         }],
       }),
+    });
+
+    // Suppress false positive - PassRole resources are specific ARNs, not wildcards
+    // Guard cannot evaluate Fn::GetAtt in unresolved templates
+    const pipeRolePolicy = pipe.node.findChild('Role').node.findChild('DefaultPolicy').node.defaultChild as cdk.CfnResource;
+    pipeRolePolicy.addMetadata('guard', {
+      SuppressedRules: ['IAM_NO_OVERLY_PERMISSIVE_PASSROLE'],
     });
   }
 }
@@ -88,7 +97,9 @@ class Ec2BridgeScenario extends Construct {
     super(scope, id);
 
     this.parameterName = '/pipes/ecs/ec2-test-value';
-    this.sourceQueue = new sqs.Queue(this, 'SourceQueue');
+    this.sourceQueue = new sqs.Queue(this, 'SourceQueue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
 
     const asgProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
       autoScalingGroup: new autoscaling.AutoScalingGroup(this, 'Asg', {
@@ -118,7 +129,7 @@ class Ec2BridgeScenario extends Construct {
 
     parameter.grantWrite(taskDefinition.taskRole);
 
-    new Pipe(this, 'Pipe', {
+    const pipe = new Pipe(this, 'Pipe', {
       source: new TestSource(this.sourceQueue),
       target: new EcsTaskTarget(props.cluster, {
         taskDefinition,
@@ -127,6 +138,11 @@ class Ec2BridgeScenario extends Construct {
           environment: [{ name: 'MESSAGE', value: '$.body' }],
         }],
       }),
+    });
+
+    const pipeRolePolicy = pipe.node.findChild('Role').node.findChild('DefaultPolicy').node.defaultChild as cdk.CfnResource;
+    pipeRolePolicy.addMetadata('guard', {
+      SuppressedRules: ['IAM_NO_OVERLY_PERMISSIVE_PASSROLE'],
     });
   }
 }

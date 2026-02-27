@@ -27,7 +27,7 @@
      "MessageBody": "\"fargate-updated\""
     },
     "flattenResponse": "false",
-    "salt": "1772097006540"
+    "salt": "1772152652665"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -157,7 +157,7 @@
      "Name": "\"/pipes/ecs/fargate-test-value\""
     },
     "flattenResponse": "false",
-    "salt": "1772097006540"
+    "salt": "1772152652666"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage463d2acb330f6ddf620a35c9a71223f7"
@@ -431,7 +431,7 @@
      "MessageBody": "\"ec2-updated\""
     },
     "flattenResponse": "false",
-    "salt": "1772097006541"
+    "salt": "1772152652667"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -455,7 +455,7 @@
      "Name": "\"/pipes/ecs/ec2-test-value\""
     },
     "flattenResponse": "false",
-    "salt": "1772097006542"
+    "salt": "1772152652667"
    },
    "DependsOn": [
     "AwsApiCallSQSsendMessage0ec549498af59a4e3bee3019096c8238"
