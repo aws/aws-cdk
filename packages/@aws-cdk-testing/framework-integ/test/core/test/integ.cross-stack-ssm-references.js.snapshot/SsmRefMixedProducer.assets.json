@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "9665bc3deae826520c2cb5cbc04c1d7a33d3ad47fcf5ed1e2c7f9b4b3ca74e30": {
+      "displayName": "SsmRefMixedProducer Template",
+      "source": {
+        "path": "SsmRefMixedProducer.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9a03f8bc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9665bc3deae826520c2cb5cbc04c1d7a33d3ad47fcf5ed1e2c7f9b4b3ca74e30.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

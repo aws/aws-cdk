@@ -1,0 +1,17 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "SsmCrossStackReferencesTest/DefaultTest": {
+      "stacks": [
+        "SsmRefProducer",
+        "SsmRefConsumer",
+        "SsmRefMixedProducer",
+        "SsmRefMixedConsumer"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SsmCrossStackReferencesTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SsmCrossStackReferencesTestDefaultTestDeployAssertC9BDD157"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -27,6 +27,7 @@ export * from './stack';
 export * from './stage';
 export * from './cfn-element';
 export * from './cfn-dynamic-reference';
+export * from './cross-stack-references';
 export * from './cfn-tag';
 export * from './cfn-json';
 export * from './removal-policy';

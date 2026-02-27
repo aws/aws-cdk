@@ -2,18 +2,24 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
+import { Construct } from 'constructs';
 import type { IConstruct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
+import { Annotations } from '../annotations';
+import { CfnDynamicReference, CfnDynamicReferenceService } from '../cfn-dynamic-reference';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { CfnResource } from '../cfn-resource';
+import { CrossStackReferenceType, StackReferences } from '../cross-stack-references';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable } from '../resolvable';
@@ -129,8 +135,8 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     return createCrossRegionImportValue(reference, consumer);
   }
 
-  // export the value through a cloudformation "export name" and use an
-  // Fn::ImportValue in the consumption site.
+  // Determine the reference mechanism to use (CFN_EXPORTS, SSM, or MIXED)
+  const referenceTypes = determineReferenceTypes(producer, consumer, reference);
 
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
@@ -138,7 +144,20 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-  return createImportValue(reference);
+  const usesCfnExports = referenceTypes.includes(CrossStackReferenceType.CFN_EXPORTS);
+  const usesSsm = referenceTypes.includes(CrossStackReferenceType.SSM);
+
+  if (usesCfnExports && usesSsm) {
+    // MIXED mode: create both CFN Export and SSM Parameter, consume via SSM.
+    // Used during migration from CFN_EXPORTS to SSM.
+    return createMixedImportValue(reference, consumer);
+  } else if (usesSsm) {
+    // SSM only: create SSM Parameter, consume via {{resolve:ssm:...}}
+    return createSsmImportValue(reference, consumer);
+  } else {
+    // CFN_EXPORTS only (default / existing behavior)
+    return createImportValue(reference);
+  }
 }
 
 /**
@@ -387,4 +406,277 @@ function isNested(nested: Stack, parent: Stack): boolean {
 function generateUniqueId(stack: Stack, ref: Reference, prefix = '') {
   // we call "resolve()" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
   return stack.resolve(`${prefix}${Names.nodeUniqueId(ref.target.node)}${ref.displayName}`);
+}
+
+// ------------------------------------------------------------------------------------------------
+// SSM-based cross-stack references
+// ------------------------------------------------------------------------------------------------
+
+/**
+ * Determine the reference types to use for a cross-stack reference.
+ *
+ * Priority:
+ * 1. toHere() on the producer scope (producer controls export method)
+ * 2. fromHere() on the consumer scope (consumer controls import method)
+ * 3. Default: CFN_EXPORTS (backward compatibility)
+ */
+function determineReferenceTypes(
+  _producer: Stack,
+  consumer: Stack,
+  reference: CfnReference,
+): CrossStackReferenceType[] {
+  // Check producer-side configuration (toHere)
+  const toHereTypes = StackReferences._lookupToHere(reference.target);
+  if (toHereTypes) {
+    return toHereTypes;
+  }
+
+  // Check consumer-side configuration (fromHere)
+  // We use the consumer stack itself as the scope for lookup since the
+  // consuming CfnElement doesn't carry a user-facing scope that would
+  // be useful here.
+  const fromHereTypes = StackReferences._lookupFromHere(consumer);
+  if (fromHereTypes) {
+    return fromHereTypes;
+  }
+
+  // Default: CFN_EXPORTS (current behavior)
+  return [CrossStackReferenceType.CFN_EXPORTS];
+}
+
+/**
+ * Creates an SSM parameter in the producer stack and returns a
+ * `{{resolve:ssm:...}}` dynamic reference for the consumer stack.
+ *
+ * Unlike the cross-region SSM implementation, this does NOT use
+ * custom resources. Instead, it directly creates an
+ * `AWS::SSM::Parameter` CloudFormation resource in the producer
+ * stack, and the consumer uses a `CfnDynamicReference` to resolve
+ * the value at deploy time.
+ */
+function createSsmImportValue(
+  reference: Reference,
+  consumer: Stack,
+): Intrinsic {
+  const producer = Stack.of(reference.target);
+
+  // Get the exportable value (handles nested stack teleportation)
+  const exportable = getExportable(producer, reference);
+
+  // Generate a unique SSM parameter name
+  const parameterName = generateSsmParameterName(producer, consumer, exportable);
+
+  // Create the SSM parameter in the producer stack
+  ensureSsmParameter(producer, parameterName, exportable, reference);
+
+  // Emit a warning about the soft reference tradeoff
+  warnAboutSoftReferences(reference.target);
+
+  // Return a dynamic reference for the consumer
+  const dynamicRef = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
+
+  if (consumer.nestedStackParent && !isNested(consumer, producer)) {
+    // Consumer is a nested stack (not nested inside producer):
+    // resolve {{resolve:ssm:...}} at the parent level and pass via CfnParameter.
+    // We pass the original reference (which has a valid .target) for ID generation,
+    // and the dynamicRef as the actual value to be passed through.
+    return createNestedStackParameter(consumer, reference as CfnReference, dynamicRef);
+  }
+
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    return Tokenization.reverseList(
+      Fn.split(STRING_LIST_REFERENCE_DELIMITER, dynamicRef.toString()),
+    ) as Intrinsic;
+  }
+
+  return dynamicRef;
+}
+
+/**
+ * MIXED mode: Creates both a CFN Export AND an SSM parameter.
+ * The consumer uses the SSM dynamic reference.
+ *
+ * This is used for migration from CFN_EXPORTS to SSM:
+ *   Step 1: [CFN_EXPORTS]          (current state)
+ *   Step 2: [CFN_EXPORTS, SSM]     (this function - MIXED)
+ *   Step 3: [SSM]                  (remove CFN Export)
+ *
+ * In Step 2, the CFN Export still exists so no consumer currently
+ * using Fn::ImportValue will break. But the consumer template switches
+ * to SSM. Once all consumers are redeployed (Step 2), the Export is
+ * no longer referenced, and can be safely removed in Step 3.
+ */
+function createMixedImportValue(
+  reference: Reference,
+  consumer: Stack,
+): Intrinsic {
+  // Create the CFN Export side (keep alive for migration)
+  createCfnExportOnly(reference);
+
+  // Create and return the SSM-based reference
+  return createSsmImportValue(reference, consumer);
+}
+
+/**
+ * Create the CFN Export side only (without generating the
+ * ImportValue consumer side). Used in MIXED mode to keep the
+ * export alive during migration.
+ */
+function createCfnExportOnly(reference: Reference): void {
+  const exportingStack = Stack.of(reference.target);
+
+  // Re-use the same export logic that exportValue() uses
+  const exportable = getExportable(exportingStack, reference);
+  const resolved = exportingStack.resolve(exportable);
+  const id = 'Output' + JSON.stringify(resolved);
+
+  const exportsScope = getOrCreateExportsScope(exportingStack);
+  const exportName = generateCfnExportName(exportsScope, id);
+
+  if (!exportsScope.node.tryFindChild(id)) {
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      new CfnOutput(exportsScope, id, {
+        value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable)),
+        exportName,
+      });
+    } else {
+      new CfnOutput(exportsScope, id, {
+        value: Token.asString(exportable),
+        exportName,
+      });
+    }
+  }
+}
+
+/**
+ * Ensure an AWS::SSM::Parameter resource exists in the producer
+ * stack for the given cross-stack reference.
+ *
+ * Unlike cross-region references which use Custom Resources to
+ * write SSM parameters to a different region, same-region SSM
+ * references can use a native AWS::SSM::Parameter CloudFormation
+ * resource directly. This is simpler, faster, and doesn't require
+ * Lambda permissions.
+ */
+function ensureSsmParameter(
+  producer: Stack,
+  parameterName: string,
+  exportable: Intrinsic,
+  reference: Reference,
+): void {
+  const ssmScope = getOrCreateSsmExportsScope(producer);
+  const parameterId = `SsmParam${makeUniqueId([parameterName])}`;
+
+  if (!ssmScope.node.tryFindChild(parameterId)) {
+    let value: string;
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      value = Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable));
+    } else {
+      value = Token.asString(exportable);
+    }
+
+    new CfnResource(ssmScope, parameterId, {
+      type: 'AWS::SSM::Parameter',
+      properties: {
+        Type: 'String',
+        Name: parameterName,
+        Value: value,
+      },
+    });
+  }
+}
+
+/**
+ * Generate a unique SSM parameter name for a cross-stack reference.
+ *
+ * Format: /cdk/cross-stack-refs/{producerStackName}/{uniqueHash}
+ *
+ * For nested stacks, we use the top-level parent stack name since
+ * nested stack names are tokens that cannot be resolved at synthesis time.
+ */
+function generateSsmParameterName(
+  producer: Stack,
+  consumer: Stack,
+  exportable: Intrinsic,
+): string {
+  // Use the top-level stack name (nested stack names are tokens)
+  const producerName = (producer.nestedStackParent ?? producer).stackName;
+  const consumerName = (consumer.nestedStackParent ?? consumer).stackName;
+
+  const id = JSON.stringify(producer.resolve(exportable));
+  const components = [
+    producerName,
+    consumerName,
+    id,
+  ];
+  const localPart = makeUniqueId(components);
+
+  // SSM parameter name max length is ~1011 characters in the ARN.
+  // Use a conservative limit of 900.
+  const prefix = `/cdk/cross-stack-refs/${producerName}/`;
+  const maxLength = 900;
+  const truncatedPart = localPart.slice(
+    Math.max(0, localPart.length - maxLength + prefix.length),
+  );
+  return `${prefix}${truncatedPart}`;
+}
+
+/**
+ * Get or create a scoping construct for SSM export parameters.
+ */
+function getOrCreateSsmExportsScope(stack: Stack): Construct {
+  const id = 'SsmCrossStackExports';
+  let scope = stack.node.tryFindChild(id) as Construct;
+  if (!scope) {
+    scope = new Construct(stack, id);
+  }
+  return scope;
+}
+
+/**
+ * Get or create the Exports scoping construct (for CFN Exports).
+ * Mirrors the getCreateExportsScope function in stack.ts.
+ */
+function getOrCreateExportsScope(stack: Stack): Construct {
+  const exportsName = 'Exports';
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
+  if (stackExports === undefined) {
+    stackExports = new Construct(stack, exportsName);
+  }
+  return stackExports;
+}
+
+/**
+ * Generate a CFN export name. Used in MIXED mode to create the
+ * same export name that the default export path would create.
+ *
+ * Must match the logic in stack.ts generateExportName() exactly,
+ * including the STACK_RELATIVE_EXPORTS_CONTEXT feature flag handling.
+ */
+function generateCfnExportName(stackExports: Construct, id: string): string {
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stack = Stack.of(stackExports);
+  const components = [
+    ...stackExports.node.scopes
+      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
+      .map(c => c.node.id),
+    id,
+  ];
+  const prefix = stack.stackName ? stack.stackName + ':' : '';
+  const localPart = makeUniqueId(components);
+  const maxLength = 255;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
+
+/**
+ * Emit a warning about the soft reference tradeoff.
+ */
+function warnAboutSoftReferences(scope: IConstruct): void {
+  Annotations.of(scope).addWarningV2(
+    '@aws-cdk/core:ssmCrossStackReferenceRisk',
+    'SSM-based cross-stack references trade "deployment failure" for potential "service disruption". '
+    + 'When the producer stack changes an exported value, consumer stacks will pick up the new value '
+    + 'on their next deployment, which may cause runtime errors if the value is incompatible. '
+    + 'Make sure you understand this tradeoff before using SSM references.',
+  );
 }

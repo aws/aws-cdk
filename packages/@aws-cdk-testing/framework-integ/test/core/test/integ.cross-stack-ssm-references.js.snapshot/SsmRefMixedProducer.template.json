@@ -1,0 +1,65 @@
+{
+ "Resources": {
+  "MixedSharedParamDB7F01AF": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "mixed-mode-test-value"
+   }
+  },
+  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE840B9687": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Name": "/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE",
+    "Value": {
+     "Ref": "MixedSharedParamDB7F01AF"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMixedSharedParamDB7F01AFC23DA46B": {
+   "Value": {
+    "Ref": "MixedSharedParamDB7F01AF"
+   },
+   "Export": {
+    "Name": "SsmRefMixedProducer:ExportsOutputRefMixedSharedParamDB7F01AFC23DA46B"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
