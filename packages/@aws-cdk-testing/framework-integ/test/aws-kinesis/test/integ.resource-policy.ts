@@ -1,4 +1,5 @@
-import { App, CfnResource, Stack } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
 import { Stream, StreamConsumer } from 'aws-cdk-lib/aws-kinesis';
 import { AccountPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
