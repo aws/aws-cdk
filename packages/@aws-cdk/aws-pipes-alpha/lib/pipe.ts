@@ -349,5 +349,10 @@ export class Pipe extends PipeBase {
 
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
+
+    // The CfnPipe only has an implicit CFN dependency on the Role (via roleArn),
+    // not on the role's DefaultPolicy which is a separate CFN resource. Without
+    // this the Pipe can be created before the policy grants permissions.
+    resource.node.addDependency(this.pipeRole);
   }
 }
