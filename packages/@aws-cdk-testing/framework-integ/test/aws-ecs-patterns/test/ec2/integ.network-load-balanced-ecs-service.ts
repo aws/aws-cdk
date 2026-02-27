@@ -68,6 +68,7 @@ const myService = new NetworkLoadBalancedEc2Service(stack, 'myService', {
   ipAddressType: IpAddressType.IPV4,
 });
 myService.service.connections.allowFrom(myService.loadBalancer, Port.tcp(80));
+myService.loadBalancer.connections.allowTo(myService.service, Port.tcp(80));
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
   testCases: [stack],

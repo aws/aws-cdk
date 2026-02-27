@@ -531,10 +531,7 @@
         "/aws-ecs-integ-fargate-multi-nlb-health/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceTaskDef7FB8322A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "myServiceTaskDef7FB8322A"
           }
         ],
         "/aws-ecs-integ-fargate-multi-nlb-health/myService/TaskDef/web/LogGroup": [
@@ -703,15 +700,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "myServicelb2listener2ECSTargetGroupweb90Group6841F924": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

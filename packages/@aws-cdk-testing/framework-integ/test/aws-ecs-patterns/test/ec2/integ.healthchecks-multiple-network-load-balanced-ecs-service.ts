@@ -76,7 +76,10 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
-networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => networkMultipleTargetGroupsFargateService.service.connections.allowFrom(lb, Port.allTcp()));
+networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => {
+  networkMultipleTargetGroupsFargateService.service.connections.allowFrom(lb, Port.allTcp());
+  lb.connections.allowToDefaultPort(networkMultipleTargetGroupsFargateService.service);
+});
 
 new IntegTest(app, 'Integ', {
   testCases: [stack],
