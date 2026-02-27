@@ -135,7 +135,7 @@
     },
     "PrimaryContainer": {
      "Image": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:442a71de95281cb26bd41da567c79060206108b97bdde93cb4ce5f213f50013a"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:98e27853307092de1d03c86e89a5ead7aab9f8ea8f6722e4f113f04f34a329fd"
      },
      "ModelDataUrl": {
       "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
@@ -236,7 +236,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 2,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -252,6 +251,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 2,
     "MetricName": "Invocations",
     "Namespace": "AWS/SageMaker",
     "Period": 300,
@@ -263,7 +263,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 5,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -279,6 +278,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 5,
     "MetricName": "InvocationsPerInstance",
     "Namespace": "AWS/SageMaker",
     "Period": 300,
@@ -290,7 +290,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 8,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -306,6 +305,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 8,
     "MetricName": "ModelLatency",
     "Namespace": "AWS/SageMaker",
     "Period": 300,
@@ -317,7 +317,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 11,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -333,6 +332,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 11,
     "MetricName": "OverheadLatency",
     "Namespace": "AWS/SageMaker",
     "Period": 300,
@@ -344,7 +344,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 14,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -360,6 +359,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 14,
     "MetricName": "Invocation5XXErrors",
     "Namespace": "AWS/SageMaker",
     "Period": 300,
@@ -371,7 +371,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 17,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -387,6 +386,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 17,
     "MetricName": "DiskUtilization",
     "Namespace": "/aws/sagemaker/Endpoints",
     "Period": 300,
@@ -398,7 +398,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 20,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -414,6 +413,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 20,
     "MetricName": "CPUUtilization",
     "Namespace": "/aws/sagemaker/Endpoints",
     "Period": 300,
@@ -425,7 +425,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 23,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -441,6 +440,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 23,
     "MetricName": "MemoryUtilization",
     "Namespace": "/aws/sagemaker/Endpoints",
     "Period": 300,
@@ -452,7 +452,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 26,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -468,6 +467,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 26,
     "MetricName": "GPUUtilization",
     "Namespace": "/aws/sagemaker/Endpoints",
     "Period": 300,
@@ -479,7 +479,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 29,
     "Dimensions": [
      {
       "Name": "EndpointName",
@@ -495,6 +494,7 @@
       "Value": "firstVariant"
      }
     ],
+    "EvaluationPeriods": 29,
     "MetricName": "GPUMemoryUtilization",
     "Namespace": "/aws/sagemaker/Endpoints",
     "Period": 300,
