@@ -77,8 +77,9 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
 networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => {
-  networkMultipleTargetGroupsFargateService.service.connections.allowFrom(lb, Port.allTcp());
-  lb.connections.allowToDefaultPort(networkMultipleTargetGroupsFargateService.service);
+  const nlbSg = new SecurityGroup(stack, `NlbSg${lb.node.id}`, { vpc, allowAllOutbound: false });
+  nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+  lb.connections.addSecurityGroup(nlbSg);
 });
 
 new IntegTest(app, 'Integ', {

@@ -67,8 +67,9 @@ const myService = new NetworkLoadBalancedEc2Service(stack, 'myService', {
   ],
   ipAddressType: IpAddressType.IPV4,
 });
-myService.service.connections.allowFrom(myService.loadBalancer, Port.tcp(80));
-myService.loadBalancer.connections.allowTo(myService.service, Port.tcp(80));
+const nlbSg = new SecurityGroup(stack, 'NlbSecurityGroup', { vpc, allowAllOutbound: false });
+nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+myService.loadBalancer.connections.addSecurityGroup(nlbSg);
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
   testCases: [stack],
