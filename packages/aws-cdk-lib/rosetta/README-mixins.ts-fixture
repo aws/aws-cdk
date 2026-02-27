@@ -10,12 +10,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import '@aws-cdk/mixins-preview/with';
 import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/core';
 import { IMixin } from 'constructs';
-import { PropertyMergeStrategy } from '@aws-cdk/mixins-preview/mixins';
-import { AutoDeleteObjects, BucketVersioning, CfnBucketPropsMixin, BucketPolicyStatementsMixin, BucketBlockPublicAccess } from '@aws-cdk/mixins-preview/aws-s3/mixins';
-
-// for testing purposes, ensure these imports work
-import { mixins as alexa_mixins } from '@aws-cdk/mixins-preview/alexa-ask';
-import { aws_logs } from '@aws-cdk/mixins-preview';
 
 declare const scope: Construct;
 declare const stack: Stack;
@@ -32,6 +26,11 @@ class ProductionSecurityMixin extends Mixin {
 }
 
 class EncryptionAtRest extends Mixin {
+  supports(_construct: any): boolean { return true; }
+  applyTo(_construct: any): void { }
+}
+
+class AutoDeleteObjects extends Mixin {
   supports(_construct: any): boolean { return true; }
   applyTo(_construct: any): void { }
 }
