@@ -870,6 +870,79 @@ describe('stack', () => {
     });
   });
 
+  test('cross-account stack references with crossAccountReferences=true', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        region: 'us-east-1',
+        account: '111111111111',
+      },
+      crossAccountReferences: true,
+    });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        region: 'us-east-2',
+        account: '222222222222',
+      },
+      crossAccountReferences: true,
+    });
+
+    // WHEN - used in another account and region
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer stack has an output
+    const outputName = 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83';
+    expect(template1).toMatchObject({
+      Resources: {
+        SomeResourceExport: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+      Outputs: expect.objectContaining({
+        [outputName]: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+      }),
+    });
+
+    // THEN - consumer stack references via Fn::GetStackOutput
+    expect(template2).toMatchObject({
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::S3::Bucket',
+          Properties: {
+            Name: {
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                OutputName: outputName,
+                Region: 'us-east-1',
+                RoleArn: 'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-cfn-exec-role-111111111111-us-east-1',
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('cross-region stack references throws error', () => {
     // GIVEN
     const app = new App();

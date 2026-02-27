@@ -63,11 +63,24 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     throw new UnscopedValidationError('Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
-  // unsupported: stacks are not in the same account
+  // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    throw new UnscopedValidationError(
-      `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack');
+    // only supported if the customer opts in
+    if (!consumer._crossAccountReferences) {
+      throw new UnscopedValidationError(
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack' +
+        'Set crossAccountReferences=true to enable cross region references');
+    // and we have a role to add to the Fn::GetStackOutput call
+    } if (producer.synthesizer.cloudFormationExecutionRole == null) {
+      throw new UnscopedValidationError(
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'The stack synthesizer used does not have a CloudFormation execution role. ' +
+        'Use a different synthesizer, such as DefaultStackSynthesizer',
+      );
+    } else {
+      return createGetStackOutput(reference, producer.synthesizer.cloudFormationExecutionRole);
+    }
   }
 
   // Stacks are in the same account, but different regions
@@ -256,7 +269,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
   return exported;
 }
 
-function createGetStackOutput(reference: Reference): Intrinsic {
+function createGetStackOutput(reference: Reference, roleArn?: string): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
   const resolved = exportingStack.resolve(reference);
@@ -282,7 +295,7 @@ function createGetStackOutput(reference: Reference): Intrinsic {
   }
 
   return Tokenization.reverseCompleteString(
-    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region),
+    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
   ) as Intrinsic;
 }
 
