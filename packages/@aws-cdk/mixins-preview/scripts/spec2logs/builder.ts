@@ -5,10 +5,9 @@ import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T, EnumType, InterfaceType } from '@cdklabs/typewriter';
 import { MIXINS_LOGS_DELIVERY } from './helpers';
 import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import { MIXINS_CORE } from '../spec2mixins/helpers';
 import { ResourceReference } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
 
 class LogsDeliveryBuilderServiceModule extends BaseServiceSubmodule {
@@ -72,7 +71,6 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
     CDK_CORE.import(module, 'cdk');
     CDK_INTERFACES.import(module, 'interfaces');
     CONSTRUCTS.import(module, 'constructs');
-    MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
     MIXINS_LOGS_DELIVERY.import(module, 'logsDelivery', { fromLocation: '../aws-logs/logs-delivery' });
     submodule.constructLibModule.import(module, 'service');
 
@@ -512,8 +510,8 @@ class LogsMixin extends ClassType {
     super(scope, {
       export: true,
       name: `${naming.classNameFromResource(resource)}LogsMixin`,
-      implements: [MIXINS_CORE.IMixin],
-      extends: MIXINS_CORE.Mixin,
+      implements: [CONSTRUCTS.IMixin],
+      extends: CDK_CORE.Mixin,
       docs: {
         summary: `Mixin to implement vended logs for ${resource.cloudFormationType}`,
         ...util.splitDocumentation(resource.documentation),

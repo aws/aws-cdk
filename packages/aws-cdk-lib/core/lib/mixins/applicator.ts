@@ -1,9 +1,8 @@
-import type { IConstruct } from 'constructs';
-import { ValidationError } from 'aws-cdk-lib/core';
-import type { IMixin } from './mixins';
+import type { IConstruct, IMixin } from 'constructs';
+import { ValidationError } from '../errors';
+import { applyMixin } from './private/mixin-metadata';
 import { ConstructSelector, type IConstructSelector } from './selectors';
-import { applyMixin } from './private/metadata';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from '../helpers-internal';
 
 /**
  * Represents a successful mixin application.

@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
-import { Stack, App } from 'aws-cdk-lib/core';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import { ConstructSelector } from '../../lib/core';
+import { CfnLogGroup } from '../../../aws-logs';
+import { Bucket, CfnBucket } from '../../../aws-s3';
+import { Stack, App } from '../../lib';
+import { ConstructSelector } from '../../lib/mixins/selectors';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -30,17 +30,17 @@ describe('ConstructSelector', () => {
   });
 
   test('resourcesOfType() selects by type', () => {
-    const bucket = new s3.CfnBucket(stack, 'Bucket');
-    const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
+    const bucket = new CfnBucket(stack, 'Bucket');
+    const logGroup = new CfnLogGroup(stack, 'LogGroup');
 
-    const selected = ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME).select(stack);
+    const selected = ConstructSelector.resourcesOfType(CfnBucket.CFN_RESOURCE_TYPE_NAME).select(stack);
     expect(selected).toContain(bucket);
     expect(selected).not.toContain(logGroup);
   });
 
   test('resourcesOfType() selects by CloudFormation type', () => {
-    const bucket = new s3.CfnBucket(stack, 'Bucket');
-    const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
+    const bucket = new CfnBucket(stack, 'Bucket');
+    const logGroup = new CfnLogGroup(stack, 'LogGroup');
 
     const selected = ConstructSelector.resourcesOfType('AWS::S3::Bucket').select(stack);
     expect(selected).toContain(bucket);
@@ -48,8 +48,8 @@ describe('ConstructSelector', () => {
   });
 
   test('byId() selects by ID pattern', () => {
-    const prodBucket = new s3.CfnBucket(stack, 'prod-bucket');
-    const devBucket = new s3.CfnBucket(stack, 'dev-bucket');
+    const prodBucket = new CfnBucket(stack, 'prod-bucket');
+    const devBucket = new CfnBucket(stack, 'dev-bucket');
 
     const selected = ConstructSelector.byId('*prod*').select(stack);
     expect(selected).toContain(prodBucket);
@@ -58,8 +58,8 @@ describe('ConstructSelector', () => {
 
   test('byPath() selects by construct path pattern', () => {
     const scope = new Construct(stack, 'Prefix');
-    const prodBucket = new s3.CfnBucket(scope, 'prod-bucket');
-    const devBucket = new s3.CfnBucket(stack, 'dev-bucket');
+    const prodBucket = new CfnBucket(scope, 'prod-bucket');
+    const devBucket = new CfnBucket(stack, 'dev-bucket');
 
     const selected = ConstructSelector.byPath('*/Prefix/**').select(stack);
     expect(selected).toContain(prodBucket);
@@ -67,8 +67,8 @@ describe('ConstructSelector', () => {
   });
 
   test('cfnResource() selects CfnResource or default child', () => {
-    const bucket = new s3.CfnBucket(stack, 'Bucket');
-    const l2Bucket = new s3.Bucket(stack, 'L2Bucket');
+    const bucket = new CfnBucket(stack, 'Bucket');
+    const l2Bucket = new Bucket(stack, 'L2Bucket');
 
     const selectedFromCfn = ConstructSelector.cfnResource().select(bucket);
     expect(selectedFromCfn).toContain(bucket);

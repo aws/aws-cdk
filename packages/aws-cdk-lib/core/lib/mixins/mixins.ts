@@ -1,9 +1,8 @@
-import type { IConstruct } from 'constructs';
-import type { IConstructSelector } from './selectors';
+import type { IConstruct, IMixin } from 'constructs';
 import { MixinApplicator } from './applicator';
+import type { IConstructSelector } from './selectors';
 
-// this will change when we update the interface to deliberately break compatibility checks
-const MIXIN_SYMBOL = Symbol.for('@aws-cdk/mixins-preview.Mixin.pre1');
+const MIXIN_SYMBOL = Symbol.for('@aws-cdk/core.Mixin');
 
 /**
  * Main entry point for applying mixins.
@@ -15,22 +14,6 @@ export class Mixins {
   static of(scope: IConstruct, selector?: IConstructSelector): MixinApplicator {
     return new MixinApplicator(scope, selector);
   }
-}
-
-/**
- * A mixin is a reusable piece of functionality that can be applied to constructs
- * to add behavior, properties, or modify existing functionality without inheritance.
- */
-export interface IMixin {
-  /**
-   * Determines whether this mixin can be applied to the given construct.
-   */
-  supports(construct: IConstruct): boolean;
-
-  /**
-   * Applies the mixin functionality to the target construct.
-   */
-  applyTo(construct: IConstruct): void;
 }
 
 /**

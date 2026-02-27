@@ -1,12 +1,8 @@
-import { Construct, type IConstruct } from 'constructs';
-import { Stack, App } from 'aws-cdk-lib/core';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import type { IMixin } from '../../lib/core';
-import {
-  Mixin,
-  Mixins,
-} from '../../lib/core';
+import { Construct, type IMixin, type IConstruct } from 'constructs';
+import { CfnLogGroup } from '../../../aws-logs';
+import { CfnBucket } from '../../../aws-s3';
+import { Stack, App } from '../../lib';
+import { Mixin, Mixins } from '../../lib/mixins';
 
 class Root extends Construct {
   constructor() {
@@ -29,7 +25,7 @@ class TestMixin extends Mixin {
 
 class SelectiveMixin implements IMixin {
   supports(_construct: any): boolean {
-    return _construct instanceof s3.CfnBucket;
+    return _construct instanceof CfnBucket;
   }
 
   applyTo(construct: any): any {
@@ -76,8 +72,8 @@ describe('Core Mixins Framework', () => {
     });
 
     test('selective mixin only applies to supported constructs', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
+      const bucket = new CfnBucket(stack, 'Bucket');
+      const logGroup = new CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       expect(mixin.supports(bucket)).toBe(true);
@@ -115,8 +111,8 @@ describe('Core Mixins Framework', () => {
     });
 
     test('skips unsupported constructs', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const logGroup = new logs.CfnLogGroup(stack, 'LogGroup');
+      const bucket = new CfnBucket(stack, 'Bucket');
+      const logGroup = new CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       Mixins.of(stack).apply(mixin);
@@ -125,7 +121,7 @@ describe('Core Mixins Framework', () => {
     });
 
     test('requireAny throws when no constructs match', () => {
-      new logs.CfnLogGroup(stack, 'LogGroup');
+      new CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       expect(() => {
@@ -134,8 +130,8 @@ describe('Core Mixins Framework', () => {
     });
 
     test('requireAll throws when some constructs do not support mixin', () => {
-      new s3.CfnBucket(stack, 'Bucket');
-      new logs.CfnLogGroup(stack, 'LogGroup');
+      new CfnBucket(stack, 'Bucket');
+      new CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       expect(() => {
@@ -144,8 +140,8 @@ describe('Core Mixins Framework', () => {
     });
 
     test('report returns successful mixin applications', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      new logs.CfnLogGroup(stack, 'LogGroup');
+      const bucket = new CfnBucket(stack, 'Bucket');
+      new CfnLogGroup(stack, 'LogGroup');
       const mixin = new SelectiveMixin();
 
       const applicator = Mixins.of(stack).apply(mixin);

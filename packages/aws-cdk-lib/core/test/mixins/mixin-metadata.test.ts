@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
-import { App, Stack } from 'aws-cdk-lib/core';
-import { Mixin, Mixins } from '../../lib/core';
+import { App, Stack } from '../../lib';
+import { Mixin, Mixins } from '../../lib/mixins';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 const MIXIN_METADATA_KEY = 'aws:cdk:analytics:mixin';
