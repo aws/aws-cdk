@@ -52,6 +52,7 @@ export enum CustomResourceProviderRuntime {
 
   /**
    * Node.js 18.x
+   * @deprecated Use latest version
    */
   NODEJS_18_X = 'nodejs18.x',
 
