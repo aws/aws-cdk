@@ -1,15 +1,30 @@
 {
-  "version": "38.0.1",
+  "version": "50.0.0",
   "files": {
-    "1772e18de899d6961118c074890d20c1b2f65ac8abfc63b6cb92c0aa6ccea511": {
+    "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-ff046730": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7044ab5d0d2b8c96ac4fa238ddc766aca7ce0ff7075857fad8d90a39a8cdf12d": {
+      "displayName": "kinesis-resource-policy Template",
       "source": {
         "path": "kinesis-resource-policy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-407411af": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1772e18de899d6961118c074890d20c1b2f65ac8abfc63b6cb92c0aa6ccea511.json",
+          "objectKey": "7044ab5d0d2b8c96ac4fa238ddc766aca7ce0ff7075857fad8d90a39a8cdf12d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
