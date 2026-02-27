@@ -234,6 +234,7 @@ export enum CfnThingApplicationLogsRecordFields {
   RESOURCE_ID = "resource_id",
   ACCOUNT_ID = "account_id",
   EVENT_TYPE = "event_type",
+  PHASE1_STATE = "phase1_state",
 }
 
 export interface CfnThingApplicationLogsS3Props {
@@ -312,9 +313,11 @@ export namespace CfnThingAccessLogsOutputFormat {
 }
 
 export enum CfnThingAccessLogsRecordFields {
-  ACCOUNT_ID = "account-id",
-  TRACE_ID = "trace-id",
-  SPAN_ID = "span-id",
+  ACCOUNT_ID = "account.id",
+  TRACE_ID = "trace/id",
+  SPAN_ID = "span*id",
+  _1PHASE_STATE = "1phase_state",
+  _200VERSION = "200version",
   RESOURCE_ID = "resource-id",
   BODY = "body",
 }
