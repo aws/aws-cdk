@@ -40,7 +40,7 @@ const myService = new NetworkMultipleTargetGroupsFargateService(stack, 'myServic
       listener: 'listener1',
     },
     {
-      containerPort: 90,
+      containerPort: 80,
       listener: 'listener2',
     },
   ],

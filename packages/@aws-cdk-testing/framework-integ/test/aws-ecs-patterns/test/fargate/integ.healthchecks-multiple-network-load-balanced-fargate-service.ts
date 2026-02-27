@@ -40,7 +40,7 @@ const networkMultipleTargetGroupsFargateService = new NetworkMultipleTargetGroup
       listener: 'listener1',
     },
     {
-      containerPort: 90,
+      containerPort: 80,
       listener: 'listener2',
     },
   ],
