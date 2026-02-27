@@ -1,28 +1,28 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
-    "cluster-data-api.assets": {
+    "aws-cdk-rds-cluster-data-api.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cluster-data-api.assets.json",
+        "file": "aws-cdk-rds-cluster-data-api.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cluster-data-api": {
+    "aws-cdk-rds-cluster-data-api": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cluster-data-api.template.json",
+        "templateFile": "aws-cdk-rds-cluster-data-api.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/452fb49a01e75ceec61c83404ca34a2a296b015c8563c16b351b1d83b1fe6165.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/969dc7fa1631b3466b70e6126c630dccd80ebb2a482670a22cb683de59911863.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cluster-data-api.assets"
+          "aws-cdk-rds-cluster-data-api.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,22 +31,25 @@
         }
       },
       "dependencies": [
-        "cluster-data-api.assets"
+        "aws-cdk-rds-cluster-data-api.assets"
       ],
       "metadata": {
-        "/cluster-data-api/VPC": [
+        "/aws-cdk-rds-cluster-data-api/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
           }
         ],
-        "/cluster-data-api/VPC/Resource": [
+        "/aws-cdk-rds-cluster-data-api/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -82,43 +85,43 @@
             }
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -154,43 +157,43 @@
             }
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/cluster-data-api/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet1": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,31 +221,31 @@
             "data": {}
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet2": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -270,73 +273,216 @@
             "data": {}
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/cluster-data-api/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-cluster-data-api/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/cluster-data-api/VPC/IGW": [
+        "/aws-cdk-rds-cluster-data-api/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/cluster-data-api/VPC/VPCGW": [
+        "/aws-cdk-rds-cluster-data-api/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/cluster-data-api/VPC/RestrictDefaultSecurityGroupCustomResource": [
+        "/aws-cdk-rds-cluster-data-api/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-data-api/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-rds-cluster-data-api/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
-        "/cluster-data-api/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/aws-cdk-rds-cluster-data-api/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+            "data": "RoleDefaultPolicy5FFB7DAB"
           }
         ],
-        "/cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+        "/aws-cdk-rds-cluster-data-api/User": [
           {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
-        "/cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/aws-cdk-rds-cluster-data-api/User/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+            "data": "User00B015A1"
           }
         ],
-        "/cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/aws-cdk-rds-cluster-data-api/User/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachToUser": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-data-api/User/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+            "data": "UserDefaultPolicy1F97781E"
           }
         ],
-        "/cluster-data-api/Function": [
+        "/aws-cdk-rds-cluster-data-api/Function": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -346,7 +492,7 @@
             }
           }
         ],
-        "/cluster-data-api/Function/ServiceRole": [
+        "/aws-cdk-rds-cluster-data-api/Function/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -394,19 +540,13 @@
             }
           }
         ],
-        "/cluster-data-api/Function/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cluster-data-api/Function/ServiceRole/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionServiceRole675BB04A"
           }
         ],
-        "/cluster-data-api/Function/ServiceRole/DefaultPolicy": [
+        "/aws-cdk-rds-cluster-data-api/Function/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -444,19 +584,19 @@
             }
           }
         ],
-        "/cluster-data-api/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FunctionServiceRoleDefaultPolicy2F49994A"
           }
         ],
-        "/cluster-data-api/Function/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Function76856677"
           }
         ],
-        "/cluster-data-api/Database": [
+        "/aws-cdk-rds-cluster-data-api/Database": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -472,13 +612,15 @@
                 "defaultUsername": "*",
                 "supportedLogTypes": "*"
               },
-              "writer": "*",
               "vpc": "*",
+              "writer": "*",
+              "serverlessV2MinCapacity": "*",
+              "serverlessV2MaxCapacity": "*",
               "enableDataApi": true
             }
           }
         ],
-        "/cluster-data-api/Database/Subnets": [
+        "/aws-cdk-rds-cluster-data-api/Database/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -489,13 +631,13 @@
             }
           }
         ],
-        "/cluster-data-api/Database/Subnets/Default": [
+        "/aws-cdk-rds-cluster-data-api/Database/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets56F17B9A"
           }
         ],
-        "/cluster-data-api/Database/SecurityGroup": [
+        "/aws-cdk-rds-cluster-data-api/Database/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -504,13 +646,13 @@
             }
           }
         ],
-        "/cluster-data-api/Database/SecurityGroup/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Database/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecurityGroup5C91FDCB"
           }
         ],
-        "/cluster-data-api/Database/Secret": [
+        "/aws-cdk-rds-cluster-data-api/Database/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -531,13 +673,13 @@
             }
           }
         ],
-        "/cluster-data-api/Database/Secret/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Database/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecret3B817195"
           }
         ],
-        "/cluster-data-api/Database/Secret/Attachment": [
+        "/aws-cdk-rds-cluster-data-api/Database/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -546,58 +688,58 @@
             }
           }
         ],
-        "/cluster-data-api/Database/Secret/Attachment/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Database/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecretAttachmentE5D1B020"
           }
         ],
-        "/cluster-data-api/Database/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Database/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseB269D8BB"
           }
         ],
-        "/cluster-data-api/Database/writerInstance": [
+        "/aws-cdk-rds-cluster-data-api/Database/writer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/cluster-data-api/Database/writerInstance/Resource": [
+        "/aws-cdk-rds-cluster-data-api/Database/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabasewriterInstanceEBFCC003"
+            "data": "Databasewriter2462CC03"
           }
         ],
-        "/cluster-data-api/BootstrapVersion": [
+        "/aws-cdk-rds-cluster-data-api/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cluster-data-api/CheckBootstrapVersion": [
+        "/aws-cdk-rds-cluster-data-api/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cluster-data-api"
+      "displayName": "aws-cdk-rds-cluster-data-api"
     },
-    "integclusterdataapiDefaultTestDeployAssertACD87C08.assets": {
+    "clusterdataapiintegtestDefaultTestDeployAssert4141457D.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integclusterdataapiDefaultTestDeployAssertACD87C08.assets.json",
+        "file": "clusterdataapiintegtestDefaultTestDeployAssert4141457D.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integclusterdataapiDefaultTestDeployAssertACD87C08": {
+    "clusterdataapiintegtestDefaultTestDeployAssert4141457D": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integclusterdataapiDefaultTestDeployAssertACD87C08.template.json",
+        "templateFile": "clusterdataapiintegtestDefaultTestDeployAssert4141457D.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -606,7 +748,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integclusterdataapiDefaultTestDeployAssertACD87C08.assets"
+          "clusterdataapiintegtestDefaultTestDeployAssert4141457D.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -615,23 +757,23 @@
         }
       },
       "dependencies": [
-        "integclusterdataapiDefaultTestDeployAssertACD87C08.assets"
+        "clusterdataapiintegtestDefaultTestDeployAssert4141457D.assets"
       ],
       "metadata": {
-        "/integ-cluster-data-api/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cluster-data-api-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-cluster-data-api/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cluster-data-api-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-cluster-data-api/DefaultTest/DeployAssert"
+      "displayName": "cluster-data-api-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -645,6 +787,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -663,6 +806,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -774,7 +918,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -928,6 +1072,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -959,16 +1107,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1114,6 +1252,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,
             "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
@@ -1122,12 +1265,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1105.0"
 }

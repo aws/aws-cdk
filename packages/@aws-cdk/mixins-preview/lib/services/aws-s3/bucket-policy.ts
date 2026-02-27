@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs/lib/construct';
-import { Mixin } from '../../core';
+import { Mixin } from 'aws-cdk-lib/core';
 import type { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';

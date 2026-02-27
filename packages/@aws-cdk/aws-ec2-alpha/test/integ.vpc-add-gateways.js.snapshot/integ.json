@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "50.0.0",
   "testCases": {
     "VpcSameAccountInteg/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "VpcSameAccountIntegDefaultTestDeployAssertDA1BF34D"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1105.0"
 }
