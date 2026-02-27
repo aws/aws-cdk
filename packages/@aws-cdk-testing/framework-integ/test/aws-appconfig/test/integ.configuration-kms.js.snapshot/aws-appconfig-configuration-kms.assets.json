@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "52.0.0",
   "files": {
     "576959e6fcdfa5040b2b11959fc18318bfdaa7e4a215655138108db3423077ae": {
       "displayName": "aws-appconfig-configuration-kms Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-2228a73d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "576959e6fcdfa5040b2b11959fc18318bfdaa7e4a215655138108db3423077ae.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
