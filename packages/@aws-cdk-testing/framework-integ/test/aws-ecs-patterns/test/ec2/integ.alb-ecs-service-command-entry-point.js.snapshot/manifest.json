@@ -568,10 +568,7 @@
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/CapacityProvier/CapacityProvier": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CapacityProvier480DE32F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "CapacityProvier480DE32F"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/ALBECSServiceWithCommandEntryPoint/LB": [

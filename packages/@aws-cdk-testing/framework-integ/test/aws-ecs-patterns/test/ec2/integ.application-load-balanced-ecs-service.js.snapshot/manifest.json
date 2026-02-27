@@ -576,10 +576,7 @@
         "/aws-ecs-integ-alb/FirstCapacityProvier/FirstCapacityProvier": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FirstCapacityProvierD92F5AC4",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "FirstCapacityProvierD92F5AC4"
           }
         ],
         "/aws-ecs-integ-alb/SecondAutoScalingGroup": [
@@ -779,10 +776,7 @@
         "/aws-ecs-integ-alb/SecondCapacityProvier/SecondCapacityProvier": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecondCapacityProvierADE5DA56",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "SecondCapacityProvierADE5DA56"
           }
         ],
         "/aws-ecs-integ-alb/myService/LB": [

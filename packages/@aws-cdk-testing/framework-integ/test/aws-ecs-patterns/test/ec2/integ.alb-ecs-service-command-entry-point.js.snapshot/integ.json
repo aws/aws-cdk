@@ -7,9 +7,7 @@
       ],
       "cdkCommandOptions": {
         "destroy": {
-          "args": {
-            "force": true
-          }
+          "expectError": true
         }
       },
       "assertionStack": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",

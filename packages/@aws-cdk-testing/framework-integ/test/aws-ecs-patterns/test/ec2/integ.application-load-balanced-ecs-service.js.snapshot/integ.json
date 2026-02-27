@@ -7,9 +7,7 @@
       ],
       "cdkCommandOptions": {
         "destroy": {
-          "args": {
-            "force": true
-          }
+          "expectError": true
         }
       },
       "assertionStack": "applicationLoadBalancedEc2ServiceTest/DefaultTest/DeployAssert",
