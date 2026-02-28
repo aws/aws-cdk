@@ -44,24 +44,6 @@ const STACK_REFERENCES_SYMBOL = Symbol.for('@aws-cdk/core.StackReferences');
  * This allows controlling the mechanism used to pass values between stacks
  * at the construct scope level. The configuration applies recursively to
  * all constructs within the scope.
- *
- * @example
- * // Configure all references TO resources in this Lambda Layer to use SSM
- * const layer = new lambda.LayerVersion(stack, 'SharedLayer', { ... });
- * StackReferences.of(layer).toHere([CrossStackReferenceType.SSM]);
- *
- * // Configure all references FROM this CloudWatch Dashboard to use SSM
- * const dashboard = new cloudwatch.Dashboard(stack, 'Dashboard', { ... });
- * StackReferences.of(dashboard).fromHere([CrossStackReferenceType.SSM]);
- *
- * // Migration: create both CFN Export and SSM Parameter, consume via SSM
- * StackReferences.of(myConstruct).toHere([
- *   CrossStackReferenceType.CFN_EXPORTS,
- *   CrossStackReferenceType.SSM,
- * ]);
- *
- * // Apply to an entire stack
- * StackReferences.of(stack).toHere([CrossStackReferenceType.SSM]);
  */
 export class StackReferences {
   /**
