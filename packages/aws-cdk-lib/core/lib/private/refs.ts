@@ -36,7 +36,7 @@ export function resolveReferences(scope: IConstruct): void {
 
     // resolve the value in the context of the consumer
     if (!value.hasValueForStack(consumer)) {
-      const resolved = resolveValue(consumer, value);
+      const resolved = resolveValue(consumer, value, source);
       value.assignValueForStack(consumer, resolved);
     }
   }
@@ -44,8 +44,12 @@ export function resolveReferences(scope: IConstruct): void {
 
 /**
  * Resolves the value for `reference` in the context of `consumer`.
+ *
+ * @param consumer - The consuming stack
+ * @param reference - The cross-stack reference to resolve
+ * @param consumingElement - The actual CfnElement that uses the reference (used for fromHere lookup)
  */
-function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
+function resolveValue(consumer: Stack, reference: CfnReference, consumingElement?: CfnElement): IResolvable {
   const producer = Stack.of(reference.target);
   const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
@@ -131,7 +135,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   }
 
   // Determine the reference mechanism to use (CFN_EXPORTS, SSM, or MIXED)
-  const referenceTypes = determineReferenceTypes(consumer, reference);
+  const referenceTypes = determineReferenceTypes(consumer, reference, consumingElement);
 
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
@@ -418,6 +422,7 @@ function generateUniqueId(stack: Stack, ref: Reference, prefix = '') {
 function determineReferenceTypes(
   consumer: Stack,
   reference: CfnReference,
+  consumingElement?: CfnElement,
 ): CrossStackReferenceType[] {
   // Check producer-side configuration (toHere)
   const toHereTypes = StackReferences._lookupToHere(reference.target);
@@ -426,10 +431,10 @@ function determineReferenceTypes(
   }
 
   // Check consumer-side configuration (fromHere)
-  // We use the consumer stack itself as the scope for lookup since the
-  // consuming CfnElement doesn't carry a user-facing scope that would
-  // be useful here.
-  const fromHereTypes = StackReferences._lookupFromHere(consumer);
+  // Start from the consuming element if available, so that fromHere()
+  // set on parent constructs within the consumer stack can be found.
+  // Falls back to the consumer stack itself.
+  const fromHereTypes = StackReferences._lookupFromHere(consumingElement ?? consumer);
   if (fromHereTypes) {
     return fromHereTypes;
   }

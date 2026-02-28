@@ -826,7 +826,7 @@ describe('SSM-based cross-stack references', () => {
     });
   });
 
-  test('fromHere() on child construct does not affect references (lookup starts from Stack)', () => {
+  test('fromHere() on child construct applies to resources within that scope', () => {
     // GIVEN
     const app = new App();
     const producer = new Stack(app, 'Producer');
@@ -834,7 +834,7 @@ describe('SSM-based cross-stack references', () => {
 
     const consumer = new Stack(app, 'Consumer');
     const group = new Construct(consumer, 'MonitoringGroup');
-    // fromHere set on a child construct, NOT on the stack itself
+    // fromHere set on a child construct applies to resources within that scope
     StackReferences.of(group).fromHere([CrossStackReferenceType.SSM]);
 
     new CfnResource(group, 'Alarm', {
@@ -844,16 +844,27 @@ describe('SSM-based cross-stack references', () => {
 
     // WHEN
     const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
     const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
 
-    // THEN - fromHere on a child construct is NOT picked up because
-    // determineReferenceTypes looks up fromHere starting from the consumer Stack.
-    // Falls back to default CFN_EXPORTS.
+    // THEN - fromHere on child construct is picked up via tree walk from the consuming element
+    expect(producerTemplate.Resources).toEqual({
+      MyResource: { Type: 'AWS::S3::Bucket' },
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Type: 'String',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+          Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        },
+      },
+    });
+
     expect(consumerTemplate.Resources).toEqual({
       MonitoringGroupAlarmB4EEB6AA: {
         Type: 'AWS::CloudWatch::Alarm',
         Properties: {
-          BucketArn: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
         },
       },
     });
