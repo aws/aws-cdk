@@ -588,10 +588,7 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
-  /**
-   * @internal
-   */
-  private readonly _autoConfigurePathParameter?: boolean;
+  private readonly _autoConfigurePathParameter: boolean;
 
   constructor(scope: Construct, id: string, props: ProxyResourceProps) {
     // Auto-configure method request path parameter if requested
@@ -614,8 +611,7 @@ export class ProxyResource extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Store the flag for use in addMethod()
-    this._autoConfigurePathParameter = props.autoConfigurePathParameter;
+    this._autoConfigurePathParameter = props.autoConfigurePathParameter ?? false;
 
     const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
