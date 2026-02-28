@@ -1,9 +1,4 @@
-// ----------------------------------------------------
-// CROSS REFERENCES
-// ----------------------------------------------------
-
-import { Construct } from 'constructs';
-import type { IConstruct } from 'constructs';
+import { Construct, type IConstruct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
