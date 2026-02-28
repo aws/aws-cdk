@@ -232,40 +232,6 @@ describe('SSM-based cross-stack references', () => {
     expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
   });
 
-  test('MIXED mode consumer uses SSM not Fn::ImportValue', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Producer');
-    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
-
-    StackReferences.of(resource).toHere([
-      CrossStackReferenceType.CFN_EXPORTS,
-      CrossStackReferenceType.SSM,
-    ]);
-
-    const consumer = new Stack(app, 'Consumer');
-    new CfnResource(consumer, 'ConsumerResource', {
-      type: 'AWS::Lambda::Function',
-      properties: {
-        BucketArn: resource.getAtt('Arn'),
-      },
-    });
-
-    // WHEN
-    const assembly = app.synth();
-    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
-
-    // THEN - Consumer should use SSM, not Fn::ImportValue
-    expect(consumerTemplate.Resources).toEqual({
-      ConsumerResource: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
-        },
-      },
-    });
-  });
-
   test('toHere() takes priority over fromHere()', () => {
     // GIVEN
     const app = new App();
@@ -1003,5 +969,308 @@ describe('SSM-based cross-stack references', () => {
 
     // THEN - Same instance (singleton per scope)
     expect(refs1).toBe(refs2);
+  });
+
+  test('cross-account references are not supported even with SSM', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer', {
+      env: { account: '111111111111', region: 'us-east-1' },
+    });
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+    StackReferences.of(resource).toHere([CrossStackReferenceType.SSM]);
+
+    const consumer = new Stack(app, 'Consumer', {
+      env: { account: '222222222222', region: 'us-east-1' },
+    });
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // THEN - Cross-account is not supported, SSM config doesn't bypass this
+    expect(() => app.synth()).toThrow(
+      /Cross stack references are only supported for stacks deployed to the same account/,
+    );
+  });
+
+  test('cross-region with unresolved region throws even with SSM configured', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+    StackReferences.of(resource).toHere([CrossStackReferenceType.SSM]);
+
+    const consumer = new Stack(app, 'Consumer', {
+      env: { account: '123456789012' },
+      crossRegionReferences: true,
+    });
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // THEN - Cross-region with unresolved region throws
+    expect(() => app.synth()).toThrow(
+      /Cross stack\/region references are only supported for stacks with an explicit region/,
+    );
+  });
+
+  test('fromHere() on child construct does not affect resources outside that scope', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumer = new Stack(app, 'Consumer');
+    const group = new Construct(consumer, 'MonitoringGroup');
+    StackReferences.of(group).fromHere([CrossStackReferenceType.SSM]);
+
+    // Resource OUTSIDE the MonitoringGroup scope - should use default CFN_EXPORTS
+    new CfnResource(consumer, 'OutsideResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - Falls back to default CFN_EXPORTS
+    expect(producerTemplate.Resources).toEqual({
+      MyResource: { Type: 'AWS::S3::Bucket' },
+    });
+    expect(producerTemplate.Outputs).toEqual({
+      ExportsOutputFnGetAttMyResourceArnE157F485: {
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        Export: { Name: 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+      },
+    });
+    expect(consumerTemplate.Resources).toEqual({
+      OutsideResource: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          BucketArn: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+        },
+      },
+    });
+  });
+
+  test('fromHere() inside nested consumer applies SSM via parameter pass-through', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumerParent = new Stack(app, 'ConsumerParent');
+    const nestedConsumer = new NestedStack(consumerParent, 'NestedConsumer');
+    StackReferences.of(nestedConsumer).fromHere([CrossStackReferenceType.SSM]);
+
+    new CfnResource(nestedConsumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerParentTemplate = assembly.getStackByName(consumerParent.stackName).template;
+
+    // THEN - Producer has SSM Parameter (identical output to toHere case)
+    expect(producerTemplate.Outputs).toBeUndefined();
+    expect(producerTemplate.Resources).toEqual({
+      MyResource: { Type: 'AWS::S3::Bucket' },
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerParentFnGetAttMyResourceArn8907058E51CA0A52: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Type: 'String',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E',
+          Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        },
+      },
+    });
+
+    // THEN - Consumer parent passes SSM reference to nested stack
+    const nestedStackResource =
+      consumerParentTemplate.Resources.NestedConsumerNestedStackNestedConsumerNestedStackResource8CB6F5DC;
+    expect(nestedStackResource.Type).toBe('AWS::CloudFormation::Stack');
+    expect(nestedStackResource.Properties.Parameters).toEqual({
+      referencetoProducerMyResource2D6458ECArn:
+        '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E}}',
+    });
+  });
+
+  test('different resources in same stack can use different reference types via toHere', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const ssmResource = new CfnResource(producer, 'SsmResource', { type: 'AWS::S3::Bucket' });
+    StackReferences.of(ssmResource).toHere([CrossStackReferenceType.SSM]);
+
+    const cfnResource = new CfnResource(producer, 'CfnResource', { type: 'AWS::SQS::Queue' });
+    StackReferences.of(cfnResource).toHere([CrossStackReferenceType.CFN_EXPORTS]);
+
+    const consumer = new Stack(app, 'Consumer');
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: {
+        BucketArn: ssmResource.getAtt('Arn'),
+        QueueUrl: cfnResource.getAtt('QueueUrl'),
+      },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - Producer: SSM Parameter for SsmResource, CFN Export for CfnResource
+    const ssmKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducer' +
+      'ProducerConsumerFnGetAttSsmResourceArn32B8C433A1EE037C';
+    expect(producerTemplate.Resources).toEqual({
+      SsmResource: { Type: 'AWS::S3::Bucket' },
+      CfnResource: { Type: 'AWS::SQS::Queue' },
+      [ssmKey]: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Type: 'String',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttSsmResourceArn32B8C433',
+          Value: { 'Fn::GetAtt': ['SsmResource', 'Arn'] },
+        },
+      },
+    });
+    expect(producerTemplate.Outputs).toEqual({
+      ExportsOutputFnGetAttCfnResourceQueueUrl6155ED8C: {
+        Value: { 'Fn::GetAtt': ['CfnResource', 'QueueUrl'] },
+        Export: { Name: 'Producer:ExportsOutputFnGetAttCfnResourceQueueUrl6155ED8C' },
+      },
+    });
+
+    // THEN - Consumer: SSM for BucketArn, ImportValue for QueueUrl
+    expect(consumerTemplate.Resources).toEqual({
+      ConsumerResource: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttSsmResourceArn32B8C433}}',
+          QueueUrl: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttCfnResourceQueueUrl6155ED8C' },
+        },
+      },
+    });
+  });
+
+  test('fromHere() nearest scope takes priority over parent scope', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumer = new Stack(app, 'Consumer');
+    // Stack-level: SSM
+    StackReferences.of(consumer).fromHere([CrossStackReferenceType.SSM]);
+    const group = new Construct(consumer, 'Group');
+    // Group-level: CFN_EXPORTS (closer to resource, should win)
+    StackReferences.of(group).fromHere([CrossStackReferenceType.CFN_EXPORTS]);
+
+    new CfnResource(group, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - nearest scope (CFN_EXPORTS on Group) wins over Stack-level SSM
+    expect(producerTemplate.Resources).toEqual({
+      MyResource: { Type: 'AWS::S3::Bucket' },
+    });
+    expect(producerTemplate.Outputs).toEqual({
+      ExportsOutputFnGetAttMyResourceArnE157F485: {
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        Export: { Name: 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+      },
+    });
+    expect(consumerTemplate.Resources).toEqual({
+      GroupConsumerResource8E796115: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          BucketArn: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+        },
+      },
+    });
+  });
+
+  test('MIXED mode with nested producer creates both CFN Export and SSM Parameter', () => {
+    // GIVEN
+    const app = new App();
+    const producerParent = new Stack(app, 'ProducerParent');
+    StackReferences.of(producerParent).toHere([
+      CrossStackReferenceType.CFN_EXPORTS,
+      CrossStackReferenceType.SSM,
+    ]);
+    const nestedProducer = new NestedStack(producerParent, 'NestedProducer');
+    const resource = new CfnResource(nestedProducer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumer = new Stack(app, 'Consumer');
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerParentTemplate = assembly.getStackByName(producerParent.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - Producer parent has both SSM Parameter and CFN Export
+    const nestedStackLogicalId =
+      'NestedProducerNestedStackNestedProducerNestedStackResource421EA5D7';
+    const nestedOutputAttr =
+      'Outputs.ProducerParentNestedProducerMyResource8FC21B8BArn';
+
+    const ssmParamKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerParent' +
+      'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
+      nestedOutputAttr.replace('.', '') + '79726D0D0DF517D3';
+
+    expect(producerParentTemplate.Resources[ssmParamKey]).toEqual({
+      Type: 'AWS::SSM::Parameter',
+      Properties: {
+        Type: 'String',
+        Name: '/cdk/cross-stack-refs/ProducerParent/' +
+          'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
+          nestedOutputAttr.replace('.', '') + '79726D0D',
+        Value: {
+          'Fn::GetAtt': [nestedStackLogicalId, nestedOutputAttr],
+        },
+      },
+    });
+
+    const cfnOutputKey = 'ExportsOutputFnGetAtt' + nestedStackLogicalId +
+      nestedOutputAttr.replace('.', '') + 'E0070345';
+    expect(producerParentTemplate.Outputs[cfnOutputKey]).toEqual({
+      Value: {
+        'Fn::GetAtt': [nestedStackLogicalId, nestedOutputAttr],
+      },
+      Export: {
+        Name: 'ProducerParent:' + cfnOutputKey,
+      },
+    });
+
+    // THEN - Consumer uses SSM reference
+    const ssmParamName = '/cdk/cross-stack-refs/ProducerParent/' +
+      'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
+      nestedOutputAttr.replace('.', '') + '79726D0D';
+    expect(consumerTemplate.Resources).toEqual({
+      ConsumerResource: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          BucketArn: '{{resolve:ssm:' + ssmParamName + '}}',
+        },
+      },
+    });
   });
 });
