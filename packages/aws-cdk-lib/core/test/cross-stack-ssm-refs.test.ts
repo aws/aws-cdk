@@ -825,4 +825,172 @@ describe('SSM-based cross-stack references', () => {
       },
     });
   });
+
+  test('fromHere() on child construct does not affect references (lookup starts from Stack)', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumer = new Stack(app, 'Consumer');
+    const group = new Construct(consumer, 'MonitoringGroup');
+    // fromHere set on a child construct, NOT on the stack itself
+    StackReferences.of(group).fromHere([CrossStackReferenceType.SSM]);
+
+    new CfnResource(group, 'Alarm', {
+      type: 'AWS::CloudWatch::Alarm',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - fromHere on a child construct is NOT picked up because
+    // determineReferenceTypes looks up fromHere starting from the consumer Stack.
+    // Falls back to default CFN_EXPORTS.
+    expect(consumerTemplate.Resources).toEqual({
+      MonitoringGroupAlarmB4EEB6AA: {
+        Type: 'AWS::CloudWatch::Alarm',
+        Properties: {
+          BucketArn: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+        },
+      },
+    });
+  });
+
+  test('fromHere() with MIXED mode creates both CFN Export and SSM Parameter', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer');
+    const resource = new CfnResource(producer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumer = new Stack(app, 'Consumer');
+    StackReferences.of(consumer).fromHere([
+      CrossStackReferenceType.CFN_EXPORTS,
+      CrossStackReferenceType.SSM,
+    ]);
+
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - Producer has both CFN Export and SSM Parameter
+    expect(producerTemplate.Outputs).toEqual({
+      ExportsOutputFnGetAttMyResourceArnE157F485: {
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        Export: { Name: 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+      },
+    });
+    expect(
+      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645,
+    ).toEqual({
+      Type: 'AWS::SSM::Parameter',
+      Properties: {
+        Type: 'String',
+        Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+      },
+    });
+
+    // THEN - Consumer uses SSM
+    expect(consumerTemplate.Resources).toEqual({
+      ConsumerResource: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
+        },
+      },
+    });
+  });
+
+  test('SSM parameter name stays within 900 character limit', () => {
+    // GIVEN - Use maximum-length stack names (128 chars) and long resource IDs
+    const app = new App();
+    const producer = new Stack(app, 'P'.repeat(128));
+    const resource = new CfnResource(producer, 'R'.repeat(200), { type: 'AWS::S3::Bucket' });
+    StackReferences.of(resource).toHere([CrossStackReferenceType.SSM]);
+
+    const consumer = new Stack(app, 'C'.repeat(128));
+    new CfnResource(consumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - SSM parameter name should be under 900 chars
+    const ssmResources = Object.entries(producerTemplate.Resources).filter(
+      ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
+    );
+    expect(ssmResources.length).toBe(1);
+    const [, ssmParam] = ssmResources[0] as [string, any];
+    expect(ssmParam.Properties.Name.length).toBeLessThanOrEqual(900);
+    expect(ssmParam.Properties.Name).toMatch(/^\/cdk\/cross-stack-refs\//);
+  });
+
+  test('both producer and consumer inside nested stacks', () => {
+    // GIVEN
+    const app = new App();
+    const producerParent = new Stack(app, 'ProducerParent');
+    StackReferences.of(producerParent).toHere([CrossStackReferenceType.SSM]);
+    const nestedProducer = new NestedStack(producerParent, 'NestedProducer');
+    const resource = new CfnResource(nestedProducer, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const consumerParent = new Stack(app, 'ConsumerParent');
+    const nestedConsumer = new NestedStack(consumerParent, 'NestedConsumer');
+    new CfnResource(nestedConsumer, 'ConsumerResource', {
+      type: 'AWS::Lambda::Function',
+      properties: { BucketArn: resource.getAtt('Arn') },
+    });
+
+    // WHEN
+    const assembly = app.synth();
+    const producerParentTemplate = assembly.getStackByName(producerParent.stackName).template;
+    const consumerParentTemplate = assembly.getStackByName(consumerParent.stackName).template;
+
+    // THEN - Producer parent has SSM Parameter with nested stack output reference
+    const ssmResources = Object.entries(producerParentTemplate.Resources).filter(
+      ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
+    );
+    expect(ssmResources.length).toBe(1);
+    const [, ssmParam] = ssmResources[0] as [string, any];
+    expect(ssmParam.Properties.Type).toBe('String');
+    expect(ssmParam.Properties.Value).toEqual({
+      'Fn::GetAtt': [
+        'NestedProducerNestedStackNestedProducerNestedStackResource421EA5D7',
+        'Outputs.ProducerParentNestedProducerMyResource8FC21B8BArn',
+      ],
+    });
+
+    // THEN - Consumer parent passes SSM reference as parameter to nested consumer
+    const nestedStackResource =
+      consumerParentTemplate.Resources.NestedConsumerNestedStackNestedConsumerNestedStackResource8CB6F5DC;
+    expect(nestedStackResource.Type).toBe('AWS::CloudFormation::Stack');
+    const paramValues = Object.values(nestedStackResource.Properties.Parameters) as string[];
+    expect(paramValues.length).toBe(1);
+    expect(paramValues[0]).toContain('resolve:ssm:/cdk/cross-stack-refs/ProducerParent/');
+  });
+
+  test('StackReferences.of() returns the same instance for the same scope', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const resource = new CfnResource(stack, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    // WHEN
+    const refs1 = StackReferences.of(resource);
+    const refs2 = StackReferences.of(resource);
+
+    // THEN - Same instance (singleton per scope)
+    expect(refs1).toBe(refs2);
+  });
 });
