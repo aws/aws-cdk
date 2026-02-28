@@ -127,7 +127,6 @@ const s3Consumer = new S3ConsumerStack(app, 'SsmRefMixedConsumer', {
 
 const testCase = new IntegTest(app, 'SsmCrossStackReferencesTest', {
   testCases: [sqsProducer, sqsConsumer, s3Producer, s3Consumer],
-  diffAssets: true,
 });
 
 // ---------------------------------------------------------------------------
