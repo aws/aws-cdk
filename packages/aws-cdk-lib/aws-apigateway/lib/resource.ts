@@ -536,17 +536,6 @@ export interface ProxyResourceOptions extends ResourceOptions {
    * and eliminates the need to manually configure path parameters.
    *
    * @default false
-   *
-   * @example
-   *   const api = new apigateway.RestApi(this, 'MyApi');
-   *
-   *   // Enable automatic path parameter configuration
-   *   api.root.addResource('api').addProxy({
-   *     autoConfigurePathParameter: true,
-   *     defaultIntegration: new apigateway.HttpIntegration(
-   *       'http://example.com/api/{proxy}'
-   *     )
-   *   });
    */
   readonly autoConfigurePathParameter?: boolean;
 }
