@@ -40,13 +40,13 @@ describe('SSM-based cross-stack references', () => {
     expect(ssmResources.length).toBe(1);
     const [, ssmParam] = ssmResources[0] as [string, any];
     expect(ssmParam.Properties.Type).toBe('String');
-    expect(ssmParam.Properties.Name).toMatch(/^\/cdk\/cross-stack-refs\/Producer\//);
+    expect(ssmParam.Properties.Name).toBe('/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002');
     expect(ssmParam.Properties.Value).toEqual({ 'Fn::GetAtt': ['MyResource', 'Arn'] });
 
     // THEN - Consumer should use {{resolve:ssm:...}} not Fn::ImportValue
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     const bucketArn = consumerResource.Properties.BucketArn;
-    expect(bucketArn).toMatch(/^\{\{resolve:ssm:\/cdk\/cross-stack-refs\/Producer\//);
+    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
   });
 
   test('SSM reference with STRING_LIST values', () => {
@@ -84,7 +84,7 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Consumer: should split the SSM value
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     expect(consumerResource.Properties.Prop).toEqual({
-      'Fn::Split': ['||', expect.stringMatching(/^\{\{resolve:ssm:/)],
+      'Fn::Split': ['||', '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceList9FB0FB1A}}'],
     });
   });
 
@@ -204,7 +204,7 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Consumer should use SSM (not ImportValue)
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     const bucketArn = consumerResource.Properties.BucketArn;
-    expect(bucketArn).toMatch(/^\{\{resolve:ssm:/);
+    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
   });
 
   test('MIXED mode consumer uses SSM not Fn::ImportValue', () => {
@@ -296,7 +296,7 @@ describe('SSM-based cross-stack references', () => {
     expect(ssmResources.length).toBe(1);
 
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
-    expect(consumerResource.Properties.BucketArn).toMatch(/^\{\{resolve:ssm:/);
+    expect(consumerResource.Properties.BucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
   });
 
   test('StackReferences walks construct tree recursively', () => {
@@ -323,7 +323,7 @@ describe('SSM-based cross-stack references', () => {
 
     // THEN - SSM from parent scope should apply
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
-    expect(consumerResource.Properties.BucketArn).toMatch(/^\{\{resolve:ssm:/);
+    expect(consumerResource.Properties.BucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttParentMyResource4B1FDBCCArnA6294FFD}}');
   });
 
   test('nearest scope setting takes priority', () => {
@@ -506,7 +506,7 @@ describe('SSM-based cross-stack references', () => {
       ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
     );
     const [, ssmParam] = ssmResources[0] as [string, any];
-    expect(ssmParam.Properties.Name).toMatch(/^\/cdk\/cross-stack-refs\/MyProducerStack\//);
+    expect(ssmParam.Properties.Name).toBe('/cdk/cross-stack-refs/MyProducerStack/MyProducerStackMyConsumerStackFnGetAttMyResourceArnCCDB7D75');
   });
 
   test('SSM ref: toHere on stack applies to all resources in that stack', () => {
