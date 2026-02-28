@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import type { AccessEntryReference, IAccessEntryRef } from '../../aws-eks';
 import { CfnAccessEntry } from '../../aws-eks';
+import type { IPrincipal, IRole, IUser } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -317,8 +318,23 @@ export interface AccessEntryProps {
   readonly accessPolicies: IAccessPolicy[];
   /**
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
+   *
+   * Mutually exclusive with `iamPrincipal`. Either `principal` or `iamPrincipal` must be specified.
+   *
+   * @default - none
+   * @deprecated Use `iamPrincipal` to pass an IAM principal construct directly.
    */
-  readonly principal: string;
+  readonly principal?: string;
+
+  /**
+   * The IAM principal (role or user) to associate with the access entry.
+   *
+   * Only IAM roles and users are supported.
+   * Mutually exclusive with `principal`. Either `principal` or `iamPrincipal` must be specified.
+   *
+   * @default - none
+   */
+  readonly iamPrincipal?: IPrincipal;
   /**
    * The removal policy applied to the access entry.
    *
@@ -384,8 +400,36 @@ export class AccessEntry extends Resource implements IAccessEntry {
     addConstructMetadata(this, props);
 
     this.cluster = props.cluster;
-    this.principal = props.principal;
     this.accessPolicies = props.accessPolicies;
+
+    if (props.iamPrincipal !== undefined && props.principal !== undefined) {
+      throw new ValidationError(
+        'Only one of `iamPrincipal` or `principal` can be specified, not both.',
+        this,
+      );
+    }
+
+    if (props.iamPrincipal !== undefined) {
+      if ('roleArn' in props.iamPrincipal) {
+        this.principal = (props.iamPrincipal as IRole).roleArn;
+      } else if ('userArn' in props.iamPrincipal) {
+        this.principal = (props.iamPrincipal as IUser).userArn;
+      } else {
+        throw new ValidationError(
+          'Cannot determine the ARN from the provided `iamPrincipal`. ' +
+          'Only IAM roles and users are supported. ' +
+          'Use the `principal` property with an explicit ARN string instead.',
+          this,
+        );
+      }
+    } else if (props.principal !== undefined) {
+      this.principal = props.principal;
+    } else {
+      throw new ValidationError(
+        'Either `iamPrincipal` or `principal` must be specified.',
+        this,
+      );
+    }
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies

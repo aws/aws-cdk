@@ -793,6 +793,47 @@ cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
 ]);
 ```
 
+#### Using AccessEntry directly with IAM principals
+
+You can also use the `AccessEntry` construct directly. When doing so, pass an IAM role or user
+via `iamPrincipal` instead of providing a raw ARN string:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+const user = new iam.User(this, 'User');
+
+// Pass an IAM Role directly using iamPrincipal
+new eks.AccessEntry(this, 'AccessEntryRole', {
+  cluster,
+  iamPrincipal: role,
+  accessPolicies: [
+    eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+      accessScopeType: eks.AccessScopeType.CLUSTER,
+    }),
+  ],
+});
+
+// Pass an IAM User directly using iamPrincipal
+new eks.AccessEntry(this, 'AccessEntryUser', {
+  cluster,
+  iamPrincipal: user,
+  accessPolicies: [
+    eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
+      accessScopeType: eks.AccessScopeType.CLUSTER,
+    }),
+  ],
+});
+```
+
+> **Note**: Only IAM roles and users are supported for `iamPrincipal`.
+> If you need to specify a principal that is not a role or user, use the `principal` property
+> with an explicit ARN string instead.
+
 #### Access Entry Types
 
 You can optionally specify an access entry type when granting access. This is particularly useful for EKS Auto Mode clusters with custom node roles, which require the `EC2` type:
