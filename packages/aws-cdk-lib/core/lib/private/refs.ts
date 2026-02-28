@@ -468,8 +468,13 @@ function createSsmImportValue(
   // Create the SSM parameter in the producer stack
   ensureSsmParameter(producer, parameterName, exportable, reference);
 
-  // Emit a warning about the soft reference tradeoff
-  warnAboutSoftReferences(reference.target);
+  Annotations.of(reference.target).addWarningV2(
+    '@aws-cdk/core:ssmCrossStackReferenceRisk',
+    'SSM-based cross-stack references trade "deployment failure" for potential "service disruption". '
+    + 'When the producer stack changes an exported value, consumer stacks will pick up the new value '
+    + 'on their next deployment, which may cause runtime errors if the value is incompatible. '
+    + 'Make sure you understand this tradeoff before using SSM references.',
+  );
 
   // Return a dynamic reference for the consumer
   const dynamicRef = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
@@ -667,15 +672,3 @@ function generateCfnExportName(stackExports: Construct, id: string): string {
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
-/**
- * Emit a warning about the soft reference tradeoff.
- */
-function warnAboutSoftReferences(scope: IConstruct): void {
-  Annotations.of(scope).addWarningV2(
-    '@aws-cdk/core:ssmCrossStackReferenceRisk',
-    'SSM-based cross-stack references trade "deployment failure" for potential "service disruption". '
-    + 'When the producer stack changes an exported value, consumer stacks will pick up the new value '
-    + 'on their next deployment, which may cause runtime errors if the value is incompatible. '
-    + 'Make sure you understand this tradeoff before using SSM references.',
-  );
-}
