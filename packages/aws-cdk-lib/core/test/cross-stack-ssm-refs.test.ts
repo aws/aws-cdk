@@ -118,12 +118,17 @@ describe('SSM-based cross-stack references', () => {
     const producerParentTemplate = assembly.getStackByName(producerParent.stackName).template;
 
     // THEN - SSM Parameter should be on the parent stack, not the nested stack
-    const ssmParam = producerParentTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerParentProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerParentNestedMyResource58EEE46AArn8C15706570EF2895;
-    expect(ssmParam).toEqual({
+    const ssmParamKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerParent' +
+      'ProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4D' +
+      'OutputsProducerParentNestedMyResource58EEE46AArn8C15706570EF2895';
+    const ssmParamName = '/cdk/cross-stack-refs/ProducerParent/' +
+      'ProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4D' +
+      'OutputsProducerParentNestedMyResource58EEE46AArn8C157065';
+    expect(producerParentTemplate.Resources[ssmParamKey]).toEqual({
       Type: 'AWS::SSM::Parameter',
       Properties: {
         Type: 'String',
-        Name: '/cdk/cross-stack-refs/ProducerParent/ProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4DOutputsProducerParentNestedMyResource58EEE46AArn8C157065',
+        Name: ssmParamName,
         Value: {
           'Fn::GetAtt': [
             'NestedNestedStackNestedNestedStackResourceDEFDAA4D',
