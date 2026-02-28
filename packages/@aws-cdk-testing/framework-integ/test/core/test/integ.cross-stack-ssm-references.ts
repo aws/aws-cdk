@@ -35,7 +35,9 @@ class SqsProducerStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    this.queue = new sqs.Queue(this, 'SharedQueue');
+    this.queue = new sqs.Queue(this, 'SharedQueue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
     StackReferences.of(this.queue).toHere([CrossStackReferenceType.SSM]);
   }
 }

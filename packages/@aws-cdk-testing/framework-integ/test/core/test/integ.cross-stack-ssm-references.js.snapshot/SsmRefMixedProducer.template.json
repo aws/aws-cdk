@@ -5,11 +5,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C3E942AAD": {
+  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2EEC378726": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Name": "/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C",
+    "Name": "/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2E",
     "Value": {
      "Fn::GetAtt": [
       "SharedBucket60D199D6",

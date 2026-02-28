@@ -29,8 +29,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C}}",
-        "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C}}/*"
+        "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2E}}",
+        "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2E}}/*"
        ]
       }
      ],
@@ -47,7 +47,7 @@
  },
  "Outputs": {
   "BucketArn": {
-   "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C}}"
+   "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2E}}"
   },
   "ReaderRoleArn": {
    "Value": {

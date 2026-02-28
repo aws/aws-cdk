@@ -8,7 +8,6 @@
         "SsmRefMixedProducer",
         "SsmRefMixedConsumer"
       ],
-      "diffAssets": true,
       "assertionStack": "SsmCrossStackReferencesTest/DefaultTest/DeployAssert",
       "assertionStackName": "SsmCrossStackReferencesTestDefaultTestDeployAssertC9BDD157"
     }

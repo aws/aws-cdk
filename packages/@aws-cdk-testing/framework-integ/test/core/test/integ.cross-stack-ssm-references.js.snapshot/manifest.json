@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04163a236b2464c939c640598250b477e1f493d03596e6fe5367ed338775ad8c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a36e4ce012da013fa25f96042e02d6259449d612ac2fb53e4b69e15440510fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -50,16 +50,16 @@
             "data": "SSM-based cross-stack references trade \"deployment failure\" for potential \"service disruption\". When the producer stack changes an exported value, consumer stacks will pick up the new value on their next deployment, which may cause runtime errors if the value is incompatible. Make sure you understand this tradeoff before using SSM references. [ack: @aws-cdk/core:ssmCrossStackReferenceRisk]"
           }
         ],
-        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52": [
+        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerFnGetAttSharedQueue148BFB25QueueName310343B1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52E473DDD8"
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerFnGetAttSharedQueue148BFB25QueueName310343B13A7D946B"
           }
         ],
-        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01": [
+        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerRefSharedQueue148BFB25B6E80E9E": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01F1BBC5F8"
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerRefSharedQueue148BFB25B6E80E9EED12CBDF"
           }
         ],
         "/SsmRefProducer/BootstrapVersion": [
@@ -94,7 +94,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96e758d57621f4097f7219d5eab0cf20785ffd966bf27dc033e60f535a46f94c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2cb9c2b178dbfdc27382cfeb6abb802dcce6eee8cf004534abe11d393cd0ad69.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -161,7 +161,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/971e19d5491a6e7d6366ed56be28dc547c039cde7f150f863eb243c0593e8b9a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21c62a864d3bcc9de87ffb7f77e660d30ae0675651949947c317936b79dae2f9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,10 +199,10 @@
             "data": "ExportsOutputFnGetAttSharedBucket60D199D6Arn46A4CCC0"
           }
         ],
-        "/SsmRefMixedProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C": [
+        "/SsmRefMixedProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2E": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C3E942AAD"
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerFnGetAttSharedBucket60D199D6Arn65FF4A2EEC378726"
           }
         ],
         "/SsmRefMixedProducer/BootstrapVersion": [
@@ -237,7 +237,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccf3d6ed85796dcd582c0c67277b3d933067e70e76d7859d682ce3b29080e7a0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16a1bce692502811af84ae20c6900fd3bc3fef265077eb3cfb9d679e5c5d374d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -350,7 +350,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7f456ae314e7fc3fdf9ed881e50011726a7839f5371158a281a8c548b318598.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af7cdc9b86206a3741e7b9ee4bc8e305d8e9b90670c7d536730c4ccd17e11e2a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

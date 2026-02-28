@@ -2,14 +2,17 @@
  "Resources": {
   "SharedQueue148BFB25": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52E473DDD8": {
+  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerFnGetAttSharedQueue148BFB25QueueName310343B13A7D946B": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Name": "/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52",
+    "Name": "/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerFnGetAttSharedQueue148BFB25QueueName310343B1",
     "Value": {
      "Fn::GetAtt": [
       "SharedQueue148BFB25",
@@ -18,11 +21,11 @@
     }
    }
   },
-  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01F1BBC5F8": {
+  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerRefSharedQueue148BFB25B6E80E9EED12CBDF": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Name": "/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01",
+    "Name": "/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerRefSharedQueue148BFB25B6E80E9E",
     "Value": {
      "Ref": "SharedQueue148BFB25"
     }

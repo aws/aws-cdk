@@ -16,7 +16,7 @@
      "StackName": "\"SsmRefConsumer\""
     },
     "flattenResponse": "false",
-    "salt": "1772241453923"
+    "salt": "1772291604963"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -125,7 +125,7 @@
      "StackName": "\"SsmRefMixedConsumer\""
     },
     "flattenResponse": "false",
-    "salt": "1772241453924"
+    "salt": "1772291604964"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -146,7 +146,7 @@
      "Path": "\"/cdk/cross-stack-refs/SsmRefProducer/\""
     },
     "flattenResponse": "false",
-    "salt": "1772241453924"
+    "salt": "1772291604964"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -167,7 +167,7 @@
      "Path": "\"/cdk/cross-stack-refs/SsmRefMixedProducer/\""
     },
     "flattenResponse": "false",
-    "salt": "1772241453924"
+    "salt": "1772291604964"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -7,7 +7,7 @@
     "Dimensions": [
      {
       "Name": "QueueName",
-      "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52}}"
+      "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerFnGetAttSharedQueue148BFB25QueueName310343B1}}"
      }
     ],
     "EvaluationPeriods": 1,
@@ -22,7 +22,7 @@
  },
  "Outputs": {
   "MonitoredQueueUrl": {
-   "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01}}"
+   "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerRefSharedQueue148BFB25B6E80E9E}}"
   }
  },
  "Parameters": {
