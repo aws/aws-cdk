@@ -190,16 +190,23 @@ describe('SSM-based cross-stack references', () => {
     const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
 
     // THEN - Producer should have BOTH a CFN Export and an SSM Parameter
-    expect(producerTemplate.Outputs).toBeDefined();
-    const hasExport = Object.values(producerTemplate.Outputs).some(
-      (o: any) => o.Export !== undefined,
-    );
-    expect(hasExport).toBe(true);
+    expect(producerTemplate.Outputs).toEqual({
+      ExportsOutputFnGetAttMyResourceArnE157F485: {
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+        Export: { Name: 'Producer:ExportsOutputFnGetAttMyResourceArnE157F485' },
+      },
+    });
 
-    const ssmResources = Object.entries(producerTemplate.Resources).filter(
-      ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
-    );
-    expect(ssmResources.length).toBe(1);
+    expect(
+      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645
+    ).toEqual({
+      Type: 'AWS::SSM::Parameter',
+      Properties: {
+        Type: 'String',
+        Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+        Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+      },
+    });
 
     // THEN - Consumer should use SSM (not ImportValue)
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
