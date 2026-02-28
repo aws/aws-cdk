@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "4343cfc0927fc3a0d27b2ec64a1edc2155a5cbddb5ec7918a7d9a651f9c7dcc2": {
-      "displayName": "ProxyAutoConfigureIntegTest Template",
+    "a341b0750fa298d8fdca5b280893ce3a6bec8ed97d21bc7d2b3021b8d6bbf193": {
+      "displayName": "ProxyAutoConfigureStack Template",
       "source": {
-        "path": "ProxyAutoConfigureIntegTest.template.json",
+        "path": "ProxyAutoConfigureStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8a2e9b0": {
+        "current_account-current_region-90bf0b23": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4343cfc0927fc3a0d27b2ec64a1edc2155a5cbddb5ec7918a7d9a651f9c7dcc2.json",
+          "objectKey": "a341b0750fa298d8fdca5b280893ce3a6bec8ed97d21bc7d2b3021b8d6bbf193.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

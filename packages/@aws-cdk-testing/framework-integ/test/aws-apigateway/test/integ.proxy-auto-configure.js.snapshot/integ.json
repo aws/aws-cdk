@@ -3,7 +3,7 @@
   "testCases": {
     "ProxyAutoConfigureTest/DefaultTest": {
       "stacks": [
-        "ProxyAutoConfigureIntegTest"
+        "ProxyAutoConfigureStack"
       ],
       "assertionStack": "ProxyAutoConfigureTest/DefaultTest/DeployAssert",
       "assertionStackName": "ProxyAutoConfigureTestDefaultTestDeployAssertACE28D60"

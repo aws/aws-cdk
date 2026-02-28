@@ -7,10 +7,9 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 /**
  * Integration test for ProxyResource autoConfigurePathParameter feature.
  *
- * This test verifies that:
- * 1. Proxy resources with autoConfigurePathParameter automatically configure path parameters
- * 2. Requests to /api/foo/bar are correctly forwarded to the backend with the full path
- * 3. The feature works with both Lambda and HTTP integrations
+ * This test verifies that proxy resources with autoConfigurePathParameter
+ * automatically configure path parameters and correctly forward requests
+ * to the Lambda backend.
  */
 class ProxyAutoConfigureStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -50,42 +49,12 @@ class ProxyAutoConfigureStack extends cdk.Stack {
       autoConfigurePathParameter: true,
       defaultIntegration: new apigateway.LambdaIntegration(echoHandler),
     });
-
-    // Add another proxy resource without auto-configuration for comparison
-    const manualResource = api.root.addResource('manual');
-    manualResource.addProxy({
-      autoConfigurePathParameter: false,
-      defaultIntegration: new apigateway.LambdaIntegration(echoHandler),
-      defaultMethodOptions: {
-        requestParameters: {
-          'method.request.path.proxy': true,
-        },
-      },
-    });
-
-    // Output the API endpoint
-    new cdk.CfnOutput(this, 'ApiEndpoint', {
-      value: api.url,
-      description: 'API Gateway endpoint URL',
-    });
-
-    new cdk.CfnOutput(this, 'AutoProxyUrl', {
-      value: `${api.url}api/test/path`,
-      description: 'Test URL with auto-configured proxy',
-    });
-
-    new cdk.CfnOutput(this, 'ManualProxyUrl', {
-      value: `${api.url}manual/test/path`,
-      description: 'Test URL with manually configured proxy',
-    });
   }
 }
 
 const app = new cdk.App();
-const stack = new ProxyAutoConfigureStack(app, 'ProxyAutoConfigureIntegTest');
+const stack = new ProxyAutoConfigureStack(app, 'ProxyAutoConfigureStack');
 
 new IntegTest(app, 'ProxyAutoConfigureTest', {
   testCases: [stack],
 });
-
-app.synth();
