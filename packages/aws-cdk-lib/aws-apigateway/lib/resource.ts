@@ -3,7 +3,8 @@ import type { CfnResourceProps, IResourceRef, ResourceReference } from './apigat
 import { CfnResource } from './apigateway.generated';
 import type { CorsOptions } from './cors';
 import { Cors } from './cors';
-import type { Integration } from './integration';
+import type { IntegrationConfig } from './integration';
+import { Integration, IntegrationType } from './integration';
 import { MockIntegration } from './integrations';
 import type { MethodOptions } from './method';
 import { AuthorizationType, Method } from './method';
@@ -522,6 +523,32 @@ export interface ProxyResourceOptions extends ResourceOptions {
    * @default true
    */
   readonly anyMethod?: boolean;
+
+  /**
+   * Automatically configure path parameter mapping for the proxy resource.
+   *
+   * When enabled, this property automatically configures both the method request
+   * and integration request to properly handle the proxy path parameter:
+   * - Adds `method.request.path.proxy: true` to method request parameters
+   * - Adds `integration.request.path.proxy: 'method.request.path.proxy'` to integration request parameters
+   *
+   * This matches the behavior of the AWS Console when creating proxy resources
+   * and eliminates the need to manually configure path parameters.
+   *
+   * @default false
+   *
+   * @example
+   *   const api = new apigateway.RestApi(this, 'MyApi');
+   *
+   *   // Enable automatic path parameter configuration
+   *   api.root.addResource('api').addProxy({
+   *     autoConfigurePathParameter: true,
+   *     defaultIntegration: new apigateway.HttpIntegration(
+   *       'http://example.com/api/{proxy}'
+   *     )
+   *   });
+   */
+  readonly autoConfigurePathParameter?: boolean;
 }
 
 export interface ProxyResourceProps extends ProxyResourceOptions {
@@ -530,6 +557,32 @@ export interface ProxyResourceProps extends ProxyResourceOptions {
    * `Resource` object or a `RestApi` object here.
    */
   readonly parent: IResource;
+}
+
+/**
+ * Integration wrapper that automatically configures proxy path parameter mapping.
+ * This is an internal class used by ProxyResource when autoConfigurePathParameter is enabled.
+ * @internal
+ */
+class AutoProxyIntegration extends Integration {
+  constructor(private readonly innerIntegration: Integration) {
+    super({ type: IntegrationType.MOCK }); // Placeholder value, actual type comes from innerIntegration.bind()
+  }
+
+  public bind(method: Method): IntegrationConfig {
+    const baseConfig = this.innerIntegration.bind(method);
+
+    return {
+      ...baseConfig,
+      options: {
+        ...baseConfig.options,
+        requestParameters: {
+          'integration.request.path.proxy': 'method.request.path.proxy',
+          ...baseConfig.options?.requestParameters,
+        },
+      },
+    };
+  }
 }
 
 /**
@@ -546,15 +599,34 @@ export class ProxyResource extends Resource {
    */
   public readonly anyMethod?: Method;
 
+  /**
+   * @internal
+   */
+  private readonly _autoConfigurePathParameter?: boolean;
+
   constructor(scope: Construct, id: string, props: ProxyResourceProps) {
+    // Auto-configure method request path parameter if requested
+    const methodOptions = props.autoConfigurePathParameter
+      ? {
+        ...props.defaultMethodOptions,
+        requestParameters: {
+          'method.request.path.proxy': true,
+          ...props.defaultMethodOptions?.requestParameters,
+        },
+      }
+      : props.defaultMethodOptions;
+
     super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
       defaultIntegration: props.defaultIntegration,
-      defaultMethodOptions: props.defaultMethodOptions,
+      defaultMethodOptions: methodOptions,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    // Store the flag for use in addMethod()
+    this._autoConfigurePathParameter = props.autoConfigurePathParameter;
 
     const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
@@ -564,15 +636,24 @@ export class ProxyResource extends Resource {
 
   @MethodMetadata()
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
+    // Wrap integration to auto-configure integration request path parameters if enabled
+    let finalIntegration = integration;
+    if (this._autoConfigurePathParameter) {
+      const integrationToWrap = integration ?? this.defaultIntegration;
+      if (integrationToWrap) {
+        finalIntegration = new AutoProxyIntegration(integrationToWrap);
+      }
+    }
+
     // In case this proxy is mounted under the root, also add this method to
     // the root so that empty paths are proxied as well.
     if (this.parentResource && this.parentResource.path === '/') {
       // skip if the root resource already has this method defined
       if (!(this.parentResource.node.tryFindChild(httpMethod) instanceof Method)) {
-        this.parentResource.addMethod(httpMethod, integration, options);
+        this.parentResource.addMethod(httpMethod, finalIntegration, options);
       }
     }
-    return super.addMethod(httpMethod, integration, options);
+    return super.addMethod(httpMethod, finalIntegration, options);
   }
 }
 
