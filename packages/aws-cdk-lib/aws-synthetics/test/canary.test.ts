@@ -1348,3 +1348,11 @@ describe('Browser configurations', () => {
     }).toThrow('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.');
   });
 });
+
+test.each([
+  [synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_5_1, 'syn-nodejs-playwright-5.1'],
+  [synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_13_1, 'syn-nodejs-puppeteer-13.1'],
+])('Runtime constant %s has correct name and family', (runtime, expectedName) => {
+  expect(runtime.name).toBe(expectedName);
+  expect(runtime.family).toBe(synthetics.RuntimeFamily.NODEJS);
+});
