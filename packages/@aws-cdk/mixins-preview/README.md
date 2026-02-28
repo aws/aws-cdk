@@ -15,6 +15,9 @@
 
 <!--END STABILITY BANNER-->
 
+> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib/core`. Please update your imports.
+> This package continues to provide additional preview features until they move to their final destinations.
+
 This package provides two main features:
 
 1. **Mixins** - Composable abstractions for adding functionality to constructs
@@ -22,85 +25,25 @@ This package provides two main features:
 
 ---
 
-## CDK Mixins
-
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
 
-### Key Benefits
+## Key Benefits
+
+CDK Mixins offer a well-defined way to build self-contained constructs features.
+Mixins are applied during or after construct construction.
 
 * **Universal Compatibility**: Apply the same abstractions to L1 constructs, L2 constructs, or custom constructs
-* **Composable Design**: Mix and match features without being locked into specific implementations  
+* **Composable Design**: Mix and match features without being locked into specific implementations
 * **Cross-Service Abstractions**: Use common patterns like encryption across different AWS services
 * **Escape Hatch Freedom**: Customize resources in a safe, typed way while keeping the abstractions you want
 
-### Basic Usage
+Mixins are an _addition_, _not_ a replacement for construct properties.
+By itself, they cannot change optionality of properties or change defaults.
 
-Mixins use `Mixins.of()` as the fundamental API for applying abstractions to constructs:
+### Usage and documentation
 
-```typescript
-// Base form: apply mixins to any construct
-const bucket = new s3.CfnBucket(scope, "MyBucket");
-Mixins.of(bucket)
-  .apply(new EncryptionAtRest())
-  .apply(new AutoDeleteObjects());
-```
-
-#### Fluent Syntax with `.with()`
-
-For convenience, you can use the `.with()` method for a more fluent syntax:
-
-```typescript
-import '@aws-cdk/mixins-preview/with';
-
-const bucket = new s3.CfnBucket(scope, "MyBucket")
-  .with(new BucketVersioning())
-  .with(new AutoDeleteObjects());
-```
-
-The `.with()` method is available after importing `@aws-cdk/mixins-preview/with`, which augments all constructs with this method. It provides the same functionality as `Mixins.of().apply()` but with a more chainable API.
-
-> **Note**: The `.with()` fluent syntax is only available in JavaScript and TypeScript. Other jsii languages (Python, Java, C#, and Go) should use the `Mixins.of(...).requireAll()` syntax instead. The import requirement is temporary during the preview phase. Once the API is stable, the `.with()` method will be available by default on all constructs and in all languages.
-
-### Creating Custom Mixins
-
-Mixins are simple classes that implement the `IMixin` interface (usually by extending the abstract `Mixin` class:
-
-```typescript
-// Simple mixin that enables versioning
-class CustomVersioningMixin extends Mixin implements IMixin {
-  supports(construct: any): boolean {
-    return construct instanceof s3.CfnBucket;
-  }
-
-  applyTo(bucket: any): void {
-    bucket.versioningConfiguration = {
-      status: "Enabled"
-    };
-  }
-}
-
-// Usage
-const bucket = new s3.CfnBucket(scope, "MyBucket");
-Mixins.of(bucket).apply(new CustomVersioningMixin());
-```
-
-### Construct Selection
-
-Mixins operate on construct trees and can be applied selectively:
-
-```typescript
-// Apply to all constructs in a scope
-Mixins.of(scope).apply(new EncryptionAtRest());
-
-// Apply to specific resource types
-Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME))
-  .apply(new EncryptionAtRest());
-
-// Apply to constructs matching a path pattern
-Mixins.of(scope, ConstructSelector.byPath("**/*-prod-*/**"))
-  .apply(new ProductionSecurityMixin());
-```
+See the [documentation for `aws-cdk-lib`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins).
 
 ### Built-in Mixins
 
@@ -110,11 +53,11 @@ Mixins.of(scope, ConstructSelector.byPath("**/*-prod-*/**"))
 
 ```typescript
 // Works across different resource types
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new EncryptionAtRest());
+const myBucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(myBucket).apply(new EncryptionAtRest());
 
-const logGroup = new logs.CfnLogGroup(scope, "LogGroup");
-Mixins.of(logGroup).apply(new EncryptionAtRest());
+const myLogGroup = new logs.CfnLogGroup(scope, "LogGroup");
+Mixins.of(myLogGroup).apply(new EncryptionAtRest());
 ```
 
 #### S3-Specific Mixins
@@ -122,29 +65,27 @@ Mixins.of(logGroup).apply(new EncryptionAtRest());
 **AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
 
 ```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new AutoDeleteObjects());
+const myBucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(myBucket).apply(new AutoDeleteObjects());
 ```
 
 **BucketVersioning**: Enables versioning on S3 buckets
 
 ```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new BucketVersioning());
+const myBucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(myBucket).apply(new BucketVersioning());
 ```
 
 **BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
 
 ```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new BucketBlockPublicAccess());
+const myBucket = new s3.CfnBucket(scope, "Bucket");
+Mixins.of(myBucket).apply(new BucketBlockPublicAccess());
 ```
 
 **BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
 
 ```typescript
-declare const bucket: s3.IBucketRef;
-
 const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
   bucket: bucket,
   policyDocument: new iam.PolicyDocument(),
@@ -178,14 +119,13 @@ Mixins.of(cluster).apply(new ClusterSettings([{
 Configures vended logs delivery for supported resources to various destinations:
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
 // Create CloudFront distribution
-declare const bucket: s3.Bucket;
+declare const origin: s3.IBucket;
 const distribution = new cloudfront.Distribution(scope, 'Distribution', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
   },
 });
 
@@ -212,10 +152,10 @@ import '@aws-cdk/mixins-preview/with';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
 // Create CloudFront distribution
-declare const bucket: s3.Bucket;
+declare const origin: s3.IBucket;
 const distribution = new cloudfront.Distribution(scope, 'Distribution', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
   },
 });
 
@@ -272,10 +212,10 @@ const sourceStack = new Stack(app, 'source-stack', {
 });
 
 // Create CloudFront distribution
-declare const bucket: s3.Bucket;
+declare const origin: s3.IBucket;
 const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
   },
 });
 
@@ -292,8 +232,7 @@ For every CloudFormation resource, CDK Mixins automatically generates type-safe 
 ```typescript
 import '@aws-cdk/mixins-preview/with';
 
-
-const bucket = new s3.Bucket(scope, "Bucket")
+new s3.Bucket(scope, "Bucket")
   .with(new CfnBucketPropsMixin({
     versioningConfiguration: { status: "Enabled" },
     publicAccessBlockConfiguration: {
@@ -306,8 +245,6 @@ const bucket = new s3.Bucket(scope, "Bucket")
 Property mixins support two merge strategies:
 
 ```typescript
-declare const bucket: s3.CfnBucket;
-
 // MERGE (default): Deep merges properties with existing values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
@@ -358,8 +295,8 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 // Works with L2 constructs
-const bucket = new s3.Bucket(scope, 'Bucket');
-const bucketEvents = BucketEvents.fromBucket(bucket);
+const myBucket = new s3.Bucket(scope, 'Bucket');
+const bucketEvents = BucketEvents.fromBucket(myBucket);
 declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
@@ -389,7 +326,6 @@ new events.CfnRule(scope, 'CfnRule', {
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 
-declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 // Bucket name is automatically injected from the bucket reference
@@ -403,7 +339,6 @@ const pattern = bucketEvents.objectCreatedPattern();
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 import * as events from 'aws-cdk-lib/aws-events';
 
-declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
