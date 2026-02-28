@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5149027bbb310bac3786fba3d20078fac6f58cb552baabd2fac5eae933549b49.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04163a236b2464c939c640598250b477e1f493d03596e6fe5367ed338775ad8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,26 +34,32 @@
         "SsmRefProducer.assets"
       ],
       "metadata": {
-        "/SsmRefProducer/SharedParam": [
+        "/SsmRefProducer/SharedQueue": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SsmRefProducer/SharedParam/Resource": [
+        "/SsmRefProducer/SharedQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SharedParam42AD6347"
+            "data": "SharedQueue148BFB25"
           },
           {
             "type": "aws:cdk:warning",
             "data": "SSM-based cross-stack references trade \"deployment failure\" for potential \"service disruption\". When the producer stack changes an exported value, consumer stacks will pick up the new value on their next deployment, which may cause runtime errors if the value is incompatible. Make sure you understand this tradeoff before using SSM references. [ack: @aws-cdk/core:ssmCrossStackReferenceRisk]"
           }
         ],
-        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedParam42AD6347093CA4BE": [
+        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedParam42AD6347093CA4BE94140D2B"
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52E473DDD8"
+          }
+        ],
+        "/SsmRefProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefProducerSsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01F1BBC5F8"
           }
         ],
         "/SsmRefProducer/BootstrapVersion": [
@@ -88,7 +94,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f6ec2ddd61b364ef1c31136f50dc237490c960f4cdd4c6eab058a4d247e25a90.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96e758d57621f4097f7219d5eab0cf20785ffd966bf27dc033e60f535a46f94c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -105,16 +111,22 @@
         "SsmRefConsumer.assets"
       ],
       "metadata": {
-        "/SsmRefConsumer/ConsumedParam": [
+        "/SsmRefConsumer/QueueDepthAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SsmRefConsumer/ConsumedParam/Resource": [
+        "/SsmRefConsumer/QueueDepthAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConsumedParam4B4685C0"
+            "data": "QueueDepthAlarmD4A3A893"
+          }
+        ],
+        "/SsmRefConsumer/MonitoredQueueUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MonitoredQueueUrl"
           }
         ],
         "/SsmRefConsumer/BootstrapVersion": [
@@ -149,7 +161,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9665bc3deae826520c2cb5cbc04c1d7a33d3ad47fcf5ed1e2c7f9b4b3ca74e30.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/971e19d5491a6e7d6366ed56be28dc547c039cde7f150f863eb243c0593e8b9a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -165,32 +177,32 @@
         "SsmRefMixedProducer.assets"
       ],
       "metadata": {
-        "/SsmRefMixedProducer/MixedSharedParam": [
+        "/SsmRefMixedProducer/SharedBucket": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/SsmRefMixedProducer/MixedSharedParam/Resource": [
+        "/SsmRefMixedProducer/SharedBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MixedSharedParamDB7F01AF"
+            "data": "SharedBucket60D199D6"
           },
           {
             "type": "aws:cdk:warning",
             "data": "SSM-based cross-stack references trade \"deployment failure\" for potential \"service disruption\". When the producer stack changes an exported value, consumer stacks will pick up the new value on their next deployment, which may cause runtime errors if the value is incompatible. Make sure you understand this tradeoff before using SSM references. [ack: @aws-cdk/core:ssmCrossStackReferenceRisk]"
           }
         ],
-        "/SsmRefMixedProducer/Exports/Output{\"Ref\":\"MixedSharedParamDB7F01AF\"}": [
+        "/SsmRefMixedProducer/Exports/Output{\"Fn::GetAtt\":[\"SharedBucket60D199D6\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefMixedSharedParamDB7F01AFC23DA46B"
+            "data": "ExportsOutputFnGetAttSharedBucket60D199D6Arn46A4CCC0"
           }
         ],
-        "/SsmRefMixedProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE": [
+        "/SsmRefMixedProducer/SsmCrossStackExports/SsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE840B9687"
+            "data": "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C3E942AAD"
           }
         ],
         "/SsmRefMixedProducer/BootstrapVersion": [
@@ -225,7 +237,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a2d6e3ebb0171e7052cdb6d4359748de412d6ff0ca314a5854cf1016c5cf1a7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccf3d6ed85796dcd582c0c67277b3d933067e70e76d7859d682ce3b29080e7a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -242,16 +254,68 @@
         "SsmRefMixedConsumer.assets"
       ],
       "metadata": {
-        "/SsmRefMixedConsumer/MixedConsumedParam": [
+        "/SsmRefMixedConsumer/BucketReaderRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
           }
         ],
-        "/SsmRefMixedConsumer/MixedConsumedParam/Resource": [
+        "/SsmRefMixedConsumer/BucketReaderRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MixedConsumedParamC183A512"
+            "data": "BucketReaderRoleCEDE31AB"
+          }
+        ],
+        "/SsmRefMixedConsumer/BucketReaderRole/DefaultPolicy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SsmRefMixedConsumer/BucketReaderRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketReaderRoleDefaultPolicyE91A9D83"
+          }
+        ],
+        "/SsmRefMixedConsumer/BucketArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketArn"
+          }
+        ],
+        "/SsmRefMixedConsumer/ReaderRoleArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReaderRoleArn"
           }
         ],
         "/SsmRefMixedConsumer/BootstrapVersion": [
@@ -286,7 +350,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa13cbec0b3627e893ccd8eea4ad9a7fba45b2707280b985b3b93352e06a4b69.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7f456ae314e7fc3fdf9ed881e50011726a7839f5371158a281a8c548b318598.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -304,7 +368,7 @@
         "SsmCrossStackReferencesTestDefaultTestDeployAssertC9BDD157.assets"
       ],
       "metadata": {
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b/Default": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -318,16 +382,16 @@
             "data": "*"
           }
         ],
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b/Default/Default": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b"
+            "data": "AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001"
           }
         ],
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b/AssertionResults": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b"
+            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001"
           }
         ],
         "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -342,7 +406,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920/Default": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -356,16 +420,68 @@
             "data": "*"
           }
         ],
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920/Default/Default": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920"
+            "data": "AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084"
           }
         ],
-        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920/AssertionResults": [
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920"
+            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251"
+          }
+        ],
+        "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251"
           }
         ],
         "/SsmCrossStackReferencesTest/DefaultTest/DeployAssert/BootstrapVersion": [

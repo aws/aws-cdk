@@ -1,30 +1,34 @@
 {
  "Resources": {
-  "MixedSharedParamDB7F01AF": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Type": "String",
-    "Value": "mixed-mode-test-value"
-   }
+  "SharedBucket60D199D6": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE840B9687": {
+  "SsmCrossStackExportsSsmParamcdkcrossstackrefsSsmRefMixedProducerSsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C3E942AAD": {
    "Type": "AWS::SSM::Parameter",
    "Properties": {
     "Type": "String",
-    "Name": "/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerRefMixedSharedParamDB7F01AF7C08A0CE",
+    "Name": "/cdk/cross-stack-refs/SsmRefMixedProducer/SsmRefMixedProducerSsmRefMixedConsumerFnGetAttSharedBucket60D199D6Arn5BBD5C0C",
     "Value": {
-     "Ref": "MixedSharedParamDB7F01AF"
+     "Fn::GetAtt": [
+      "SharedBucket60D199D6",
+      "Arn"
+     ]
     }
    }
   }
  },
  "Outputs": {
-  "ExportsOutputRefMixedSharedParamDB7F01AFC23DA46B": {
+  "ExportsOutputFnGetAttSharedBucket60D199D6Arn46A4CCC0": {
    "Value": {
-    "Ref": "MixedSharedParamDB7F01AF"
+    "Fn::GetAtt": [
+     "SharedBucket60D199D6",
+     "Arn"
+    ]
    },
    "Export": {
-    "Name": "SsmRefMixedProducer:ExportsOutputRefMixedSharedParamDB7F01AFC23DA46B"
+    "Name": "SsmRefMixedProducer:ExportsOutputFnGetAttSharedBucket60D199D6Arn46A4CCC0"
    }
   }
  },

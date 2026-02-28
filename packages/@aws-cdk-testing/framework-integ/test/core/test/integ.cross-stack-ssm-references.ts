@@ -1,96 +1,207 @@
-import * as cdk from 'aws-cdk-lib/core';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import { App, CfnOutput, RemovalPolicy, Stack, StackProps, CrossStackReferenceType, StackReferences } from 'aws-cdk-lib/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
+import type { Construct } from 'constructs';
 
 /**
  * Integration test for SSM-based cross-stack references.
  *
- * Tests that cross-stack references using SSM parameters work correctly:
- * 1. Producer stack creates an SSM parameter with the resource attribute value
- * 2. Consumer stack uses {{resolve:ssm:...}} to consume the value
- * 3. The value is correctly resolved at deploy time
+ * Verifies that cross-stack references via SSM Parameters work with real
+ * AWS resources:
+ *
+ * Test Case 1 (SSM mode):
+ *   Producer creates an SQS Queue.
+ *   Consumer creates a CloudWatch Alarm that monitors the queue depth,
+ *   referencing the queue name across stacks via {{resolve:ssm:...}}.
+ *
+ * Test Case 2 (MIXED mode):
+ *   Producer creates an S3 Bucket.
+ *   Consumer creates an IAM Role with a policy granting read access to
+ *   the bucket, referencing the bucket ARN via SSM (with a CFN Export
+ *   also present for migration purposes).
  */
-const app = new cdk.App();
 
 // ---------------------------------------------------------------------------
-// Test Case 1: Basic SSM cross-stack reference
+// Test Case 1: SSM mode - SQS Queue monitored by CloudWatch Alarm
 // ---------------------------------------------------------------------------
 
-const producer = new cdk.Stack(app, 'SsmRefProducer');
+class SqsProducerStack extends Stack {
+  public readonly queue: sqs.Queue;
 
-// Create a resource whose attribute will be shared across stacks
-const param = new ssm.StringParameter(producer, 'SharedParam', {
-  stringValue: 'cross-stack-test-value',
-});
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-// Configure SSM-based cross-stack references for this resource
-cdk.StackReferences.of(param).toHere([cdk.CrossStackReferenceType.SSM]);
+    this.queue = new sqs.Queue(this, 'SharedQueue');
+    StackReferences.of(this.queue).toHere([CrossStackReferenceType.SSM]);
+  }
+}
 
-const consumer = new cdk.Stack(app, 'SsmRefConsumer');
+interface SqsConsumerStackProps extends StackProps {
+  readonly queue: sqs.Queue;
+}
 
-// Reference the parameter value from the other stack - this will use SSM.
-// Use an SSM parameter to store the consumed value (creates an actual resource).
-new ssm.StringParameter(consumer, 'ConsumedParam', {
-  parameterName: '/integ-test/ssm-ref/consumed-value',
-  stringValue: param.parameterArn,
-});
+class SqsConsumerStack extends Stack {
+  constructor(scope: Construct, id: string, props: SqsConsumerStackProps) {
+    super(scope, id, props);
+
+    // CloudWatch Alarm references queue.queueName across stacks via SSM
+    new cloudwatch.Alarm(this, 'QueueDepthAlarm', {
+      metric: props.queue.metricApproximateNumberOfMessagesVisible(),
+      threshold: 100,
+      evaluationPeriods: 1,
+      treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+    });
+
+    new CfnOutput(this, 'MonitoredQueueUrl', {
+      value: props.queue.queueUrl,
+    });
+  }
+}
 
 // ---------------------------------------------------------------------------
-// Test Case 2: MIXED mode (both CFN Export and SSM)
+// Test Case 2: MIXED mode - S3 Bucket with IAM Role for read access
 // ---------------------------------------------------------------------------
 
-const mixedProducer = new cdk.Stack(app, 'SsmRefMixedProducer');
-const mixedParam = new ssm.StringParameter(mixedProducer, 'MixedSharedParam', {
-  stringValue: 'mixed-mode-test-value',
-});
+class S3ProducerStack extends Stack {
+  public readonly bucket: s3.Bucket;
 
-// MIXED mode: create both CFN Export and SSM Parameter
-cdk.StackReferences.of(mixedParam).toHere([
-  cdk.CrossStackReferenceType.CFN_EXPORTS,
-  cdk.CrossStackReferenceType.SSM,
-]);
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
 
-const mixedConsumer = new cdk.Stack(app, 'SsmRefMixedConsumer');
+    this.bucket = new s3.Bucket(this, 'SharedBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
-// Reference the parameter value from the other stack using MIXED mode
-new ssm.StringParameter(mixedConsumer, 'MixedConsumedParam', {
-  parameterName: '/integ-test/ssm-ref/mixed-consumed-value',
-  stringValue: mixedParam.parameterArn,
-});
+    // MIXED mode: create both CFN Export and SSM Parameter
+    StackReferences.of(this.bucket).toHere([
+      CrossStackReferenceType.CFN_EXPORTS,
+      CrossStackReferenceType.SSM,
+    ]);
+  }
+}
+
+interface S3ConsumerStackProps extends StackProps {
+  readonly bucket: s3.Bucket;
+}
+
+class S3ConsumerStack extends Stack {
+  constructor(scope: Construct, id: string, props: S3ConsumerStackProps) {
+    super(scope, id, props);
+
+    // IAM Policy references bucket.bucketArn across stacks via SSM
+    const role = new iam.Role(this, 'BucketReaderRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    role.addToPolicy(new iam.PolicyStatement({
+      actions: ['s3:GetObject', 's3:ListBucket'],
+      resources: [props.bucket.bucketArn, props.bucket.arnForObjects('*')],
+    }));
+
+    new CfnOutput(this, 'BucketArn', {
+      value: props.bucket.bucketArn,
+    });
+    new CfnOutput(this, 'ReaderRoleArn', {
+      value: role.roleArn,
+    });
+  }
+}
 
 // ---------------------------------------------------------------------------
 // IntegTest setup
 // ---------------------------------------------------------------------------
 
-const testCase = new integ.IntegTest(app, 'SsmCrossStackReferencesTest', {
-  testCases: [producer, consumer, mixedProducer, mixedConsumer],
+const app = new App();
+
+const sqsProducer = new SqsProducerStack(app, 'SsmRefProducer');
+const sqsConsumer = new SqsConsumerStack(app, 'SsmRefConsumer', {
+  queue: sqsProducer.queue,
+});
+
+const s3Producer = new S3ProducerStack(app, 'SsmRefMixedProducer');
+const s3Consumer = new S3ConsumerStack(app, 'SsmRefMixedConsumer', {
+  bucket: s3Producer.bucket,
+});
+
+const testCase = new IntegTest(app, 'SsmCrossStackReferencesTest', {
+  testCases: [sqsProducer, sqsConsumer, s3Producer, s3Consumer],
   diffAssets: true,
 });
 
-// Verify Test Case 1: Consumer's SSM parameter was created with the correct value
-const getConsumedParam = testCase.assertions.awsApiCall('SSM', 'getParameter', {
-  Name: '/integ-test/ssm-ref/consumed-value',
+// ---------------------------------------------------------------------------
+// Assertions
+// ---------------------------------------------------------------------------
+
+// Verify Test Case 1: Queue URL was resolved through SSM reference
+const describeConsumer = testCase.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: sqsConsumer.stackName,
 });
 
-// Ensure the assertion stack deploys after the consumer stacks
-const assertStack = cdk.Stack.of(getConsumedParam);
-assertStack.addDependency(consumer);
-assertStack.addDependency(mixedConsumer);
+// Ensure the assertion stack deploys after consumer stacks
+const assertStack = Stack.of(describeConsumer);
+assertStack.addDependency(sqsConsumer);
+assertStack.addDependency(s3Consumer);
 
-getConsumedParam.expect(integ.ExpectedResult.objectLike({
-  Parameter: integ.Match.objectLike({
-    // The value should be the SSM parameter ARN from the producer
-    Value: integ.Match.stringLikeRegexp('arn:aws:ssm:.*:parameter/.*'),
-  }),
+describeConsumer.expect(ExpectedResult.objectLike({
+  Stacks: Match.arrayWith([
+    Match.objectLike({
+      Outputs: Match.arrayWith([
+        Match.objectLike({
+          OutputKey: 'MonitoredQueueUrl',
+          OutputValue: Match.stringLikeRegexp('https://sqs\\..*\\.amazonaws\\.com/.*'),
+        }),
+      ]),
+    }),
+  ]),
 }));
 
-// Verify Test Case 2: Mixed mode consumer also has the correct value
-const getMixedConsumedParam = testCase.assertions.awsApiCall('SSM', 'getParameter', {
-  Name: '/integ-test/ssm-ref/mixed-consumed-value',
+// Verify Test Case 2: Bucket ARN was resolved through MIXED SSM reference
+const describeMixedConsumer = testCase.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: s3Consumer.stackName,
 });
 
-getMixedConsumedParam.expect(integ.ExpectedResult.objectLike({
-  Parameter: integ.Match.objectLike({
-    Value: integ.Match.stringLikeRegexp('arn:aws:ssm:.*:parameter/.*'),
-  }),
+describeMixedConsumer.expect(ExpectedResult.objectLike({
+  Stacks: Match.arrayWith([
+    Match.objectLike({
+      Outputs: Match.arrayWith([
+        Match.objectLike({
+          OutputKey: 'BucketArn',
+          OutputValue: Match.stringLikeRegexp('arn:aws:s3:::.*'),
+        }),
+      ]),
+    }),
+  ]),
+}));
+
+// Verify SSM Parameters were actually created in the producer stacks
+
+// Test Case 1: SSM parameters exist under /cdk/cross-stack-refs/SsmRefProducer/
+const ssmParamsProducer = testCase.assertions.awsApiCall('SSM', 'getParametersByPath', {
+  Path: '/cdk/cross-stack-refs/SsmRefProducer/',
+});
+
+ssmParamsProducer.expect(ExpectedResult.objectLike({
+  Parameters: Match.arrayWith([
+    Match.objectLike({
+      Name: Match.stringLikeRegexp('/cdk/cross-stack-refs/SsmRefProducer/.*'),
+      Type: 'String',
+    }),
+  ]),
+}));
+
+// Test Case 2: SSM parameter stores the S3 bucket ARN
+const ssmParamsMixed = testCase.assertions.awsApiCall('SSM', 'getParametersByPath', {
+  Path: '/cdk/cross-stack-refs/SsmRefMixedProducer/',
+});
+
+ssmParamsMixed.expect(ExpectedResult.objectLike({
+  Parameters: Match.arrayWith([
+    Match.objectLike({
+      Name: Match.stringLikeRegexp('/cdk/cross-stack-refs/SsmRefMixedProducer/.*'),
+      Type: 'String',
+      Value: Match.stringLikeRegexp('arn:aws:s3:::.*'),
+    }),
+  ]),
 }));

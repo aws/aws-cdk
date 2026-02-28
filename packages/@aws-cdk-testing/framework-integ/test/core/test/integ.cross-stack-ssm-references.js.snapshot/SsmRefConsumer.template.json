@@ -1,31 +1,28 @@
 {
  "Resources": {
-  "ConsumedParam4B4685C0": {
-   "Type": "AWS::SSM::Parameter",
+  "QueueDepthAlarmD4A3A893": {
+   "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
-    "Name": "/integ-test/ssm-ref/consumed-value",
-    "Type": "String",
-    "Value": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":ssm:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":parameter/{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerRefSharedParam42AD6347093CA4BE}}"
-      ]
-     ]
-    }
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerFnGetAttSharedQueue148BFB25QueueNameA7889F52}}"
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Maximum",
+    "Threshold": 100,
+    "TreatMissingData": "notBreaching"
    }
+  }
+ },
+ "Outputs": {
+  "MonitoredQueueUrl": {
+   "Value": "{{resolve:ssm:/cdk/cross-stack-refs/SsmRefProducer/SsmRefProducerSsmRefConsumerRefSharedQueue148BFB2525528B01}}"
   }
  },
  "Parameters": {

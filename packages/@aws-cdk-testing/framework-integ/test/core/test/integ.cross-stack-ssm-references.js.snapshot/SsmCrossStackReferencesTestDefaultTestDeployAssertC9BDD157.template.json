@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b": {
-   "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
+  "AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,14 +9,14 @@
       "Arn"
      ]
     },
-    "service": "SSM",
-    "api": "getParameter",
-    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"$ObjectLike\":{\"Value\":{\"$StringLike\":\"arn:aws:ssm:.*:parameter/.*\"}}}}}",
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"MonitoredQueueUrl\",\"OutputValue\":{\"$StringLike\":\"https://sqs\\\\..*\\\\.amazonaws\\\\.com/.*\"}}}]}}}]}}}",
     "parameters": {
-     "Name": "\"/integ-test/ssm-ref/consumed-value\""
+     "StackName": "\"SsmRefConsumer\""
     },
     "flattenResponse": "false",
-    "salt": "1772207716990"
+    "salt": "1772241453923"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -49,7 +49,7 @@
        "Statement": [
         {
          "Action": [
-          "ssm:GetParameter"
+          "cloudformation:DescribeStacks"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -58,7 +58,25 @@
         },
         {
          "Action": [
-          "ssm:GetParameter"
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ssm:GetParametersByPath"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ssm:GetParametersByPath"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -91,8 +109,29 @@
     }
    }
   },
-  "AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920": {
-   "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
+  "AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"BucketArn\",\"OutputValue\":{\"$StringLike\":\"arn:aws:s3:::.*\"}}}]}}}]}}}",
+    "parameters": {
+     "StackName": "\"SsmRefMixedConsumer\""
+    },
+    "flattenResponse": "false",
+    "salt": "1772241453924"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParametersByPath",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -101,31 +140,68 @@
      ]
     },
     "service": "SSM",
-    "api": "getParameter",
-    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"$ObjectLike\":{\"Value\":{\"$StringLike\":\"arn:aws:ssm:.*:parameter/.*\"}}}}}",
+    "api": "getParametersByPath",
+    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":{\"$StringLike\":\"/cdk/cross-stack-refs/SsmRefProducer/.*\"},\"Type\":\"String\"}}]}}}",
     "parameters": {
-     "Name": "\"/integ-test/ssm-ref/mixed-consumed-value\""
+     "Path": "\"/cdk/cross-stack-refs/SsmRefProducer/\""
     },
     "flattenResponse": "false",
-    "salt": "1772207716991"
+    "salt": "1772241453924"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParametersByPath",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SSM",
+    "api": "getParametersByPath",
+    "expected": "{\"$ObjectLike\":{\"Parameters\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":{\"$StringLike\":\"/cdk/cross-stack-refs/SsmRefMixedProducer/.*\"},\"Type\":\"String\",\"Value\":{\"$StringLike\":\"arn:aws:s3:::.*\"}}}]}}}",
+    "parameters": {
+     "Path": "\"/cdk/cross-stack-refs/SsmRefMixedProducer/\""
+    },
+    "flattenResponse": "false",
+    "salt": "1772241453924"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetParameterae8787841567c485ed187ef12f34e19b",
+     "AwsApiCallCloudFormationdescribeStacksc77a3fa9e8336b2e03ab2285ef389001",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSSMgetParameter27007cd9ff3c53f2245f6bfdf26db920",
+     "AwsApiCallCloudFormationdescribeStacks806d86db65a3e6c62252d446ae2b9084",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSSMgetParametersByPath8eac9118c858d40051304a05c540e7c2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSSMgetParametersByPathdd6c6872004d60f33e53b2e631bfe251",
      "assertion"
     ]
    }
