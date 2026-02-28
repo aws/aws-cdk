@@ -456,6 +456,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -572,6 +579,13 @@
     "scopes": [
       {
         "namespace": "AWS::DevOpsGuru"
+      }
+    ]
+  },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
       }
     ]
   },
