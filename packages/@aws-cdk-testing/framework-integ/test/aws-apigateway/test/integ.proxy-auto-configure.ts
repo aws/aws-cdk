@@ -15,8 +15,7 @@ class ProxyAutoConfigureStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    // Create a Lambda function that echoes the request
-    const echoHandler = new lambda.Function(this, 'EchoHandler', {
+    const handler = new lambda.Function(this, 'EchoHandler', {
       runtime: STANDARD_NODEJS_RUNTIME,
       code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
@@ -34,20 +33,12 @@ class ProxyAutoConfigureStack extends cdk.Stack {
       handler: 'index.handler',
     });
 
-    // REST API with proxy resource using autoConfigurePathParameter
-    const api = new apigateway.RestApi(this, 'ProxyApi', {
-      restApiName: 'proxy-auto-configure-test',
-      description: 'Test API for autoConfigurePathParameter feature',
-      deployOptions: {
-        stageName: 'test',
-      },
-    });
+    const api = new apigateway.RestApi(this, 'ProxyApi');
 
-    // Add proxy resource with automatic path parameter configuration
     const apiResource = api.root.addResource('api');
     apiResource.addProxy({
       autoConfigurePathParameter: true,
-      defaultIntegration: new apigateway.LambdaIntegration(echoHandler),
+      defaultIntegration: new apigateway.LambdaIntegration(handler),
     });
   }
 }

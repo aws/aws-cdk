@@ -72,14 +72,13 @@
   "ProxyApi0DF2D7AE": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
-    "Description": "Test API for autoConfigurePathParameter feature",
-    "Name": "proxy-auto-configure-test"
+    "Name": "ProxyApi"
    }
   },
-  "ProxyApiDeployment6107D4F30d9396204f884ead8ca2c0bf51df2feb": {
+  "ProxyApiDeployment6107D4F39a536222630e6097464b3619b5b76ced": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
-    "Description": "Test API for autoConfigurePathParameter feature",
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "ProxyApi0DF2D7AE"
     }
@@ -93,16 +92,16 @@
     "aws:cdk:do-not-refactor": true
    }
   },
-  "ProxyApiDeploymentStagetestC6245BC2": {
+  "ProxyApiDeploymentStageprod9EF20FCC": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "ProxyApiDeployment6107D4F30d9396204f884ead8ca2c0bf51df2feb"
+     "Ref": "ProxyApiDeployment6107D4F39a536222630e6097464b3619b5b76ced"
     },
     "RestApiId": {
      "Ref": "ProxyApi0DF2D7AE"
     },
-    "StageName": "test"
+    "StageName": "prod"
    }
   },
   "ProxyApiapiF51BF759": {
@@ -165,7 +164,7 @@
        },
        "/",
        {
-        "Ref": "ProxyApiDeploymentStagetestC6245BC2"
+        "Ref": "ProxyApiDeploymentStageprod9EF20FCC"
        },
        "/*/api/*"
       ]
@@ -277,7 +276,7 @@
       },
       "/",
       {
-       "Ref": "ProxyApiDeploymentStagetestC6245BC2"
+       "Ref": "ProxyApiDeploymentStageprod9EF20FCC"
       },
       "/"
      ]
