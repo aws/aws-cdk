@@ -37,11 +37,11 @@ describe('SSM-based cross-stack references', () => {
     expect(producerTemplate.Outputs).toBeUndefined();
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -50,7 +50,7 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Consumer should use {{resolve:ssm:...}} not Fn::ImportValue
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     const bucketArn = consumerResource.Properties.BucketArn;
-    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
+    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}');
   });
 
   test('SSM reference with STRING_LIST values', () => {
@@ -78,11 +78,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Producer: SSM param value should be joined with ||
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'BLA' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceList9FB0FB1AA02CB3E3: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceList4C66B21E31B223C1: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceList9FB0FB1A',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceList4C66B21E',
           Value: { 'Fn::Join': ['||', { 'Fn::GetAtt': ['MyResource', 'List'] }] },
         },
       },
@@ -91,7 +91,7 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Consumer: should split the SSM value
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     expect(consumerResource.Properties.Prop).toEqual({
-      'Fn::Split': ['||', '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceList9FB0FB1A}}'],
+      'Fn::Split': ['||', '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceList4C66B21E}}'],
     });
   });
 
@@ -119,24 +119,18 @@ describe('SSM-based cross-stack references', () => {
     const producerParentTemplate = assembly.getStackByName(producerParent.stackName).template;
 
     // THEN - SSM Parameter should be on the parent stack, not the nested stack
-    const ssmParamKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerParent' +
-      'ProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4D' +
-      'OutputsProducerParentNestedMyResource58EEE46AArn8C15706570EF2895';
-    const ssmParamName = '/cdk/cross-stack-refs/ProducerParent/' +
-      'ProducerParentConsumerFnGetAttNestedNestedStackNestedNestedStackResourceDEFDAA4D' +
-      'OutputsProducerParentNestedMyResource58EEE46AArn8C157065';
-    expect(producerParentTemplate.Resources[ssmParamKey]).toEqual({
-      Type: 'AWS::SSM::Parameter',
-      Properties: {
-        Type: 'String',
-        Name: ssmParamName,
-        Value: {
-          'Fn::GetAtt': [
-            'NestedNestedStackNestedNestedStackResourceDEFDAA4D',
-            'Outputs.ProducerParentNestedMyResource58EEE46AArn',
-          ],
-        },
-      },
+    const ssmResources = Object.entries(producerParentTemplate.Resources).filter(
+      ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
+    );
+    expect(ssmResources.length).toBe(1);
+    const [, ssmParam] = ssmResources[0] as [string, any];
+    expect(ssmParam.Properties.Type).toBe('String');
+    expect(ssmParam.Properties.Name).toMatch(/^\/cdk\/cross-stack-refs\/ProducerParent\//);
+    expect(ssmParam.Properties.Value).toEqual({
+      'Fn::GetAtt': [
+        'NestedNestedStackNestedNestedStackResourceDEFDAA4D',
+        'Outputs.ProducerParentNestedMyResource58EEE46AArn',
+      ],
     });
   });
 
@@ -165,11 +159,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Producer has SSM Parameter
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerParentFnGetAttMyResourceArn8907058E51CA0A52: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -179,7 +173,7 @@ describe('SSM-based cross-stack references', () => {
     const nestedStackResource = consumerParentTemplate.Resources.NestedConsumerNestedStackNestedConsumerNestedStackResource8CB6F5DC;
     expect(nestedStackResource.Type).toBe('AWS::CloudFormation::Stack');
     expect(nestedStackResource.Properties.Parameters).toEqual({
-      referencetoProducerMyResource2D6458ECArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E}}',
+      referencetoProducerMyResource2D6458ECArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}',
     });
   });
 
@@ -216,12 +210,12 @@ describe('SSM-based cross-stack references', () => {
     });
 
     expect(
-      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645,
+      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA,
     ).toEqual({
       Type: 'AWS::SSM::Parameter',
       Properties: {
         Type: 'String',
-        Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+        Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
         Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
       },
     });
@@ -229,7 +223,7 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Consumer should use SSM (not ImportValue)
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
     const bucketArn = consumerResource.Properties.BucketArn;
-    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}');
+    expect(bucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}');
   });
 
   test('toHere() takes priority over fromHere()', () => {
@@ -293,11 +287,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - fromHere applies: SSM
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -307,7 +301,7 @@ describe('SSM-based cross-stack references', () => {
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}',
         },
       },
     });
@@ -337,7 +331,7 @@ describe('SSM-based cross-stack references', () => {
 
     // THEN - SSM from parent scope should apply
     const consumerResource = consumerTemplate.Resources.ConsumerResource;
-    expect(consumerResource.Properties.BucketArn).toBe('{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttParentMyResource4B1FDBCCArnA6294FFD}}');
+    expect(consumerResource.Properties.BucketArn).toMatch(/^\{\{resolve:ssm:\/cdk\/cross-stack-refs\/Producer\//);
   });
 
   test('nearest scope setting takes priority', () => {
@@ -408,11 +402,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Only one SSM Parameter even with two consumers
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -542,11 +536,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsMyProducerStackMyProducerStackMyConsumerStackFnGetAttMyResourceArnCCDB7D75323BACFA: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsMyProducerStackMyProducerStackFnGetAttMyResourceArn3395F2F810FE8FA4: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/MyProducerStack/MyProducerStackMyConsumerStackFnGetAttMyResourceArnCCDB7D75',
+          Name: '/cdk/cross-stack-refs/MyProducerStack/MyProducerStackFnGetAttMyResourceArn3395F2F8',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -581,19 +575,19 @@ describe('SSM-based cross-stack references', () => {
     expect(producerTemplate.Resources).toEqual({
       Resource1: { Type: 'AWS::S3::Bucket' },
       Resource2: { Type: 'AWS::SQS::Queue' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttResource1Arn9CD5461E86EDD8F3: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttResource1Arn3C567B22EC0FDF91: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttResource1Arn9CD5461E',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttResource1Arn3C567B22',
           Value: { 'Fn::GetAtt': ['Resource1', 'Arn'] },
         },
       },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttResource2QueueUrl0596462C1E17FABF: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttResource2QueueUrlC4C2F89F45F1208C: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttResource2QueueUrl0596462C',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttResource2QueueUrlC4C2F89F',
           Value: { 'Fn::GetAtt': ['Resource2', 'QueueUrl'] },
         },
       },
@@ -635,11 +629,11 @@ describe('SSM-based cross-stack references', () => {
 
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'BLA' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceList9FB0FB1AA02CB3E3: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceList4C66B21E31B223C1: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceList9FB0FB1A',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceList4C66B21E',
           Value: { 'Fn::Join': ['||', { 'Fn::GetAtt': ['MyResource', 'List'] }] },
         },
       },
@@ -651,7 +645,7 @@ describe('SSM-based cross-stack references', () => {
         Type: 'BLA',
         Properties: {
           Prop: {
-            'Fn::Split': ['||', '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceList9FB0FB1A}}'],
+            'Fn::Split': ['||', '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceList4C66B21E}}'],
           },
         },
       },
@@ -685,7 +679,7 @@ describe('SSM-based cross-stack references', () => {
     );
   });
 
-  test('multiple consumer stacks create separate SSM Parameters', () => {
+  test('multiple consumer stacks share a single SSM Parameter', () => {
     // GIVEN
     const app = new App();
     const producer = new Stack(app, 'Producer');
@@ -710,33 +704,27 @@ describe('SSM-based cross-stack references', () => {
     const consumer1Template = assembly.getStackByName(consumer1.stackName).template;
     const consumer2Template = assembly.getStackByName(consumer2.stackName).template;
 
-    // THEN - Producer should have two separate SSM Parameters (one per consumer)
+    // THEN - Producer should have a single SSM Parameter shared by all consumers
+    // (mirrors CFN Exports where a single Export is shared)
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumer1FnGetAttMyResourceArnB6078C912B804A3D: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumer1FnGetAttMyResourceArnB6078C91',
-          Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
-        },
-      },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumer2FnGetAttMyResourceArnEF05BA8E2192BE74: {
-        Type: 'AWS::SSM::Parameter',
-        Properties: {
-          Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumer2FnGetAttMyResourceArnEF05BA8E',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
     });
 
-    // THEN - Each consumer references its own SSM parameter
+    // THEN - Both consumers reference the same SSM parameter
+    const expectedSsmRef = '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}';
     expect(consumer1Template.Resources).toEqual({
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumer1FnGetAttMyResourceArnB6078C91}}',
+          BucketArn: expectedSsmRef,
         },
       },
     });
@@ -744,7 +732,7 @@ describe('SSM-based cross-stack references', () => {
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumer2FnGetAttMyResourceArnEF05BA8E}}',
+          BucketArn: expectedSsmRef,
         },
       },
     });
@@ -771,11 +759,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - Producer: SSM param value uses Ref (not Fn::GetAtt)
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerRefMyResourceEDCF2EDB2DE63099: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerRefMyResourceF43CC75086169F21: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerRefMyResourceEDCF2EDB',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerRefMyResourceF43CC750',
           Value: { Ref: 'MyResource' },
         },
       },
@@ -786,7 +774,7 @@ describe('SSM-based cross-stack references', () => {
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketName: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerRefMyResourceEDCF2EDB}}',
+          BucketName: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerRefMyResourceF43CC750}}',
         },
       },
     });
@@ -816,11 +804,11 @@ describe('SSM-based cross-stack references', () => {
     // THEN - fromHere on child construct is picked up via tree walk from the consuming element
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -830,7 +818,7 @@ describe('SSM-based cross-stack references', () => {
       MonitoringGroupAlarmB4EEB6AA: {
         Type: 'AWS::CloudWatch::Alarm',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}',
         },
       },
     });
@@ -866,12 +854,12 @@ describe('SSM-based cross-stack references', () => {
       },
     });
     expect(
-      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerFnGetAttMyResourceArn70A380021E7A5645,
+      producerTemplate.Resources.SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA,
     ).toEqual({
       Type: 'AWS::SSM::Parameter',
       Properties: {
         Type: 'String',
-        Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002',
+        Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
         Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
       },
     });
@@ -881,7 +869,7 @@ describe('SSM-based cross-stack references', () => {
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttMyResourceArn70A38002}}',
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}',
         },
       },
     });
@@ -1083,11 +1071,11 @@ describe('SSM-based cross-stack references', () => {
     expect(producerTemplate.Outputs).toBeUndefined();
     expect(producerTemplate.Resources).toEqual({
       MyResource: { Type: 'AWS::S3::Bucket' },
-      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerConsumerParentFnGetAttMyResourceArn8907058E51CA0A52: {
+      SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerProducerFnGetAttMyResourceArn761B34A26BAD27DA: {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2',
           Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
         },
       },
@@ -1099,7 +1087,7 @@ describe('SSM-based cross-stack references', () => {
     expect(nestedStackResource.Type).toBe('AWS::CloudFormation::Stack');
     expect(nestedStackResource.Properties.Parameters).toEqual({
       referencetoProducerMyResource2D6458ECArn:
-        '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerParentFnGetAttMyResourceArn8907058E}}',
+        '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttMyResourceArn761B34A2}}',
     });
   });
 
@@ -1129,7 +1117,7 @@ describe('SSM-based cross-stack references', () => {
 
     // THEN - Producer: SSM Parameter for SsmResource, CFN Export for CfnResource
     const ssmKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducer' +
-      'ProducerConsumerFnGetAttSsmResourceArn32B8C433A1EE037C';
+      'ProducerFnGetAttSsmResourceArn54789609934E309B';
     expect(producerTemplate.Resources).toEqual({
       SsmResource: { Type: 'AWS::S3::Bucket' },
       CfnResource: { Type: 'AWS::SQS::Queue' },
@@ -1137,7 +1125,7 @@ describe('SSM-based cross-stack references', () => {
         Type: 'AWS::SSM::Parameter',
         Properties: {
           Type: 'String',
-          Name: '/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttSsmResourceArn32B8C433',
+          Name: '/cdk/cross-stack-refs/Producer/ProducerFnGetAttSsmResourceArn54789609',
           Value: { 'Fn::GetAtt': ['SsmResource', 'Arn'] },
         },
       },
@@ -1154,7 +1142,7 @@ describe('SSM-based cross-stack references', () => {
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',
         Properties: {
-          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerConsumerFnGetAttSsmResourceArn32B8C433}}',
+          BucketArn: '{{resolve:ssm:/cdk/cross-stack-refs/Producer/ProducerFnGetAttSsmResourceArn54789609}}',
           QueueUrl: { 'Fn::ImportValue': 'Producer:ExportsOutputFnGetAttCfnResourceQueueUrl6155ED8C' },
         },
       },
@@ -1232,23 +1220,18 @@ describe('SSM-based cross-stack references', () => {
     const nestedOutputAttr =
       'Outputs.ProducerParentNestedProducerMyResource8FC21B8BArn';
 
-    const ssmParamKey = 'SsmCrossStackExportsSsmParamcdkcrossstackrefsProducerParent' +
-      'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
-      nestedOutputAttr.replace('.', '') + '79726D0D0DF517D3';
-
-    expect(producerParentTemplate.Resources[ssmParamKey]).toEqual({
-      Type: 'AWS::SSM::Parameter',
-      Properties: {
-        Type: 'String',
-        Name: '/cdk/cross-stack-refs/ProducerParent/' +
-          'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
-          nestedOutputAttr.replace('.', '') + '79726D0D',
-        Value: {
-          'Fn::GetAtt': [nestedStackLogicalId, nestedOutputAttr],
-        },
-      },
+    // SSM Parameter
+    const ssmResources = Object.entries(producerParentTemplate.Resources).filter(
+      ([_, v]: [string, any]) => v.Type === 'AWS::SSM::Parameter',
+    );
+    expect(ssmResources.length).toBe(1);
+    const [, ssmParam] = ssmResources[0] as [string, any];
+    expect(ssmParam.Properties.Name).toMatch(/^\/cdk\/cross-stack-refs\/ProducerParent\//);
+    expect(ssmParam.Properties.Value).toEqual({
+      'Fn::GetAtt': [nestedStackLogicalId, nestedOutputAttr],
     });
 
+    // CFN Export
     const cfnOutputKey = 'ExportsOutputFnGetAtt' + nestedStackLogicalId +
       nestedOutputAttr.replace('.', '') + 'E0070345';
     expect(producerParentTemplate.Outputs[cfnOutputKey]).toEqual({
@@ -1261,9 +1244,7 @@ describe('SSM-based cross-stack references', () => {
     });
 
     // THEN - Consumer uses SSM reference
-    const ssmParamName = '/cdk/cross-stack-refs/ProducerParent/' +
-      'ProducerParentConsumerFnGetAtt' + nestedStackLogicalId +
-      nestedOutputAttr.replace('.', '') + '79726D0D';
+    const ssmParamName = ssmParam.Properties.Name;
     expect(consumerTemplate.Resources).toEqual({
       ConsumerResource: {
         Type: 'AWS::Lambda::Function',

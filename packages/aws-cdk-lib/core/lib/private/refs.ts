@@ -463,7 +463,7 @@ function createSsmImportValue(
   const exportable = getExportable(producer, reference);
 
   // Generate a unique SSM parameter name
-  const parameterName = generateSsmParameterName(producer, consumer, exportable);
+  const parameterName = generateSsmParameterName(producer, exportable);
 
   // Create the SSM parameter in the producer stack
   ensureSsmParameter(producer, parameterName, exportable, reference);
@@ -600,17 +600,18 @@ function ensureSsmParameter(
  */
 function generateSsmParameterName(
   producer: Stack,
-  consumer: Stack,
   exportable: Intrinsic,
 ): string {
   // Use the top-level stack name (nested stack names are tokens)
   const producerName = (producer.nestedStackParent ?? producer).stackName;
-  const consumerName = (consumer.nestedStackParent ?? consumer).stackName;
 
   const id = JSON.stringify(producer.resolve(exportable));
+  // The parameter name is derived only from the producer and the exported
+  // value, not the consumer.  This mirrors CFN Exports where a single
+  // Export is shared by all consumers, avoiding unnecessary duplication of
+  // SSM parameters when multiple consumer stacks reference the same value.
   const components = [
     producerName,
-    consumerName,
     id,
   ];
   const localPart = makeUniqueId(components);
