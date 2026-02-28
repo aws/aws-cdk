@@ -136,7 +136,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   }
 
   // Determine the reference mechanism to use (CFN_EXPORTS, SSM, or MIXED)
-  const referenceTypes = determineReferenceTypes(producer, consumer, reference);
+  const referenceTypes = determineReferenceTypes(consumer, reference);
 
   // add a dependency between the producer and the consumer. dependency logic
   // will take care of applying the dependency at the right level (e.g. the
@@ -421,7 +421,6 @@ function generateUniqueId(stack: Stack, ref: Reference, prefix = '') {
  * 3. Default: CFN_EXPORTS (backward compatibility)
  */
 function determineReferenceTypes(
-  _producer: Stack,
   consumer: Stack,
   reference: CfnReference,
 ): CrossStackReferenceType[] {
