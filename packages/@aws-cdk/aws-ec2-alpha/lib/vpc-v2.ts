@@ -331,6 +331,7 @@ export class VpcV2 extends VpcV2Base {
       public readonly privateSubnets: ISubnetV2[] = [];
       public readonly isolatedSubnets: ISubnetV2[] = [];
       public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
+      public readonly ipv6CidrBlockCreated: IDependable = new DependencyGroup();
       public readonly ipv4CidrBlock: string;
       public readonly region: string;
       public readonly ownerAccountId: string;
@@ -461,6 +462,14 @@ export class VpcV2 extends VpcV2Base {
    * To define dependency on internet connectivity
    */
   public readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * Dependable that can be depended upon to force the VPC's IPv6 CIDR block to be allocated.
+   *
+   * For VPCs with IPv6 enabled, this will be a dependency group containing the IPv6 CIDR blocks.
+   * For IPv4-only VPCs, this will be an empty `DependencyGroup`.
+   */
+  public readonly ipv6CidrBlockCreated: IDependable;
 
   /**
    * reference to all secondary blocks attached
@@ -607,6 +616,12 @@ export class VpcV2 extends VpcV2Base {
      * Add igw to this if its a public subnet
      */
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+
+    /**
+     * Initialize ipv6CidrBlockCreated as an empty DependencyGroup
+     * This will be populated if IPv6 CIDR blocks are added
+     */
+    this.ipv6CidrBlockCreated = new DependencyGroup();
   }
 }
 /**

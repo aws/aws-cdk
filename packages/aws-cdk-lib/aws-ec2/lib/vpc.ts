@@ -181,6 +181,17 @@ export interface IVpc extends IResource, IVPCRef {
   readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Dependable that can be depended upon to force the VPC's IPv6 CIDR block to be allocated.
+   *
+   * For VPCs with `IpProtocol.DUAL_STACK` set, this will be the `CfnVPCCidrBlock` resource.
+   * For IPv4-only VPCs, this will be an empty `DependencyGroup`.
+   *
+   * Use this to establish a dependency on the IPv6 CIDR block being allocated before
+   * creating resources that reference `vpcIpv6CidrBlocks`.
+   */
+  readonly ipv6CidrBlockCreated: IDependable;
+
+  /**
    * Return information on the subnets appropriate for the given selection strategy
    *
    * Requires that at least one subnet is matched, throws a descriptive
@@ -507,6 +518,11 @@ abstract class VpcBase extends Resource implements IVpc {
    * Dependencies for internet connectivity
    */
   public abstract readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * Dependencies for IPv6 CIDR block allocation
+   */
+  public abstract readonly ipv6CidrBlockCreated: IDependable;
 
   /**
    * Dependencies for NAT connectivity
@@ -1508,6 +1524,17 @@ export class Vpc extends VpcBase {
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Dependable that can be depended upon to force the VPC's IPv6 CIDR block to be allocated.
+   *
+   * For VPCs with `IpProtocol.DUAL_STACK` set, this will be the `CfnVPCCidrBlock` resource.
+   * For IPv4-only VPCs, this will be an empty `DependencyGroup`.
+   *
+   * Use this to establish a dependency on the IPv6 CIDR block being allocated before
+   * creating resources that reference `vpcIpv6CidrBlocks`.
+   */
+  public readonly ipv6CidrBlockCreated: IDependable;
+
+  /**
    * Indicates if instances launched in this VPC will have public DNS hostnames.
    */
   public readonly dnsHostnamesEnabled: boolean;
@@ -1565,6 +1592,8 @@ export class Vpc extends VpcBase {
 
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
+  private readonly _ipv6CidrBlockCreated = new DependencyGroup();
+
   /**
    * Vpc creates a VPC that spans a whole region.
    * It will automatically divide the provided VPC CIDR range, and create public and private subnets per Availability Zone.
@@ -1617,6 +1646,7 @@ export class Vpc extends VpcBase {
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     const instanceTenancy = props.defaultInstanceTenancy || 'default';
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+    this.ipv6CidrBlockCreated = this._ipv6CidrBlockCreated;
 
     const vpcIpAddressOptions = this.ipAddresses.allocateVpcCidr();
 
@@ -1675,6 +1705,8 @@ export class Vpc extends VpcBase {
         scope: this,
         vpcId: this.vpcId,
       });
+
+      this._ipv6CidrBlockCreated.add(this.ipv6CidrBlock);
 
       this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
     }
@@ -2551,6 +2583,7 @@ class ImportedVpc extends VpcBase {
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
+  public readonly ipv6CidrBlockCreated: IDependable = new DependencyGroup();
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
@@ -2602,6 +2635,7 @@ class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
   public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
+  public readonly ipv6CidrBlockCreated: IDependable = new DependencyGroup();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
