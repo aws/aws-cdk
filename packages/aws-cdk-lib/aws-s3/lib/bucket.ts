@@ -371,7 +371,8 @@ export interface IBucket extends IResource, IBucketRef {
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -858,6 +859,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to decrypt the contents
    * of the bucket will also be granted to the same principal.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param identity The principal
@@ -868,6 +872,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
@@ -880,6 +887,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.put()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param identity The principal
@@ -890,6 +900,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.putAcl()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
@@ -899,6 +912,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.delete()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -910,6 +926,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
@@ -922,6 +941,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * Note that when calling this function for source or destination buckets that support KMS encryption,
    * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.replicationPermission()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -954,6 +976,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * managed by CloudFormation, this method will have no effect, since it's
    * impossible to modify the policy of an existing bucket.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.publicAccess()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
@@ -979,7 +1004,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -1800,6 +1826,16 @@ export interface BucketProps {
   readonly objectLockEnabled?: boolean;
 
   /**
+   * Enables Amazon S3 to evaluate the ABAC policy in the request.
+   * Set to true to enable ABAC, false to explicitly disable it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
+   *
+   * @default - The ABAC status is not set
+   */
+  readonly abacStatus?: boolean;
+
+  /**
    * The default retention mode and rules for S3 Object Lock.
    *
    * Default retention can be configured after a bucket is created if the bucket already
@@ -2323,6 +2359,7 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
     });
     this._resource = resource;
 
