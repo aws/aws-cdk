@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 type StackConfiguration = {
   computeConfiguration: codebuild.ComputeConfiguration;

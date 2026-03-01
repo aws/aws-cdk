@@ -1,6 +1,7 @@
-import { DependencyGroup, IConstruct, Node } from 'constructs';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
+import type { IConstruct } from 'constructs';
+import { DependencyGroup, Node } from 'constructs';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { Annotations, Stack, UnscopedValidationError } from '../../core';
 
 /**

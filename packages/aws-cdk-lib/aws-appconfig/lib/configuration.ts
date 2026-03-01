@@ -1,24 +1,27 @@
 /* eslint-disable import/order */
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appconfig.generated';
-import { IApplication } from './application';
-import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
-import { IEnvironment } from './environment';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
-import { IDeploymentStrategyRef } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IApplication } from './application';
+import type { IDeploymentStrategy } from './deployment-strategy';
+import { DeploymentStrategy, RolloutStrategy } from './deployment-strategy';
+import type { IEnvironment } from './environment';
+import type { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible } from './extension';
+import { ExtensibleBase } from './extension';
+import type { IDeploymentStrategyRef } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 import { toIDeploymentStrategy } from './private/ref-utils';
-import * as cp from '../../aws-codepipeline';
+import type * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
-import * as sm from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type * as s3 from '../../aws-s3';
+import type * as sm from '../../aws-secretsmanager';
+import type * as ssm from '../../aws-ssm';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy, ValidationError } from '../../core';
 import * as mimeTypes from 'mime-types';
-import { DeletionProtectionCheck } from './util';
+import type { DeletionProtectionCheck } from './util';
 
 /**
  * Options for the Configuration construct

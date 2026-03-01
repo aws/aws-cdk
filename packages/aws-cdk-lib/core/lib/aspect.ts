@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { ValidationError } from './errors';
 
 const ASPECTS_SYMBOL = Symbol.for('cdk-aspects');

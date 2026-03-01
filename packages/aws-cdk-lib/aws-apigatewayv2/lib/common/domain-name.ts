@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
-import { IpAddressType } from './api';
-import { CfnDomainName, CfnDomainNameProps } from '.././index';
-import { IBucket } from '../../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IpAddressType } from './api';
+import type { CfnDomainNameProps } from '.././index';
+import { CfnDomainName } from '.././index';
+import type { IBucket } from '../../../aws-s3';
+import type { IResource } from '../../../core';
+import { ArnFormat, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
-import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
+import type { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.

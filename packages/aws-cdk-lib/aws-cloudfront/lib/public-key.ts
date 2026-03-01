@@ -1,6 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnPublicKey, IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
-import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
+import { CfnPublicKey } from './cloudfront.generated';
+import type { IResource } from '../../core';
+import { Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

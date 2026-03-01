@@ -1,4 +1,4 @@
-import { Metric } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
 import { StateTransitionMetric } from '../lib';
 
 describe('State Transition Metrics', () => {

@@ -1,5 +1,5 @@
 
-import { GitHubFile, GitHubPr } from './github';
+import type { GitHubFile, GitHubPr } from './github';
 
 /**
  * Results of a single test.

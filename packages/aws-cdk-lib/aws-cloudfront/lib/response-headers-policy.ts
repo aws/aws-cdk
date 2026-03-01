@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import {
-  CfnResponseHeadersPolicy,
+import type { Construct } from 'constructs';
+import type {
   IResponseHeadersPolicyRef,
   ResponseHeadersPolicyReference,
 } from './cloudfront.generated';
-import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
+import {
+  CfnResponseHeadersPolicy,
+} from './cloudfront.generated';
+import type { Duration } from '../../core';
+import { Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

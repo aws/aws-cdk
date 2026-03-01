@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as events from '../../../aws-events';
+import type { Construct } from 'constructs';
+import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';

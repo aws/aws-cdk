@@ -1,6 +1,7 @@
 import { Grant } from './grant';
-import { IRoleRef } from './iam.generated';
-import { AccountPrincipal, IPrincipal, ServicePrincipal } from './principals';
+import type { IRoleRef } from './iam.generated';
+import type { IPrincipal } from './principals';
+import { AccountPrincipal, ServicePrincipal } from './principals';
 import { ValidationError } from '../../core';
 
 /**

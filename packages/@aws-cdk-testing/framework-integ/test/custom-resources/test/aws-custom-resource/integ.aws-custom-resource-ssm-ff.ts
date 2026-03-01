@@ -1,9 +1,10 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from 'aws-cdk-lib/cx-api';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 const app = new App({
   postCliContext: {

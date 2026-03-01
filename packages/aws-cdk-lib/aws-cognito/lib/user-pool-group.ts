@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IRoleRef } from '../../aws-iam';
-import { IResource, Resource, Token } from '../../core';
+import type { IRoleRef } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.

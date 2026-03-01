@@ -11,11 +11,13 @@
  *  and limitations under the License.
  */
 
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 // Internal libs
-import { ManagedMemoryStrategy, ManagedStrategyProps } from './strategies/managed-strategy';
-import { SelfManagedMemoryStrategy, SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import type { ManagedStrategyProps } from './strategies/managed-strategy';
+import { ManagedMemoryStrategy } from './strategies/managed-strategy';
+import type { SelfManagedStrategyProps } from './strategies/self-managed-strategy';
+import { SelfManagedMemoryStrategy } from './strategies/self-managed-strategy';
 
 /******************************************************************************
  *                              CONSTANTS

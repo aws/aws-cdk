@@ -3,7 +3,7 @@ import { RegionInfo } from '../../../region-info';
 import { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
 import { UnscopedValidationError } from '../errors';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 
 /**
  * Make sure a CfnMapping exists in the given stack with the lookup values for the given fact
