@@ -34,6 +34,7 @@ import {
   CfnResource,
   CfnResourceProps,
   ConstructSelector,
+  CrossStackReferenceType,
   CustomResource,
   CustomResourceProvider,
   CustomResourceProviderRuntime,
@@ -54,6 +55,7 @@ import {
   SizeRoundingBehavior,
   Stack,
   StackProps,
+  StackReferences,
   Stage,
   TagManager,
   TagType,
@@ -77,9 +79,11 @@ declare const constructC: Construct;
 declare const functionProps: lambda.SingletonFunctionProps;
 declare const isCompleteHandler: lambda.Function;
 declare const myBucket: s3.IBucket;
+declare const myDashboard: Construct;
 declare const myFunction: lambda.IFunction;
 declare const myTopic: sns.ITopic;
 declare const onEventHandler: lambda.Function;
+declare const producerStack: Stack;
 declare const resourceProps: CfnResourceProps;
 
 declare class MyStack extends Stack {}

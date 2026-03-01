@@ -1,5 +1,4 @@
-import { App, CfnOutput, RemovalPolicy, Stack, CrossStackReferenceType, StackReferences } from 'aws-cdk-lib/core';
-import type { StackProps } from 'aws-cdk-lib/core';
+import { App, CfnOutput, RemovalPolicy, Stack, CrossStackReferenceType, StackReferences, type StackProps } from 'aws-cdk-lib/core';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
