@@ -34,6 +34,96 @@ export interface WindowsUserDataOptions {
 }
 
 /**
+ * The frequency at which EC2Launch v2 scripts should run.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2Frequency {
+  /**
+   * The script runs every time the instance starts.
+   */
+  ALWAYS = 'always',
+
+  /**
+   * The script runs only once, on the first boot.
+   */
+  ONCE = 'once',
+}
+
+/**
+ * The type of script to run in EC2Launch v2.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2ScriptType {
+  /**
+   * PowerShell script.
+   */
+  POWERSHELL = 'powershell',
+
+  /**
+   * Batch script.
+   */
+  BATCH = 'batch',
+}
+
+/**
+ * The user context to run EC2Launch v2 scripts as.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export enum Ec2LaunchV2RunAs {
+  /**
+   * Run as the SYSTEM account (highest privileges).
+   */
+  LOCAL_SYSTEM = 'localSystem',
+
+  /**
+   * Run as the Administrator account.
+   */
+  ADMIN = 'admin',
+}
+
+/**
+ * Options when constructing UserData for Windows with EC2Launch v2
+ *
+ * EC2Launch v2 is the default launch agent for Windows Server 2016 and later AMIs.
+ * It uses a YAML-based configuration format that provides more flexibility than
+ * the legacy XML format used by EC2Launch v1.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+ */
+export interface WindowsV2UserDataOptions {
+  /**
+   * The version of the EC2Launch v2 user data schema.
+   *
+   * @default "1.1"
+   */
+  readonly version?: string;
+
+  /**
+   * The frequency at which the script should run.
+   *
+   * @default Ec2LaunchV2Frequency.ALWAYS
+   */
+  readonly frequency?: Ec2LaunchV2Frequency;
+
+  /**
+   * The type of script to run.
+   *
+   * @default Ec2LaunchV2ScriptType.POWERSHELL
+   */
+  readonly scriptType?: Ec2LaunchV2ScriptType;
+
+  /**
+   * The user context to run the script as.
+   *
+   * @default Ec2LaunchV2RunAs.LOCAL_SYSTEM
+   */
+  readonly runAs?: Ec2LaunchV2RunAs;
+}
+
+/**
  * Options when downloading files from S3
  */
 export interface S3DownloadOptions {
@@ -99,6 +189,22 @@ export abstract class UserData {
    */
   public static forWindows(options: WindowsUserDataOptions = {}): UserData {
     return new WindowsUserData(options);
+  }
+
+  /**
+   * Create a userdata object for Windows hosts with EC2Launch v2 format.
+   *
+   * EC2Launch v2 is the default launch agent for Windows Server 2016 and later AMIs.
+   * It uses a YAML-based configuration format that provides more flexibility than
+   * the legacy XML format used by EC2Launch v1.
+   *
+   * The generated user data will use the `executeScript` task to run PowerShell
+   * or batch scripts.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-overview.html
+   */
+  public static forWindowsV2(options: WindowsV2UserDataOptions = {}): UserData {
+    return new WindowsV2UserData(options);
   }
 
   /**
@@ -263,6 +369,89 @@ class WindowsUserData extends UserData {
       return ['trap {', '$success=($PSItem.Exception.Message -eq "Success")', ...this.onExitLines, 'break', '}'];
     }
     return [];
+  }
+}
+
+/**
+ * Windows Instance User Data for EC2Launch v2
+ *
+ * Generates YAML-formatted user data compatible with EC2Launch v2.
+ */
+class WindowsV2UserData extends UserData {
+  private readonly lines: string[] = [];
+  private readonly version: string;
+  private readonly frequency: Ec2LaunchV2Frequency;
+  private readonly scriptType: Ec2LaunchV2ScriptType;
+  private readonly runAs: Ec2LaunchV2RunAs;
+
+  constructor(props: WindowsV2UserDataOptions = {}) {
+    super();
+    this.version = props.version ?? '1.1';
+    this.frequency = props.frequency ?? Ec2LaunchV2Frequency.ALWAYS;
+    this.scriptType = props.scriptType ?? Ec2LaunchV2ScriptType.POWERSHELL;
+    this.runAs = props.runAs ?? Ec2LaunchV2RunAs.LOCAL_SYSTEM;
+  }
+
+  public addCommands(...commands: string[]) {
+    this.lines.push(...commands);
+  }
+
+  public addOnExitCommands(..._commands: string[]): void {
+    throw new UnscopedValidationError('WindowsV2UserData (EC2Launch v2) does not support addOnExitCommands. The EC2Launch v2 YAML format does not have a direct equivalent to the PowerShell trap mechanism. Consider using addCommands to add cleanup logic at the end of your script.');
+  }
+
+  public render(): string {
+    // Build the YAML structure for EC2Launch v2
+    // Using manual string building to ensure proper YAML formatting
+    const yamlLines: string[] = [];
+
+    yamlLines.push(`version: "${this.version}"`);
+    yamlLines.push('tasks:');
+    yamlLines.push('- task: executeScript');
+    yamlLines.push('  inputs:');
+    yamlLines.push(`  - frequency: ${this.frequency}`);
+    yamlLines.push(`    type: ${this.scriptType}`);
+    yamlLines.push(`    runAs: ${this.runAs}`);
+    yamlLines.push('    content: |-');
+
+    // Add each command line with proper indentation (6 spaces for content block)
+    for (const line of this.lines) {
+      yamlLines.push(`      ${line}`);
+    }
+
+    return yamlLines.join('\n');
+  }
+
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    const localPath = (params.localFile && params.localFile.length !== 0) ? params.localFile : `C:/temp/${params.bucketKey}`;
+    const regionParam = params.region !== undefined ? ` -Region ${params.region}` : '';
+
+    // Use PowerShell commands to download from S3
+    this.addCommands(
+      `New-Item -ItemType Directory -Force -Path (Split-Path -Path '${localPath}')`,
+      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -Key '${params.bucketKey}' -File '${localPath}' -ErrorAction Stop${regionParam}`,
+    );
+
+    return localPath;
+  }
+
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
+    this.addCommands(
+      `& '${params.filePath}' ${params.arguments ?? ''}`.trim(),
+      `if (-not $?) { throw 'Failed to execute the file "${params.filePath}"' }`,
+    );
+  }
+
+  public addSignalOnExitCommand(resource: Resource): void {
+    const stack = Stack.of(resource);
+    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
+
+    // Add cfn-signal command at the end of the script
+    // Note: In EC2Launch v2, we can't use trap, so we add the signal at the end
+    // and rely on the script completing successfully
+    this.addCommands(
+      `cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success true`,
+    );
   }
 }
 
