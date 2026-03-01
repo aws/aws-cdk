@@ -231,7 +231,7 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925"
       }
      }
     },
@@ -292,20 +292,6 @@
      "EndpointType": "Tagged",
      "Version": "v1"
     }
-   }
-  },
-  "V2EndpointFFAF1748": {
-   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
-   "Properties": {
-    "AgentRuntimeId": {
-     "Fn::GetAtt": [
-      "TestRuntime65042BB5",
-      "AgentRuntimeId"
-     ]
-    },
-    "AgentRuntimeVersion": "2",
-    "Description": "Version 2 endpoint",
-    "Name": "v2_endpoint"
    }
   },
   "TestInvokerFunctionServiceRole08233DAF": {
@@ -458,15 +444,6 @@
    "Value": {
     "Fn::GetAtt": [
      "TaggedEndpointB1B1CDE4",
-     "Id"
-    ]
-   }
-  },
-  "V2EndpointId": {
-   "Description": "Version 2 endpoint ID",
-   "Value": {
-    "Fn::GetAtt": [
-     "V2EndpointFFAF1748",
      "Id"
     ]
    }
