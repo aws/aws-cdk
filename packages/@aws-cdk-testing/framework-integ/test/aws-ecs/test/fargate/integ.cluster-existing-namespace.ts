@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
