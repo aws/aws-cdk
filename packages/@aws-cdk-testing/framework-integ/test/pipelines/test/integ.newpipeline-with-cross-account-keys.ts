@@ -1,6 +1,7 @@
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { StackProps, StageProps } from 'aws-cdk-lib';
-import { App, Stack, Stage } from 'aws-cdk-lib';
+import { App, Stack, Stage, RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 
@@ -10,11 +11,16 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       crossAccountKeys: true,
       enableKeyRotation: true,
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('tkglaser/cdk-pipelines-demo', 'main'),
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
         commands: [
           'npm ci',
           'npm run build',

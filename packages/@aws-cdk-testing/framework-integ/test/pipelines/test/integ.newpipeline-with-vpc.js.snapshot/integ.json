@@ -1,17 +1,13 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.newpipeline-with-vpc": {
+    "NewPipelineWithVpcTest/DefaultTest": {
       "stacks": [
         "PipelineStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "NewPipelineWithVpcTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NewPipelineWithVpcTestDefaultTestDeployAssert62A22156"
     }
   },
-  "synthContext": {
-    "@aws-cdk/core:newStyleStackSynthesis": "true"
-  },
-  "enableLookups": false,
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1033.0"
 }
