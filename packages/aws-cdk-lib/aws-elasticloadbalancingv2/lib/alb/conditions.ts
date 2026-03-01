@@ -186,7 +186,7 @@ class RegexPathPatternListenerCondition extends ListenerCondition {
     return {
       field: 'path-pattern',
       pathPatternConfig: {
-        regexValues: this.values,
+        RegexValues: this.values,
       },
     };
   }
