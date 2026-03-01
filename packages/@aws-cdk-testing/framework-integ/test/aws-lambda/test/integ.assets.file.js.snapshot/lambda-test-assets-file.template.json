@@ -38,15 +38,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
+     "S3Key": "d48aac32b23adb22c66a00d01ba33fd5e07e2a4989d4bd1a9518ff8a5a8f5794.zip"
     },
+    "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaServiceRole4539ECB6",
       "Arn"
      ]
     },
-    "Handler": "index.main",
     "Runtime": "python3.9"
    },
    "DependsOn": [
