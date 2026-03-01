@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
 import { Annotations, ValidationError } from '../../../core';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import { ScheduledTaskBase } from '../base/scheduled-task-base';
 
 /**
  * The properties for the ScheduledFargateTask task.

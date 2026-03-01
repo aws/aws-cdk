@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnDistribution } from './cloudfront.generated';
-import { Duration, Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import type { Construct } from 'constructs';
+import type { CfnDistribution } from './cloudfront.generated';
+import type { Duration } from '../../core';
+import { Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
 
 /**
  * The selection criteria for the origin group.

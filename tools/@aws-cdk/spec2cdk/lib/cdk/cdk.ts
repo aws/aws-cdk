@@ -1,4 +1,5 @@
-import { $E, $T, expr, Expression, ExternalModule, IScope, ThingSymbol, Type } from '@cdklabs/typewriter';
+import type { Expression, IScope } from '@cdklabs/typewriter';
+import { $E, $T, expr, ExternalModule, ThingSymbol, Type } from '@cdklabs/typewriter';
 
 export class CdkCore extends ExternalModule {
   public readonly helpers = new CdkInternalHelpers(this);
@@ -56,6 +57,8 @@ export class CdkCore extends ExternalModule {
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
 
+  public readonly Mixin = Type.fromName(this, 'Mixin');
+
   constructor(fqn: string) {
     super(fqn);
   }
@@ -89,8 +92,10 @@ export class Interfaces extends ExternalModule {
   public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
 
   public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
+  public readonly IKeyRef = Type.fromName(this, 'aws_kms.IKeyRef');
   public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
   public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
+  public readonly IDeliveryDestinationRef = Type.fromName(this, 'aws_logs.IDeliveryDestinationRef');
 }
 
 export class CdkInternalHelpers extends ExternalModule {
@@ -116,6 +121,7 @@ export class CdkErrors extends ExternalModule {
 export class Constructs extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
   public readonly IConstruct = Type.fromName(this, 'IConstruct');
+  public readonly IMixin = Type.fromName(this, 'IMixin');
 
   constructor() {
     super('constructs');

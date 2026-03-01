@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { LinkedQueue } from './linked-queue';
 
 /**

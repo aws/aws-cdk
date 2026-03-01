@@ -1,13 +1,15 @@
-import { CfnTable } from 'aws-cdk-lib/aws-glue';
+import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
-import { DataFormat } from './data-format';
-import { IDatabase } from './database';
-import { Column } from './schema';
-import { StorageParameter } from './storage-parameter';
+import type { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
+import type { Construct } from 'constructs';
+import type { DataFormat } from './data-format';
+import type { IDatabase } from './database';
+import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
+import type { Column } from './schema';
+import type { StorageParameter } from './storage-parameter';
 
 /**
  * Properties of a Partition Index.
@@ -157,6 +159,18 @@ export interface TableBaseProps {
    * @default - The parameter is not defined
    */
   readonly parameters?: { [key: string]: string };
+
+  /**
+   * Partition projection configuration for this table.
+   *
+   * Partition projection allows Athena to automatically add new partitions
+   * without requiring `ALTER TABLE ADD PARTITION` statements.
+   *
+   * @see https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html
+   *
+   * @default - No partition projection
+   */
+  readonly partitionProjection?: PartitionProjection;
 }
 
 /**
@@ -224,6 +238,11 @@ export abstract class TableBase extends Resource implements ITable {
   public readonly storageParameters?: StorageParameter[];
 
   /**
+   * This table's partition projection configuration if enabled.
+   */
+  public readonly partitionProjection?: PartitionProjection;
+
+  /**
    * The tables' properties associated with the table.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
    */
@@ -251,9 +270,12 @@ export abstract class TableBase extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
     this.storageParameters = props.storageParameters;
+    this.partitionProjection = props.partitionProjection;
     this.parameters = props.parameters ?? {};
 
     this.compressed = props.compressed ?? false;
+
+    this.validateAndGeneratePartitionProjection();
   }
 
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
@@ -325,6 +347,65 @@ export abstract class TableBase extends Resource implements ITable {
     if (!index.keyNames.every(k => keyNames.includes(k))) {
       throw new ValidationError(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`, this);
     }
+  }
+
+  /**
+   * Validate partition projection configuration and merge generated parameters into this.parameters.
+   */
+  private validateAndGeneratePartitionProjection(): void {
+    if (!this.partitionProjection) {
+      return;
+    }
+
+    // Validate that partition keys exist
+    if (!this.partitionKeys || this.partitionKeys.length === 0) {
+      throw new ValidationError(
+        'The table must have partition keys to use partition projection',
+        this,
+      );
+    }
+
+    const partitionKeyNames = this.partitionKeys.map(pk => pk.name);
+
+    // Validate each partition projection configuration
+    for (const [columnName, config] of Object.entries(this.partitionProjection)) {
+      // Validate that column is a partition key
+      if (!partitionKeyNames.includes(columnName)) {
+        throw new ValidationError(
+          `Partition projection column "${columnName}" must be a partition key. ` +
+          `Partition keys are: ${partitionKeyNames.join(', ')}`,
+          this,
+        );
+      }
+
+      // Generate CloudFormation parameters
+      const generatedParams = generatePartitionProjectionParameters(columnName, config);
+
+      // Check for conflicts with manually specified parameters
+      const conflictingKeys = Object.keys(generatedParams).filter(key => key in this.parameters);
+      if (conflictingKeys.length > 0) {
+        throw new ValidationError(
+          `Partition projection parameters conflict with manually specified parameters: ${conflictingKeys.join(', ')}. ` +
+          'Use the partitionProjection property instead of manually specifying projection parameters.',
+          this,
+        );
+      }
+
+      // Merge into this.parameters
+      Object.assign(this.parameters, generatedParams);
+    }
+
+    // Check for conflict with projection.enabled
+    if ('projection.enabled' in this.parameters) {
+      throw new ValidationError(
+        'Parameter "projection.enabled" conflicts with partitionProjection configuration. ' +
+        'Use the partitionProjection property instead of manually specifying projection.enabled.',
+        this,
+      );
+    }
+
+    // Enable partition projection globally
+    this.parameters['projection.enabled'] = 'true';
   }
 
   /**

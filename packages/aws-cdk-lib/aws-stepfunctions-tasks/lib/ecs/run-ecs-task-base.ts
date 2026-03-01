@@ -1,6 +1,6 @@
-import { ContainerOverride } from './run-ecs-task-base-types';
+import type { ContainerOverride } from './run-ecs-task-base-types';
 import * as ec2 from '../../../aws-ec2';
-import * as ecs from '../../../aws-ecs';
+import type * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';

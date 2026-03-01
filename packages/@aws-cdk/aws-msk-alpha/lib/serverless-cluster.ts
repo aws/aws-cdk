@@ -4,8 +4,9 @@ import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
-import { ClusterBase, ICluster } from '.';
+import type * as constructs from 'constructs';
+import type { ICluster } from '.';
+import { ClusterBase } from '.';
 
 /**
  *  Properties for a MSK Serverless Cluster

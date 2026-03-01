@@ -4,11 +4,12 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../cx-api';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1, Resource } from '../lib';
+import type { IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, PolicyValidationPluginReportBeta1 } from '../lib';
+import { App, Stack, Stage, Resource } from '../lib';
 import { JSII_RUNTIME_SYMBOL } from '../lib/constants';
 import { MetadataType } from '../lib/metadata-type';
 import { formatAnalytics, parseAnalytics } from '../lib/private/metadata-resource';
-import { ConstructInfo } from '../lib/private/runtime-info';
+import type { ConstructInfo } from '../lib/private/runtime-info';
 import { constructAnalyticsFromScope } from '../lib/private/stack-metadata';
 
 describe('MetadataResource', () => {

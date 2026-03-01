@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs/lib/construct';
-import { Mixin } from '../../core';
+import { Mixin } from 'aws-cdk-lib/core';
 import type { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
 import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
@@ -20,17 +20,15 @@ export class BucketPolicyStatementsMixin extends Mixin {
     return CfnBucketPolicy.isCfnBucketPolicy(construct);
   }
 
-  public applyTo(policy: IConstruct): IConstruct {
+  public applyTo(policy: IConstruct): void {
     if (!this.supports(policy)) {
-      return policy;
+      return;
     }
 
     const policyDocument = this.getPolicyDocument(policy);
     policyDocument.addStatements(...this.statements);
 
     policy.policyDocument = policyDocument;
-
-    return policy;
   }
 
   /**

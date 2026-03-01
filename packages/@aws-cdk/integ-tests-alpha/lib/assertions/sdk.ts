@@ -1,10 +1,12 @@
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import type { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput, AspectPriority } from 'aws-cdk-lib/core';
-import { Construct, IConstruct } from 'constructs';
-import { ApiCallBase, IApiCall } from './api-call-base';
-import { ExpectedResult } from './common';
+import type { Construct, IConstruct } from 'constructs';
+import type { IApiCall } from './api-call-base';
+import { ApiCallBase } from './api-call-base';
+import type { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
-import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
+import type { WaiterStateMachineOptions } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
 
 /**
  * Options to perform an AWS JavaScript V2 API call

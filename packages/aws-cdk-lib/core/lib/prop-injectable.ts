@@ -1,4 +1,4 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { AssumptionError } from './errors';
 import { applyInjectors } from './prop-injectors-helpers';
 

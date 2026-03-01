@@ -1,5 +1,5 @@
 import { Step } from './step';
-import { ITopic } from '../../../aws-sns';
+import type { ITopic } from '../../../aws-sns';
 /**
  * Construction properties for a `ManualApprovalStep`
  */

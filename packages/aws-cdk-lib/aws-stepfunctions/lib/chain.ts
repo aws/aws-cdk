@@ -1,7 +1,8 @@
 import { UnscopedValidationError } from '../../core';
-import { Parallel, ParallelProps } from './states/parallel';
-import { State } from './states/state';
-import { IChainable, INextable } from './types';
+import type { ParallelProps } from './states/parallel';
+import { Parallel } from './states/parallel';
+import type { State } from './states/state';
+import type { IChainable, INextable } from './types';
 
 /**
  * A collection of states to chain onto

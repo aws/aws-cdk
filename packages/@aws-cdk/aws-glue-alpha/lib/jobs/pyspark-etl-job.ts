@@ -2,10 +2,11 @@ import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Code } from '../code';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Python Spark ETL job

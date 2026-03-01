@@ -1,6 +1,6 @@
-import { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
-import { IAgentAlias } from './agent-alias';
+import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import type { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
+import type { IAgentAlias } from './agent-alias';
 import { ValidationError } from './validation-helpers';
 
 /**

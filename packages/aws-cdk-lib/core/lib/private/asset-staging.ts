@@ -1,8 +1,9 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
-import { BundlingOptions } from '../bundling';
+import type { BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
 
 /**

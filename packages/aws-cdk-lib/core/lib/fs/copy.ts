@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { IgnoreStrategy } from './ignore';
-import { CopyOptions, SymlinkFollowMode } from './options';
+import type { CopyOptions } from './options';
+import { SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 import { UnscopedValidationError } from '../errors';
 

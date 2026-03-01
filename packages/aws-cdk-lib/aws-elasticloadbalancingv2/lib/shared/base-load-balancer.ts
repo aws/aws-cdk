@@ -1,15 +1,17 @@
-import { Construct, IDependable } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { IpAddressType } from './enums';
-import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
+import type { Attributes } from './util';
+import { ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import type { IResource } from '../../../core';
+import { CfnResource, ContextProvider, Lazy, Resource, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 

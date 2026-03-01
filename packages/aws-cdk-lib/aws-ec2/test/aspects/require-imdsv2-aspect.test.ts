@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as cdk from '../../../core';
+import type { CfnLaunchTemplate } from '../../lib';
 import {
-  CfnLaunchTemplate,
   Instance,
   InstanceRequireImdsv2Aspect,
   InstanceType,

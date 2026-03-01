@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { $E, Expression, IScope, ThingSymbol, expr } from '@cdklabs/typewriter';
+import type { Expression, IScope } from '@cdklabs/typewriter';
+import { $E, ThingSymbol, expr } from '@cdklabs/typewriter';
 
 /**
  * A class representing an expression proxy which builds a JavaScript object that
