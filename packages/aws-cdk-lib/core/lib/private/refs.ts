@@ -14,7 +14,6 @@ import { CfnResource } from '../cfn-resource';
 import { CrossStackReferenceType, StackReferences } from '../cross-stack-references';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable } from '../resolvable';
@@ -525,30 +524,20 @@ function createMixedImportValue(
  * Create the CFN Export side only (without generating the
  * ImportValue consumer side). Used in MIXED mode to keep the
  * export alive during migration.
+ *
+ * Delegates to the same exportValue()/exportStringListValue()
+ * APIs that createImportValue() uses, guaranteeing identical
+ * CfnOutput and export-name generation. The returned ImportValue
+ * token is intentionally discarded — only the export side-effect
+ * (the CfnOutput) is needed.
  */
 function createCfnExportOnly(reference: Reference): void {
   const exportingStack = Stack.of(reference.target);
 
-  // Re-use the same export logic that exportValue() uses
-  const exportable = getExportable(exportingStack, reference);
-  const resolved = exportingStack.resolve(exportable);
-  const id = 'Output' + JSON.stringify(resolved);
-
-  const exportsScope = getOrCreateExportsScope(exportingStack);
-  const exportName = generateCfnExportName(exportsScope, id);
-
-  if (!exportsScope.node.tryFindChild(id)) {
-    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
-      new CfnOutput(exportsScope, id, {
-        value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable)),
-        exportName,
-      });
-    } else {
-      new CfnOutput(exportsScope, id, {
-        value: Token.asString(exportable),
-        exportName,
-      });
-    }
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    exportingStack.exportStringListValue(reference);
+  } else {
+    exportingStack.exportValue(reference);
   }
 }
 
@@ -638,38 +627,4 @@ function getOrCreateSsmExportsScope(stack: Stack): Construct {
   return scope;
 }
 
-/**
- * Get or create the Exports scoping construct (for CFN Exports).
- * Mirrors the getCreateExportsScope function in stack.ts.
- */
-function getOrCreateExportsScope(stack: Stack): Construct {
-  const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
-  if (stackExports === undefined) {
-    stackExports = new Construct(stack, exportsName);
-  }
-  return stackExports;
-}
-
-/**
- * Generate a CFN export name. Used in MIXED mode to create the
- * same export name that the default export path would create.
- *
- * Must match the logic in stack.ts generateExportName() exactly,
- * including the STACK_RELATIVE_EXPORTS_CONTEXT feature flag handling.
- */
-function generateCfnExportName(stackExports: Construct, id: string): string {
-  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
-  const stack = Stack.of(stackExports);
-  const components = [
-    ...stackExports.node.scopes
-      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
-      .map(c => c.node.id),
-    id,
-  ];
-  const prefix = stack.stackName ? stack.stackName + ':' : '';
-  const localPart = makeUniqueId(components);
-  const maxLength = 255;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
-}
 
