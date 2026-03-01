@@ -46,7 +46,7 @@ describe('construct', () => {
     new Construct(root, 'in.Valid' );
   });
 
-  test('if construct id contains path seperators, they will be replaced by double-dash', () => {
+  test('if construct id contains path separators, they will be replaced by double-dash', () => {
     const root = new Root();
     const c = new Construct(root, 'Boom/Boom/Bam');
     expect(c.node.id).toEqual('Boom--Boom--Bam');
