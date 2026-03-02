@@ -89,14 +89,16 @@ export enum SecurityPolicy {
  * The endpoint access mode for the domain name.
  *
  * When using enhanced security policies (those starting with `SecurityPolicy_`),
- * you must set the endpoint access mode to `STRICT`.
+ * you must set the endpoint access mode to either `STRICT` or `BASIC`.
+ * Use `STRICT` for production workloads requiring the highest security.
+ * Use `BASIC` for migration scenarios or certain application architectures.
  *
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
  */
 export enum EndpointAccessMode {
   /**
-   * Strict mode - required for enhanced security policies.
-   * Only accepts connections from clients using the specified security policy.
+   * Strict mode - only accepts connections from clients using the specified security policy.
+   * Recommended for production workloads.
    */
   STRICT = 'STRICT',
 
