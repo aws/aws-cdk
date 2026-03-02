@@ -425,7 +425,9 @@ class CfnSynthesisError extends Error {
  * Ensures that a property is either undefined or a string.
  * Used in spec2cdk to have better error messages in other languages.
  */
-export function ensureStringOrUndefined(value: any, propName: string, possibleType: string): string | undefined {
+export function ensureStringOrUndefined(value: {}, propName: string, possibleType: string): string;
+export function ensureStringOrUndefined(value: {} | undefined, propName: string, possibleType: string): string | undefined;
+export function ensureStringOrUndefined(value: {} | undefined, propName: string, possibleType: string): string | undefined {
   if (value !== undefined && typeof value !== 'string') {
     throw new TypeError(`Property ${propName} should be one of ${possibleType}`);
   }
@@ -450,4 +452,23 @@ export function mapArrayInPlace<T, U extends T>(arr: T[] | undefined, mapper: (i
     }
   });
   return arr as unknown as U[];
+}
+
+/**
+ * Extracts a property from a ref object, throwing if the reference exists but the property is undefined.
+ *
+ * @param ref - The ref object to extract from, or undefined.
+ * @param valueKey - The property key to extract from the ref.
+ * @returns The value of the property, or undefined if ref is null.
+ */
+export function getRefProperty<T, K extends keyof T>(
+  ref: T | undefined,
+  valueKey: K,
+): T[K] | undefined {
+  if (ref == null) return undefined;
+  const value = ref[valueKey];
+  if (value === undefined) {
+    throw new TypeError(`Expected '${String(valueKey)}' to be defined in reference interface`);
+  }
+  return value;
 }
