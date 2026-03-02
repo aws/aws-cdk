@@ -1,15 +1,30 @@
 {
-  "version": "20.0.0",
+  "version": "52.0.0",
   "files": {
-    "7b63709c01331638692fcb680dfd5ba0a469a726e859494e688f765167ada0af": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-cdk-rds-instance-s3-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "e58a0a2572beaf324de6ab7521c7680e85b085234aaeeea39fb0f9b18460721f": {
+      "displayName": "aws-cdk-rds-instance-s3-integ Template",
       "source": {
         "path": "aws-cdk-rds-instance-s3-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-1b80587a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7b63709c01331638692fcb680dfd5ba0a469a726e859494e688f765167ada0af.json",
+          "objectKey": "e58a0a2572beaf324de6ab7521c7680e85b085234aaeeea39fb0f9b18460721f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -4,7 +4,6 @@ exports[`L1 property mixin for a standard-issue resource 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
-import * as core from "../../core";
 import * as mixins from "../../mixins";
 import * as helpers from "../../util/property-mixins";
 import * as service from "aws-cdk-lib/aws-some";
@@ -15,7 +14,7 @@ import * as service from "aws-cdk-lib/aws-some";
  * @stability external
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-some-resource.html
  */
-export class CfnThingPropsMixin extends core.Mixin implements core.IMixin {
+export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
   protected static readonly CFN_PROPERTY_KEYS: Array<string> = ["config", "externalId", "id"];
 
   protected readonly props: CfnThingMixinProps;

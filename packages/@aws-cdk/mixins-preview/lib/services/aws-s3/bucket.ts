@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
-import type { IMixin } from '../../core';
+import type { IMixin } from 'constructs';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';

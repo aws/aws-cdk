@@ -68,6 +68,7 @@ export interface ConnectionsProps {
  * This object can manage one or more security groups.
  */
 export class Connections implements IConnectable {
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly connections: Connections;
 
   /**

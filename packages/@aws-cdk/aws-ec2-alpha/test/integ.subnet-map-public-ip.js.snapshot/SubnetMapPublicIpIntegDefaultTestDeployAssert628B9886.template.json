@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf": {
+  "AwsApiCallec2describeSubnets82ba1231c5110d5f3779f54eb05b61f3": {
    "Type": "Custom::DeployAssert@SdkCallec2describeSubnets",
    "Properties": {
     "ServiceToken": {
@@ -13,10 +13,10 @@
     "api": "describeSubnets",
     "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":true}}]}}",
     "parameters": {
-     "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PublicSubnetWithIp\"]}]"
+     "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PublicSubnetWithIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1746718724180"
+    "salt": "1770745613229"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -83,20 +83,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97484721f29e34bf38d7a459804dd2d2a8dea6f8c27d7531e215bf4274fbc895.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -108,7 +100,7 @@
     }
    }
   },
-  "AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489": {
+  "AwsApiCallec2describeSubnetsf5c53e84194df681353ec9c1c2d4a253": {
    "Type": "Custom::DeployAssert@SdkCallec2describeSubnets",
    "Properties": {
     "ServiceToken": {
@@ -121,15 +113,15 @@
     "api": "describeSubnets",
     "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":false}}]}}",
     "parameters": {
-     "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PublicSubnetWithoutIp\"]}]"
+     "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PublicSubnetWithoutIp\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1746718724182"
+    "salt": "1770745613231"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf": {
+  "AwsApiCallec2describeSubnetscf22e3d5296fc1da00f47e05eda76f52": {
    "Type": "Custom::DeployAssert@SdkCallec2describeSubnets",
    "Properties": {
     "ServiceToken": {
@@ -142,168 +134,38 @@
     "api": "describeSubnets",
     "expected": "{\"$ObjectLike\":{\"Subnets\":[{\"$ObjectLike\":{\"MapPublicIpOnLaunch\":false}}]}}",
     "parameters": {
-     "Filters": "[{\"Name\":\"tag:Name\",\"Values\":[\"PrivateSubnetDefault\"]}]"
+     "Filters": "[{\"Name\":\"tag:aws-cdk:subnet-name\",\"Values\":[\"PrivateSubnetDefault\"]}]"
     },
     "flattenResponse": "false",
-    "salt": "1746718724182"
+    "salt": "1770745613231"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf": {
+  "AssertionResultsAwsApiCallec2describeSubnets82ba1231c5110d5f3779f54eb05b61f3": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallec2describeSubnets98d4c9f08d451e5a2fb3b4b512d20ebf",
+     "AwsApiCallec2describeSubnets82ba1231c5110d5f3779f54eb05b61f3",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489": {
+  "AssertionResultsAwsApiCallec2describeSubnetsf5c53e84194df681353ec9c1c2d4a253": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallec2describeSubnetse859ca6b8064fd26ab61f9f3b6f39489",
+     "AwsApiCallec2describeSubnetsf5c53e84194df681353ec9c1c2d4a253",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf": {
+  "AssertionResultsAwsApiCallec2describeSubnetscf22e3d5296fc1da00f47e05eda76f52": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallec2describeSubnetsc8073878e870ab1b106b2c25c7cc40cf",
+     "AwsApiCallec2describeSubnetscf22e3d5296fc1da00f47e05eda76f52",
      "assertion"
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs20.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs20.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs20.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs20.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs20.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs20.x"
-   },
-   "il-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-central-1": {
-    "value": "nodejs20.x"
-   },
-   "me-south-1": {
-    "value": "nodejs20.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs20.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-east-2": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs20.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs20.x"
-   },
-   "us-west-2": {
-    "value": "nodejs20.x"
    }
   }
  },

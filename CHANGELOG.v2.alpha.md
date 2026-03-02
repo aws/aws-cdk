@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.241.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.240.0-alpha.0...v2.241.0-alpha.0) (2026-03-02)
+
+
+### Features
+
+* **mixins-preview:** add `recordFields` and `outputFormat` to Vended Logs Mixin ([#37042](https://github.com/aws/aws-cdk/issues/37042)) ([dd94c31](https://github.com/aws/aws-cdk/commit/dd94c312ae77cd9b51cbf6d544c85a2af6a7cdc8))
+* **mixins-preview:** cross account delivery destinations ([#36827](https://github.com/aws/aws-cdk/issues/36827)) ([a759eb6](https://github.com/aws/aws-cdk/commit/a759eb69d560ff039d09d62e91627bb267a664e5))
+
 ## [2.240.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.239.0-alpha.0...v2.240.0-alpha.0) (2026-02-23)
 
 ## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)

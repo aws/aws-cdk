@@ -130,12 +130,12 @@ be created by default. It will only be deployed when `kubectlProviderOptions`
 property is used.**
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
   }
 });
 ```
@@ -439,7 +439,7 @@ new eks.Cluster(this, 'HelloEKS', {
 To provide additional Helm chart values supported by `albController` in CDK, use the `additionalHelmChartValues` property. For example, the following code snippet shows how to set the `enableWafV2` flag:
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
@@ -541,12 +541,12 @@ To create a `Kubectl Handler`, use `kubectlProviderOptions` when creating the cl
 `kubectlLayer` is the only required property in `kubectlProviderOptions`.
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
   }
 });
 ```
@@ -575,12 +575,12 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
     environment: {
         'http_proxy': 'http://proxy.myproxy.com',
     },
@@ -601,12 +601,12 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
   },
 });
 ```
@@ -616,11 +616,11 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `memory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'MyCluster', {
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
   version: eks.KubernetesVersion.V1_34,
@@ -703,7 +703,7 @@ When you create an Amazon EKS cluster, you can configure it to leverage the [EKS
 Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'Cluster', {
   version: eks.KubernetesVersion.V1_34,
@@ -756,7 +756,7 @@ eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 declare const vpc: ec2.Vpc;
 
 const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
@@ -772,7 +772,7 @@ const cluster = new eks.Cluster(this, 'Cluster', {
   mastersRole: clusterAdminRole,
   version: eks.KubernetesVersion.V1_34,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
 });
@@ -895,13 +895,13 @@ const provider2 = new eks.OidcProviderNative(this, 'Provider', {
   url: issuerUrl,
 });
 
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   clusterName: 'Cluster',
   openIdConnectProvider: provider,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
   }});
 	
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');

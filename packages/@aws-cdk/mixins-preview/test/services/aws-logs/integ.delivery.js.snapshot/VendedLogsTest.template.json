@@ -394,7 +394,7 @@
     ]
    }
   },
-  "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F": {
+  "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Desterrorlogs94C9111F": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "S3",
@@ -404,7 +404,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-s3-error-logs-dest-VendedLogsTestBucket45E742478B007C41"
+    "Name": "cdk-s3-Desterror-logs-dest-VendedLogsTecket45E742478B007C41"
    },
    "DependsOn": [
     "DeliveryBucketPolicyB86375F3"
@@ -415,7 +415,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F",
+      "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Desterrorlogs94C9111F",
       "Arn"
      ]
     },
@@ -424,7 +424,7 @@
     }
    },
    "DependsOn": [
-    "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247DestE1C5E99F",
+    "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Desterrorlogs94C9111F",
     "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },
@@ -441,7 +441,7 @@
     }
    }
   },
-  "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E": {
+  "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Desterrorlogs787D0EAC": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -451,7 +451,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsTestgGroup50916FD9D42AD8BD"
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsTeroup50916FD9D42AD8BD"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -462,7 +462,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E",
+      "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Desterrorlogs787D0EAC",
       "Arn"
      ]
     },
@@ -471,7 +471,7 @@
     }
    },
    "DependsOn": [
-    "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Dest07565F4E",
+    "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Desterrorlogs787D0EAC",
     "CDKSourceERRORLOGSVendedLogsTest"
    ]
   },
@@ -512,7 +512,7 @@
     "PolicyName": "VendedLogsTestCdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9D42AD8BD"
    }
   },
-  "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA": {
+  "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDesterrorlogs18D360A3": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "FH",
@@ -522,7 +522,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-fh-error-logs-dest-VendedLogsTestStream5258C60DF56F6844"
+    "Name": "cdk-fh-Desterror-logs-dest-VendedLogsTeream5258C60DF56F6844"
    }
   },
   "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDeliveryF5EFF358": {
@@ -530,7 +530,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA",
+      "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDesterrorlogs18D360A3",
       "Arn"
      ]
     },
@@ -539,7 +539,7 @@
     }
    },
    "DependsOn": [
-    "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDestA14731EA",
+    "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDesterrorlogs18D360A3",
     "CDKSourceERRORLOGSVendedLogsTest"
    ]
   }

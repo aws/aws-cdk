@@ -1,0 +1,48 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2": {
+      "displayName": "ClusterSnapshoter/OnEventHandler/Code",
+      "source": {
+        "path": "asset.4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-1cdf18ca": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
+      "displayName": "ClusterSnapshoter/SnapshotProvider/framework-onEvent/Code",
+      "source": {
+        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9e5c0bf1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "022a03493c8a163ed02cba912952a9d5eab041d166baa75abbe51b8470e63ae0": {
+      "displayName": "aws-cdk-rds-cluster-snapshot Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-snapshot.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-be2d52c7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "022a03493c8a163ed02cba912952a9d5eab041d166baa75abbe51b8470e63ae0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

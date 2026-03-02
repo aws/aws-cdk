@@ -1,0 +1,20 @@
+{
+  "version": "50.0.0",
+  "files": {
+    "969dc7fa1631b3466b70e6126c630dccd80ebb2a482670a22cb683de59911863": {
+      "displayName": "aws-cdk-rds-cluster-data-api Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-data-api.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-65913d57": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "969dc7fa1631b3466b70e6126c630dccd80ebb2a482670a22cb683de59911863.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
