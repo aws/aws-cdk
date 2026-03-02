@@ -6,11 +6,11 @@ import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
 import type { Method } from '@cdklabs/typewriter';
 import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
-import { MIXINS_COMMON, MIXINS_CORE, MIXINS_UTILS } from './helpers';
+import { MIXINS_COMMON, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { BaseServiceSubmodule, relativeImportPath } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
+import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
 class MixinsServiceModule extends BaseServiceSubmodule {
   public readonly constructLibModule: ExternalModule;
@@ -57,7 +57,6 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
 
     CDK_CORE.import(module, 'cdk');
     CONSTRUCTS.import(module, 'constructs');
-    MIXINS_CORE.import(module, 'core', { fromLocation: relativeImportPath(filePath, '../core') });
     MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../../mixins' });
     MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../../util/property-mixins' });
     submodule.constructLibModule.import(module, 'service');
@@ -94,8 +93,8 @@ class L1PropsMixin extends ClassType {
     super(scope, {
       export: true,
       name: `${naming.classNameFromResource(resource)}PropsMixin`,
-      implements: [MIXINS_CORE.IMixin],
-      extends: MIXINS_CORE.Mixin,
+      implements: [CONSTRUCTS.IMixin],
+      extends: CDK_CORE.Mixin,
       docs: {
         summary: `L1 property mixin for ${resource.cloudFormationType}`,
         ...util.splitDocumentation(resource.documentation),
