@@ -1,5 +1,5 @@
 import type { IConstruct, Node } from 'constructs';
-import { CfnResource } from 'aws-cdk-lib/core';
+import { CfnResource } from '../cfn-resource';
 
 /**
  * Selects constructs from a construct tree.
