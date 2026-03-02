@@ -1188,6 +1188,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FORCE_DELETE",
     "RETAIN"
   ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
+  ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
     "APPLY",
