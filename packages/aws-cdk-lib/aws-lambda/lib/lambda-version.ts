@@ -221,6 +221,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return new Import(scope, id);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly version: string;
   public readonly lambda: IFunction;
   public readonly functionArn: string;

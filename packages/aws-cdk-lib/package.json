@@ -33,7 +33,7 @@
     "pre": [
       "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
-      "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
+      "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "post": [
@@ -118,14 +118,14 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-api": "^2.1.1",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
-    "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
     "@aws-cdk/cloud-assembly-schema": "^52.1.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
-    "minimatch": "^10.2.2",
+    "minimatch": "^10.2.3",
     "punycode": "^2.3.1",
     "semver": "^7.7.4",
     "table": "^6.9.0",
@@ -135,7 +135,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
-    "@aws-cdk/aws-service-spec": "^0.1.154",
+    "@aws-cdk/aws-service-spec": "^0.1.157",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -283,6 +283,7 @@
     "./aws-cognito": "./aws-cognito/index.js",
     "./aws-cognito-identitypool": "./aws-cognito-identitypool/index.js",
     "./aws-comprehend": "./aws-comprehend/index.js",
+    "./aws-computeoptimizer": "./aws-computeoptimizer/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
@@ -300,6 +301,7 @@
     "./aws-devicefarm": "./aws-devicefarm/index.js",
     "./aws-devopsagent": "./aws-devopsagent/index.js",
     "./aws-devopsguru": "./aws-devopsguru/index.js",
+    "./aws-directconnect": "./aws-directconnect/index.js",
     "./aws-directoryservice": "./aws-directoryservice/index.js",
     "./aws-dlm": "./aws-dlm/index.js",
     "./aws-dms": "./aws-dms/index.js",

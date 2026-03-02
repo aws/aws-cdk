@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "fcce87911abc072895ca35d1c4dd585ec6143db0751f4a125e61c9695abb622b": {
       "displayName": "aws-cdk-docdb-cluster-serverless Template",
