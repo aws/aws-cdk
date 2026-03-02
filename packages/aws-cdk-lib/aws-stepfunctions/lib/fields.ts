@@ -1,7 +1,7 @@
 import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, renderInExpression, jsonPathFromAny } from './private/json-path';
+import { findJsonataExpressions, JsonataToken, validateJsonataExpression } from './private/jsonata';
 import type { IResolvable } from '../../core';
 import { Token, JsonNull, UnscopedValidationError } from '../../core';
-import { findJsonataExpressions } from './private/jsonata';
 
 /**
  * Extract a field from the State Machine data or context
@@ -392,7 +392,87 @@ export class JsonPath {
     return new JsonPathToken(`States.JsonToString(${path})`).toString();
   }
 
-  private constructor() {}
+  private constructor() { }
+}
+
+/**
+ * Helper class for creating JSONata expressions that can be used
+ * where specific types are expected (number, string, list, object).
+ *
+ * Similar to JsonPath, this uses CDK's Token system to allow JSONata
+ * expressions to satisfy TypeScript type constraints.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/transforming-data.html
+ */
+export class Jsonata {
+  /**
+   * Use a JSONata expression that evaluates to a number.
+   *
+   * The expression should NOT include the {% %} delimiters - they will be added automatically.
+   *
+   * @example
+   * // Use a value from state input
+   * sfn.Jsonata.numberAt('$states.input.batchSize')
+   *
+   * // Use a JSONata function
+   * sfn.Jsonata.numberAt('$count($states.input.items)')
+   *
+   * @param expression - JSONata expression (without {% %} delimiters)
+   */
+  public static numberAt(expression: string): number {
+    validateJsonataExpression(expression);
+    return Token.asNumber(new JsonataToken(expression));
+  }
+
+  /**
+   * Use a JSONata expression that evaluates to a string.
+   *
+   * The expression should NOT include the {% %} delimiters - they will be added automatically.
+   *
+   * @example
+   * // Use a value from state input
+   * sfn.Jsonata.stringAt('$states.input.name')
+   *
+   * @param expression - JSONata expression (without {% %} delimiters)
+   */
+  public static stringAt(expression: string): string {
+    validateJsonataExpression(expression);
+    return new JsonataToken(expression).toString();
+  }
+
+  /**
+   * Use a JSONata expression that evaluates to a list.
+   *
+   * The expression should NOT include the {% %} delimiters - they will be added automatically.
+   *
+   * @example
+   * // Use a value from state input
+   * sfn.Jsonata.listAt('$states.input.items')
+   *
+   * @param expression - JSONata expression (without {% %} delimiters)
+   */
+  public static listAt(expression: string): string[] {
+    validateJsonataExpression(expression);
+    return Token.asList(new JsonataToken(expression));
+  }
+
+  /**
+   * Use a JSONata expression that evaluates to an object.
+   *
+   * The expression should NOT include the {% %} delimiters - they will be added automatically.
+   *
+   * @example
+   * // Use a value from state input
+   * sfn.Jsonata.objectAt('$states.input.data')
+   *
+   * @param expression - JSONata expression (without {% %} delimiters)
+   */
+  public static objectAt(expression: string): IResolvable {
+    validateJsonataExpression(expression);
+    return new JsonataToken(expression);
+  }
+
+  private constructor() { }
 }
 
 /**
@@ -444,7 +524,7 @@ export class Data {
     return !!jsonPathString(value);
   }
 
-  private constructor() {}
+  private constructor() { }
 }
 
 /**
@@ -492,7 +572,7 @@ export class Context {
     return new JsonPathToken('$$').toString();
   }
 
-  private constructor() {}
+  private constructor() { }
 }
 
 /**
@@ -529,7 +609,7 @@ export class FieldUtils {
     return hasJsonPathTaskToken || hasJsonataTaskToken;
   }
 
-  private constructor() {}
+  private constructor() { }
 }
 
 function validateJsonPath(path: string) {

@@ -590,3 +590,25 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
     },
   });
 });
+
+test('BatchSubmitJob.jsonata with Jsonata.numberAt for arraySize', () => {
+  // WHEN
+  const task = BatchSubmitJob.jsonata(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'myJob',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    arraySize: sfn.Jsonata.numberAt('$states.input.batchSize'),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toMatchObject({
+    Type: 'Task',
+    QueryLanguage: 'JSONata',
+    Resource: expect.any(Object),
+    Arguments: {
+      ArrayProperties: {
+        Size: '{% $states.input.batchSize %}',
+      },
+    },
+  });
+});
