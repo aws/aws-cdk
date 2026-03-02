@@ -103,7 +103,9 @@ export enum EndpointAccessMode {
   STRICT = 'STRICT',
 
   /**
-   * Basic mode - default for legacy security policies (TLS_1_0, TLS_1_2).
+   * Basic mode - the default endpoint access mode for enhanced security policies.
+   * Suitable for migration scenarios or certain application architectures.
+   * Note: legacy security policies (TLS_1_0, TLS_1_2) do not use this attribute.
    */
   BASIC = 'BASIC',
 }
