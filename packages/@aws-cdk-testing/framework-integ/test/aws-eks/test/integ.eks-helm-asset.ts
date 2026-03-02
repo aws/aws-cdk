@@ -5,14 +5,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import { getClusterVersionConfig, getLatestVersions } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
-  constructor(scope: App, id: string) {
+  constructor(scope: App, id: string, version?: eks.KubernetesVersion) {
     super(scope, id);
 
     // allow all account users to assume this role in order to admin the cluster
@@ -28,7 +28,7 @@ class EksClusterStack extends Stack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      ...getClusterVersionConfig(this),
+      ...getClusterVersionConfig(this, version),
       tags: {
         foo: 'bar',
       },
@@ -117,6 +117,15 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    // non-OCI chart from a standard HTTPS Helm repository
+    // https://kubernetes-sigs.github.io/headlamp/
+    this.cluster.addHelmChart('test-non-oci-chart', {
+      chart: 'headlamp',
+      release: 'headlamp',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
+      version: '0.39.0',
+    });
   }
 }
 
@@ -127,9 +136,12 @@ const app = new App({
   },
 });
 
-const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+const [previousVersion, latestVersion] = getLatestVersions(2);
+
+const stackLatest = new EksClusterStack(app, 'aws-cdk-eks-helm-test', eks.KubernetesVersion.of(latestVersion));
+const stackPrevious = new EksClusterStack(app, 'aws-cdk-eks-helm-test-prev', eks.KubernetesVersion.of(previousVersion));
 new integ.IntegTest(app, 'aws-cdk-eks-helm', {
-  testCases: [stack],
+  testCases: [stackLatest, stackPrevious],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
