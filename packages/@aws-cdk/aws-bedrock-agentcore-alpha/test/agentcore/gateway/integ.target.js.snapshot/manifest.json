@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "BedrockAgentCoreTargetIntegTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4459d2d00deaf3cee8644d5ef761597a2ac1f1abacab91152e5e0b257ba7aef7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e928fe87a1bb8ae74484dd6929529a48c5ebc53fc60b0e1237566cea4b9d77c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -277,12 +277,6 @@
             "data": "Lambda1LogGroup0E97D0DB"
           }
         ],
-        "/BedrockAgentCoreTargetIntegTest/Lambda1/BedrockAgentCoreInvoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Lambda1BedrockAgentCoreInvokeC2F4838A"
-          }
-        ],
         "/BedrockAgentCoreTargetIntegTest/LambdaTarget": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -364,12 +358,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Lambda2LogGroup4F31598F"
-          }
-        ],
-        "/BedrockAgentCoreTargetIntegTest/Lambda2/BedrockAgentCoreInvoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Lambda2BedrockAgentCoreInvoke0E55EE25"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/ConstructorTarget": [
@@ -987,5 +975,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1106.1"
 }
