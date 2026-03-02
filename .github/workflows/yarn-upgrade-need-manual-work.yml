@@ -78,6 +78,7 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Check Out
         uses: actions/checkout@v6
@@ -89,7 +90,8 @@ jobs:
           path: ${{ runner.temp }}
 
       - name: Apply patch
-        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
+        run:
+          '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply --binary ${{ runner.temp
           }}/upgrade.patch || echo "Empty patch. Skipping."'
 
       - name: Make Pull Request
@@ -102,7 +104,7 @@ jobs:
             chore: npm-check-updates && yarn upgrade
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
           # Pull Request details
-          title: 'chore: yarn upgrade dependencies requiring intervention'
+          title: "chore: yarn upgrade dependencies requiring intervention"
           body: |-
             Ran npm-check-updates and yarn upgrade for the following dependencies:
             ```

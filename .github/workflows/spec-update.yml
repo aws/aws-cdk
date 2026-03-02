@@ -122,6 +122,7 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Check Out
         uses: actions/checkout@v6
