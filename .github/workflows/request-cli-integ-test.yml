@@ -36,6 +36,7 @@ jobs:
     needs: cli-changes
     if: needs.cli-changes.outputs.any-changed-files == 'true' || contains(github.event.pull_request.labels.*.name, 'pr/request-cli-integ-tests')
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Checkout
         uses: actions/checkout@v6
