@@ -24,7 +24,6 @@ aws-codedeploy: AWS::CodeDeploy::DeploymentGroup: Id attribute removed.
 
 * bump minimatch to ^10.2.3 to resolve ReDoS vulnerabilities ([#37127](https://github.com/aws/aws-cdk/issues/37127)) ([c359329](https://github.com/aws/aws-cdk/commit/c3593297569f051c70b506a2e7f4035f8c8ee662)), closes [#37100](https://github.com/aws/aws-cdk/issues/37100)
 * **dynamodb:** fix SID for grants on multi-account global tables ([#37057](https://github.com/aws/aws-cdk/issues/37057)) ([98d5e82](https://github.com/aws/aws-cdk/commit/98d5e82079b574913a46f4c0588e98bd0181acbe))
-* **events:** correct docs on schema discovery and CMK encryption ([#37102](https://github.com/aws/aws-cdk/issues/37102)) ([71d8f24](https://github.com/aws/aws-cdk/commit/71d8f24deeefc610981ccea2266ab410c64a18ee))
 * **rds:** correct engine version deprecation tags and add missing versions ([#37080](https://github.com/aws/aws-cdk/issues/37080)) ([127b359](https://github.com/aws/aws-cdk/commit/127b35989a2a64f66de241022ecfe643179b9dd6)), closes [#37079](https://github.com/aws/aws-cdk/issues/37079) [#36937](https://github.com/aws/aws-cdk/issues/36937)
 
 ## [2.240.0](https://github.com/aws/aws-cdk/compare/v2.239.0...v2.240.0) (2026-02-23)
