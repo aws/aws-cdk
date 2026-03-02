@@ -626,5 +626,3 @@ function getOrCreateSsmExportsScope(stack: Stack): Construct {
   }
   return scope;
 }
-
-
