@@ -11,7 +11,7 @@ import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnResource } from '../cfn-resource';
-import { CrossStackReferenceType } from '../cross-stack-references';
+import { CrossStackReferenceType, StackReferences } from '../cross-stack-references';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
@@ -411,46 +411,6 @@ function generateUniqueId(stack: Stack, ref: Reference, prefix = '') {
 // ------------------------------------------------------------------------------------------------
 
 /**
- * Well-known symbol used by StackReferences to attach configuration
- * to construct nodes. Reconstructed here via Symbol.for() so that
- * the tree-walk logic can live in this private module instead of
- * being exposed on the public StackReferences class.
- */
-const STACK_REFERENCES_SYMBOL = Symbol.for('@aws-cdk/core.StackReferences');
-
-/**
- * Walk up the construct tree from `scope` and return the first
- * toHere() configuration found, or undefined.
- */
-function lookupToHere(scope: IConstruct): CrossStackReferenceType[] | undefined {
-  let current: IConstruct | undefined = scope;
-  while (current) {
-    const refs = (current as any)[STACK_REFERENCES_SYMBOL];
-    if (refs && refs._toHereTypes) {
-      return refs._toHereTypes;
-    }
-    current = current.node.scope;
-  }
-  return undefined;
-}
-
-/**
- * Walk up the construct tree from `scope` and return the first
- * fromHere() configuration found, or undefined.
- */
-function lookupFromHere(scope: IConstruct): CrossStackReferenceType[] | undefined {
-  let current: IConstruct | undefined = scope;
-  while (current) {
-    const refs = (current as any)[STACK_REFERENCES_SYMBOL];
-    if (refs && refs._fromHereTypes) {
-      return refs._fromHereTypes;
-    }
-    current = current.node.scope;
-  }
-  return undefined;
-}
-
-/**
  * Determine the reference types to use for a cross-stack reference.
  *
  * Priority:
@@ -464,7 +424,7 @@ function determineReferenceTypes(
   consumingElement?: CfnElement,
 ): CrossStackReferenceType[] {
   // Check producer-side configuration (toHere)
-  const toHereTypes = lookupToHere(reference.target);
+  const toHereTypes = StackReferences._lookupToHere(reference.target);
   if (toHereTypes) {
     return toHereTypes;
   }
@@ -473,7 +433,7 @@ function determineReferenceTypes(
   // Start from the consuming element if available, so that fromHere()
   // set on parent constructs within the consumer stack can be found.
   // Falls back to the consumer stack itself.
-  const fromHereTypes = lookupFromHere(consumingElement ?? consumer);
+  const fromHereTypes = StackReferences._lookupFromHere(consumingElement ?? consumer);
   if (fromHereTypes) {
     return fromHereTypes;
   }

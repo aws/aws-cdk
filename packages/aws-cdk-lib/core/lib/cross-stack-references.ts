@@ -62,6 +62,42 @@ export class StackReferences {
     return refs;
   }
 
+  /**
+   * Walk up the construct tree from `scope` and return the first
+   * toHere() configuration found, or undefined.
+   *
+   * @internal
+   */
+  public static _lookupToHere(scope: IConstruct): CrossStackReferenceType[] | undefined {
+    let current: IConstruct | undefined = scope;
+    while (current) {
+      const refs = (current as any)[STACK_REFERENCES_SYMBOL] as StackReferences | undefined;
+      if (refs?._toHereTypes) {
+        return refs._toHereTypes;
+      }
+      current = current.node.scope;
+    }
+    return undefined;
+  }
+
+  /**
+   * Walk up the construct tree from `scope` and return the first
+   * fromHere() configuration found, or undefined.
+   *
+   * @internal
+   */
+  public static _lookupFromHere(scope: IConstruct): CrossStackReferenceType[] | undefined {
+    let current: IConstruct | undefined = scope;
+    while (current) {
+      const refs = (current as any)[STACK_REFERENCES_SYMBOL] as StackReferences | undefined;
+      if (refs?._fromHereTypes) {
+        return refs._fromHereTypes;
+      }
+      current = current.node.scope;
+    }
+    return undefined;
+  }
+
   private _toHereTypes?: CrossStackReferenceType[];
   private _fromHereTypes?: CrossStackReferenceType[];
 
