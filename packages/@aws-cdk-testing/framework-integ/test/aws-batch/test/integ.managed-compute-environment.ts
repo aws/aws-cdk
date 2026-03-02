@@ -88,6 +88,14 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ECS_AL2023', {
   }],
 });
 
+new ManagedEc2EcsComputeEnvironment(stack, 'MinScaleDownDelay', {
+  vpc,
+  images: [{
+    image: new ec2.AmazonLinuxImage(),
+  }],
+  minScaleDownDelayMinutes: 30,
+});
+
 new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
   vpc,
   images: [{

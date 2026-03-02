@@ -353,6 +353,13 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   readonly placementGroup?: ec2.IPlacementGroup;
 
   /**
+   * The minimum number of minutes to wait before scaling down after a scale-in event.
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelayMinutes?: number;
+
+  /**
    * Add an instance type to this compute environment
    */
   addInstanceType(instanceType: ec2.InstanceType): void;
@@ -626,6 +633,13 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroupRef;
+
+  /**
+   * The minimum number of minutes to wait before scaling down after a scale-in event.
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelayMinutes?: number;
 }
 
 /**
@@ -700,6 +714,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
+  public readonly minScaleDownDelayMinutes?: number;
 
   private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
@@ -738,10 +753,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
+    this.minScaleDownDelayMinutes = props.minScaleDownDelayMinutes;
     this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
+    validateMinScaleDownDelayMinutes(this, this.minScaleDownDelayMinutes);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     this.resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -750,7 +767,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
-        instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
+        scalingPolicy: this.minScaleDownDelayMinutes !== undefined ? {
+          minScaleDownDelayMinutes: this.minScaleDownDelayMinutes,
+        } : undefined,
+        instanceRole: this.instanceProfile.attrArn,
         instanceTypes: Lazy.list({
           produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
         }),
@@ -902,6 +922,13 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   readonly placementGroup?: ec2.IPlacementGroup;
 
   /**
+   * The minimum number of minutes to wait before scaling down after a scale-in event.
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelayMinutes?: number;
+
+  /**
    * Add an instance type to this compute environment
    */
   addInstanceType(instanceType: ec2.InstanceType): void;
@@ -1046,6 +1073,13 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroupRef;
+
+  /**
+   * The minimum number of minutes to wait before scaling down after a scale-in event.
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelayMinutes?: number;
 }
 
 /**
@@ -1084,6 +1118,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
+  public readonly minScaleDownDelayMinutes?: number;
 
   private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
@@ -1115,10 +1150,12 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
+    this.minScaleDownDelayMinutes = props.minScaleDownDelayMinutes;
     this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
+    validateMinScaleDownDelayMinutes(this, this.minScaleDownDelayMinutes);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     this.resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1131,6 +1168,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
+        scalingPolicy: this.minScaleDownDelayMinutes !== undefined ? {
+          minScaleDownDelayMinutes: this.minScaleDownDelayMinutes,
+        } : undefined,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
           produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
@@ -1336,6 +1376,16 @@ function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?
     if (!spot) {
       throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotFleetRole' without specifying 'spot'`, scope);
     }
+  }
+}
+
+function validateMinScaleDownDelayMinutes(scope: Construct, minScaleDownDelayMinutes?: number): void {
+  if (minScaleDownDelayMinutes === undefined || Token.isUnresolved(minScaleDownDelayMinutes)) return;
+  if (minScaleDownDelayMinutes < 20 || minScaleDownDelayMinutes > 10080) {
+    throw new ValidationError(
+      `Managed ComputeEnvironment '${scope.node.id}' specifies 'minScaleDownDelayMinutes' of ${minScaleDownDelayMinutes}, but must be between 20 and 10080`,
+      scope,
+    );
   }
 }
 
