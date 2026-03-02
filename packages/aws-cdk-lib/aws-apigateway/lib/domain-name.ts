@@ -295,6 +295,19 @@ export class DomainName extends Resource implements IDomainName {
         );
       }
 
+      // Validate endpointAccessMode is not set for legacy security policies
+      // CloudFormation rejects this combination: "Endpoint access mode is not supported for this security policy"
+      // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
+      if (!this.isEnhancedSecurityPolicy(this.securityPolicy) &&
+          props.endpointAccessMode !== undefined) {
+        throw new ValidationError(
+          'endpointAccessMode is not supported for legacy security policies (TLS_1_0, TLS_1_2). ' +
+          'It can only be specified when using enhanced security policies (those starting with SecurityPolicy_). ' +
+          'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
+          this,
+        );
+      }
+
       // Validate security policy matches endpoint type
       // Regional-only policies cannot be used with EDGE endpoints and vice versa
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html

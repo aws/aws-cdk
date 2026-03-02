@@ -226,6 +226,22 @@ describe('domains', () => {
     }).toThrow(/Enhanced security policies require endpointAccessMode to be specified/);
   });
 
+  test('throws if endpointAccessMode is set with a legacy security policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
+
+    // THEN
+    expect(() => {
+      new apigw.DomainName(stack, 'domain', {
+        domainName: 'example.com',
+        certificate: cert,
+        securityPolicy: apigw.SecurityPolicy.TLS_1_2,
+        endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      });
+    }).toThrow(/endpointAccessMode is not supported for legacy security policies/);
+  });
+
   test('throws if mTLS is used with enhanced security policy', () => {
     // GIVEN
     const stack = new Stack();
