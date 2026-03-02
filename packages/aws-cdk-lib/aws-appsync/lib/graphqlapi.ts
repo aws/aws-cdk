@@ -287,6 +287,8 @@ export interface SourceApiOptions {
 export interface SourceApi {
   /**
    * Source API that is associated with the merged API
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   readonly sourceApi: IGraphqlApi;
 

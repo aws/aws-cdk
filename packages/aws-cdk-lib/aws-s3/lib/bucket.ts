@@ -371,7 +371,8 @@ export interface IBucket extends IResource, IBucketRef {
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -1003,7 +1004,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -1824,6 +1826,16 @@ export interface BucketProps {
   readonly objectLockEnabled?: boolean;
 
   /**
+   * Enables Amazon S3 to evaluate the ABAC policy in the request.
+   * Set to true to enable ABAC, false to explicitly disable it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
+   *
+   * @default - The ABAC status is not set
+   */
+  readonly abacStatus?: boolean;
+
+  /**
    * The default retention mode and rules for S3 Object Lock.
    *
    * Default retention can be configured after a bucket is created if the bucket already
@@ -2347,6 +2359,7 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
     });
     this._resource = resource;
 
