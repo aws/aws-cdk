@@ -686,9 +686,9 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @param schedule The schedule to format
    * @returns Time string in HH:MM format
    */
-  private formatBackupTime(backupTime?: TimeOfDay): string {
-    const hour = backupTime.hour ? backupTime.hour : '0';
-    const minute = backupTime.minute ? backupTime.minute : '0';
+  private formatBackupTime(backupTime: TimeOfDay): string {
+    const hour = backupTime.hour ? backupTime.hour.toString() : '0';
+    const minute = backupTime.minute ? backupTime.minute.toString() : '0';
 
     return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
   }
