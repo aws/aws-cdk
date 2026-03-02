@@ -136,10 +136,11 @@ export interface DomainNameOptions {
    * The endpoint access mode for this domain name.
    *
    * When using enhanced security policies (those starting with `SecurityPolicy_`),
-   * you must set this to `STRICT`.
+   * you must specify this property. STRICT is recommended for production workloads,
+   * but BASIC may be needed during migration or for certain application architectures.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
-   * @default - No endpoint access mode is configured. For enhanced security policies, you must explicitly set this to STRICT.
+   * @default - No endpoint access mode is configured. Required for enhanced security policies.
    */
   readonly endpointAccessMode?: EndpointAccessMode;
 
@@ -278,12 +279,13 @@ export class DomainName extends Resource implements IDomainName {
         );
       }
 
-      // Validate endpointAccessMode is STRICT for enhanced security policies
+      // Validate endpointAccessMode is specified for enhanced security policies
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
       if (this.isEnhancedSecurityPolicy(this.securityPolicy) &&
-          props.endpointAccessMode !== EndpointAccessMode.STRICT) {
+          props.endpointAccessMode === undefined) {
         throw new ValidationError(
-          'Enhanced security policies require endpointAccessMode to be set to STRICT. ' +
+          'Enhanced security policies require endpointAccessMode to be specified (BASIC or STRICT). ' +
+          'STRICT is recommended for production workloads. ' +
           'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
           this,
         );

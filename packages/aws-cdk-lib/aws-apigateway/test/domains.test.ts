@@ -210,7 +210,7 @@ describe('domains', () => {
     });
   });
 
-  test('throws if enhanced security policy is used without endpointAccessMode STRICT', () => {
+  test('throws if enhanced security policy is used without endpointAccessMode', () => {
     // GIVEN
     const stack = new Stack();
     const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
@@ -221,9 +221,9 @@ describe('domains', () => {
         domainName: 'example.com',
         certificate: cert,
         securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
-        // Missing endpointAccessMode: STRICT
+        // Missing endpointAccessMode
       });
-    }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
+    }).toThrow(/Enhanced security policies require endpointAccessMode to be specified/);
   });
 
   test('throws if mTLS is used with enhanced security policy', () => {
@@ -1061,20 +1061,20 @@ describe('domains', () => {
       }).not.toThrow();
     });
 
-    test('still validates non-token endpointAccessMode with enhanced security policy', () => {
+    test('accepts BASIC endpointAccessMode with enhanced security policy', () => {
       // GIVEN
       const stack = new Stack();
       const cert = new acm.Certificate(stack, 'Cert', { domainName: 'example.com' });
 
-      // WHEN/THEN - non-token values should still be validated
+      // WHEN/THEN - BASIC is a valid value for enhanced security policies
       expect(() => {
         new apigw.DomainName(stack, 'domain', {
           domainName: 'example.com',
           certificate: cert,
           securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09,
-          endpointAccessMode: apigw.EndpointAccessMode.BASIC, // Wrong value
+          endpointAccessMode: apigw.EndpointAccessMode.BASIC,
         });
-      }).toThrow(/Enhanced security policies require endpointAccessMode to be set to STRICT/);
+      }).not.toThrow();
     });
 
     test('still validates non-token endpointType with incompatible security policy', () => {
