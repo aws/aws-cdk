@@ -226,10 +226,29 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('minScaleDownDelayMinutes of 0 disables scale down delay', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minScaleDownDelayMinutes: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        ScalingPolicy: {
+          MinScaleDownDelayMinutes: 0,
+        },
+      },
+    });
+  });
+
   test.each([
-    [19, /must be between 20 and 10080/],
-    [0, /must be between 20 and 10080/],
-    [10081, /must be between 20 and 10080/],
+    [19, /must be 0 \(to disable\) or between 20 and 10080/],
+    [10081, /must be 0 \(to disable\) or between 20 and 10080/],
   ])('throws error when minScaleDownDelayMinutes is %i', (value, expectedError) => {
     expect(() => {
       new ComputeEnvironment(stack, 'MyCE', {

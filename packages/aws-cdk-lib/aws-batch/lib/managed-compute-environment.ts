@@ -354,6 +354,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
 
   /**
    * The minimum number of minutes to wait before scaling down after a scale-in event.
+   * Use 0 to explicitly unset and disable the scale down delay.
    *
    * @default - no delay
    */
@@ -636,6 +637,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
 
   /**
    * The minimum number of minutes to wait before scaling down after a scale-in event.
+   * Use 0 to explicitly unset and disable the scale down delay.
    *
    * @default - no delay
    */
@@ -923,6 +925,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
 
   /**
    * The minimum number of minutes to wait before scaling down after a scale-in event.
+   * Use 0 to explicitly unset and disable the scale down delay.
    *
    * @default - no delay
    */
@@ -1076,6 +1079,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
 
   /**
    * The minimum number of minutes to wait before scaling down after a scale-in event.
+   * Use 0 to explicitly unset and disable the scale down delay.
    *
    * @default - no delay
    */
@@ -1381,9 +1385,10 @@ function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?
 
 function validateMinScaleDownDelayMinutes(scope: Construct, minScaleDownDelayMinutes?: number): void {
   if (minScaleDownDelayMinutes === undefined || Token.isUnresolved(minScaleDownDelayMinutes)) return;
+  if (minScaleDownDelayMinutes === 0) return;
   if (minScaleDownDelayMinutes < 20 || minScaleDownDelayMinutes > 10080) {
     throw new ValidationError(
-      `Managed ComputeEnvironment '${scope.node.id}' specifies 'minScaleDownDelayMinutes' of ${minScaleDownDelayMinutes}, but must be between 20 and 10080`,
+      `Managed ComputeEnvironment '${scope.node.id}' specifies 'minScaleDownDelayMinutes' of ${minScaleDownDelayMinutes}, but must be 0 (to disable) or between 20 and 10080`,
       scope,
     );
   }
