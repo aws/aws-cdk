@@ -3,10 +3,10 @@ import { Bucket, BucketEncryption, BucketPolicy, CfnBucket, CfnBucketPolicy } fr
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnDeliveryStream, DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnDeliveryDestination, CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
-import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
+import { DestinationLogsDelivery, FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../../lib/services/aws-logs';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('S3 Delivery', () => {
@@ -30,7 +30,7 @@ describe('S3 Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkS3AccessLogsDeliverySourceBucketDestinationDestBA63D329',
+          'SourceBucketCdkS3AccessLogsDeliverySourceBucketDestinationDestaccesslogs73B16B4A',
           'Arn',
         ],
       },
@@ -46,7 +46,7 @@ describe('S3 Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-s3-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-s3-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -65,6 +65,70 @@ describe('S3 Delivery', () => {
     const bucketPolicyLogicalId = Object.keys(bucketPolicies)[0];
 
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(bucketPolicyLogicalId);
+  });
+
+  test('creates S3 delivery with outputFormat', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, { outputFormat: 'json' });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates S3 delivery with providedFields', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, { providedFields: ['field1', 'field2'] });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates S3 delivery with both providedFields and mandatoryFields', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates S3 delivery with only mandatoryFields if they are provided', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const bucket = new Bucket(stack, 'Destination');
+
+    const s3Logs = new S3LogsDelivery(bucket, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    s3Logs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
   });
 
   test('creates S3 Delivery when bucket is an L1', () => {
@@ -744,7 +808,7 @@ describe('Cloudwatch Logs Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDeliveryDest89BD1E86',
+          'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDeliveryDestaccesslogs87B1BF73',
           'Arn',
         ],
       },
@@ -760,7 +824,7 @@ describe('Cloudwatch Logs Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-cwl-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-cwl-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -814,6 +878,70 @@ describe('Cloudwatch Logs Delivery', () => {
     const cwlPolicyLogicalId = Object.keys(resourcePolicies)[0];
 
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(cwlPolicyLogicalId);
+  });
+
+  test('creates LogGroup delivery with outputFormat', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, { outputFormat: 'json' });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates LogGroup delivery with providedFields', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, { providedFields: ['field1', 'field2'] });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates LogGroup delivery with both providedFields and mandatoryFields', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates LogGroup delivery with only mandatoryFields if they are provided', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const logGroup = new LogGroup(stack, 'LogGroupDelivery');
+
+    const cwlLogs = new LogGroupLogsDelivery(logGroup, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    cwlLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
   });
 
   test('creates Cloudwatch delivery destination when given an L1 Log Group', () => {
@@ -1007,7 +1135,7 @@ describe('Firehose Stream Delivery', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
       DeliveryDestinationArn: {
         'Fn::GetAtt': [
-          'SourceBucketCdkFirehoseAccessLogsDeliverySourceBucketFirehoseDestACDAE1B5',
+          'SourceBucketCdkFirehoseAccessLogsDeliverySourceBucketFirehoseDestaccesslogsC6B8A051',
           'Arn',
         ],
       },
@@ -1023,7 +1151,7 @@ describe('Firehose Stream Delivery', () => {
           'Arn',
         ],
       },
-      Name: Match.stringLikeRegexp('cdk-fh-access-logs-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-fh-Destaccess-logs-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -1038,6 +1166,105 @@ describe('Firehose Stream Delivery', () => {
         Key: 'LogDeliveryEnabled',
         Value: 'true',
       })]),
+    });
+  });
+
+  test('creates Firehose delivery with outputFormat', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, { outputFormat: 'json' });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      OutputFormat: 'json',
+    });
+  });
+
+  test('creates Firehose delivery with providedFields', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, { providedFields: ['field1', 'field2'] });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates Firehose delivery with both providedFields and mandatoryFields', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates Firehose delivery with only mandatoryFields if they are provided', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const streamBucket = new Bucket(stack, 'DeliveryBucket');
+    const firehoseRole = new Role(stack, 'FirehoseRole', {
+      assumedBy: new ServicePrincipal('firehose.amazonaws.com'),
+    });
+    const stream = new DeliveryStream(stack, 'Firehose', {
+      destination: new S3Bucket(streamBucket),
+      role: firehoseRole,
+    });
+
+    const fhLogs = new FirehoseLogsDelivery(stream, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    fhLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
     });
   });
 
@@ -1126,7 +1353,7 @@ describe('XRay Delivery', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
       DeliveryDestinationType: 'XRAY',
-      Name: Match.stringLikeRegexp('cdk-xray-traces-dest-.*'),
+      Name: Match.stringLikeRegexp('cdk-xray-Desttraces-dest-.*'),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
       LogType: logType,
@@ -1134,6 +1361,51 @@ describe('XRay Delivery', () => {
         'Fn::GetAtt': ['SourceBucketDDD2130A', 'Arn'],
       },
       Name: Match.stringLikeRegexp('cdk-traces-source-.*'),
+    });
+  });
+
+  test('creates XRay delivery with providedFields', () => {
+    const xrayLogs = new XRayLogsDelivery({ providedFields: ['field1', 'field2'] });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates XRay delivery with both providedFields and mandatoryFields', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates XRay delivery with only mandatoryFields if they are provided', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const xrayLogs = new XRayLogsDelivery({
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    xrayLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
     });
   });
 
@@ -1227,5 +1499,164 @@ describe('XRay Delivery', () => {
         ],
       },
     });
+  });
+});
+
+describe('Destination Delivery', () => {
+  let stack: Stack;
+  let source: Bucket;
+  const logType = 'ACCESS_LOGS';
+
+  beforeEach(() => {
+    stack = new Stack();
+    source = new Bucket(stack, 'SourceBucket');
+  });
+
+  test('creates delivery connection with existing delivery destination resource', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination);
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      DeliveryDestinationArn: {
+        'Fn::GetAtt': ['Dest', 'Arn'],
+      },
+      DeliverySourceName: {
+        Ref: 'SourceBucketCDKSourceACCESSLOGSSourceBucket3DC18173',
+      },
+    });
+  });
+
+  test('creates Destination delivery with providedFields', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, { providedFields: ['field1', 'field2'] });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('creates Destination delivery with both providedFields and mandatoryFields', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field3', 'field4'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('creates Destination delivery with only mandatoryFields if they are provided', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2'],
+    });
+  });
+
+  test('adds missing mandatoryFields if providedFields are missing some', () => {
+    const destination = new CfnDeliveryDestination(stack, 'Dest', {
+      name: 'my-cool-xray-dest',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs = new DestinationLogsDelivery(destination, {
+      providedFields: ['field1', 'field2'],
+      mandatoryFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::Delivery', {
+      RecordFields: ['field1', 'field2', 'field3', 'field4'],
+    });
+  });
+
+  test('reuses delivery source when binding same source multiple times and destination arn is unresolved', () => {
+    const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
+      name: 'my-cool-xray-dest-1',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destination2 = new CfnDeliveryDestination(stack, 'Dest2', {
+      name: 'my-cool-xray-dest-2',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destLogs1 = new DestinationLogsDelivery(destination1);
+    destLogs1.bind(source, logType, source.bucketArn);
+
+    const destLogs2 = new DestinationLogsDelivery(destination2);
+    destLogs2.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
+  });
+
+  test('able to make multiple deliveries to different destinations', () => {
+    const destination1 = new CfnDeliveryDestination(stack, 'Dest1', {
+      name: 'my-cool-xray-dest-1',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destination2 = new CfnDeliveryDestination(stack, 'Dest2', {
+      name: 'my-cool-xray-dest-2',
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const source2 = new Bucket(stack, 'SourceBucket2');
+
+    const destLogs1 = new DestinationLogsDelivery(destination1);
+    destLogs1.bind(source, logType, source.bucketArn);
+
+    const destLogs2 = new DestinationLogsDelivery(destination2);
+    destLogs2.bind(source2, logType, source2.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 2);
+  });
+
+  test('able to make delivery when destination is imported cross stack', () => {
+    const destName = 'my-cool-xray-dest';
+    const crossStack = new Stack();
+
+    new CfnDeliveryDestination(crossStack, 'Dest', {
+      name: destName,
+      deliveryDestinationType: 'XRAY',
+    });
+
+    const destCrossStack = CfnDeliveryDestination.fromDeliveryDestinationName(stack, 'CrossStackDest', destName);
+
+    const destLogs = new DestinationLogsDelivery(destCrossStack);
+    destLogs.bind(source, logType, source.bucketArn);
+
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
   });
 });
