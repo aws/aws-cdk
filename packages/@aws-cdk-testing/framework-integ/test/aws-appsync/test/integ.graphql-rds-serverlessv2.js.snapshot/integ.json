@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "testCases": {
     "rds-serverlessV2-stack/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "rdsserverlessV2stackDefaultTestDeployAssert877504EC"
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1107.0"
 }
