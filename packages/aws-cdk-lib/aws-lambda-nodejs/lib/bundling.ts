@@ -5,7 +5,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, shellEscapeForBundlingCommand } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -216,6 +216,15 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
+  /**
+   * Creates a shell command string for Docker bundling.
+   *
+   * This method produces a shell command string that Docker executes via `bash -c`.
+   * All user-provided values (externalModules, define, loader, inject, esbuildArgs) are
+   * shell-escaped using shellEscapeForBundlingCommand() to ensure proper quoting.
+   *
+   * For local bundling, we use a different approach - see getLocalBundlingProvider().
+   */
   private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
@@ -231,42 +240,17 @@ export class Bundling implements cdk.BundlingOptions {
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    const loaders = Object.entries(this.props.loader ?? {});
-    const defines = Object.entries(this.props.define ?? {});
+    // Build esbuild arguments as a clean array, then shell-escape each for the command string
+    const esbuildArgs = this.buildEsbuildArgs(scope, {
+      ...options,
+      entryPath: relativeEntryPath,
+    });
 
-    if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
-    }
-
-    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
-    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
-    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
-    const sourcesContent = this.props.sourcesContent ?? true;
-
-    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const esbuildCommand: string[] = [
-      options.esbuildRunner,
-      '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-      '--platform=node',
-      ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
-      ...this.props.minify ? ['--minify'] : [],
-      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-      ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
-      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-      ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
-    ];
+    // Shell-escape each argument for safe interpolation into the bash command string
+    // This ensures proper quoting of user-provided bundling options
+    const escapedEsbuildCommand = [options.esbuildRunner, ...esbuildArgs]
+      .map(arg => shellEscapeForBundlingCommand(arg, options.osPlatform))
+      .join(' ');
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -301,24 +285,84 @@ export class Bundling implements cdk.BundlingOptions {
     return chain([
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
       tscCommand,
-      esbuildCommand.join(' '),
+      escapedEsbuildCommand,
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
       ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
     ]);
   }
 
+  /**
+   * Builds an array of esbuild CLI arguments WITHOUT shell escaping.
+   *
+   * This method returns raw argument values. The caller is responsible for:
+   * - Shell-escaping when building a command string (Docker bundling)
+   * - Passing directly to spawnSync without shell (local bundling)
+   *
+   * This separation allows us to:
+   * 1. Reuse the argument construction logic
+   * 2. Apply appropriate escaping based on execution context
+   *
+   * @returns Array of esbuild CLI arguments (e.g., ['--bundle', 'entry.ts', '--external:aws-sdk'])
+   */
+  private buildEsbuildArgs(scope: IConstruct, options: EsbuildArgsOptions): string[] {
+    const pathJoin = osPathJoin(options.osPlatform);
+
+    const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
+
+    if (this.props.sourceMap === false && this.props.sourceMapMode) {
+      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
+    }
+
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourcesContent = this.props.sourcesContent ?? true;
+
+    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
+
+    // Build the arguments array - NO shell escaping here, just raw values
+    // The caller will either shell-escape (Docker) or pass directly to spawnSync (local)
+    const args: string[] = [
+      '--bundle', options.entryPath,
+      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
+      '--platform=node',
+      ...this.props.format ? [`--format=${this.props.format}`] : [],
+      `--outfile=${pathJoin(options.outputDir, outFile)}`,
+      ...this.props.minify ? ['--minify'] : [],
+      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
+      ...this.externals.map(external => `--external:${external}`),
+      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
+      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.esbuildArgs ? toCliArgs(this.props.esbuildArgs) : [],
+    ];
+
+    return args;
+  }
+
+  /**
+   * Creates a local bundling provider.
+   *
+   * Local bundling runs all commands (hooks, tsc, esbuild, deps) in a single
+   * shell session so that environment variables and shell state propagate across
+   * stages. Esbuild arguments are shell-escaped via shellEscapeForBundlingCommand()
+   * to ensure user-provided values (externalModules, define, loader, inject,
+   * esbuildArgs) are treated as literals by the shell — the same approach used
+   * for Docker bundling.
+   */
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand(scope, {
-      inputDir: this.projectRoot,
-      outputDir,
-      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-      tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
-      osPlatform,
-    });
-    const environment = this.props.environment ?? {};
-    const cwd = this.projectRoot;
+    const bundlingInstance = this;
 
     return {
       tryBundle(outputDir: string) {
@@ -331,24 +375,29 @@ export class Bundling implements cdk.BundlingOptions {
           throw new ValidationError(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
-        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
+        const localCommand = bundlingInstance.createBundlingCommand(scope, {
+          inputDir: bundlingInstance.projectRoot,
+          outputDir,
+          esbuildRunner: Bundling.esbuildInstallation.isLocal
+            ? bundlingInstance.packageManager.runBinCommand('esbuild')
+            : 'esbuild',
+          tscRunner: Bundling.tscInstallation && (Bundling.tscInstallation.isLocal
+            ? bundlingInstance.packageManager.runBinCommand('tsc')
+            : 'tsc'),
+          osPlatform,
+        });
 
+        const isWindows = osPlatform === 'win32';
         exec(
-          osPlatform === 'win32' ? 'cmd' : 'bash',
-          [
-            osPlatform === 'win32' ? '/c' : '-c',
-            localCommand,
-          ],
+          isWindows ? 'cmd' : 'bash',
+          [isWindows ? '/c' : '-c', localCommand],
           {
-            env: { ...process.env, ...environment },
-            stdio: [ // show output
-              'ignore', // ignore stdio
-              process.stderr, // redirect stdout to stderr
-              'inherit', // inherit stderr
-            ],
-            cwd,
-            windowsVerbatimArguments: osPlatform === 'win32',
-          });
+            env: { ...process.env, ...bundlingInstance.props.environment },
+            stdio: ['ignore', process.stderr, 'inherit'],
+            cwd: bundlingInstance.projectRoot,
+            windowsVerbatimArguments: isWindows,
+          },
+        );
 
         return true;
       },
@@ -362,6 +411,17 @@ interface BundlingCommandOptions {
   readonly esbuildRunner: string;
   readonly tscRunner?: string;
   readonly osPlatform: NodeJS.Platform;
+}
+
+/**
+ * Options for building esbuild arguments
+ */
+interface EsbuildArgsOptions {
+  readonly inputDir: string;
+  readonly outputDir: string;
+  readonly osPlatform: NodeJS.Platform;
+  /** The entry file path (may be modified if preCompilation changes .ts to .js) */
+  readonly entryPath: string;
 }
 
 /**
@@ -450,21 +510,34 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
   return `node${match[1]}`;
 }
 
-function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
-  const args = new Array<string>();
+/**
+ * Converts esbuildArgs to an array of CLI arguments without shell quoting.
+ *
+ * The caller is responsible for either:
+ * - Shell-escaping when building a command string (Docker bundling)
+ * - Passing directly to spawnSync without shell (local bundling)
+ *
+ * @param esbuildArgs - Object mapping CLI flags to values
+ * @returns Array of CLI arguments (e.g., ['--log-limit=0', '--splitting'])
+ */
+function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string[] {
+  const args: string[] = [];
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
+      // Boolean flag or empty string - just the key
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
-      args.push(`${key}:"${value}"`);
+      // Keys that can be specified multiple times use colon syntax
+      args.push(`${key}:${value}`);
     } else if (value) {
-      args.push(`${key}="${value}"`);
+      // Standard key=value format
+      args.push(`${key}=${value}`);
     }
   }
 
-  return args.join(' ');
+  return args;
 }
 
 /**
