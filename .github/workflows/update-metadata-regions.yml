@@ -16,7 +16,7 @@ jobs:
         run: |
           response=$(curl $URL)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
-          
+
           status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
@@ -45,6 +45,7 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Check Out
         uses: actions/checkout@v6
