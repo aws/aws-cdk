@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-inference.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f142ec20e16b45422e906c1c14310c84264c43a755e74e60c56864f5a4a4d1d6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccc9d515f28f7964cf7a49b25178fa5536cc48559016b09d78c93180abee2f51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -299,7 +299,10 @@
         "/aws-cdk-eks-cluster-inference/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5"
+            "data": "KubectlLayer600207B5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster": [
@@ -426,12 +429,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/Cluster/KubectlHandlerRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -496,12 +493,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/Role/Resource": [
@@ -807,12 +798,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Resource/CreationRole/ImportCreationRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/Cluster/Resource/CreationRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -923,10 +908,6 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/Resource/Resource/Default": [
@@ -1005,23 +986,21 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "url": "*"
+              "url": "*",
+              "removalPolicy": "*"
             }
           },
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "url": "*"
+              "url": "*",
+              "removalPolicy": "*"
             }
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/OpenIdConnectProvider/Resource": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
             "data": "*"
           }
         ],
@@ -1092,12 +1071,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
@@ -1387,12 +1360,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/Cluster/InferenceInstances/InstanceRole/Resource": [
@@ -1733,12 +1700,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/Cluster/Inference2Instances/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1856,12 +1817,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1928,12 +1883,6 @@
                 }
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
@@ -2066,12 +2015,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -2257,12 +2200,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2438,12 +2375,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -2557,12 +2488,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
@@ -2803,12 +2728,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
@@ -3080,12 +2999,6 @@
             }
           }
         ],
-        "/aws-cdk-eks-cluster-inference/awscdkeksclusterinferenceCluster5E14EED5-AlbController/alb-sa/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/aws-cdk-eks-cluster-inference/awscdkeksclusterinferenceCluster5E14EED5-AlbController/alb-sa/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -3308,10 +3221,10 @@
             "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
           }
         ],
-        "/aws-cdk-eks-cluster-inference/SsmParameterValue:--aws--service--eks--optimized-ami--1.32--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-inference/SsmParameterValue:--aws--service--eks--optimized-ami--1.35--amazon-linux-2-gpu--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami132amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami135amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster-inference/BootstrapVersion": [
@@ -3389,6 +3302,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -3407,6 +3321,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -3518,7 +3433,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -3672,6 +3587,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -3703,16 +3622,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -3857,10 +3766,39 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1106.1"
 }
