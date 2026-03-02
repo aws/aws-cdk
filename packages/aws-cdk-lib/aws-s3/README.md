@@ -1133,3 +1133,42 @@ if (sourceBucket.replicationRoleArn) {
   destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
 ```
+
+## Mixins
+
+S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### BucketVersioning
+
+Enables or suspends versioning on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketBlockPublicAccess
+
+Blocks public access on an S3 bucket. Defaults to blocking all public access:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketBlockPublicAccess());
+```
+
+### BucketPolicyStatements
+
+Adds IAM policy statements to a bucket policy:
+
+```ts
+new s3.CfnBucketPolicy(this, 'Policy', {
+  bucket: new s3.CfnBucket(this, 'Bucket').ref,
+  policyDocument: new iam.PolicyDocument(),
+}).with(new s3.mixins.BucketPolicyStatements([
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
+```
