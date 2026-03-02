@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Mixin } from '../../lib/core';
+import { Mixin } from '../../lib/mixins';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
