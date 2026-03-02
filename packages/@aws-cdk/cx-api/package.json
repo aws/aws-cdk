@@ -81,15 +81,15 @@
   },
   "dependencies": {
     "semver": "^7.7.4",
-    "@aws-cdk/cloud-assembly-api": "^2.0.1"
+    "@aws-cdk/cloud-assembly-api": "^2.1.1"
   },
   "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": ">=50.3.0"
+    "@aws-cdk/cloud-assembly-schema": ">=52.1.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "^50.3.0",
+    "@aws-cdk/cloud-assembly-schema": "^52.1.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
     "@types/mock-fs": "^4.13.4",

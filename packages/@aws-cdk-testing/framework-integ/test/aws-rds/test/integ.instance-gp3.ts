@@ -1,22 +1,23 @@
 import { InstanceClass, InstanceSize, InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { INTEG_TEST_LATEST_MYSQL } from './db-versions';
+import { App } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
-import { DatabaseInstance, DatabaseInstanceEngine, MysqlEngineVersion, StorageType } from 'aws-cdk-lib/aws-rds';
+import { DatabaseInstance, DatabaseInstanceEngine, StorageType } from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
-class TestStack extends Stack {
+class TestStack extends IntegTestBaseStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const vpc = new Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     new DatabaseInstance(this, 'Instance', {
-      engine: DatabaseInstanceEngine.mysql({ version: MysqlEngineVersion.VER_8_0_30 }),
+      engine: DatabaseInstanceEngine.mysql({ version: INTEG_TEST_LATEST_MYSQL }),
       instanceType: InstanceType.of(InstanceClass.BURSTABLE3, InstanceSize.SMALL),
       vpc,
       allocatedStorage: 1000,
       storageType: StorageType.GP3,
-      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 }
@@ -27,4 +28,3 @@ new integ.IntegTest(app, 'InstanceGp3Test', {
   testCases: [new TestStack(app, 'cdk-integ-rds-instance-gp3')],
 });
 
-app.synth();

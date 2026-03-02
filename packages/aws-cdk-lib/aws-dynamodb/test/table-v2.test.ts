@@ -3743,7 +3743,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
           PolicyDocument: {
             Statement: [
               {
-                Sid: 'AllowMultiAccountReplicaAssociation-222222222222',
+                Sid: 'AllowMultiAccountReplicaAssociation222222222222',
                 Effect: 'Allow',
                 Action: 'dynamodb:AssociateTableReplica',
                 Resource: '*',
@@ -3754,7 +3754,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
                 },
               },
               {
-                Sid: 'AllowReplicationServiceReadWrite-222222222222',
+                Sid: 'AllowReplicationServiceReadWrite222222222222',
                 Effect: 'Allow',
                 Action: [
                   'dynamodb:ReadDataForReplication',
