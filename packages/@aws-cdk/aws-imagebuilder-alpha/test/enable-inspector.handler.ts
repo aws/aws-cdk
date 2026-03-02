@@ -1,4 +1,5 @@
 import { Inspector2Client, EnableCommand, BatchGetAccountStatusCommand, type ResourceScanType } from '@aws-sdk/client-inspector2';
+import type { CloudFormationCustomResourceEvent } from 'aws-lambda';
 
 const client = new Inspector2Client();
 const POLL_INTERVAL_MS = 5_000;
@@ -11,7 +12,7 @@ const RESOURCE_KEY: Record<string, string> = {
   LAMBDA_CODE: 'lambdaCode',
 };
 
-export async function handler(event: any) {
+export async function handler(event: CloudFormationCustomResourceEvent) {
   const resourceTypes = event.ResourceProperties.resourceTypes as ResourceScanType[];
 
   if (event.RequestType === 'Delete') {
