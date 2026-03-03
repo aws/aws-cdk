@@ -78,3 +78,74 @@ function moduleForResource(resource: Resource, props: MixinsBuilderProps) {
   const info = ast.addResource(resource);
   return info.locatedModules[0].module;
 }
+
+test('L1 property mixin with deeply nested relationship properties', () => {
+  // Target resource for the relationship
+  const targetService = db.allocate('service', {
+    name: 'aws-other',
+    shortName: 'other',
+    capitalized: 'Other',
+    cloudFormationNamespace: 'AWS::Other',
+  });
+  const targetResource = db.allocate('resource', {
+    name: 'Key',
+    primaryIdentifier: ['KeyId'],
+    properties: {
+      KeyId: {
+        type: { type: 'string' },
+      },
+    },
+    attributes: {
+      KeyArn: {
+        type: { type: 'string' },
+      },
+    },
+    cloudFormationType: 'AWS::Other::Key',
+  });
+  db.link('hasResource', targetService, targetResource);
+
+  // Nested type with a relationship ref
+  const nestedType = db.allocate('typeDefinition', {
+    name: 'EncryptionConfig',
+    properties: {
+      KeyId: {
+        type: { type: 'string' },
+        relationshipRefs: [{
+          cloudFormationType: 'AWS::Other::Key',
+          propertyName: 'KeyId',
+        }],
+      },
+      Algorithm: {
+        type: { type: 'string' },
+      },
+    },
+  });
+
+  const resource = db.allocate('resource', {
+    name: 'Thing',
+    primaryIdentifier: ['Id'],
+    properties: {
+      Id: {
+        type: { type: 'string' },
+      },
+      Encryption: {
+        type: { type: 'ref', reference: ref(nestedType) },
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+    attributes: {},
+  });
+  db.link('hasResource', service, resource);
+  db.link('usesType', resource, nestedType);
+
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+  const module = moduleForResource(foundResource, { db });
+  const rendered = renderer.render(module);
+
+  expect(rendered).toMatchSnapshot();
+
+  // Non-relationship props (id) should pass through without flatten wrapping
+  expect(rendered).not.toContain('ret.id');
+  // Relationship props (encryption) should be in the flatten function
+  expect(rendered).toContain('ret.encryption');
+});

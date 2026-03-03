@@ -4,8 +4,9 @@ import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
-import type { Method } from '@cdklabs/typewriter';
-import { ExternalModule, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
+import { ResolverBuilder } from '@aws-cdk/spec2cdk/lib/cdk/resolver-builder';
+import type { Expression, Method } from '@cdklabs/typewriter';
+import { ExternalModule, FreeFunction, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
 import { MIXINS_COMMON, MIXINS_UTILS } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
@@ -123,8 +124,8 @@ class L1PropsMixin extends ClassType {
     });
 
     this.relationshipDecider = new RelationshipDecider(this.resource, db, {
-      enableRelationships: false,
-      enableNestedRelationships: false,
+      enableRelationships: true,
+      enableNestedRelationships: true,
       refsImportLocation: 'aws-cdk-lib/interfaces',
     });
     this.converter = TypeConverter.forMixin({
@@ -140,23 +141,60 @@ class L1PropsMixin extends ClassType {
    * Build the elements of the L1PropsMixin Class and types
    */
   public build() {
+    const resolverBuilder = new ResolverBuilder(this.converter, this.relationshipDecider, this.scope);
+
     // Build the props type with all properties optional
+    let needsFlatten = false;
+    const flattenResolvers: Array<{ name: string; resolver: (props: Expression) => Expression }> = [];
     for (const prop of this.decider.propsProperties) {
-      if (prop.propertySpec.type.fqn) {
-        continue;
-      }
       this.propsType.addProperty({
         ...prop.propertySpec,
         optional: true,
       });
+
+      const specProp = this.resource.properties[prop.cfnMapping.cfnName];
+      // Mark as required so buildResolver skips the inline undefined guard;
+      // the top-level flatten function already has an if-guard for each property.
+      const result = resolverBuilder.buildResolver({ ...specProp, required: true }, prop.cfnMapping.cfnName);
+      const hasRelationships = specProp.relationshipRefs && specProp.relationshipRefs.length > 0;
+      const hasNestedFlatten = this.relationshipDecider.needsFlatteningFunction(prop.cfnMapping.cfnName, specProp);
+      if (hasRelationships || hasNestedFlatten) {
+        needsFlatten = true;
+        flattenResolvers.push({
+          name: result.name,
+          // The outer if-guard in the flatten function body already ensures the value is defined,
+          // so no additional undefined check is needed here.
+          resolver: result.resolver,
+        });
+      }
     }
 
-    this.makeConstructor();
+    // Generate a top-level flatten function if any props need resolving
+    let flattenFunction: FreeFunction | undefined;
+    if (needsFlatten) {
+      flattenFunction = new FreeFunction(this.scope, {
+        name: naming.flattenFunctionNameFromType(this.propsType),
+        returnType: this.propsType.type,
+        parameters: [{ name: 'props', type: this.propsType.type }],
+      });
+      const fnProps = flattenFunction.parameters[0];
+      const ret = expr.ident('ret');
+      flattenFunction.addBody(
+        stmt.constVar(expr.directCode('ret: any'), expr.object()),
+        ...flattenResolvers.map(r =>
+          stmt.if_(expr.binOp(expr.get(fnProps, r.name), '!==', expr.UNDEFINED))
+            .then(stmt.assign(expr.get(ret, r.name), r.resolver(fnProps))),
+        ),
+        stmt.ret(ret),
+      );
+    }
+
+    this.makeConstructor(flattenFunction);
     const supports = this.makeSupportsMethod();
     this.makeApplyToMethod(supports);
   }
 
-  private makeConstructor() {
+  private makeConstructor(flattenFunction?: FreeFunction) {
     const optionsType = MIXINS_COMMON.CfnPropertyMixinOptions;
 
     this.addProperty({
@@ -204,7 +242,9 @@ class L1PropsMixin extends ClassType {
 
     init.addBody(
       expr.sym(new ThingSymbol('super', this.scope)).call(),
-      stmt.assign($this.props, props),
+      stmt.assign($this.props, flattenFunction
+        ? expr.object(expr.splat(props), expr.splat(CallableProxy.fromName(flattenFunction.name, this.scope).invoke(props)))
+        : props),
       stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.MERGE)),
     );
   }
