@@ -40,6 +40,7 @@ scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 
 # Execute any pre-package steps for the jsii modules here:
 echo "Running aws-cdk-lib pre-package"
+npx nx run-many -t package -- --pre-only
 npx lerna run --scope aws-cdk-lib package -- --pre-only
 
 # Jsii packaging (all at once using jsii-pacmak)
