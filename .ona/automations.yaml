@@ -1,0 +1,10 @@
+tasks:
+  build:
+    name: Build CDK
+    description: Install dependencies and build packages
+    triggeredBy:
+      - prebuild
+    command: |
+      yarn install
+      export NODE_OPTIONS=--max-old-space-size=8192
+      npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ --skip-nx-cache

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40b6c0a5f15ea70a9f443fc2da6a5e04b9659c67353dd49db46ff98c731f164f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1864e7e24ab0e83abe0e729ae3150f49c9d9426877860d522dbf032936a4bf13.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -295,6 +295,12 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          }
+        ],
+        "/BedrockAgentCoreRuntimeGatewayM2MIntegTest/TestGateway/TestTarget/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestGatewayTestTargetBedrockAgentCoreInvokeD0B637B6"
           }
         ],
         "/BedrockAgentCoreRuntimeGatewayM2MIntegTest/TestGateway/TestTarget/Resource": [
@@ -675,7 +681,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e8e1a5d51bd1a820a89b84fd8370c91fa06eb636bcf40846cb51f1ff659bc89d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/978d93f0343e50230000672c340ad504a34b02e9abb8d1660206659a4571458a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -692,7 +698,7 @@
         "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A.assets"
       ],
       "metadata": {
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/Default": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime32016a0c46639793d62dfdfa5a3bae43/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -706,16 +712,16 @@
             "data": "*"
           }
         ],
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/Default/Default": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime32016a0c46639793d62dfdfa5a3bae43/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c"
+            "data": "AwsApiCallbedrockagentcoreinvokeAgentRuntime32016a0c46639793d62dfdfa5a3bae43"
           }
         ],
-        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c/AssertionResults": [
+        "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime32016a0c46639793d62dfdfa5a3bae43/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntimea507b5714a2c0d1155e8085976fdc32c"
+            "data": "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime32016a0c46639793d62dfdfa5a3bae43"
           }
         ],
         "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -1240,12 +1246,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1105.0"
 }

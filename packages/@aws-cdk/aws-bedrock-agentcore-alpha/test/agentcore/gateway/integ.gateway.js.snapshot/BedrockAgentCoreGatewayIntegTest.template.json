@@ -347,6 +347,25 @@
     }
    }
   },
+  "TestGatewayLambdaTargetBedrockAgentCoreInvokeF366EA95": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunction22AD90FC",
+      "Arn"
+     ]
+    },
+    "Principal": "bedrock-agentcore.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayArn"
+     ]
+    }
+   }
+  },
   "TestGatewayLambdaTargetBE2E7E0C": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",
    "Properties": {
@@ -395,7 +414,10 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "TestGatewayLambdaTargetBedrockAgentCoreInvokeF366EA95"
+   ]
   },
   "TestGatewaySmithyTarget2C1ACC84": {
    "Type": "AWS::BedrockAgentCore::GatewayTarget",

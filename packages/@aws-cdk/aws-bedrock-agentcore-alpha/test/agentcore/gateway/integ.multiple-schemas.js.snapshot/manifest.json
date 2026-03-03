@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5acd123cc7c21d088f861358e8e6a02b846bfb4e9ac29266621592cc40cc0e2a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c715bf339dd9b7929ae31f82d3bcd75f27b0f3398c8ddf03bad1efe5fa502381.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -408,6 +408,12 @@
             "data": "*"
           }
         ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/LambdaTarget1/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTarget1BedrockAgentCoreInvoke51DAB573"
+          }
+        ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/LambdaTarget1/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -418,6 +424,12 @@
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
+          }
+        ],
+        "/BedrockAgentCoreMultipleSchemasIntegTest/LambdaTarget2/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTarget2BedrockAgentCoreInvoke87B2031C"
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/LambdaTarget2/Resource": [
@@ -984,12 +996,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1105.0"
 }
