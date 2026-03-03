@@ -16,7 +16,7 @@
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1694205517464"
+    "salt": "1768251311404"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,12 +106,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d4087f9b90522f437499693de83d9bb1d3d93a99d4d34dad4625e71132244692.zip"
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
