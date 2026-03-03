@@ -23,7 +23,7 @@ export abstract class ScheduleExpression {
       return new LiteralScheduleExpression(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
     } catch (e) {
       if (e instanceof RangeError) {
-        throw new UnscopedValidationError('Invalid date');
+        throw new UnscopedValidationError('InvalidInvalidDate', 'Invalid date');
       }
       throw e;
     }
