@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "88430e508fdbad930960dbb9f4e37eee7f850bd99714abdeda9a34fc57430aca": {
+    "50820134a0f182035dd249c572d1ca8a750b0617c610170da6e321d039a2e05b": {
       "displayName": "aws-cdk-lambda-destinations Template",
       "source": {
         "path": "aws-cdk-lambda-destinations.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7b806dcb": {
+        "current_account-current_region-d508a9d6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "88430e508fdbad930960dbb9f4e37eee7f850bd99714abdeda9a34fc57430aca.json",
+          "objectKey": "50820134a0f182035dd249c572d1ca8a750b0617c610170da6e321d039a2e05b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

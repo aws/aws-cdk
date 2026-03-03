@@ -11,7 +11,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
-    "RefreshToken": "LambdaCurrentVersionDF706F6A9853da99a9f11ddc5fd2e8d8cd482e5d"
+    "RefreshToken": "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -101,7 +101,7 @@
     },
     "Region": "us-east-1",
     "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
-    "RefreshToken": "Lambda2CurrentVersion72012B7485d45928c1d1d842786a98166f8568eb"
+    "RefreshToken": "Lambda2CurrentVersion72012B74c1f6734ecb54ea821fc6141f309901b4"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

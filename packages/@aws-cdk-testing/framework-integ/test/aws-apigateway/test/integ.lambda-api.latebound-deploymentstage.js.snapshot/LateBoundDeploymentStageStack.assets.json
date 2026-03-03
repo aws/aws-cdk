@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "bfad1dda28aa3164a5ac0275b03176ee13601ec5a5d47913f2f89e10e891c817": {
+    "a61c22a349bdc584ce7372dde04e760f41f3952c1a575ad9769f0dcb4a9f9880": {
       "displayName": "LateBoundDeploymentStageStack Template",
       "source": {
         "path": "LateBoundDeploymentStageStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d292e8d4": {
+        "current_account-current_region-3623df4a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bfad1dda28aa3164a5ac0275b03176ee13601ec5a5d47913f2f89e10e891c817.json",
+          "objectKey": "a61c22a349bdc584ce7372dde04e760f41f3952c1a575ad9769f0dcb4a9f9880.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

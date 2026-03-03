@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "911dabc4cc4b6175c9fabd25fe8aa74d185cefdb5294266e334d9d41d17154f1": {
+    "066b417fdfa13fe28f8e7e4448eeb74b7a10030a6ae3cb1ceccfd2b34d9e7529": {
       "displayName": "integ-user-pool-pre-token-generation-v2 Template",
       "source": {
         "path": "integ-user-pool-pre-token-generation-v2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a51b1086": {
+        "current_account-current_region-43c3229c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "911dabc4cc4b6175c9fabd25fe8aa74d185cefdb5294266e334d9d41d17154f1.json",
+          "objectKey": "066b417fdfa13fe28f8e7e4448eeb74b7a10030a6ae3cb1ceccfd2b34d9e7529.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

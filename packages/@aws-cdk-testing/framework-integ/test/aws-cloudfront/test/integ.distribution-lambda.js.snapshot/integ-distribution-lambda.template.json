@@ -47,13 +47,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
    ]
   },
-  "LambdaCurrentVersionDF706F6A9853da99a9f11ddc5fd2e8d8cd482e5d": {
+  "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -75,7 +75,7 @@
        {
         "EventType": "origin-request",
         "LambdaFunctionARN": {
-         "Ref": "LambdaCurrentVersionDF706F6A9853da99a9f11ddc5fd2e8d8cd482e5d"
+         "Ref": "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360"
         }
        }
       ],

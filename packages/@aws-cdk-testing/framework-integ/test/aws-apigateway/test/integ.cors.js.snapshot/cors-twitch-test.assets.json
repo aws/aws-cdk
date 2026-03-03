@@ -15,16 +15,16 @@
         }
       }
     },
-    "68d6a349ee7474ae800c3106a049b63ce052fafce9c000811e40e0a1f44fa384": {
+    "a2aa34524fdb113f8477f3375e73bd3613ee8f8d10c5c94f237dd2546d17e928": {
       "displayName": "cors-twitch-test Template",
       "source": {
         "path": "cors-twitch-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-96eab87d": {
+        "current_account-current_region-12a6120e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "68d6a349ee7474ae800c3106a049b63ce052fafce9c000811e40e0a1f44fa384.json",
+          "objectKey": "a2aa34524fdb113f8477f3375e73bd3613ee8f8d10c5c94f237dd2546d17e928.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

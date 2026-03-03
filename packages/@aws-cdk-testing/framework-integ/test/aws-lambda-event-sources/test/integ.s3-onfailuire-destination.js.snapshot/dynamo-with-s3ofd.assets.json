@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "1e11fec5b27e9a3c4e35f92c0d0b0656d9d9db52a43ceaf53e82e598c18f8634": {
+    "57c04a15e2b713c19797cf909dd1b01966cdc5e989743a739b36f809e5201016": {
       "displayName": "dynamo-with-s3ofd Template",
       "source": {
         "path": "dynamo-with-s3ofd.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7b4599ab": {
+        "current_account-current_region-8023ad5a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e11fec5b27e9a3c4e35f92c0d0b0656d9d9db52a43ceaf53e82e598c18f8634.json",
+          "objectKey": "57c04a15e2b713c19797cf909dd1b01966cdc5e989743a739b36f809e5201016.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

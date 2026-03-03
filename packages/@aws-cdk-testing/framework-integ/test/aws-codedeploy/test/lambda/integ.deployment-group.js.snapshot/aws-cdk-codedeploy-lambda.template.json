@@ -47,13 +47,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "HandlerServiceRoleFCDC14AE"
    ]
   },
-  "HandlerCurrentVersion93FB80BF9342c2c5c8b0dd83443d38a62d917ea2": {
+  "HandlerCurrentVersion93FB80BFc4706e7444907189998c700b4a4555e2": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -72,7 +72,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "HandlerCurrentVersion93FB80BF9342c2c5c8b0dd83443d38a62d917ea2",
+      "HandlerCurrentVersion93FB80BFc4706e7444907189998c700b4a4555e2",
       "Version"
      ]
     },
@@ -189,7 +189,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "PreHookServiceRoleDefaultPolicy65358F76",
@@ -290,7 +290,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "PostHookServiceRoleDefaultPolicy82AEE758",
@@ -474,7 +474,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "HandlerCurrentVersion93FB80BF9342c2c5c8b0dd83443d38a62d917ea2",
+      "HandlerCurrentVersion93FB80BFc4706e7444907189998c700b4a4555e2",
       "Version"
      ]
     },

@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"action\\\":\\\"subscribe\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"LAMBDA\\\",\\\"authToken\\\":\\\"validtoken\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121525450"
+    "salt": "1772552014663"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -208,7 +208,7 @@
      "Payload": "\"{\\\"action\\\":\\\"publish\\\",\\\"channel\\\":\\\"default\\\",\\\"authMode\\\":\\\"LAMBDA\\\",\\\"authToken\\\":\\\"validtoken\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121525452"
+    "salt": "1772552014665"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

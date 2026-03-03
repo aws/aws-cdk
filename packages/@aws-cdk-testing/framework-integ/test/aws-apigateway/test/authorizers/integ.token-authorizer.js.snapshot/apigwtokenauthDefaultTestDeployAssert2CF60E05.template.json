@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"method\\\":\\\"GET\\\",\\\"authorization\\\":\\\"allow\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121539405"
+    "salt": "1772552018408"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -248,7 +248,7 @@
      "Payload": "\"{\\\"method\\\":\\\"GET\\\",\\\"authorization\\\":\\\"deny\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121539407"
+    "salt": "1772552018409"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -296,7 +296,7 @@
      "Payload": "\"{\\\"method\\\":\\\"OPTIONS\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121539408"
+    "salt": "1772552018410"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

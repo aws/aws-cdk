@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "42ffa767736cd2fdffa530e5f60d84fe4c175f28da2d4e00eb659ffa8dab9097": {
+    "77a1e4a24862e718eb1b82bfcb341332b5143b90d5f8ff1a29c72fde023c93c6": {
       "displayName": "UserPoolPreTokenGenerationStack Template",
       "source": {
         "path": "UserPoolPreTokenGenerationStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2b960576": {
+        "current_account-current_region-6cfd19ec": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "42ffa767736cd2fdffa530e5f60d84fe4c175f28da2d4e00eb659ffa8dab9097.json",
+          "objectKey": "77a1e4a24862e718eb1b82bfcb341332b5143b90d5f8ff1a29c72fde023c93c6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

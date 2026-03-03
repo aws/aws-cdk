@@ -91,7 +91,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "ErrorHandlingFunctionServiceRoleDefaultPolicy73BB7661",

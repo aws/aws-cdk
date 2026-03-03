@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "34be08478bc53f7d0ece615b0f7c46050d51d6c0059eddf6d838dd04eb818f36": {
+    "eabfd87fea1a7473232e0e86ee520286d73934193f9146e5d4a6e91070a5d6d4": {
       "displayName": "KafkaObservabilityTest Template",
       "source": {
         "path": "KafkaObservabilityTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-796c6820": {
+        "current_account-current_region-0670db04": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "34be08478bc53f7d0ece615b0f7c46050d51d6c0059eddf6d838dd04eb818f36.json",
+          "objectKey": "eabfd87fea1a7473232e0e86ee520286d73934193f9146e5d4a6e91070a5d6d4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

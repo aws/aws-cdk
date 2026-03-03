@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dad62098fcf7b135eb5f217e9843b1ac887d86e9ce8bd34365a3c5dbc1fadbdc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f93ce4bd2a75d305a0ba8a3eeb9f71d8e3358fb9d3c3766f5887dbc607a2131c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -141,7 +141,7 @@
         "/MyStack/MyTriggerFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTriggerFunctionCurrentVersion61957CE1fffd3084a9aeea22fdf54135232c8925"
+            "data": "MyTriggerFunctionCurrentVersion61957CE1f17c1c09f1ce6b916e414b39b50d1e7d"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider": [
@@ -226,7 +226,7 @@
         "/MyStack/MyLambdaFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaFunctionCurrentVersion4FAB80EC606843d76c51daee2210faf093c5a057"
+            "data": "MyLambdaFunctionCurrentVersion4FAB80EC88e1a6555a4925fe10563117c573d2cf"
           }
         ],
         "/MyStack/MyTrigger/Default": [
@@ -361,7 +361,7 @@
         "/MyStack/MyAssertionLambdaFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C8008d66d0dcba9aeb0cb56c09c1fec0b0a"
+            "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80471a30c0d98c41fbae206f65480f88b6"
           }
         ],
         "/MyStack/MyAssertionTrigger/Default": [
@@ -445,7 +445,7 @@
         "/MyStack/MySecondFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySecondFunctionCurrentVersion7D497B5D12214c93d7c29b85186712bb8bbc6b06"
+            "data": "MySecondFunctionCurrentVersion7D497B5D521822ce335698d5cea3b86e1bc4c2e2"
           }
         ],
         "/MyStack/MyDefaultPropTrigger/Default": [
@@ -477,42 +477,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "MyStack"
@@ -534,7 +498,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f36e816dac8eef3774416640d0d944f835f5b4f4ef39da007db9e37368437bae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/842e6f9620408cadadee3bfe3cd6158dd2957bd166b6d12de63ac329b744a65b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

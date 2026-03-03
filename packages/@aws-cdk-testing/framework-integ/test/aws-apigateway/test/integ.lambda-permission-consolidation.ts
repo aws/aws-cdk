@@ -1,8 +1,9 @@
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import { LambdaIntegration, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class LambdaPermissionConsolidationStack extends Stack {
   public readonly api: RestApi;
@@ -19,7 +20,7 @@ class LambdaPermissionConsolidationStack extends Stack {
           headers: { 'Content-Type': 'application/json' }
         };
       }`),
-      runtime: Runtime.NODEJS_24_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
     });
 

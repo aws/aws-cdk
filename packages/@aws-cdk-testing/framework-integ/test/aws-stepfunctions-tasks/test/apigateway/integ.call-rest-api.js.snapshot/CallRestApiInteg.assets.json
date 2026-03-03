@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "14466beead18fe979d483d82deb390bf17e1a37962befb590558d2cff65e7ba7": {
+    "4b29dde1159c3cb37089c0c2938dc88ae2ed729bb20a1329c93387eea44f8d29": {
       "displayName": "CallRestApiInteg Template",
       "source": {
         "path": "CallRestApiInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-95c09dfd": {
+        "current_account-current_region-2253e534": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "14466beead18fe979d483d82deb390bf17e1a37962befb590558d2cff65e7ba7.json",
+          "objectKey": "4b29dde1159c3cb37089c0c2938dc88ae2ed729bb20a1329c93387eea44f8d29.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

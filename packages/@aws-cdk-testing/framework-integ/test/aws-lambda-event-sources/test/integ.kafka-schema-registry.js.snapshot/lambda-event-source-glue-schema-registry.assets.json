@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "06913c81aca136b1bee49ff7f3ef78ab10a593a46d301d5438aa2c7840136177": {
+    "e56fc6f0baaf1dfa04cf92f1654c1a7a1ef2fa026828033cc1533e2ef327620b": {
       "displayName": "lambda-event-source-glue-schema-registry Template",
       "source": {
         "path": "lambda-event-source-glue-schema-registry.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5c6fc620": {
+        "current_account-current_region-13369426": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "06913c81aca136b1bee49ff7f3ef78ab10a593a46d301d5438aa2c7840136177.json",
+          "objectKey": "e56fc6f0baaf1dfa04cf92f1654c1a7a1ef2fa026828033cc1533e2ef327620b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

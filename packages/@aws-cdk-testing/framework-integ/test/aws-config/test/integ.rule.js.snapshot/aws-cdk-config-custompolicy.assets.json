@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "8bf0f19904e8202337ac06b462ec9ba9ebd5ad81ad952257ff5697e671c2d214": {
+    "9f80ccfe0b05b1a9c0c970f6412697eb92533a898d110af8b1d14be9c0e954ef": {
       "displayName": "aws-cdk-config-custompolicy Template",
       "source": {
         "path": "aws-cdk-config-custompolicy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-7bdc7401": {
+        "current_account-current_region-2a43b47c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8bf0f19904e8202337ac06b462ec9ba9ebd5ad81ad952257ff5697e671c2d214.json",
+          "objectKey": "9f80ccfe0b05b1a9c0c970f6412697eb92533a898d110af8b1d14be9c0e954ef.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

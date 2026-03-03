@@ -58,7 +58,7 @@
     "Code": {
      "ZipFile": "exports.handler =  async function(event, context) { console.log(\"Hello from CDK! with Alias Provisioned Concurrent Exec!\");}"
     },
-    "Description": "version-hash:fc2f108513cd9b06e4d04b8c709be89c",
+    "Description": "version-hash:7b7db7b3be081423975b40fb6b8a1b1d",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -66,14 +66,14 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
     "MyLambdaAliasPCEServiceRoleF7C9F212"
    ]
   },
-  "MyLambdaAliasPCECurrentVersion072335D3f0c0a1526c86c441003768aeead75a9c": {
+  "MyLambdaAliasPCECurrentVersion072335D37ab574d45753c23192dd39d06f334695": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -92,7 +92,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaAliasPCECurrentVersion072335D3f0c0a1526c86c441003768aeead75a9c",
+      "MyLambdaAliasPCECurrentVersion072335D37ab574d45753c23192dd39d06f334695",
       "Version"
      ]
     },
@@ -170,7 +170,7 @@
     "Code": {
      "ZipFile": "exports.handler =  async function(event, context) { console.log(\"Hello from CDK! with Version Provisioned Concurrent Exec!\");}"
     },
-    "Description": "version-hash:5ac35497c721554fd3965a9c11c5880c",
+    "Description": "version-hash:0b94eb2f5b03ac57e565c348d24dc820",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -178,14 +178,14 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",
     "MyLambdaVersionPCEServiceRole2ACFB73E"
    ]
   },
-  "MyLambdaVersionPCECurrentVersion27FC393240960d48807994f5f5fd6a7659dbe346": {
+  "MyLambdaVersionPCECurrentVersion27FC39322cebb0c49cd3347c94dbeb424f97cc83": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -207,7 +207,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaVersionPCECurrentVersion27FC393240960d48807994f5f5fd6a7659dbe346",
+      "MyLambdaVersionPCECurrentVersion27FC39322cebb0c49cd3347c94dbeb424f97cc83",
       "Version"
      ]
     },

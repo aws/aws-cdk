@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "79e9816244c8c1345bcd25fe807bf2c6a37b5f07700eaf3c33b426df94e79dd3": {
+    "2832c76cd628c65482503e36846159da4206642a66d7c47cca72ba7e8804074e": {
       "displayName": "edge-lambda-stack-eu-west-1-2 Template",
       "source": {
         "path": "edge-lambda-stack-eu-west-1-2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-850cc000": {
+        "current_account-us-east-1-d4aedab6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "79e9816244c8c1345bcd25fe807bf2c6a37b5f07700eaf3c33b426df94e79dd3.json",
+          "objectKey": "2832c76cd628c65482503e36846159da4206642a66d7c47cca72ba7e8804074e.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

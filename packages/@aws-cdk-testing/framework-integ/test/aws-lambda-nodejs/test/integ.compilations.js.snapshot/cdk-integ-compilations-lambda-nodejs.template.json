@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "tsdecoratorhandlerServiceRole61E9E52C"
@@ -100,7 +100,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "tsdecoratorhandlertsconfigServiceRoleC4AE481E"

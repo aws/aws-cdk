@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"status\\\":\\\"success\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772121476852"
+    "salt": "1772556377472"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -188,7 +188,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1772121476854"
+    "salt": "1772556377474"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
