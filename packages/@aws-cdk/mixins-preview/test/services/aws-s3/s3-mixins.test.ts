@@ -212,6 +212,20 @@ describe('S3 Mixins', () => {
         },
       });
     });
+
+    test('handles undefined nested properties through flatten path', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      // Only set a non-relationship property, leaving bucketEncryption undefined
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketName: 'my-bucket',
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketName: 'my-bucket',
+      });
+    });
   });
 
   describe('BucketPolicyStatementsMixin', () => {

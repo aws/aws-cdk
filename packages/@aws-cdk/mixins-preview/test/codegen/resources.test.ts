@@ -143,4 +143,9 @@ test('L1 property mixin with deeply nested relationship properties', () => {
   const rendered = renderer.render(module);
 
   expect(rendered).toMatchSnapshot();
+
+  // Non-relationship props (id) should pass through without flatten wrapping
+  expect(rendered).not.toContain('ret.id');
+  // Relationship props (encryption) should be in the flatten function
+  expect(rendered).toContain('ret.encryption');
 });

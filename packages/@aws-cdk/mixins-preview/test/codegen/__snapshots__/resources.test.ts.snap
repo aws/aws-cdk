@@ -132,7 +132,10 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
    */
   public constructor(props: CfnThingMixinProps, options: mixins.CfnPropertyMixinOptions = {}) {
     super();
-    this.props = { ...props, ...flattenCfnThingMixinProps(props) };
+    this.props = {
+      ...props,
+      ...flattenCfnThingMixinProps(props)
+    };
     this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.MERGE);
   }
 
@@ -207,7 +210,7 @@ function flattenCfnThingPropsMixinEncryptionConfigProperty(props: CfnThingPropsM
 // @ts-ignore TS6133
 function flattenCfnThingMixinProps(props: CfnThingMixinProps): CfnThingMixinProps {
   const ret: any = {};
-  if ((props.encryption !== undefined)) ret.encryption = (!props.encryption ? undefined : (!props.encryption ? undefined : flattenCfnThingPropsMixinEncryptionConfigProperty(props.encryption)));
+  if ((props.encryption !== undefined)) ret.encryption = flattenCfnThingPropsMixinEncryptionConfigProperty(props.encryption);
   return ret;
 }"
 `;

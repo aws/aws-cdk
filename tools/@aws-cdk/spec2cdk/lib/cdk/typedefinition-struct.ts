@@ -140,7 +140,10 @@ export class PartialTypeDefinitionStruct extends TypeDefinitionStruct {
   protected resolverExpression(prop: TypeDefProperty, propsParam: Expression): Expression {
     const propValue = expr.get(propsParam, prop.propertySpec.name);
     const resolved = prop.resolver(propsParam);
-    // All properties are optional in partial structs, so we need to guard against undefined
+    // All properties are optional in partial structs, so we need to guard against undefined.
+    // Reference equality is safe here: when a property has no relationship to resolve,
+    // prop.resolver returns the exact same expr.get() object as propValue, so we can
+    // skip the redundant ternary guard for simple pass-through properties.
     if (resolved === propValue) {
       return resolved;
     }

@@ -148,7 +148,6 @@ distribution
 Configures vended logs delivery for supported resources when a pre-created destination is provided:
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
 // Create CloudFront distribution
@@ -180,7 +179,6 @@ distribution
 Vended Logs Configuration for Cross Account delivery (only supported for S3 and Firehose destinations)
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
 import * as logDestinations from '@aws-cdk/mixins-preview/aws-logs';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
@@ -230,8 +228,6 @@ distribution
 For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
-
 new s3.Bucket(scope, "Bucket")
   .with(new CfnBucketPropsMixin({
     versioningConfiguration: { status: "Enabled" },
@@ -245,8 +241,6 @@ new s3.Bucket(scope, "Bucket")
 Deeply nested properties support cross-service references, such as passing a KMS key for encryption:
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
-
 const key = new kms.Key(scope, "Key");
 
 new s3.Bucket(scope, "Bucket")
