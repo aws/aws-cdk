@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclients3tablesListTablesCommand2152cbd923724a855741d43f8775bc92": {
+  "AwsApiCallawssdkclients3tablesListTablesCommand0f763b4658e91bd3dafd7251d846dafa": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesListTabl",
    "Properties": {
     "ServiceToken": {
@@ -11,7 +11,7 @@
     },
     "service": "@aws-sdk/client-s3tables",
     "api": "ListTablesCommand",
-    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"tablewithpartitionsortstack_ortstack_table\"}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"test_table\"}}]}}}",
     "parameters": {
      "tableBucketARN": {
       "Fn::Join": [
@@ -25,10 +25,10 @@
        ]
       ]
      },
-     "namespace": "\"tablewithpartitionsortstack_ortstack_ns\""
+     "namespace": "\"test_namespace\""
     },
     "flattenResponse": "false",
-    "salt": "1770878501434"
+    "salt": "1772567605785"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -103,7 +103,7 @@
     }
    }
   },
-  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand32733754bb4148a90597791e54da7395": {
+  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand45919d3a58e2084895503682c402d96d": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
    "Properties": {
     "ServiceToken": {
@@ -128,29 +128,29 @@
        ]
       ]
      },
-     "namespace": "\"tablewithpartitionsortstack_ortstack_ns\"",
-     "name": "\"tablewithpartitionsortstack_ortstack_table\""
+     "namespace": "\"test_namespace\"",
+     "name": "\"test_table\""
     },
     "flattenResponse": "false",
-    "salt": "1770878501436"
+    "salt": "1772567605788"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand2152cbd923724a855741d43f8775bc92": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand0f763b4658e91bd3dafd7251d846dafa": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesListTablesCommand2152cbd923724a855741d43f8775bc92",
+     "AwsApiCallawssdkclients3tablesListTablesCommand0f763b4658e91bd3dafd7251d846dafa",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand32733754bb4148a90597791e54da7395": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand45919d3a58e2084895503682c402d96d": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand32733754bb4148a90597791e54da7395",
+     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand45919d3a58e2084895503682c402d96d",
      "assertion"
     ]
    }
