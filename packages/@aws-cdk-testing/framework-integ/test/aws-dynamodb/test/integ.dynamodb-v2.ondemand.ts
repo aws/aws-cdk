@@ -55,7 +55,6 @@ class TestStack extends Stack {
 const app = new App();
 new IntegTest(app, 'aws-cdk-global-table-ondemand-integ', {
   // Global tables with replicas require a region-aware stack
-  testCases: [new TestStack(app, 'aws-cdk-global-table-ondemand', { env: { region: process.env.CDK_DEFAULT_REGION || 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT } })],
-  regions: ['us-east-1'],
+  testCases: [new TestStack(app, 'aws-cdk-global-table-ondemand', { env: { region: process.env.AWS_REGION || 'us-east-1', account: process.env.AWS_ACCOUNT_ID } })],
   stackUpdateWorkflow: false,
 });
