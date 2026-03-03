@@ -3,6 +3,7 @@ import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -16,7 +17,7 @@ import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfigu
 import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
-import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
+import { validateStringField, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -677,7 +678,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new ValidationError(allErrors.join('\n'), this);
     }
   }
 
@@ -700,7 +701,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError(errors.join('\n'), this);
     }
   }
 }
