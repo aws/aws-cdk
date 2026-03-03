@@ -25,9 +25,9 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
-import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                                Interface

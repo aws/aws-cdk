@@ -1,8 +1,8 @@
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { PromptInferenceConfiguration } from './prompt-inference-configuration';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
 import { PromptTemplateType } from './prompt-variant';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Properties for creating a text prompt variant.

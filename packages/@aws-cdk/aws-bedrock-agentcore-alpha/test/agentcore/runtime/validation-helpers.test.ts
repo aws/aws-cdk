@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import {
   validateStringField,
   validateFieldPattern,
   throwIfInvalid,
 } from '../../../lib/runtime/validation-helpers';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 describe('validation-helpers tests', () => {
   describe('validateStringField', () => {

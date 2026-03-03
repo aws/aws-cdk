@@ -1,9 +1,9 @@
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { PromptGenAiResource } from './prompt-genai-resource';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
 import { PromptTemplateType } from './prompt-variant';
 import type { IAgentAlias } from '../agents/agent-alias';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Properties for creating an agent prompt variant.

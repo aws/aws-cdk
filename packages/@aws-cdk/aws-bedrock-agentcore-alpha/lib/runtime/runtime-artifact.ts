@@ -17,9 +17,9 @@ import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { Construct } from 'constructs';
 import type { Runtime } from './runtime';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Bedrock AgentCore runtime environment for code execution

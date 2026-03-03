@@ -13,8 +13,8 @@
 
 import { Token } from 'aws-cdk-lib';
 import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
-import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
 
 /**
  * Represents a custom claim validation configuration for Runtime JWT authorizers.

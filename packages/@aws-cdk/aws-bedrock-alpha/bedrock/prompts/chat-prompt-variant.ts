@@ -1,10 +1,10 @@
 import type { CfnPrompt } from 'aws-cdk-lib/aws-bedrock';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { PromptInferenceConfiguration } from './prompt-inference-configuration';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
 import { PromptTemplateType } from './prompt-variant';
 import type { ToolConfiguration } from './tool-choice';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Properties for creating a chat prompt variant.

@@ -3,10 +3,10 @@ import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -127,7 +127,6 @@ export class AssetApiSchema extends ApiSchema {
     if (!this.asset) {
       throw new UnscopedValidationError(
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
       );
     }
 

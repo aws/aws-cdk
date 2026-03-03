@@ -1,9 +1,9 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IBucketRef, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { Construct } from 'constructs';
 import { ActionGroupSchema } from './schema-base';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -103,7 +103,7 @@ export class AssetApiSchema extends ApiSchema {
    */
   public _render(): CfnAgent.APISchemaProperty {
     if (!this.asset) {
-      throw new UnscopedValidationError('ApiSchema must be bound to a scope before rendering. Call bind() first.', 'Asset not initialized');
+      throw new UnscopedValidationError('ApiSchema must be bound to a scope before rendering. Call bind() first.');
     }
 
     return {

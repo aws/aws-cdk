@@ -3,6 +3,7 @@ import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -24,7 +25,6 @@ import { RuntimeEndpoint } from './runtime-endpoint';
 import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
-import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
@@ -585,7 +585,7 @@ export class Runtime extends RuntimeBase {
     // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new ValidationError(allErrors.join('\n'), this);
     }
   }
 
@@ -609,7 +609,7 @@ export class Runtime extends RuntimeBase {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError(errors.join('\n'));
+        throw new ValidationError(errors.join('\n'), this);
       }
     }
   }
@@ -628,6 +628,7 @@ export class Runtime extends RuntimeBase {
     if (entries.length > 50) {
       throw new ValidationError(
         `Too many environment variables: ${entries.length}. Maximum allowed is 50`,
+        this,
       );
     }
 
@@ -656,7 +657,7 @@ export class Runtime extends RuntimeBase {
       // Combine and throw if any errors
       const allErrors = [...lengthErrors, ...patternErrors];
       if (allErrors.length > 0) {
-        throw new ValidationError(allErrors.join('\n'));
+        throw new ValidationError(allErrors.join('\n'), this);
       }
 
       // Validate value length (0-2048 characters per CloudFormation)
@@ -664,6 +665,7 @@ export class Runtime extends RuntimeBase {
         throw new ValidationError(
           `Invalid environment variable value length for key '${key}': ${value.length} characters. ` +
           'Values must not exceed 2048 characters',
+          this,
         );
       }
     }
@@ -701,7 +703,7 @@ export class Runtime extends RuntimeBase {
       // Combine key errors and throw if any
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
-        throw new ValidationError(keyErrors.join('\n'));
+        throw new ValidationError(keyErrors.join('\n'), this);
       }
 
       if (value === undefined || value === null) {
@@ -727,7 +729,7 @@ export class Runtime extends RuntimeBase {
       // Combine value errors and throw if any
       const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
       if (valueErrors.length > 0) {
-        throw new ValidationError(valueErrors.join('\n'));
+        throw new ValidationError(valueErrors.join('\n'), this);
       }
     }
   }
@@ -751,6 +753,7 @@ export class Runtime extends RuntimeBase {
     if (!pattern.test(uri)) {
       throw new ValidationError(
         `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
+        this,
       );
     }
   }
@@ -763,8 +766,11 @@ export class Runtime extends RuntimeBase {
     // Validate basic ARN format for IAM roles
     const arnPattern = /^arn:[a-z\-]+:iam::\d{12}:role\/[a-zA-Z0-9+=,.@\-_\/]+$/;
     if (!arnPattern.test(roleArn)) {
-      throw new ValidationError(`Invalid IAM role ARN format: ${roleArn}. ` +
-  'Expected format: arn:<partition>:iam::<account-id>:role/<role-name> or arn:<partition>:iam::<account-id>:role/<path>/<role-name>');
+      throw new ValidationError(
+        `Invalid IAM role ARN format: ${roleArn}. ` +
+        'Expected format: arn:<partition>:iam::<account-id>:role/<role-name> or arn:<partition>:iam::<account-id>:role/<path>/<role-name>',
+        this,
+      );
     }
 
     // Parse the ARN components using CDK's Arn.split()

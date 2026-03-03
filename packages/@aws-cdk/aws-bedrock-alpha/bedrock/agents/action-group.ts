@@ -1,9 +1,9 @@
 import * as crypto from 'crypto';
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { ActionGroupExecutor } from './api-executor';
 import type { ApiSchema } from './api-schema';
 import type { FunctionSchema } from './function-schema';
-import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                           Signatures
