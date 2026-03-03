@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BackupSelectionConditionsTest/DefaultTest": {
+      "stacks": [
+        "cdk-backup-selection-conditions"
+      ],
+      "assertionStack": "BackupSelectionConditionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BackupSelectionConditionsTestDefaultTestDeployAssert865BC2AB"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
