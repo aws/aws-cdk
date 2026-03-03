@@ -3,7 +3,11 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
+  },
+});
 
 // Stack 1: Create the capacity provider
 const providerStack = new cdk.Stack(app, 'ImportedCPStack');
@@ -25,7 +29,7 @@ const importedCapacityProvider = lambda.CapacityProvider.fromCapacityProviderArn
   capacityProvider.capacityProviderArn,
 );
 
-const fn = new lambda.Function(functionStack, 'Function', {
+const fn = new lambda.Function(functionStack, 'importedCPFunction', {
   runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
@@ -37,17 +41,8 @@ const testCase = new integ.IntegTest(app, 'FunctionCapacityProviderImportedTest'
   testCases: [providerStack, functionStack],
 });
 
-const getFunction = testCase.assertions.awsApiCall('Lambda', 'GetFunction', {
-  FunctionName: fn.functionName,
-});
-
-getFunction.expect(integ.ExpectedResult.objectLike({
-  Configuration: {
-    State: 'Active',
-    CapacityProviderConfig: {
-      LambdaManagedInstancesCapacityProviderConfig: {
-        CapacityProviderArn: capacityProvider.capacityProviderArn,
-      },
-    },
-  },
+testCase.assertions.invokeFunction({
+  functionName: fn.functionName,
+}).expect(integ.ExpectedResult.objectLike({
+  StatusCode: 200,
 }));

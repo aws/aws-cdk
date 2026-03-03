@@ -430,7 +430,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b03d5993c028e97ed49a76ea40bf80739e4ba31c930b08f312960761dc2c0b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d9fb363073cb65fc34c8b6fb47860f5b3fe57ef254bc37753a47a74946a21e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -453,7 +453,7 @@
             "data": "*"
           }
         ],
-        "/ImportedCPFunctionStack/Function": [
+        "/ImportedCPFunctionStack/importedCPFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -467,7 +467,7 @@
             "data": "Capacity provider configuration cannot be removed from a function, only modified. [ack: aws-lambda:Function.CapacityProviderConfiguration]"
           }
         ],
-        "/ImportedCPFunctionStack/Function/ServiceRole": [
+        "/ImportedCPFunctionStack/importedCPFunction/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -483,36 +483,22 @@
             }
           }
         ],
-        "/ImportedCPFunctionStack/Function/ServiceRole/Resource": [
+        "/ImportedCPFunctionStack/importedCPFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRole675BB04A"
+            "data": "importedCPFunctionServiceRole54DF61F4"
           }
         ],
-        "/ImportedCPFunctionStack/Function/Resource": [
+        "/ImportedCPFunctionStack/importedCPFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Function76856677"
+            "data": "importedCPFunction7F153084"
           }
         ],
-        "/ImportedCPFunctionStack/Function/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/ImportedCPFunctionStack/Function/LogGroup/Resource": [
+        "/ImportedCPFunctionStack/Exports/Output{\"Ref\":\"importedCPFunction7F153084\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionLogGroup55B80E27"
-          }
-        ],
-        "/ImportedCPFunctionStack/Exports/Output{\"Ref\":\"Function76856677\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefFunction76856677C48862D5"
+            "data": "ExportsOutputRefimportedCPFunction7F153084F6956582"
           }
         ],
         "/ImportedCPFunctionStack/BootstrapVersion": [
@@ -547,7 +533,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3cfc8a586ada38f61b1f3d0701397ab0a2b4c6c03368b4e2cd72b74316559328.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/58ee126b1113ad01f826eca2618fe9e7512871bca2efd6e19492888cc056f493.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -560,12 +546,11 @@
         }
       },
       "dependencies": [
-        "ImportedCPStack",
         "ImportedCPFunctionStack",
         "FunctionCapacityProviderImportedTestDefaultTestDeployAssert5E73DE47.assets"
       ],
       "metadata": {
-        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/Default": [
+        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/LambdaInvokef0807a14580c0c8b44992f0f98c86760/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -579,16 +564,22 @@
             "data": "*"
           }
         ],
-        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/Default/Default": [
+        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/LambdaInvokef0807a14580c0c8b44992f0f98c86760/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d"
+            "data": "LambdaInvokef0807a14580c0c8b44992f0f98c86760"
           }
         ],
-        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/AwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d/AssertionResults": [
+        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/LambdaInvokef0807a14580c0c8b44992f0f98c86760/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallLambdaGetFunction7235747130f9a68357e1c7db74d3463d"
+            "data": "LambdaInvokef0807a14580c0c8b44992f0f98c86760InvokeAD014630"
+          }
+        ],
+        "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/LambdaInvokef0807a14580c0c8b44992f0f98c86760/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvokef0807a14580c0c8b44992f0f98c86760"
           }
         ],
         "/FunctionCapacityProviderImportedTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -1091,7 +1082,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": true,
+            "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },

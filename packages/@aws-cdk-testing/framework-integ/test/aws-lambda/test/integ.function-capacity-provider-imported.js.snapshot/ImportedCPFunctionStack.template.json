@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "FunctionServiceRole675BB04A": {
+  "importedCPFunctionServiceRole54DF61F4": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "Function76856677": {
+  "importedCPFunction7F153084": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "CapacityProviderConfig": {
@@ -47,43 +47,24 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "FunctionServiceRole675BB04A",
+      "importedCPFunctionServiceRole54DF61F4",
       "Arn"
      ]
     },
     "Runtime": "nodejs22.x"
    },
    "DependsOn": [
-    "FunctionServiceRole675BB04A"
+    "importedCPFunctionServiceRole54DF61F4"
    ]
-  },
-  "FunctionLogGroup55B80E27": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "Function76856677"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
-  "ExportsOutputRefFunction76856677C48862D5": {
+  "ExportsOutputRefimportedCPFunction7F153084F6956582": {
    "Value": {
-    "Ref": "Function76856677"
+    "Ref": "importedCPFunction7F153084"
    },
    "Export": {
-    "Name": "ImportedCPFunctionStack:ExportsOutputRefFunction76856677C48862D5"
+    "Name": "ImportedCPFunctionStack:ExportsOutputRefimportedCPFunction7F153084F6956582"
    }
   }
  },
