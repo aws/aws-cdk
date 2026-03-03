@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.241.0](https://github.com/aws/aws-cdk/compare/v2.240.0...v2.241.0) (2026-03-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-codedeploy: AWS::CodeDeploy::DeploymentGroup: Id attribute removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37103](https://github.com/aws/aws-cdk/issues/37103)) ([f1ee45c](https://github.com/aws/aws-cdk/commit/f1ee45cdac16e804afbba2db05bc93c568915b73))
+* **autoscaling:** add deletionProtection property to AutoScalingGroup ([#36924](https://github.com/aws/aws-cdk/issues/36924)) ([467f2b4](https://github.com/aws/aws-cdk/commit/467f2b49debe7c05d427e7ca05cbff8b8e1780f2))
+* **core:** introducing CDK Mixins ([#37055](https://github.com/aws/aws-cdk/issues/37055)) ([cda96cb](https://github.com/aws/aws-cdk/commit/cda96cb9b408411da2e0f14b0a22c440b76943f4))
+* **eks:** add support for Kubernetes version 1.35 ([#37065](https://github.com/aws/aws-cdk/issues/37065)) ([909fca3](https://github.com/aws/aws-cdk/commit/909fca35ad5f9fda569ccbb8ea43a3175cdad4b2)), closes [#36920](https://github.com/aws/aws-cdk/issues/36920) [#36016](https://github.com/aws/aws-cdk/issues/36016) [cdklabs/awscdk-asset-kubectl#2669](https://github.com/cdklabs/awscdk-asset-kubectl/issues/2669) [#37070](https://github.com/aws/aws-cdk/issues/37070) [#36950](https://github.com/aws/aws-cdk/issues/36950) [#36016](https://github.com/aws/aws-cdk/issues/36016)
+* **s3:** attribute-based access control ([#36229](https://github.com/aws/aws-cdk/issues/36229)) ([9ec4db3](https://github.com/aws/aws-cdk/commit/9ec4db3add76e085ad12feef1f9a72483a30b202))
+
+
+### Bug Fixes
+
+* bump minimatch to ^10.2.3 to resolve ReDoS vulnerabilities ([#37127](https://github.com/aws/aws-cdk/issues/37127)) ([c359329](https://github.com/aws/aws-cdk/commit/c3593297569f051c70b506a2e7f4035f8c8ee662)), closes [#37100](https://github.com/aws/aws-cdk/issues/37100)
+* **dynamodb:** fix SID for grants on multi-account global tables ([#37057](https://github.com/aws/aws-cdk/issues/37057)) ([98d5e82](https://github.com/aws/aws-cdk/commit/98d5e82079b574913a46f4c0588e98bd0181acbe))
+* **rds:** correct engine version deprecation tags and add missing versions ([#37080](https://github.com/aws/aws-cdk/issues/37080)) ([127b359](https://github.com/aws/aws-cdk/commit/127b35989a2a64f66de241022ecfe643179b9dd6)), closes [#37079](https://github.com/aws/aws-cdk/issues/37079) [#36937](https://github.com/aws/aws-cdk/issues/36937)
+
+## [2.240.0](https://github.com/aws/aws-cdk/compare/v2.239.0...v2.240.0) (2026-02-23)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37039](https://github.com/aws/aws-cdk/issues/37039)) ([17b2d93](https://github.com/aws/aws-cdk/commit/17b2d93f1f1aa422729e344649d43eb92e3999de))
+* **eks-v2:** graduate to stable 🚀 ([#36950](https://github.com/aws/aws-cdk/issues/36950)) ([a7de51c](https://github.com/aws/aws-cdk/commit/a7de51c33497b0c4db26c344da19e72eeb9327a7))
+* update L1 CloudFormation resource definitions ([#37034](https://github.com/aws/aws-cdk/issues/37034)) ([62d40f8](https://github.com/aws/aws-cdk/commit/62d40f85388bfb78ad7997b75c094b5dfd52347d))
+
+### Bug Fixes
+
+* bump minimatch to ^10.2.1 to resolve ReDoS vulnerability (GHSA-3ppc-4f35-3m26) ([#37027](https://github.com/aws/aws-cdk/issues/37027)) ([e48ea41](https://github.com/aws/aws-cdk/commit/e48ea41cc049264cb3d64ac99b8250202de96c29))
+
 ## [2.239.0](https://github.com/aws/aws-cdk/compare/v2.238.0...v2.239.0) (2026-02-19)
 
 

@@ -1167,7 +1167,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
   ],
   "DefaultInstanceClass": [
     "default_x86_64",
@@ -1186,6 +1187,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SAFE_DELETE",
     "FORCE_DELETE",
     "RETAIN"
+  ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
   ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
@@ -3898,6 +3904,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataStandardDark",
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
+  ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
   ],
   "SubnetType": [
     "Isolated",
