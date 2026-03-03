@@ -156,11 +156,10 @@ will change as new NodeJs versions become available in lambda, which may change 
 environment.
 
 When passing a runtime that is known to include a version of the aws sdk, it will be excluded by default. For example, when
-passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_LATEST`,  all `@aws-sdk/*` packages are excluded.
+passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `@aws-sdk/*` packages are excluded.
 
 > [!WARNING]
 > The NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime from <=Node 16 to any newer version will require bundling the SDK with your handler code, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.
-> Additionally, Node 18 has been deprecated by Lambda. Migrate to Node 24 or later.
 
 
 
