@@ -314,9 +314,8 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
-  prefix: 'home/myusername/*',
-});
+const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
