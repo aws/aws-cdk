@@ -242,6 +242,26 @@ new s3.Bucket(scope, "Bucket")
   }));
 ```
 
+Deeply nested properties support cross-service references, such as passing a KMS key for encryption:
+
+```typescript
+import '@aws-cdk/mixins-preview/with';
+
+const key = new kms.Key(scope, "Key");
+
+new s3.Bucket(scope, "Bucket")
+  .with(new CfnBucketPropsMixin({
+    bucketEncryption: {
+      serverSideEncryptionConfiguration: [{
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: "aws:kms",
+          kmsMasterKeyId: key,
+        },
+      }],
+    },
+  }));
+```
+
 Property mixins support two merge strategies:
 
 ```typescript

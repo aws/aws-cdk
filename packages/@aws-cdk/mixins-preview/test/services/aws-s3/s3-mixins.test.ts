@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
 import '../../../lib/with';
@@ -152,6 +153,64 @@ describe('S3 Mixins', () => {
       const mixin = new s3Mixins.CfnBucketPropsMixin({ bucketName: 'test' });
 
       expect(mixin.supports(construct)).toBe(false);
+    });
+
+    test('accepts deeply nested properties with cross-service references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('accepts deeply nested properties with string token references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key.keyArn,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
     });
   });
 
