@@ -20,7 +20,9 @@ export function prepareApp(root: IConstruct) {
   // apply dependencies between resources in depending subtrees
   for (const dependency of findTransitiveDeps(root)) {
     const targetCfnResources = findCfnResources(dependency.target);
-    const sourceCfnResources = findCfnResources(dependency.source);
+
+    // Gets iterated multiple times so make the iterator concrete
+    const sourceCfnResources = Array.from(findCfnResources(dependency.source));
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
