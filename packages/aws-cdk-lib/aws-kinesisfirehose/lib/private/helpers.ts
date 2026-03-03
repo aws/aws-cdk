@@ -6,7 +6,7 @@ import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { undefinedIfAllValuesAreEmpty } from '../../../core/lib/util';
-import type { CommonDestinationProps, DestinationS3BackupProps } from '../common';
+import type { CommonDestinationProps, DestinationS3BackupProps, SecretsManagerProps } from '../common';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import type { ILoggingConfig } from '../logging-config';
 import type { DataProcessorBindOptions, IDataProcessor } from '../processor';
@@ -233,6 +233,33 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
     },
     dependables: [bucketGrant, ...(loggingDependables ?? [])],
   };
+}
+
+export function createSecretsManagerConfiguration(
+  scope: Construct,
+  role: iam.IRole, props?: SecretsManagerProps,
+): CfnDeliveryStream.SecretsManagerConfigurationProperty | undefined {
+  if (props?.enabled || props?.secret) {
+    if (!props.secret) {
+      throw new cdk.ValidationError('The secret is required when enabled', scope);
+    }
+    if (!props.role) {
+      props.secret.grantRead(role);
+    }
+    return {
+      enabled: true,
+      roleArn: props.role?.roleArn,
+      secretArn: props.secret.secretArn,
+    };
+  }
+
+  if (props?.enabled === false) {
+    return {
+      enabled: false,
+    };
+  }
+
+  return;
 }
 
 export function createDynamicPartitioningConfiguration(
