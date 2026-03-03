@@ -117,10 +117,10 @@ describe('Table', () => {
             },
           ],
         },
-        tableProperties: {
-          'write.parquet.compression-codec': 'snappy',
-          'write.metadata.compression-codec': 'gzip',
-        },
+        tableProperties: [
+          { key: 'write.parquet.compression-codec', value: 'snappy' },
+          { key: 'write.metadata.compression-codec', value: 'gzip' },
+        ],
       },
       snapshotManagement: {
         maxSnapshotAgeHours: 24,
@@ -253,9 +253,9 @@ describe('Table', () => {
               { sourceId: 1, transform: 'identity', direction: 'asc', nullOrder: 'nulls-first' },
             ],
           },
-          tableProperties: {
-            'write.parquet.compression-codec': 'snappy',
-          },
+          tableProperties: [
+            { key: 'write.parquet.compression-codec', value: 'snappy' },
+          ],
         },
       });
     });

@@ -1,6 +1,6 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as core from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3tables from '../../lib';
 
 /**
@@ -14,34 +14,19 @@ class TableWithPartitionSortStack extends core.Stack {
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
-    const base = id.toLowerCase();
-
-    // Bucket: allow a-z0-9- only
-    const baseDash = base.replace(/[^a-z0-9-]/g, '-');
-
-    // Namespace/Table: allow a-z0-9_ only
-    const baseUnderscore = base.replace(/[^a-z0-9_]/g, '_');
-
-    // Suffix: make unique, but also conform to underscore rule
-    const suffix = core.Names.uniqueId(this).slice(-8).toLowerCase();
-
-    const bucketName = `${baseDash}-${suffix}-bucket`;
-    const namespaceName = `${baseUnderscore}_${suffix}_ns`;
-    const tableName = `${baseUnderscore}_${suffix}_table`;
-
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortBucket', {
-      tableBucketName: bucketName,
+      tableBucketName: 'my-test-bucket',
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
     this.namespace = new s3tables.Namespace(this, 'PartitionSortNamespace', {
-      namespaceName,
+      namespaceName: 'test_namespace',
       tableBucket: this.tableBucket,
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortTable', {
-      tableName,
+      tableName: 'test_table',
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       icebergMetadata: {
@@ -82,10 +67,10 @@ class TableWithPartitionSortStack extends core.Stack {
             },
           ],
         },
-        tableProperties: {
-          'write.format.default': 'parquet',
-          'write.parquet.compression-codec': 'zstd',
-        },
+        tableProperties: [
+          { key: 'write.format.default', value: 'parquet' },
+          { key: 'write.parquet.compression-codec', value: 'zstd' },
+        ],
       },
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
@@ -134,5 +119,3 @@ getMetadataLocation.expect(
     versionToken: Match.stringLikeRegexp('.+'),
   }),
 );
-
-app.synth();

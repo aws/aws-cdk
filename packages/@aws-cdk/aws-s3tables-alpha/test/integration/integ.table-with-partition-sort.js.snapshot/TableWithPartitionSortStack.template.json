@@ -3,7 +3,7 @@
   "PartitionSortBucket153171A7": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "tablewithpartitionsortstack-ortstack-bucket",
+    "TableBucketName": "my-test-bucket",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -12,7 +12,7 @@
   "PartitionSortNamespace4C784AE5": {
    "Type": "AWS::S3Tables::Namespace",
    "Properties": {
-    "Namespace": "tablewithpartitionsortstack_ortstack_ns",
+    "Namespace": "test_namespace",
     "TableBucketARN": {
      "Fn::GetAtt": [
       "PartitionSortBucket153171A7",
@@ -30,24 +30,59 @@
      "IcebergSchema": {
       "SchemaFieldList": [
        {
+        "Id": 1,
         "Name": "day",
-        "Required": true,
-        "Type": "date"
+        "Type": "date",
+        "Required": true
        },
        {
+        "Id": 2,
         "Name": "person_name",
-        "Required": true,
-        "Type": "string"
+        "Type": "string",
+        "Required": true
        },
        {
+        "Id": 3,
         "Name": "classes_taken",
-        "Required": false,
-        "Type": "int"
+        "Type": "int",
+        "Required": false
        }
       ]
+     },
+     "IcebergPartitionSpec": {
+      "SpecId": 0,
+      "Fields": [
+       {
+        "SourceId": 1,
+        "Transform": "identity",
+        "Name": "day_partition",
+        "FieldId": 1000
+       }
+      ]
+     },
+     "IcebergSortOrder": {
+      "OrderId": 1,
+      "Fields": [
+       {
+        "SourceId": 1,
+        "Transform": "identity",
+        "Direction": "asc",
+        "NullOrder": "nulls-last"
+       },
+       {
+        "SourceId": 2,
+        "Transform": "identity",
+        "Direction": "asc",
+        "NullOrder": "nulls-first"
+       }
+      ]
+     },
+     "TableProperties": {
+      "write.format.default": "parquet",
+      "write.parquet.compression-codec": "zstd"
      }
     },
-    "Namespace": "tablewithpartitionsortstack_ortstack_ns",
+    "Namespace": "test_namespace",
     "OpenTableFormat": "ICEBERG",
     "TableBucketARN": {
      "Fn::GetAtt": [
@@ -55,7 +90,7 @@
       "TableBucketARN"
      ]
     },
-    "TableName": "tablewithpartitionsortstack_ortstack_table"
+    "TableName": "test_table"
    },
    "DependsOn": [
     "PartitionSortNamespace4C784AE5"
