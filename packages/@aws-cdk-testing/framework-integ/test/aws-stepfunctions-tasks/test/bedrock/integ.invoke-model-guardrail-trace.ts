@@ -7,7 +7,7 @@ import { BedrockInvokeModel, Guardrail } from 'aws-cdk-lib/aws-stepfunctions-tas
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ');
 
-const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1);
+const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_NOVA_MICRO_V1_0);
 
 const guardrail = new bedrock.CfnGuardrail(stack, 'Guardrail', {
   name: 'MyGuardrail',
@@ -36,38 +36,24 @@ const prompt1 = new BedrockInvokeModel(stack, 'Prompt1', {
   model,
   body: sfn.TaskInput.fromObject(
     {
-      inputText: 'test attack',
-      textGenerationConfig: {
-        maxTokenCount: 100,
-        temperature: 1,
-      },
+      messages: [{ role: 'user', content: [{ text: 'test attack' }] }],
+      inferenceConfig: { maxNewTokens: 100, temperature: 1 },
     },
   ),
   guardrail: Guardrail.enableDraft(guardrail.attrGuardrailId),
   traceEnabled: true,
-  resultSelector: {
-    output: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
-  },
-  resultPath: '$',
 });
 
 const prompt2 = new BedrockInvokeModel(stack, 'Prompt2', {
   model,
   body: sfn.TaskInput.fromObject(
     {
-      inputText: 'test attack',
-      textGenerationConfig: {
-        maxTokenCount: 100,
-        temperature: 1,
-      },
+      messages: [{ role: 'user', content: [{ text: 'test attack' }] }],
+      inferenceConfig: { maxNewTokens: 100, temperature: 1 },
     },
   ),
   guardrail: Guardrail.enable(guardrail.attrGuardrailArn, 1),
   traceEnabled: true,
-  resultSelector: {
-    output: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
-  },
-  resultPath: '$',
 });
 
 const chain = sfn.Chain.start(prompt1).next(prompt2);
@@ -79,6 +65,7 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
 
 const testCase = new IntegTest(app, 'InvokeModel', {
   testCases: [stack],
+  regions: ['us-east-1', 'eu-west-2', 'ap-southeast-2'],
 });
 
 testCase.assertions
