@@ -41,8 +41,10 @@ const test = new integ.IntegTest(app, 'FleetIntegTest', {
   regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
   cdkCommandOptions: {
     destroy: {
-      // Fleet resource deletion takes ~40 minutes, exceeding the CFN resource handler's
-      // ~21 minute stabilization timeout, causing DELETE_FAILED (NotStabilized).
+      // CodeBuild fleet instances have a 1-hour minimum runtime before deletion completes.
+      // The CFN resource handler's stabilization timeout is shorter than this,
+      // so DELETE always fails with "Exceeded attempts to wait" (HandlerErrorCode: NotStabilized).
+      // The fleet is still cleaned up by CodeBuild after the 1-hour window.
       expectError: true,
     },
   },

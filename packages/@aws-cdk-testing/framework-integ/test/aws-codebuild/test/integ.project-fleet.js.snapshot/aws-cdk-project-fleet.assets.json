@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "51b071eae451ed6f8d5d4337b365cbb140868f1401937390ae1aabb789bccb6a": {
       "displayName": "aws-cdk-project-fleet Template",
