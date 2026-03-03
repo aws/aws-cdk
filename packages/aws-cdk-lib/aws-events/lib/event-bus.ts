@@ -494,7 +494,7 @@ export class EventBus extends EventBusBase {
     addConstructMetadata(this, props);
 
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
-      throw new ValidationError(`description must be less than or equal to 512 characters, got ${props.description.length}`, this);
+      throw new ValidationError('Mustbedescriptionlessthan', `description must be less than or equal to 512 characters, got ${props.description.length}`, this);
     }
 
     this._resource = new CfnEventBus(this, 'Resource', {
@@ -544,7 +544,7 @@ export class EventBus extends EventBusBase {
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     // If no sid is provided, generate one based on the event bus id
     if (statement.sid == null) {
-      throw new ValidationError('Event Bus policy statements must have a sid', this);
+      throw new ValidationError('Eventpolicystatements', 'Event Bus policy statements must have a sid', this);
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340

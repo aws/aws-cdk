@@ -46,11 +46,11 @@ export class GeoRestriction {
 
   private static validateLocations(locations: string[]) {
     if (locations.length === 0) {
-      throw new UnscopedValidationError('Should provide at least 1 location');
+      throw new UnscopedValidationError('ShouldProvideLeastLocation', 'Should provide at least 1 location');
     }
     locations.forEach(location => {
       if (!GeoRestriction.LOCATION_REGEX.test(location)) {
-        throw new UnscopedValidationError(`Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
+        throw new UnscopedValidationError('InvalidInvalidLocationFormat', `Invalid location format for location: ${location}, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code`);
       }
     });
     return locations;

@@ -197,26 +197,26 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
       if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
-        throw new UnscopedValidationError(`arraySize must be between 2 and 10,000. Received ${arraySize}.`);
+        throw new UnscopedValidationError('MustBeArraysizeBetween', `arraySize must be between 2 and 10,000. Received ${arraySize}.`);
       }
     });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
-      throw new UnscopedValidationError(`dependencies must be 20 or less. Received ${props.dependsOn.length}.`);
+      throw new UnscopedValidationError('MustBeDependenciesLess', `dependencies must be 20 or less. Received ${props.dependsOn.length}.`);
     }
 
     // validate attempts
     withResolved(props.attempts, (attempts) => {
       if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
-        throw new UnscopedValidationError(`attempts must be between 1 and 10. Received ${attempts}.`);
+        throw new UnscopedValidationError('MustBeAttemptsBetween', `attempts must be between 1 and 10. Received ${attempts}.`);
       }
     });
 
     // validate timeout
     props.timeout !== undefined && withResolved(props.timeout.toSeconds(), (timeout) => {
       if (timeout < 60) {
-        throw new UnscopedValidationError(`timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
+        throw new UnscopedValidationError('MustBeTimeoutGreaterThan', `timeout must be greater than 60 seconds. Received ${timeout} seconds.`);
       }
     });
 

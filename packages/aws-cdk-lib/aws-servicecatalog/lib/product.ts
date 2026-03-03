@@ -259,7 +259,7 @@ export class CloudFormationProduct extends Product {
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
     if (props.productVersions.length == 0) {
-      throw new ValidationError(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`, this);
+      throw new ValidationError('InvalidInvalidinvalidproductversions', `Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`, this);
     }
     props.productVersions.forEach(productVersion => {
       InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, productVersion.productVersionName);

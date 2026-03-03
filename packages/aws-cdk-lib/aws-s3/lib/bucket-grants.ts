@@ -188,7 +188,7 @@ export class BucketGrants {
    */
   public replicationPermission(identity: IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
-      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this.bucket);
+      throw new ValidationError('Mustbeleastdestinationbucket', 'At least one destination bucket must be specified in the destinations array', this.bucket);
     }
 
     // add permissions to the role

@@ -467,25 +467,25 @@ export class Nodegroup extends Resource implements INodegroup {
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
       if (desired > max) {
-        throw new ValidationError(`Desired capacity ${desired} can't be greater than max size ${max}`, this);
+        throw new ValidationError('DesiredCapacityCanTGreater', `Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
       if (desired === undefined) {return ;}
       if (desired < min) {
-        throw new ValidationError(`Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
+        throw new ValidationError('MinimumCapacityCanTGreater', `Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
     });
 
     if (props.launchTemplateSpec && props.diskSize) {
       // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
       // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-      throw new ValidationError('diskSize must be specified within the launch template', this);
+      throw new ValidationError('Mustbedisksizespecifiedwithin', 'diskSize must be specified within the launch template', this);
     }
 
     if (props.instanceType && props.instanceTypes) {
-      throw new ValidationError('"instanceType is deprecated, please use "instanceTypes" only.', this);
+      throw new ValidationError('InstancetypeDeprecated', '"instanceType is deprecated, please use "instanceTypes" only.', this);
     }
 
     if (props.instanceType) {
@@ -506,7 +506,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new ValidationError(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
+        throw new ValidationError('SpecifiedDoesMatchInstance', `The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
       }
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
@@ -638,17 +638,17 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new ValidationError('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
+      throw new ValidationError('Maxunavailablemaxunavailablepercentagealloweddefined', 'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
     }
     if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new ValidationError(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
+      throw new ValidationError('Mustbemaxunavailablepercentagebetween', `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new ValidationError(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
+        throw new ValidationError('Mustbemaxunavailablelowerthan', `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
-        throw new ValidationError(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
+        throw new ValidationError('Mustbemaxunavailablebetween', `maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
   }
@@ -731,11 +731,11 @@ function getPossibleAmiTypes(scope: Construct, instanceTypes: InstanceType[]): N
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new ValidationError(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`, scope);
+    throw new ValidationError('CannotCannotDetermineType', `Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`, scope);
   }
 
   if (architectures.size > 1) {
-    throw new ValidationError('instanceTypes of different architectures is not allowed', scope);
+    throw new ValidationError('Instancetypesdifferentarchitecturesallowed', 'instanceTypes of different architectures is not allowed', scope);
   }
 
   return archAmiMap.get(Array.from(architectures)[0])!;

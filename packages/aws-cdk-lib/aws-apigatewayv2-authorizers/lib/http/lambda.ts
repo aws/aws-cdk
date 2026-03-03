@@ -102,7 +102,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
-      throw new ValidationError('Cannot attach the same authorizer to multiple Apis', options.scope);
+      throw new ValidationError('CannotCannotcannotattachsame', 'Cannot attach the same authorizer to multiple Apis', options.scope);
     }
 
     if (!this.authorizer) {

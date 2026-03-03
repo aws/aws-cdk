@@ -667,18 +667,18 @@ export class Repository extends RepositoryBase {
    */
   public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
     if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
-      throw new UnscopedValidationError('Cannot look up a repository with a tokenized name or ARN.');
+      throw new UnscopedValidationError('CannotCannotLookRepository', 'Cannot look up a repository with a tokenized name or ARN.');
     }
 
     if (!options.repositoryArn && !options.repositoryName) {
-      throw new UnscopedValidationError('At least one of `repositoryName` or `repositoryArn` must be provided.');
+      throw new UnscopedValidationError('MustBeLeastProvided', 'At least one of `repositoryName` or `repositoryArn` must be provided.');
     }
 
     const identifier = options.repositoryName ??
       (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
 
     if (!identifier) {
-      throw new UnscopedValidationError('Could not determine repository identifier from provided options.');
+      throw new UnscopedValidationError('CouldDetermineRepositoryIdentifier', 'Could not determine repository identifier from provided options.');
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -732,7 +732,7 @@ export class Repository extends RepositoryBase {
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
     if (Token.isUnresolved(repositoryArn)) {
-      throw new UnscopedValidationError('"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+      throw new UnscopedValidationError('RepositoryarnLateBoundValue', '"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
     validateRepositoryArn();
@@ -757,7 +757,7 @@ export class Repository extends RepositoryBase {
       const splitArn = repositoryArn.split(':');
 
       if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
-        throw new UnscopedValidationError(`Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+        throw new UnscopedValidationError('ShouldBeRepositoryShouldFormat', `Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
       }
     }
   }
@@ -809,7 +809,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+      throw new UnscopedValidationError('InvalidInvalidRepositoryName', `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -864,10 +864,10 @@ export class Repository extends RepositoryBase {
     }
 
     if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
-      throw new ValidationError('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+      throw new ValidationError('CannotCannotEmptyondeleteProperty', 'Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
     } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+        throw new ValidationError('CannotCannotAutodeleteimagesProperty', 'Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
       }
       this.enableAutoDeleteImages();
     }
@@ -911,28 +911,28 @@ export class Repository extends RepositoryBase {
       && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)
       && (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
     ) {
-      throw new ValidationError('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
+      throw new ValidationError('Tagstatus', 'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
     }
     if (rule.tagStatus !== TagStatus.TAGGED && (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)) {
-      throw new ValidationError('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
+      throw new ValidationError('Tagprefixlisttagpatternlistonlyspecified', 'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new ValidationError('Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
+      throw new ValidationError('Bothtagprefixlisttagpatternlistcannot', 'Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
         const splitPatternLength = pattern.split('*').length;
         if (splitPatternLength > 5) {
-          throw new ValidationError(`A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
+          throw new ValidationError('Patterncannotcontainmore', `A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
         }
       });
     }
     if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new ValidationError(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
+      throw new ValidationError('LifeCycleRuleContain', `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
     }
 
     if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
-      throw new ValidationError('Life cycle can only have one TagStatus.Any rule', this);
+      throw new ValidationError('Lifecycleonlytagstatus', 'Life cycle can only have one TagStatus.Any rule', this);
     }
 
     this.lifecycleRules.push({ ...rule });
@@ -957,7 +957,7 @@ export class Repository extends RepositoryBase {
     const filterCount = exclusionFilters?.length;
 
     if (filterCount !== undefined && (filterCount < 1 || filterCount > 5)) {
-      throw new ValidationError(`imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
+      throw new ValidationError('Imagetagmutabilityexclusionfilterscontainbetweenfilters', `imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
     }
 
     if (requiresExclusion && !hasExclusionFilters) {
@@ -1002,7 +1002,7 @@ export class Repository extends RepositoryBase {
     const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
     if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
-      throw new ValidationError("Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
+      throw new ValidationError('CannotCannotCombinePrioritized', "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
     }
 
     const prios = prioritizedRules.map(r => r.rulePriority!);
@@ -1031,7 +1031,7 @@ export class Repository extends RepositoryBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
+      throw new ValidationError('EncryptionkeySpecified', `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
     }
 
     if (encryptionType === RepositoryEncryption.AES_256) {
@@ -1045,7 +1045,7 @@ export class Repository extends RepositoryBase {
       };
     }
 
-    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError('UnexpectedUnexpectedEncryptiontype', `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 
   private enableAutoDeleteImages() {
@@ -1098,7 +1098,7 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
   if (anyRules.length === 1) {
     const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
     if (anyRules[0].rulePriority !== maxPrio) {
-      throw new UnscopedValidationError(`TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
+      throw new UnscopedValidationError('Tagstatus', `TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
     }
   }
 }
@@ -1182,13 +1182,13 @@ export class ImageTagMutabilityExclusionFilter {
     private readonly filterValue: string,
   ) {
     if (!filterValue) {
-      throw new UnscopedValidationError('Pattern cannot be empty');
+      throw new UnscopedValidationError('PatternCannotEmpty', 'Pattern cannot be empty');
     }
     if (filterValue.length > 128) {
-      throw new UnscopedValidationError(`Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+      throw new UnscopedValidationError('PatternCannotExceedCharacters', `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
     }
     if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
-      throw new UnscopedValidationError(`Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+      throw new UnscopedValidationError('PatternContainsInvalidCharacters', `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
     }
   }
 

@@ -488,19 +488,19 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     super(scope, id);
 
     if (!props.onCreate && !props.onUpdate && !props.onDelete) {
-      throw new cdk.ValidationError('At least `onCreate`, `onUpdate` or `onDelete` must be specified.', this);
+      throw new cdk.ValidationError('MissingLifecycleHandlers', 'At least `onCreate`, `onUpdate` or `onDelete` must be specified.', this);
     }
 
     if (!props.role && !props.policy) {
-      throw new cdk.ValidationError('At least one of `policy` or `role` (or both) must be specified.', this);
+      throw new cdk.ValidationError('MissingRoleOrPolicy', 'At least one of `policy` or `role` (or both) must be specified.', this);
     }
 
     if (props.onCreate && !props.onCreate.physicalResourceId) {
-      throw new cdk.ValidationError("'physicalResourceId' must be specified for 'onCreate' call.", this);
+      throw new cdk.ValidationError('MissingPhysicalResourceIdOnCreate', "'physicalResourceId' must be specified for 'onCreate' call.", this);
     }
 
     if (!props.onCreate && props.onUpdate && !props.onUpdate.physicalResourceId) {
-      throw new cdk.ValidationError("'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.", this);
+      throw new cdk.ValidationError('MissingPhysicalResourceIdOnUpdate', "'physicalResourceId' must be specified for 'onUpdate' call when 'onCreate' is omitted.", this);
     }
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
@@ -511,12 +511,12 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
       if (call?.externalId && !call?.assumedRoleArn) {
-        throw new cdk.ValidationError('ExternalId can only be provided when assumedRoleArn is specified.', this);
+        throw new cdk.ValidationError('ExternalIdWithoutAssumedRole', 'ExternalId can only be provided when assumedRoleArn is specified.', this);
       }
     }
 
     if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
-      throw new cdk.ValidationError('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.', this);
+      throw new cdk.ValidationError('PhysicalResourceIdRefInOnCreate', '`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.', this);
     }
 
     this.props = props;

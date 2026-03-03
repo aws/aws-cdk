@@ -113,28 +113,28 @@ export class StepScalingPolicy extends Construct {
     super(scope, id);
 
     if (props.scalingSteps.length < 2) {
-      throw new ValidationError('You must supply at least 2 intervals for autoscaling', this);
+      throw new ValidationError('Supplyleastintervalsautoscaling', 'You must supply at least 2 intervals for autoscaling', this);
     }
 
     if (props.scalingSteps.length > 40) {
-      throw new ValidationError(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`, this);
+      throw new ValidationError('ScalingstepsMostSteps', `'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`, this);
     }
 
     if (props.evaluationPeriods !== undefined && !Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < 1) {
-      throw new ValidationError(`evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`, this);
+      throw new ValidationError('Evaluationperiodscannotlessthan', `evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`, this);
     }
     if (props.datapointsToAlarm !== undefined) {
       if (props.evaluationPeriods === undefined) {
-        throw new ValidationError('evaluationPeriods must be set if datapointsToAlarm is set', this);
+        throw new ValidationError('Mustbeevaluationperiodsdatapointstoalarm', 'evaluationPeriods must be set if datapointsToAlarm is set', this);
       }
       if (!Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
-        throw new ValidationError(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`, this);
+        throw new ValidationError('Datapointstoalarmcannotlessthan', `datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`, this);
       }
       if (!Token.isUnresolved(props.datapointsToAlarm)
         && !Token.isUnresolved(props.evaluationPeriods)
         && props.evaluationPeriods < props.datapointsToAlarm
       ) {
-        throw new ValidationError(`datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`, this);
+        throw new ValidationError('Mustbedatapointstoalarmlessthan', `datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`, this);
       }
     }
 

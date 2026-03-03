@@ -111,7 +111,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
           templatePathsByPlugin.set(plugin, []);
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        if (!assemblyToUse) throw new AssumptionError('ValidationFailed', `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
         templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
       }
     }
@@ -143,7 +143,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       });
     }
     if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+      throw new AssumptionError('IllegalOperationValidationPlugin', `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
 
@@ -294,7 +294,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new UnscopedValidationError('We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError('DetectedPossibleInfiniteLoop', 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -477,7 +477,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new UnscopedValidationError(`Validation failed with the following errors:\n  ${errorList}`);
+    throw new UnscopedValidationError('ValidationFailedFollowingErrorsN', `Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 

@@ -483,7 +483,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
   } else {
-    throw new UnscopedValidationError(`Unsupported subnet type: ${type}`);
+    throw new UnscopedValidationError('UnsupportedSubnetType', `Unsupported subnet type: ${type}`);
   }
 
   /**
@@ -511,7 +511,7 @@ function validateSupportIpv6(vpc: IVpcV2) {
   secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
-      throw new UnscopedValidationError('To use IPv6, the VPC must enable IPv6 support.');
+      throw new UnscopedValidationError('Ipv6NotSupported', 'To use IPv6, the VPC must enable IPv6 support.');
     }
   } else {return false;}
 }
@@ -548,7 +548,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   // If no IPv4 is assigned as secondary address
   if (allCidrs.length === 0) {
-    throw new UnscopedValidationError('No secondary IP address attached to VPC');
+    throw new UnscopedValidationError('NoSecondaryIpAddress', 'No secondary IP address attached to VPC');
   }
 
   return allCidrs.some(c => c.containsCidr(subnetCidrBlock));

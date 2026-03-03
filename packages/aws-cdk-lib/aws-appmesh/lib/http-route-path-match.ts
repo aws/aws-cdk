@@ -67,7 +67,7 @@ class HttpRoutePrefixPathMatch extends HttpRoutePathMatch {
     super();
 
     if (prefix && prefix[0] !== '/') {
-      throw new UnscopedValidationError(`Prefix Path for the match must start with \'/\', got: ${prefix}`);
+      throw new UnscopedValidationError('PrefixPathMatchStart', `Prefix Path for the match must start with \'/\', got: ${prefix}`);
     }
   }
 
@@ -83,7 +83,7 @@ class HttpRouteWholePathMatch extends HttpRoutePathMatch {
     super();
 
     if (match.exact && match.exact[0] !== '/') {
-      throw new UnscopedValidationError(`Exact Path for the match must start with \'/\', got: ${match.exact}`);
+      throw new UnscopedValidationError('ExactPathMatchStart', `Exact Path for the match must start with \'/\', got: ${match.exact}`);
     }
   }
 
@@ -222,13 +222,13 @@ class HttpGatewayRouteWholePathMatch extends HttpGatewayRoutePathMatch {
     super();
 
     if (wholePathMatch.exact && wholePathMatch.exact[0] !== '/') {
-      throw new UnscopedValidationError(`Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
+      throw new UnscopedValidationError('ExactPathMatchStart', `Exact Path for the match must start with \'/\', got: ${ wholePathMatch.exact }`);
     }
     if (exactPathRewrite === '') {
-      throw new UnscopedValidationError('Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
+      throw new UnscopedValidationError('ExactPathRewriteCannot', 'Exact Path for the rewrite cannot be empty. Unlike startsWith() method, no automatic rewrite on whole path match');
     }
     if (exactPathRewrite && exactPathRewrite[0] !== '/') {
-      throw new UnscopedValidationError(`Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
+      throw new UnscopedValidationError('ExactPathRewriteStart', `Exact Path for the rewrite must start with \'/\', got: ${ exactPathRewrite }`);
     }
   }
 

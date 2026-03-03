@@ -190,22 +190,22 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new ValidationError('Task Token is required in `message` Use JsonPath.taskToken to set the token.', this);
+        throw new ValidationError('IsRequiredTaskTokenRequired', 'Task Token is required in `message` Use JsonPath.taskToken to set the token.', this);
       }
     }
 
     if (props.topic.fifo) {
       if (!props.messageGroupId) {
-        throw new ValidationError('\'messageGroupId\' is required for FIFO topics', this);
+        throw new ValidationError('IsRequiredMessagegroupidRequiredFifo', '\'messageGroupId\' is required for FIFO topics', this);
       }
       if (props.messageGroupId.length > 128) {
-        throw new ValidationError(`\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`, this);
+        throw new ValidationError('MustBeMessagegroupidMostCharacters', `\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`, this);
       }
       if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
-        throw new ValidationError('\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled', this);
+        throw new ValidationError('IsRequiredMessagededuplicationidRequiredFifo', '\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled', this);
       }
       if (props.messageDeduplicationId && props.messageDeduplicationId.length > 128) {
-        throw new ValidationError(`\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`, this);
+        throw new ValidationError('MustBeMessagededuplicationidMostCharacters', `\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`, this);
       }
     }
 
@@ -290,12 +290,12 @@ function validateMessageAttribute(scope: Construct, attribute: MessageAttribute)
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new ValidationError(`Requested SNS message attribute type was ${dataType} but ${value} was of type Array`, scope);
+      throw new ValidationError('Requestedmessageattributetype', `Requested SNS message attribute type was ${dataType} but ${value} was of type Array`, scope);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new ValidationError(`Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`, scope);
+        throw new ValidationError('Mustberequestedmessageattribute', `Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`, scope);
       }
     });
     return;

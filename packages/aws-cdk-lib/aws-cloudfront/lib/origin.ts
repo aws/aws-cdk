@@ -261,7 +261,7 @@ export abstract class OriginBase implements IOrigin {
     const vpcOriginConfig = this.renderVpcOriginConfig();
 
     if (!s3OriginConfig && !customOriginConfig && !vpcOriginConfig) {
-      throw new ValidationError('Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
+      throw new ValidationError('Subclassoverrideprovideeither', 'Subclass must override and provide either s3OriginConfig, customOriginConfig or vpcOriginConfig', scope);
     }
 
     return {
@@ -335,7 +335,7 @@ function validateIntInRangeOrUndefined(name: string, min: number, max: number, v
   if (value === undefined) { return; }
   if (!Number.isInteger(value) || value < min || value > max) {
     const seconds = isDuration ? ' seconds' : '';
-    throw new UnscopedValidationError(`${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
+    throw new UnscopedValidationError('MustBeBetweenInclusiveReceived', `${name}: Must be an int between ${min} and ${max}${seconds} (inclusive); received ${value}.`);
   }
 }
 
@@ -363,9 +363,9 @@ function validateCustomHeaders(customHeaders?: Record<string, string>) {
   });
 
   if (prohibitedHeadersKeysMatches.length !== 0) {
-    throw new UnscopedValidationError(`The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
+    throw new UnscopedValidationError('FollowingHeadersCannotConfigured', `The following headers cannot be configured as custom origin headers: ${prohibitedHeadersKeysMatches.join(', ')}`);
   }
   if (prohibitedHeaderPrefixMatches.length !== 0) {
-    throw new UnscopedValidationError(`The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
+    throw new UnscopedValidationError('FollowingHeadersCannotUsed', `The following headers cannot be used as prefixes for custom origin headers: ${prohibitedHeaderPrefixMatches.join(', ')}`);
   }
 }

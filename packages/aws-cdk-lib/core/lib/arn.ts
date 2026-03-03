@@ -142,7 +142,7 @@ export class Arn {
 
     // Catch both 'null' and 'undefined'
     if (partition == null || region == null || account == null) {
-      throw new UnscopedValidationError(`Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
+      throw new UnscopedValidationError('ValidationError', `Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
     }
 
     const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
@@ -154,7 +154,7 @@ export class Arn {
     ];
 
     if (sep !== '/' && sep !== ':' && sep !== '') {
-      throw new UnscopedValidationError('resourcePathSep may only be ":", "/" or an empty string');
+      throw new UnscopedValidationError('ResourcepathsepOnly', 'resourcePathSep may only be ":", "/" or an empty string');
     }
 
     if (components.resourceName != null) {
@@ -325,10 +325,10 @@ export class Arn {
     // resource type (to notify authors of incorrect assumptions right away).
     const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
-      throw new UnscopedValidationError(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
+      throw new UnscopedValidationError('ExpectedResourceType', `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
     }
     if (!parsed.resourceName) {
-      throw new UnscopedValidationError(`Expected resource name in ARN, didn't find one: '${arn}'`);
+      throw new UnscopedValidationError('ExpectedResourceName', `Expected resource name in ARN, didn't find one: '${arn}'`);
     }
     return parsed.resourceName;
   }
@@ -412,7 +412,7 @@ function parseArnShape(arn: string): 'token' | string[] {
     if (Token.isUnresolved(arn)) {
       return 'token';
     } else {
-      throw new UnscopedValidationError(`ARNs must start with "arn:" and have at least 6 components: ${arn}`);
+      throw new UnscopedValidationError('ArnsStartArnLeast', `ARNs must start with "arn:" and have at least 6 components: ${arn}`);
     }
   }
 

@@ -63,7 +63,7 @@ export class LambdaRestApi extends RestApi {
 
   constructor(scope: Construct, id: string, props: LambdaRestApiProps) {
     if (props.options?.defaultIntegration || props.defaultIntegration) {
-      throw new ValidationError('Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
+      throw new ValidationError('CannotCannotSpecifyDefaultintegration', 'Cannot specify "defaultIntegration" since Lambda integration is automatically defined', scope);
     }
 
     super(scope, id, {
@@ -99,13 +99,13 @@ export class LambdaRestApi extends RestApi {
 }
 
 function addResourceThrows(): Resource {
-  throw new UnscopedValidationError('Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError('CannotCannotCallAddresource', 'Cannot call \'addResource\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addMethodThrows(): Method {
-  throw new UnscopedValidationError('Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError('CannotCannotCallAddmethod', 'Cannot call \'addMethod\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
 
 function addProxyThrows(): ProxyResource {
-  throw new UnscopedValidationError('Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
+  throw new UnscopedValidationError('CannotCannotCallAddproxy', 'Cannot call \'addProxy\' on a proxying LambdaRestApi; set \'proxy\' to false');
 }
