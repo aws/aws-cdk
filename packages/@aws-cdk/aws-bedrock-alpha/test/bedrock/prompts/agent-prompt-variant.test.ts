@@ -1,6 +1,6 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as bedrock from '../../../bedrock';
-import { ValidationError } from '../../../bedrock/agents/validation-helpers';
+import { UnscopedValidationError as ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 describe('AgentPromptVariant', () => {
   let stack: Stack;

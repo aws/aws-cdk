@@ -6,6 +6,7 @@ import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                                Tool Schema Configuration
@@ -117,16 +118,6 @@ export interface ToolDefinition {
   readonly outputSchema?: SchemaDefinition;
 }
 
-/**
- * Error thrown when a ToolSchema is not properly initialized.
- */
-class ToolSchemaError extends Error {
-  constructor(message: string, public readonly cause?: string) {
-    super(message);
-    this.name = 'ToolSchemaError';
-  }
-}
-
 /******************************************************************************
  *                       TOOL SCHEMA CLASS
  *****************************************************************************/
@@ -231,7 +222,7 @@ export class AssetToolSchema extends ToolSchema {
    */
   public _render(): any {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
         'Asset not initialized',
       );
@@ -246,7 +237,7 @@ export class AssetToolSchema extends ToolSchema {
 
   public grantPermissionsToRole(role: IRole): void {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
         'Asset not initialized',
       );

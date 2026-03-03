@@ -16,7 +16,8 @@ import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfigu
 import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
-import { validateStringField, validateFieldPattern, ValidationError } from '../validation-helpers';
+import { validateStringField, validateFieldPattern } from '../validation-helpers';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                                Props

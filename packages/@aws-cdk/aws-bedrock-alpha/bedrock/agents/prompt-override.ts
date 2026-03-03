@@ -2,6 +2,7 @@ import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import * as validation from './validation-helpers';
 import type { IBedrockInvokable } from '../models';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * The step in the agent sequence that this prompt configuration applies to.
@@ -238,7 +239,7 @@ export class PromptOverrideConfiguration {
    */
   public static fromSteps(steps: PromptStepConfigBase[]): PromptOverrideConfiguration {
     if (!steps || steps.length === 0) {
-      throw new validation.ValidationError('Steps array cannot be empty');
+      throw new UnscopedValidationError('Steps array cannot be empty');
     }
 
     // Convert steps array to props format

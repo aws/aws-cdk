@@ -23,7 +23,8 @@ import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                                Props

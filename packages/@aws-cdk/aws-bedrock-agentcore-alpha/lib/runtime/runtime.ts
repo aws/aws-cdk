@@ -23,7 +23,8 @@ import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
 import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
-import { validateStringField, ValidationError, validateFieldPattern } from './validation-helpers';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
 
 /******************************************************************************
@@ -531,7 +532,7 @@ export class Runtime extends RuntimeBase {
       }
     }
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new ValidationError(allErrors.join('\n'), this);
     }
   }
 
@@ -543,13 +544,13 @@ export class Runtime extends RuntimeBase {
     if (lifecycleConfiguration.idleRuntimeSessionTimeout && !lifecycleConfiguration.idleRuntimeSessionTimeout.isUnresolved()) {
       if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
-        throw new ValidationError(`Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
+        throw new ValidationError(`Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
     }
     if (lifecycleConfiguration.maxLifetime && !lifecycleConfiguration.maxLifetime.isUnresolved()) {
       if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
-        throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`);
+        throw new ValidationError(`Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
     }
   }
@@ -704,7 +705,7 @@ export class Runtime extends RuntimeBase {
       }
 
       if (value === undefined || value === null) {
-        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`);
+        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`, this);
       }
 
       // Validate tag value length
@@ -771,12 +772,12 @@ export class Runtime extends RuntimeBase {
     const arnComponents = Arn.split(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (arnComponents.service !== 'iam') {
-      throw new ValidationError(`Invalid service in ARN: ${arnComponents.service}. Expected 'iam' for IAM role ARN.`);
+      throw new ValidationError(`Invalid service in ARN: ${arnComponents.service}. Expected 'iam' for IAM role ARN.`, this);
     }
 
     const accountId = arnComponents.account;
     if (!accountId || !/^\d{12}$/.test(accountId)) {
-      throw new ValidationError(`Invalid AWS account ID in role ARN: ${accountId}. Must be a 12-digit number.`);
+      throw new ValidationError(`Invalid AWS account ID in role ARN: ${accountId}. Must be a 12-digit number.`, this);
     }
 
     // Extract role name from resource
@@ -785,17 +786,17 @@ export class Runtime extends RuntimeBase {
     const resourceName = arnComponents.resourceName;
 
     if (resource !== 'role') {
-      throw new ValidationError(`Invalid resource type in ARN: ${resource}. Expected 'role' for IAM role ARN.`);
+      throw new ValidationError(`Invalid resource type in ARN: ${resource}. Expected 'role' for IAM role ARN.`, this);
     }
 
     if (!resourceName) {
-      throw new ValidationError('Role name is missing in the ARN');
+      throw new ValidationError('Role name is missing in the ARN', this);
     } else {
       const rolePathParts = resourceName.split('/');
       const roleName = rolePathParts[rolePathParts.length - 1];
 
       if (roleName.length > 64) {
-        throw new ValidationError(`Role name exceeds maximum length of 64 characters: ${roleName}`);
+        throw new ValidationError(`Role name exceeds maximum length of 64 characters: ${roleName}`, this);
       }
     }
 

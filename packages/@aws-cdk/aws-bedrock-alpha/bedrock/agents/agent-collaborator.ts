@@ -1,7 +1,7 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
 import type { IAgentAlias } from './agent-alias';
-import { ValidationError } from './validation-helpers';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Enum for collaborator's relay conversation history types.
@@ -110,7 +110,7 @@ export class AgentCollaborator {
 
   private validateProps(props: AgentCollaboratorProps) {
     if (props.agentAlias.aliasId === 'TSTALIASID') {
-      throw new ValidationError('Agent cannot collaborate with TSTALIASID alias of another agent');
+      throw new UnscopedValidationError('Agent cannot collaborate with TSTALIASID alias of another agent');
     }
   }
 

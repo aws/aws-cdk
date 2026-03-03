@@ -290,12 +290,12 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
   private validateProps(props: ApplicationInferenceProfileProps): void {
     // Validate applicationInferenceProfileName is provided and not empty
     if (!props.applicationInferenceProfileName || props.applicationInferenceProfileName.trim() === '') {
-      throw new ValidationError('applicationInferenceProfileName is required and cannot be empty', this);
+      throw new ValidationError('applicationInferenceProfileName is required and cannot be empty', this, this);
     }
 
     // Validate applicationInferenceProfileName length
     if (props.applicationInferenceProfileName.length > 64) {
-      throw new ValidationError('applicationInferenceProfileName cannot exceed 64 characters', this);
+      throw new ValidationError('applicationInferenceProfileName cannot exceed 64 characters', this, this);
     }
 
     // Validate applicationInferenceProfileName pattern
@@ -309,12 +309,12 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
 
     // Validate modelSource is provided
     if (!props.modelSource) {
-      throw new ValidationError('modelSource is required', this);
+      throw new ValidationError('modelSource is required', this, this);
     }
 
     // Validate description length if provided
     if (props.description !== undefined && props.description.length > 200) {
-      throw new ValidationError('description cannot exceed 200 characters', this);
+      throw new ValidationError('description cannot exceed 200 characters', this, this);
     }
 
     // Validate description pattern if provided

@@ -6,16 +6,7 @@ import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
-
-/**
- * Error thrown when an ApiSchema is not properly initialized.
- */
-class ApiSchemaError extends Error {
-  constructor(message: string, public readonly cause?: string) {
-    super(message);
-    this.name = 'ApiSchemaError';
-  }
-}
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -134,7 +125,7 @@ export class AssetApiSchema extends ApiSchema {
    */
   public _render(): any {
     if (!this.asset) {
-      throw new ApiSchemaError(
+      throw new UnscopedValidationError(
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
         'Asset not initialized',
       );

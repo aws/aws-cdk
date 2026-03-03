@@ -2,7 +2,7 @@ import type { PromptInferenceConfiguration } from './prompt-inference-configurat
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
 import { PromptTemplateType } from './prompt-variant';
-import { ValidationError } from '../agents/validation-helpers';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Properties for creating a text prompt variant.
@@ -30,7 +30,7 @@ export interface TextPromptVariantProps extends CommonPromptVariantProps {
  */
 export function createTextPromptVariant(props: TextPromptVariantProps): IPromptVariant {
   if (!props.promptText || props.promptText.trim() === '') {
-    throw new ValidationError('promptText cannot be empty');
+    throw new UnscopedValidationError('promptText cannot be empty');
   }
 
   return {

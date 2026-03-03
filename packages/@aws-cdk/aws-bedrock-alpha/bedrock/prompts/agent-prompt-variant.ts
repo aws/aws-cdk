@@ -3,7 +3,7 @@ import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
 import { PromptTemplateType } from './prompt-variant';
 import type { IAgentAlias } from '../agents/agent-alias';
-import { ValidationError } from '../agents/validation-helpers';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /**
  * Properties for creating an agent prompt variant.
@@ -29,7 +29,7 @@ export interface AgentPromptVariantProps extends CommonPromptVariantProps {
  */
 export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromptVariant {
   if (!props.promptText || props.promptText.trim() === '') {
-    throw new ValidationError('promptText cannot be empty');
+    throw new UnscopedValidationError('promptText cannot be empty');
   }
 
   return {

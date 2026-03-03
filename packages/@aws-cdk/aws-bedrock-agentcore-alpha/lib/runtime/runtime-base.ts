@@ -27,7 +27,7 @@ import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
-import { ValidationError } from './validation-helpers';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                                Interface
@@ -221,7 +221,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Cannot manage network access without configuring a VPC');
+      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

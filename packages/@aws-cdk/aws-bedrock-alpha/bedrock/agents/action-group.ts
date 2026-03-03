@@ -3,7 +3,7 @@ import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { ActionGroupExecutor } from './api-executor';
 import type { ApiSchema } from './api-schema';
 import type { FunctionSchema } from './function-schema';
-import { ValidationError } from './validation-helpers';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
 /******************************************************************************
  *                           Signatures
@@ -191,7 +191,7 @@ export class AgentActionGroup {
 
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
         'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );
