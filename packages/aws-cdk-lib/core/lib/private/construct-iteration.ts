@@ -13,9 +13,9 @@ export function* iterateDfsPreorder(root: IConstruct) {
 
   let next = stack.pop();
   while (next) {
-    for (const child of next.node.children) {
-      stack.push(child);
-    }
+    // Reverse the children so that they get popped in original array order,
+    // consistent with the behavior of `node.findAll()`.
+    stack.push(...next.node.children.reverse());
     yield next;
 
     next = stack.pop();
