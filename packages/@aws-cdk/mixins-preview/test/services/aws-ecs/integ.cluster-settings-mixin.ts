@@ -3,7 +3,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ClusterSettings } from '../../../lib/services/aws-ecs/mixins';
-import '../../../lib/with';
 
 const app = new cdk.App();
 

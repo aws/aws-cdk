@@ -57,8 +57,6 @@ export class CdkCore extends ExternalModule {
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
 
-  public readonly Mixin = Type.fromName(this, 'Mixin');
-
   constructor(fqn: string) {
     super(fqn);
   }
@@ -133,9 +131,14 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export class CdkMixins extends ExternalModule {
+  public readonly Mixin = Type.fromName(this, 'Mixin');
+}
+
 export const CDK_INTERFACES = new Interfaces('aws-cdk-lib/interfaces');
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
 export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
+export const CDK_MIXINS = new CdkMixins('aws-cdk-lib/mixins');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');
 export const CONSTRUCTS = new Constructs();
 

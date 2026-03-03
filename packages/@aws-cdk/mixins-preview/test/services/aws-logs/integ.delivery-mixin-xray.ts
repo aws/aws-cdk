@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as bedrock from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemoryLogsMixin } from '../../../lib/services/aws-bedrockagentcore/mixins';
-import '../../../lib/with';
 import { XRayDeliveryDestination } from '../../../lib/services/aws-logs';
 
 const app = new cdk.App();

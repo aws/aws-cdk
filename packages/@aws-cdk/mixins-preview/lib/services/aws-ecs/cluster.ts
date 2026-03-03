@@ -1,4 +1,4 @@
-import { Mixin } from 'aws-cdk-lib/core';
+import { Mixin } from 'aws-cdk-lib/mixins';
 import { CfnCluster } from 'aws-cdk-lib/aws-ecs';
 import type { IConstruct } from 'constructs/lib/construct';
 

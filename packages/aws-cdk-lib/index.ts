@@ -307,6 +307,7 @@ export * as cx_api from './cx-api';
 export * as interfaces from './interfaces';
 export * as lambda_layer_awscli from './lambda-layer-awscli';
 export * as lambda_layer_node_proxy_agent from './lambda-layer-node-proxy-agent';
+export * as mixins from './mixins';
 export * as pipelines from './pipelines';
 export * as region_info from './region-info';
 export * as triggers from './triggers';

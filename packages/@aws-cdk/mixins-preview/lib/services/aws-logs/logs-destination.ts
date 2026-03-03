@@ -1,5 +1,6 @@
 import type { IEnvironmentAware } from 'aws-cdk-lib/core';
-import { Aws, ConstructSelector, Mixins, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { ConstructSelector, Mixins } from 'aws-cdk-lib/mixins';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct, IConstruct } from 'constructs';

@@ -531,6 +531,7 @@
     "./lambda-layer-awscli": "./lambda-layer-awscli/index.js",
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
+    "./mixins": "./mixins/index.js",
     "./package.json": "./package.json",
     "./pipelines": "./pipelines/index.js",
     "./pipelines/.jsii": "./pipelines/.jsii",

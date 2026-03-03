@@ -1,6 +1,6 @@
 import type { Resource, Service, SpecDatabase, VendedLogs } from '@aws-cdk/service-spec-types';
 import { naming, util } from '@aws-cdk/spec2cdk';
-import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
+import { CDK_CORE, CDK_INTERFACES, CDK_MIXINS, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T, EnumType, InterfaceType } from '@cdklabs/typewriter';
 import { MIXINS_LOGS_DELIVERY } from './helpers';
@@ -69,6 +69,7 @@ export class LogsDeliveryBuilder extends LibraryBuilder<LogsDeliveryBuilderServi
     submodule.registerModule({ module, filePath });
 
     CDK_CORE.import(module, 'cdk');
+    CDK_MIXINS.import(module, 'cdkMixins');
     CDK_INTERFACES.import(module, 'interfaces');
     CONSTRUCTS.import(module, 'constructs');
     MIXINS_LOGS_DELIVERY.import(module, 'logsDelivery', { fromLocation: '../aws-logs/logs-delivery' });
@@ -511,7 +512,7 @@ class LogsMixin extends ClassType {
       export: true,
       name: `${naming.classNameFromResource(resource)}LogsMixin`,
       implements: [CONSTRUCTS.IMixin],
-      extends: CDK_CORE.Mixin,
+      extends: CDK_MIXINS.Mixin,
       docs: {
         summary: `Mixin to implement vended logs for ${resource.cloudFormationType}`,
         ...util.splitDocumentation(resource.documentation),

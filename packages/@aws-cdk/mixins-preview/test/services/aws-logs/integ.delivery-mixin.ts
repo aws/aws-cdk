@@ -3,7 +3,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
 import { CfnEventBusErrorLogsOutputFormat as outputFormat, CfnEventBusErrorLogsRecordFields as recordFields, CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
-import '../../../lib/with';
 
 const app = new cdk.App();
 

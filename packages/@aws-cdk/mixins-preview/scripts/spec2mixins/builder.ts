@@ -1,6 +1,6 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { naming, util } from '@aws-cdk/spec2cdk';
-import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
+import { CDK_CORE, CDK_MIXINS, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
 import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
 import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
@@ -56,6 +56,7 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     submodule.registerModule({ module, filePath });
 
     CDK_CORE.import(module, 'cdk');
+    CDK_MIXINS.import(module, 'cdkMixins');
     CONSTRUCTS.import(module, 'constructs');
     MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../../mixins' });
     MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../../util/property-mixins' });
@@ -94,7 +95,7 @@ class L1PropsMixin extends ClassType {
       export: true,
       name: `${naming.classNameFromResource(resource)}PropsMixin`,
       implements: [CONSTRUCTS.IMixin],
-      extends: CDK_CORE.Mixin,
+      extends: CDK_MIXINS.Mixin,
       docs: {
         summary: `L1 property mixin for ${resource.cloudFormationType}`,
         ...util.splitDocumentation(resource.documentation),

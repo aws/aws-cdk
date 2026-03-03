@@ -4,7 +4,6 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
-import '../../../lib/with';
 import { PropertyMergeStrategy } from '../../../lib/mixins';
 
 class TestConstruct extends Construct {

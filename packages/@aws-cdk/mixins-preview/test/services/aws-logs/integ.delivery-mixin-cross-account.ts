@@ -40,7 +40,6 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
-import '../../../lib/with';
 import { FirehoseDeliveryDestination, S3DeliveryDestination } from '../../../lib/services/aws-logs';
 import type { Construct } from 'constructs';
 

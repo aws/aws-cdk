@@ -5,7 +5,6 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as events from 'aws-cdk-lib/aws-events';
 import { CfnEventBusLogsMixin } from '../../../lib/services/aws-events/mixins';
-import '../../../lib/with';
 import { CloudwatchDeliveryDestination } from '../../../lib/services/aws-logs';
 
 const app = new cdk.App();

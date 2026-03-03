@@ -8,7 +8,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import '@aws-cdk/mixins-preview/with';
-import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/core';
+import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/mixins';
 import { IMixin } from 'constructs';
 import { PropertyMergeStrategy } from '@aws-cdk/mixins-preview/mixins';
 import { AutoDeleteObjects, BucketVersioning, CfnBucketPropsMixin, BucketPolicyStatementsMixin, BucketBlockPublicAccess } from '@aws-cdk/mixins-preview/aws-s3/mixins';

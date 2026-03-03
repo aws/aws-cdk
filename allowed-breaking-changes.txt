@@ -4160,3 +4160,13 @@ removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
 # were not usable without the feature implementation.
 removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
 removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
+
+# Unintentionally exported from the top level and we need them in a submodule to avoid
+# naming collisions with future service mixins submodules.
+# See: https://github.com/aws/aws-cdk/pull/37149
+removed:aws-cdk-lib.ConstructSelector
+removed:aws-cdk-lib.Mixin
+removed:aws-cdk-lib.MixinApplicator
+removed:aws-cdk-lib.Mixins
+removed:aws-cdk-lib.IConstructSelector
+removed:aws-cdk-lib.MixinApplication
