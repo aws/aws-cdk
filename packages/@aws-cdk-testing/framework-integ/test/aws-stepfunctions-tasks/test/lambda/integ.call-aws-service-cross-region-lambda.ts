@@ -34,7 +34,7 @@ class TestStack extends cdk.Stack {
     const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(this, 'CrossRegionLambdaInvoke', {
       service: 'lambda',
       action: 'invoke',
-      region: 'us-east-1',
+      region: this.region,
       parameters: {
         FunctionName: targetLambda.functionArn,
         Payload: JSON.stringify({

@@ -40,6 +40,17 @@ const stateMachine = new sfn.StateMachine(stack, 'SM', {
 
 const testCase = new IntegTest(app, 'EmrCreateClusterTestAutoDeletionPolicyIdleTimeout', {
   testCases: [stack],
+  // EMR clusters create ENIs in VPC subnets that linger after cluster termination.
+  // CloudFormation cannot delete the VPC/subnets until AWS cleans up those ENIs,
+  // causing cdk destroy to fail. See https://github.com/aws/aws-cdk/issues/19275
+  cdkCommandOptions: {
+    destroy: {
+      args: {
+        force: true,
+      },
+      expectError: true,
+    },
+  },
 });
 
 testCase.assertions

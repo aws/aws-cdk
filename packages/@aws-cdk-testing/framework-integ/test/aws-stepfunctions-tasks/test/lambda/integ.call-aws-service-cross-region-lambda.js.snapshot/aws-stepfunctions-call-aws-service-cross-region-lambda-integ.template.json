@@ -198,7 +198,11 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"CrossRegionLambdaInvoke\",\"States\":{\"CrossRegionLambdaInvoke\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Arguments\":{\"region\":\"us-east-1\",\"action\":\"invoke\",\"service\":\"lambda\",\"parameters\":{\"FunctionName\":\"",
+       "{\"StartAt\":\"CrossRegionLambdaInvoke\",\"States\":{\"CrossRegionLambdaInvoke\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Arguments\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"action\":\"invoke\",\"service\":\"lambda\",\"parameters\":{\"FunctionName\":\"",
        {
         "Fn::GetAtt": [
          "TargetLambdaE6C763FE",
