@@ -1,14 +1,13 @@
-import type { IConstruct } from 'constructs/lib/construct';
-import { Mixin } from 'aws-cdk-lib/core';
-import type { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
-import { CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import type { IConstruct } from 'constructs';
+import type { PolicyStatement } from '../../../aws-iam';
+import { PolicyDocument } from '../../../aws-iam';
+import { Mixin } from '../../../core/lib/mixins';
+import { CfnBucketPolicy } from '../s3.generated';
 
 /**
- * Adds statements to a bucket policy
- * @mixin true
+ * Adds statements to a bucket policy.
  */
-export class BucketPolicyStatementsMixin extends Mixin {
+export class BucketPolicyStatements extends Mixin {
   private readonly statements: PolicyStatement[];
 
   public constructor(statements: PolicyStatement[]) {
@@ -21,13 +20,10 @@ export class BucketPolicyStatementsMixin extends Mixin {
   }
 
   public applyTo(policy: IConstruct): void {
-    if (!this.supports(policy)) {
-      return;
-    }
+    if (!this.supports(policy)) return;
 
     const policyDocument = this.getPolicyDocument(policy);
     policyDocument.addStatements(...this.statements);
-
     policy.policyDocument = policyDocument;
   }
 

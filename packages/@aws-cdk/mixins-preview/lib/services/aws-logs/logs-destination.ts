@@ -4,7 +4,6 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct, IConstruct } from 'constructs';
 import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
-import { BucketPolicyStatementsMixin } from '../aws-s3/bucket-policy';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
@@ -181,7 +180,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
     }
 
     Mixins.of(policy, ConstructSelector.onlyItself())
-      .apply(new BucketPolicyStatementsMixin(statements));
+      .apply(new s3.mixins.BucketPolicyStatements(statements));
   }
 
   private findEncryptionKey(): CfnKey | undefined {

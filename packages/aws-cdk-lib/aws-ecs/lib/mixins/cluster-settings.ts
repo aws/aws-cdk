@@ -1,12 +1,11 @@
-import { Mixin } from 'aws-cdk-lib/core';
-import { CfnCluster } from 'aws-cdk-lib/aws-ecs';
-import type { IConstruct } from 'constructs/lib/construct';
+import type { IConstruct } from 'constructs';
+import { Mixin } from '../../../core/lib/mixins';
+import { CfnCluster } from '../ecs.generated';
 
 /**
  * Applies one or more cluster settings to an ECS cluster.
  *
  * If a setting with the same name already exists, its value is replaced.
- * @mixin true
  */
 export class ClusterSettings extends Mixin {
   private readonly settings: CfnCluster.ClusterSettingsProperty[];

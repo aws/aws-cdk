@@ -1749,6 +1749,38 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
 }
 
 /**
+ * If an aws-cdk-lib submodule has a lib/mixins/ directory,
+ * its lib/index.ts must contain `export * as mixins from './mixins';`
+ */
+export class MixinsSubmoduleExport extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/mixins-export';
+
+  /**
+   * Submodules whose lib/mixins/ directory is the source of mixins, not a consumer.
+   * These should not be required to re-export mixins from their lib/index.ts.
+   */
+  private readonly excludedSubmodules = ['core'];
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.packageName !== 'aws-cdk-lib') return;
+
+    // Scan all service submodule directories
+    for (const entry of fs.readdirSync(pkg.packageRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      if (this.excludedSubmodules.includes(entry.name)) continue;
+
+      const mixinsDir = path.join(pkg.packageRoot, entry.name, 'lib', 'mixins');
+      if (!fs.existsSync(mixinsDir)) continue;
+
+      const libIndex = path.join(entry.name, 'lib', 'index.ts');
+      const exportLine = "export * as mixins from './mixins';";
+
+      fileShouldContain(this.name, pkg, libIndex, exportLine);
+    }
+  }
+}
+
+/**
  * Determine whether this is a JSII package
  *
  * A package is a JSII package if there is 'jsii' section in the package.json
