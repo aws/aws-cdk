@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "52.0.0",
   "testCases": {
     "BundlingUserTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "BundlingUserTest/DefaultTest/DeployAssert",
       "assertionStackName": "BundlingUserTestDefaultTestDeployAssert0895CAA6"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

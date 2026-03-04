@@ -58,7 +58,7 @@
     "Code": {
      "ZipFile": "foo"
     },
-    "Description": "version-hash:328ef84696e962e6a3e0f3c7b7e62c5d",
+    "Description": "version-hash:1787d07246b99168a35759d83e9aaa33",
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -66,7 +66,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
@@ -85,7 +85,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350": {
+  "MyLambdaCurrentVersionE7A382CCda18ce6d38c408d00c4e6335ad95624f": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -104,7 +104,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350",
+      "MyLambdaCurrentVersionE7A382CCda18ce6d38c408d00c4e6335ad95624f",
       "Version"
      ]
     },

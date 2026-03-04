@@ -725,7 +725,7 @@ currently only supports Node.js-based user handlers, represents permissions as r
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
 timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
-`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, and `nodejs22.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -739,7 +739,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -834,7 +834,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_22_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -864,7 +864,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 
 const roleArn = provider.roleArn;
@@ -877,7 +877,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
