@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { Stack, App } from 'aws-cdk-lib/core';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as ecsMixins from '../../../lib/services/aws-ecs/mixins';
+import { Stack, App } from '../../core';
+import * as ecs from '../lib';
+import { ClusterSettings } from '../lib/mixins';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -21,7 +21,7 @@ describe('ECS Mixins', () => {
   describe('ClusterSettings', () => {
     test('applies setting to ECS cluster', () => {
       const cluster = new ecs.CfnCluster(stack, 'Cluster');
-      const mixin = new ecsMixins.ClusterSettings([{ name: 'containerInsights', value: 'enabled' }]);
+      const mixin = new ClusterSettings([{ name: 'containerInsights', value: 'enabled' }]);
 
       expect(mixin.supports(cluster)).toBe(true);
       mixin.applyTo(cluster);
@@ -37,7 +37,7 @@ describe('ECS Mixins', () => {
           { name: 'containerInsights', value: 'disabled' },
         ],
       });
-      const mixin = new ecsMixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
+      const mixin = new ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
 
       mixin.applyTo(cluster);
 
@@ -52,7 +52,7 @@ describe('ECS Mixins', () => {
           { name: 'otherSetting', value: 'someValue' },
         ],
       });
-      const mixin = new ecsMixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
+      const mixin = new ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
 
       mixin.applyTo(cluster);
 
@@ -65,7 +65,7 @@ describe('ECS Mixins', () => {
     test('wraps non-array clusterSettings and preserves existing value', () => {
       const cluster = new ecs.CfnCluster(stack, 'Cluster');
       (cluster as any).clusterSettings = { Ref: 'ExistingSettings' };
-      const mixin = new ecsMixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
+      const mixin = new ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]);
 
       mixin.applyTo(cluster);
 
@@ -77,7 +77,7 @@ describe('ECS Mixins', () => {
 
     test('does not support non-ECS cluster constructs', () => {
       const construct = new TestConstruct(stack, 'test');
-      const mixin = new ecsMixins.ClusterSettings([{ name: 'containerInsights', value: 'enabled' }]);
+      const mixin = new ClusterSettings([{ name: 'containerInsights', value: 'enabled' }]);
 
       expect(mixin.supports(construct)).toBe(false);
     });
