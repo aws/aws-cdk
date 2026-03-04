@@ -2131,7 +2131,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         },
       } : undefined,
-      softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
+      softwareUpdateOptions: props.enableAutoSoftwareUpdate !== undefined ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
