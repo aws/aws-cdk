@@ -40,9 +40,10 @@ const stateMachine = new sfn.StateMachine(stack, 'SM', {
 
 const testCase = new IntegTest(app, 'EmrCreateClusterTestAutoDeletionPolicyIdleTimeout', {
   testCases: [stack],
-  // EMR clusters create ENIs in VPC subnets that linger after cluster termination.
-  // CloudFormation cannot delete the VPC/subnets until AWS cleans up those ENIs,
-  // causing cdk destroy to fail. See https://github.com/aws/aws-cdk/issues/19275
+  // EMR cluster teardown is asynchronous — ENIs attached to VPC subnets may not be
+  // released before CloudFormation attempts to delete the subnets/VPC, causing
+  // DELETE_FAILED on the VPC resources. The deploy + assertions succeed; only
+  // the destroy phase races against EMR's cleanup.
   cdkCommandOptions: {
     destroy: {
       args: {

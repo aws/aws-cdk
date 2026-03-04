@@ -65,6 +65,8 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
 
 const testCase = new IntegTest(app, 'InvokeModel', {
   testCases: [stack],
+  // Amazon Nova Micro and Bedrock Guardrails are not available in every region.
+  // Restrict to regions where both the model and guardrails are supported.
   regions: ['us-east-1', 'eu-west-2', 'ap-southeast-2'],
 });
 

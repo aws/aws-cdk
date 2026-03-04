@@ -14,7 +14,6 @@ const app = new App({
 });
 const stack = new Stack(app, 'sfn-sm-training-job-image');
 
-// Please manually cleanup this bucket after testing.
 const bucket = new Bucket(stack, 'Bucket', {
   removalPolicy: RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
@@ -54,6 +53,9 @@ const sm = new StateMachine(stack, 'StateMachine', {
 
 const integTest = new integ.IntegTest(app, 'SfnSMTrainingJobImage', {
   testCases: [stack],
+  // The BlazingText training image uses a hardcoded account ID (811284229777)
+  // that is only valid for us-east-1.
+  // See https://docs.aws.amazon.com/sagemaker/latest/dg-ecr-paths/ecr-us-east-1.html
   regions: ['us-east-1'],
 });
 
