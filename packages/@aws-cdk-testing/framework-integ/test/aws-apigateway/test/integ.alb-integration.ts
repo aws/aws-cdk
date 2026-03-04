@@ -61,6 +61,7 @@ class AlbIntegrationStack extends cdk.Stack {
     const listener = alb.addListener('Listener', {
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
+      open: false,
     });
 
     // Add the Lambda function as a target
