@@ -371,7 +371,8 @@ export interface IBucket extends IResource, IBucketRef {
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -1003,7 +1004,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
