@@ -38,6 +38,7 @@ running on AWS Lambda, or any web application.
     - [Controlled triggering of deployments](#controlled-triggering-of-deployments)
     - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
   - [Custom Domains](#custom-domains)
+    - [Custom domain routing rules](#custom-domain-routing-rules)
     - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
   - [Access Logging](#access-logging)
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
@@ -1273,6 +1274,66 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
   target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
+});
+```
+
+### Custom domain routing rules
+
+You can route traffic by path or header using **routing rules**. Set `routingMode` to
+`RoutingMode.ROUTING_RULE_ONLY` (or `ROUTING_RULE_THEN_API_MAPPING` to combine rules with API mappings).
+Routing rules are only supported for **REGIONAL** endpoints.
+
+```ts
+declare const certificate: acm.ICertificate;
+
+const domain = new apigateway.DomainName(this, 'Domain', {
+  domainName: 'api.example.com',
+  certificate,
+  endpointType: apigateway.EndpointType.REGIONAL,
+  routingMode: apigateway.RoutingMode.ROUTING_RULE_ONLY,
+});
+
+// Path-based: /users/* -> Users API
+domain.addRoutingRule('UsersRule', {
+  priority: 100,
+  conditions: { basePaths: ['users'] },
+  action: {
+    restApi: usersApi,
+    stripBasePath: true,
+  },
+});
+
+// Header-based: x-api-version: v2 -> Orders v2 API
+domain.addRoutingRule('HeaderV2Rule', {
+  priority: 50,
+  conditions: {
+    headers: [{ header: 'x-api-version', valueGlob: 'v2' }],
+  },
+  action: { restApi: ordersApiV2 },
+});
+
+// Catch-all (lowest priority)
+domain.addRoutingRule('CatchAllRule', {
+  priority: 999999,
+  action: { restApi: defaultApi },
+});
+```
+
+You can also create a `RoutingRule` standalone (for example, when the domain is in another stack):
+
+```ts
+declare const importedDomain: apigateway.IDomainName;
+declare const restApi: apigateway.RestApi;
+
+new apigateway.RoutingRule(this, 'Rule', {
+  domainName: importedDomain,
+  priority: 100,
+  conditions: { basePaths: ['users'] },
+  action: {
+    restApi,
+    stage: restApi.deploymentStage,
+    stripBasePath: true,
+  },
 });
 ```
 
