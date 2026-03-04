@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sts": "3.632.0",
-    "@cdklabs/cdk-atmosphere-client": "^0.0.89"
+    "@cdklabs/cdk-atmosphere-client": "^0.0.91"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
