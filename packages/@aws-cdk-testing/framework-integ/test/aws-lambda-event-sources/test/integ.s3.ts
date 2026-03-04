@@ -12,6 +12,7 @@ class S3EventSourceTest extends cdk.Stack {
     const bucket = new s3.Bucket(this, 'B', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      encryption: s3.BucketEncryption.S3_MANAGED,
     });
 
     fn.addEventSource(new S3EventSource(bucket, {

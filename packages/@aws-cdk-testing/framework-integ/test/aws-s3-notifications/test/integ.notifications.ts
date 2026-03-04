@@ -13,6 +13,7 @@ const stack = new cdk.Stack(app, 'test-3');
 
 const bucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 const topic = new sns.Topic(stack, 'Topic');
 const topic3 = new sns.Topic(stack, 'Topic3');
@@ -22,11 +23,13 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED, new s3n.SnsDestination(
 
 const bucket2 = new s3.Bucket(stack, 'Bucket2', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 bucket2.addObjectRemovedNotification(new s3n.SnsDestination(topic3), { prefix: 'foo' }, { suffix: 'foo/bar' });
 
 const bucket3 = new s3.Bucket(stack, 'Bucket3', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
 const importedBucket3 = s3.Bucket.fromBucketName(stack, 'Bucket3Imported', bucket3.bucketName);
