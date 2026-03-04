@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
-import { DatabaseClusterEngine, ParameterGroup, ParameterGroupType } from '../lib';
+import { DatabaseClusterEngine, ParameterGroup } from '../lib';
 
 describe('parameter group', () => {
   test("does not create a parameter group if it wasn't bound to a cluster or instance", () => {
@@ -21,12 +21,12 @@ describe('parameter group', () => {
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
-  test('create instance parameter group explicitly with create() method', () => {
+  test('create instance parameter group explicitly with forInstance() static method', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    ParameterGroup.forInstance(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'desc',
       name: 'name',
@@ -34,10 +34,8 @@ describe('parameter group', () => {
         key: 'value',
       },
     });
-    const parameterGroupName = parameterGroup.create(ParameterGroupType.INSTANCE);
 
     // THEN
-    expect(parameterGroupName).toBeDefined();
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
       DBParameterGroupName: 'name',
       Description: 'desc',
@@ -48,12 +46,12 @@ describe('parameter group', () => {
     });
   });
 
-  test('create cluster parameter group explicitly with create() method', () => {
+  test('create cluster parameter group explicitly with forCluster() static method', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    ParameterGroup.forCluster(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'desc',
       name: 'name',
@@ -61,10 +59,8 @@ describe('parameter group', () => {
         key: 'value',
       },
     });
-    const parameterGroupName = parameterGroup.create(ParameterGroupType.CLUSTER);
 
     // THEN
-    expect(parameterGroupName).toBeDefined();
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
       DBClusterParameterGroupName: 'name',
       Description: 'desc',
@@ -75,38 +71,29 @@ describe('parameter group', () => {
     });
   });
 
-  test('calling create() with different types creates both resources', () => {
+  test('can create both instance and cluster parameter groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    ParameterGroup.forInstance(stack, 'InstanceParams', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      description: 'desc',
+      description: 'instance desc',
       parameters: {
         key: 'value',
       },
     });
-    parameterGroup.create(ParameterGroupType.INSTANCE);
-    parameterGroup.create(ParameterGroupType.CLUSTER);
+    ParameterGroup.forCluster(stack, 'ClusterParams', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      description: 'cluster desc',
+      parameters: {
+        key: 'value',
+      },
+    });
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBParameterGroup', 1);
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 1);
-  });
-
-  test('imported parameter group for create()', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const parameterGroup = ParameterGroup.fromParameterGroupName(stack, 'Params', 'my-param-group');
-    parameterGroup.create(ParameterGroupType.INSTANCE);
-    parameterGroup.create(ParameterGroupType.CLUSTER);
-
-    // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBParameterGroup', 0);
-    Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 0);
   });
 
   test('create a parameter group when bound to an instance', () => {
@@ -208,12 +195,12 @@ describe('parameter group', () => {
     expect(Object.values(clusterParameterGroup)[0].DeletionPolicy).toEqual('Retain');
   });
 
-  test('removal policy is applied when using create() method', () => {
+  test('removal policy is applied when using forInstance() and forCluster() methods', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    ParameterGroup.forInstance(stack, 'InstanceParams', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'desc',
       removalPolicy: cdk.RemovalPolicy.RETAIN,
@@ -221,8 +208,14 @@ describe('parameter group', () => {
         key: 'value',
       },
     });
-    parameterGroup.create(ParameterGroupType.INSTANCE);
-    parameterGroup.create(ParameterGroupType.CLUSTER);
+    ParameterGroup.forCluster(stack, 'ClusterParams', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      description: 'desc',
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+      parameters: {
+        key: 'value',
+      },
+    });
 
     // THEN
     const instanceParameterGroup = Template.fromStack(stack).findResources('AWS::RDS::DBParameterGroup');
@@ -232,7 +225,32 @@ describe('parameter group', () => {
     expect(Object.values(clusterParameterGroup)[0].DeletionPolicy).toEqual('Retain');
   });
 
-  test('Add an additional parameter to an existing parameter group', () => {
+  test('addParameter() works with forInstance() static method', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parameterGroup = ParameterGroup.forInstance(stack, 'Params', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      description: 'desc',
+      parameters: {
+        key1: 'value1',
+      },
+    });
+    parameterGroup.addParameter('key2', 'value2');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      Description: 'desc',
+      Family: 'aurora-mysql5.7',
+      Parameters: {
+        key1: 'value1',
+        key2: 'value2',
+      },
+    });
+  });
+
+  test('Add an additional parameter to an existing parameter group with bindToCluster()', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -245,7 +263,6 @@ describe('parameter group', () => {
       },
     });
     clusterParameterGroup.bindToCluster({});
-
     clusterParameterGroup.addParameter('key2', 'value2');
 
     // THEN
@@ -259,38 +276,36 @@ describe('parameter group', () => {
     });
   });
 
-  test('backward compatibility: bindToInstance after create() returns existing resource', () => {
+  test('backward compatibility: bindToInstance after forInstance() returns existing resource', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    const parameterGroup = ParameterGroup.forInstance(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'desc',
       parameters: {
         key: 'value',
       },
     });
-    parameterGroup.create(ParameterGroupType.INSTANCE);
     parameterGroup.bindToInstance({});
 
     // THEN - should only have 1 resource, not 2
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBParameterGroup', 1);
   });
 
-  test('backward compatibility: bindToCluster after create() returns existing resource', () => {
+  test('backward compatibility: bindToCluster after forCluster() returns existing resource', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const parameterGroup = new ParameterGroup(stack, 'Params', {
+    const parameterGroup = ParameterGroup.forCluster(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       description: 'desc',
       parameters: {
         key: 'value',
       },
     });
-    parameterGroup.create(ParameterGroupType.CLUSTER);
     parameterGroup.bindToCluster({});
 
     // THEN - should only have 1 resource, not 2

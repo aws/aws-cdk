@@ -1372,13 +1372,13 @@ In some scenarios, you may want to create a parameter group that exists independ
 of a database instance or cluster.
 
 By default, `ParameterGroup` uses a lazy creation pattern and only generates the
-resource when bound to an instance or cluster. To create a standalone parameter group,
-explicitly call the `create` method:
+CloudFormation resource when bound to an instance or cluster. To create a standalone 
+parameter group, use the static factory methods `forInstance()` or `forCluster()`:
 
 **For instance parameter group (AWS::RDS::DBParameterGroup):**
 
 ```ts
-const parameterGroup = new rds.ParameterGroup(this, 'InstanceParameterGroup', {
+const parameterGroup = rds.ParameterGroup.forInstance(this, 'InstanceParameterGroup', {
   engine: rds.DatabaseInstanceEngine.mysql({
     version: rds.MysqlEngineVersion.VER_8_0_35,
   }),
@@ -1388,15 +1388,12 @@ const parameterGroup = new rds.ParameterGroup(this, 'InstanceParameterGroup', {
     slow_query_log: '1',
   },
 });
-
-// Explicitly create the resource
-parameterGroup.create(rds.ParameterGroupType.INSTANCE);
 ```
 
 **For cluster parameter group (AWS::RDS::DBClusterParameterGroup):**
 
 ```ts
-const clusterParameterGroup = new rds.ParameterGroup(this, 'ClusterParameterGroup', {
+const clusterParameterGroup = rds.ParameterGroup.forCluster(this, 'ClusterParameterGroup', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_04_0,
   }),
@@ -1405,9 +1402,6 @@ const clusterParameterGroup = new rds.ParameterGroup(this, 'ClusterParameterGrou
     aurora_parallel_query: '1',
   },
 });
-
-// Explicitly create the resource
-parameterGroup.create(rds.ParameterGroupType.CLUSTER);
 ```
 
 ## Serverless v1

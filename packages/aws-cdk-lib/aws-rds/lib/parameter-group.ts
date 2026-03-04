@@ -9,20 +9,6 @@ import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { aws_rds } from '../../interfaces';
 
 /**
- * The type of parameter group to create.
- */
-export enum ParameterGroupType {
-  /**
-   * Instance parameter group (AWS::RDS::DBParameterGroup)
-   */
-  INSTANCE = 'instance',
-  /**
-   * Cluster parameter group (AWS::RDS::DBClusterParameterGroup)
-   */
-  CLUSTER = 'cluster',
-}
-
-/**
  * Options for `IParameterGroup.bindToCluster`.
  * Empty for now, but can be extended later.
  */
@@ -58,15 +44,6 @@ export interface ParameterGroupInstanceConfig {
  * and an instance parameter group.
  */
 export interface IParameterGroup extends IResource, aws_rds.IDBParameterGroupRef, aws_rds.IDBClusterParameterGroupRef {
-  /**
-   * This method allows you to explicitly create a standalone parameter group
-   * without binding it to a database instance or cluster.
-   *
-   * @param type - The type of parameter group to create (instance or cluster)
-   * @returns parameter group name
-   */
-  create(type: ParameterGroupType): string;
-
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */
@@ -147,10 +124,6 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    */
   public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
-      public create(_type: ParameterGroupType): string {
-        return parameterGroupName;
-      }
-
       public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
         return { parameterGroupName };
       }
@@ -205,19 +178,33 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   }
 
   /**
-   * This method allows you to explicitly create a standalone parameter group
-   * without binding it to a database instance or cluster.
+   * This method allows you to explicitly create a parameter group
+   * without binding it to a database instance.
    *
-   * @param type - The type of parameter group to create (instance or cluster)
-   * @returns parameter group name
+   * @param scope - The scope in which to define this construct
+   * @param id - The scoped construct ID
+   * @param props - The parameter group properties
+   * @returns instance parameter group (AWS::RDS::DBParameterGroup)
    */
-  @MethodMetadata()
-  public create(type: ParameterGroupType): string {
-    if (type === ParameterGroupType.INSTANCE) {
-      return this.createInstanceParameterGroup();
-    } else {
-      return this.createClusterParameterGroup();
-    }
+  public static forInstance(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {
+    const parameterGroup = new ParameterGroup(scope, id, props);
+    parameterGroup.createInstanceParameterGroup();
+    return parameterGroup;
+  }
+
+  /**
+   * This method allows you to explicitly create a parameter group
+   * without binding it to a database cluster.
+   *
+   * @param scope - The scope in which to define this construct
+   * @param id - The scoped construct ID
+   * @param props - The parameter group properties
+   * @returns cluster parameter group (AWS::RDS::DBClusterParameterGroup)
+   */
+  public static forCluster(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {
+    const parameterGroup = new ParameterGroup(scope, id, props);
+    parameterGroup.createClusterParameterGroup();
+    return parameterGroup;
   }
 
   @MethodMetadata()
