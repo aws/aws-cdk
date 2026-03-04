@@ -406,10 +406,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     return this.lookupRoleArn;
   }
 
-  public get cloudFormationExecutionRole(): string | undefined {
-    return this.cloudFormationExecutionRoleArn;
-  }
-
   public bind(stack: Stack): void {
     super.bind(stack);
 

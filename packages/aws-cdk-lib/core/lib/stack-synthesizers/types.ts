@@ -21,14 +21,6 @@ export interface IStackSynthesizer {
   readonly lookupRole?: string;
 
   /**
-   * The role to be assumed by the CloudFormation service to perform all
-   * the necessary operations on AWS resources.
-   *
-   * @default - no role
-   */
-  readonly cloudFormationExecutionRole?: string;
-
-  /**
    * Bind to the stack this environment is going to be used on
    *
    * Must be called before any of the other methods are called, and can only be called once.
