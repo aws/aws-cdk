@@ -2,8 +2,10 @@ import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
+import '../../../lib/with';
 import { PropertyMergeStrategy } from '../../../lib/mixins';
 
 class TestConstruct extends Construct {
@@ -152,6 +154,78 @@ describe('S3 Mixins', () => {
 
       expect(mixin.supports(construct)).toBe(false);
     });
+
+    test('accepts deeply nested properties with cross-service references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('accepts deeply nested properties with string token references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key.keyArn,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('handles undefined nested properties through flatten path', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      // Only set a non-relationship property, leaving bucketEncryption undefined
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketName: 'my-bucket',
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketName: 'my-bucket',
+      });
+    });
   });
 
   describe('BucketPolicyStatementsMixin', () => {
@@ -186,6 +260,66 @@ describe('S3 Mixins', () => {
       const mixin = new s3Mixins.BucketPolicyStatementsMixin([]);
 
       expect(mixin.supports(bucket)).toBe(false);
+    });
+  });
+
+  describe('BucketBlockPublicAccess', () => {
+    test('applies to S3 bucket with defaults', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketBlockPublicAccess();
+
+      expect(mixin.supports(bucket)).toBe(true);
+      mixin.applyTo(bucket);
+
+      const accessConfig = bucket.publicAccessBlockConfiguration as any;
+      expect(accessConfig.blockPublicAcls).toBe(true);
+      expect(accessConfig.blockPublicPolicy).toBe(true);
+      expect(accessConfig.ignorePublicAcls).toBe(true);
+      expect(accessConfig.restrictPublicBuckets).toBe(true);
+    });
+
+    test('block ACLs public access only', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketBlockPublicAccess(s3.BlockPublicAccess.BLOCK_ACLS_ONLY);
+
+      expect(mixin.supports(bucket)).toBe(true);
+      mixin.applyTo(bucket);
+
+      const accessConfig = bucket.publicAccessBlockConfiguration as any;
+      expect(accessConfig.blockPublicAcls).toBe(true);
+      expect(accessConfig.blockPublicPolicy).toBe(false);
+      expect(accessConfig.ignorePublicAcls).toBe(true);
+      expect(accessConfig.restrictPublicBuckets).toBe(false);
+    });
+
+    test('do not block public access and policy', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.BucketBlockPublicAccess(new s3.BlockPublicAccess({
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+      }));
+
+      expect(mixin.supports(bucket)).toBe(true);
+      mixin.applyTo(bucket);
+
+      const accessConfig = bucket.publicAccessBlockConfiguration as any;
+      expect(accessConfig.blockPublicAcls).toBe(false);
+      expect(accessConfig.blockPublicPolicy).toBe(false);
+      expect(accessConfig.ignorePublicAcls).toBe(true);
+      expect(accessConfig.restrictPublicBuckets).toBe(true);
+    });
+
+    // const test = (l2bucket.node.defaultChild as s3.CfnBucket).versioningConfiguration as any;
+
+    test('apply block public access on l2 bucket', () => {
+      const bucket = new s3.Bucket(stack, 'Bucket')
+        .with(new s3Mixins.BucketBlockPublicAccess());
+
+      const accessConfig = (bucket.node.defaultChild as s3.CfnBucket).publicAccessBlockConfiguration as any;
+      expect(accessConfig.blockPublicAcls).toBe(true);
+      expect(accessConfig.blockPublicPolicy).toBe(true);
+      expect(accessConfig.ignorePublicAcls).toBe(true);
+      expect(accessConfig.restrictPublicBuckets).toBe(true);
     });
   });
 });
