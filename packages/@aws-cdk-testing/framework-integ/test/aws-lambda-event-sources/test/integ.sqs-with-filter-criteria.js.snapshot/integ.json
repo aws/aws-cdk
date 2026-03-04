@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "testCases": {
     "SQSFilterCriteria/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SQSFilterCriteria/DefaultTest/DeployAssert",
       "assertionStackName": "SQSFilterCriteriaDefaultTestDeployAssert70A9A808"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }
