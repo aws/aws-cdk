@@ -3,6 +3,11 @@
   "Domain66AC69E0": {
    "Type": "AWS::OpenSearchService::Domain",
    "Properties": {
+    "AIMLOptions": {
+     "S3VectorsEngine": {
+      "Enabled": true
+     }
+    },
     "ClusterConfig": {
      "DedicatedMasterEnabled": false,
      "InstanceCount": 1,
