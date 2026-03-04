@@ -22,31 +22,6 @@ describe('S3 Mixins', () => {
     stack = new Stack(app, 'TestStack');
   });
 
-  describe('AutoDeleteObjects', () => {
-    test('applies to S3 bucket', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.AutoDeleteObjects();
-
-      expect(mixin.supports(bucket)).toBe(true);
-      mixin.applyTo(bucket);
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
-        BucketName: { Ref: 'Bucket' },
-      });
-      template.hasResourceProperties('AWS::S3::BucketPolicy', {
-        Bucket: { Ref: 'Bucket' },
-      });
-    });
-
-    test('does not support non-S3 constructs', () => {
-      const construct = new TestConstruct(stack, 'test');
-      const mixin = new s3Mixins.AutoDeleteObjects();
-
-      expect(mixin.supports(construct)).toBe(false);
-    });
-  });
-
   describe('CfnBucketPropsMixin', () => {
     test('applies properties to S3 bucket', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');

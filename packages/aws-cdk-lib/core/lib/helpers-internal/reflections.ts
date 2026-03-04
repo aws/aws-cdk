@@ -108,3 +108,17 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>
   );
 }
 
+/**
+ * Finds the parent L2 construct scope if this construct is a default child.
+ * L2 constructs create their L1 resource as a child with id 'Resource' or 'Default'.
+ * Only these two ids have special meaning.
+ *
+ * @param construct - The construct to find the parent L2 scope for
+ * @returns The parent L2 scope if the construct is a default child, undefined otherwise
+ */
+export function findParentL2Scope(construct: IConstruct): IConstruct | undefined {
+  if (construct.node.scope && (construct.node.id === 'Resource' || construct.node.id === 'Default')) {
+    return construct.node.scope;
+  }
+  return;
+}
