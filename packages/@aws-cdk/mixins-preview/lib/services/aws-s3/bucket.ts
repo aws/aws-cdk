@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
-import type { IMixin } from '../../core';
+import type { IMixin } from 'constructs';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
@@ -92,5 +92,37 @@ export class BucketVersioning implements IMixin {
         status: this.enabled ? 'Enabled' : 'Suspended',
       };
     }
+  }
+}
+
+/**
+ * S3-specific mixin for blocking public-access.
+ * @mixin true
+ */
+export class BucketBlockPublicAccess implements IMixin {
+  private readonly configOptions: s3.BlockPublicAccessOptions;
+
+  constructor(publicAccessConfig: s3.BlockPublicAccess = s3.BlockPublicAccess.BLOCK_ALL) {
+    this.configOptions = {
+      blockPublicAcls: publicAccessConfig.blockPublicAcls,
+      blockPublicPolicy: publicAccessConfig.blockPublicPolicy,
+      ignorePublicAcls: publicAccessConfig.ignorePublicAcls,
+      restrictPublicBuckets: publicAccessConfig.restrictPublicBuckets,
+    };
+  }
+
+  supports(construct: IConstruct): construct is s3.CfnBucket {
+    return s3.CfnBucket.isCfnBucket(construct);
+  }
+
+  applyTo(construct: IConstruct): void {
+    if (!this.supports(construct)) return;
+
+    construct.publicAccessBlockConfiguration = {
+      blockPublicAcls: this.configOptions.blockPublicAcls ?? true,
+      blockPublicPolicy: this.configOptions.blockPublicPolicy ?? true,
+      ignorePublicAcls: this.configOptions.ignorePublicAcls ?? true,
+      restrictPublicBuckets: this.configOptions.restrictPublicBuckets ?? true,
+    };
   }
 }

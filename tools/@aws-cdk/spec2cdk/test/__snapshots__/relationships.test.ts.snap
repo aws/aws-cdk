@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`resource with array of nested properties with relationship 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -700,7 +700,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       properties: props
     });
 
-    this.principalArn = (props.principalArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? (props.principalArn as iamRefs.IUserRef)?.userRef?.userArn ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
+    this.principalArn = cdk.getRefProperty((props.principalArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.getRefProperty((props.principalArn as iamRefs.IUserRef)?.userRef, 'userArn') ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
@@ -1758,7 +1758,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       properties: props
     });
 
-    this.roleArn = (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
+    this.roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {
