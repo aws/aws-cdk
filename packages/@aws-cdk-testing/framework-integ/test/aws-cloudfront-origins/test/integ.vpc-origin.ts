@@ -137,7 +137,7 @@ instance.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 alb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 nlb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 
-const integ = new IntegTest(stack, 'cloudfront-vpc-origin-test', {
+const integ = new IntegTest(app, 'cloudfront-vpc-origin-test', {
   testCases: [stack],
 });
 
