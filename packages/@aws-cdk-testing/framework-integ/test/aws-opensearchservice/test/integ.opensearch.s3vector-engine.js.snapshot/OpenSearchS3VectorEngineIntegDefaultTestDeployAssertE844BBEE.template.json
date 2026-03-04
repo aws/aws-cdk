@@ -11,8 +11,7 @@
     },
     "service": "OpenSearch",
     "api": "describeDomain",
-    "expected": "{\"$Exact\":true}",
-    "actualPath": "DomainStatus.AIMLOptions.S3VectorsEngine.Enabled",
+    "expected": "{\"$ObjectLike\":{\"DomainStatus\":{\"AIMLOptions\":{\"S3VectorsEngine\":{\"Enabled\":true}}}}}",
     "parameters": {
      "DomainName": {
       "Fn::Join": [
@@ -27,11 +26,8 @@
       ]
      }
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "DomainStatus.AIMLOptions.S3VectorsEngine.Enabled"
-    ],
-    "salt": "1765587325637"
+    "flattenResponse": "false",
+    "salt": "1772632557390"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -85,7 +81,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8208945b020ee79332597d5ad6dfd363938ca96ad50ae746ae25aed3d2845c8f.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
