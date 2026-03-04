@@ -663,6 +663,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         obtainExecutionRole: () => this.executionRole,
       },
     });
+
+    if (this.imageConfig.repositoryCredentials && !this.imageConfig.repositoryCredentials.credentialsParameter) {
+      throw new ValidationError('credentialsParameter is required when repositoryCredentials is set', this);
+    }
   }
 
   /**
@@ -671,6 +675,9 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       image: this.imageConfig.imageName,
+      repositoryCredentials: this.imageConfig.repositoryCredentials ? {
+        credentialsParameter: this.imageConfig.repositoryCredentials.credentialsParameter!,
+      } : undefined,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,
