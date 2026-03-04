@@ -59,7 +59,17 @@ If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
 ```ts
-const customEngineVersion = rds.AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.08.1');
+const customEngineVersion = rds.AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.1');
+```
+
+When using `of()`, the major version is automatically inferred from the full version string.
+You can also provide it explicitly as the second argument if needed.
+
+To specify only a major version and let CloudFormation select the default minor version at
+deployment time, use `ofMajorVersion`:
+
+```ts
+const latestMinorVersion = rds.AuroraMysqlEngineVersion.ofMajorVersion('8.0');
 ```
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
