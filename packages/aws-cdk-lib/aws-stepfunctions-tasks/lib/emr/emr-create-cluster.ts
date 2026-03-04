@@ -765,6 +765,14 @@ export namespace EmrCreateCluster {
     readonly instanceType: string;
 
     /**
+     * The priority at which Amazon EMR launches the EC2 instance with this instance type.
+     * Priority starts at 0, which is the highest priority. Amazon EMR considers the highest priority first.
+     *
+     * @default - None
+     */
+    readonly priority?: number;
+
+    /**
      * The number of units that a provisioned instance of this type provides toward fulfilling the target capacities defined
      * in the InstanceFleetConfig.
      *
@@ -786,6 +794,10 @@ export namespace EmrCreateCluster {
      * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
      */
     LOWEST_PRICE = 'lowest-price',
+    /**
+     * Prioritized, which launches instances based on the priority that you assign to each instance type configuration.
+     */
+    PRIORITIZED = 'prioritized',
   }
 
   /**
