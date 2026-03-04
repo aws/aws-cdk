@@ -1,8 +1,11 @@
 import { Aws } from 'aws-cdk-lib';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { IBucket, Location } from 'aws-cdk-lib/aws-s3';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
 /******************************************************************************
@@ -115,16 +118,6 @@ export interface ToolDefinition {
   readonly outputSchema?: SchemaDefinition;
 }
 
-/**
- * Error thrown when a ToolSchema is not properly initialized.
- */
-class ToolSchemaError extends Error {
-  constructor(message: string, public readonly cause?: string) {
-    super(message);
-    this.name = 'ToolSchemaError';
-  }
-}
-
 /******************************************************************************
  *                       TOOL SCHEMA CLASS
  *****************************************************************************/
@@ -215,7 +208,7 @@ export class AssetToolSchema extends ToolSchema {
   public bind(scope: Construct): void {
     // If the same AssetToolSchema is used multiple times, retain only the first instantiation
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Schema', {
+      this.asset = new s3_assets.Asset(scope, `Schema${md5hash(this.path)}`, {
         path: this.path,
         ...this.options,
       });
@@ -229,9 +222,8 @@ export class AssetToolSchema extends ToolSchema {
    */
   public _render(): any {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
       );
     }
 
@@ -244,9 +236,8 @@ export class AssetToolSchema extends ToolSchema {
 
   public grantPermissionsToRole(role: IRole): void {
     if (!this.asset) {
-      throw new ToolSchemaError(
+      throw new UnscopedValidationError(
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
-        'Asset not initialized',
       );
     }
     this.asset.grantRead(role);

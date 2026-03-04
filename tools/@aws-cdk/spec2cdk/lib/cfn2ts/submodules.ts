@@ -2,7 +2,7 @@ import * as path from 'node:path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-import { ModuleMap, ModuleMapEntry } from '../module-topology';
+import type { ModuleMap, ModuleMapEntry } from '../module-topology';
 
 /**
  * Make sure that a number of expected files exist for every service submodule
@@ -13,6 +13,7 @@ export default async function generateServiceSubmoduleFiles(modules: ModuleMap, 
   for (const submodule of Object.values(modules)) {
     await ensureSubmodule(submodule, outPath);
     await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
+    await ensureMixinsSubmoduleJsiiRc(submodule, outPath);
   }
 }
 
@@ -108,4 +109,38 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, int
 
 function lastPart(x: string): string {
   return x.split('.').slice(-1)[0];
+}
+
+/**
+ * If a service submodule has a `lib/mixins/` directory, generate a `.mixins.jsiirc.json`
+ * file with the appropriate target namespaces.
+ */
+async function ensureMixinsSubmoduleJsiiRc(submodule: ModuleMapEntry, outPath: string) {
+  const mixinsDir = path.join(outPath, submodule.name, 'lib', 'mixins');
+  if (!fs.existsSync(mixinsDir)) {
+    return;
+  }
+
+  if (!submodule.definition) {
+    throw new Error(`Cannot infer namespace for mixins submodule of "${submodule.name}".`);
+  }
+
+  const def = submodule.definition;
+  const jsiirc = {
+    targets: {
+      java: {
+        package: `${def.javaPackage}.mixins`,
+      },
+      dotnet: {
+        namespace: `${def.dotnetPackage}.Mixins`,
+      },
+      python: {
+        module: `${def.pythonModuleName}.mixins`,
+      },
+      go: {
+        packageName: `${def.moduleName}mixins`.replace(/[^a-z0-9]/gi, ''),
+      },
+    },
+  };
+  await fs.writeJson(path.join(mixinsDir, '.jsiirc.json'), jsiirc, { spaces: 2 });
 }

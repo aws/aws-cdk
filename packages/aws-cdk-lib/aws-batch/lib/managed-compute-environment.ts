@@ -1,11 +1,13 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
-import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
+import type { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
+import { ComputeEnvironmentBase } from './compute-environment-base';
 import * as ec2 from '../../aws-ec2';
-import * as eks from '../../aws-eks';
+import type * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
-import { IRole } from '../../aws-iam';
-import { ArnFormat, Duration, ITaggable, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
+import type { IRole } from '../../aws-iam';
+import type { Duration, ITaggable } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

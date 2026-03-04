@@ -1,20 +1,21 @@
-import { Arn, ArnComponents, ArnFormat } from './arn';
+import { Construct } from 'constructs';
+import type { IConstruct, IMixin } from 'constructs';
+import type { ArnComponents } from './arn';
+import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
 import { ValidationError } from './errors';
 import { memoizedGetter } from './helpers-internal/memoize';
-import { IStringProducer, Lazy } from './lazy';
+import type { IStringProducer } from './lazy';
+import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
-import { RemovalPolicy } from './removal-policy';
-import { IResolveContext } from './resolvable';
+import type { RemovalPolicy } from './removal-policy';
+import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
-import { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
-
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { Construct, IConstruct } from 'constructs';
+import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+import { withMixins } from './mixins/private/mixin-metadata';
 
 /**
  * Interface for L2 Resource constructs.
@@ -166,6 +167,10 @@ export abstract class Resource extends Construct implements IResource {
       account: this._customAccount ?? this.stack.account,
       region: this._customRegion ?? this.stack.region,
     };
+  }
+
+  public with(...mixins: IMixin[]): IConstruct {
+    return withMixins(this, ...mixins);
   }
 
   /**

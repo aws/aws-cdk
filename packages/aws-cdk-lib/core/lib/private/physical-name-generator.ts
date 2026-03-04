@@ -3,8 +3,8 @@ import { Node } from 'constructs';
 import { TokenMap } from './token-map';
 import { UnscopedValidationError, ValidationError } from '../errors';
 import { Names } from '../names';
-import { IResolvable, IResolveContext } from '../resolvable';
-import { IResource } from '../resource';
+import type { IResolvable, IResolveContext } from '../resolvable';
+import type { IResource } from '../resource';
 import { Stack } from '../stack';
 import { Token } from '../token';
 

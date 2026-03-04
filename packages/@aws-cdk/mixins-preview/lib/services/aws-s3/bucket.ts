@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
-import type { IMixin } from '../../core';
+import type { IMixin } from 'constructs';
 import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
@@ -17,9 +17,9 @@ export class AutoDeleteObjects implements IMixin {
     return CfnResource.isCfnResource(construct) && construct.cfnResourceType === s3.CfnBucket.CFN_RESOURCE_TYPE_NAME;
   }
 
-  applyTo(construct: IConstruct): IConstruct {
+  applyTo(construct: IConstruct): void {
     if (!this.supports(construct)) {
-      return construct;
+      return;
     }
 
     const ref = construct.bucketRef;
@@ -73,25 +73,6 @@ export class AutoDeleteObjects implements IMixin {
 
     // Tag the bucket to record that we want it autodeleted
     Tags.of(construct).add(AUTO_DELETE_OBJECTS_TAG, 'true');
-
-    return construct;
   }
 }
 
-/**
- * S3-specific mixin for enabling versioning.
- */
-export class EnableVersioning implements IMixin {
-  supports(construct: IConstruct): boolean {
-    return construct instanceof s3.CfnBucket;
-  }
-
-  applyTo(construct: IConstruct): IConstruct {
-    if (construct instanceof s3.CfnBucket) {
-      construct.versioningConfiguration = {
-        status: 'Enabled',
-      };
-    }
-    return construct;
-  }
-}

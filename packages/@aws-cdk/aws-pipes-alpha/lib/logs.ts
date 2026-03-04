@@ -1,9 +1,9 @@
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { ILogGroup } from 'aws-cdk-lib/aws-logs';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { IPipe } from './pipe';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { ILogGroup } from 'aws-cdk-lib/aws-logs';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { IBucket } from 'aws-cdk-lib/aws-s3';
+import type { IPipe } from './pipe';
 
 /**
  * Log data configuration for a pipe.

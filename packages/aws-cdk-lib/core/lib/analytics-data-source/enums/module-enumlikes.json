@@ -191,72 +191,6 @@
       "AUTO"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
-    "AccessPolicyArn": [
-      "AMAZON_EKS_ADMIN_POLICY",
-      "AMAZON_EKS_CLUSTER_ADMIN_POLICY",
-      "AMAZON_EKS_ADMIN_VIEW_POLICY",
-      "AMAZON_EKS_EDIT_POLICY",
-      "AMAZON_EKS_VIEW_POLICY"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
-    "AlbControllerVersion": [
-      "V2_0_0",
-      "V2_0_1",
-      "V2_1_0",
-      "V2_1_1",
-      "V2_1_2",
-      "V2_1_3",
-      "V2_2_0",
-      "V2_2_1",
-      "V2_2_2",
-      "V2_2_3",
-      "V2_2_4",
-      "V2_3_0",
-      "V2_3_1",
-      "V2_4_1",
-      "V2_4_2",
-      "V2_4_3",
-      "V2_4_4",
-      "V2_4_5",
-      "V2_4_6",
-      "V2_4_7",
-      "V2_5_0",
-      "V2_5_1",
-      "V2_5_2",
-      "V2_5_3",
-      "V2_5_4",
-      "V2_6_0",
-      "V2_6_1",
-      "V2_6_2",
-      "V2_7_0",
-      "V2_7_1",
-      "V2_7_2",
-      "V2_8_0",
-      "V2_8_1",
-      "V2_8_2"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts": {
-    "EndpointAccess": [
-      "PUBLIC",
-      "PRIVATE",
-      "PUBLIC_AND_PRIVATE"
-    ],
-    "KubernetesVersion": [
-      "V1_25",
-      "V1_26",
-      "V1_27",
-      "V1_28",
-      "V1_29",
-      "V1_30",
-      "V1_31",
-      "V1_32",
-      "V1_33",
-      "V1_34"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/connection.ts": {
     "ConnectionType": [
       "JDBC",
@@ -286,7 +220,19 @@
       "SNAPCHATADS",
       "STRIPE",
       "ZENDESK",
-      "ZOHOCRM"
+      "ZOHOCRM",
+      "BIGQUERY",
+      "AZURESQL",
+      "AZURECOSMOS",
+      "OPENSEARCH",
+      "MYSQL",
+      "POSTGRESQL",
+      "ORACLE",
+      "SQLSERVER",
+      "SAPHANA",
+      "TERADATA",
+      "VERTICA",
+      "DYNAMODB"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/data-format.ts": {
@@ -798,6 +744,8 @@
       "ANTHROPIC_CLAUDE_OPUS_4_20250514_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
       "COHERE_COMMAND_V14",
@@ -2111,6 +2059,73 @@
       "WINDOWS_SERVER_2025_CORE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.ts": {
+    "AccessPolicyArn": [
+      "AMAZON_EKS_ADMIN_POLICY",
+      "AMAZON_EKS_CLUSTER_ADMIN_POLICY",
+      "AMAZON_EKS_ADMIN_VIEW_POLICY",
+      "AMAZON_EKS_EDIT_POLICY",
+      "AMAZON_EKS_VIEW_POLICY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.ts": {
+    "AlbControllerVersion": [
+      "V2_0_0",
+      "V2_0_1",
+      "V2_1_0",
+      "V2_1_1",
+      "V2_1_2",
+      "V2_1_3",
+      "V2_2_0",
+      "V2_2_1",
+      "V2_2_2",
+      "V2_2_3",
+      "V2_2_4",
+      "V2_3_0",
+      "V2_3_1",
+      "V2_4_1",
+      "V2_4_2",
+      "V2_4_3",
+      "V2_4_4",
+      "V2_4_5",
+      "V2_4_6",
+      "V2_4_7",
+      "V2_5_0",
+      "V2_5_1",
+      "V2_5_2",
+      "V2_5_3",
+      "V2_5_4",
+      "V2_6_0",
+      "V2_6_1",
+      "V2_6_2",
+      "V2_7_0",
+      "V2_7_1",
+      "V2_7_2",
+      "V2_8_0",
+      "V2_8_1",
+      "V2_8_2"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "EndpointAccess": [
+      "PUBLIC",
+      "PRIVATE",
+      "PUBLIC_AND_PRIVATE"
+    ],
+    "KubernetesVersion": [
+      "V1_25",
+      "V1_26",
+      "V1_27",
+      "V1_28",
+      "V1_29",
+      "V1_30",
+      "V1_31",
+      "V1_32",
+      "V1_33",
+      "V1_34",
+      "V1_35"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessPolicyArn": [
       "AMAZON_EKS_ADMIN_POLICY",
@@ -2185,7 +2200,8 @@
       "V1_31",
       "V1_32",
       "V1_33",
-      "V1_34"
+      "V1_34",
+      "V1_35"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-elasticsearch/lib/domain.ts": {
@@ -2675,6 +2691,7 @@
       "VER_3_04_2",
       "VER_3_04_3",
       "VER_3_04_4",
+      "VER_3_04_6",
       "VER_3_05_0",
       "VER_3_05_1",
       "VER_3_05_2",
@@ -2689,8 +2706,10 @@
       "VER_3_10_0",
       "VER_3_10_1",
       "VER_3_10_2",
+      "VER_3_10_3",
       "VER_3_11_0",
-      "VER_3_11_1"
+      "VER_3_11_1",
+      "VER_3_12_0"
     ],
     "AuroraPostgresEngineVersion": [
       "VER_9_6_8",
@@ -2769,6 +2788,7 @@
       "VER_13_20",
       "VER_13_21",
       "VER_13_22",
+      "VER_13_23",
       "VER_14_3",
       "VER_14_4",
       "VER_14_5",
@@ -2798,6 +2818,7 @@
       "VER_15_12",
       "VER_15_13",
       "VER_15_14",
+      "VER_15_15",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2812,11 +2833,15 @@
       "VER_16_9",
       "VER_16_9_LIMITLESS",
       "VER_16_10",
+      "VER_16_10_LIMITLESS",
+      "VER_16_11",
+      "VER_16_11_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
       "VER_17_5",
-      "VER_17_6"
+      "VER_17_6",
+      "VER_17_7"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -2923,6 +2948,7 @@
       "VER_10_6_22",
       "VER_10_6_23",
       "VER_10_6_24",
+      "VER_10_6_25",
       "VER_10_11",
       "VER_10_11_4",
       "VER_10_11_5",
@@ -2935,14 +2961,17 @@
       "VER_10_11_13",
       "VER_10_11_14",
       "VER_10_11_15",
+      "VER_10_11_16",
       "VER_11_4_3",
       "VER_11_4_4",
       "VER_11_4_5",
       "VER_11_4_7",
       "VER_11_4_8",
       "VER_11_4_9",
+      "VER_11_4_10",
       "VER_11_8_3",
-      "VER_11_8_5"
+      "VER_11_8_5",
+      "VER_11_8_6"
     ],
     "MysqlEngineVersion": [
       "VER_5_5",
@@ -2997,6 +3026,7 @@
       "VER_5_7_44_RDS_20250213",
       "VER_5_7_44_RDS_20250508",
       "VER_5_7_44_RDS_20250818",
+      "VER_5_7_44_RDS_20251212",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -3026,11 +3056,13 @@
       "VER_8_0_42",
       "VER_8_0_43",
       "VER_8_0_44",
+      "VER_8_0_45",
       "VER_8_4_3",
       "VER_8_4_4",
       "VER_8_4_5",
       "VER_8_4_6",
-      "VER_8_4_7"
+      "VER_8_4_7",
+      "VER_8_4_8"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -3123,8 +3155,10 @@
       "VER_11_22_RDS_20240509",
       "VER_11_22_RDS_20240808",
       "VER_11_22_RDS_20241121",
+      "VER_11_22_RDS_20250220",
       "VER_11_22_RDS_20250508",
       "VER_11_22_RDS_20250814",
+      "VER_11_22_RDS_20251114",
       "VER_12",
       "VER_12_2",
       "VER_12_3",
@@ -3150,6 +3184,7 @@
       "VER_12_22_RDS_20250220",
       "VER_12_22_RDS_20250508",
       "VER_12_22_RDS_20250814",
+      "VER_12_22_RDS_20251114",
       "VER_13",
       "VER_13_1",
       "VER_13_2",
@@ -3195,6 +3230,7 @@
       "VER_14_18",
       "VER_14_19",
       "VER_14_20",
+      "VER_14_21",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -3210,6 +3246,7 @@
       "VER_15_13",
       "VER_15_14",
       "VER_15_15",
+      "VER_15_16",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -3222,6 +3259,7 @@
       "VER_16_9",
       "VER_16_10",
       "VER_16_11",
+      "VER_16_12",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
@@ -3230,8 +3268,10 @@
       "VER_17_5",
       "VER_17_6",
       "VER_17_7",
+      "VER_17_8",
       "VER_18",
-      "VER_18_1"
+      "VER_18_1",
+      "VER_18_2"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3452,6 +3492,7 @@
       "VER_15_00_4435_7_V1",
       "VER_15_00_4440_1_V1",
       "VER_15_00_4445_1_V1",
+      "VER_15_00_4455_2_V1",
       "VER_16",
       "VER_16_00_4085_2_V1",
       "VER_16_00_4095_4_V1",
@@ -3469,7 +3510,10 @@
       "VER_16_00_4195_2_V1",
       "VER_16_00_4205_1_V1",
       "VER_16_00_4210_1_V1",
-      "VER_16_00_4215_2_V1"
+      "VER_16_00_4215_2_V1",
+      "VER_16_00_4225_2_V1",
+      "VER_16_00_4230_2_V1",
+      "VER_16_00_4236_2_V1"
     ],
     "DatabaseInstanceEngine": [
       "MARIADB",

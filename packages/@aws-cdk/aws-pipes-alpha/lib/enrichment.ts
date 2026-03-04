@@ -1,6 +1,6 @@
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { IPipe } from '.';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { IPipe } from '.';
 
 /**
  * The parameters required to set up enrichment on your pipe.

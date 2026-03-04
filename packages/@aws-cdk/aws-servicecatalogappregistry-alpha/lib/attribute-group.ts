@@ -3,9 +3,10 @@ import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IApplication } from './application';
-import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
+import type { Construct } from 'constructs';
+import type { IApplication } from './application';
+import type { ShareOptions } from './common';
+import { getPrincipalsforSharing, hashValues, SharePermission } from './common';
 import { InputValidator } from './private/validation';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = `arn:${cdk.Aws.PARTITION}:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly`;

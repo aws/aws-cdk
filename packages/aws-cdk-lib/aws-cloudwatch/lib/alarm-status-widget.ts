@@ -1,6 +1,6 @@
-import { AlarmState } from './alarm-rule';
+import type { AlarmState } from './alarm-rule';
 import { ConcreteWidget } from './widget';
-import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * The sort possibilities for AlarmStatusWidgets

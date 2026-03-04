@@ -1,6 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import { Service, Source } from '../lib';
 import { VpcIngressConnection } from '../lib/vpc-ingress-connection';
 
@@ -37,6 +38,7 @@ const vpcIngressConnection = new VpcIngressConnection(stack, 'VpcIngressConnecti
 
 new integ.IntegTest(app, 'AppRunnerVpcIngressConnection', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });
 
 new cdk.CfnOutput(stack, 'Vpc Ingress Connection Domain name', { value: `https://${vpcIngressConnection.domainName}` });

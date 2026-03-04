@@ -1,6 +1,4 @@
-import {
-  AssetManifestBuilder,
-  BOOTSTRAP_QUALIFIER_CONTEXT,
+import type {
   DockerImageAssetLocation,
   DockerImageAssetSource,
   FileAssetLocation,
@@ -9,16 +7,22 @@ import {
   IReusableStackSynthesizer,
   ISynthesisSession,
   Stack,
+} from 'aws-cdk-lib/core';
+import {
+  AssetManifestBuilder,
+  BOOTSTRAP_QUALIFIER_CONTEXT,
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib/core';
 import { StringSpecializer, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { BootstrapRole, BootstrapRoles, DeploymentIdentities } from './bootstrap-roles';
-import { DefaultStagingStack, DefaultStagingStackOptions } from './default-staging-stack';
+import type { BootstrapRole, BootstrapRoles } from './bootstrap-roles';
+import { DeploymentIdentities } from './bootstrap-roles';
+import type { DefaultStagingStackOptions } from './default-staging-stack';
+import { DefaultStagingStack } from './default-staging-stack';
 import { PerEnvironmentStagingFactory as PerEnvironmentStagingFactory } from './per-env-staging-factory';
 import { AppScopedGlobal } from './private/app-global';
 import { validateNoTokens } from './private/no-tokens';
-import { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
+import type { IStagingResources, IStagingResourcesFactory, ObtainStagingResourcesContext } from './staging-stack';
 
 const AGNOSTIC_STACKS = new AppScopedGlobal(() => new Set<Stack>());
 const ENV_AWARE_STACKS = new AppScopedGlobal(() => new Set<Stack>());

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
-import { IInstance } from '../../aws-ec2';
-import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
+import type { IInstance } from '../../aws-ec2';
+import type { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
 import * as cdk from '../../core';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 
@@ -76,6 +76,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
     return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.networkLoadBalancer(nlb), props);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   protected vpcOrigin?: cloudfront.IVpcOrigin;
 
   protected constructor(domainName: string, protected readonly props: VpcOriginProps) {

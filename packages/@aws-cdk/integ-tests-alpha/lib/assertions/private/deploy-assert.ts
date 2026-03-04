@@ -1,13 +1,15 @@
 import { Stack, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
-import { Construct, IConstruct, Node } from 'constructs';
-import { IApiCall } from '../api-call-base';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
+import type { IApiCall } from '../api-call-base';
 import { EqualsAssertion } from '../assertions';
-import { ActualResult, ExpectedResult } from '../common';
+import type { ActualResult, ExpectedResult } from '../common';
 import { HttpApiCall as HttpApiCall } from '../http-call';
 import { md5hash } from '../private/hash';
-import { FetchOptions } from '../providers';
-import { AwsApiCall, LambdaInvokeFunction, LambdaInvokeFunctionProps } from '../sdk';
-import { IDeployAssert } from '../types';
+import type { FetchOptions } from '../providers';
+import type { LambdaInvokeFunctionProps } from '../sdk';
+import { AwsApiCall, LambdaInvokeFunction } from '../sdk';
+import type { IDeployAssert } from '../types';
 
 const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 

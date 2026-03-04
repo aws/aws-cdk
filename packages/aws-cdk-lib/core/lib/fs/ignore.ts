@@ -1,12 +1,15 @@
 import * as path from 'path';
-import dockerIgnore, * as DockerIgnore from '@balena/dockerignore';
-import gitIgnore, * as GitIgnore from 'ignore';
-import { CopyOptions, IgnoreMode } from './options';
+import type * as DockerIgnore from '@balena/dockerignore';
+import dockerIgnore from '@balena/dockerignore';
+import type * as GitIgnore from 'ignore';
+import gitIgnore from 'ignore';
+import type { CopyOptions } from './options';
+import { IgnoreMode } from './options';
 import { UnscopedValidationError } from '../errors';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
+const { minimatch } = require('minimatch');
 
 /**
  * Represents file path ignoring behavior.

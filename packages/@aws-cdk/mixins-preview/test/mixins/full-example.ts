@@ -5,7 +5,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import {
   Mixins,
   ConstructSelector,
-} from '../../lib/core';
+} from 'aws-cdk-lib/core';
 import * as s3Mixins from '../../lib/services/aws-s3/mixins';
 
 describe('Integration Tests', () => {
@@ -32,7 +32,7 @@ describe('Integration Tests', () => {
     Mixins.of(
       stack,
       ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME),
-    ).apply(new s3Mixins.EnableVersioning());
+    ).apply(new s3.mixins.BucketVersioning());
 
     // Verify auto-delete only applied to prod bucket
     const template = Template.fromStack(stack);
@@ -51,7 +51,7 @@ describe('Integration Tests', () => {
 
     Mixins.of(bucket)
       .apply(new s3Mixins.AutoDeleteObjects())
-      .apply(new s3Mixins.EnableVersioning());
+      .apply(new s3.mixins.BucketVersioning());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('Custom::S3AutoDeleteObjects', {

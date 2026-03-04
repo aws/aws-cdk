@@ -4,10 +4,11 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IBuild } from './build';
-import { FleetBase, FleetProps, IFleet } from './fleet-base';
-import { Port, IPeer, IngressRule } from './ingress-rule';
+import type { Construct } from 'constructs';
+import type { IBuild } from './build';
+import type { FleetProps, IFleet } from './fleet-base';
+import { FleetBase } from './fleet-base';
+import type { Port, IPeer, IngressRule } from './ingress-rule';
 
 /**
  * Represents a GameLift Fleet used to run a custom game build.

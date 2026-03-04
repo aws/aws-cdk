@@ -48,7 +48,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "STANDARD",
     "FARGATE_LINUX",
     "EC2_LINUX",
-    "EC2_WINDOWS"
+    "EC2_WINDOWS",
+    "EC2",
+    "HYBRID_LINUX",
+    "HYPERPOD_LINUX"
   ],
   "AccessKeyStatus": [
     "Active",
@@ -244,6 +247,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "GPU",
     "ARM64",
     "Neuron"
+  ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
   ],
   "ApiKeyCredentialLocationType": [
     "HEADER",
@@ -1060,6 +1072,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "FIRST_ROW",
     "GIVEN"
   ],
+  "CustomClaimOperator": [
+    "EQUALS",
+    "CONTAINS",
+    "CONTAINS_ANY"
+  ],
+  "CustomClaimValueType": [
+    "STRING",
+    "STRING_ARRAY"
+  ],
   "CustomControl": [
     "RETURN_CONTROL"
   ],
@@ -1112,6 +1133,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "standard",
     "advanced"
   ],
+  "DateIntervalUnit": [
+    "YEARS",
+    "MONTHS",
+    "WEEKS",
+    "DAYS",
+    "HOURS",
+    "MINUTES",
+    "SECONDS"
+  ],
   "DateTimeFormat": [
     "yyyy-MM-dd'T'HH:mm:ss'Z'",
     "epoch",
@@ -1137,7 +1167,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
   ],
   "DefaultInstanceClass": [
     "default_x86_64",
@@ -1156,6 +1187,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SAFE_DELETE",
     "FORCE_DELETE",
     "RETAIN"
+  ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
   ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
@@ -1412,6 +1448,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "EventSource": [
     "aws.config"
   ],
+  "EventSourceMappingLogLevel": [
+    "INFO",
+    "DEBUG",
+    "WARN"
+  ],
   "EventType": [
     "s3:ObjectCreated:*",
     "s3:ObjectCreated:Put",
@@ -1615,6 +1656,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPEN",
     "UPDATED",
     "CLOSED"
+  ],
+  "GlobalTableSettingsReplicationMode": [
+    "ENABLED"
   ],
   "GlueVersion": [
     "0.9",
@@ -2694,7 +2738,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPENAPI_SCHEMA",
     "SMITHY_MODEL",
     "LAMBDA",
-    "MCP_SERVER"
+    "MCP_SERVER",
+    "API_GATEWAY"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
@@ -3044,6 +3089,12 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "PartitionDateSource": [
     "EventTime",
     "DeliveryTime"
+  ],
+  "PartitionProjectionType": [
+    "integer",
+    "date",
+    "enum",
+    "injected"
   ],
   "PasskeyUserVerification": [
     "preferred",
@@ -3853,6 +3904,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataStandardDark",
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
+  ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
   ],
   "SubnetType": [
     "Isolated",

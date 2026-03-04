@@ -1,7 +1,7 @@
-import { IStageRef } from './apigateway.generated';
-import * as firehose from '../../aws-kinesisfirehose';
+import type { IStageRef } from './apigateway.generated';
+import type * as firehose from '../../aws-kinesisfirehose';
 import { ValidationError } from '../../core/lib/errors';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a RestApi Stage.

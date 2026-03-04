@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { LogDriver, LogDriverConfig } from './log-driver';
+import type { Construct } from 'constructs';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
 import { removeEmpty } from './utils';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import { toILogGroup } from '../../../aws-logs/lib/private/ref-utils';
-import { Size, SizeRoundingBehavior, UnscopedValidationError } from '../../../core';
-import { ContainerDefinition } from '../container-definition';
+import type { Size } from '../../../core';
+import { SizeRoundingBehavior, UnscopedValidationError } from '../../../core';
+import type { ContainerDefinition } from '../container-definition';
 
 /**
  * awslogs provides two modes for delivering messages from the container to the log driver

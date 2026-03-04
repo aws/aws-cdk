@@ -1,6 +1,7 @@
-import { IPeer, Peer } from './peer';
-import { Port } from './port';
-import { ISecurityGroup } from './security-group';
+import type { IPeer } from './peer';
+import { Peer } from './peer';
+import type { Port } from './port';
+import type { ISecurityGroup } from './security-group';
 import { UnscopedValidationError } from '../../core';
 
 /**
@@ -67,6 +68,7 @@ export interface ConnectionsProps {
  * This object can manage one or more security groups.
  */
 export class Connections implements IConnectable {
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly connections: Connections;
 
   /**
