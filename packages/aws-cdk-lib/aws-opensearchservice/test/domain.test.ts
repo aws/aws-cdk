@@ -2584,6 +2584,29 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
     });
   });
 
+  test('with autoSoftwareUpdateEnabled set to false', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: false,
+      },
+    });
+  });
+
+  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: Match.absent(),
+    });
+  });
+
   test('with invalid offPeakWindowStart', () => {
     expect(() => {
       new Domain(stack, 'Domain1', {
