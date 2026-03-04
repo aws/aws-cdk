@@ -157,10 +157,10 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
             ],
         },
         // Configure table properties for Parquet format
-        tableProperties: {
-            'write.format.default': 'parquet',
-            'write.parquet.compression-codec': 'zstd',
-        },
+        tableProperties: [
+            { key: 'write.format.default', value: 'parquet' },
+            { key: 'write.parquet.compression-codec', value: 'zstd' },
+        ],
     },
 });
 ```
