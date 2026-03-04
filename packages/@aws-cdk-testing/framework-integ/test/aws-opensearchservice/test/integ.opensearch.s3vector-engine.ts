@@ -44,12 +44,13 @@ const describeDomain = integ.assertions.awsApiCall('OpenSearch', 'describeDomain
   DomainName: stack.domainName,
 });
 
-describeDomain.expect(ExpectedResult.objectLike({
-  DomainStatus: {
-    AIMLOptions: {
-      S3VectorsEngine: {
-        Enabled: true,
+describeDomain.expect(
+  ExpectedResult.objectLike({
+    DomainStatus: {
+      AIMLOptions: {
+        S3VectorsEngine: {
+          Enabled: true,
+        },
       },
     },
-  },
-}));
+  }));
