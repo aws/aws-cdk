@@ -78,6 +78,8 @@
     "./aws-bedrock/mixins": "./lib/services/aws-bedrock/mixins.js",
     "./aws-bedrockagentcore": "./lib/services/aws-bedrockagentcore/index.js",
     "./aws-bedrockagentcore/mixins": "./lib/services/aws-bedrockagentcore/mixins.js",
+    "./aws-bedrockmantle": "./lib/services/aws-bedrockmantle/index.js",
+    "./aws-bedrockmantle/mixins": "./lib/services/aws-bedrockmantle/mixins.js",
     "./aws-billing": "./lib/services/aws-billing/index.js",
     "./aws-billing/mixins": "./lib/services/aws-billing/mixins.js",
     "./aws-billingconductor": "./lib/services/aws-billingconductor/index.js",
