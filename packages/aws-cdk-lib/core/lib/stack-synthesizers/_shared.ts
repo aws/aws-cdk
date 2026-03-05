@@ -100,8 +100,8 @@ function collectStackMetadata(stack: Stack) {
 
   const queue: IConstruct[] = [stack];
 
-  let next = queue.shift();
-  while (next) {
+  let next;
+  while (next = queue.shift()) {
     // break off if we reached a Stack construct that is not a NestedStack
     if (Stack.isStack(next) && next !== stack && next.nestedStackParent === undefined) {
       continue;
@@ -110,7 +110,6 @@ function collectStackMetadata(stack: Stack) {
     handleNode(next);
 
     queue.push(...next.node.children);
-    next = queue.shift();
   }
 
   return output;
