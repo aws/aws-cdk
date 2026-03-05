@@ -2568,21 +2568,13 @@ export class Bucket extends BucketBase {
       blockedEncryptionTypes = undefined;
     } else if (props.blockedEncryptionTypes.length === 0) {
       throw new ValidationError('At least one blocked encryption type must be specified', this);
-    } else if (props.blockedEncryptionTypes.includes(BlockedEncryptionType.NONE)) {
-      if (props.blockedEncryptionTypes.length > 1) {
+    } else {
+      const typeNames = props.blockedEncryptionTypes.map(type => type.name);
+      if (typeNames.includes(BlockedEncryptionType.NONE.name) && props.blockedEncryptionTypes.length > 1) {
         throw new ValidationError('If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
       }
       blockedEncryptionTypes = {
-        encryptionType: [BlockedEncryptionType.NONE],
-      };
-    } else {
-      for (const type of props.blockedEncryptionTypes) {
-        if (!Object.values(BlockedEncryptionType).includes(type)) {
-          throw new ValidationError(`Unrecognized blocked encryption type: ${type}`, this);
-        }
-      }
-      blockedEncryptionTypes = {
-        encryptionType: props.blockedEncryptionTypes,
+        encryptionType: typeNames,
       };
     }
 
@@ -3264,12 +3256,24 @@ export enum BucketEncryption {
 /**
  * Encryption types that can be blocked on an S3 bucket.
  */
-export enum BlockedEncryptionType {
+export class BlockedEncryptionType {
   /** Special value - all encryption types are allowed */
-  NONE = 'NONE',
-
+  public static readonly NONE = new BlockedEncryptionType('NONE');
   /** Server-Side Encryption with customer-provided keys (SSE-C) is blocked */
-  SSE_C = 'SSE-C',
+  public static readonly SSE_C = new BlockedEncryptionType('SSE-C');
+
+  /**
+   * Use this constructor only if S3 releases a new BlockedEncryptionType
+   * that is unknown to CDK. Otherwise, use this class's static constants.
+   */
+  public static custom(name: string) {
+    return new BlockedEncryptionType(name);
+  }
+
+  /**
+   * @param name The name for this blocked encryption type used in the API
+   */
+  private constructor(public readonly name: string) {}
 }
 
 /**

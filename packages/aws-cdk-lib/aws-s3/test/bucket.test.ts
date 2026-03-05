@@ -162,16 +162,6 @@ describe('bucket', () => {
     })).toThrow(/If NONE is specified as the blocked encryption type, no other encryption types may be specified/);
   });
 
-  test('invalid blocked encryption type fails to validate', () => {
-    const stack = new cdk.Stack();
-
-    // Invalid type triggers validation error
-    expect(() => new s3.Bucket(stack, 'MyBucket', {
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      blockedEncryptionTypes: ['INVALID' as any],
-    })).toThrow(/Unrecognized blocked encryption type/);
-  });
-
   test('bucket with no encryption by default and blockedEncryptionTypes', () => {
     const stack = new cdk.Stack();
 
@@ -207,6 +197,31 @@ describe('bucket', () => {
           {
             BlockedEncryptionTypes: {
               EncryptionType: ['NONE'],
+            },
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('bucket with custom blockedEncryptionTypes', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockedEncryptionTypes: [
+        s3.BlockedEncryptionType.custom('unknown'),
+        s3.BlockedEncryptionType.custom('unsupported'),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            BlockedEncryptionTypes: {
+              EncryptionType: ['unknown', 'unsupported'],
             },
             ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
           },
