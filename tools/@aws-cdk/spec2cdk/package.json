@@ -32,9 +32,9 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.157",
-    "@aws-cdk/service-spec-importers": "^0.0.112",
-    "@aws-cdk/service-spec-types": "^0.0.223",
+    "@aws-cdk/aws-service-spec": "^0.1.160",
+    "@aws-cdk/service-spec-importers": "^0.0.115",
+    "@aws-cdk/service-spec-types": "^0.0.226",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.16",
     "camelcase": "^6",
