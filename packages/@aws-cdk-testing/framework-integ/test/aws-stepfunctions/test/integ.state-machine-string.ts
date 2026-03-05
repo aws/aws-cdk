@@ -24,4 +24,6 @@ const integ = new IntegTest(app, 'IntegTest', {
 
 integ.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
   stateMachineArn: smWithTimeout.stateMachineArn,
-}).assertAtPath('definition', ExpectedResult.stringLikeRegexp('"TimeoutSeconds":3600'));
+}).expect(ExpectedResult.objectLike({
+  definition: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":3600}',
+}));

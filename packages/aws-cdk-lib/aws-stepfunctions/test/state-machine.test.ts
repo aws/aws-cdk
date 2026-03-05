@@ -1569,7 +1569,7 @@ describe('State Machine', () => {
   test('FileDefinitionBody emits warning when timeout is specified', () => {
     const stack = new cdk.Stack();
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definitionBody: sfn.DefinitionBody.fromFile(require('path').join(__dirname, 'simple.asl.json')),
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
       timeout: cdk.Duration.hours(1),
     });
     Annotations.fromStack(stack).hasWarning(
@@ -1577,5 +1577,4 @@ describe('State Machine', () => {
       Match.stringLikeRegexp('timeout is ignored when using FileDefinitionBody'),
     );
   });
-
 });
