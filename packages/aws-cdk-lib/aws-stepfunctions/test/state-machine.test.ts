@@ -1,5 +1,5 @@
 import { FakeTask } from './private/fake-task';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -1531,4 +1531,51 @@ describe('State Machine', () => {
       }),
     });
   });
+
+  test('StringDefinitionBody injects TimeoutSeconds when timeout is specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}';
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":3600}',
+    });
+  });
+
+  test('StringDefinitionBody does not override existing TimeoutSeconds in ASL', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":7200}';
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN — ASL-level TimeoutSeconds takes precedence
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":7200}',
+    });
+  });
+
+  test('FileDefinitionBody emits warning when timeout is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(require('path').join(__dirname, 'simple.asl.json')),
+      timeout: cdk.Duration.hours(1),
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('timeout is ignored when using FileDefinitionBody'),
+    );
+  });
+
 });
