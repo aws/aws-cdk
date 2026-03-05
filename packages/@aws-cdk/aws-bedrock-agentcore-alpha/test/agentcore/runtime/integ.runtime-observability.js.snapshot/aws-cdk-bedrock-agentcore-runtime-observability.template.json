@@ -908,7 +908,7 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":delivery-source:*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"*\",\"Sid\":\"CDKLogsDeliveryWrite\"}],\"Version\":\"2012-10-17\"}"
+       ":delivery-source:*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
       ]
      ]
     },

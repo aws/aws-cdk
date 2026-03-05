@@ -3047,7 +3047,7 @@ describe('Runtime observability tests', () => {
             { 'Fn::GetAtt': ['TracingRuntime80A99119', 'AgentRuntimeArn'] },
             '"]},"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
             { Ref: 'AWS::Partition' },
-            ':logs:us-east-1:123456789012:delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*","Sid":"CDKLogsDeliveryWrite"}],"Version":"2012-10-17"}',
+            ':logs:us-east-1:123456789012:delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
           ],
         ],
       },

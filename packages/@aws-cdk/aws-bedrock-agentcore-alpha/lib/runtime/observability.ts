@@ -129,12 +129,15 @@ class CloudWatchLogsDestination extends LoggingDestination {
           'aws:SourceAccount': stack.account,
         },
         ArnLike: {
-          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+          'aws:SourceArn': stack.formatArn({
+            service: 'logs',
+            resource: '*',
+          }),
         },
       },
     }));
 
-    const deliveryDestination: logs.CfnDeliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
+    const deliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
       name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
       deliveryDestinationType: 'CWL',
       destinationResourceArn: this.logGroup.logGroupArn,
@@ -175,7 +178,7 @@ class S3Destination extends LoggingDestination {
       },
     }));
 
-    const deliveryDestination: logs.CfnDeliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
+    const deliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
       name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
       deliveryDestinationType: 'S3',
       destinationResourceArn: this.bucket.bucketArn,
@@ -198,7 +201,7 @@ class FirehoseDestination extends LoggingDestination {
     // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-Firehose.html
     Tags.of(this.stream).add('LogDeliveryEnabled', 'true');
 
-    const deliveryDestination: logs.CfnDeliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
+    const deliveryDestination = new logs.CfnDeliveryDestination(scope, `${id}Dest`, {
       name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
       deliveryDestinationType: 'FH',
       destinationResourceArn: this.stream.deliveryStreamArn,
@@ -245,7 +248,7 @@ export function configureTracingDelivery(
   const stack = Stack.of(scope);
 
   // Create delivery source for traces
-  const deliverySource: logs.CfnDeliverySource = new logs.CfnDeliverySource(scope, 'TracesDeliverySource', {
+  const deliverySource = new logs.CfnDeliverySource(scope, 'TracesDeliverySource', {
     name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliverySource, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
     logType: 'TRACES',
     resourceArn: sourceArn,
@@ -262,7 +265,6 @@ export function configureTracingDelivery(
   // Grant permissions for this specific source resource
   // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
   xrayPolicy.document.addStatements(new PolicyStatement({
-    sid: 'CDKLogsDeliveryWrite',
     effect: Effect.ALLOW,
     principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
     actions: ['xray:PutTraceSegments'],
@@ -281,7 +283,7 @@ export function configureTracingDelivery(
   }));
 
   // Create delivery destination for X-Ray
-  const deliveryDestination: logs.CfnDeliveryDestination = new logs.CfnDeliveryDestination(scope, 'TracesDeliveryDest', {
+  const deliveryDestination = new logs.CfnDeliveryDestination(scope, 'TracesDeliveryDest', {
     name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
     deliveryDestinationType: 'XRAY',
   });
