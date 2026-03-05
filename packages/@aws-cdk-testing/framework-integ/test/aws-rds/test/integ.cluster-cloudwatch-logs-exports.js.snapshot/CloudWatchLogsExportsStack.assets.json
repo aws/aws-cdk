@@ -1,30 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
-      "displayName": "CloudWatchLogsExportsStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
-      "source": {
-        "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region-4416417b": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "d07527338b271441f26522da3dcdfb74ee70c5d64783d3b6e79ba638850a1b20": {
+    "e64a36da0aa06fbe44cbc6aa5159e5bf3923b0c33c333bf7e37c567807a31ad9": {
       "displayName": "CloudWatchLogsExportsStack Template",
       "source": {
         "path": "CloudWatchLogsExportsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-185d5699": {
+        "current_account-current_region-0467a148": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d07527338b271441f26522da3dcdfb74ee70c5d64783d3b6e79ba638850a1b20.json",
+          "objectKey": "e64a36da0aa06fbe44cbc6aa5159e5bf3923b0c33c333bf7e37c567807a31ad9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

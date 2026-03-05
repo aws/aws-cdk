@@ -53,7 +53,7 @@
     "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
    ]
   },
-  "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15": {
+  "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eServiceRole544E6136": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -84,7 +84,7 @@
     ]
    }
   },
-  "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4": {
+  "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -96,14 +96,14 @@
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15",
+      "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eServiceRole544E6136",
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
-    "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15"
+    "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eServiceRole544E6136"
    ]
   },
   "StateMachineRoleB840431D": {
@@ -134,13 +134,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+          "Eval41256dc5445742738ed917bc818694e54EB1134F",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "Eval41256dc5445742738ed917bc818694e54EB1134F",
+          "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325",
           "Arn"
          ]
         },
@@ -150,7 +150,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+             "Eval41256dc5445742738ed917bc818694e54EB1134F",
              "Arn"
             ]
            },
@@ -164,7 +164,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval41256dc5445742738ed917bc818694e54EB1134F",
+             "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325",
              "Arn"
             ]
            },
@@ -202,14 +202,14 @@
        "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+         "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325",
          "Arn"
         ]
        },
        "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+         "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325",
          "Arn"
         ]
        },

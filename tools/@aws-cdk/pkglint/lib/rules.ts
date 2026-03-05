@@ -643,7 +643,7 @@ export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
  */
 export class ConstructsVersion extends ValidationRule {
   public static readonly VERSION = cdkMajorVersion() === 2
-    ? '^10.0.0'
+    ? '^10.5.0'
     : '^3.3.69';
 
   public readonly name = 'deps/constructs';
@@ -1167,7 +1167,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 18.0.0');
+      expectJSON(this.name, pkg, 'engines.node', '>= 20.0.0');
     } else {
       expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
     }
@@ -1744,6 +1744,38 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
           delete pkg.json.types;
         },
       });
+    }
+  }
+}
+
+/**
+ * If an aws-cdk-lib submodule has a lib/mixins/ directory,
+ * its lib/index.ts must contain `export * as mixins from './mixins';`
+ */
+export class MixinsSubmoduleExport extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/mixins-export';
+
+  /**
+   * Submodules whose lib/mixins/ directory is the source of mixins, not a consumer.
+   * These should not be required to re-export mixins from their lib/index.ts.
+   */
+  private readonly excludedSubmodules = ['core'];
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.packageName !== 'aws-cdk-lib') return;
+
+    // Scan all service submodule directories
+    for (const entry of fs.readdirSync(pkg.packageRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      if (this.excludedSubmodules.includes(entry.name)) continue;
+
+      const mixinsDir = path.join(pkg.packageRoot, entry.name, 'lib', 'mixins');
+      if (!fs.existsSync(mixinsDir)) continue;
+
+      const libIndex = path.join(entry.name, 'lib', 'index.ts');
+      const exportLine = "export * as mixins from './mixins';";
+
+      fileShouldContain(this.name, pkg, libIndex, exportLine);
     }
   }
 }
