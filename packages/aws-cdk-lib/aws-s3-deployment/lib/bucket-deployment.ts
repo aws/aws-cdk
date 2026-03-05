@@ -305,6 +305,13 @@ export interface BucketDeploymentProps {
    * not specified a dedicated security group will be created for this function.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The system architectures compatible with the lambda function for this deployment.
+   *
+   * @default - the default Lambda architecture (X86_64)
+   */
+  readonly architecture?: lambda.Architecture;
 }
 
 /**
@@ -380,7 +387,8 @@ export class BucketDeployment extends Construct {
 
     const mountPath = `/mnt${accessPointPath}`;
     const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc, props.securityGroups, props.architecture),
+      architecture: props.architecture,
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
@@ -436,7 +444,7 @@ export class BucketDeployment extends Construct {
       },
     });
 
-    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc)}`;
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.ephemeralStorageSize, props.vpc, undefined, props.architecture)}`;
     this.cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
@@ -602,7 +610,13 @@ export class BucketDeployment extends Construct {
     }
   }
 
-  private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]) {
+  private renderUniqueId(
+    memoryLimit?: number,
+    ephemeralStorageSize?: cdk.Size,
+    vpc?: ec2.IVpc,
+    securityGroups?: ec2.ISecurityGroup[],
+    architecture?: lambda.Architecture,
+  ) {
     let uuid = '';
 
     // if the user specifes a custom memory limit, we define another singleton handler
@@ -646,13 +660,26 @@ export class BucketDeployment extends Construct {
       uuid += `-${sortedSecurityGroupIds}`;
     }
 
+    // if the user specifies an architecture, we define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    if (architecture) {
+      uuid += `-${architecture.name}`;
+    }
+
     return uuid;
   }
 
-  private renderSingletonUuid(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc, securityGroups?: ec2.ISecurityGroup[]) {
+  private renderSingletonUuid(
+    memoryLimit?: number,
+    ephemeralStorageSize?: cdk.Size,
+    vpc?: ec2.IVpc,
+    securityGroups?: ec2.ISecurityGroup[],
+    architecture?: lambda.Architecture,
+  ) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
-    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc, securityGroups);
+    uuid += this.renderUniqueId(memoryLimit, ephemeralStorageSize, vpc, securityGroups, architecture);
 
     return uuid;
   }

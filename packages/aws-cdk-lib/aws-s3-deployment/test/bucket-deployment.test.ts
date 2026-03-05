@@ -5,6 +5,7 @@ import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
@@ -1801,4 +1802,97 @@ test('outputObjectKeys default value is true', () => {
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     OutputObjectKeys: true,
   });
+});
+
+test('architecture can be used to specify the Lambda architecture', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.ARM_64,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('architecture creates separate singleton handlers for different architectures', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployX86-1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.X86_64,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployX86-2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.X86_64,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployARM', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.ARM_64,
+  });
+
+  // THEN - two handlers (one for x86_64, one for arm64)
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['x86_64'],
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('default architecture does not set Architectures property', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN - Architectures is not set (Lambda defaults to x86_64)
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: Match.absent(),
+  });
+});
+
+test('architecture combined with memoryLimit creates separate singleton handlers', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployX86-256', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.X86_64,
+    memoryLimit: 256,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployARM-256', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    architecture: lambda.Architecture.ARM_64,
+    memoryLimit: 256,
+  });
+
+  // THEN - same memory but different architecture = different singletons
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
 });
