@@ -72,7 +72,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithDestinationKeyCustomResourceE17493FF": {

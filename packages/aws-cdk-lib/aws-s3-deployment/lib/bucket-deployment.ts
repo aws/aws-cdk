@@ -309,7 +309,7 @@ export interface BucketDeploymentProps {
   /**
    * The system architectures compatible with the lambda function for this deployment.
    *
-   * @default - the default Lambda architecture (X86_64)
+   * @default lambda.Architecture.X86_64
    */
   readonly architecture?: lambda.Architecture;
 }
