@@ -37,6 +37,7 @@ const firehoseStream = new firehose.DeliveryStream(stack, 'RuntimeLogStream', {
   destination: new firehose.S3Bucket(logBucket, {
     dataOutputPrefix: 'firehose-logs/',
   }),
+  encryption: firehose.StreamEncryption.awsOwnedKey(),
 });
 
 // Runtime with full observability:
