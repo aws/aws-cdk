@@ -3,6 +3,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
+import * as s3 from '../../aws-s3';
 import type { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
 import type { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
@@ -128,19 +129,33 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     const accessLevels = new Set(this.originAccessLevels ?? [cloudfront.AccessLevel.READ]);
     if (accessLevels.has(AccessLevel.LIST)) {
       Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:listBucketSecurityRisk',
-        'When the origin with AccessLevel.LIST is associated to the default behavior, '+
-        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n'+
+        'When the origin with AccessLevel.LIST is associated to the default behavior, ' +
+        'it is strongly recommended to ensure the distribution\'s defaultRootObject is specified,\n' +
         'See the "Setting up OAC with LIST permission" section of module\'s README for more info.');
     }
 
     const bucketPolicyActions = this.getBucketPolicyActions(accessLevels);
-    const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
 
-    // Failed to update bucket policy, assume using imported bucket
-    if (!bucketPolicyResult.statementAdded) {
-      Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac',
-        'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
-        'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info.');
+    // Using a bucket from another stack creates a cyclic reference with
+    // the bucket policy taking a dependency on the distribution ID,
+    // and the distribution having a dependency on the bucket's domain name.
+    // Fix this by creating the bucket policy in the distribution's stack when cross-stack usage is detected.
+    const bucketStack = Stack.of(this.bucket);
+    const bucketInDifferentStack = bucketStack !== Stack.of(scope);
+
+    if (bucketInDifferentStack) {
+      // Cross-stack: Create bucket policy in distribution stack to avoid cyclic dependency
+      this.grantDistributionAccessToBucketCrossStack(scope, distributionId!, bucketPolicyActions);
+    } else {
+      // Same-stack: Use existing behavior
+      const bucketPolicyResult = this.grantDistributionAccessToBucket(distributionId!, bucketPolicyActions);
+
+      // Failed to update bucket policy, assume using imported bucket
+      if (!bucketPolicyResult.statementAdded) {
+        Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudfront-origins:updateImportedBucketPolicyOac',
+          'Cannot update bucket policy of an imported bucket. You will need to update the policy manually instead.\n' +
+          'See the "Setting up OAC with imported S3 buckets" section of module\'s README for more info.');
+      }
     }
 
     if (this.bucket.encryptionKey) {
@@ -194,6 +209,43 @@ class S3BucketOriginWithOAC extends S3BucketOrigin {
     );
     const result = this.bucket.addToResourcePolicy(oacBucketPolicyStatement);
     return result;
+  }
+
+  /**
+   * Creates a bucket policy in the distribution stack for cross-stack scenarios.
+   * This avoids cyclic dependencies by placing the bucket policy (which references the distribution ID)
+   * in the same stack as the distribution.
+   */
+  private grantDistributionAccessToBucketCrossStack(
+    scope: Construct,
+    distributionId: string,
+    policyActions: BucketPolicyAction[],
+  ): void {
+    const policyId = `${Names.uniqueId(scope)}BucketPolicy`;
+
+    const resources: string[] = [this.bucket.arnForObjects('*')];
+    if (policyActions.some((pa) => pa.needsBucketArn)) {
+      resources.push(this.bucket.bucketArn);
+    }
+
+    // Create CfnBucketPolicy directly in the distribution stack
+    new s3.CfnBucketPolicy(scope, policyId, {
+      bucket: this.bucket.bucketName,
+      policyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          Effect: 'Allow',
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Action: policyActions.map((pa) => pa.action),
+          Resource: resources,
+          Condition: {
+            StringEquals: {
+              'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
+            },
+          },
+        }],
+      },
+    });
   }
 
   private grantDistributionAccessToKey(actions: string[], key: IKey): iam.AddToResourcePolicyResult {
