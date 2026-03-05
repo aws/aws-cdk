@@ -232,6 +232,9 @@ export class Stack extends Construct implements ITaggable {
 
   /**
    * Looks up the first stack scope in which `construct` is defined. Fails if there is no stack up the tree.
+   *
+   * Will return the closest containing `Stack` or `NestedStack`.
+   *
    * @param construct The construct to start the search from.
    */
   public static of(construct: IConstruct): Stack {
@@ -912,7 +915,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * If this is a nested stack, returns it's parent stack.
+   * If this is a nested stack, returns its parent stack.
    */
   public get nestedStackParent() {
     return this.nestedStackResource && Stack.of(this.nestedStackResource);

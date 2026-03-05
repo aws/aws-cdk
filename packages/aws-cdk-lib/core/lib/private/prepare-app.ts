@@ -4,7 +4,7 @@ import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
-import { iterateDfsPreorder } from './construct-iteration';
+import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -87,14 +87,12 @@ function findAllNestedStacks(root: IConstruct) {
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  // Build a preorder list then reverse it
-  for (const node of iterateDfsPreorder(root)) {
+  for (const node of iterateDfsPostorder(root)) { /* <== important to use postorder */
     if (includeStack(node)) {
       result.push(node);
     }
   }
 
-  result.reverse();
   return result;
 }
 

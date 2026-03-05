@@ -23,6 +23,29 @@ export function* iterateDfsPreorder(root: IConstruct) {
 }
 
 /**
+ * Depth-first iterator over the construct tree (post-order version)
+ *
+ * Replaces `node.findAll()` which both uses recursive function
+ * calls and accumulates into an array, both of which are much slower
+ * than this solution.
+ */
+export function* iterateDfsPostorder(root: IConstruct) {
+  type Instruction = { yield: IConstruct } | { visit: IConstruct };
+  const stack: Instruction[] = [{ visit: root }];
+
+  let next = stack.pop();
+  while (next) {
+    if ('yield' in next) {
+      yield next.yield;
+    } else {
+      stack.push({ yield: next.visit });
+      stack.push(...next.visit.node.children.reverse().map((visit) => ({ visit })));
+    }
+    next = stack.pop();
+  }
+}
+
+/**
  * Breadth-first iterator over the construct tree
  */
 export function* iterateBfs(root: IConstruct) {
