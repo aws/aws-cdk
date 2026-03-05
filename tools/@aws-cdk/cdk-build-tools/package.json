@@ -53,7 +53,7 @@
     "glob": "^7.2.3",
     "jest": "^29.7.0",
     "jest-junit": "^13.2.0",
-    "jsii": "~5.9.29",
+    "jsii": "~5.9.31",
     "jsii-rosetta": "~5.9.32",
     "jsii-pacmak": "1.127.0",
     "jsii-reflect": "1.127.0",
@@ -71,7 +71,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "nozem": {
     "ostools": [

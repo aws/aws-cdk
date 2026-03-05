@@ -1,0 +1,18 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "integ-vpc/DefaultTest": {
+      "stacks": [
+        "canary-vpc"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "integ-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "integvpcDefaultTestDeployAssert82D0F8F7"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}

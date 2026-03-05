@@ -57,6 +57,8 @@ export class CdkCore extends ExternalModule {
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
 
+  public readonly Mixin = Type.fromName(this, 'Mixin');
+
   constructor(fqn: string) {
     super(fqn);
   }
@@ -119,6 +121,7 @@ export class CdkErrors extends ExternalModule {
 export class Constructs extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
   public readonly IConstruct = Type.fromName(this, 'IConstruct');
+  public readonly IMixin = Type.fromName(this, 'IMixin');
 
   constructor() {
     super('constructs');
