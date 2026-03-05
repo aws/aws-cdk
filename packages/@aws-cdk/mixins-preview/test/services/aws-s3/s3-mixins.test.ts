@@ -70,7 +70,7 @@ describe('S3 Mixins', () => {
 
       const mixin = new s3Mixins.CfnBucketPropsMixin(
         { versioningConfiguration: { mfaDelete: 'Disabled' } as any },
-        { strategy: PropertyMergeStrategy.OVERRIDE },
+        { strategy: PropertyMergeStrategy.override() },
       );
       mixin.applyTo(bucket);
 

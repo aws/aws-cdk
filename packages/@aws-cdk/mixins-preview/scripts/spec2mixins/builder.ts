@@ -7,7 +7,7 @@ import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-deci
 import { ResolverBuilder } from '@aws-cdk/spec2cdk/lib/cdk/resolver-builder';
 import type { Expression, Method } from '@cdklabs/typewriter';
 import { ExternalModule, FreeFunction, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
-import { MIXINS_COMMON, MIXINS_UTILS } from './helpers';
+import { MIXINS_COMMON } from './helpers';
 import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
 import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
@@ -59,7 +59,6 @@ export class MixinsBuilder extends LibraryBuilder<MixinsServiceModule> {
     CDK_CORE.import(module, 'cdk');
     CONSTRUCTS.import(module, 'constructs');
     MIXINS_COMMON.import(module, 'mixins', { fromLocation: '../../mixins' });
-    MIXINS_UTILS.import(module, 'helpers', { fromLocation: '../../util/property-mixins' });
     submodule.constructLibModule.import(module, 'service');
 
     return { module, filePath };
@@ -215,7 +214,7 @@ class L1PropsMixin extends ClassType {
 
     this.addProperty({
       name: 'strategy',
-      type: MIXINS_COMMON.PropertyMergeStrategy,
+      type: MIXINS_COMMON.IMergeStrategy,
       protected: true,
       immutable: true,
     });
@@ -245,7 +244,7 @@ class L1PropsMixin extends ClassType {
       stmt.assign($this.props, flattenFunction
         ? expr.object(expr.splat(props), expr.splat(CallableProxy.fromName(flattenFunction.name, this.scope).invoke(props)))
         : props),
-      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.MERGE)),
+      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.combine())),
     );
   }
 
@@ -300,18 +299,7 @@ class L1PropsMixin extends ClassType {
         .if_(CallableProxy.fromMethod(supports).invoke(construct))
         .then(
           stmt.block(
-            stmt
-              .if_(expr.eq($this.strategy, MIXINS_COMMON.PropertyMergeStrategy.MERGE))
-              .then(
-                stmt.block(
-                  MIXINS_UTILS.deepMerge(construct, $this.props, CFN_PROPERTY_KEYS),
-                ),
-              )
-              .else(
-                stmt.block(
-                  MIXINS_UTILS.shallowAssign(construct, $this.props, CFN_PROPERTY_KEYS),
-                ),
-              ),
+            $this.strategy.callMethod('apply', construct, $this.props, CFN_PROPERTY_KEYS),
           ),
         ),
     );
