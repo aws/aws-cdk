@@ -86,7 +86,7 @@ const actionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(actionGroupFu
 new bedrock.Agent(stack, 'MyAgent', {
   agentName: 'test-action-group-agent',
   instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
-  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+  foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_4_V1_0,
   forceDelete: true,
   // Enable built-in action groups
   userInputEnabled: true,
@@ -105,6 +105,9 @@ new bedrock.Agent(stack, 'MyAgent', {
 
 new integ.IntegTest(app, 'BedrockActionGroup', {
   testCases: [stack],
+  // CodeInterpreter is only supported in us-east-1, us-west-2, eu-central-1
+  // https://docs.aws.amazon.com/bedrock/latest/userguide/agents-code-interpretation.html
+  regions: ['us-east-1', 'us-west-2', 'eu-central-1'],
 });
 
 app.synth();
