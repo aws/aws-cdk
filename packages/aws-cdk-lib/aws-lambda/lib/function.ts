@@ -241,8 +241,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * The default Role automatically has permissions granted for Lambda execution. If you
    * provide a Role, you must add the relevant AWS managed policies yourself.
    *
-   * The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole" and
-   * "service-role/AWSLambdaVPCAccessExecutionRole".
+   * The relevant managed policies are "service-role/AWSLambdaBasicExecutionRole",
+   * "service-role/AWSLambdaVPCAccessExecutionRole" and "service-role/AWSLambdaBasicDurableExecutionRolePolicy".
    *
    * @default - A unique role will be generated for this lambda function.
    * Both supplied and generated roles can always be changed by calling `addToRolePolicy`.
