@@ -1,16 +1,16 @@
 {
   "version": "52.0.0",
   "files": {
-    "75b3a1eb27ecffad47be028a7776053dceb9663483656be7f27c244880c2ad3e": {
+    "784f8846920c557408a85e7bf79691da299b86835c9b0481e0161e45403891e6": {
       "displayName": "cdk-integ-opensearch-s3vector-engine Template",
       "source": {
         "path": "cdk-integ-opensearch-s3vector-engine.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4e90fece": {
+        "current_account-current_region-9d8d865e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "75b3a1eb27ecffad47be028a7776053dceb9663483656be7f27c244880c2ad3e.json",
+          "objectKey": "784f8846920c557408a85e7bf79691da299b86835c9b0481e0161e45403891e6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
