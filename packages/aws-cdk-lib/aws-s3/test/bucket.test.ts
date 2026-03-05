@@ -1165,6 +1165,38 @@ describe('bucket', () => {
       });
     });
 
+    test('L2 addToResourcePolicy and L1 ResourceWithPolicies.of share a single bucket policy', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+
+      // Add a statement via the L2 API
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [bucket.arnForObjects('*')],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      // Add a statement via the L1 default trait
+      const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
+      iam.ResourceWithPolicies.of(cfnBucket)?.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [bucket.arnForObjects('*')],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      // Should result in a single bucket policy with both statements
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::S3::BucketPolicy', 1);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: 's3:GetObject' }),
+            Match.objectLike({ Action: 's3:PutObject' }),
+          ]),
+        },
+      });
+    });
+
     test('addPermission creates a bucket policy for an S3_MANAGED bucket', () => {
       const stack = new cdk.Stack();
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.S3_MANAGED });

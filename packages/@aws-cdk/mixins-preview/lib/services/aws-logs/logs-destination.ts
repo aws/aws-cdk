@@ -3,7 +3,7 @@ import { Aws, ConstructSelector, Mixins, Names, Stack, Tags } from 'aws-cdk-lib/
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct, IConstruct } from 'constructs';
-import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from './reflections';
 import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
