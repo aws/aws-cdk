@@ -1,10 +1,3 @@
-/**
- * ATTENTION: these functions were copied from the mixins-preview package, because we cannot
- * depend on that package from core. When mixins goes GA, this file should be removed
- * and all references to the functions in it should be updated to import from the new
- * location in core.
- */
-
 import type { IConstruct } from 'constructs';
 import { CfnResource } from '../cfn-resource';
 

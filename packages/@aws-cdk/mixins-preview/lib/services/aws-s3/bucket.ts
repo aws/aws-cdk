@@ -3,7 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnResource, CustomResource, Tags } from 'aws-cdk-lib/core';
 import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/aws-s3/auto-delete-objects-provider';
 import type { IMixin } from 'constructs';
-import { tryFindBucketPolicyForBucket } from '../../mixins/private/reflections';
+import { tryFindBucketPolicyForBucket } from '../aws-logs/reflections'; // tmp this will be removed soon
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
