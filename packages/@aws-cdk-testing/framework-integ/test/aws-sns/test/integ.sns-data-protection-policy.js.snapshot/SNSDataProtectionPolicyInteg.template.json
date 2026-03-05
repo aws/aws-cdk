@@ -1,0 +1,573 @@
+{
+ "Resources": {
+  "TopicWithBasicDataProtectionPolicy8EA4D447": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "data-protection-policy-cdk",
+     "Description": "cdk generated data protection policy",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
+        }
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": []
+     }
+    },
+    "DisplayName": "Topic with Basic Data Protection Policy",
+    "TopicName": "topic-with-basic-data-protection-policy"
+   }
+  },
+  "TopicWithCustomDataProtectionPolicy6A20B441": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "CustomDataProtectionPolicy",
+     "Description": "Custom data protection policy for integration test",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         "SSN"
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
+        }
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         "SSN"
+        ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": [
+       {
+        "Name": "SSN",
+        "Regex": "[0-9]{3}-[0-9]{2}-[0-9]{4}"
+       }
+      ]
+     }
+    },
+    "DisplayName": "Topic with Custom Data Protection Policy",
+    "TopicName": "topic-with-custom-data-protection-policy"
+   }
+  },
+  "TopicWithCustomOnlyDataProtectionPolicy535624C6": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "CustomOnlyDataProtectionPolicy",
+     "Description": "Policy with only custom data identifiers",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
+        "SSN",
+        "CustomAccountId"
+       ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Audit": {
+         "SampleRate": 99,
+         "FindingsDestination": {}
+        }
+       }
+      },
+      {
+       "Sid": "redact-statement-cdk",
+       "DataIdentifier": [
+        "SSN",
+        "CustomAccountId"
+       ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": [
+       {
+        "Name": "SSN",
+        "Regex": "[0-9]{3}-[0-9]{2}-[0-9]{4}"
+       },
+       {
+        "Name": "CustomAccountId",
+        "Regex": "ACCT-[A-Z]{3}-[0-9]{6}"
+       }
+      ]
+     }
+    },
+    "DisplayName": "Topic with Custom Only Data Protection Policy",
+    "TopicName": "topic-with-custom-only-data-protection-policy"
+   }
+  },
+  "TopicWithComprehensiveDataProtectionPolicy7C435190": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "ComprehensiveDataProtectionPolicy",
+     "Description": "Comprehensive policy with multiple identifier types",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Ssn-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/PhoneNumber-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Address"
+           ]
+          ]
+         },
+         "EmployeeId",
+         "ProjectCode"
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {}
+         }
+        }
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Ssn-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/PhoneNumber-US"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/Address"
+           ]
+          ]
+         },
+         "EmployeeId",
+         "ProjectCode"
+        ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": [
+       {
+        "Name": "EmployeeId",
+        "Regex": "EMP-[0-9]{6}"
+       },
+       {
+        "Name": "ProjectCode",
+        "Regex": "PROJ-[A-Z]{2}-[0-9]{4}"
+       }
+      ]
+     }
+    },
+    "DisplayName": "Topic with Comprehensive Data Protection Policy",
+    "TopicName": "topic-with-comprehensive-data-protection-policy"
+   }
+  },
+  "AuditLogGroup6D13791A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/vendedlogs/sns-data-protection-audit-c8d23625642d48ad67e1ae429c907cac6f843153a6",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AuditBucketB01E0AE8": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TopicWithAuditDestinations3C801BA4": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DataProtectionPolicy": {
+     "Name": "AuditDestinationPolicy",
+     "Description": "Policy with audit destinations for integration test",
+     "Version": "2021-06-01",
+     "Statement": [
+      {
+       "Sid": "audit-statement-cdk",
+       "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+        "DataDirection": "Inbound",
+        "Principal": [
+         "*"
+        ],
+        "Operation": {
+         "Audit": {
+          "SampleRate": 99,
+          "FindingsDestination": {
+           "CloudWatchLogs": {
+            "LogGroup": {
+             "Ref": "AuditLogGroup6D13791A"
+            }
+           },
+           "S3": {
+            "Bucket": {
+             "Ref": "AuditBucketB01E0AE8"
+            }
+           }
+          }
+         }
+        }
+       },
+       {
+        "Sid": "redact-statement-cdk",
+        "DataIdentifier": [
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/EmailAddress"
+           ]
+          ]
+         },
+         {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":dataprotection::aws:data-identifier/CreditCardNumber"
+           ]
+          ]
+         }
+        ],
+       "DataDirection": "Inbound",
+       "Principal": [
+        "*"
+       ],
+       "Operation": {
+        "Deidentify": {
+         "MaskConfig": {}
+        }
+       }
+      }
+     ],
+     "Configuration": {
+      "CustomDataIdentifier": []
+     }
+    },
+    "DisplayName": "Topic with Audit Destinations",
+    "TopicName": "topic-with-audit-destinations"
+   }
+  },
+  "TopicWithoutDataProtectionPolicyC2BC08B3": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Topic without Data Protection Policy",
+    "TopicName": "topic-without-data-protection-policy"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
