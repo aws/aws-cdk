@@ -35,15 +35,6 @@ See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/do
 
 ### Built-in Mixins
 
-#### S3-Specific Mixins
-
-**AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
-
-```typescript
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new AutoDeleteObjects());
-```
-
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:

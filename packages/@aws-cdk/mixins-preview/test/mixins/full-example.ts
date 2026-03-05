@@ -6,7 +6,6 @@ import {
   Mixins,
   ConstructSelector,
 } from 'aws-cdk-lib/core';
-import * as s3Mixins from '../../lib/services/aws-s3/mixins';
 
 describe('Integration Tests', () => {
   let app: App;
@@ -26,7 +25,7 @@ describe('Integration Tests', () => {
     Mixins.of(
       stack,
       ConstructSelector.byId('*Prod*'),
-    ).apply(new s3Mixins.AutoDeleteObjects());
+    ).apply(new s3.mixins.BucketAutoDeleteObjects());
 
     // Apply versioning to all S3 buckets
     Mixins.of(
@@ -50,7 +49,7 @@ describe('Integration Tests', () => {
     const bucket = new s3.CfnBucket(stack, 'Bucket1');
 
     Mixins.of(bucket)
-      .apply(new s3Mixins.AutoDeleteObjects())
+      .apply(new s3.mixins.BucketAutoDeleteObjects())
       .apply(new s3.mixins.BucketVersioning());
 
     const template = Template.fromStack(stack);

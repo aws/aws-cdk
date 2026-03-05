@@ -262,6 +262,6 @@ export class BucketGrants {
   }
 
   private arnForObjects(keyPattern: string): string {
-    return `${this.bucket.bucketRef.bucketArn}/${keyPattern}`;
+    return perms.arnForObjects(this.bucket.bucketRef.bucketArn, keyPattern);
   }
 }

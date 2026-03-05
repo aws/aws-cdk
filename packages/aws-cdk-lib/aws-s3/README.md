@@ -1138,6 +1138,15 @@ if (sourceBucket.replicationRoleArn) {
 
 S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
 
+### BucketAutoDeleteObjects
+
+Automatically deletes all objects from a bucket when the bucket is removed from the stack or when the stack is deleted. Requires the bucket's removal policy to be set to `DESTROY`:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
 ### BucketVersioning
 
 Enables or suspends versioning on an S3 bucket:

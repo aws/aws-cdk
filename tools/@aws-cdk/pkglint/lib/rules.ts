@@ -1751,6 +1751,7 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
 /**
  * If an aws-cdk-lib submodule has a lib/mixins/ directory,
  * its lib/index.ts must contain `export * as mixins from './mixins';`
+ * and package.json#exports must have an entry for the mixins submodule.
  */
 export class MixinsSubmoduleExport extends ValidationRule {
   public readonly name = 'aws-cdk-lib/mixins-export';
@@ -1776,6 +1777,26 @@ export class MixinsSubmoduleExport extends ValidationRule {
       const exportLine = "export * as mixins from './mixins';";
 
       fileShouldContain(this.name, pkg, libIndex, exportLine);
+
+      // Ensure package.json exports includes the mixins submodule
+      const exportKey = `./${entry.name}/mixins`;
+      const exportValue = `./${entry.name}/lib/mixins/index.js`;
+      if (pkg.json.exports?.[exportKey] !== exportValue) {
+        pkg.report({
+          ruleName: this.name,
+          message: `package.json "exports" must include "${exportKey}": "${exportValue}"`,
+          fix: () => {
+            if (!pkg.json.exports) {
+              pkg.json.exports = {};
+            }
+            pkg.json.exports[exportKey] = exportValue;
+            // Keep exports sorted
+            pkg.json.exports = Object.fromEntries(
+              Object.entries(pkg.json.exports).sort(([a], [b]) => a.localeCompare(b)),
+            );
+          },
+        });
+      }
     }
   }
 }
