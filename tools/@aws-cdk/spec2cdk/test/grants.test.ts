@@ -5,7 +5,6 @@ import { InterfaceType, Module, Stability, TypeScriptRenderer } from '@cdklabs/t
 import { CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from '../lib/cdk/cdk';
 import { GrantsModule } from '../lib/cdk/grants-module';
 
-
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
 
