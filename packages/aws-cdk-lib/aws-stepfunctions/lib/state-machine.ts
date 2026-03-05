@@ -1,4 +1,6 @@
 import type { Construct } from 'constructs';
+import * as fs from 'fs';
+import * as path from 'path';
 import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
 import type { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
@@ -14,6 +16,7 @@ import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import type { Duration, IResource } from '../../core';
 import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { FileSystem } from '../../core/lib/fs';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -789,14 +792,38 @@ export abstract class DefinitionBody {
   public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig;
 }
 
+function tryParseJsonObject(value: string, scope: Construct, source: string): any {
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : `${e}`;
+    throw new ValidationError(`Unable to parse Amazon States Language JSON from ${source}: ${message}`, scope);
+  }
+}
+
+function applyStateMachineTimeout(definition: any, timeout: Duration, scope: Construct, source: string): any {
+  if (definition === null || typeof definition !== 'object' || Array.isArray(definition)) {
+    throw new ValidationError(`Amazon States Language definition from ${source} must be a JSON object in order to apply 'timeout'.`, scope);
+  }
+
+  return {
+    ...definition,
+    TimeoutSeconds: timeout.toSeconds(),
+  };
+}
+
 export class FileDefinitionBody extends DefinitionBody {
   constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    const assetPath = sfnProps.timeout
+      ? this.createPatchedDefinitionAssetFile(scope, sfnProps)
+      : this.path;
+
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
-      path: this.path,
+      path: assetPath,
       ...this.options,
     });
     return {
@@ -806,6 +833,19 @@ export class FileDefinitionBody extends DefinitionBody {
       },
     };
   }
+
+  private createPatchedDefinitionAssetFile(scope: Construct, sfnProps: StateMachineProps): string {
+    const definitionText = fs.readFileSync(this.path, { encoding: 'utf-8' });
+    const definitionJson = tryParseJsonObject(definitionText, scope, `file '${this.path}'`);
+    const patched = applyStateMachineTimeout(definitionJson, sfnProps.timeout!, scope, `file '${this.path}'`);
+
+    const tempDir = FileSystem.mkdtemp('cdk-stepfunctions-definition-');
+    const extension = path.extname(this.path) || '.json';
+    const outPath = path.join(tempDir, `definition${extension}`);
+    fs.writeFileSync(outPath, JSON.stringify(patched), { encoding: 'utf-8' });
+
+    return outPath;
+  }
 }
 
 export class StringDefinitionBody extends DefinitionBody {
@@ -813,7 +853,19 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout) {
+      if (Token.isUnresolved(this.body)) {
+        throw new ValidationError('Cannot apply \'timeout\' to an unresolved definition string. Include "TimeoutSeconds" in the definition instead.', scope);
+      }
+
+      const definitionJson = tryParseJsonObject(this.body, scope, 'definition string');
+      const patched = applyStateMachineTimeout(definitionJson, sfnProps.timeout, scope, 'definition string');
+      return {
+        definitionString: JSON.stringify(patched),
+      };
+    }
+
     return {
       definitionString: this.body,
     };
