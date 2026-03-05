@@ -6,9 +6,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-pipeline-container-all-parameters');
+
+const inspector = enableInspector(stack, ['ECR']);
 
 const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
@@ -78,6 +81,7 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
   imageScanningEcrTags: ['latest-scan'],
   tags: { key1: 'value1', key2: 'value2' },
 });
+containerImagePipeline.node.addDependency(inspector);
 containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');
