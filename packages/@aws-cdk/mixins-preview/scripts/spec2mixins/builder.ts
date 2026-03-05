@@ -245,7 +245,7 @@ class L1PropsMixin extends ClassType {
       stmt.assign($this.props, flattenFunction
         ? expr.object(expr.splat(props), expr.splat(CallableProxy.fromName(flattenFunction.name, this.scope).invoke(props)))
         : props),
-      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.MERGE)),
+      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.merge())),
     );
   }
 
@@ -301,7 +301,7 @@ class L1PropsMixin extends ClassType {
         .then(
           stmt.block(
             stmt
-              .if_(expr.eq($this.strategy, MIXINS_COMMON.PropertyMergeStrategy.MERGE))
+              .if_(expr.eq($this.strategy.value.strategy, expr.lit('merge')))
               .then(
                 stmt.block(
                   MIXINS_UTILS.deepMerge(construct, $this.props, CFN_PROPERTY_KEYS),

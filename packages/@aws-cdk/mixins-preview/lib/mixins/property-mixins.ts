@@ -1,15 +1,22 @@
 /**
  * Strategy for handling nested properties in L1 property mixins
  */
-export enum PropertyMergeStrategy {
+export class PropertyMergeStrategy {
   /**
    * Override all properties
    */
-  OVERRIDE = 'override',
+  public static override() {
+    return new PropertyMergeStrategy({ strategy: 'override' });
+  }
+
   /**
    * Deep merge nested objects, override primitives and arrays
    */
-  MERGE = 'merge',
+  public static merge() {
+    return new PropertyMergeStrategy({ strategy: 'merge' });
+  }
+
+  private constructor(public readonly value: { readonly strategy: 'merge' | 'override' }) {}
 }
 
 /**
@@ -19,7 +26,7 @@ export interface CfnPropertyMixinOptions {
   /**
    * Strategy for merging nested properties
    *
-   * @default - PropertyMergeStrategy.MERGE
+   * @default - PropertyMergeStrategy.merge()
    */
   readonly strategy?: PropertyMergeStrategy;
 }

@@ -183,13 +183,13 @@ Property mixins support two merge strategies:
 // MERGE (default): Deep merges properties with existing values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.MERGE }
+  { strategy: PropertyMergeStrategy.merge() }
 ));
 
 // OVERRIDE: Replaces existing property values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERRIDE }
+  { strategy: PropertyMergeStrategy.override() }
 ));
 ```
 
