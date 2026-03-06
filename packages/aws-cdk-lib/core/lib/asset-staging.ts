@@ -230,6 +230,14 @@ export class AssetStaging extends Construct {
     this.assetHash = staged.assetHash;
     this.packaging = staged.packaging;
     this.isArchive = staged.isArchive;
+
+    // Memory optimization: this.sourceStats is used as a field to covertly pass
+    // arguments between functions in the constructor, but the size of that object is 1.8kB
+    //
+    // That's holding on to a lot of unnecessary memory if there are a lot of assets (think 100k+).
+    //
+    // Release the object here, we don't need it again.
+    delete (this as any).sourceStats;
   }
 
   /**

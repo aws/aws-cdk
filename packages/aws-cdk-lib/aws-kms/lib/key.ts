@@ -24,6 +24,7 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -142,8 +143,6 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
-  public abstract readonly grants: KeyGrants;
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -155,6 +154,11 @@ abstract class KeyBase extends Resource implements IKey {
       keyArn: this.keyArn,
       keyId: this.keyId,
     };
+  }
+
+  @memoizedGetter
+  public get grants(): KeyGrants {
+    return KeyGrants.fromKey(this, this.trustAccountIdentities);
   }
 
   /**
@@ -596,30 +600,19 @@ export class Key extends KeyBase {
    * @param keyArn the ARN of an existing KMS key.
    */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
-    class Import extends KeyBase {
-      public readonly keyArn = keyArn;
-      public readonly keyId: string;
-      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
-      // defaulting true: if we are importing the key the key policy is
-      // undefined and impossible to change here; this means updating identity
-      // policies is really the only option
-      protected readonly trustAccountIdentities: boolean = true;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
-
-      constructor(keyId: string, props: ResourceProps = {}) {
-        super(scope, id, props);
-
-        this.keyId = keyId;
-      }
-    }
-
     const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
       throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
     }
 
-    return new Import(keyResourceName, {
+    return new ReferencedKey(scope, id, {
       environmentFromArn: keyArn,
+      keyArn,
+      keyId: keyResourceName,
+      // defaulting true: if we are importing the key the key policy is
+      // undefined and impossible to change here; this means updating identity
+      // policies is really the only option
+      trustAccountIdentities: true,
     });
   }
 
@@ -669,7 +662,6 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
     }(cfnKey, id);
   }
 
@@ -707,7 +699,6 @@ export class Key extends KeyBase {
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
       constructor(keyId: string, keyArn: string) {
         super(scope, id);
@@ -751,11 +742,6 @@ export class Key extends KeyBase {
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
   private readonly enableKeyRotation?: boolean;
-
-  /**
-   * Collection of grant methods for a Key
-   */
-  public readonly grants: KeyGrants;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -887,8 +873,6 @@ export class Key extends KeyBase {
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
-
     (props.admins ?? []).forEach((p) => this.grantAdmin(p));
 
     if (props.alias !== undefined) {
@@ -958,5 +942,39 @@ export class Key extends KeyBase {
       actions,
       principals: [new iam.AccountRootPrincipal()],
     }));
+  }
+}
+
+/**
+ * An instance of a referenced Key
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromKeyArn()` etc. used to declare an anonymous subclass of
+ * `KeyBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+class ReferencedKey extends KeyBase {
+  public keyArn: string;
+  public keyId: string;
+  protected policy?: iam.PolicyDocument | undefined;
+  protected trustAccountIdentities: boolean;
+
+  constructor(scope: Construct, id: string, props: {
+    environmentFromArn?: string;
+    keyArn: string;
+    keyId: string;
+    policy?: iam.PolicyDocument | undefined;
+    trustAccountIdentities: boolean;
+  }) {
+    super(scope, id, {
+      environmentFromArn: props.environmentFromArn,
+    });
+
+    this.keyArn = props.keyArn;
+    this.keyId = props.keyId;
+    this.policy = props.policy;
+    this.trustAccountIdentities = props.trustAccountIdentities;
   }
 }
