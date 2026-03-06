@@ -391,7 +391,7 @@ export interface EcsMachineImage extends MachineImage {
 /**
  * A Batch MachineImage that is compatible with EKS
  */
-export interface EksMachineImage extends MachineImage{
+export interface EksMachineImage extends MachineImage {
   /**
    * Tells Batch which instance type to launch this image on
    *
@@ -416,9 +416,14 @@ export enum EcsMachineImageType {
   ECS_AL2023 = 'ECS_AL2023',
 
   /**
-   * Tells Batch that this machine image runs on GPU instances
+   * Tells Batch that this machine image runs on GPU AL2 instances
    */
   ECS_AL2_NVIDIA = 'ECS_AL2_NVIDIA',
+
+  /**
+   * Tells Batch that this machine image runs on GPU AL2023 instances
+   */
+  ECS_AL2023_NVIDIA = 'ECS_AL2023_NVIDIA',
 }
 
 /**
@@ -654,7 +659,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly instanceClasses = [];
       public readonly instanceTypes = [];
       public readonly maxvCpus = 1;
-      public readonly connections = { } as any;
+      public readonly connections = {} as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
@@ -725,9 +730,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
-    if (this.images?.find(image => image.imageType === EcsMachineImageType.ECS_AL2023) &&
+    if (this.images?.find(image => image.imageType !== undefined &&
+      [EcsMachineImageType.ECS_AL2023, EcsMachineImageType.ECS_AL2023_NVIDIA].includes(image.imageType)) &&
       (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
-       this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
+        this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
     ) {
       throw new ValidationError('Amazon Linux 2023 does not support A1 instances.', this);
     }
@@ -1202,7 +1208,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
       public readonly maxvCpus = 1;
-      public readonly connections = { } as any;
+      public readonly connections = {} as any;
       public readonly securityGroups = [];
       public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
