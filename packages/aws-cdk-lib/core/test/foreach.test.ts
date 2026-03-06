@@ -212,6 +212,18 @@ describe('ForEachOutput', () => {
     expect(ForEachOutput.isForEachOutput(forEach)).toBe(true);
     expect(ForEachOutput.isForEachOutput({})).toBe(false);
   });
+
+  test('throws on invalid loop name', () => {
+    const stack = new Stack();
+    expect(() => {
+      new ForEachOutput(stack, 'Bad', {
+        loopName: 'invalid-name',
+        collection: ['a'],
+        outputKeyTemplate: 'Out${invalid-name}',
+        value: 'val',
+      });
+    }).toThrow(/forEach loop name must be alphanumeric/);
+  });
 });
 
 describe('ForEachCondition', () => {
@@ -247,5 +259,36 @@ describe('ForEachCondition', () => {
 
     expect(ForEachCondition.isForEachCondition(forEach)).toBe(true);
     expect(ForEachCondition.isForEachCondition({})).toBe(false);
+  });
+
+  test('throws on invalid loop name', () => {
+    const stack = new Stack();
+    expect(() => {
+      new ForEachCondition(stack, 'Bad', {
+        loopName: 'invalid-name',
+        collection: ['a'],
+        conditionKeyTemplate: 'Is${invalid-name}',
+        expression: Fn.conditionEquals('a', 'b'),
+      });
+    }).toThrow(/forEach loop name must be alphanumeric/);
+  });
+
+  test('works with forEachRef in expression', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    new ForEachCondition(stack, 'EnvConditions', {
+      loopName: 'Env',
+      collection: ['dev', 'prod'],
+      conditionKeyTemplate: 'Is${Env}',
+      expression: Fn.conditionEquals(Fn.ref('Environment'), Fn.forEachRef('Env')),
+    });
+
+    const template = app.synth().getStackByName('TestStack').template;
+    const condDef = template.Conditions['Fn::ForEach::Env'][1]['Is${Env}'];
+
+    expect(condDef).toEqual({
+      'Fn::Equals': [{ Ref: 'Environment' }, '${Env}'],
+    });
   });
 });

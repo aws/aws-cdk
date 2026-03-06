@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
-import { ICfnConditionExpression } from './cfn-condition';
+import type { ICfnConditionExpression } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
+import { UnscopedValidationError } from './errors';
 import { Stack } from './stack';
 
 const FOR_EACH_CONDITION_SYMBOL = Symbol.for('@aws-cdk/core.ForEachCondition');
@@ -52,6 +53,10 @@ export class ForEachCondition extends Construct {
 
   constructor(scope: Construct, id: string, props: ForEachConditionProps) {
     super(scope, id);
+
+    if (!/^[A-Za-z0-9]+$/.test(props.loopName)) {
+      throw new UnscopedValidationError(`forEach loop name must be alphanumeric, got '${props.loopName}'`);
+    }
 
     Object.defineProperty(this, FOR_EACH_CONDITION_SYMBOL, { value: true });
 

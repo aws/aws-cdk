@@ -15,7 +15,7 @@ export * from './stack-synthesizers';
 export * from './reference';
 export * from './cfn-condition';
 export * from './cfn-fn';
-export * from './cfn-foreach-fragment';
+// cfn-foreach-fragment is internal; not exported from the public API
 export * from './cfn-hook';
 export * from './cfn-codedeploy-blue-green-hook';
 export * from './cfn-include';

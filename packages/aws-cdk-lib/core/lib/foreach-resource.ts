@@ -4,7 +4,7 @@ import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { CfnResource } from './cfn-resource';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
-import { IResolvable } from './resolvable';
+import type { IResolvable } from './resolvable';
 import { Stack } from './stack';
 
 const FOR_EACH_RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.ForEachResource');
@@ -48,6 +48,13 @@ export interface ForEachResourceProps {
 class VirtualCfnResource extends CfnResource {
   protected shouldSynthesize(): boolean {
     return false;
+  }
+
+  /**
+   * Expose resolved properties for use by ForEachResource.
+   */
+  public get resolvedProperties(): { [key: string]: any } {
+    return this.cfnProperties;
   }
 }
 
@@ -158,7 +165,7 @@ export class ForEachResource extends Construct {
   private buildForEachStructure(): any {
     const resourceDef: Record<string, any> = {
       Type: this.resourceType,
-      Properties: (this.templateResource as any)._cfnProperties,
+      Properties: (this.templateResource as VirtualCfnResource).resolvedProperties,
     };
 
     const options = this.templateResource.cfnOptions;

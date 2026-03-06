@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
-import { IResolvable } from './resolvable';
+import type { IResolvable } from './resolvable';
 import { Stack } from './stack';
 
 /**
@@ -41,7 +41,6 @@ export class CfnForEachFragment extends CfnElement {
     super(scope, id);
     this.section = props.section;
     this.fragment = props.fragment;
-    Stack.of(this).addTransform('AWS::LanguageExtensions');
   }
 
   /** @internal */
