@@ -1334,7 +1334,7 @@ declare const vpc: ec2.Vpc;
 
 const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
-    version: rds.SqlServerEngineVersion.VER_11,
+    version: rds.SqlServerEngineVersion.VER_16_00_4236_2_V1,
   }),
   name: 'my-parameter-group',
   parameters: {
