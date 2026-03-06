@@ -161,7 +161,7 @@ export class AssetStaging extends Construct {
 
   private readonly cacheKey: string;
 
-  private readonly sourceStats: fs.Stats;
+  private readonly _sourceStats?: fs.Stats;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
@@ -179,7 +179,7 @@ export class AssetStaging extends Construct {
       throw new ValidationError(`Cannot find asset at ${this.sourcePath}`, this);
     }
 
-    this.sourceStats = fs.statSync(this.sourcePath);
+    this._sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
@@ -231,13 +231,20 @@ export class AssetStaging extends Construct {
     this.packaging = staged.packaging;
     this.isArchive = staged.isArchive;
 
-    // Memory optimization: this.sourceStats is used as a field to covertly pass
+    // Memory optimization: this._sourceStats is used as a field to covertly pass
     // arguments between functions in the constructor, but the size of that object is 1.8kB
     //
     // That's holding on to a lot of unnecessary memory if there are a lot of assets (think 100k+).
     //
     // Release the object here, we don't need it again.
-    delete (this as any).sourceStats;
+    this._sourceStats = undefined;
+  }
+
+  private get sourceStats(): fs.Stats {
+    if (!this._sourceStats) {
+      throw new AssumptionError('_sourceStats has been unset');
+    }
+    return this._sourceStats;
   }
 
   /**
