@@ -1,7 +1,7 @@
 import { DependencyBuilders, Graph, GraphNode, GraphNodeCollection } from './graph';
 import { PipelineQueries } from './pipeline-queries';
 import { ValidationError } from '../../../core';
-import type { FileSet, StackAsset, StackDeployment, StageDeployment, Wave } from '../blueprint';
+import type { FileSet, StackAsset, StackDeployment, StageDeployment, Wave, RetryMode } from '../blueprint';
 import { AssetType, Step } from '../blueprint';
 import type { PipelineBase } from '../main/pipeline-base';
 
@@ -50,6 +50,7 @@ export class PipelineGraph {
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
   public readonly queries: PipelineQueries;
+  public readonly waveRetryModes = new Map<AGraph, RetryMode>();
 
   private readonly added = new Map<Step, AGraphNode>();
   private readonly assetNodes = new Map<string, AGraphNode>();
@@ -126,6 +127,10 @@ export class PipelineGraph {
     this.addPrePost(wave.pre, wave.post, retGraph);
     retGraph.dependOn(this.lastPreparationNode);
     this.graph.add(retGraph);
+
+    if (wave.retryMode) {
+      this.waveRetryModes.set(retGraph, wave.retryMode);
+    }
 
     return retGraph;
   }

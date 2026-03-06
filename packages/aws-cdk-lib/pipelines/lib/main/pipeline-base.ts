@@ -95,7 +95,8 @@ export abstract class PipelineBase extends Construct {
     if (this.built) {
       throw new ValidationError('addStage: can\'t add Stages anymore after buildPipeline() has been called', this);
     }
-    return this.addWave(stage.stageName).addStage(stage, options);
+    const { retryMode, ...stageOpts } = options ?? {};
+    return this.addWave(stage.stageName, { retryMode }).addStage(stage, stageOpts);
   }
 
   /**

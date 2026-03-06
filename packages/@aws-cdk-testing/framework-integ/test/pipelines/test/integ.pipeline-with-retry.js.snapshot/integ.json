@@ -1,0 +1,14 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "RetryPipelineTest/DefaultTest": {
+      "stacks": [
+        "RetryPipelineStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "RetryPipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RetryPipelineTestDefaultTestDeployAssert7A828353"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}

@@ -565,13 +565,24 @@ export class CodePipeline extends PipelineBase {
         throw new ValidationError(`Top-level children must be graphs, got '${stageNode}'`, this);
       }
 
+      // Look up the retry mode configured for this wave's graph node
+      const waveRetryMode = isGraph(stageNode) ? structure.waveRetryModes.get(stageNode) : undefined;
+
       // Group our ordered tranches into blocks of 50.
       // We can map these onto stages without exceeding the capacity of a Stage.
       const chunks = chunkTranches(50, stageNode.sortedLeaves());
       const actionsOverflowStage = chunks.length > 1;
       for (const [i, tranches] of enumerate(chunks)) {
         const stageName = actionsOverflowStage ? `${stageNode.id}.${i + 1}` : stageNode.id;
-        const pipelineStage = this.pipeline.addStage({ stageName });
+        const pipelineStage = this.pipeline.addStage({
+          stageName,
+          ...(waveRetryMode ? {
+            onFailure: {
+              result: cp.Result.RETRY,
+              retryMode: waveRetryMode === 'ALL_ACTIONS' ? cp.RetryMode.ALL_ACTIONS : cp.RetryMode.FAILED_ACTIONS,
+            },
+          } : {}),
+        });
 
         const sharedParent = new GraphNodeCollection(flatten(tranches)).commonAncestor();
 
