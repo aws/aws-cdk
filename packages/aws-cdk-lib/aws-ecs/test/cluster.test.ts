@@ -5089,9 +5089,53 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with fargate.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-3', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'fargatecp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: fargatecp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with Aws.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-4', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'AwsCp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: AwsCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with Ecs.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-5', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'EcsCp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: EcsCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with Fargate.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-6', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'FargateCp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: FargateCp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
 
-test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
+test('does not throw and sets a proper capacity provider name when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'ecscp');
@@ -5113,6 +5157,40 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
 
     cluster.addAsgCapacityProvider(capacityProvider);
   }).not.toThrow();
+
+  // Verify the capacity provider name is set and starts with 'cp-'
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+    Name: Match.stringLikeRegexp('^cp-'),
+  });
+});
+
+test('does not throw and sets a proper capacity provider name when ASG Capacity Provider with no capacityProviderName but stack name starting with ECS (case-insensitive)', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'EcsCp');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  expect(() => {
+    // WHEN Capacity Provider when stack name starts with ECS (uppercase).
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+  }).not.toThrow();
+
+  // Verify the capacity provider name is set and starts with 'cp-'
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+    Name: Match.stringLikeRegexp('^cp-'),
+  });
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {

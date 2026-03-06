@@ -1689,7 +1689,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
 
     // Handle capacity provider name generation similar to AsgCapacityProvider
     let capacityProviderName = props.capacityProviderName;
-    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
+    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gmi;
     if (capacityProviderName) {
       if (!(capacityProviderNameRegex.test(capacityProviderName))) {
         throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
@@ -1990,7 +1990,7 @@ export class AsgCapacityProvider extends Construct {
       }
     }
 
-    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
+    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gmi;
     if (capacityProviderName) {
       if (!(capacityProviderNameRegex.test(capacityProviderName))) {
         throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
