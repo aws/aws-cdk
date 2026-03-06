@@ -42,7 +42,10 @@ export class CloudFormationInit {
   private readonly _configSets: Record<string, string[]> = {};
   private readonly _configs: Record<string, InitConfig> = {};
 
-  private constructor(configSets: Record<string, string[]>, configs: Record<string, InitConfig>) {
+  private constructor(
+    configSets: Record<string, string[]>,
+    configs: Record<string, InitConfig>,
+  ) {
     Object.assign(this._configSets, configSets);
     Object.assign(this._configs, configs);
   }
@@ -52,7 +55,9 @@ export class CloudFormationInit {
    */
   public addConfig(configName: string, config: InitConfig) {
     if (this._configs[configName]) {
-      throw new UnscopedValidationError(`CloudFormationInit already contains a config named '${configName}'`);
+      throw new UnscopedValidationError(
+        `CloudFormationInit already contains a config named '${configName}'`,
+      );
     }
     this._configs[configName] = config;
   }
@@ -64,12 +69,16 @@ export class CloudFormationInit {
    */
   public addConfigSet(configSetName: string, configNames: string[] = []) {
     if (this._configSets[configSetName]) {
-      throw new UnscopedValidationError(`CloudFormationInit already contains a configSet named '${configSetName}'`);
+      throw new UnscopedValidationError(
+        `CloudFormationInit already contains a configSet named '${configSetName}'`,
+      );
     }
 
-    const unk = configNames.filter(c => !this._configs[c]);
+    const unk = configNames.filter((c) => !this._configs[c]);
     if (unk.length > 0) {
-      throw new UnscopedValidationError(`Unknown configs referenced in definition of '${configSetName}': ${unk}`);
+      throw new UnscopedValidationError(
+        `Unknown configs referenced in definition of '${configSetName}': ${unk}`,
+      );
     }
 
     this._configSets[configSetName] = [...configNames];
@@ -91,15 +100,24 @@ export class CloudFormationInit {
    *   referenced asset and bucket resources.
    * - Updates the given UserData with commands to execute the `cfn-init` script.
    */
-  public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
+  public attach(
+    attachedResource: CfnResource,
+    attachOptions: AttachInitOptions,
+  ) {
     if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
-      throw new ValidationError('Cannot attach CloudFormationInit to an unknown OS type', attachedResource);
+      throw new ValidationError(
+        'Cannot attach CloudFormationInit to an unknown OS type',
+        attachedResource,
+      );
     }
 
     const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
 
     if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
-      throw new ValidationError(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`, attachedResource);
+      throw new ValidationError(
+        `Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`,
+        attachedResource,
+      );
     }
 
     // Note: This will not reflect mutations made after attaching.
@@ -108,23 +126,40 @@ export class CloudFormationInit {
 
     // Need to resolve the various tokens from assets in the config,
     // as well as include any asset hashes provided so the fingerprint is accurate.
-    const resolvedConfig = attachedResource.stack.resolve(bindResult.configData);
-    const fingerprintInput = { config: resolvedConfig, assetHash: bindResult.assetHash };
-    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(0, 16);
+    const resolvedConfig = attachedResource.stack.resolve(
+      bindResult.configData,
+    );
+    const fingerprintInput = {
+      config: resolvedConfig,
+      assetHash: bindResult.assetHash,
+    };
+    const fingerprint = contentHash(JSON.stringify(fingerprintInput)).slice(
+      0,
+      16,
+    );
 
-    attachOptions.instanceRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['cloudformation:DescribeStackResource', 'cloudformation:SignalResource'],
-      resources: [Aws.STACK_ID],
-    }));
+    attachOptions.instanceRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          'cloudformation:DescribeStackResource',
+          'cloudformation:SignalResource',
+        ],
+        resources: [Aws.STACK_ID],
+      }),
+    );
 
     if (bindResult.authData) {
-      attachedResource.addMetadata('AWS::CloudFormation::Authentication', bindResult.authData);
+      attachedResource.addMetadata(
+        'AWS::CloudFormation::Authentication',
+        bindResult.authData,
+      );
     }
 
     // To identify the resources that have the metadata and where the signal
     // needs to be sent, we need { region, stackName, logicalId }
     let resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
-    const signalResource = attachOptions.signalResource?.logicalId ?? attachedResource.logicalId;
+    const signalResource =
+      attachOptions.signalResource?.logicalId ?? attachedResource.logicalId;
     let notifyResourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${signalResource}`;
 
     // If specified in attachOptions, include arguments in cfn-init/cfn-signal commands
@@ -139,6 +174,7 @@ export class CloudFormationInit {
 
     const configSets = (attachOptions.configSets ?? ['default']).join(',');
     const printLog = attachOptions.printLog ?? true;
+    const includeSignalCommand = attachOptions.includeSignalCommand ?? true;
 
     if (attachOptions.embedFingerprint ?? true) {
       // It just so happens that the comment char is '#' for both bash and PowerShell
@@ -147,41 +183,60 @@ export class CloudFormationInit {
 
     if (attachOptions.platform === OperatingSystemType.WINDOWS) {
       const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
-      attachOptions.userData.addCommands(
-        ...[
-          `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
-          `cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`,
-          ...(printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : []),
-        ],
-      );
+      const commands = [`cfn-init.exe -v ${resourceLocator} -c ${configSets}`];
+      if (includeSignalCommand) {
+        commands.push(`cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`);
+      }
+      if (printLog) {
+        commands.push('type C:\\cfn\\log\\cfn-init.log');
+      }
+      attachOptions.userData.addCommands(...commands);
     } else {
       const errCode = attachOptions.ignoreFailures ? '0' : '$?';
-      attachOptions.userData.addCommands(
-        ...[
-          // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
-          '(',
-          '  set +e',
-          `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+      const commands = [
+        // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
+        '(',
+        '  set +e',
+        `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+      ];
+      if (includeSignalCommand) {
+        commands.push(
           `  /opt/aws/bin/cfn-signal -e ${errCode} ${notifyResourceLocator}`,
-          ...(printLog ? ['  cat /var/log/cfn-init.log >&2'] : []),
-          ')',
-        ],
-      );
+        );
+      }
+      if (printLog) {
+        commands.push('  cat /var/log/cfn-init.log >&2');
+      }
+      commands.push(')');
+      attachOptions.userData.addCommands(...commands);
     }
   }
 
-  private bind(scope: Construct, options: AttachInitOptions): { configData: any; authData: any; assetHash?: any } {
-    const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty() ? undefined : c);
+  private bind(
+    scope: Construct,
+    options: AttachInitOptions,
+  ): { configData: any; authData: any; assetHash?: any } {
+    const nonEmptyConfigs = mapValues(this._configs, (c) =>
+      c.isEmpty() ? undefined : c,
+    );
 
-    const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));
+    const configNameToBindResult = mapValues(nonEmptyConfigs, (c) =>
+      c._bind(scope, options),
+    );
 
     return {
       configData: {
-        configSets: mapValues(this._configSets, configNames => configNames.filter(name => nonEmptyConfigs[name] !== undefined)),
-        ...mapValues(configNameToBindResult, c => c.config),
+        configSets: mapValues(this._configSets, (configNames) =>
+          configNames.filter((name) => nonEmptyConfigs[name] !== undefined),
+        ),
+        ...mapValues(configNameToBindResult, (c) => c.config),
       },
-      authData: Object.values(configNameToBindResult).map(c => c.authentication).reduce(deepMerge, undefined),
-      assetHash: combineAssetHashesOrUndefined(Object.values(configNameToBindResult).map(c => c.assetHash)),
+      authData: Object.values(configNameToBindResult)
+        .map((c) => c.authentication)
+        .reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(
+        Object.values(configNameToBindResult).map((c) => c.assetHash),
+      ),
     };
   }
 }
@@ -215,25 +270,49 @@ export class InitConfig {
    * Creates the CloudFormation representation of the Init config and handles any permissions and assets.
    * @internal
    */
-  public _bind(scope: Construct, options: AttachInitOptions): InitElementConfig {
+  public _bind(
+    scope: Construct,
+    options: AttachInitOptions,
+  ): InitElementConfig {
     const bindOptions = {
       instanceRole: options.instanceRole,
       platform: this.initPlatformFromOSType(options.platform),
       scope,
     };
 
-    const packageConfig = this.bindForType(InitElementType.PACKAGE, bindOptions);
+    const packageConfig = this.bindForType(
+      InitElementType.PACKAGE,
+      bindOptions,
+    );
     const groupsConfig = this.bindForType(InitElementType.GROUP, bindOptions);
     const usersConfig = this.bindForType(InitElementType.USER, bindOptions);
     const sourcesConfig = this.bindForType(InitElementType.SOURCE, bindOptions);
     const filesConfig = this.bindForType(InitElementType.FILE, bindOptions);
-    const commandsConfig = this.bindForType(InitElementType.COMMAND, bindOptions);
+    const commandsConfig = this.bindForType(
+      InitElementType.COMMAND,
+      bindOptions,
+    );
     // Must be last!
-    const servicesConfig = this.bindForType(InitElementType.SERVICE, bindOptions);
+    const servicesConfig = this.bindForType(
+      InitElementType.SERVICE,
+      bindOptions,
+    );
 
-    const allConfig = [packageConfig, groupsConfig, usersConfig, sourcesConfig, filesConfig, commandsConfig, servicesConfig];
-    const authentication = allConfig.map(c => c?.authentication).reduce(deepMerge, undefined);
-    const assetHash = combineAssetHashesOrUndefined(allConfig.map(c => c?.assetHash));
+    const allConfig = [
+      packageConfig,
+      groupsConfig,
+      usersConfig,
+      sourcesConfig,
+      filesConfig,
+      commandsConfig,
+      servicesConfig,
+    ];
+    const authentication = allConfig
+      .map((c) => c?.authentication)
+      .reduce(deepMerge, undefined);
+    const assetHash = combineAssetHashesOrUndefined(
+      allConfig.map((c) => c?.assetHash),
+    );
 
     return {
       config: {
@@ -250,16 +329,30 @@ export class InitConfig {
     };
   }
 
-  private bindForType(elementType: InitElementType, renderOptions: Omit<InitBindOptions, 'index'>): InitElementConfig | undefined {
-    const elements = this.elements.filter(elem => elem.elementType === elementType);
-    if (elements.length === 0) { return undefined; }
+  private bindForType(
+    elementType: InitElementType,
+    renderOptions: Omit<InitBindOptions, 'index'>,
+  ): InitElementConfig | undefined {
+    const elements = this.elements.filter(
+      (elem) => elem.elementType === elementType,
+    );
+    if (elements.length === 0) {
+      return undefined;
+    }
 
-    const bindResults = elements.map((e, index) => e._bind({ index, ...renderOptions }));
+    const bindResults = elements.map((e, index) =>
+      e._bind({ index, ...renderOptions }),
+    );
 
     return {
-      config: bindResults.map(r => r.config).reduce(deepMerge, undefined) ?? {},
-      authentication: bindResults.map(r => r.authentication).reduce(deepMerge, undefined),
-      assetHash: combineAssetHashesOrUndefined(bindResults.map(r => r.assetHash)),
+      config:
+        bindResults.map((r) => r.config).reduce(deepMerge, undefined) ?? {},
+      authentication: bindResults
+        .map((r) => r.authentication)
+        .reduce(deepMerge, undefined),
+      assetHash: combineAssetHashesOrUndefined(
+        bindResults.map((r) => r.assetHash),
+      ),
     };
   }
 
@@ -272,7 +365,9 @@ export class InitConfig {
         return InitPlatform.WINDOWS;
       }
       default: {
-        throw new UnscopedValidationError('Cannot attach CloudFormationInit to an unknown OS type');
+        throw new UnscopedValidationError(
+          'Cannot attach CloudFormationInit to an unknown OS type',
+        );
       }
     }
   }
@@ -300,8 +395,12 @@ export interface ConfigSetProps {
  * cfn-inits, not applicable elsewhere.
  */
 function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
-  if (target == null) { return src; }
-  if (src == null) { return target; }
+  if (target == null) {
+    return src;
+  }
+  if (src == null) {
+    return target;
+  }
 
   for (const [key, value] of Object.entries(src)) {
     if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
@@ -310,18 +409,15 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
 
     if (Array.isArray(value)) {
       if (target[key] && !Array.isArray(target[key])) {
-        throw new UnscopedValidationError(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
-      }
-      if (key === 'command') { // don't deduplicate command arguments
-        target[key] = new Array(
-          ...target[key] ?? [],
-          ...value,
+        throw new UnscopedValidationError(
+          `Trying to merge array [${value}] into a non-array '${target[key]}'`,
         );
+      }
+      if (key === 'command') {
+        // don't deduplicate command arguments
+        target[key] = new Array(...(target[key] ?? []), ...value);
       } else {
-        target[key] = Array.from(new Set([
-          ...target[key] ?? [],
-          ...value,
-        ]));
+        target[key] = Array.from(new Set([...(target[key] ?? []), ...value]));
       }
       continue;
     }
@@ -342,7 +438,10 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
  *
  * If the mapping function returns undefined, remove the key
  */
-function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B | undefined): Record<string, B> {
+function mapValues<A, B>(
+  xs: Record<string, A>,
+  fn: (x: A) => B | undefined,
+): Record<string, B> {
   const ret: Record<string, B> = {};
   for (const [k, v] of Object.entries(xs)) {
     const mapped = fn(v);
@@ -354,7 +453,9 @@ function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B | undefined): Re
 }
 
 // Combines all input asset hashes into one, or if no hashes are present, returns undefined.
-function combineAssetHashesOrUndefined(hashes: (string | undefined)[]): string | undefined {
+function combineAssetHashesOrUndefined(
+  hashes: (string | undefined)[],
+): string | undefined {
   const hashArray = hashes.filter((x): x is string => x !== undefined);
   return hashArray.length > 0 ? hashArray.join('') : undefined;
 }
@@ -455,4 +556,18 @@ export interface AttachInitOptions {
    * @default - if this property is undefined cfn-signal signals the attached resource
    */
   readonly signalResource?: CfnResource;
+
+  /**
+   * Include cfn-signal command in the UserData
+   *
+   * If `true` (the default), the cfn-signal command will be automatically added to the UserData
+   * after cfn-init completes. This signals CloudFormation that the instance has successfully
+   * (or unsuccessfully) initialized.
+   *
+   * Set this to `false` if you want to manage the cfn-signal call manually in your application
+   * logic, allowing you to signal CloudFormation only after your application is fully ready.
+   *
+   * @default true
+   */
+  readonly includeSignalCommand?: boolean;
 }
