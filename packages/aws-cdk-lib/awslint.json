@@ -1270,6 +1270,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.customMessage",
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.customSmsSender",
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.defineAuthChallenge",
+    "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.inboundFederation",
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.postAuthentication",
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.postConfirmation",
     "prefer-ref-interface:aws-cdk-lib.aws_cognito.UserPoolTriggers.preAuthentication",

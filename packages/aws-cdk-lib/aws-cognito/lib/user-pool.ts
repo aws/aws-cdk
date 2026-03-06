@@ -185,6 +185,13 @@ export interface UserPoolTriggers {
   readonly customSmsSender?: lambda.IFunction;
 
   /**
+   * Amazon Cognito invokes this trigger to transform federated user attributes during authentication.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-inbound-federation.html
+   * @default - no trigger configured
+   */
+  readonly inboundFederation?: lambda.IFunction;
+
+  /**
    * Index signature.
    *
    * This index signature is not usable in non-TypeScript/JavaScript languages.
@@ -279,6 +286,12 @@ export class UserPoolOperation {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
    */
   public static readonly CUSTOM_SMS_SENDER = new UserPoolOperation('customSmsSender');
+
+  /**
+   * Amazon Cognito invokes this trigger to transform federated user attributes during authentication.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-inbound-federation.html
+   */
+  public static readonly INBOUND_FEDERATION = new UserPoolOperation('inboundFederation');
 
   /** A custom user pool operation */
   public static of(name: string): UserPoolOperation {
@@ -1182,6 +1195,16 @@ export class UserPool extends UserPoolBase {
               };
             }
             break;
+          case 'inboundFederation':
+            trigger = props.lambdaTriggers[t];
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = {
+                lambdaArn: trigger.functionArn,
+                lambdaVersion: LambdaVersion.V1_0,
+              };
+            }
+            break;
           default:
             trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
             if (trigger !== undefined) {
@@ -1325,6 +1348,12 @@ export class UserPool extends UserPoolBase {
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
           lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
+        };
+        break;
+      case 'inboundFederation':
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: LambdaVersion.V1_0,
         };
         break;
       default:
