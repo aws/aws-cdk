@@ -2013,7 +2013,7 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
    *
-   * @default No Intelligent Tiiering Configurations.
+   * @default No Intelligent Tiering Configurations.
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 
