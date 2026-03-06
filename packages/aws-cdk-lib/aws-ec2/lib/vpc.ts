@@ -654,13 +654,14 @@ abstract class VpcBase extends Resource implements IVpc {
     if (selection.subnets !== undefined) {
       return selection.subnets.map(s => {
         if (s instanceof CfnSubnet) {
-          const wrapperId = `WrappedSubnet${s.node.addr}`;
+          const cfnSubnet = s as CfnSubnet;
+          const wrapperId = `WrappedSubnet${cfnSubnet.node.addr}`;
           let wrappedSubnet = this.node.tryFindChild(wrapperId) as ISubnet;
           if (!wrappedSubnet) {
             wrappedSubnet = Subnet.fromSubnetAttributes(this, wrapperId, {
-              subnetId: s.ref,
-              availabilityZone: s.availabilityZone,
-              ipv4CidrBlock: s.cidrBlock,
+              subnetId: cfnSubnet.ref,
+              availabilityZone: cfnSubnet.availabilityZone,
+              ipv4CidrBlock: cfnSubnet.cidrBlock,
             });
           }
           return wrappedSubnet;
