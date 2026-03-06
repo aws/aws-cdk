@@ -234,6 +234,104 @@ test.each([
   }).toThrow(`keepaliveTimeout: Must be an int between 1 and 180 seconds (inclusive); received ${keepaliveTimeout.toSeconds()}`);
 });
 
+test('VPC origin with cross-account ownerAccountId from a VpcOrigin resource', () => {
+  // GIVEN
+  const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
+    endpoint: { endpointArn: 'arn:opaque', domainName: 'vpcorigin.example.com' },
+  });
+
+  // WHEN
+  new cloudfront.Distribution(stack, 'Distribution', {
+    defaultBehavior: {
+      origin: VpcOrigin.withVpcOrigin(vpcOrigin, {
+        ownerAccountId: '123456789012',
+      }),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Origins: [
+        {
+          DomainName: 'vpcorigin.example.com',
+          VpcOriginConfig: {
+            VpcOriginId: { 'Fn::GetAtt': ['VpcOrigin65BCA67E', 'Id'] },
+            OwnerAccountId: '123456789012',
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('VPC origin with cross-account ownerAccountId from an endpoint', () => {
+  // GIVEN
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+
+  // WHEN
+  new cloudfront.Distribution(stack, 'Distribution', {
+    defaultBehavior: {
+      origin: VpcOrigin.withApplicationLoadBalancer(alb, {
+        ownerAccountId: '987654321098',
+      }),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      Origins: [
+        {
+          VpcOriginConfig: {
+            VpcOriginId: { 'Fn::GetAtt': ['DistributionOrigin1VpcOrigin1389D846', 'Id'] },
+            OwnerAccountId: '987654321098',
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('VPC origin without ownerAccountId does not include OwnerAccountId in config', () => {
+  // GIVEN
+  const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
+    endpoint: { endpointArn: 'arn:opaque', domainName: 'vpcorigin.example.com' },
+  });
+
+  // WHEN
+  new cloudfront.Distribution(stack, 'Distribution', {
+    defaultBehavior: {
+      origin: VpcOrigin.withVpcOrigin(vpcOrigin),
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const origins = template.findResources('AWS::CloudFront::Distribution');
+  const distConfig = Object.values(origins)[0].Properties.DistributionConfig;
+  expect(distConfig.Origins[0].VpcOriginConfig.OwnerAccountId).toBeUndefined();
+});
+
+test.each([
+  '12345',
+  '1234567890123',
+  '12345678901a',
+  'abcdefghijkl',
+  '',
+])('VPC origin throws when ownerAccountId is %s - invalid format', (ownerAccountId) => {
+  // GIVEN
+  const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
+    endpoint: { endpointArn: 'arn:opaque', domainName: 'vpcorigin.example.com' },
+  });
+
+  // WHEN / THEN
+  expect(() => {
+    VpcOrigin.withVpcOrigin(vpcOrigin, { ownerAccountId });
+  }).toThrow(`ownerAccountId: Must be a 12-digit AWS account ID, got '${ownerAccountId}'.`);
+});
+
 test('VPC origin throws when no domainName is specified', () => {
   // GIVEN
   const vpcOrigin = new cloudfront.VpcOrigin(stack, 'VpcOrigin', {
