@@ -521,6 +521,12 @@ The following widgets are available:
 - `TextWidget` -- shows some static Markdown.
 - `AlarmStatusWidget` -- shows the status of your alarms in a grid view.
 
+### Metric Math in widgets
+
+All widgets that can display metrics can also display math expressions. The
+constituent metrics in a math expression are hidden. The visible metrics appear
+first in the widget, followed by the hidden metrics.
+
 ### Graph widget
 
 A graph widget can display any number of metrics on either the `left` or
