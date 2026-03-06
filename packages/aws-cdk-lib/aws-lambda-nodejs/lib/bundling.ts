@@ -5,7 +5,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime, validateShellSafe } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -233,6 +233,23 @@ export class Bundling implements cdk.BundlingOptions {
 
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
+
+    // Validate all user-controlled values that will be interpolated into shell commands
+    this.externals.forEach(ext => validateShellSafe(ext, 'externalModules'));
+    loaders.forEach(([ext, name]) => {
+      validateShellSafe(ext, 'loader key');
+      validateShellSafe(name, 'loader value');
+    });
+    defines.forEach(([key]) => validateShellSafe(key, 'define key'));
+    (this.props.inject ?? []).forEach(i => validateShellSafe(i, 'inject'));
+    if (this.props.esbuildArgs) {
+      Object.entries(this.props.esbuildArgs).forEach(([key, value]) => {
+        validateShellSafe(key, 'esbuildArgs key');
+        if (typeof value === 'string') {
+          validateShellSafe(value, 'esbuildArgs value');
+        }
+      });
+    }
 
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
       throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
