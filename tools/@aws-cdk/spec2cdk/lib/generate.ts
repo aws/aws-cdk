@@ -284,7 +284,10 @@ function grantsConfigForModule(moduleName: string, modulePath: string, isStable:
     'aws-bedrockagentcore': 'aws-bedrock-agentcore-alpha',
   };
 
-  const actualModuleName = grantsJsonPathOverrides[moduleName] || moduleName;
+  const actualModuleName = isStable
+    ? (grantsJsonPathOverrides[moduleName] || moduleName)
+    : (grantsJsonPathOverrides[moduleName] || `${moduleName}-alpha`);
+
   const grantsFileLocation = isStable
     ? path.join(modulePath, actualModuleName)
     : path.join(modulePath, '..', actualModuleName);
