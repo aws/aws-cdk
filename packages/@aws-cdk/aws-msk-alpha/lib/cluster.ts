@@ -849,9 +849,16 @@ export class Cluster extends ClusterBase {
           },
           physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
         },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
+        policy: cr.AwsCustomResourcePolicy.fromStatements([
+          new iam.PolicyStatement({
+            actions: ['kafka:GetBootstrapBrokers'],
+            resources: [core.Stack.of(this).formatArn({
+              service: 'kafka',
+              resource: 'cluster',
+              resourceName: `${this.physicalName}/*`,
+            })],
+          }),
+        ]),
         // APIs are available in 2.1055.0
         installLatestAwsSdk: false,
       });
