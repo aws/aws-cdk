@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-"@actions/core@^1.11.1":
+"@actions/core@^1.10.0", "@actions/core@^1.11.1":
   version "1.11.1"
   resolved "https://registry.npmjs.org/@actions/core/-/core-1.11.1.tgz#ae683aac5112438021588030efb53b1adb86f172"
   integrity sha512-hXJCSrkwfA46Vd9Z3q4cpEpHB1rL5NG04+/rbqW9d3+CSvtB1tYe8UTpAlixa1vj0m/ULglfEK2UKxMGxCxv5A==
@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.198"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@^0.1.157":
-  version "0.1.157"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.157.tgz#28ff21f280e5a7f1eb34a1afc04766100a0a7aba"
-  integrity sha512-fLJ+P0CffrFgq/JqMfou8FdqMSjU+OFasC2RDL6/PzgaaP6RGo2QWV0qFIJ/zPFGKbwaXeDdk5F7zSOJnwGnbQ==
+"@aws-cdk/aws-service-spec@^0.1.160":
+  version "0.1.160"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.160.tgz#e43d775b4c27dadf3ef544607e172d6656b8b63d"
+  integrity sha512-4JQF0J8x0g+PUXvFLdxHEHPLoDp3+PgxKvEleevpyjzon/nDsdoVFDB37cvUQvzaMU+KxJcfhEikzsHU30D0Uw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.223"
+    "@aws-cdk/service-spec-types" "^0.0.226"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.1.1":
@@ -130,19 +130,19 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v35/-/lambda-layer-kubectl-v35-2.0.0.tgz#6f2b1dcfd668f9abc08d0d841af28cd6a3b6ebc7"
   integrity sha512-yO2uQKE4xhRfURhT0YQ344i/ZbZ8TA915YmtFjgWaZHbt5kpyceKRQESf9kTWlVDVzQJAIB8d7Pwpoy5P5sEtw==
 
-"@aws-cdk/service-spec-importers@^0.0.112":
-  version "0.0.112"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.112.tgz#e4cb4f9432853b8f6eb71269c33f33da78ec34e8"
-  integrity sha512-MCSaLG3haWgd9TdsujfGh5mBzPnK+5Ql4cw/oe6FE/qJgvjAB+r+hpr5gpPxt20qRAtFCI2yLj/mAMkP+jadMA==
+"@aws-cdk/service-spec-importers@^0.0.115":
+  version "0.0.115"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.115.tgz#3a41574df694578c6b19bc02d8ddeb985546c3d7"
+  integrity sha512-pZHo0iqulybvLzHkak9dVFAHOyrzYcRGIOTO0ESiy7wPav0T2v1BIpyxM9fjVd7kpNUduq+SSQ3gQO5r6ueG4Q==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.223"
+    "@aws-cdk/service-spec-types" "^0.0.226"
     "@cdklabs/tskb" "^0.0.4"
     ajv "^6"
     canonicalize "^2.1.0"
     chalk "^4"
     commander "^11.1.0"
     fast-json-patch "^3.1.1"
-    fs-extra "^11.3.3"
+    fs-extra "^11.3.4"
     glob "^8"
     sort-json "^2.0.1"
 
@@ -153,10 +153,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.223":
-  version "0.0.223"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.223.tgz#04bca9050e39d1ef7e7ac1864316b63212941d80"
-  integrity sha512-n7IE0cA1t4zoLKcgQIfRTwcEMlA5uvErEE3icC94t2PQuNC3PfI5m5ALqAlfcfaPUdhI8PSLXvB/jA1WS3zG1A==
+"@aws-cdk/service-spec-types@^0.0.226":
+  version "0.0.226"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.226.tgz#92f1cec73018f6337d4feae5a717e78ca479a347"
+  integrity sha512-1+kbXcr8IqWLOf6UXxPzRdzfTX+pwGPSsetzyVN1iVii8Nv5ky+RQHSCdROfmVcVQObbJz2ba6WTkVBU3SY6dA==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -6237,7 +6237,7 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^29.5.14":
+"@types/jest@^29.5.0", "@types/jest@^29.5.14":
   version "29.5.14"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-29.5.14.tgz#2b910912fa1d6856cadcd0c1f95af7df1d6049e5"
   integrity sha512-ZN+4sdnLUbo8EVvVc2ao0GFW6oVrQRPn4K2lglySj7APvSrgzxHiNNK99us4WDMi57xxA2yggblIAMNhXOotLQ==
@@ -6325,6 +6325,13 @@
   integrity sha512-GRaXQx6jGfL8sKfaIDD6OupbIHBr9jv7Jnaml9tB7l4v068PAOXqfcujMMo5PhbIs6ggR1XODELqahT2R8v0fg==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/node@^22.14.1":
+  version "22.19.15"
+  resolved "https://registry.npmjs.org/@types/node/-/node-22.19.15.tgz#6091d99fdf7c08cb57dc8b1345d407ba9a1df576"
+  integrity sha512-F0R/h2+dsy5wJAUe3tAU6oqa2qbWY5TpNfL/RGmo1y38hiyO1w3x2jPtt76wmuaJI4DQnOBu21cNXQ2STIUUWg==
+  dependencies:
+    undici-types "~6.21.0"
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.4"
@@ -9287,6 +9294,15 @@ fs-extra@^11.2.0, fs-extra@^11.3.3:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
+fs-extra@^11.3.4:
+  version "11.3.4"
+  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.3.4.tgz#ab6934eca8bcf6f7f6b82742e33591f86301d6fc"
+  integrity sha512-CTXd6rk/M3/ULNQj8FBqBWHYBVYybQ3VPBw0xGKFe3tuH7ytT6ACnvzpIQ3UZtB8yvUKC2cXn1a+x+5EVQLovA==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
+
 fs-extra@^8.1.0:
   version "8.1.0"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-8.1.0.tgz#49d43c45a88cd9677668cb7be1b46efdb8d2e1c0"
@@ -10841,7 +10857,7 @@ jest-worker@^29.7.0:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jest@^29, jest@^29.7.0:
+jest@^29, jest@^29.5.0, jest@^29.7.0:
   version "29.7.0"
   resolved "https://registry.npmjs.org/jest/-/jest-29.7.0.tgz#994676fc24177f088f1c5e3737f5697204ff2613"
   integrity sha512-NIy3oAFp9shda19hy4HK0HRTWKtPJmGdnvywu01nOqNC2vZg+Z+fvJDxpMQA88eb2I9EcafcdjYgsDthnYTvGw==
@@ -14428,7 +14444,7 @@ ts-api-utils@^2.4.0:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-2.4.0.tgz#2690579f96d2790253bdcf1ca35d569ad78f9ad8"
   integrity sha512-3TaVTaAv2gTiMB35i3FiGJaRfwb3Pyn/j3m/bfAvGe8FB7CF6u+LMYqYlDh7reQf7UNvoTvdfAqHGmPGOSsPmA==
 
-ts-jest@^29, ts-jest@^29.4.6:
+ts-jest@^29, ts-jest@^29.1.0, ts-jest@^29.4.6:
   version "29.4.6"
   resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-29.4.6.tgz#51cb7c133f227396818b71297ad7409bb77106e9"
   integrity sha512-fSpWtOO/1AjSNQguk43hb/JCo16oJDnMJf3CdEGNkqsEX3t0KX96xvyX1D7PfLCpVoKu4MfVrqUkFyblYoY4lA==
@@ -14664,7 +14680,7 @@ typescript-json-schema@^0.67.1:
     vm2 "^3.10.0"
     yargs "^17.1.1"
 
-"typescript@>=3 < 6", typescript@^5.9.3, typescript@~5.9:
+"typescript@>=3 < 6", typescript@^5.8.3, typescript@^5.9.3, typescript@~5.9:
   version "5.9.3"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.9.3.tgz#5b4f59e15310ab17a216f5d6cf53ee476ede670f"
   integrity sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==
@@ -14703,6 +14719,11 @@ undici-types@~5.26.4:
   version "5.26.5"
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
+
+undici-types@~6.21.0:
+  version "6.21.0"
+  resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.21.0.tgz#691d00af3909be93a7faa13be61b3a5b50ef12cb"
+  integrity sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==
 
 undici-types@~7.18.0:
   version "7.18.2"
