@@ -10,6 +10,9 @@ on:
       - labeled
       - unlabeled
 
+permissions:
+  contents: read
+
 jobs:
   cli-changes:
     runs-on: ubuntu-latest
@@ -31,10 +34,17 @@ jobs:
           files_yaml: |
             cli:
               - packages/aws-cdk-lib/cx-api/lib/features.ts
-  submit-to-test-pipeline:
-    environment: test-pipeline
+  approve-test-pipeline:
     needs: cli-changes
     if: needs.cli-changes.outputs.any-changed-files == 'true' || contains(github.event.pull_request.labels.*.name, 'pr/request-cli-integ-tests')
+    environment: test-pipeline
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Approved"
+  submit-to-test-pipeline:
+    needs:
+      - approve-test-pipeline
+      - cli-changes
     runs-on: ubuntu-latest
     environment: automation
     steps:

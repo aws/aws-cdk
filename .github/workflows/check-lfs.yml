@@ -2,6 +2,9 @@ name: Check all requires files are in LFS
 on:
   pull_request: {}
 
+permissions:
+  contents: read
+
 jobs:
   check-lfs:
     runs-on: ubuntu-latest

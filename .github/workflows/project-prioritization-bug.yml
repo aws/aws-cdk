@@ -4,6 +4,9 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   prioritize:
     if: github.repository == 'aws/aws-cdk' && contains(github.event.issue.labels.*.name, 'bug') && contains(github.event.issue.labels.*.name, 'p1')
