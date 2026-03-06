@@ -790,8 +790,60 @@ describe('Map State', () => {
   });
 });
 
-function render(sm: stepfunctions.IChainable) {
-  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+test('Map.jsonata() with itemProcessor propagates QueryLanguage to child states', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const map = stepfunctions.Map.jsonata(stack, 'Map State', {
+    stateName: 'My-Map-State',
+    items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+  });
+
+  const passState = stepfunctions.Pass.jsonata(stack, 'PassState', {
+    outputs: '{% $states.input %}',
+  });
+  map.itemProcessor(passState);
+
+  // THEN
+  const rendered = render(map, stepfunctions.QueryLanguage.JSONATA);
+
+  expect(rendered.States['My-Map-State'].ItemProcessor.ProcessorConfig.QueryLanguage).toBeUndefined();
+
+  // Verify child state uses Output (JSONata style)
+  const childState = rendered.States['My-Map-State'].ItemProcessor.States.PassState;
+  expect(childState.Output).toBe('{% $states.input %}');
+});
+
+test('Map.jsonPath() with itemProcessor does not include QueryLanguage in ProcessorConfig', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const map = stepfunctions.Map.jsonPath(stack, 'Map State', {
+    stateName: 'My-Map-State',
+    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+  });
+  // Use Pass.jsonPath() which outputs 'Result' field (JSONPath style)
+  const passState = stepfunctions.Pass.jsonPath(stack, 'PassState', {
+    result: stepfunctions.Result.fromObject({ value: 'test' }),
+  });
+  map.itemProcessor(passState);
+
+  // THEN
+  const rendered = render(map);
+
+  // Verify ProcessorConfig does NOT contain QueryLanguage
+  expect(rendered.States['My-Map-State'].ItemProcessor.ProcessorConfig.QueryLanguage).toBeUndefined();
+
+  // Verify child state uses Result (JSONPath style)
+  const childState = rendered.States['My-Map-State'].ItemProcessor.States.PassState;
+  expect(childState.Result).toBeDefined();
+  expect(childState.Output).toBeUndefined();
+});
+
+function render(sm: stepfunctions.IChainable, queryLanguage?: stepfunctions.QueryLanguage) {
+  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson(queryLanguage));
 }
 
 function createAppWithMap(mapFactory: (stack: cdk.Stack) => stepfunctions.Map) {
