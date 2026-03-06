@@ -5,6 +5,11 @@
       "stacks": [
         "aws-ecs-integ-alb-ec2-cmd-entrypoint"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "AlbEc2ServiceWithCommandAndEntryPoint/DefaultTest/DeployAssert",
       "assertionStackName": "AlbEc2ServiceWithCommandAndEntryPointDefaultTestDeployAssert91EF33D6"
     }

@@ -33,7 +33,6 @@ const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'first-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider1);
 
@@ -44,12 +43,11 @@ const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'second-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider2);
 
 // one service with multi capacity provider strategies
-new NetworkLoadBalancedEc2Service(stack, 'myService', {
+const myService = new NetworkLoadBalancedEc2Service(stack, 'myService', {
   cluster,
   memoryLimitMiB: 256,
   taskImageOptions: {
@@ -69,9 +67,18 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
   ],
   ipAddressType: IpAddressType.IPV4,
 });
+const nlbSg = new SecurityGroup(stack, 'NlbSecurityGroup', { vpc, allowAllOutbound: false });
+nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+myService.loadBalancer.connections.addSecurityGroup(nlbSg);
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
 });
 
 app.synth();
