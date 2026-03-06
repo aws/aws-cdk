@@ -52,14 +52,16 @@ const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
 ### Define an S3 Table
 
 ```ts
-// Build a table
-const sampleTable = new Table(scope, 'ExampleTable', {
-    tableName: 'example_table',
+// build table with only required fields
+const minimalTable = new Table(scope, 'MinimalTable', {
+    tableName: 'minimal_table',
     namespace: namespace,
     openTableFormat: OpenTableFormat.ICEBERG,
     withoutMetadata: true,
 });
+```
 
+```ts
 // Build a table with an Iceberg Schema
 const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
     tableName: 'example_table_with_schema',
@@ -132,7 +134,7 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
             fields: [
                 {
                     sourceId: 1,
-                    transform: 'identity',
+                    transform: PartitionTransform.IDENTITY,
                     name: 'event_date_partition',
                     fieldId: 1000,
                 },
@@ -144,15 +146,16 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
             fields: [
                 {
                     sourceId: 1,
+                    // Sort transform is a string to support parameterized Iceberg transforms like 'bucket[16]' or 'truncate[8]'
                     transform: 'identity',
-                    direction: 'asc',
-                    nullOrder: 'nulls-last',
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_LAST,
                 },
                 {
                     sourceId: 2,
                     transform: 'identity',
-                    direction: 'asc',
-                    nullOrder: 'nulls-first',
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_FIRST,
                 },
             ],
         },

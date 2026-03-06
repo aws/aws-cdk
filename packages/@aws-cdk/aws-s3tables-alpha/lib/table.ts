@@ -178,7 +178,7 @@ abstract class TableBase extends Resource implements ITable {
     tableActions: string[],
     resourceArn: string,
     ...otherResourceArns: (string | undefined)[]) {
-    const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
+    const resources = [resourceArn, ...otherResourceArns].filter((arn): arn is string => arn !== undefined);
 
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
@@ -280,6 +280,68 @@ export enum Status {
 }
 
 /**
+ * Partition transform values for Iceberg partition fields.
+ */
+export enum PartitionTransform {
+  /**
+   * Use the column value as the partition value without transformation.
+   */
+  IDENTITY = 'identity',
+  /**
+   * Partition by year extracted from a timestamp/date field.
+   */
+  YEAR = 'year',
+  /**
+   * Partition by month extracted from a timestamp/date field.
+   */
+  MONTH = 'month',
+  /**
+   * Partition by day extracted from a timestamp/date field.
+   */
+  DAY = 'day',
+  /**
+   * Partition by hour extracted from a timestamp field.
+   */
+  HOUR = 'hour',
+  /**
+   * Hash partition into a fixed number of buckets.
+   */
+  BUCKET = 'bucket',
+  /**
+   * Truncate the value to a fixed width.
+   */
+  TRUNCATE = 'truncate',
+}
+
+/**
+ * Sort direction values for Iceberg sort fields.
+ */
+export enum SortDirection {
+  /**
+   * Sort values in ascending order.
+   */
+  ASC = 'asc',
+  /**
+   * Sort values in descending order.
+   */
+  DESC = 'desc',
+}
+
+/**
+ * Null ordering values for Iceberg sort fields.
+ */
+export enum NullOrder {
+  /**
+   * Place null values before non-null values.
+   */
+  NULLS_FIRST = 'nulls-first',
+  /**
+   * Place null values after non-null values.
+   */
+  NULLS_LAST = 'nulls-last',
+}
+
+/**
  * Partition field definition for Iceberg table.
  *
  * Defines a single partition column. Multiple partition fields can be combined
@@ -292,9 +354,9 @@ export interface IcebergPartitionField {
   readonly sourceId: number;
 
   /**
-   * The partition transform function (e.g., 'identity', 'day', 'hour', 'bucket', 'truncate').
+   * The partition transform function.
    */
-  readonly transform: string;
+  readonly transform: PartitionTransform;
 
   /**
    * The name of the partition field.
@@ -346,12 +408,12 @@ export interface IcebergSortField {
   /**
    * The sort direction.
    */
-  readonly direction: 'asc' | 'desc';
+  readonly direction: SortDirection;
 
   /**
    * The null ordering.
    */
-  readonly nullOrder: 'nulls-first' | 'nulls-last';
+  readonly nullOrder: NullOrder;
 }
 
 /**
@@ -642,9 +704,15 @@ export class Table extends TableBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.withoutMetadata && props.icebergMetadata) {
+      throw new UnscopedValidationError(
+        "TableProps: 'withoutMetadata' and 'icebergMetadata' are mutually exclusive. Specify only one.",
+      );
+    }
+
     Table.validateTableName(props.tableName);
 
-    this._resource = new CfnTable(this, id, {
+    this._resource = new CfnTable(this, 'Resource', {
       tableName: props.tableName,
       openTableFormat: props.openTableFormat,
       tableBucketArn: props.namespace.tableBucket.tableBucketArn,
@@ -652,63 +720,41 @@ export class Table extends TableBase {
       compaction: props.compaction,
       icebergMetadata: props.icebergMetadata ? {
         icebergSchema: {
-          schemaFieldList: props.icebergMetadata.icebergSchema.schemaFieldList,
+          schemaFieldList: props.icebergMetadata.icebergSchema.schemaFieldList.map(f => ({
+            name: f.name,
+            type: f.type,
+            ...(f.id !== undefined && { id: f.id }),
+            ...(f.required !== undefined && { required: f.required }),
+          })),
         },
+        icebergPartitionSpec: props.icebergMetadata.icebergPartitionSpec ? {
+          specId: props.icebergMetadata.icebergPartitionSpec.specId,
+          fields: props.icebergMetadata.icebergPartitionSpec.fields.map(f => ({
+            sourceId: f.sourceId,
+            transform: f.transform,
+            name: f.name,
+            fieldId: f.fieldId,
+          })),
+        } : undefined,
+        icebergSortOrder: props.icebergMetadata.icebergSortOrder ? {
+          orderId: props.icebergMetadata.icebergSortOrder.orderId,
+          fields: props.icebergMetadata.icebergSortOrder.fields.map(f => ({
+            sourceId: f.sourceId,
+            transform: f.transform,
+            direction: f.direction,
+            nullOrder: f.nullOrder,
+          })),
+        } : undefined,
+        tableProperties: props.icebergMetadata.tableProperties
+          ? props.icebergMetadata.tableProperties.reduce(
+            (acc, entry) => ({ ...acc, [entry.key]: entry.value }),
+            {} as Record<string, string>,
+          )
+          : undefined,
       } : undefined,
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
     });
-
-    // Use addPropertyOverride for properties not yet in L1 types
-    // Override schema to include Id field
-    if (props.icebergMetadata?.icebergSchema.schemaFieldList.some(f => f.id !== undefined)) {
-      this._resource.addPropertyOverride(
-        'IcebergMetadata.IcebergSchema.SchemaFieldList',
-        props.icebergMetadata.icebergSchema.schemaFieldList.map(f => ({
-          Id: f.id,
-          Name: f.name,
-          Type: f.type,
-          Required: f.required,
-        })),
-      );
-    }
-    if (props.icebergMetadata?.icebergPartitionSpec) {
-      this._resource.addPropertyOverride(
-        'IcebergMetadata.IcebergPartitionSpec',
-        {
-          SpecId: props.icebergMetadata.icebergPartitionSpec.specId,
-          Fields: props.icebergMetadata.icebergPartitionSpec.fields.map(f => ({
-            SourceId: f.sourceId,
-            Transform: f.transform,
-            Name: f.name,
-            FieldId: f.fieldId,
-          })),
-        },
-      );
-    }
-    if (props.icebergMetadata?.icebergSortOrder) {
-      this._resource.addPropertyOverride(
-        'IcebergMetadata.IcebergSortOrder',
-        {
-          OrderId: props.icebergMetadata.icebergSortOrder.orderId,
-          Fields: props.icebergMetadata.icebergSortOrder.fields.map(f => ({
-            SourceId: f.sourceId,
-            Transform: f.transform,
-            Direction: f.direction,
-            NullOrder: f.nullOrder,
-          })),
-        },
-      );
-    }
-    if (props.icebergMetadata?.tableProperties) {
-      this._resource.addPropertyOverride(
-        'IcebergMetadata.TableProperties',
-        props.icebergMetadata.tableProperties.reduce(
-          (acc, entry) => ({ ...acc, [entry.key]: entry.value }),
-          {} as { [key: string]: string },
-        ),
-      );
-    }
 
     this.namespace = props.namespace;
     this.tableName = props.tableName;

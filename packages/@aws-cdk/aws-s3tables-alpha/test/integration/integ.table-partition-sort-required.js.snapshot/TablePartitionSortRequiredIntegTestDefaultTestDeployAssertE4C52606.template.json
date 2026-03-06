@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036": {
+  "AwsApiCallawssdkclients3tablesListTablesCommand120e629e30144fdfd4a3e08422c72593": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesListTabl",
    "Properties": {
     "ServiceToken": {
@@ -11,7 +11,7 @@
     },
     "service": "@aws-sdk/client-s3tables",
     "api": "ListTablesCommand",
-    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"events_by_day_sorted\"}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"events_by_day_required\"}}]}}}",
     "parameters": {
      "tableBucketARN": {
       "Fn::Join": [
@@ -19,16 +19,16 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TableWithPartitionSortStack:ExportsOutputFnGetAttPartitionSortBucket153171A7TableBucketARND5608456"
+         "Fn::ImportValue": "TablePartitionSortRequiredFieldsStack:ExportsOutputFnGetAttPartitionSortRequiredFieldsBucketD7ACD847TableBucketARN65C3B12D"
         },
         "\""
        ]
       ]
      },
-     "namespace": "\"partition_sort_ns\""
+     "namespace": "\"partition_sort_required_ns\""
     },
     "flattenResponse": "false",
-    "salt": "1772771243306"
+    "salt": "1772771858533"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -103,7 +103,7 @@
     }
    }
   },
-  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand05ca3e2e953435467c00017fbe7395ce": {
+  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
    "Properties": {
     "ServiceToken": {
@@ -122,35 +122,35 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "TableWithPartitionSortStack:ExportsOutputFnGetAttPartitionSortBucket153171A7TableBucketARND5608456"
+         "Fn::ImportValue": "TablePartitionSortRequiredFieldsStack:ExportsOutputFnGetAttPartitionSortRequiredFieldsBucketD7ACD847TableBucketARN65C3B12D"
         },
         "\""
        ]
       ]
      },
-     "namespace": "\"partition_sort_ns\"",
-     "name": "\"events_by_day_sorted\""
+     "namespace": "\"partition_sort_required_ns\"",
+     "name": "\"events_by_day_required\""
     },
     "flattenResponse": "false",
-    "salt": "1772771243308"
+    "salt": "1772771858536"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand120e629e30144fdfd4a3e08422c72593": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036",
+     "AwsApiCallawssdkclients3tablesListTablesCommand120e629e30144fdfd4a3e08422c72593",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand05ca3e2e953435467c00017fbe7395ce": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand05ca3e2e953435467c00017fbe7395ce",
+     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607",
      "assertion"
     ]
    }

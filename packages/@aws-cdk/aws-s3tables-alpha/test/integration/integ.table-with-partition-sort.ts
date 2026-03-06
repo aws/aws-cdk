@@ -1,32 +1,32 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
-import * as core from 'aws-cdk-lib/core';
+import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as s3tables from '../../lib';
 
 /**
  * Test for table with partition spec, sort order, and table properties
  */
-class TableWithPartitionSortStack extends core.Stack {
+class TableWithPartitionSortStack extends Stack {
   public readonly table: s3tables.Table;
   public readonly namespace: s3tables.Namespace;
   public readonly tableBucket: s3tables.TableBucket;
 
-  constructor(scope: Construct, id: string, props?: core.StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortBucket', {
-      tableBucketName: 'my-test-bucket',
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      tableBucketName: 'cdk-partition-sort',
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     this.namespace = new s3tables.Namespace(this, 'PartitionSortNamespace', {
-      namespaceName: 'test_namespace',
+      namespaceName: 'partition_sort_ns',
       tableBucket: this.tableBucket,
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortTable', {
-      tableName: 'test_table',
+      tableName: 'events_by_day_sorted',
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       icebergMetadata: {
@@ -43,7 +43,7 @@ class TableWithPartitionSortStack extends core.Stack {
           fields: [
             {
               sourceId: 1, // References 'day' field (id: 1)
-              transform: 'identity', // Keep as-is (it's already a date)
+              transform: s3tables.PartitionTransform.IDENTITY,
               name: 'day_partition',
               fieldId: 1000,
             },
@@ -56,14 +56,14 @@ class TableWithPartitionSortStack extends core.Stack {
             {
               sourceId: 1, // Sort by 'day' first
               transform: 'identity',
-              direction: 'asc',
-              nullOrder: 'nulls-last',
+              direction: s3tables.SortDirection.ASC,
+              nullOrder: s3tables.NullOrder.NULLS_LAST,
             },
             {
               sourceId: 2, // Then by 'person_name'
               transform: 'identity',
-              direction: 'asc',
-              nullOrder: 'nulls-first',
+              direction: s3tables.SortDirection.ASC,
+              nullOrder: s3tables.NullOrder.NULLS_FIRST,
             },
           ],
         },
@@ -72,12 +72,12 @@ class TableWithPartitionSortStack extends core.Stack {
           { key: 'write.parquet.compression-codec', value: 'zstd' },
         ],
       },
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 }
 
-const app = new core.App();
+const app = new App();
 
 const partitionSortTest = new TableWithPartitionSortStack(app, 'TableWithPartitionSortStack');
 
@@ -85,7 +85,7 @@ const integ = new IntegTest(app, 'TablePartitionSortIntegTest', {
   testCases: [partitionSortTest],
 });
 
-// Assert table exists (use the actual generated name)
+// Assert table exists
 const listTables = integ.assertions.awsApiCall('@aws-sdk/client-s3tables', 'ListTablesCommand', {
   tableBucketARN: partitionSortTest.tableBucket.tableBucketArn,
   namespace: partitionSortTest.namespace.namespaceName,
