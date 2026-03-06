@@ -6,6 +6,102 @@ import type { AwsSdkCall } from './construct-types';
 type Event = AWSLambda.CloudFormationCustomResourceEvent;
 
 /**
+ * Retry configuration constants
+ */
+const MAX_RETRIES = 5;
+const DELAY_BASE_MS = 1000;
+const DELAY_CAP_MS = 30000;
+
+let FAKE_SLEEP = false;
+
+/**
+ * Disables sleep for testing purposes to speed up tests.
+ */
+export function disableSleepForTesting() {
+  FAKE_SLEEP = true;
+}
+
+/**
+ * Checks if an error is a Lambda initialization error that should be retried.
+ * These errors occur when invoking a Lambda function that is in a cold start state.
+ */
+export function isRetryableError(error: any): boolean {
+  if (!error) return false;
+
+  // Check error name
+  if (error.name === 'ResourceNotReadyException') {
+    return true;
+  }
+
+  // Check error message for Lambda initialization errors (case-insensitive)
+  const message = error.message || '';
+  if (message.toLowerCase().includes('lambda is initializing')) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Calculates delay with exponential backoff and jitter.
+ * @param attempt The current attempt number (1-based)
+ * @param base The base delay in milliseconds
+ * @param cap The maximum delay in milliseconds
+ * @returns The calculated delay in milliseconds
+ */
+export function calculateDelay(attempt: number, base: number, cap: number): number {
+  return Math.min(Math.round(Math.random() * base * 2 ** attempt), cap);
+}
+
+/**
+ * Sleep helper function.
+ * @param timeMs Time to sleep in milliseconds
+ */
+export async function sleep(timeMs: number): Promise<void> {
+  if (FAKE_SLEEP) {
+    timeMs = 0;
+  }
+  await new Promise<void>(resolve => setTimeout(resolve, timeMs));
+}
+
+/**
+ * Creates a retry wrapper function that retries on Lambda initialization errors.
+ * Follows the same pattern as log-retention-handler.
+ * @param maxRetries Maximum number of retry attempts
+ * @param delayBase Base delay in milliseconds for exponential backoff
+ * @param delayCap Maximum delay in milliseconds
+ * @returns A function that wraps an async operation with retry logic
+ */
+export function makeWithRetry(
+  maxRetries: number = MAX_RETRIES,
+  delayBase: number = DELAY_BASE_MS,
+  delayCap: number = DELAY_CAP_MS,
+): <T>(block: () => Promise<T>) => Promise<T> {
+  return async <T>(block: () => Promise<T>): Promise<T> => {
+    let attempts = 0;
+    do {
+      try {
+        return await block();
+      } catch (error: any) {
+        if (isRetryableError(error)) {
+          if (attempts < maxRetries) {
+            attempts++;
+            const delay = calculateDelay(attempts, delayBase, delayCap);
+            console.log(`Lambda initialization error detected, retrying (attempt ${attempts}/${maxRetries}) after ${delay}ms...`);
+            await sleep(delay);
+            continue;
+          } else {
+            // Out of retries
+            throw new Error(`Lambda initialization failed after ${maxRetries} retries: ${error.message}`);
+          }
+        }
+        throw error;
+      }
+    } while (true); // exit happens on retry count check or successful return
+  };
+}
+
+/**
  * Serialized form of the physical resource id for use in the operation parameters
  */
 export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
