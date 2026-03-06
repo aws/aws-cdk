@@ -1,16 +1,16 @@
 {
   "version": "48.0.0",
   "files": {
-    "2834aa8143610db1c681b2b5c6c4a651bbdf5649fe395ccdc3d44032c2d94d7b": {
-      "displayName": "integ-servicecatalogappregistry-attribute-group Template",
+    "a9aa56dfe5eb5f71f4a27f3a9ff51c410a2e24e3d6f2dc12d1f1efd7a3282cb6": {
+      "displayName": "integappregistrynostackidresourcesStack71DBEEDC Template",
       "source": {
-        "path": "integ-servicecatalogappregistry-attribute-group.template.json",
+        "path": "integappregistrynostackidresourcesStack71DBEEDC.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ca05bd55": {
+        "current_account-current_region-eaf4e1c2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2834aa8143610db1c681b2b5c6c4a651bbdf5649fe395ccdc3d44032c2d94d7b.json",
+          "objectKey": "a9aa56dfe5eb5f71f4a27f3a9ff51c410a2e24e3d6f2dc12d1f1efd7a3282cb6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
