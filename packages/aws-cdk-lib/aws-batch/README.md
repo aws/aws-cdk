@@ -247,6 +247,21 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+### Controlling Scale-In Delay
+
+You can configure the minimum number of minutes to wait before scaling down after a scale-in event using `minScaleDownDelayMinutes`.
+This is useful to avoid thrashing when workloads are bursty. The value must be between 20 and 10080 (7 days).
+See the [AWS CloudFormation documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-batch-computeenvironment-computescalingpolicy.html) for more details.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
+  minScaleDownDelayMinutes: 30,
+});
+```
+
 ### Tagging Instances
 
 You can tag any instances launched by your managed EC2 ComputeEnvironments by using the CDK `Tags` API:

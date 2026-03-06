@@ -206,6 +206,75 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('can specify minScaleDownDelayMinutes', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minScaleDownDelayMinutes: 30,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        ScalingPolicy: {
+          MinScaleDownDelayMinutes: 30,
+        },
+      },
+    });
+  });
+
+  test('minScaleDownDelayMinutes of 0 disables scale down delay', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minScaleDownDelayMinutes: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        ScalingPolicy: {
+          MinScaleDownDelayMinutes: 0,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [19, /must be 0 \(to disable\) or between 20 and 10080/],
+    [10081, /must be 0 \(to disable\) or between 20 and 10080/],
+  ])('throws error when minScaleDownDelayMinutes is %i', (value, expectedError) => {
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        minScaleDownDelayMinutes: value,
+      });
+    }).toThrow(expectedError);
+  });
+
+  test('does not throw when minScaleDownDelayMinutes is a token', () => {
+    // WHEN
+    const param = new CfnParameter(stack, 'MinScaleDownDelayParam', {
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        minScaleDownDelayMinutes: param.valueAsNumber,
+      });
+    }).not.toThrow();
+  });
+
   test('can specify spotBidPercentage as a parameter', () => {
     // WHEN
     const spotBidPercentageParameter = new CfnParameter(stack, 'SpotBidPercentageParameter', {
