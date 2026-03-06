@@ -246,6 +246,43 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+When a pipeline is triggered by a pull request event, additional PR-specific variables are available:
+
+```ts
+declare const project: codebuild.Project;
+
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
+  actionName: 'BitBucket_Source',
+  owner: 'aws',
+  repo: 'aws-cdk',
+  output: sourceOutput,
+  connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+});
+
+// later:
+
+new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput,
+  environmentVariables: {
+    SOURCE_BRANCH: {
+      value: sourceAction.variables.sourceBranchName,
+    },
+    DESTINATION_BRANCH: {
+      value: sourceAction.variables.destinationBranchName,
+    },
+    PULL_REQUEST_ID: {
+      value: sourceAction.variables.pullRequestId,
+    },
+    PULL_REQUEST_TITLE: {
+      value: sourceAction.variables.pullRequestTitle,
+    },
+  },
+});
+```
+
 ### AWS S3 Source
 
 To use an S3 Bucket as a source in CodePipeline:
