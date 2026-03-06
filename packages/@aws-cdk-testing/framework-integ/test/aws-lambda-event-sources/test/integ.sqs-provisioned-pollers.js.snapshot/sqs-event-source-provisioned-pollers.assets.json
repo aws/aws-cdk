@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "d005df7741a48c8391ff32b8fc7eb8999f51cc0ab884badce4ffbb98e26a841b": {
+      "displayName": "sqs-event-source-provisioned-pollers Template",
+      "source": {
+        "path": "sqs-event-source-provisioned-pollers.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-63b20d64": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d005df7741a48c8391ff32b8fc7eb8999f51cc0ab884badce4ffbb98e26a841b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

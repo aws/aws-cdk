@@ -52,6 +52,7 @@ behavior:
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxConcurrency__: The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
+* __provisionedPollerConfig__: Configuration for provisioned pollers that read from the event source. Provisioned mode enables faster scaling and higher concurrency than the default mode. Note that `provisionedPollerConfig` and `maxConcurrency` are mutually exclusive.
 
 ```ts
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -65,6 +66,23 @@ fn.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
   maxBatchingWindow: Duration.minutes(5),
   reportBatchItemFailures: true, // default to false
+}));
+```
+
+You can also configure provisioned pollers for the SQS event source to enable faster scaling:
+
+```ts
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+declare const fn: lambda.Function;
+const queue = new sqs.Queue(this, 'MyQueue');
+
+fn.addEventSource(new SqsEventSource(queue, {
+  batchSize: 10,
+  provisionedPollerConfig: {
+    minimumPollers: 2,
+    maximumPollers: 10,
+  },
 }));
 ```
 

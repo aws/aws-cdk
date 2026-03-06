@@ -4,6 +4,30 @@ import type * as sqs from '../../aws-sqs';
 import type { Duration } from '../../core';
 import { Names, Token, Annotations, ValidationError } from '../../core';
 
+/**
+ * Configuration for provisioned pollers for an SQS event source.
+ *
+ * Provisioned mode enables faster scaling and supports up to 20,000
+ * maximum concurrent executions compared to the standard 1,250.
+ *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-provisioned-mode
+ */
+export interface SqsProvisionedPollerConfig {
+  /**
+   * The minimum number of event pollers this event source can scale down to.
+   *
+   * @default 2
+   */
+  readonly minimumPollers?: number;
+
+  /**
+   * The maximum number of event pollers this event source can scale up to.
+   *
+   * @default 200
+   */
+  readonly maximumPollers?: number;
+}
+
 export interface SqsEventSourceProps {
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -77,6 +101,23 @@ export interface SqsEventSourceProps {
    * @default - Enhanced monitoring is disabled
    */
   readonly metricsConfig?: lambda.MetricsConfig;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows you to control the minimum and maximum number of pollers
+   * that can be provisioned to process events from the source.
+   *
+   * Provisioned mode enables faster scaling (up to 3x) and supports up to 20,000
+   * maximum concurrent executions compared to the standard 1,250.
+   *
+   * Note: `provisionedPollerConfig` and `maxConcurrency` are mutually exclusive.
+   * You cannot use both at the same time.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-provisioned-mode
+   *
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: SqsProvisionedPollerConfig;
 }
 
 /**
@@ -103,6 +144,27 @@ export class SqsEventSource implements lambda.IEventSource {
         throw new ValidationError(`Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`, queue);
       }
     }
+    if (this.props.provisionedPollerConfig && this.props.maxConcurrency !== undefined) {
+      throw new ValidationError('provisionedPollerConfig and maxConcurrency are mutually exclusive', queue);
+    }
+    if (this.props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
+      if (minimumPollers !== undefined) {
+        if (minimumPollers < 2 || minimumPollers > 200) {
+          throw new ValidationError('Minimum provisioned pollers for SQS must be between 2 and 200 inclusive', queue);
+        }
+      }
+      if (maximumPollers !== undefined) {
+        if (maximumPollers < 2 || maximumPollers > 2000) {
+          throw new ValidationError('Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive', queue);
+        }
+      }
+      if (minimumPollers !== undefined && maximumPollers !== undefined) {
+        if (minimumPollers > maximumPollers) {
+          throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', queue);
+        }
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -116,6 +178,7 @@ export class SqsEventSource implements lambda.IEventSource {
       filters: this.props.filters,
       filterEncryption: this.props.filterEncryption,
       metricsConfig: this.props.metricsConfig,
+      provisionedPollerConfig: this.props.provisionedPollerConfig,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;
