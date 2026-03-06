@@ -5,16 +5,17 @@ import type { INetworkLoadBalancer } from './network-load-balancer';
 import type { INetworkLoadBalancerTarget, INetworkTargetGroup } from './network-target-group';
 import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy, Token } from '../../../core';
+import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { BaseListener } from '../shared/base-listener';
 import type { HealthCheck } from '../shared/base-target-group';
-import type { AlpnPolicy, SslPolicy } from '../shared/enums';
-import { Protocol } from '../shared/enums';
+import type { AlpnPolicy } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
 import type { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
@@ -224,11 +225,18 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       throw new ValidationError('Protocol must be TLS when alpnPolicy have been specified', scope);
     }
 
+    // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
+    let sslPolicy = props.sslPolicy;
+    if (!sslPolicy && proto === Protocol.TLS &&
+        FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+      sslPolicy = SslPolicy.RECOMMENDED_TLS_PQ;
+    }
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
-      sslPolicy: props.sslPolicy,
+      sslPolicy: sslPolicy,
       certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
