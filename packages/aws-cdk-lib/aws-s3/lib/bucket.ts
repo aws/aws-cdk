@@ -3,6 +3,7 @@ import type { Construct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
 import type { IBucketNotificationDestination } from './destination';
+import { BucketAutoDeleteObjects } from './mixins';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import type { LifecycleRule, StorageClass } from './rule';
@@ -20,7 +21,6 @@ import type {
 } from '../../core';
 import {
   Annotations,
-  CustomResource,
   FeatureFlags,
   Fn,
   Lazy,
@@ -28,7 +28,6 @@ import {
   RemovalPolicy,
   Resource,
   Stack,
-  Tags,
   Token,
   Tokenization,
 } from '../../core';
@@ -37,14 +36,8 @@ import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import {
-  AutoDeleteObjectsProvider,
-} from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
-
-const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
-const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 export interface IBucket extends IResource, IBucketRef {
   /**
@@ -744,9 +737,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * silently, which may be confusing.
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
-    }
+    this.maybeAutoCreatePolicy();
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
@@ -754,6 +745,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     }
 
     return { statementAdded: false };
+  }
+
+  /**
+   * Ensures a bucket policy exists on the L2 if `autoCreatePolicy` is set.
+   */
+  protected maybeAutoCreatePolicy() {
+    if (!this.policy && this.autoCreatePolicy) {
+      this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
+    }
   }
 
   /**
@@ -849,7 +849,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    */
   public arnForObjects(keyPattern: string): string {
-    return `${this.bucketArn}/${keyPattern}`;
+    return perms.arnForObjects(this.bucketArn, keyPattern);
   }
 
   /**
@@ -3113,49 +3113,11 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects() {
-    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
-    });
-
-    // Use a bucket policy to allow the custom resource to delete
-    // objects in the bucket
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        // prevent further PutObject calls
-        ...perms.BUCKET_PUT_POLICY_ACTIONS,
-        // list objects
-        ...perms.BUCKET_READ_METADATA_ACTIONS,
-        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
-      ],
-      resources: [
-        this.bucketArn,
-        this.arnForObjects('*'),
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
-
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        BucketName: this.bucketName,
-      },
-    });
-
-    // Ensure bucket policy is deleted AFTER the custom resource otherwise
-    // we don't have permissions to list and delete in the bucket.
-    // (add a `if` to make TS happy)
-    if (this.policy) {
-      customResource.node.addDependency(this.policy);
-    }
-
-    // We also tag the bucket to record the fact that we want it autodeleted.
-    // The custom resource will check this tag before actually doing the delete.
-    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
-    // the bucket as a side effect.
-    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+    // When called from the constructor, this is the first time the bucket policy
+    // might be auto created. For backwards compatibility, we need to make sure the
+    // L2 owned policy already exists, so it will be used by the Mixin.
+    this.maybeAutoCreatePolicy();
+    this.with(new BucketAutoDeleteObjects());
   }
 
   /**
