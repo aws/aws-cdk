@@ -163,6 +163,9 @@ export class DynamoAttributeValue {
 
   /**
    * Sets an attribute of type String Set. For example:  "SS": ["Giraffe", "Hippo" ,"Zebra"]
+   *
+   * This method only accepts static arrays defined at CDK synthesis time.
+   * Dynamic value resolution via JSONata or JsonPath is not supported for Set types.
    */
   public static fromStringSet(value: string[]) {
     return new DynamoAttributeValue({ SS: value });
