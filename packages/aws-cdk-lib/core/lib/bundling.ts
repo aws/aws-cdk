@@ -144,6 +144,16 @@ export interface BundlingOptions {
    * @default - no platform specified (the current machine architecture will be used)
    */
   readonly platform?: string;
+
+  /**
+   * Fix ownership of the output directory to the current host user.
+   *
+   * If this is set to true, the output directory will be `chown`ed to the
+   * current host user after the bundling command finishes.
+   *
+   * @default - false
+   */
+  readonly fixOwnership?: boolean;
 }
 
 /**

@@ -52,9 +52,25 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
    * Bundle files with bind mount as copy method
    */
   public run() {
+    let command = this.options.command;
+    const user = this.determineUser();
+
+    if (this.options.fixOwnership && process.platform === 'linux' && command) {
+      const userInfo = os.userInfo();
+      const hostUser = userInfo.uid !== -1 ? `${userInfo.uid}:${userInfo.gid}` : '1000:1000';
+      const escapedCommand = command.map(arg => {
+        // A simple escaping for shell. If it contains shell special chars, wrap in double quotes and escape internal backslashes and double quotes.
+        if (/[&|;()<> \t\\"]/g.test(arg)) {
+          return `"${arg.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+        }
+        return arg;
+      }).join(' ');
+      command = ['sh', '-c', `${escapedCommand} && chown -R ${hostUser} ${AssetStaging.BUNDLING_OUTPUT_DIR}`];
+    }
+
     this.options.image.run({
-      command: this.options.command,
-      user: this.determineUser(),
+      command,
+      user,
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
       workingDirectory:
@@ -232,8 +248,8 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
 
     throw new ExecutionError([
       `${prog} exited with ${reason}`,
-      ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
-      ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],
+      ...prependLines('--> STDOUT:  ', proc.stdout) ?? [],
+      ...prependLines('--> STDERR:  ', proc.stderr) ?? [],
       `--> Command: ${command}`,
     ].join('\n'));
   }
