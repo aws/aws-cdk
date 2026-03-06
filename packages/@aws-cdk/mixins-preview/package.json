@@ -78,6 +78,8 @@
     "./aws-bedrock/mixins": "./lib/services/aws-bedrock/mixins.js",
     "./aws-bedrockagentcore": "./lib/services/aws-bedrockagentcore/index.js",
     "./aws-bedrockagentcore/mixins": "./lib/services/aws-bedrockagentcore/mixins.js",
+    "./aws-bedrockmantle": "./lib/services/aws-bedrockmantle/index.js",
+    "./aws-bedrockmantle/mixins": "./lib/services/aws-bedrockmantle/mixins.js",
     "./aws-billing": "./lib/services/aws-billing/index.js",
     "./aws-billing/mixins": "./lib/services/aws-billing/mixins.js",
     "./aws-billingconductor": "./lib/services/aws-billingconductor/index.js",
@@ -667,7 +669,7 @@
     "@aws-cdk/integ-runner": "^2.196.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/service-spec-types": "^0.0.223",
+    "@aws-cdk/service-spec-types": "^0.0.226",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.16",
@@ -684,7 +686,7 @@
   },
   "separate-module": false,
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
