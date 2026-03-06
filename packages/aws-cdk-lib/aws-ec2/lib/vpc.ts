@@ -652,7 +652,22 @@ abstract class VpcBase extends Resource implements IVpc {
     selection = this.reifySelectionDefaults(selection);
 
     if (selection.subnets !== undefined) {
-      return selection.subnets;
+      return selection.subnets.map(s => {
+        if (s instanceof CfnSubnet) {
+          const cfnSubnet = s as CfnSubnet;
+          const wrapperId = `WrappedSubnet${cfnSubnet.node.addr}`;
+          let wrappedSubnet = this.node.tryFindChild(wrapperId) as ISubnet;
+          if (!wrappedSubnet) {
+            wrappedSubnet = Subnet.fromSubnetAttributes(this, wrapperId, {
+              subnetId: cfnSubnet.ref,
+              availabilityZone: cfnSubnet.availabilityZone,
+              ipv4CidrBlock: cfnSubnet.cidrBlock,
+            });
+          }
+          return wrappedSubnet;
+        }
+        return s;
+      });
     }
 
     let subnets;
@@ -1403,7 +1418,7 @@ export class Vpc extends VpcBase {
       throw new ValidationError('All arguments to Vpc.fromLookup() must be concrete (no Tokens)', scope);
     }
 
-    const filter: {[key: string]: string} = makeTagFilter(options.tags);
+    const filter: { [key: string]: string } = makeTagFilter(options.tags);
 
     // We give special treatment to some tags
     if (options.vpcId) { filter['vpc-id'] = options.vpcId; }
@@ -1413,7 +1428,7 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
-    const overrides: {[key: string]: string} = {};
+    const overrides: { [key: string]: string } = {};
     if (options.region) {
       overrides.region = options.region;
     }
@@ -1642,7 +1657,7 @@ export class Vpc extends VpcBase {
       // If given AZs and stack AZs are both resolved, then validate their compatibility.
       const resolvedStackAzs = this.resolveStackAvailabilityZones(stack.availabilityZones);
       const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
-        props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
+        props.availabilityZones.every(az => Token.isUnresolved(az) || resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
         throw new ValidationError(`Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`, this);
       }
@@ -1829,7 +1844,7 @@ export class Vpc extends VpcBase {
   private createSubnets() {
     const requestedSubnets: RequestedSubnet[] = [];
 
-    this.subnetConfiguration.forEach((configuration)=> (
+    this.subnetConfiguration.forEach((configuration) => (
       this.availabilityZones.forEach((az, index) => {
         requestedSubnets.push({
           availabilityZone: az,

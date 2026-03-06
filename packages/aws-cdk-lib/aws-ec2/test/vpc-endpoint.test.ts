@@ -13,6 +13,8 @@ import {
   SubnetFilter,
   SubnetType,
   Vpc,
+  CfnSubnet,
+  ISubnet,
   VpcEndpointDnsRecordIpType,
   VpcEndpointIpAddressType,
 } from '../lib';
@@ -639,6 +641,40 @@ describe('vpc endpoint', () => {
           subnets: [],
         }),
       })).toThrow();
+    });
+    test('endpoint selection works with L1 CfnSubnet passed as ISubnet', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', {
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'Public',
+            subnetType: SubnetType.PUBLIC,
+          },
+        ]
+      });
+
+      const cfnSubnet = new CfnSubnet(stack, 'CfnSubnet', {
+        vpcId: vpc.vpcId,
+        cidrBlock: '10.0.100.0/24',
+        availabilityZone: 'us-east-1a'
+      });
+
+      // WHEN
+      vpc.addInterfaceEndpoint('YourService', {
+        service: InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+        subnets: { subnets: [cfnSubnet as unknown as ISubnet] },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        SubnetIds: [
+          {
+            Ref: 'CfnSubnet',
+          },
+        ],
+      });
     });
     test('test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-north-1', () => {
       // GIVEN
