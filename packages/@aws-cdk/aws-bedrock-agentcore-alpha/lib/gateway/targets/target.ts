@@ -14,7 +14,7 @@ import type { ToolSchema } from './schema/tool-schema';
 import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
 import { GatewayTargetBase, GatewayTargetProtocolType, McpTargetType } from './target-base';
 import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfiguration } from './target-configuration';
-import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration, validateMetadataConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern } from '../validation-helpers';
@@ -41,6 +41,18 @@ export interface GatewayTargetCommonProps {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * Metadata configuration for HTTP header and query parameter propagation
+   * Allows you to pass additional context through headers and query parameters
+   * to and from this gateway target.
+   *
+   * This applies to all target types (Lambda, OpenAPI, Smithy, MCP Server, API Gateway).
+   *
+   * @default - No metadata configuration
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-headers.html
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -207,13 +219,6 @@ export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
    * @default - Empty array (service handles IAM automatically)
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
-
-  /**
-   * Metadata configuration for passing headers and query parameters
-   * Allows you to pass additional context through headers and query parameters
-   * @default - No metadata configuration
-   */
-  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -329,6 +334,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      metadataConfiguration: props.metadataConfiguration,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: LambdaTargetConfiguration.create(
         props.lambdaFunction,
@@ -356,6 +362,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      metadataConfiguration: props.metadataConfiguration,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: OpenApiTargetConfiguration.create(props.apiSchema, props.validateOpenApiSchema),
     });
@@ -379,6 +386,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      metadataConfiguration: props.metadataConfiguration,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: SmithyTargetConfiguration.create(props.smithyModel),
     });
@@ -403,6 +411,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      metadataConfiguration: props.metadataConfiguration,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: McpServerTargetConfiguration.create(props.endpoint),
     });
@@ -427,12 +436,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      metadataConfiguration: props.metadataConfiguration,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: ApiGatewayTargetConfiguration.create({
         restApi: props.restApi,
         stage: props.stage,
         apiGatewayToolConfiguration: props.apiGatewayToolConfiguration,
-        metadataConfiguration: props.metadataConfiguration,
       }),
     });
   }
@@ -527,6 +536,11 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       this.validateDescription(this.description);
     }
 
+    // Validate metadata configuration if provided
+    if (props.metadataConfiguration) {
+      validateMetadataConfiguration(props.metadataConfiguration);
+    }
+
     this.gateway = props.gateway;
     this.targetConfiguration = props.targetConfiguration;
     this.targetType = this.targetConfiguration.targetType;
@@ -553,13 +567,11 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
         produce: () => this.targetConfiguration._render(),
       }),
 
-      // Add metadata configuration for API Gateway targets
-      metadataConfiguration: this.targetType === McpTargetType.API_GATEWAY &&
-        (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration
+      metadataConfiguration: props.metadataConfiguration
         ? {
-          allowedQueryParameters: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedQueryParameters,
-          allowedRequestHeaders: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedRequestHeaders,
-          allowedResponseHeaders: (this.targetConfiguration as ApiGatewayTargetConfiguration).metadataConfiguration!.allowedResponseHeaders,
+          allowedQueryParameters: props.metadataConfiguration.allowedQueryParameters,
+          allowedRequestHeaders: props.metadataConfiguration.allowedRequestHeaders,
+          allowedResponseHeaders: props.metadataConfiguration.allowedResponseHeaders,
         }
         : undefined,
     };
