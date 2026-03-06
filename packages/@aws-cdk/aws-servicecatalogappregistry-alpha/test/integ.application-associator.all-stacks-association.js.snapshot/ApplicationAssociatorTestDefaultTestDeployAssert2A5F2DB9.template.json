@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallServiceCatalogAppRegistrydisassociateResource81d96dc6f41b5e87b8e17b2ce1970ae5": {
+  "AwsApiCallServiceCatalogAppRegistrydisassociateResource6ea3b5d8f3237e753be6d2ba26596ba7": {
    "Type": "Custom::DeployAssert@SdkCallServiceCatalogAppRegistrydisasso",
    "Properties": {
     "ServiceToken": {
@@ -12,7 +12,7 @@
     "service": "ServiceCatalogAppRegistry",
     "api": "disassociateResource",
     "parameters": {
-     "application": "\"AppRegistryDisableUrlApp\"",
+     "application": "\"AppRegistryAllStacksApp\"",
      "resourceType": "\"CFN_STACK\"",
      "resource": {
       "Fn::Join": [
@@ -20,7 +20,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "integ-appregistry-disable-url:ExportsOutputRefAWSStackIdB2DD5BAA"
+         "Fn::ImportValue": "integ-appregistry-all-stacks:ExportsOutputRefAWSStackIdB2DD5BAA"
         },
         "\""
        ]
@@ -28,7 +28,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1771541197239"
+    "salt": "1771541182913"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -111,7 +111,7 @@
   "AppRegistryAssociation": {
    "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
-    "Application": "AppRegistryDisableUrlApp",
+    "Application": "AppRegistryAllStacksApp",
     "Resource": {
      "Ref": "AWS::StackId"
     },

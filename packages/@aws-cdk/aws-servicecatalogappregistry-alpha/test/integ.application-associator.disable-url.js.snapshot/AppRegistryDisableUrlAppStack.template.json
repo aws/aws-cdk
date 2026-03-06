@@ -1,46 +1,29 @@
 {
+ "Description": "Stack to create AppRegistry application",
  "Resources": {
-  "TestApplication2FBC585F": {
+  "DefaultCdkApplication4573D5A3": {
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
-    "Description": "My application description",
-    "Name": "TestApplication"
+    "Description": "Application containing stacks deployed via CDK.",
+    "Name": "AppRegistryDisableUrlApp",
+    "Tags": {
+     "managedBy": "CDK_Application_Associator"
+    }
    }
   },
-  "TestAttributeGroupB1CB284F": {
-   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
-   "Properties": {
-    "Attributes": {
-     "stage": "alpha",
-     "teamMembers": [
-      "markI",
-      "markII",
-      "markIII"
-     ],
-     "plannedRoadMap": {
-      "alpha": "time1",
-      "beta": "time2"
-     }
-    },
-    "Description": "test attribute group description",
-    "Name": "myFirstAttributeGroup"
-   }
-  },
-  "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A": {
-   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+  "AppRegistryAssociation": {
+   "Type": "AWS::ServiceCatalogAppRegistry::ResourceAssociation",
    "Properties": {
     "Application": {
      "Fn::GetAtt": [
-      "TestApplication2FBC585F",
+      "DefaultCdkApplication4573D5A3",
       "Id"
      ]
     },
-    "AttributeGroup": {
-     "Fn::GetAtt": [
-      "TestAttributeGroupB1CB284F",
-      "Id"
-     ]
-    }
+    "Resource": {
+     "Ref": "AWS::StackId"
+    },
+    "ResourceType": "CFN_STACK"
    }
   }
  },
