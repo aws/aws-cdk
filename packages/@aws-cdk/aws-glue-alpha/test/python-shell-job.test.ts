@@ -295,6 +295,43 @@ describe('Job', () => {
     });
   });
 
+  describe('Create Python Shell Job with extraPythonFiles', () => {
+    test('should set --extra-py-files for a single file', () => {
+      const extraCodeBucket = s3.Bucket.fromBucketName(stack, 'ExtraCodeBucket', 'extra-bucket');
+      const extraPythonFile = glue.Code.fromBucket(extraCodeBucket, 'extra.py');
+
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [extraPythonFile],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': 's3://extra-bucket/extra.py',
+        }),
+      });
+    });
+
+    test('should set --extra-py-files with comma-separated URLs for multiple files', () => {
+      const extraCodeBucket = s3.Bucket.fromBucketName(stack, 'ExtraCodeBucket', 'extra-bucket');
+      const extraFile1 = glue.Code.fromBucket(extraCodeBucket, 'file1.py');
+      const extraFile2 = glue.Code.fromBucket(extraCodeBucket, 'file2.whl');
+
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [extraFile1, extraFile2],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': 's3://extra-bucket/file1.py,s3://extra-bucket/file2.whl',
+        }),
+      });
+    });
+  });
+
   describe('Create Python Shell Job with job run queuing enabled', () => {
     beforeEach(() => {
       job = new glue.PythonShellJob(stack, 'PythonShellJob', {
