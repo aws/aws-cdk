@@ -154,11 +154,10 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
 
     console.log('Responding', responseBody);
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const parsedUrl = require('url').parse(event.ResponseURL);
+    const parsedUrl = new URL(event.ResponseURL);
     const requestOptions = {
       hostname: parsedUrl.hostname,
-      path: parsedUrl.path,
+      path: parsedUrl.pathname + parsedUrl.search,
       method: 'PUT',
       headers: {
         'content-type': '',
