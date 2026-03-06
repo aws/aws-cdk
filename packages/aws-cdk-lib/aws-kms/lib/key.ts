@@ -156,6 +156,9 @@ abstract class KeyBase extends Resource implements IKey {
     };
   }
 
+  /**
+   * Collection of grant methods for a Key
+   */
   @memoizedGetter
   public get grants(): KeyGrants {
     return KeyGrants.fromKey(this, this.trustAccountIdentities);
