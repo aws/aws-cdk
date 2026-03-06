@@ -925,6 +925,16 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefRule4C995B7FC04CD733": {
+   "Value": {
+    "Ref": "Rule4C995B7F"
+   },
+   "Export": {
+    "Name": "aws-ecs-integ-fargate:ExportsOutputRefRule4C995B7FC04CD733"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

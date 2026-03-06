@@ -492,7 +492,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -524,8 +524,7 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "RoleName": "TaskRoleA"
+    }
    }
   },
   "TaskDef54694570": {
@@ -595,7 +594,22 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:ecs:test-region:12345678:task-definition/TaskDef:*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":task-definition/TaskDefinitionA"
+         ]
+        ]
+       }
       },
       {
        "Action": "ecs:TagResource",
@@ -624,7 +638,12 @@
       {
        "Action": "iam:PassRole",
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::12345678:role/TaskRoleA"
+       "Resource": {
+        "Fn::GetAtt": [
+         "TaskRole30FC0FBB",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -690,7 +709,22 @@
         }
        },
        "TaskCount": 1,
-       "TaskDefinitionArn": "arn:aws:ecs:test-region:12345678:task-definition/TaskDef"
+       "TaskDefinitionArn": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":task-definition/TaskDefinitionA"
+         ]
+        ]
+       }
       },
       "Id": "Target0",
       "Input": "{}",
