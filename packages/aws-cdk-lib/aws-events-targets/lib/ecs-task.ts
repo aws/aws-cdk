@@ -293,12 +293,18 @@ export class EcsTask implements events.IRuleTarget {
       throw new ValidationError('assignPublicIp is only supported for FARGATE tasks', rule);
     }
 
-    const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
+    const baseEcsParameters = {
+      taskCount,
+      taskDefinitionArn,
+      propagateTags,
+      tagList,
+      enableExecuteCommand,
+      launchType,
+    };
 
     const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
       ? {
         ...baseEcsParameters,
-        launchType,
         platformVersion: this.platformVersion,
         networkConfiguration: {
           awsVpcConfiguration: {
