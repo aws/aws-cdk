@@ -1,0 +1,79 @@
+{
+ "Transform": [
+  "AWS::LanguageExtensions"
+ ],
+ "Resources": {
+  "Fn::ForEach::Env": [
+   [
+    "dev",
+    "staging"
+   ],
+   {
+    "Bucket${Env}": {
+     "Type": "AWS::S3::Bucket",
+     "Properties": {
+      "Tags": [
+       {
+        "Key": "Environment",
+        "Value": "${Env}"
+       }
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "Outputs": {
+  "Fn::ForEach::Env": [
+   [
+    "dev",
+    "staging"
+   ],
+   {
+    "BucketArn${Env}": {
+     "Value": {
+      "Fn::GetAtt": [
+       "Bucket${Env}",
+       "Arn"
+      ]
+     },
+     "Description": "ARN of the bucket"
+    }
+   }
+  ]
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
