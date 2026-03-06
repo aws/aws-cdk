@@ -651,43 +651,41 @@ export class DatabaseCluster extends DatabaseClusterBase {
       this.secret = secret.attach(this);
     }
 
-    // Create instances only for provisioned clusters
-    if (!isServerless) {
-      const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
-      if (instanceCount < 1) {
-        throw new ValidationError('At least one instance is required for provisioned clusters', this);
-      }
+    // Create instances
+    const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
+    if (instanceCount < 1) {
+      throw new ValidationError('At least one instance is required', this);
+    }
 
-      const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
-      const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
+    const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
 
-      for (let i = 0; i < instanceCount; i++) {
-        const instanceIndex = i + 1;
+    for (let i = 0; i < instanceCount; i++) {
+      const instanceIndex = i + 1;
 
-        const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
-          : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
+      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
+        : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
 
-        const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
-          // Link to cluster
-          dbClusterIdentifier: this.cluster.ref,
-          dbInstanceIdentifier: instanceIdentifier,
-          // Instance properties
-          dbInstanceClass: databaseInstanceType(props.instanceType!),
-          enablePerformanceInsights: props.enablePerformanceInsights,
-          caCertificateIdentifier: caCertificateIdentifier,
-        });
+      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
+        // Link to cluster
+        dbClusterIdentifier: this.cluster.ref,
+        dbInstanceIdentifier: instanceIdentifier,
+        // Instance properties
+        dbInstanceClass: isServerless ? 'db.serverless' : databaseInstanceType(props.instanceType!),
+        enablePerformanceInsights: props.enablePerformanceInsights,
+        caCertificateIdentifier: caCertificateIdentifier,
+      });
 
-        instance.applyRemovalPolicy(instanceRemovalPolicy, {
-          applyToUpdateReplacePolicy: true,
-        });
+      instance.applyRemovalPolicy(instanceRemovalPolicy, {
+        applyToUpdateReplacePolicy: true,
+      });
 
-        // We must have a dependency on the NAT gateway provider here to create
-        // things in the right order.
-        instance.node.addDependency(internetConnectivityEstablished);
+      // We must have a dependency on the NAT gateway provider here to create
+      // things in the right order.
+      instance.node.addDependency(internetConnectivityEstablished);
 
-        this.instanceIdentifiers.push(instance.ref);
-        this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
-      }
+      this.instanceIdentifiers.push(instance.ref);
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
     }
 
     this.connections = new ec2.Connections({
