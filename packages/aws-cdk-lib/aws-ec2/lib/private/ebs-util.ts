@@ -12,6 +12,11 @@ export function instanceBlockDeviceMappings(construct: Construct, blockDevices: 
           'See https://github.com/aws/aws-cdk/issues/34033 for more information.',
       );
     }
+    if (blockDevice.volume.ebsDevice?.volumeInitializationRate !== undefined) {
+      Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:volumeInitializationRateNotSuported',
+        'The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.',
+      );
+    }
   }
   return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(construct, blockDevices, {});
 }
@@ -33,7 +38,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     let finalEbs: CfnLaunchTemplate.EbsProperty | CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
-      const { iops, throughput, volumeType, kmsKey, ...rest } = ebs;
+      const { iops, throughput, volumeType, kmsKey, volumeInitializationRate, ...rest } = ebs;
 
       if (throughput) {
         if (volumeType !== EbsDeviceVolumeType.GP3) {
@@ -57,6 +62,15 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         }
       }
 
+      if (volumeInitializationRate) {
+        if (!Number.isInteger(volumeInitializationRate)) {
+          throw new ValidationError(`'volumeInitializationRate' must be an integer, got: ${volumeInitializationRate}.`, construct);
+        }
+
+        if (volumeInitializationRate < 100 || volumeInitializationRate > 300) {
+          throw new ValidationError(`'volumeInitializationRate' must be between 100 and 300, got ${volumeInitializationRate}.`, construct);
+        }
+      }
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
           throw new ValidationError('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2', construct);
@@ -74,6 +88,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
         ...rest,
         iops,
         throughput,
+        volumeInitializationRate,
         volumeType,
         kmsKeyId: kmsKey?.keyArn,
       };
