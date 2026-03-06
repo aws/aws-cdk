@@ -10,6 +10,9 @@ on:
       - labeled
       - unlabeled
 
+permissions:
+  contents: read
+
 jobs:
   cli-changes:
     runs-on: ubuntu-latest
