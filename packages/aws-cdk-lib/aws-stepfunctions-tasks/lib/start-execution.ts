@@ -58,12 +58,12 @@ export class StartExecution implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new ValidationError('InvalidInvalidinvalidserviceintegration', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`, stateMachine);
+      throw new ValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Step Functions.`, stateMachine);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new ValidationError('Tasktokenmissinginput', 'Task Token is missing in input (pass JsonPath.taskToken somewhere in input)', stateMachine);
+      throw new ValidationError('TaskTokenMissingInInput', 'Task Token is missing in input (pass JsonPath.taskToken somewhere in input)', stateMachine);
     }
   }
 

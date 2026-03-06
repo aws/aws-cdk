@@ -60,7 +60,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     const parsedArn = Stack.of(scope).splitArn(deploymentStrategyArn, ArnFormat.SLASH_RESOURCE_NAME);
     const deploymentStrategyId = parsedArn.resourceName;
     if (!deploymentStrategyId) {
-      throw new ValidationError('MissingMissingmissingrequireddeployment', 'Missing required deployment strategy id from deployment strategy ARN', scope);
+      throw new ValidationError('MissingDeploymentStrategyId', 'Missing required deployment strategy id from deployment strategy ARN', scope);
     }
 
     class Import extends Resource implements IDeploymentStrategy {

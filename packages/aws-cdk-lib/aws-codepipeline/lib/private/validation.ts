@@ -78,9 +78,9 @@ function validateAgainstRegex(scope: Construct | undefined, regex: RegExp, thing
   if (name !== undefined && !regex.test(name)) {
     const msg = `${thing} name must match regular expression: ${regex.toString()}, got '${name}'`;
     if (scope) {
-      throw new cdk.ValidationError(msg, scope);
+      throw new cdk.ValidationError('InvalidName', msg, scope);
     } else {
-      throw new cdk.UnscopedValidationError(msg);
+      throw new cdk.UnscopedValidationError('InvalidName', msg);
     }
   }
 }
@@ -133,6 +133,7 @@ function validateGitFilterPropertiesLength(filter: GitPushFilter | GitPullReques
 const validateBranchesSpecified = (filter: GitPullRequestFilter, actionName: string) => {
   if (!filter.branchesExcludes && !filter.branchesIncludes) {
     throw new UnscopedValidationError(
+      'MustSpecifyBranches',
       `must specify branches in GitPullRequestFilter for sourceAction with name '${actionName}'`,
     );
   }
@@ -146,6 +147,7 @@ const validateArrayLength = (
 ) => {
   if (array && array.length > MAX_FILTER_LENGTH) {
     throw new UnscopedValidationError(
+      'MaximumArrayLength',
       `maximum length of ${fieldName} in ${filterType} for sourceAction with name '${actionName}' is ${MAX_FILTER_LENGTH}, got ${array.length}`,
     );
   }
@@ -166,6 +168,7 @@ const hasTags = (filter: GitPushFilter ): boolean => {
 const validateFilePathsWithBranches = (filter: GitPushFilter | GitPullRequestFilter, actionName: string) => {
   if (!hasBranches(filter) && hasFilePaths(filter)) {
     throw new UnscopedValidationError(
+      'CannotSpecifyFilePathsWithoutBranches',
       `cannot specify filePaths without branches for sourceAction with name '${actionName}'`,
     );
   }
@@ -174,6 +177,7 @@ const validateFilePathsWithBranches = (filter: GitPushFilter | GitPullRequestFil
 const validateTagsOrBranchesExist = (filter: GitPushFilter, actionName: string) => {
   if (!hasTags(filter) && !hasBranches(filter)) {
     throw new UnscopedValidationError(
+      'MustSpecifyTagsOrBranches',
       `must specify either tags or branches in GitpushFilter for sourceAction with name '${actionName}'`,
     );
   }

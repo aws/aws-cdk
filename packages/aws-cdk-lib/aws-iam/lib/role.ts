@@ -906,7 +906,7 @@ function validateRolePath(scope: Construct, path?: string) {
     throw new ValidationError('Mustberolepathbetween', `Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
   } else if (!validRolePath.test(path)) {
     throw new ValidationError(
-      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+      'InvalidRolePathCharacters', 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
       + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`, scope);
   }
 }

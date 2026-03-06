@@ -69,7 +69,7 @@ export class PolicyStatement {
     // validate that the PolicyStatement has the correct shape
     const errors = ret.validateForAnyPolicy();
     if (errors.length > 0) {
-      throw new UnscopedValidationError('Incorrect Policy Statement: ' + errors.join('\n'));
+      throw new UnscopedValidationError('IncorrectPolicyStatement', 'Incorrect Policy Statement: ' + errors.join('\n'));
     }
 
     return ret;

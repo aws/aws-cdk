@@ -136,7 +136,7 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     if (props.payloadResponseOnly &&
       (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
-      throw new ValidationError(
+      throw new ValidationError('PayloadResponseOnlyRestriction',
         "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified.", this,
       );
     }

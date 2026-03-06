@@ -189,7 +189,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new UnscopedValidationError(
+      throw new UnscopedValidationError('InvalidServiceIntegrationPattern',
         `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call RunBatchJob.`,
       );
     }
@@ -225,7 +225,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
     if (props.containerOverrides?.environment) {
       Object.keys(props.containerOverrides.environment).forEach(key => {
         if (key.match(/^AWS_BATCH/)) {
-          throw new UnscopedValidationError(
+          throw new UnscopedValidationError('InvalidEnvironmentVariableName',
             `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
           );
         }

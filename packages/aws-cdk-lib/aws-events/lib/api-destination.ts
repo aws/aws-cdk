@@ -125,7 +125,7 @@ export class ApiDestination extends Resource implements IApiDestination {
     ).resourceName;
 
     if (!apiDestinationName) {
-      throw new UnscopedValidationError('CouldExtractDestionationName', `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
+      throw new UnscopedValidationError('CouldNotExtractDestinationName', `Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
     class Import extends Resource implements IApiDestination {

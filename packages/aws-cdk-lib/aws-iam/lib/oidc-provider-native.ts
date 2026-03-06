@@ -208,7 +208,7 @@ export class OidcProviderNative extends Resource implements IOidcProvider {
     if (!Token.isUnresolved(props.url)) {
       if (!props.url.startsWith('https://')) {
         throw new ValidationError(
-          'The URL of the identity provider must start with https://', scope,
+          'UrlMustStartWithHttps', 'The URL of the identity provider must start with https://', scope,
         );
       }
 

@@ -909,7 +909,7 @@ export class CompositePrincipal extends PrincipalBase {
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new UnscopedValidationError(
-          'Components of a CompositePrincipal must not have conditions. ' +
+          'CompositePrincipalComponentsCannotHaveConditions', 'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
     }

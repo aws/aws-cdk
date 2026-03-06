@@ -398,6 +398,7 @@ export class EventBus extends EventBusBase {
 
     if (eventBusName !== undefined && eventSourceName !== undefined) {
       throw new UnscopedValidationError(
+        'EventBusNameAndEventSourceNameCannotBothBeProvided',
         '\'eventBusName\' and \'eventSourceName\' cannot both be provided',
       );
     }
@@ -406,14 +407,17 @@ export class EventBus extends EventBusBase {
       if (!Token.isUnresolved(eventBusName)) {
         if (eventBusName === 'default') {
           throw new UnscopedValidationError(
+            'EventBusNameMustNotBeDefault',
             '\'eventBusName\' must not be \'default\'',
           );
         } else if (eventBusName.indexOf('/') > -1) {
           throw new UnscopedValidationError(
+            'EventBusNameMustNotContainSlash',
             '\'eventBusName\' must not contain \'/\'',
           );
         } else if (!eventBusNameRegex.test(eventBusName)) {
           throw new UnscopedValidationError(
+            'EventBusNameMustSatisfyRegex',
             `'eventBusName' must satisfy: ${eventBusNameRegex}`,
           );
         }
@@ -427,10 +431,12 @@ export class EventBus extends EventBusBase {
         const eventSourceNameRegex = /^aws\.partner(\/[\.\-_A-Za-z0-9]+){2,}$/;
         if (!eventSourceNameRegex.test(eventSourceName)) {
           throw new UnscopedValidationError(
+            'EventSourceNameMustSatisfyRegex',
             `'eventSourceName' must satisfy: ${eventSourceNameRegex}`,
           );
         } else if (!eventBusNameRegex.test(eventSourceName)) {
           throw new UnscopedValidationError(
+            'EventSourceNameMustSatisfyBusNameRegex',
             `'eventSourceName' must satisfy: ${eventBusNameRegex}`,
           );
         }
@@ -494,7 +500,7 @@ export class EventBus extends EventBusBase {
     addConstructMetadata(this, props);
 
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
-      throw new ValidationError('Mustbedescriptionlessthan', `description must be less than or equal to 512 characters, got ${props.description.length}`, this);
+      throw new ValidationError('DescriptionMustBeLessThanOrEqualTo512Characters', `description must be less than or equal to 512 characters, got ${props.description.length}`, this);
     }
 
     this._resource = new CfnEventBus(this, 'Resource', {
@@ -544,7 +550,7 @@ export class EventBus extends EventBusBase {
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     // If no sid is provided, generate one based on the event bus id
     if (statement.sid == null) {
-      throw new ValidationError('Eventpolicystatements', 'Event Bus policy statements must have a sid', this);
+      throw new ValidationError('EventBusPolicyStatementsMustHaveSid', 'Event Bus policy statements must have a sid', this);
     }
 
     // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340

@@ -1397,7 +1397,7 @@ export class Project extends ProjectBase {
     errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
 
     if (errors.length > 0) {
-      throw new ValidationError('Invalid CodeBuild environment: ' + errors.join('\n'), this);
+      throw new ValidationError('InvalidCodeBuildEnvironment', 'Invalid CodeBuild environment: ' + errors.join('\n'), this);
     }
 
     const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :

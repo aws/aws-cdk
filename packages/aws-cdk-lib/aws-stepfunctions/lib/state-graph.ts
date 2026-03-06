@@ -97,7 +97,7 @@ export class StateGraph {
   public registerSuperGraph(graph: StateGraph) {
     if (this.superGraph === graph) { return; }
     if (this.superGraph) {
-      throw new UnscopedValidationError('EveryStategraphOnlyRegistered', 'Every StateGraph can only be registered into one other StateGraph');
+      throw new UnscopedValidationError('StateGraphAlreadyRegistered', 'Every StateGraph can only be registered into one other StateGraph');
     }
     this.superGraph = graph;
     this.pushContainedStatesUp(graph);

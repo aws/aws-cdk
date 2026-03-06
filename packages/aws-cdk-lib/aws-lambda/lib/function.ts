@@ -1226,7 +1226,7 @@ export class Function extends FunctionBase {
 
     if (props.filesystem) {
       if (!props.vpc) {
-        throw new ValidationError('RequiresRequiresfilesystemrequiresvpc', 'FilesystemRequiresVpc', 'Cannot configure \'filesystem\' without configuring a VPC.', this);
+        throw new ValidationError('FilesystemRequiresVpc', 'Cannot configure \'filesystem\' without configuring a VPC.', this);
       }
       const config = props.filesystem.config;
       if (config.dependency) {
@@ -1527,7 +1527,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (props.runtime === Runtime.FROM_IMAGE) {
-      throw new ValidationError('Adotlayercontainerimageincompatible', 'AdotLayerContainerImageIncompatible', "ADOT Lambda layer can't be configured with container image package type", this);
+      throw new ValidationError('AdotLayerContainerImageIncompatible', "ADOT Lambda layer can't be configured with container image package type", this);
     }
 
     // This is not the complete list of incompatible runtimes and layer types. We are only
@@ -1608,19 +1608,19 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     const hasSecurityGroups = props.securityGroups && props.securityGroups.length > 0;
     if (!props.vpc) {
       if (props.allowAllOutbound !== undefined) {
-        throw new ValidationError('RequiresRequiresallowalloutboundrequiresvpc', 'AllowAllOutboundRequiresVpc', 'Cannot configure \'allowAllOutbound\' without configuring a VPC', this);
+        throw new ValidationError('AllowAllOutboundRequiresVpc', 'Cannot configure \'allowAllOutbound\' without configuring a VPC', this);
       }
       if (props.securityGroup) {
-        throw new ValidationError('RequiresRequiressecuritygrouprequiresvpc', 'SecurityGroupRequiresVpc', 'Cannot configure \'securityGroup\' without configuring a VPC', this);
+        throw new ValidationError('SecurityGroupRequiresVpc', 'Cannot configure \'securityGroup\' without configuring a VPC', this);
       }
       if (hasSecurityGroups) {
-        throw new ValidationError('Securitygroupsrequirevpc', 'SecurityGroupsRequireVpc', 'Cannot configure \'securityGroups\' without configuring a VPC', this);
+        throw new ValidationError('SecurityGroupsRequireVpc', 'Cannot configure \'securityGroups\' without configuring a VPC', this);
       }
       if (props.vpcSubnets) {
-        throw new ValidationError('RequiresRequiresvpcsubnetsrequiresvpc', 'VpcSubnetsRequiresVpc', 'Cannot configure \'vpcSubnets\' without configuring a VPC', this);
+        throw new ValidationError('VpcSubnetsRequiresVpc', 'Cannot configure \'vpcSubnets\' without configuring a VPC', this);
       }
       if (props.ipv6AllowedForDualStack) {
-        throw new ValidationError('RequiresRequiresipv6dualstackrequiresvpc', 'Ipv6DualStackRequiresVpc', 'Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC', this);
+        throw new ValidationError('Ipv6DualStackRequiresVpc', 'Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC', this);
       }
       if (props.allowAllIpv6Outbound !== undefined) {
         throw new ValidationError('RequiresRequiresallowallipv6outboundrequiresvpc', 'AllowAllIpv6OutboundRequiresVpc', 'Cannot configure \'allowAllIpv6Outbound\' without configuring a VPC', this);

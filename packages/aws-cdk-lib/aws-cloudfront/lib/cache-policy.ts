@@ -256,7 +256,7 @@ export class CacheCookieBehavior {
    */
   public static allowList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastCookieAllow', 'At least one cookie to allow must be provided');
+      throw new UnscopedValidationError('AtLeastOneCookieToAllowMustBeProvided', 'At least one cookie to allow must be provided');
     }
     return new CacheCookieBehavior('whitelist', cookies);
   }
@@ -267,7 +267,7 @@ export class CacheCookieBehavior {
    */
   public static denyList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastCookieDeny', 'At least one cookie to deny must be provided');
+      throw new UnscopedValidationError('AtLeastOneCookieToDenyMustBeProvided', 'At least one cookie to deny must be provided');
     }
     return new CacheCookieBehavior('allExcept', cookies);
   }
@@ -292,7 +292,7 @@ export class CacheHeaderBehavior {
   /** Listed headers are included in the cache key and are automatically included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastHeaderAllow', 'At least one header to allow must be provided');
+      throw new UnscopedValidationError('AtLeastOneHeaderToAllowMustBeProvided', 'At least one header to allow must be provided');
     }
     return new CacheHeaderBehavior('whitelist', headers);
   }
@@ -329,7 +329,7 @@ export class CacheQueryStringBehavior {
    */
   public static allowList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastQueryString', 'At least one query string to allow must be provided');
+      throw new UnscopedValidationError('AtLeastOneQueryStringToAllowMustBeProvided', 'At least one query string to allow must be provided');
     }
     return new CacheQueryStringBehavior('whitelist', queryStrings);
   }
@@ -340,7 +340,7 @@ export class CacheQueryStringBehavior {
    */
   public static denyList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastQueryString', 'At least one query string to deny must be provided');
+      throw new UnscopedValidationError('AtLeastOneQueryStringToDenyMustBeProvided', 'At least one query string to deny must be provided');
     }
     return new CacheQueryStringBehavior('allExcept', queryStrings);
   }

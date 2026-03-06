@@ -184,6 +184,7 @@ export class HelmChart extends Construct {
 
     if (this.chartAsset && (this.repository || this.version)) {
       throw new ValidationError(
+        'ChartAssetRepositoryVersionConflict',
         "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
         this,
       );

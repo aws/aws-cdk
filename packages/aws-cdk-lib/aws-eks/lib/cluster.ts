@@ -2429,6 +2429,7 @@ export class Cluster extends ClusterBase {
         for (let j = i + 1; j < cidrs.length; j++) {
           if (ec2.NetworkUtils.validateCidrPairOverlap(cidrs[i], cidrs[j])) {
             throw new ValidationError(
+              'RemoteNetworkCidrOverlap',
               `CIDR ${cidrs[i]} should not overlap with another CIDR in remote ${networkType} network #${index + 1}`,
               this,
             );
@@ -2445,6 +2446,7 @@ export class Cluster extends ClusterBase {
         const [overlap, cidr1, cidr2] = ec2.NetworkUtils.validateCidrBlocksOverlap(resolvedCidrs[i], resolvedCidrs[j]);
         if (overlap) {
           throw new ValidationError(
+            'RemoteNetworkCidrBlockOverlap',
             `CIDR block ${cidr1} in remote ${networkType} network #${i + 1} should not overlap with CIDR block ${cidr2} in remote ${networkType} network #${j + 1}`,
             this,
           );
@@ -2468,6 +2470,7 @@ export class Cluster extends ClusterBase {
         const [overlap, nodeCidr, podCidr] = ec2.NetworkUtils.validateCidrBlocksOverlap(nodeCidrs, podCidrs);
         if (overlap) {
           throw new ValidationError(
+            'RemoteNodePodNetworkOverlap',
             `Remote node network CIDR block ${nodeCidr} should not overlap with remote pod network CIDR block ${podCidr}`,
             this,
           );

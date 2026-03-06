@@ -114,7 +114,7 @@ export class AlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         if (operands.length === 0) {
-          throw new UnscopedValidationError('DetectOperandsAlarmrule', `Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
+          throw new UnscopedValidationError('NoOperandsDetectedForAlarmRule', `Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
         }
 
         const expression = operands

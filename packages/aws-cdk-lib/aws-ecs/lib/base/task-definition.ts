@@ -479,67 +479,67 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.networkMode = props.networkMode ??
       (this.isFargateCompatible || this.isManagedInstancesCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new ValidationError('Fargatetasksonlyawsvpc', `Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
+      throw new ValidationError('FargateTasksOnlyAwsVpc', `Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`, this);
     }
     if (props.proxyConfiguration && this.networkMode !== NetworkMode.AWS_VPC) {
-      throw new ValidationError('Proxyconfigurationonlyusedawsvpc', `ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`, this);
+      throw new ValidationError('ProxyConfigurationOnlyUsedAwsVpc', `ProxyConfiguration can only be used with AwsVpc network mode, got: ${this.networkMode}`, this);
     }
     if (props.placementConstraints && props.placementConstraints.length > 0 && this.isFargateCompatible) {
-      throw new ValidationError('CannotCannotcannotplacementconstraints', 'Cannot set placement constraints on tasks that run on Fargate', this);
+      throw new ValidationError('CannotPlacementConstraints', 'Cannot set placement constraints on tasks that run on Fargate', this);
     }
 
     if (this.isFargateCompatible && (!props.cpu || !props.memoryMiB)) {
-      throw new ValidationError('Fargatecompatibletasksrequireboth', `Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`, this);
+      throw new ValidationError('FargateCompatibleTasksRequireBoth', `Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`, this);
     }
 
     if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
-      throw new ValidationError('CannotCannotcannotinferenceaccelerators', 'Cannot use inference accelerators on tasks that run on Fargate', this);
+      throw new ValidationError('CannotInferenceAccelerators', 'Cannot use inference accelerators on tasks that run on Fargate', this);
     }
 
     if (this.isExternalCompatible && ![NetworkMode.BRIDGE, NetworkMode.HOST, NetworkMode.NONE].includes(this.networkMode)) {
-      throw new ValidationError('Externaltasksonlybridge', `External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`, this);
+      throw new ValidationError('ExternalTasksOnlyBridge', `External tasks can only have Bridge, Host or None network mode, got: ${this.networkMode}`, this);
     }
 
     // Managed Instances validations
     if (this.isManagedInstancesCompatible) {
       // Managed Instances only support awsvpc and host network modes
       if (![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
-        throw new ValidationError('Managedinstancestasksonly', `Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
+        throw new ValidationError('ManagedInstancesTasksOnly', `Managed Instances tasks can only have AwsVpc or Host network mode, got: ${this.networkMode}`, this);
       }
 
       // Managed Instances don't support inference accelerators
       if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0) {
-        throw new ValidationError('CannotCannotcannotinferenceaccelerators', 'Cannot use inference accelerators on tasks that run on Managed Instances', this);
+        throw new ValidationError('CannotInferenceAccelerators', 'Cannot use inference accelerators on tasks that run on Managed Instances', this);
       }
 
       // Managed Instances don't support ephemeral storage
       if (props.ephemeralStorageGiB) {
-        throw new ValidationError('Ephemeralstoragesupportedtasks', 'Ephemeral storage is not supported for tasks running on Managed Instances', this);
+        throw new ValidationError('EphemeralStorageSupportedTasks', 'Ephemeral storage is not supported for tasks running on Managed Instances', this);
       }
 
       // Managed Instances don't support IPC mode
       if (props.ipcMode) {
-        throw new ValidationError('Modesupportedtasksrunning', 'IPC mode is not supported for tasks running on Managed Instances', this);
+        throw new ValidationError('ModeSupportedTasksRunning', 'IPC mode is not supported for tasks running on Managed Instances', this);
       }
 
       // Managed Instances don't support proxy configuration
       if (props.proxyConfiguration) {
-        throw new ValidationError('Proxyconfigurationsupportedtasks', 'Proxy configuration is not supported for tasks running on Managed Instances', this);
+        throw new ValidationError('ProxyConfigurationSupportedTasks', 'Proxy configuration is not supported for tasks running on Managed Instances', this);
       }
 
       // Managed Instances only support LINUX operating system family
       if (props.runtimePlatform?.operatingSystemFamily && !props.runtimePlatform.operatingSystemFamily.isLinux()) {
-        throw new ValidationError('Managedinstancestasksonly', `Managed Instances tasks only support LINUX operating system family, got: ${props.runtimePlatform.operatingSystemFamily._operatingSystemFamily}`, this);
+        throw new ValidationError('ManagedInstancesTasksOnly', `Managed Instances tasks only support LINUX operating system family, got: ${props.runtimePlatform.operatingSystemFamily._operatingSystemFamily}`, this);
       }
     }
 
     if (!this.isFargateCompatible && !this.isManagedInstancesCompatible && props.runtimePlatform) {
-      throw new ValidationError('CannotCannotcannotspecifyruntimeplatform', 'Cannot specify runtimePlatform in non-Fargate and non-Managed Instances compatible tasks', this);
+      throw new ValidationError('CannotSpecifyRuntimePlatform', 'Cannot specify runtimePlatform in non-Fargate and non-Managed Instances compatible tasks', this);
     }
 
     // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fault-injection.html
     if (props.enableFaultInjection && ![NetworkMode.AWS_VPC, NetworkMode.HOST].includes(this.networkMode)) {
-      throw new ValidationError('Onlyawsvpchostnetwork', `Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`, this);
+      throw new ValidationError('OnlyAwsVpcHostNetwork', `Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`, this);
     }
 
     this._executionRole = props.executionRole;
@@ -739,7 +739,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
     // only one firelens log router is allowed in each task.
     if (this.containers.find(x => x instanceof FirelensLogRouter)) {
-      throw new ValidationError('Firelensrouteralreadyadded', 'Firelens log router is already added in this task.', this);
+      throw new ValidationError('FirelensRouterAlreadyAdded', 'Firelens log router is already added in this task.', this);
     }
 
     return new FirelensLogRouter(this, id, { taskDefinition: this, ...props });
@@ -754,7 +754,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       const taskCpu = Number(this._cpu);
       const sumOfContainerCpu = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
       if (taskCpu < sumOfContainerCpu) {
-        throw new ValidationError('Containervaluescannotgreater', 'The sum of all container cpu values cannot be greater than the value of the task cpu', this);
+        throw new ValidationError('ContainerValuesCannotGreater', 'The sum of all container cpu values cannot be greater than the value of the task cpu', this);
       }
     }
 
@@ -777,14 +777,14 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (volume.configuredAtLaunch !== true) {
       // Validate DockerVolumeConfiguration is not used with Managed Instances
       if (this.isManagedInstancesCompatible && volume.dockerVolumeConfiguration) {
-        throw new ValidationError('DockervolumeconfigurationSupportedTasksRunning', `DockerVolumeConfiguration is not supported for tasks running on Managed Instances. Volume '${volume.name}' cannot use dockerVolumeConfiguration`, this);
+        throw new ValidationError('DockerVolumeConfigurationSupportedTasksRunning', `DockerVolumeConfiguration is not supported for tasks running on Managed Instances. Volume '${volume.name}' cannot use dockerVolumeConfiguration`, this);
       }
       return;
     }
 
     // Other volume configurations must not be specified.
     if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration) {
-      throw new ValidationError('VolumeConfigurationsSpecifiedConfiguredatlaunch', `Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`, this);
+      throw new ValidationError('VolumeConfigurationsSpecifiedConfiguredAtLaunch', `Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`, this);
     }
   }
 
@@ -794,7 +794,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   @MethodMetadata()
   public addPlacementConstraint(constraint: PlacementConstraint) {
     if (isFargateCompatible(this.compatibility)) {
-      throw new ValidationError('CannotCannotcannotplacementconstraints', 'Cannot set placement constraints on tasks that run on Fargate', this);
+      throw new ValidationError('CannotPlacementConstraints', 'Cannot set placement constraints on tasks that run on Fargate', this);
     }
     this.placementConstraints.push(...constraint.toJson());
   }
@@ -817,7 +817,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   @MethodMetadata()
   public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
     if (isFargateCompatible(this.compatibility)) {
-      throw new ValidationError('CannotCannotcannotinferenceaccelerators', 'Cannot use inference accelerators on tasks that run on Fargate', this);
+      throw new ValidationError('CannotInferenceAccelerators', 'Cannot use inference accelerators on tasks that run on Fargate', this);
     }
     this._inferenceAccelerators.push(inferenceAccelerator);
   }
@@ -1008,7 +1008,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         throw new ValidationError('Provided', `If provided cpu is ${cpu}, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${Number(memory)}.`, this);
       }
     } else {
-      throw new ValidationError('Operatingsystemfamily', `If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`, this);
+      throw new ValidationError('OperatingSystemFamily', `If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`, this);
     }
   }
 }

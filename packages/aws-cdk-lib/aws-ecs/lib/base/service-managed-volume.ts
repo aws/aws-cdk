@@ -262,20 +262,20 @@ export class ServiceManagedVolume extends Construct {
 
     if (volumeInitializationRate !== undefined && !Token.isUnresolved(volumeInitializationRate)) {
       if (snapShotId === undefined) {
-        throw new ValidationError('VolumeinitializationrateOnlySpecifiedSnapshotid', '\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.', this);
+        throw new ValidationError('VolumeInitializationRateOnlySpecifiedSnapshotId', '\'volumeInitializationRate\' can only be specified when \'snapShotId\' is provided.', this);
       }
       if (volumeInitializationRate.toMebibytes() < 100 || volumeInitializationRate.toMebibytes() > 300) {
-        throw new ValidationError('MustBeVolumeinitializationrateBetweenMibS', `'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`, this);
+        throw new ValidationError('MustBeVolumeInitializationRateBetweenMibS', `'volumeInitializationRate' must be between 100 and 300 MiB/s, got ${volumeInitializationRate.toMebibytes()} MiB/s.`, this);
       }
     }
 
     // Validate if both size and snapShotId are not specified.
     if (size === undefined && snapShotId === undefined) {
-      throw new ValidationError('MustBeSizeSnapshotidSpecified', '\'size\' or \'snapShotId\' must be specified', this);
+      throw new ValidationError('MustBeSizeSnapshotIdSpecified', '\'size\' or \'snapShotId\' must be specified', this);
     }
 
     if (snapShotId && !Token.isUnresolved(snapShotId) && !/^snap-[0-9a-fA-F]+$/.test(snapShotId)) {
-      throw new ValidationError('SnapshotidDoesMatchExpected', `'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: ${snapShotId}`, this);
+      throw new ValidationError('SnapshotIdDoesMatchExpected', `'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: ${snapShotId}`, this);
     }
 
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-sizeingib
@@ -327,7 +327,7 @@ export class ServiceManagedVolume extends Construct {
     if (iops !== undefined && !Token.isUnresolved(iops)) {
       const { min, max } = iopsRanges[volumeType];
       if ((iops < min || iops > max)) {
-        throw new ValidationError('VolumesIopsBetween', `'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`, this);
+        throw new ValidationError('Volumesiopsbetween', `'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`, this);
       }
     }
   }

@@ -134,7 +134,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       if (props.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX && this.hwType !== AmiHardwareType.STANDARD) {
         throw new UnscopedValidationError('AmazonLinuxDoesSupport', 'Amazon Linux does not support special hardware type. Use Amazon Linux 2 instead');
       } else if (props.windowsVersion) {
-        throw new UnscopedValidationError('WindowsversionLinuxImageGeneration', '"windowsVersion" and Linux image "generation" cannot be both set');
+        throw new UnscopedValidationError('WindowsVersionLinuxImageGeneration', '"windowsVersion" and Linux image "generation" cannot be both set');
       } else {
         this.generation = props.generation;
       }
@@ -165,7 +165,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
     this.additionalCacheKey = props?.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalCacheKeyCachedInContextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 
@@ -307,7 +307,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     this.additionalCacheKey = props.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalCacheKeyCachedInContextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 
@@ -435,7 +435,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
     this.additionalCacheKey = props.additionalCacheKey;
 
     if (this.additionalCacheKey !== undefined && !this.cachedInContext) {
-      throw new UnscopedValidationError('AdditionalcachekeyCachedincontextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
+      throw new UnscopedValidationError('AdditionalCacheKeyCachedInContextFalse', '"additionalCacheKey" was set but "cachedInContext" is false, so it will have no effect');
     }
   }
 

@@ -89,7 +89,7 @@ class AssetCode extends Code {
 
   public bind(scope: Construct): CodeConfig {
     if (!this.asset.isZipArchive) {
-      throw new ValidationError('Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )', scope);
+      throw new ValidationError('AssetMustBeZipFileOrDirectory', 'Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )', scope);
     }
 
     return {

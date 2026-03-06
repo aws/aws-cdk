@@ -119,11 +119,11 @@ export class AwsLogDriver extends LogDriver {
     super();
 
     if (props.logGroup && props.logRetention) {
-      throw new UnscopedValidationError('CannotCannotSpecifyBoth', 'Cannot specify both `logGroup` and `logRetentionDays`.');
+      throw new UnscopedValidationError('CannotSpecifyBoth', 'Cannot specify both `logGroup` and `logRetentionDays`.');
     }
 
     if (props.maxBufferSize && props.mode !== AwsLogDriverMode.NON_BLOCKING) {
-      throw new UnscopedValidationError('CannotCannotSpecifyDriver', 'Cannot specify `maxBufferSize` when the driver mode is blocking');
+      throw new UnscopedValidationError('CannotSpecifyDriverMaxBufferSize', 'Cannot specify `maxBufferSize` when the driver mode is blocking');
     }
   }
 

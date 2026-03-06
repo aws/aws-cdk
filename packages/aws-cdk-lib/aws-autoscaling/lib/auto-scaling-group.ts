@@ -1868,7 +1868,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       throw new ValidationError('SettingBlockdevicesLaunchtemplateMixedinstancespolicy', 'Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.requireImdsv2) {
-      throw new ValidationError('SettingRequireimdsv2LaunchtemplateMixedinstancespolicy', 'Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError('RequireImdsv2ConflictsWithLaunchTemplate', 'Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
   }
 
@@ -1916,6 +1916,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
       if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
         throw new ValidationError(
+          'MigrateToLaunchTemplateRequiresRollingUpdate',
           'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
           'to ensure instances are properly replaced during migration. ' +
           'This prevents instances from referencing a deleted IAM instance profile.',
@@ -2668,6 +2669,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
 
         if (throughput < Min || throughput > Max) {
           throw new ValidationError(
+            'ThroughputOutOfRange',
             `throughput property takes a minimum of ${Min} and a maximum of ${Max}`, construct,
           );
         }
