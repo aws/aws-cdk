@@ -98,6 +98,43 @@ both. If both are specified, both conditions must be met for the requests to
 be routed to the given target. `priority` is a required field when you add
 targets with conditions. The lowest number wins.
 
+#### Regex Path Patterns
+
+For more flexible path matching, you can use `regexPathPatterns()` instead of `pathPatterns()`.
+This allows you to specify regular expressions for path matching, which can be more concise
+and powerful than using multiple wildcard patterns:
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+declare const asg: autoscaling.AutoScalingGroup;
+
+listener.addTargets('API Routes', {
+  priority: 10,
+  conditions: [
+    // Match /api, /api/, /api/users, etc.
+    elbv2.ListenerCondition.regexPathPatterns(['^/api/?.*$']),
+  ],
+  port: 8080,
+  targets: [asg]
+});
+
+listener.addTargets('Versioned API Routes', {
+  priority: 20,
+  conditions: [
+    // Match versioned API paths like /v1/users, /v2/posts, /api/v3/data
+    elbv2.ListenerCondition.regexPathPatterns([
+      '^/v[0-9]+/.*$',
+      '^/api/v[0-9]+/.*$',
+    ]),
+  ],
+  port: 8080,
+  targets: [asg]
+});
+```
+
+For more information about regex path patterns and supported syntax, see the
+[ALB documentation on path conditions](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-condition-types.html#path-conditions).
+
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
 
