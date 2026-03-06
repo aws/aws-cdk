@@ -1,9 +1,10 @@
 import type { IConstruct } from 'constructs';
-import { ConstructOrder, Dependable } from 'constructs';
+import { Dependable } from 'constructs';
 import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
+import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -19,7 +20,9 @@ export function prepareApp(root: IConstruct) {
   // apply dependencies between resources in depending subtrees
   for (const dependency of findTransitiveDeps(root)) {
     const targetCfnResources = findCfnResources(dependency.target);
-    const sourceCfnResources = findCfnResources(dependency.source);
+
+    // Gets iterated multiple times so make the iterator concrete
+    const sourceCfnResources = Array.from(findCfnResources(dependency.source));
 
     for (const target of targetCfnResources) {
       for (const source of sourceCfnResources) {
@@ -84,9 +87,9 @@ function findAllNestedStacks(root: IConstruct) {
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
-    if (includeStack(stack)) {
-      result.push(stack);
+  for (const node of iterateDfsPostorder(root)) { /* <== important to use postorder */
+    if (includeStack(node)) {
+      result.push(node);
     }
   }
 
@@ -96,8 +99,12 @@ function findAllNestedStacks(root: IConstruct) {
 /**
  * Find all resources in a set of constructs
  */
-function findCfnResources(root: IConstruct): CfnResource[] {
-  return root.node.findAll().filter(CfnResource.isCfnResource);
+function* findCfnResources(root: IConstruct): IterableIterator<CfnResource> {
+  for (const node of iterateDfsPreorder(root)) {
+    if (CfnResource.isCfnResource(node)) {
+      yield node;
+    }
+  }
 }
 
 interface INestedStackPrivateApi {
@@ -111,7 +118,7 @@ function findTransitiveDeps(root: IConstruct): Dependency[] {
   const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
   const ret = new Array<Dependency>();
 
-  for (const source of root.node.findAll()) {
+  for (const source of iterateDfsPreorder(root)) {
     for (const dependable of source.node.dependencies) {
       for (const target of Dependable.of(dependable).dependencyRoots) {
         let foundTargets = found.get(source);
