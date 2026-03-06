@@ -13,7 +13,7 @@ import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -794,7 +794,11 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyTimeoutIgnored',
+        'timeout is ignored when using FileDefinitionBody. Set TimeoutSeconds directly in the ASL definition file.');
+    }
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -813,7 +817,16 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout !== undefined) {
+      const definition = JSON.parse(this.body);
+      if (definition.TimeoutSeconds === undefined) {
+        definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+      }
+      return {
+        definitionString: JSON.stringify(definition),
+      };
+    }
     return {
       definitionString: this.body,
     };
