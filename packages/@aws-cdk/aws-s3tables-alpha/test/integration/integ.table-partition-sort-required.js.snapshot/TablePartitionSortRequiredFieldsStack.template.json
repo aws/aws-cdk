@@ -1,0 +1,130 @@
+{
+ "Resources": {
+  "PartitionSortRequiredFieldsBucketD7ACD847": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "partition-sort-required-bucket-test",
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PartitionSortRequiredNamespace06DC1795": {
+   "Type": "AWS::S3Tables::Namespace",
+   "Properties": {
+    "Namespace": "partition_sort_required_ns",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "PartitionSortRequiredFieldsBucketD7ACD847",
+      "TableBucketARN"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PartitionSortRequiredTable50FB0F5A": {
+   "Type": "AWS::S3Tables::Table",
+   "Properties": {
+    "IcebergMetadata": {
+     "IcebergPartitionSpec": {
+      "Fields": [
+       {
+        "Name": "day_partition",
+        "SourceId": 1,
+        "Transform": "identity"
+       }
+      ]
+     },
+     "IcebergSchema": {
+      "SchemaFieldList": [
+       {
+        "Id": 1,
+        "Name": "day",
+        "Required": true,
+        "Type": "date"
+       },
+       {
+        "Id": 2,
+        "Name": "person_name",
+        "Required": true,
+        "Type": "string"
+       }
+      ]
+     },
+     "IcebergSortOrder": {
+      "Fields": [
+       {
+        "Direction": "asc",
+        "NullOrder": "nulls-last",
+        "SourceId": 1,
+        "Transform": "identity"
+       }
+      ]
+     }
+    },
+    "Namespace": "partition_sort_required_ns",
+    "OpenTableFormat": "ICEBERG",
+    "TableBucketARN": {
+     "Fn::GetAtt": [
+      "PartitionSortRequiredFieldsBucketD7ACD847",
+      "TableBucketARN"
+     ]
+    },
+    "TableName": "events_by_day_required"
+   },
+   "DependsOn": [
+    "PartitionSortRequiredNamespace06DC1795"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttPartitionSortRequiredFieldsBucketD7ACD847TableBucketARN65C3B12D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PartitionSortRequiredFieldsBucketD7ACD847",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "TablePartitionSortRequiredFieldsStack:ExportsOutputFnGetAttPartitionSortRequiredFieldsBucketD7ACD847TableBucketARN65C3B12D"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -52,14 +52,16 @@ const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
 ### Define an S3 Table
 
 ```ts
-// Build a table
-const sampleTable = new Table(scope, 'ExampleTable', {
-    tableName: 'example_table',
+// build table with only required fields
+const minimalTable = new Table(scope, 'MinimalTable', {
+    tableName: 'minimal_table',
     namespace: namespace,
     openTableFormat: OpenTableFormat.ICEBERG,
     withoutMetadata: true,
 });
+```
 
+```ts
 // Build a table with an Iceberg Schema
 const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
     tableName: 'example_table_with_schema',
@@ -93,6 +95,78 @@ const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
 ```
 
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
+
+### Advanced Iceberg Table Configuration
+
+You can configure partition specifications, sort orders, and table properties for optimized query performance:
+
+```ts
+// Build a table with partition spec, sort order, and table properties
+const advancedTable = new Table(scope, 'AdvancedTable', {
+    tableName: 'advanced_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                {
+                    id: 1,
+                    name: 'event_date',
+                    type: 'date',
+                    required: true,
+                },
+                {
+                    id: 2,
+                    name: 'user_id',
+                    type: 'string',
+                    required: true,
+                },
+                {
+                    id: 3,
+                    name: 'event_count',
+                    type: 'int',
+                },
+            ],
+        },
+        // Partition by date for efficient time-based queries
+        icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: PartitionTransform.IDENTITY,
+                    name: 'event_date_partition',
+                    fieldId: 1000,
+                },
+            ],
+        },
+        // Sort by date and user_id for better query performance
+        icebergSortOrder: {
+            orderId: 1,
+            fields: [
+                {
+                    sourceId: 1,
+                    // Sort transform is a string to support parameterized Iceberg transforms like 'bucket[16]' or 'truncate[8]'
+                    transform: 'identity',
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_LAST,
+                },
+                {
+                    sourceId: 2,
+                    transform: 'identity',
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_FIRST,
+                },
+            ],
+        },
+        // Configure table properties for Parquet format
+        tableProperties: [
+            { key: 'write.format.default', value: 'parquet' },
+            { key: 'write.parquet.compression-codec', value: 'zstd' },
+        ],
+    },
+});
+```
 
 ### Controlling Table Bucket Permissions
 

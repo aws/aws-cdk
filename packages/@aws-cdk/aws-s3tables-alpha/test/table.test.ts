@@ -84,16 +84,43 @@ describe('Table', () => {
         icebergSchema: {
           schemaFieldList: [
             {
+              id: 1,
               name: 'id',
               type: 'int',
               required: true,
             },
             {
+              id: 2,
               name: 'name',
               type: 'string',
             },
           ],
         },
+        icebergPartitionSpec: {
+          specId: 0,
+          fields: [
+            {
+              sourceId: 1,
+              transform: s3tables.PartitionTransform.IDENTITY,
+              name: 'id_partition',
+            },
+          ],
+        },
+        icebergSortOrder: {
+          orderId: 1,
+          fields: [
+            {
+              sourceId: 2,
+              transform: 'identity',
+              direction: s3tables.SortDirection.ASC,
+              nullOrder: s3tables.NullOrder.NULLS_FIRST,
+            },
+          ],
+        },
+        tableProperties: [
+          { key: 'write.parquet.compression-codec', value: 'snappy' },
+          { key: 'write.metadata.compression-codec', value: 'gzip' },
+        ],
       },
       snapshotManagement: {
         maxSnapshotAgeHours: 24,
@@ -126,15 +153,42 @@ describe('Table', () => {
           'IcebergSchema': {
             'SchemaFieldList': [
               {
+                'Id': 1,
                 'Name': 'id',
                 'Type': 'int',
                 'Required': true,
               },
               {
+                'Id': 2,
                 'Name': 'name',
                 'Type': 'string',
               },
             ],
+          },
+          'IcebergPartitionSpec': {
+            'SpecId': 0,
+            'Fields': [
+              {
+                'SourceId': 1,
+                'Transform': 'identity',
+                'Name': 'id_partition',
+              },
+            ],
+          },
+          'IcebergSortOrder': {
+            'OrderId': 1,
+            'Fields': [
+              {
+                'SourceId': 2,
+                'Transform': 'identity',
+                'Direction': 'asc',
+                'NullOrder': 'nulls-first',
+              },
+            ],
+          },
+          'TableProperties': {
+            'write.parquet.compression-codec': 'snappy',
+            'write.metadata.compression-codec': 'gzip',
           },
         },
         'SnapshotManagement': {
@@ -168,6 +222,78 @@ describe('Table', () => {
     test('has withoutMetadata set to "Yes"', () => {
       Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
         'WithoutMetadata': 'Yes',
+      });
+    });
+  });
+
+  describe('created with partition spec and sort order', () => {
+    beforeEach(() => {
+      new s3tables.Table(stack, 'PartitionedTable', {
+        tableName: 'partitioned_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        icebergMetadata: {
+          icebergSchema: {
+            schemaFieldList: [
+              { id: 1, name: 'event_id', type: 'string' },
+              { id: 2, name: 'event_time', type: 'timestamp' },
+              { id: 3, name: 'category', type: 'string' },
+            ],
+          },
+          icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+              { sourceId: 2, transform: s3tables.PartitionTransform.DAY, name: 'event_day' },
+              { sourceId: 3, transform: s3tables.PartitionTransform.IDENTITY, name: 'category_partition' },
+            ],
+          },
+          icebergSortOrder: {
+            orderId: 1,
+            fields: [
+              { sourceId: 1, transform: 'identity', direction: s3tables.SortDirection.ASC, nullOrder: s3tables.NullOrder.NULLS_FIRST },
+            ],
+          },
+          tableProperties: [
+            { key: 'write.parquet.compression-codec', value: 'snappy' },
+          ],
+        },
+      });
+    });
+
+    test('has partition spec', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'IcebergPartitionSpec': {
+            'SpecId': 0,
+            'Fields': [
+              { 'SourceId': 2, 'Transform': 'day', 'Name': 'event_day' },
+              { 'SourceId': 3, 'Transform': 'identity', 'Name': 'category_partition' },
+            ],
+          },
+        },
+      });
+    });
+
+    test('has sort order', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'IcebergSortOrder': {
+            'OrderId': 1,
+            'Fields': [
+              { 'SourceId': 1, 'Transform': 'identity', 'Direction': 'asc', 'NullOrder': 'nulls-first' },
+            ],
+          },
+        },
+      });
+    });
+
+    test('has table properties', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'IcebergMetadata': {
+          'TableProperties': {
+            'write.parquet.compression-codec': 'snappy',
+          },
+        },
       });
     });
   });
