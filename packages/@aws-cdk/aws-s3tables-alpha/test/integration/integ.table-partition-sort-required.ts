@@ -1,28 +1,29 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
-import * as core from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as s3tables from '../../lib';
 
 /**
  * Test for table with partition spec and sort order using only required fields.
  */
-class TablePartitionSortRequiredStack extends core.Stack {
+class TablePartitionSortRequiredStack extends Stack {
   public readonly table: s3tables.Table;
   public readonly namespace: s3tables.Namespace;
   public readonly tableBucket: s3tables.TableBucket;
 
-  constructor(scope: Construct, id: string, props?: core.StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortRequiredFieldsBucket', {
       tableBucketName: 'partition-sort-required-bucket-test',
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     this.namespace = new s3tables.Namespace(this, 'PartitionSortRequiredNamespace', {
       namespaceName: 'partition_sort_required_ns',
       tableBucket: this.tableBucket,
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortRequiredTable', {
@@ -56,12 +57,12 @@ class TablePartitionSortRequiredStack extends core.Stack {
           ],
         },
       },
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 }
 
-const app = new core.App();
+const app = new App();
 
 const partitionSortRequiredTest = new TablePartitionSortRequiredStack(app, 'TablePartitionSortRequiredFieldsStack');
 
