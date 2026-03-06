@@ -1,28 +1,28 @@
 {
   "version": "50.0.0",
   "artifacts": {
-    "aws-cdk-docdb-cluster-serverless.assets": {
+    "aws-cdk-docdb-cluster-serverless-mixed.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-docdb-cluster-serverless.assets.json",
+        "file": "aws-cdk-docdb-cluster-serverless-mixed.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-docdb-cluster-serverless": {
+    "aws-cdk-docdb-cluster-serverless-mixed": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-docdb-cluster-serverless.template.json",
+        "templateFile": "aws-cdk-docdb-cluster-serverless-mixed.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcce87911abc072895ca35d1c4dd585ec6143db0751f4a125e61c9695abb622b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/acb2dbe2ae12ac438681c3edf862c0b1ac3aed37a955a0ad767bd9639832f2e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-docdb-cluster-serverless.assets"
+          "aws-cdk-docdb-cluster-serverless-mixed.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-docdb-cluster-serverless.assets"
+        "aws-cdk-docdb-cluster-serverless-mixed.assets"
       ],
       "metadata": {
-        "/aws-cdk-docdb-cluster-serverless/VPC": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -43,13 +43,13 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/Resource": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -85,43 +85,43 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -157,43 +157,43 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -221,31 +221,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -273,43 +273,43 @@
             "data": {}
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/IGW": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/VPC/VPCGW": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -322,18 +322,19 @@
                 "maxCapacity": "*"
               },
               "instances": "*",
+              "instanceType": "*",
               "engineVersion": "*",
               "removalPolicy": "destroy"
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Subnets": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Subnets": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSubnets56F17B9A"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/SecurityGroup": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -342,13 +343,13 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/SecurityGroup/Resource": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecurityGroup5C91FDCB"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Secret": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -366,13 +367,13 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Secret/Resource": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecret3B817195"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Secret/Attachment": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -381,38 +382,44 @@
             }
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Secret/Attachment/Resource": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseSecretAttachmentE5D1B020"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/Resource": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseB269D8BB"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/Database/InstanceServerless1": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseInstance1844F58FD"
+          }
+        ],
+        "/aws-cdk-docdb-cluster-serverless-mixed/Database/InstanceServerless1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseInstanceServerless10455085A"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/BootstrapVersion": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-docdb-cluster-serverless/CheckBootstrapVersion": [
+        "/aws-cdk-docdb-cluster-serverless-mixed/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-docdb-cluster-serverless"
+      "displayName": "aws-cdk-docdb-cluster-serverless-mixed"
     },
     "awscdkdocdbclusterserverlessintegDefaultTestDeployAssert24E176B3.assets": {
       "type": "cdk:asset-manifest",
@@ -957,7 +964,6 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
@@ -965,5 +971,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1101.0"
 }

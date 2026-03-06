@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PublicSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-docdb-cluster-serverless/VPC"
+      "Value": "aws-cdk-docdb-cluster-serverless-mixed/VPC"
      }
     ]
    }
@@ -504,6 +504,23 @@
      }
     ]
    },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DatabaseInstance1844F58FD": {
+   "Type": "AWS::DocDB::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "DatabaseB269D8BB"
+    },
+    "DBInstanceClass": "db.r5.large"
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
