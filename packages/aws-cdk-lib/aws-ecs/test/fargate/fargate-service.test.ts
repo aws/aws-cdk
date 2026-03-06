@@ -1301,6 +1301,39 @@ describe('fargate service', () => {
       });
     });
 
+    test('enableDeploymentAlarms concatenates alarms when called multiple times', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const expectedAlarmNames = ['alarm1', 'alarm2', 'alarm3'];
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        minHealthyPercent: 100,
+        maxHealthyPercent: 200,
+        deploymentAlarms: { alarmNames: ['alarm1'] },
+      });
+
+      service.enableDeploymentAlarms(['alarm2']);
+      service.enableDeploymentAlarms(['alarm3']);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            AlarmNames: expectedAlarmNames,
+            Enable: true,
+            Rollback: true,
+          },
+        },
+      });
+    });
+
     test('no network configuration with external deployment controller', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
