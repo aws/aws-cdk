@@ -912,7 +912,7 @@ export enum HttpVersion {
 export enum PriceClass {
   /** USA, Canada, Europe, & Israel */
   PRICE_CLASS_100 = 'PriceClass_100',
-  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
+  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, Philippines, India, Indonesia, Thailand, Malaysia, Vietnam, Nigeria, Egypt, & Türkiye */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
