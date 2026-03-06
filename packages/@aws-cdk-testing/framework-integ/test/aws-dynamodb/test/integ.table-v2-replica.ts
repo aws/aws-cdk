@@ -43,7 +43,7 @@ const app = new App({
 
 const integTest = new IntegTest(app, 'aws-cdk-global-table-replica-integ', {
   // Global tables with replicas require a region-aware stack
-  testCases: [new TestStack(app, 'BarStack', { env: { region: process.env.AWS_REGION || 'us-east-1', account: process.env.AWS_ACCOUNT_ID } })],
+  testCases: [new TestStack(app, 'BarStack', { env: { region: process.env.CDK_DEFAULT_REGION || 'us-east-1', account: process.env.CDK_DEFAULT_ACCOUNT } })],
   stackUpdateWorkflow: false,
 });
 
