@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.ce"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CE"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_ce"
+    }
+  }
+}

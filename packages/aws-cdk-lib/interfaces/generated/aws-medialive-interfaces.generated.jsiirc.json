@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.medialive"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.MediaLive"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_medialive"
+    }
+  }
+}

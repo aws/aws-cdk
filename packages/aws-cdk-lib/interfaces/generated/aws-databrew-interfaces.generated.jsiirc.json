@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.databrew"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.DataBrew"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_databrew"
+    }
+  }
+}

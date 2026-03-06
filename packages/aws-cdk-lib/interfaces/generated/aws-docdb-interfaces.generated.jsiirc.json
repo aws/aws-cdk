@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.docdb"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.DocDB"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_docdb"
+    }
+  }
+}

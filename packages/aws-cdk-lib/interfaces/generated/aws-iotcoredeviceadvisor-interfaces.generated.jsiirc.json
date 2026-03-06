@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.iotcoredeviceadvisor"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.IoTCoreDeviceAdvisor"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_iotcoredeviceadvisor"
+    }
+  }
+}

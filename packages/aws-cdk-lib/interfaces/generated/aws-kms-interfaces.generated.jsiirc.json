@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.kms"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.KMS"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_kms"
+    }
+  }
+}

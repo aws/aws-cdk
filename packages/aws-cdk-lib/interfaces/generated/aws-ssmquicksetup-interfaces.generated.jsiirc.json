@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.ssmquicksetup"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.SSMQuickSetup"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_ssmquicksetup"
+    }
+  }
+}

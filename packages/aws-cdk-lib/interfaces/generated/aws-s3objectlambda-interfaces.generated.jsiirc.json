@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.s3objectlambda"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.S3ObjectLambda"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_s3objectlambda"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.emrcontainers"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.EMRContainers"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_emrcontainers"
+    }
+  }
+}

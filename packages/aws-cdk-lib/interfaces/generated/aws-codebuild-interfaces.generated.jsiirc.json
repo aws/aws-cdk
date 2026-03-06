@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.codebuild"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CodeBuild"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_codebuild"
+    }
+  }
+}

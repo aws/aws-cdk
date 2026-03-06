@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.emrserverless"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.EMRServerless"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_emrserverless"
+    }
+  }
+}

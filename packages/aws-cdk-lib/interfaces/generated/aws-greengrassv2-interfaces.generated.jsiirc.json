@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.greengrassv2"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.GreengrassV2"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_greengrassv2"
+    }
+  }
+}

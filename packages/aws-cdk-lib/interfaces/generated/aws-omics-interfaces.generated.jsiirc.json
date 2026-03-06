@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.omics"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Omics"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_omics"
+    }
+  }
+}

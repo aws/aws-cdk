@@ -183,6 +183,35 @@ in which case, we recommend to remove `retainOnDelete: false`, and instead, conf
 [`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-s3-readme.html#bucket-deletion)
 property on the destination bucket. This will avoid the logical ID problem mentioned above.
 
+## Retain on Delete
+
+By default, the contents of the destination bucket will **not** be deleted when the
+`BucketDeployment` resource is removed from the stack or when the destination is
+changed. You can use the option `retainOnDelete: false` to disable this behavior,
+in which case the contents will be deleted.
+
+## IAM Permissions and Security
+
+The `BucketDeployment` construct automatically configures IAM permissions following the principle of least privilege. When you specify a `destinationKeyPrefix`, the Lambda function's execution role will only receive permissions to access objects under that specific prefix, rather than the entire bucket.
+
+```ts
+declare const destinationBucket: s3.Bucket;
+
+// The Lambda will only have access to objects under 'app/static/*'
+new s3deploy.BucketDeployment(this, 'DeployWebsite', {
+  sources: [s3deploy.Source.asset('./website-dist')],
+  destinationBucket,
+  destinationKeyPrefix: 'app/static',
+});
+```
+
+This scoped permission approach provides several security benefits:
+  Limits the blast radius if deployment credentials are compromised
+  Enables multiple independent deployments to the same bucket with isolation
+  Prevents accidental modification of objects outside the intended prefix
+
+If no `destinationKeyPrefix` is specified, the Lambda will have access to all objects in the bucket (/*), maintaining backward compatibility with existing deployments.
+
 ## Prune
 
 By default, files in the destination bucket that don't exist in the source will be deleted

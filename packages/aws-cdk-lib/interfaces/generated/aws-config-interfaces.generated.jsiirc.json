@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.config"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Config"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_config"
+    }
+  }
+}

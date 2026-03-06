@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.waf"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.WAF"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_waf"
+    }
+  }
+}

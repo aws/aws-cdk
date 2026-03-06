@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.servicediscovery"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ServiceDiscovery"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_servicediscovery"
+    }
+  }
+}

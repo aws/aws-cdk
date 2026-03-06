@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-scoped-permissions/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-scoped-permissions"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-test-scoped-permissions/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestscopedpermissionsDefaultTestDeployAssertA554764D"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

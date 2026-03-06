@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.codegurureviewer"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CodeGuruReviewer"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_codegurureviewer"
+    }
+  }
+}

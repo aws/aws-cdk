@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.location"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Location"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_location"
+    }
+  }
+}

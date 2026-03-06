@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.applicationinsights"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ApplicationInsights"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_applicationinsights"
+    }
+  }
+}

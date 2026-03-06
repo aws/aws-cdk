@@ -1802,3 +1802,40 @@ test('outputObjectKeys default value is true', () => {
     OutputObjectKeys: true,
   });
 });
+
+test.each([
+  ['my-prefix', '/my-prefix/*'],
+  ['my-prefix/', '/my-prefix/*'],
+  ['/my-prefix', '/my-prefix/*'],
+  ['/my-prefix/', '/my-prefix/*'],
+  [undefined, '/*'],
+])('lambda execution role gets permissions with destinationKeyPrefix "%s"', (prefix, expectedSuffix) => {
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: prefix,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: Match.objectLike({
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Resource: Match.arrayWith([
+            { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+            {
+              'Fn::Join': [
+                '',
+                [
+                  { 'Fn::GetAtt': ['DestC383B82A', 'Arn'] },
+                  expectedSuffix,
+                ],
+              ],
+            },
+          ]),
+        }),
+      ]),
+    }),
+  });
+});

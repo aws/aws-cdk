@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.applicationautoscaling"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ApplicationAutoScaling"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_applicationautoscaling"
+    }
+  }
+}

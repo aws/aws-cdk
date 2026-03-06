@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.launchwizard"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.LaunchWizard"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_launchwizard"
+    }
+  }
+}

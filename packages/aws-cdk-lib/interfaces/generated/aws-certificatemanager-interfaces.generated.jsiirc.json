@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.certificatemanager"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.CertificateManager"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_certificatemanager"
+    }
+  }
+}

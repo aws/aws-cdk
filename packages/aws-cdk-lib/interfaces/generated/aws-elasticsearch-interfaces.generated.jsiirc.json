@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.elasticsearch"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Elasticsearch"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_elasticsearch"
+    }
+  }
+}
