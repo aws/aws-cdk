@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import type { TaskDefinition } from './base/task-definition';
 import { NetworkMode } from './base/task-definition';
-import type { ContainerImage, ContainerImageConfig } from './container-image';
+import type { IContainerImage, ContainerImageConfig } from './container-image';
 import type { CredentialSpec, CredentialSpecConfig } from './credential-spec';
 import type { CfnTaskDefinition } from './ecs.generated';
 import type { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
@@ -112,9 +112,8 @@ export interface ContainerDefinitionOptions {
    * This string is passed directly to the Docker daemon.
    * Images in the Docker Hub registry are available by default.
    * Other repositories are specified with either repository-url/image:tag or repository-url/image@digest.
-   * TODO: Update these to specify using classes of IContainerImage
    */
-  readonly image: ContainerImage;
+  readonly image: IContainerImage;
 
   /**
    * The name of the container.
