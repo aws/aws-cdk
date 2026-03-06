@@ -71,7 +71,11 @@
       ]
      }
     }
-   }
+   },
+   "DependsOn": [
+    "ScriptServiceRoleDefaultPolicyEE85DAE7",
+    "ScriptServiceRole23DD8079"
+   ]
   }
  },
  "Parameters": {
