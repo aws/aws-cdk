@@ -55,15 +55,15 @@
   resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.157.tgz#28ff21f280e5a7f1eb34a1afc04766100a0a7aba"
   integrity sha512-fLJ+P0CffrFgq/JqMfou8FdqMSjU+OFasC2RDL6/PzgaaP6RGo2QWV0qFIJ/zPFGKbwaXeDdk5F7zSOJnwGnbQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.226"
+    "@aws-cdk/service-spec-types" "^0.0.223"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@^0.1.157":
-  version "0.1.159"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.159.tgz#24c19554e7b65008c61fdc88a1778f8a9ad411a9"
-  integrity sha512-IgdIOREfGNWwSac1Y2XpsP8WL9CkoolS2ixfGC3VJFDifkni5rmc+ADeFuD+egujAnjHUIz7MZP/67gIHru3mA==
+"@aws-cdk/aws-service-spec@^0.1.160":
+  version "0.1.160"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.160.tgz#e43d775b4c27dadf3ef544607e172d6656b8b63d"
+  integrity sha512-4JQF0J8x0g+PUXvFLdxHEHPLoDp3+PgxKvEleevpyjzon/nDsdoVFDB37cvUQvzaMU+KxJcfhEikzsHU30D0Uw==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.225"
+    "@aws-cdk/service-spec-types" "^0.0.226"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.2.0":
@@ -146,24 +146,10 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@^0.0.198":
-  version "0.0.198"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.198.tgz#4a55de541c0f67a84fdd97dd47398383d6cd66c4"
-  integrity sha512-oksZShBGTW/W7HnsnWU3N/YZGkWCbZ/4naFwYYVbXNfpTLauz5ME94SQwyHWG7U7ohjN57JR8DvdGfHVs6PTzg==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
 "@aws-cdk/service-spec-types@^0.0.226":
   version "0.0.226"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.226.tgz#92f1cec73018f6337d4feae5a717e78ca479a347"
   integrity sha512-1+kbXcr8IqWLOf6UXxPzRdzfTX+pwGPSsetzyVN1iVii8Nv5ky+RQHSCdROfmVcVQObbJz2ba6WTkVBU3SY6dA==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.225":
-  version "0.0.225"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.225.tgz#ee0648db07b4a3a3585f9d4d2987e2c9dd1180b6"
-  integrity sha512-y7+D/NwFxzopYB4jlSH+ES/p8OyI4JWZIMPjE20RFCWdWRNukxevGPCSM5T6YS0eWHjLUIECaMhOqVLyyFemvQ==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -4898,7 +4884,7 @@
     "@smithy/util-stream" "^4.5.16"
     tslib "^2.6.2"
 
-"@smithy/types@3.5.0", "@smithy/types@3.7.2", "@smithy/types@^3.3.0", "@smithy/types@^3.5.0", "@smithy/types@^3.7.2", "@smithy/types@^4.12.0", "@smithy/types@^4.13.0":
+"@smithy/types@3.5.0", "@smithy/types@3.7.2", "@smithy/types@^3.3.0", "@smithy/types@^3.5.0", "@smithy/types@^3.7.2", "@smithy/types@^4.13.0":
   version "3.5.0"
   resolved "https://registry.npmjs.org/@smithy/types/-/types-3.5.0.tgz#9589e154c50d9c5d00feb7d818112ef8fc285d6e"
   integrity sha512-QN0twHNfe8mNJdH9unwsCK13GURU7oEAZqkBI+rsvpv1jrmserO+WnLE7jidR9W/1dxwZ0u/CB01mV2Gms/K2Q==
@@ -8459,15 +8445,6 @@ fs-extra@^10.1.0:
     universalify "^2.0.0"
 
 fs-extra@^11.2.0, fs-extra@^11.3.3, fs-extra@^11.3.4:
-  version "11.3.4"
-  resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.3.4.tgz#ab6934eca8bcf6f7f6b82742e33591f86301d6fc"
-  integrity sha512-CTXd6rk/M3/ULNQj8FBqBWHYBVYybQ3VPBw0xGKFe3tuH7ytT6ACnvzpIQ3UZtB8yvUKC2cXn1a+x+5EVQLovA==
-  dependencies:
-    graceful-fs "^4.2.0"
-    jsonfile "^6.0.1"
-    universalify "^2.0.0"
-
-fs-extra@^11.3.4:
   version "11.3.4"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.3.4.tgz#ab6934eca8bcf6f7f6b82742e33591f86301d6fc"
   integrity sha512-CTXd6rk/M3/ULNQj8FBqBWHYBVYybQ3VPBw0xGKFe3tuH7ytT6ACnvzpIQ3UZtB8yvUKC2cXn1a+x+5EVQLovA==
