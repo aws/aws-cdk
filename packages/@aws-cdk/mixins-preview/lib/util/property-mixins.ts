@@ -67,7 +67,7 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 function deepMergeCopy(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new AssumptionError(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+      throw new AssumptionError('InvalidDeepMergeArguments', `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
     }
 
     for (const key of Object.keys(source)) {

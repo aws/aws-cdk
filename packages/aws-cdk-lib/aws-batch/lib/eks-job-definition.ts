@@ -225,7 +225,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                   };
                 }
 
-                throw new ValidationError('unknown volume type', this);
+                throw new ValidationError('UnknownUnknownunknownvolumetype', 'unknown volume type', this);
               });
             },
           }),
