@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -898,7 +898,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 370d9b2dcf8bf44b\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: dd55d0ee17423ecf\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -954,19 +954,15 @@
          "useradd",
          "-u",
          "1001",
-         "-g",
-         "1001",
          "eguser"
         ]
        },
        "001": {
         "command": [
-         "useradd",
+         "usermod",
          "-a",
-         "-u",
-         "1001",
-         "-g",
-         "1001",
+         "-G",
+         "eguser",
          "eguser"
         ]
        }

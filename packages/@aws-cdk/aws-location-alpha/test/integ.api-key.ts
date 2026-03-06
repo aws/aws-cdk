@@ -2,6 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import { AllowMapsAction, AllowPlacesAction, AllowRoutesAction, ApiKey } from '../lib';
+import { LOCATION_SUPPORTED_REGIONS } from './integ-tests-regions';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
@@ -10,7 +11,7 @@ class TestStack extends Stack {
     new ApiKey(this, 'APIKey', {
       apiKeyName: 'my-api-key',
       description: 'my api key for test',
-      expireTime: new Date('2026-01-01T00:00:00Z'),
+      expireTime: new Date('2036-01-01T00:00:00Z'),
       noExpiry: false,
       allowMapsActions: [
         AllowMapsAction.GET_STATIC_MAP,
@@ -58,4 +59,5 @@ const app = new App();
 
 new integ.IntegTest(app, 'ApiKeyTest', {
   testCases: [new TestStack(app, 'cdk-integ-location-api-key')],
+  regions: LOCATION_SUPPORTED_REGIONS,
 });

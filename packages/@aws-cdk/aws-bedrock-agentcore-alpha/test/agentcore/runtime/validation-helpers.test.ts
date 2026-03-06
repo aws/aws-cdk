@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import {
   validateStringField,
   validateFieldPattern,
   throwIfInvalid,
-  ValidationError,
 } from '../../../lib/runtime/validation-helpers';
 
 describe('validation-helpers tests', () => {
@@ -113,7 +113,7 @@ describe('validation-helpers tests', () => {
   });
 
   describe('throwIfInvalid', () => {
-    test('Should throw ValidationError when validation fails', () => {
+    test('Should throw UnscopedValidationError when validation fails', () => {
       const validator = (value: string) => {
         const errors: string[] = [];
         if (value !== 'valid') {
@@ -124,7 +124,7 @@ describe('validation-helpers tests', () => {
 
       expect(() => {
         throwIfInvalid(validator, 'invalid');
-      }).toThrow(ValidationError);
+      }).toThrow(UnscopedValidationError);
 
       expect(() => {
         throwIfInvalid(validator, 'invalid');
@@ -194,9 +194,9 @@ describe('validation-helpers tests', () => {
     });
   });
 
-  describe('ValidationError', () => {
+  describe('UnscopedValidationError', () => {
     test('Should be an instance of Error', () => {
-      const error = new ValidationError('Test error');
+      const error = new UnscopedValidationError('Test error');
       expect(error).toBeInstanceOf(Error);
       expect(error.name).toBe('ValidationError');
       expect(error.message).toBe('Test error');
