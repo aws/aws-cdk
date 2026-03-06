@@ -31,7 +31,7 @@ export function addStackArtifactToAssembly(
     const unresolvedTags = Object.entries(stackTags).filter(([k, v]) => Token.isUnresolved(k) || Token.isUnresolved(v));
 
     if (unresolvedTags.length > 0) {
-      const rendered = unresolvedTags.map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>': k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`).join(', ');
+      const rendered = unresolvedTags.map(([k, v]) => `${Token.isUnresolved(k) ? '<TOKEN>' : k}=${Token.isUnresolved(v) ? '<TOKEN>' : v}`).join(', ');
       stack.node.addMetadata(
         cxschema.ArtifactMetadataEntryType.WARN,
         `Ignoring stack tags that contain deploy-time values (found: ${rendered}). Apply tags containing deploy-time values to resources only, avoid tagging stacks (for example using { excludeResourceTypes: ['aws:cdk:stack'] }).`,
@@ -59,7 +59,7 @@ export function addStackArtifactToAssembly(
   // name and artifact ID are the same, the cloud assembly manifest will not
   // change.
   const stackNameProperty = stack.stackName === stack.artifactId
-    ? { }
+    ? {}
     : { stackName: stack.stackName };
 
   const properties: cxschema.AwsCloudFormationStackProperties = {
@@ -87,7 +87,7 @@ export function addStackArtifactToAssembly(
  * Collect the metadata from a stack
  */
 function collectStackMetadata(stack: Stack) {
-  const output: { [id: string]: cxschema.MetadataEntry[] } = { };
+  const output: { [id: string]: cxschema.MetadataEntry[] } = {};
 
   visit(stack);
 
@@ -127,7 +127,7 @@ function collectStackMetadata(stack: Stack) {
   }
 
   function findParentStack(node: IConstruct): Stack | undefined {
-    if (Stack.isStack(node) && node.nestedStackParent === undefined) {
+    if (Stack.isStack(node)) {
       return node;
     }
 
