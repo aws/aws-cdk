@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "52.0.0",
   "testCases": {
     "aws-cdk-aws-apigatewayv2-websocket-stage-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "awscdkawsapigatewayv2websocketstagetestDefaultTestDeployAssert19BC2E43"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "minimumCliVersion": "2.1107.0"
 }
