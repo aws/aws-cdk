@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "BedrockAgentCoreTargetIntegTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/90d448ac56e4108fcd0c64ae663069a6cf49fb726d972f802e9ef5533e4e27c9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49f4282a06bba969212aa91ea9f10fcdeea9d06b57654cce56700b232b13f123.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -90,6 +90,14 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/TestGateway/ServiceRole/Resource": [
@@ -116,6 +124,14 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -378,6 +394,77 @@
             "data": "ConstructorTarget16ECF8B6"
           }
         ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda3ServiceRole54BB0786"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda35298F1AD"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda3LogGroupBE6B5268"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/Lambda3/BedrockAgentCoreInvoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambda3BedrockAgentCoreInvoke8379AB58"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/LambdaTargetWithMetadata": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/LambdaTargetWithMetadata/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTargetWithMetadata18BBC77D"
+          }
+        ],
         "/BedrockAgentCoreTargetIntegTest/GatewayId": [
           {
             "type": "aws:cdk:logicalId",
@@ -400,6 +487,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ConstructorTargetId"
+          }
+        ],
+        "/BedrockAgentCoreTargetIntegTest/LambdaTargetWithMetadataId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaTargetWithMetadataId"
           }
         ],
         "/BedrockAgentCoreTargetIntegTest/BootstrapVersion": [
@@ -960,12 +1053,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }

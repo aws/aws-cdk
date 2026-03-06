@@ -188,6 +188,11 @@ const apiGatewayTarget2 = new agentcore.GatewayTarget(stack, 'ApiGatewayTargetCo
   gateway: gateway,
   gatewayTargetName: 'api-gateway-via-constructor',
   description: 'Target created via constructor with ApiGatewayTargetConfiguration',
+  metadataConfiguration: {
+    allowedQueryParameters: ['limit', 'offset'],
+    allowedRequestHeaders: ['X-Request-ID'],
+    allowedResponseHeaders: ['X-Custom-Header'],
+  },
   targetConfiguration: agentcore.ApiGatewayTargetConfiguration.create({
     restApi: restApi,
     stage: 'prod',
@@ -198,11 +203,6 @@ const apiGatewayTarget2 = new agentcore.GatewayTarget(stack, 'ApiGatewayTargetCo
           methods: [agentcore.ApiGatewayHttpMethod.GET],
         },
       ],
-    },
-    metadataConfiguration: {
-      allowedQueryParameters: ['limit', 'offset'],
-      allowedRequestHeaders: ['X-Request-ID'],
-      allowedResponseHeaders: ['X-Custom-Header'],
     },
   }),
 });

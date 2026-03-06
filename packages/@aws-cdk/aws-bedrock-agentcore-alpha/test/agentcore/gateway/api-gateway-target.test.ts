@@ -14,7 +14,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
-import { Gateway } from '../../../lib';
+import { Gateway, GatewayTarget } from '../../../lib';
 import {
   ApiGatewayTargetConfiguration,
   ApiGatewayHttpMethod,
@@ -174,29 +174,6 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
       expect(rendered.mcp.apiGateway.stage).toBe(restApi.deploymentStage.stageName);
     });
 
-    test('Should work with metadata configuration', () => {
-      const config = ApiGatewayTargetConfiguration.create({
-        restApi: restApi,
-        stage: 'dev',
-        apiGatewayToolConfiguration: {
-          toolFilters: [
-            {
-              filterPath: '/api/*',
-              methods: [ApiGatewayHttpMethod.GET],
-            },
-          ],
-        },
-        metadataConfiguration: {
-          allowedQueryParameters: ['userId'],
-          allowedRequestHeaders: ['Authorization'],
-          allowedResponseHeaders: ['X-Request-ID'],
-        },
-      });
-
-      expect(config.metadataConfiguration).toBeDefined();
-      expect(config.metadataConfiguration?.allowedQueryParameters).toEqual(['userId']);
-    });
-
     test('Should work with tool overrides', () => {
       const config = ApiGatewayTargetConfiguration.create({
         restApi: restApi,
@@ -224,26 +201,6 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
   });
 
   describe('Edge cases with IRestApi', () => {
-    test('Should accept metadata with exact limit (10 items)', () => {
-      const exactLimit = Array.from({ length: 10 }, (_, i) => `param${i}`);
-      expect(() => {
-        ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/test',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: {
-            allowedQueryParameters: exactLimit,
-          },
-        });
-      }).not.toThrow();
-    });
-
     test('Should accept empty tool overrides array', () => {
       const config = ApiGatewayTargetConfiguration.create({
         restApi: restApi,
@@ -263,77 +220,62 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
   });
 
   describe('MetadataConfiguration validation', () => {
+    const toolConfig = {
+      toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
+    };
+
     describe('allowedQueryParameters validation', () => {
       test('Should reject empty array', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: [],
-            },
+          GatewayTarget.forApiGateway(stack, 'EmptyQP', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedQueryParameters: [] },
           });
         }).toThrow(/allowedQueryParameters cannot be an empty array/);
       });
 
       test('Should reject more than 10 items', () => {
-        const tooMany = Array.from({ length: 11 }, (_, i) => `param${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: tooMany,
-            },
+          GatewayTarget.forApiGateway(stack, 'TooManyQP', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedQueryParameters: Array.from({ length: 11 }, (_, i) => `param${i}`) },
           });
         }).toThrow(/allowedQueryParameters cannot exceed 10 items/);
       });
 
       test('Should reject parameter name longer than 40 characters', () => {
-        const longParam = 'a'.repeat(41);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: [longParam],
-            },
+          GatewayTarget.forApiGateway(stack, 'LongQP', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedQueryParameters: ['a'.repeat(41)] },
           });
         }).toThrow(/allowedQueryParameters\[0\].*must be less than or equal to 40 characters/);
       });
 
       test('Should accept valid parameter at max length (40 characters)', () => {
-        const maxLengthParam = 'a'.repeat(40);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: [maxLengthParam],
-            },
+          GatewayTarget.forApiGateway(stack, 'MaxLenQP', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedQueryParameters: ['a'.repeat(40)] },
           });
         }).not.toThrow();
       });
 
       test('Should accept valid configuration with 10 items', () => {
-        const validParams = Array.from({ length: 10 }, (_, i) => `param${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedQueryParameters: validParams,
-            },
+          GatewayTarget.forApiGateway(stack, 'Valid10QP', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedQueryParameters: Array.from({ length: 10 }, (_, i) => `param${i}`) },
           });
         }).not.toThrow();
       });
@@ -342,74 +284,55 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
     describe('allowedRequestHeaders validation', () => {
       test('Should reject empty array', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedRequestHeaders: [],
-            },
+          GatewayTarget.forApiGateway(stack, 'EmptyReqH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedRequestHeaders: [] },
           });
         }).toThrow(/allowedRequestHeaders cannot be an empty array/);
       });
 
       test('Should reject more than 10 items', () => {
-        const tooMany = Array.from({ length: 11 }, (_, i) => `Header-${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedRequestHeaders: tooMany,
-            },
+          GatewayTarget.forApiGateway(stack, 'TooManyReqH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedRequestHeaders: Array.from({ length: 11 }, (_, i) => `Header-${i}`) },
           });
         }).toThrow(/allowedRequestHeaders cannot exceed 10 items/);
       });
 
       test('Should reject header name longer than 100 characters', () => {
-        const longHeader = 'X-Custom-Header-' + 'a'.repeat(100);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedRequestHeaders: [longHeader],
-            },
+          GatewayTarget.forApiGateway(stack, 'LongReqH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedRequestHeaders: ['X-Custom-Header-' + 'a'.repeat(100)] },
           });
         }).toThrow(/allowedRequestHeaders\[0\].*must be less than or equal to 100 characters/);
       });
 
       test('Should accept valid header at max length (100 characters)', () => {
-        const maxLengthHeader = 'X-' + 'a'.repeat(98);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedRequestHeaders: [maxLengthHeader],
-            },
+          GatewayTarget.forApiGateway(stack, 'MaxLenReqH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedRequestHeaders: ['X-' + 'a'.repeat(98)] },
           });
         }).not.toThrow();
       });
 
       test('Should accept valid configuration with 10 items', () => {
-        const validHeaders = Array.from({ length: 10 }, (_, i) => `X-Header-${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedRequestHeaders: validHeaders,
-            },
+          GatewayTarget.forApiGateway(stack, 'Valid10ReqH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedRequestHeaders: Array.from({ length: 10 }, (_, i) => `X-Header-${i}`) },
           });
         }).not.toThrow();
       });
@@ -418,74 +341,55 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
     describe('allowedResponseHeaders validation', () => {
       test('Should reject empty array', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedResponseHeaders: [],
-            },
+          GatewayTarget.forApiGateway(stack, 'EmptyResH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedResponseHeaders: [] },
           });
         }).toThrow(/allowedResponseHeaders cannot be an empty array/);
       });
 
       test('Should reject more than 10 items', () => {
-        const tooMany = Array.from({ length: 11 }, (_, i) => `X-Response-${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedResponseHeaders: tooMany,
-            },
+          GatewayTarget.forApiGateway(stack, 'TooManyResH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedResponseHeaders: Array.from({ length: 11 }, (_, i) => `X-Response-${i}`) },
           });
         }).toThrow(/allowedResponseHeaders cannot exceed 10 items/);
       });
 
       test('Should reject header name longer than 100 characters', () => {
-        const longHeader = 'X-Custom-Response-' + 'a'.repeat(100);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedResponseHeaders: [longHeader],
-            },
+          GatewayTarget.forApiGateway(stack, 'LongResH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedResponseHeaders: ['X-Custom-Response-' + 'a'.repeat(100)] },
           });
         }).toThrow(/allowedResponseHeaders\[0\].*must be less than or equal to 100 characters/);
       });
 
       test('Should accept valid header at max length (100 characters)', () => {
-        const maxLengthHeader = 'X-' + 'a'.repeat(98);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedResponseHeaders: [maxLengthHeader],
-            },
+          GatewayTarget.forApiGateway(stack, 'MaxLenResH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedResponseHeaders: ['X-' + 'a'.repeat(98)] },
           });
         }).not.toThrow();
       });
 
       test('Should accept valid configuration with 10 items', () => {
-        const validHeaders = Array.from({ length: 10 }, (_, i) => `X-Response-${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
-            metadataConfiguration: {
-              allowedResponseHeaders: validHeaders,
-            },
+          GatewayTarget.forApiGateway(stack, 'Valid10ResH', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
+            metadataConfiguration: { allowedResponseHeaders: Array.from({ length: 10 }, (_, i) => `X-Response-${i}`) },
           });
         }).not.toThrow();
       });
@@ -494,11 +398,10 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
     describe('Combined metadata configuration', () => {
       test('Should validate all fields together', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
-            restApi: restApi,
-            apiGatewayToolConfiguration: {
-              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-            },
+          GatewayTarget.forApiGateway(stack, 'AllFields', {
+            gateway,
+            restApi,
+            apiGatewayToolConfiguration: toolConfig,
             metadataConfiguration: {
               allowedQueryParameters: ['userId', 'sessionId'],
               allowedRequestHeaders: ['Authorization', 'X-API-Key'],
@@ -508,32 +411,10 @@ describe('ApiGatewayTargetConfiguration with IRestApi', () => {
         }).not.toThrow();
       });
 
-      test('Should render metadata configuration in CloudFormation output', () => {
+      test('Should not render metadata configuration in apiGateway block', () => {
         const config = ApiGatewayTargetConfiguration.create({
           restApi: restApi,
-          apiGatewayToolConfiguration: {
-            toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-          },
-          metadataConfiguration: {
-            allowedQueryParameters: ['userId'],
-            allowedRequestHeaders: ['Authorization'],
-            allowedResponseHeaders: ['X-Request-ID'],
-          },
-        });
-
-        const rendered = config._render();
-        expect(rendered.mcp.apiGateway.metadataConfiguration).toBeDefined();
-        expect(rendered.mcp.apiGateway.metadataConfiguration.allowedQueryParameters).toEqual(['userId']);
-        expect(rendered.mcp.apiGateway.metadataConfiguration.allowedRequestHeaders).toEqual(['Authorization']);
-        expect(rendered.mcp.apiGateway.metadataConfiguration.allowedResponseHeaders).toEqual(['X-Request-ID']);
-      });
-
-      test('Should not render metadata configuration when not provided', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          apiGatewayToolConfiguration: {
-            toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
-          },
+          apiGatewayToolConfiguration: toolConfig,
         });
 
         const rendered = config._render();
