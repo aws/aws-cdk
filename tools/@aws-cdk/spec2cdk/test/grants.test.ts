@@ -29,9 +29,9 @@ test('generates grants for methods with and without key actions', async () => {
       },
     },
   };
+
   const service = db.lookup('service', 'name', 'equals', 'aws-sns').only();
   const module = new GrantsModule(service, db, config, 'aws-cdk-lib/aws-iam', true);
-
   const scope = new Module('@aws-cdk/aws-sns');
   const refInterface = new InterfaceType(scope, {
     export: true,
@@ -49,7 +49,7 @@ test('generates grants for methods with and without key actions', async () => {
       ref: {
         interfaceType: refInterface.type,
         property: refInterface.properties[0],
-        struct: {} as unknown as StructType, // FIXME What should go here?
+        struct: {} as unknown as StructType,
       },
     },
   });

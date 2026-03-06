@@ -1,5 +1,4 @@
 # Request a deployment to the test pipeline
-
 name: request-cli-integ-test
 on:
   pull_request_target:
@@ -9,7 +8,6 @@ on:
       - reopened
       - labeled
       - unlabeled
-
 jobs:
   cli-changes:
     runs-on: ubuntu-latest
@@ -36,7 +34,6 @@ jobs:
     needs: cli-changes
     if: needs.cli-changes.outputs.any-changed-files == 'true' || contains(github.event.pull_request.labels.*.name, 'pr/request-cli-integ-tests')
     runs-on: ubuntu-latest
-    environment: automation
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -55,7 +52,6 @@ jobs:
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
-
             A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
           comment-tag: request-cli-integ-test
           mode: recreate
