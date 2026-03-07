@@ -65,7 +65,7 @@ export class DataProtectionPolicy {
 
     const statement = [
       {
-        Sid: 'audit-statement-cdk',
+        Sid: 'auditStatementCdk',
         DataIdentifier: identifiers,
         Operation: {
           Audit: {
@@ -74,7 +74,7 @@ export class DataProtectionPolicy {
         },
       },
       {
-        Sid: 'redact-statement-cdk',
+        Sid: 'redactStatementCdk',
         DataIdentifier: identifiers,
         Operation: {
           Deidentify: {
