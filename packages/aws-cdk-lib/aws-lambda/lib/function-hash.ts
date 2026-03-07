@@ -23,7 +23,8 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash(fn._layers);
+    const functionLayers = getFunctionLayers(fn, properties, stack);
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(functionLayers);
   }
 
   return md5hash(stringifiedConfig + additional);
@@ -100,6 +101,51 @@ function filterUsefulKeys(properties: any, fn: LambdaFunction) {
   const ret: { [key: string]: any } = {};
   Object.entries(properties).filter(([k, _]) => versionProps[k]).forEach(([k, v]) => ret[k] = v);
   return ret;
+}
+
+/**
+ * Extract the layers actually attached to the function from CloudFormation properties.
+ * This ensures we only include layers for this specific function, not all layers in the stack.
+ */
+function getFunctionLayers(fn: LambdaFunction, properties: any, stack: Stack): ILayerVersion[] {
+  const layersProperty = properties.Layers;
+  if (!layersProperty || !Array.isArray(layersProperty) || layersProperty.length === 0) {
+    return [];
+  }
+
+  // For each layer ARN in the function's Layers property, find the corresponding ILayerVersion
+  const functionLayers: ILayerVersion[] = [];
+
+  for (const layerArnFromProps of layersProperty) {
+    // Try to find a matching layer from fn._layers
+    const matchingLayer = fn._layers.find(layer => {
+      // Resolve both ARNs for comparison
+      const resolvedPropArn = stack.resolve(layerArnFromProps);
+      const resolvedLayerArn = stack.resolve(layer.layerVersionArn);
+
+      // If both are strings, compare directly
+      if (typeof resolvedPropArn === 'string' && typeof resolvedLayerArn === 'string') {
+        return resolvedPropArn === resolvedLayerArn;
+      }
+
+      // If one or both are unresolved tokens, compare the string representations
+      // This handles cases where both are Ref tokens or similar
+      const propArnStr = typeof resolvedPropArn === 'string'
+        ? resolvedPropArn
+        : JSON.stringify(resolvedPropArn);
+      const layerArnStr = typeof resolvedLayerArn === 'string'
+        ? resolvedLayerArn
+        : JSON.stringify(resolvedLayerArn);
+
+      return propArnStr === layerArnStr;
+    });
+
+    if (matchingLayer) {
+      functionLayers.push(matchingLayer);
+    }
+  }
+
+  return functionLayers;
 }
 
 function calculateLayersHash(layers: ILayerVersion[]): string {
