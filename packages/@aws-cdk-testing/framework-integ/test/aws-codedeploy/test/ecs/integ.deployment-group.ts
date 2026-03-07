@@ -81,7 +81,7 @@ const cluster = new ecs.Cluster(stack, 'EcsCluster', {
 });
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('Container', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:stable-alpine'),
   portMappings: [{ containerPort: 80 }],
 });
 const service = new ecs.FargateService(stack, 'FargateService', {
@@ -95,7 +95,7 @@ const service = new ecs.FargateService(stack, 'FargateService', {
 // A second task definition for testing a CodeDeploy deployment of the ECS service to a new task definition
 const taskDefinition2 = new ecs.FargateTaskDefinition(stack, 'TaskDef2');
 taskDefinition2.addContainer('Container', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:stable-alpine'),
   portMappings: [{ containerPort: 80 }],
 });
 service.node.addDependency(taskDefinition2);

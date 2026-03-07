@@ -180,16 +180,35 @@ new s3.Bucket(scope, "Bucket")
 Property mixins support two merge strategies:
 
 ```typescript
-// MERGE (default): Deep merges properties with existing values
+// COMBINE (default): Deep merges properties with existing values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.MERGE }
+  { strategy: PropertyMergeStrategy.combine() }
 ));
 
 // OVERRIDE: Replaces existing property values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERRIDE }
+  { strategy: PropertyMergeStrategy.override() }
+));
+```
+
+You can also implement `IMergeStrategy` to define a custom strategy:
+
+```typescript
+class MyCustomStrategy implements IMergeStrategy {
+  public apply(target: object, source: object, allowedKeys: string[]) {
+    for (const key of allowedKeys) {
+      if (key in source) {
+        (target as any)[key] = (source as any)[key];
+      }
+    }
+  }
+}
+
+Mixins.of(bucket).apply(new CfnBucketPropsMixin(
+  { tags: [{ key: 'Extra', value: 'Tag' }] },
+  { strategy: new MyCustomStrategy() }
 ));
 ```
 

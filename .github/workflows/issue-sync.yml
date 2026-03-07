@@ -2,6 +2,9 @@ name: Issue Sync
 
 on: [issues, issue_comment]
 
+permissions:
+  contents: read
+
 jobs:
   sync-issue:
     name: Sync Issue with Project Board
