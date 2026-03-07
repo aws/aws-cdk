@@ -2530,3 +2530,16 @@ new ecs.ExternalService(this, 'ExternalService', {
   daemon: true,
 });
 ```
+
+## Mixins
+
+ECS provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### ClusterSettings
+
+Applies one or more cluster settings to an ECS cluster. If a setting with the same name already exists, its value is replaced:
+
+```ts
+new ecs.CfnCluster(this, 'Cluster')
+  .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
+```
