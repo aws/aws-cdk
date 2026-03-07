@@ -5,7 +5,6 @@ exports[`L1 property mixin for a standard-issue resource 1`] = `
 import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as mixins from "../../mixins";
-import * as helpers from "../../util/property-mixins";
 import * as service from "aws-cdk-lib/aws-some";
 
 /**
@@ -19,7 +18,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
 
   protected readonly props: CfnThingMixinProps;
 
-  protected readonly strategy: mixins.PropertyMergeStrategy;
+  protected readonly strategy: mixins.IMergeStrategy;
 
   /**
    * Create a mixin to apply properties to \`AWS::Some::Resource\`.
@@ -30,7 +29,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
   public constructor(props: CfnThingMixinProps, options: mixins.CfnPropertyMixinOptions = {}) {
     super();
     this.props = props;
-    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.MERGE);
+    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.combine());
   }
 
   /**
@@ -45,11 +44,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
    */
   public applyTo(construct: constructs.IConstruct): void {
     if (this.supports(construct)) {
-      if ((this.strategy === mixins.PropertyMergeStrategy.MERGE)) {
-        helpers.deepMerge(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
-      } else {
-        helpers.shallowAssign(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
-      }
+      this.strategy.apply(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
     }
   }
 }
@@ -107,7 +102,6 @@ exports[`L1 property mixin with deeply nested relationship properties 1`] = `
 import * as cdk from "aws-cdk-lib/core";
 import * as constructs from "constructs";
 import * as mixins from "../../mixins";
-import * as helpers from "../../util/property-mixins";
 import * as service from "aws-cdk-lib/aws-some";
 import { aws_other as otherRefs } from "aws-cdk-lib/interfaces";
 
@@ -122,7 +116,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
 
   protected readonly props: CfnThingMixinProps;
 
-  protected readonly strategy: mixins.PropertyMergeStrategy;
+  protected readonly strategy: mixins.IMergeStrategy;
 
   /**
    * Create a mixin to apply properties to \`AWS::Some::Resource\`.
@@ -136,7 +130,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
       ...props,
       ...flattenCfnThingMixinProps(props)
     };
-    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.MERGE);
+    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.combine());
   }
 
   /**
@@ -151,11 +145,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
    */
   public applyTo(construct: constructs.IConstruct): void {
     if (this.supports(construct)) {
-      if ((this.strategy === mixins.PropertyMergeStrategy.MERGE)) {
-        helpers.deepMerge(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
-      } else {
-        helpers.shallowAssign(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
-      }
+      this.strategy.apply(construct, this.props, CfnThingPropsMixin.CFN_PROPERTY_KEYS);
     }
   }
 }
