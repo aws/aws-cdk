@@ -1,11 +1,12 @@
 import type { Construct, IConstruct } from 'constructs';
-import type { IApplicationListener } from './application-listener';
+import { ApplicationListener, type IApplicationListener } from './application-listener';
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
 import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { ApplicationProtocol } from '../shared/enums';
 import type { IListenerAction } from '../shared/listener-action';
 
 /**
@@ -32,6 +33,22 @@ export class ListenerAction implements IListenerAction {
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
     return new AuthenticateOidcAction(options);
+  }
+
+  /**
+   * Authenticate using JWT validation
+   *
+   * You can configure ALB to verify JSON Web Tokens (JWT) provided by clients
+   * for secure service-to-service (S2S) or machine-to-machine (M2M) communications.
+   *
+   * ALB validates the token signature and requires mandatory claims: 'iss' (issuer)
+   * and 'exp' (expiration). Additionally, if present, ALB validates 'nbf' (not before)
+   * and 'iat' (issued at time) claims.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-verify-jwt.html
+   */
+  public static authenticateJwt(options: AuthenticateJwtOptions): ListenerAction {
+    return new AuthenticateJwtAction(options);
   }
 
   /**
@@ -435,6 +452,37 @@ export interface AuthenticateOidcOptions {
 }
 
 /**
+ * Options for `ListenerAction.authenticateJwt()`
+ */
+export interface AuthenticateJwtOptions {
+  /**
+   * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
+   */
+  readonly next: ListenerAction;
+
+  /**
+   * The issuer of the JWT token
+   *
+   * This must be a full URL, including the HTTPS protocol, the domain, and the path.
+   *
+   * @example 'https://issuer.example.com'
+   */
+  readonly issuer: string;
+
+  /**
+   * The JWKS (JSON Web Key Set) endpoint URL
+   *
+   * The endpoint must be publicly accessible and return the public keys used to verify JWT signatures.
+   *
+   * @example 'https://issuer.example.com/jwks'
+   */
+  readonly jwksEndpoint: string;
+}
+
+/**
  * What to do with unauthenticated requests
  */
 export enum UnauthenticatedAction {
@@ -465,6 +513,30 @@ class TargetGroupListenerAction extends ListenerAction {
   public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
+    }
+  }
+}
+
+/**
+ * A Listener Action to authenticate with JWT
+ */
+class AuthenticateJwtAction extends ListenerAction {
+  constructor(options: AuthenticateJwtOptions) {
+    super({
+      type: 'jwt-validation',
+      jwtValidationConfig: {
+        issuer: options.issuer,
+        jwksEndpoint: options.jwksEndpoint,
+      },
+    }, options.next);
+  }
+
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    // JWT authentication requires HTTPS listener
+    if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
+      throw new UnscopedValidationError('JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
     }
   }
 }
