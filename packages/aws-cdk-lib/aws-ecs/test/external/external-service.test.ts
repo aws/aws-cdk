@@ -1,4 +1,4 @@
-import { Template, Annotations } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -496,5 +496,159 @@ describe('external service', () => {
     // THEN
     Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 0% for an external service is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercentExternal]');
     Annotations.fromStack(stack).hasNoWarning('/Default/ExternalService', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
+  });
+});
+
+describe('ExternalService with imported TaskDefinition', () => {
+  test('can create ExternalService with imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    // WHEN
+    new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    const template = Template.fromStack(testStack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      TaskDefinition: 'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+      LaunchType: 'EXTERNAL',
+    });
+  });
+
+  test('adds info annotation when using imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    // WHEN
+    new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(testStack);
+    annotations.hasInfo('/Default/Service', Match.stringLikeRegexp('.*EXTERNAL.*compatibility.*'));
+  });
+
+  test('can create ExternalService with daemon mode and imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    // WHEN
+    new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+      daemon: true,
+    });
+
+    // THEN
+    const template = Template.fromStack(testStack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      SchedulingStrategy: 'DAEMON',
+    });
+  });
+
+  test('load balancer target still throws with imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    const service = new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      service.loadBalancerTarget({
+        containerName: 'web',
+        containerPort: 80,
+      });
+    }).toThrow(/External service cannot be attached as load balancer targets/);
+  });
+
+  test('auto scaling still throws with imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    const service = new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      service.autoScaleTaskCount({
+        minCapacity: 1,
+        maxCapacity: 10,
+      });
+    }).toThrow(/Autoscaling not supported for external service/);
+  });
+
+  test('cloud map still throws with imported TaskDefinition', () => {
+    // GIVEN
+    const testStack = new cdk.Stack();
+    const testVpc = new ec2.Vpc(testStack, 'Vpc');
+    const testCluster = new ecs.Cluster(testStack, 'Cluster', { vpc: testVpc });
+
+    const taskDef = ecs.TaskDefinition.fromTaskDefinitionArn(
+      testStack,
+      'ImportedTaskDef',
+      'arn:aws:ecs:us-east-1:123456789012:task-definition/my-task:1',
+    );
+
+    const service = new ecs.ExternalService(testStack, 'Service', {
+      cluster: testCluster,
+      taskDefinition: taskDef,
+    });
+
+    // WHEN/THEN
+    expect(() => {
+      service.enableCloudMap({
+        name: 'myApp',
+      });
+    }).toThrow(/Cloud map integration not supported for an external service/);
   });
 });
