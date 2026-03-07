@@ -380,6 +380,8 @@ You can use the `architecture` property to deploy using the `ARM_64` (Graviton)
 architecture for cost savings and sustainability improvements.
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
 declare const destinationBucket: s3.Bucket;
 
 new s3deploy.BucketDeployment(this, 'DeployWithGraviton', {
