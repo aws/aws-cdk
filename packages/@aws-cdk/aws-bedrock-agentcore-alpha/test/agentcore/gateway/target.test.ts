@@ -300,7 +300,7 @@ describe('GatewayTarget Tests', () => {
       expect((targetResource as any).Properties.MetadataConfiguration).toBeUndefined();
     });
 
-    test('Should not include metadata configuration for non-API Gateway targets', () => {
+    test('Should not include metadata configuration when not provided', () => {
       const fn = new lambda.Function(stack, 'TestFunction', {
         runtime: lambda.Runtime.NODEJS_22_X,
         handler: 'index.handler',
@@ -332,6 +332,120 @@ describe('GatewayTarget Tests', () => {
         r.Properties.Name === 'lambda-target',
       );
       expect((targetResource as any).Properties.MetadataConfiguration).toBeUndefined();
+    });
+
+    test('Should create Lambda target with metadata configuration', () => {
+      const fn = new lambda.Function(stack, 'TestFunction', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+      });
+
+      const toolSchema = ToolSchema.fromInline([
+        {
+          name: 'test_tool',
+          description: 'Test tool',
+          inputSchema: {
+            type: SchemaDefinitionType.OBJECT,
+            properties: {},
+          },
+        },
+      ]);
+
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'lambda-target-with-metadata',
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+        metadataConfiguration: {
+          allowedRequestHeaders: ['x-correlation-id', 'x-tenant-id'],
+          allowedResponseHeaders: ['x-rate-limit-remaining'],
+          allowedQueryParameters: ['version'],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'lambda-target-with-metadata',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['x-correlation-id', 'x-tenant-id'],
+          AllowedResponseHeaders: ['x-rate-limit-remaining'],
+          AllowedQueryParameters: ['version'],
+        },
+      });
+    });
+
+    test('Should create MCP Server target with metadata configuration', () => {
+      GatewayTarget.forMcpServer(stack, 'McpServerTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'mcp-server-with-metadata',
+        endpoint: 'https://example.com/mcp',
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromIamRole(),
+        ],
+        metadataConfiguration: {
+          allowedRequestHeaders: ['x-correlation-id'],
+          allowedQueryParameters: ['version'],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-server-with-metadata',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['x-correlation-id'],
+          AllowedQueryParameters: ['version'],
+        },
+      });
+    });
+
+    test('Should create OpenAPI target with metadata configuration', () => {
+      const apiSchema = ApiSchema.fromInline(JSON.stringify({
+        openapi: '3.0.0',
+        info: { title: 'Test', version: '1.0' },
+        servers: [{ url: 'https://api.example.com' }],
+        paths: { '/test': { get: { operationId: 'getTest', summary: 'Test', responses: { 200: { description: 'OK' } } } } },
+      }));
+
+      GatewayTarget.forOpenApi(stack, 'OpenApiTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'openapi-with-metadata',
+        apiSchema: apiSchema,
+        metadataConfiguration: {
+          allowedResponseHeaders: ['x-rate-limit'],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'openapi-with-metadata',
+        MetadataConfiguration: {
+          AllowedResponseHeaders: ['x-rate-limit'],
+        },
+      });
+    });
+
+    test('Should create Smithy target with metadata configuration', () => {
+      const smithyModel = ApiSchema.fromInline('{"smithy":"1.0"}');
+
+      GatewayTarget.forSmithy(stack, 'SmithyTarget', {
+        gateway: gateway,
+        gatewayTargetName: 'smithy-with-metadata',
+        smithyModel: smithyModel,
+        metadataConfiguration: {
+          allowedRequestHeaders: ['x-tenant-id'],
+          allowedQueryParameters: ['page'],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'smithy-with-metadata',
+        MetadataConfiguration: {
+          AllowedRequestHeaders: ['x-tenant-id'],
+          AllowedQueryParameters: ['page'],
+        },
+      });
     });
   });
 
@@ -684,6 +798,9 @@ describe('GatewayTarget Tests', () => {
       const target = new GatewayTarget(stack, 'ConstructorApiGwTarget', {
         gateway: gateway,
         gatewayTargetName: 'constructor-apigw-target',
+        metadataConfiguration: {
+          allowedQueryParameters: ['id'],
+        },
         targetConfiguration: ApiGatewayTargetConfiguration.create({
           restApi: restApi,
           stage: 'prod',
@@ -694,9 +811,6 @@ describe('GatewayTarget Tests', () => {
                 methods: [ApiGatewayHttpMethod.GET],
               },
             ],
-          },
-          metadataConfiguration: {
-            allowedQueryParameters: ['id'],
           },
         }),
       });
