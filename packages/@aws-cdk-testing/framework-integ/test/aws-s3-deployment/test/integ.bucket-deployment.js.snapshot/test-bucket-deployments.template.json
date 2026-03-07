@@ -163,7 +163,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithBasicCustomResource7B6A9DF8": {
@@ -422,7 +426,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithPruneDisabledCustomResourceBC53A8E0": {
@@ -462,7 +470,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithExcludeCustomResource4ED5F4CA": {
@@ -593,7 +605,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithoutExtractCustomResource13DE2310": {
@@ -722,7 +738,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithAddSourceCustomResourceFDFDFB55": {
@@ -862,7 +882,11 @@
      },
      "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "DeployWithoutObjectKeysCustomResource825229D6": {
