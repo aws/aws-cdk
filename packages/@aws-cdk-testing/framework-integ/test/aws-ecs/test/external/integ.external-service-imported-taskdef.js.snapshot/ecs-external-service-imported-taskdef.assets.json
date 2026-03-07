@@ -1,16 +1,30 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "files": {
-    "366c7761e8b0acc83d91d8261c0a5320499e8f6d716269b6973f750d9463af13": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
+      "displayName": "ecs-external-service-imported-taskdef/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-65a3ca72": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "0e6aae51ecf548c74ee79982da341434943465b9a60b7a43048c4573bb5a57fb": {
       "displayName": "ecs-external-service-imported-taskdef Template",
       "source": {
         "path": "ecs-external-service-imported-taskdef.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c4e8e28b": {
+        "current_account-current_region-af41c043": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "366c7761e8b0acc83d91d8261c0a5320499e8f6d716269b6973f750d9463af13.json",
+          "objectKey": "0e6aae51ecf548c74ee79982da341434943465b9a60b7a43048c4573bb5a57fb.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

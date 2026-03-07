@@ -43,7 +43,7 @@
     "outputPaths": [
      "services.0.taskDefinition"
     ],
-    "salt": "1771749046832"
+    "salt": "1772881703853"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -106,7 +106,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -161,7 +161,7 @@
     "outputPaths": [
      "services.0.schedulingStrategy"
     ],
-    "salt": "1771749046833"
+    "salt": "1772881703854"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
