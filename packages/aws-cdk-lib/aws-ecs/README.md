@@ -2454,6 +2454,27 @@ new ecs.ExternalService(this, 'ExternalService', {
 });
 ```
 
+### Force New Deployment
+
+You can force a new deployment of a service without changing the task definition or desired count.
+This is useful when you want ECS to pull the latest container image with the same tag or to trigger a redeployment.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+// Force a new deployment with an auto-generated nonce
+service.forceNewDeployment();
+
+// Or provide your own nonce to control when deployments are triggered
+service.forceNewDeployment('my-custom-nonce-v2');
+```
+
 ## Mixins
 
 ECS provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.

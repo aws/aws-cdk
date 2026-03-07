@@ -940,6 +940,32 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Forces a new deployment of the service.
+   *
+   * This can be used to trigger a deployment without changing the task definition or desired count.
+   * ECS will start a new deployment even if there are no changes to the service configuration.
+   *
+   * @param nonce - A unique string that signals ECS to start a new deployment.
+   * Must be between 1 and 255 characters. If not provided, a timestamp-based nonce is generated.
+   */
+  public forceNewDeployment(nonce?: string) {
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+    }
+
+    const resolvedNonce = nonce ?? new Date().toISOString();
+
+    if (resolvedNonce.length < 1 || resolvedNonce.length > 255) {
+      throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+    }
+
+    this.resource.forceNewDeployment = {
+      enableForceNewDeployment: true,
+      forceNewDeploymentNonce: resolvedNonce,
+    };
+  }
+
+  /**
    * Add a deployment lifecycle hook target
    * @param target The lifecycle hook target to add
    */
