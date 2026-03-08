@@ -2,7 +2,7 @@ import { S3OnFailureDestination } from './s3-onfailuire-destination';
 import type { IKey } from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import type { Duration } from '../../core';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * The set of properties for streaming event sources shared by
@@ -185,17 +185,17 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
-      if (minimumPollers != undefined) {
+      if (minimumPollers != undefined && !Token.isUnresolved(minimumPollers)) {
         if (minimumPollers < 1 || minimumPollers > 200) {
           throw new UnscopedValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive');
         }
       }
-      if (maximumPollers != undefined) {
+      if (maximumPollers != undefined && !Token.isUnresolved(maximumPollers)) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
           throw new UnscopedValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive');
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined) {
+      if (minimumPollers != undefined && maximumPollers != undefined && !Token.isUnresolved(minimumPollers) && !Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
           throw new UnscopedValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
         }

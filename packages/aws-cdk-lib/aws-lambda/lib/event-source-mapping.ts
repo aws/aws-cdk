@@ -514,17 +514,17 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
-      if (minimumPollers != undefined) {
+      if (minimumPollers != undefined && !cdk.Token.isUnresolved(minimumPollers)) {
         if (minimumPollers < 1 || minimumPollers > 200) {
           throw new ValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive', this);
         }
       }
-      if (maximumPollers != undefined) {
+      if (maximumPollers != undefined && !cdk.Token.isUnresolved(maximumPollers)) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
           throw new ValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined) {
+      if (minimumPollers != undefined && maximumPollers != undefined && !cdk.Token.isUnresolved(minimumPollers) && !cdk.Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
           throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
         }

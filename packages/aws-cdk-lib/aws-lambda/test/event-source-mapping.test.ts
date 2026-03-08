@@ -602,4 +602,17 @@ describe('event source mapping', () => {
       },
     })).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
   });
+
+  test('provisioned pollers with unresolved tokens should not throw', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      startingPosition: StartingPosition.AT_TIMESTAMP,
+      startingPositionTimestamp: 1640995200,
+      provisionedPollerConfig: {
+        minimumPollers: cdk.Lazy.number({ produce: () => 1 }),
+        maximumPollers: cdk.Lazy.number({ produce: () => 3 }),
+      },
+    })).not.toThrow();
+  });
 });
