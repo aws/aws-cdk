@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-eu-west-1/bb540f98affca3575f4355831ac1c660d368f561847f4ca3167c3a595d0c704e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-eu-west-1/2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -47,7 +47,8 @@
                 "name": "*",
                 "type": "S"
               },
-              "removalPolicy": "destroy"
+              "removalPolicy": "destroy",
+              "globalTableSettingsReplicationMode": "ENABLED"
             }
           },
           {
@@ -128,6 +129,23 @@
       ],
       "metadata": {
         "/MultiAccountReplicaStackV2/ReplicaTableV2": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "tableName": "*",
+              "replicaSourceTable": "*",
+              "globalTableSettingsReplicationMode": "ENABLED",
+              "removalPolicy": "destroy"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToResourcePolicy": [
+                {}
+              ]
+            }
+          },
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
@@ -699,12 +717,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1105.0"
 }

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa3411adc42cc099cb4e955b8615cfff045d013c6077296d54c92b59bd31c239.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/771d7bc77eaa1f499ee08536dc8781c67e54f68d494752c9e1b357f22a57478c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -70,10 +70,10 @@
             }
           }
         ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Dest": [
+        "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Desterror-logs": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDestC87FF06E"
+            "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813"
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
@@ -100,10 +100,10 @@
             "data": "EventBusCdkDestVendedLogsMixinTestDeliveryDestination409399E9InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestEventBusCDKSourceINFOLOGSVendedLogsMixinTestEventBus050202CAEA2661EFDeliveryA29B2652"
           }
         ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Dest": [
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Desterror-logs": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4DestE59F2AF8"
+            "data": "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Desterrorlogs2589B657"
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Delivery": [
@@ -112,10 +112,10 @@
             "data": "EventBusCdkS3ErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Delivery2E928457"
           }
         ],
-        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Dest": [
+        "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Destinfo-logs": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Dest927BC870"
+            "data": "EventBusCdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4Destinfologs715126EC"
           }
         ],
         "/VendedLogsMixinTest/EventBus/Resource/CdkS3InfoLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryBucketE1BC60E4/Delivery": [
