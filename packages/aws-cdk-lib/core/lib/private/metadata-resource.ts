@@ -125,8 +125,9 @@ export function formatAnalytics(infos: ConstructAnalytics[]) {
 
   if (process.env.CDK_CONTEXT_JSON && JSON.parse(process.env.CDK_CONTEXT_JSON)['cdk-migrate']) {
     const compressedAppInfoBuffer = zlib.gzipSync(Buffer.from('cdk-migrate'));
+    setGzipOperatingSystemToUnknown(compressedAppInfoBuffer);
     const compressedAppInfo = compressedAppInfoBuffer.toString('base64');
-    analyticsString.concat(':', compressedAppInfo);
+    return `${analyticsString}:${compressedAppInfo}`;
   }
 
   return analyticsString;

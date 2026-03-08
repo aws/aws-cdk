@@ -276,6 +276,70 @@ describe('formatAnalytics', () => {
     expect(gzip[9]).toBe(255);
   });
 
+  describe('cdk-migrate telemetry', () => {
+    const originalEnv = process.env.CDK_CONTEXT_JSON;
+
+    afterEach(() => {
+      if (originalEnv === undefined) {
+        delete process.env.CDK_CONTEXT_JSON;
+      } else {
+        process.env.CDK_CONTEXT_JSON = originalEnv;
+      }
+    });
+
+    test('includes cdk-migrate suffix when CDK_CONTEXT_JSON contains cdk-migrate flag', () => {
+      process.env.CDK_CONTEXT_JSON = JSON.stringify({ 'cdk-migrate': true });
+
+      const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+      const analytics = formatAnalytics(constructInfo);
+
+      // Analytics string should have 4 parts when cdk-migrate is set
+      const parts = analytics.split(':');
+      expect(parts.length).toBe(4);
+      expect(parts[0]).toBe('v2');
+      expect(parts[1]).toBe('deflate64');
+
+      // The fourth part should be the compressed 'cdk-migrate' string
+      const appInfoBuffer = Buffer.from(parts[3], 'base64');
+      const decompressedAppInfo = zlib.gunzipSync(appInfoBuffer).toString('utf-8');
+      expect(decompressedAppInfo).toBe('cdk-migrate');
+    });
+
+    test('does not include cdk-migrate suffix when CDK_CONTEXT_JSON is not set', () => {
+      delete process.env.CDK_CONTEXT_JSON;
+
+      const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+      const analytics = formatAnalytics(constructInfo);
+
+      // Analytics string should have 3 parts when cdk-migrate is not set
+      const parts = analytics.split(':');
+      expect(parts.length).toBe(3);
+    });
+
+    test('does not include cdk-migrate suffix when cdk-migrate flag is false', () => {
+      process.env.CDK_CONTEXT_JSON = JSON.stringify({ 'cdk-migrate': false });
+
+      const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+      const analytics = formatAnalytics(constructInfo);
+
+      // Analytics string should have 3 parts when cdk-migrate is false
+      const parts = analytics.split(':');
+      expect(parts.length).toBe(3);
+    });
+
+    test('cdk-migrate app info gzip is encoded with "unknown" operating system', () => {
+      process.env.CDK_CONTEXT_JSON = JSON.stringify({ 'cdk-migrate': true });
+
+      const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+      const analytics = formatAnalytics(constructInfo);
+      const parts = analytics.split(':');
+      const appInfoGzip = Buffer.from(parts[3], 'base64');
+
+      // OS byte at position 9 should be 255 (unknown)
+      expect(appInfoGzip[9]).toBe(255);
+    });
+  });
+
   // Compares the output of formatAnalytics with an expected (plaintext) output.
   // For ease of testing, the plaintext versions are compared rather than the encoded versions.
   function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
