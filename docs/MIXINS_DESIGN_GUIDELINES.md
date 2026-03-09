@@ -129,40 +129,63 @@ automatically delegates to the L1 default child.
 
 ### Validation
 
-Use `node.addValidation()` for deferred validation that runs at synth time.
-This allows properties like `removalPolicy` to be set after the mixin is
-applied:
+Mixins have two distinct phases: initialization and application. During
+initialization only the mixin's input properties are available. During
+application we also have access to the target construct. Validate as early as
+possible in each phase.
+
+**During initialization** — validate all input properties in the constructor.
+Throw an error for invalid combinations:
 
 ```ts
-construct.node.addValidation({
-  validate: () => {
-    if (construct.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE) {
-      return ['Cannot use \'BucketAutoDeleteObjects\' without setting removal policy to \'DESTROY\'.'];
-    }
-    return [];
-  },
-});
+constructor(props: EncryptionAtRestProps = {}) {
+  // Validate mixin props at construction time
+  if (props.bucketKey && props.algorithm === 'aws:kms:dsse') {
+    throw new Error("Cannot use S3 Bucket Key and DSSE together");
+  }
+}
 ```
 
-Do not throw errors in `applyTo()` for conditions that may be resolved later.
-
-### Custom Resources
-
-When a mixin creates custom resources (e.g., auto-delete handlers):
-
-1. Use `findParentL2Scope(construct) ?? construct` to attach the custom
-   resource to the L2 scope when available. This ensures the custom resource
-   is a sibling of the L1, not a child.
-2. Use singleton providers via `getOrCreateProvider()` to share Lambda
-   functions across multiple resources.
-3. Tag the resource to record the mixin's intent, so the custom resource can
-   verify before acting.
+**During application** — validate pre-conditions on the target construct in
+`applyTo()`. Throw an error if the failure is unrecoverable:
 
 ```ts
-const scope = findParentL2Scope(construct) ?? construct;
-const provider = MyProvider.getOrCreateProvider(scope, RESOURCE_TYPE, { ... });
-Tags.of(construct).add(MY_TAG, 'true');
+applyTo(bucket: IConstruct): void {
+  if (!this.supports(bucket)) return;
+
+  // Throw if the pre-condition cannot be resolved later
+  if (bucket.bucketEncryption) {
+    throw new Error("Bucket encryption is already configured");
+  }
+
+  bucket.bucketEncryption = { /* ... */ };
+}
 ```
+
+**Deferred validation** — use `node.addValidation()` for conditions that may
+be resolved later in the app's lifecycle. This runs at synth time:
+
+```ts
+applyTo(construct: IConstruct): void {
+  if (!this.supports(construct)) return;
+
+  // This condition may be set after the mixin is applied
+  construct.node.addValidation({
+    validate: () => {
+      if (construct.cfnOptions.deletionPolicy !== CfnDeletionPolicy.DELETE) {
+        return ['Cannot use \'BucketAutoDeleteObjects\' without setting removal policy to \'DESTROY\'.'];
+      }
+      return [];
+    },
+  });
+
+  // ... apply the mixin
+}
+```
+
+Like with constructs, mixins should _throw an error_ for unrecoverable
+failures and use _annotations_ for recoverable ones. Collect errors and throw
+as a group whenever possible.
 
 ### Refactoring L2 Properties into Mixins
 
@@ -171,12 +194,44 @@ When extracting an existing L2 property into a mixin:
 1. Create the mixin class following the naming and file conventions above.
 2. Refactor the L2 to call `this.with(new MyMixin())` instead of the private
    method.
-3. Ensure the mixin's custom resource type and tag match the L2's existing
-   values for backward compatibility.
-4. Verify the Lambda provider is shared between L2 property usage and direct
-   mixin usage.
-5. Keep the L2 property for backward compatibility — it should delegate to the
+3. Keep the L2 property for backward compatibility — it should delegate to the
    mixin internally.
+4. Verify the synthesized CloudFormation output is identical before and after
+   the refactoring.
+
+### Modifying L1 Properties
+
+When a mixin sets properties on an L1 resource, consider how the mixin
+interacts with existing configuration. L1 properties may already be set by the
+user, by the L2, or by another mixin.
+
+**Simple properties** (strings, booleans, numbers) can typically be overwritten.
+This is expected — later mixins override earlier ones:
+
+```ts
+// Simple override is fine
+construct.versioningConfiguration = { status: 'Enabled' };
+```
+
+**Nested or array properties** require more care. Decide whether the mixin
+should replace or merge with existing values. For example, a mixin that adds
+lifecycle rules should append to existing rules, not replace them:
+
+```ts
+// ❌ Replaces any existing rules
+construct.lifecycleConfiguration = {
+  rules: [myRule],
+};
+
+// ✅ Merges with existing rules
+const existing = construct.lifecycleConfiguration?.rules ?? [];
+construct.lifecycleConfiguration = {
+  rules: [...existing, myRule],
+};
+```
+
+**Document the merge behavior** in the mixin's JSDoc. Users need to understand
+whether applying a mixin will replace or extend existing configuration.
 
 ## Testing
 

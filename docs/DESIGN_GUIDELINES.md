@@ -215,8 +215,10 @@ distinct role and can be used independently of an L2.
 
 Mixins are **inward-looking features** that modify a resource's own
 configuration. They are composable abstractions applied to constructs via the
-`.with()` method. Mixins target L1 (`Cfn*`) resources and can be applied to
-L1s, L2s, or custom constructs alike.
+`.with()` method. Mixins usually operate on a single primary resource and can be
+applied to L1s, L2s, or custom constructs alike. They are not designed for
+integrations between two equally important resources — use a
+[Facade](#facades) for that.
 
 Examples: `BucketVersioning`, `BucketAutoDeleteObjects`, `BucketBlockPublicAccess`.
 
@@ -261,13 +263,13 @@ similar, each contains resource-specific logic. A Facade can also provide a
 the `IResourceWithPolicyV2` trait for buckets).
 
 Some Facades are auto-generated and available for most resources (e.g.,
-`BucketMetrics`, `BucketReflections`). Others are handwritten for resources that
+`BucketMetrics`, `BucketReflection`). Others are handwritten for resources that
 need custom logic (e.g., `BucketGrants`). Because Facades are standalone classes
 that only depend on the resource reference interface, third-party packages can
 provide their own Facades for any resource without modifying `aws-cdk-lib`.
 
 Examples: `BucketGrants` (handwritten), `BucketMetrics` (generated),
-`BucketReflections` (generated).
+`BucketReflection` (generated).
 
 ```ts
 // Facades are typically accessed through the construct interface
@@ -312,14 +314,16 @@ interact with directly.
 
 ### When to use which
 
-| Question                                         | Mixin | Facade | Trait  |
-| ------------------------------------------------ | ----- | ------ | ------ |
-| Does it modify the resource itself?              | ✅     |        |        |
-| Does it integrate with external things?          |       | ✅      |        |
-| Does it advertise a service-agnostic capability? |       |        | ✅      |
-| Is it specific to one resource type?             | ✅     | ✅      | no     |
-| Should it work with L1 constructs?               | ✅     | ✅      | ✅      |
-| Is it user-facing?                               | ✅     | ✅      | rarely |
+| Question                                         | Mixin                           | Facade           | Trait            |
+| ------------------------------------------------ | ------------------------------- | ---------------- | ---------------- |
+| Does it modify the resource itself?              | yes                             | no               |                  |
+| Does it integrate with external things?          | no                              | yes              | yes              |
+| Does it advertise a service-agnostic capability? | cross-service Mixins            | no               | yes              |
+| Is it specific to one resource type?             | yes                             | yes              | no               |
+| Should it work with L1 constructs?               | yes                             | yes              | yes              |
+| Is it user-facing?                               | yes                             | yes              | rarely           |
+| Primary builder audience                         | construct author & app builders | construct author | construct author |
+| Primary user audience                            | app builder                     | app builder      | construct author |
 
 For new features, prefer Mixins and Facades over adding methods or properties
 directly to L2 constructs. Existing L2 constructs will continue to work and
@@ -543,24 +547,28 @@ interface IBucket extends IResource, IBucketRef {
 
 #### Defining construct interfaces: what goes onto the resource interface
 
-An L2 construct can have a lot of additional features that it provides to its
-consumers. Here is a (non-exhaustive) set:
+An L2 construct should provide additional features to its consumers.
+Here is a (non-exhaustive) set:
 
 - CloudFormation attribute getters (ex: `bucketWebsiteUrl`)
+- Reflections on the state of the construct (ex: `isEncrypted`, `isVersioned`).
+- Functions to calculate something (ex: `arnForObjects`)
+- Functions to create new constructs that relate to the given resource
+  (ex: `addEventNotification`)
 - Functions to grant permissions to perform actions on the given resource (ex: `grantRead` or `grant.read`).
 - Functions to build metric objects based on metrics of the given resource (ex: `metricBucketSize` or `metrics.bucketSize`).
-- Reflections that derive state from the construct tree (ex: `isEncrypted`, `isVersioned`).
 
 Traditionally, we used to put all of these features directly on the L2 resource
 interface; that led to huge L2 interfaces and it being impossible to benefit
 from these features with alternative class implementations or L1 resource
 classes.
 
-To make it possible to use those features as widely as possible, each category
-is implemented in a separate class called a **Facade** (see
-[Mixins, Facades, and Traits](#mixins-facades-and-traits)), and exposed via
-the resource interface. New resource interfaces are designed like this,
-and old interfaces are being migrated to the new style over time (when we
+We want those features to be used as widely as possible.
+Therefore each feature is implemented in a separate class called a **Facade**
+(see [Mixins, Facades, and Traits](#mixins-facades-and-traits)).
+**They must not be added directly to the resource interface**.
+New resource interfaces are designed like this;
+old interfaces are being migrated to the new style over time (when we
 migrate, the old functions remain in place and forward to the new style
 implementation).
 
@@ -578,20 +586,42 @@ export interface IBucket extends IResource, IBucketRef {
    */
   readonly bucketWebsiteUrl: string;
 
+  // 👉 Facade: functions that only need public information move to a separate class (planned)
+  readonly helpers: BucketHelpers;
+
+  // 👉 Facade: create new constructs that relate to this resource (planned)
+  readonly create: BucketCreateHelpers;
+
   // 👉 Facade: grant permissions for a Bucket
   // The BucketGrants class can be code-generated (see the "Grants" section below).
   readonly grants: BucketGrants;
 
-  // 👉 Facade: obtain metrics for a Bucket.
+  // 👉 Facade: obtain metrics for a Bucket (planned)
   // The BucketMetrics class is automatically generated from an external source and does not need to be handwritten.
   readonly metrics: BucketMetrics;
 
-  // 👉 Facade: derive state from the construct tree instead of storing input values.
-  readonly reflections: BucketReflections;
+  // 👉 Facade: derive state from the construct tree instead of storing input values (planned)
+  readonly reflections: BucketReflection;
 }
 
-// This class can be handwritten or generated. Generation should be preferred for
-// simple resources.
+// This class is handwritten.
+export class BucketHelpers {
+  public static of(bucket: IBucketRef) { /* ... */ }
+
+  /**
+   * Returns an ARN that represents an object in the bucket
+   */
+  arnForObjects(keyPattern: string): string { /* ... */ }
+}
+
+// This class can be handwritten or generated (planned).
+// Generation should be preferred for simple resources.
+export class BucketCreateHelpers {
+  public static of(bucket: IBucketRef) { /* ... */ }
+}
+
+// This class can be handwritten or generated.
+// Generation should be preferred for simple resources.
 export class BucketGrants {
   public static of(bucket: IBucketRef) { /* ... */ }
 
@@ -613,8 +643,8 @@ export class BucketMetrics {
 }
 
 // Reflections derive state from the L1 configuration rather than storing input values.
-// This class is generated and available for most resources.
-export class BucketReflections {
+// This class is handwritten using shared reflection helpers.
+export class BucketReflection {
   public static of(bucket: IBucketRef) { /* ... */ }
 
   /**
@@ -690,7 +720,7 @@ There should be a Facade class with these kinds of functions already for this
 resource. If there isn't, write a new one.
 
 If this applies to your use case, you can accept an `IBucketRef` type and
-construct the Facade yourself.
+instantiate the Facade yourself.
 
 ```ts
 var bucket: IBucket;
@@ -701,8 +731,8 @@ bucket.arnForObjects('file.zip')
 
 // ✅ Free helper function, just accessible to you, the construct author
 arnForObjects(bucketRef, 'file.zip')
-// ✅ Even better, a Facade class accessible to you and library customers
-BucketReflections.of(bucketRef).isVersioned
+// ✅ Even better, a collection of helper functions to you and library customers
+BucketHelpers.for(bucketRef).arnForObjects('file.zip')
 ```
 
 **If the feature needs the object's cooperation**: if you want to layer on

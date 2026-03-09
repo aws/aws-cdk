@@ -67,6 +67,11 @@ Mixins are **inward-looking features** that modify a resource's own
 configuration. They are composable abstractions applied to constructs via the
 `.with()` method from the `constructs` library.
 
+Mixins operate on a single primary resource. While a mixin can create auxiliary
+resources (like custom resource handlers) or accept other constructs as props,
+it is not designed for integrations between two equally important resources
+(e.g. connecting an SNS Topic to an SQS Queue). For those, use a Facade.
+
 Mixins target L1 (`Cfn*`) resources. When applied to an L2 construct via
 `.with()`, the mixin framework automatically delegates to the L1 default child.
 
@@ -112,7 +117,7 @@ similar, each contains resource-specific logic (e.g. `BucketGrants` knows about
 object key patterns, `TopicGrants` does not).
 
 Some Facades are auto-generated and available for most resources (e.g.
-`BucketMetrics`, `BucketReflections`). Others are handwritten for resources that
+`BucketMetrics`, `BucketReflection`). Others are handwritten for resources that
 need custom logic (e.g. `BucketGrants`). Because Facades are standalone classes
 that only depend on the resource reference interface, third-party packages can
 provide their own Facades for any resource without modifying `aws-cdk-lib`.
@@ -127,7 +132,7 @@ provide their own Facades for any resource without modifying `aws-cdk-lib`.
 - Exposed as properties on the construct interface (e.g. `readonly grants`).
 - Do not modify the resource's own configuration.
 
-**Examples:** `BucketGrants`, `TopicGrants`, `BucketMetrics`, `BucketReflections`
+**Examples:** `BucketGrants`, `TopicGrants`, `BucketMetrics`, `BucketReflection`
 
 **When to use:**
 
@@ -301,19 +306,24 @@ work unchanged. Some L2 implementations have already been refactored to use
 Mixins internally (e.g. `autoDeleteObjects` on `s3.Bucket` delegates to the
 `BucketAutoDeleteObjects` mixin), but the L2 API remains stable.
 
-### L2s are not just L1 + Mixins + Facades + Traits
+### L2s are L1 + Mixins + Facades + Traits + Defaults
 
-An L2 construct is not structurally identical to an L1 with building blocks
-bolted on. L2s still contain glue code that wires the building blocks together:
-mapping L2 props to L1 properties, instantiating the right Mixins based on prop
-values, exposing Facades on the interface, and registering Traits. This glue
-code is necessary but should not contain any functionality of its own — all
-actual behavior lives in the building blocks.
+Conceptually, an L2 construct is the sum of its building blocks: an L1
+resource, Mixins that configure it, Facades that integrate it, Traits that
+advertise its capabilities, and sensible defaults that make it easy to use out
+of the box.
+
+In practice, L2s are not yet structurally identical to this formula. L2s still
+contain glue code that wires the building blocks together: mapping L2 props to
+L1 properties, instantiating the right Mixins based on prop values, exposing
+Facades on the interface, and registering Traits. This glue code is necessary
+but should not contain any functionality of its own — all actual behavior lives
+in the building blocks.
 
 > [!NOTE]
 > If you find yourself writing logic in the L2 glue code that does more than
-> map props and wire building blocks, that logic should be extracted into a
-> Mixin or Facade instead.
+> map props, apply defaults, and wire building blocks, that logic should be
+> extracted into a Mixin or Facade instead.
 
 ### Preferred approach for new features
 
