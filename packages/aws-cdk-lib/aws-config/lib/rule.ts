@@ -582,7 +582,7 @@ export class CustomPolicy extends RuleNew {
       throw new ValidationError('Policytextcannotempty', 'Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new ValidationError('Policytextlimited', 'Policy Text is limited to 10, 000 characters or less.', this);
+      throw new ValidationError('Policytextlimited', 'Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];

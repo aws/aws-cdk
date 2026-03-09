@@ -471,7 +471,7 @@ export class LustreFileSystem extends FileSystemBase {
     if (importedFileChunkSize === undefined) { return; }
 
     if (importedFileChunkSize < 1 || importedFileChunkSize > 512000) {
-      throw new ValidationError('ImportedFileChunkSizeInvalid', `importedFileChunkSize cannot be ${importedFileChunkSize} MiB. It must be a value from 1 to 512, 000 MiB`, this);
+      throw new ValidationError('ImportedFileChunkSizeInvalid', `importedFileChunkSize cannot be ${importedFileChunkSize} MiB. It must be a value from 1 to 512,000 MiB`, this);
     }
   }
 
@@ -552,10 +552,10 @@ export class LustreFileSystem extends FileSystemBase {
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
       if (storageType === StorageType.HDD) {
         if (perUnitStorageThroughput === 12 && storageCapacity % 6000 !== 0) {
-          throw new ValidationError('StorageCapacityMustBeMultipleOf6000ForPersistent1Hdd12Throughput', `storageCapacity must be a multiple of 6, 000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`, this);
+          throw new ValidationError('StorageCapacityMustBeMultipleOf6000ForPersistent1Hdd12Throughput', `storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput, got ${storageCapacity}`, this);
         }
         if (perUnitStorageThroughput === 40 && storageCapacity % 1800 !== 0) {
-          throw new ValidationError('StorageCapacityMustBeMultipleOf1800ForPersistent1Hdd40Throughput', `storageCapacity must be a multiple of 1, 800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`, this);
+          throw new ValidationError('StorageCapacityMustBeMultipleOf1800ForPersistent1Hdd40Throughput', `storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput, got ${storageCapacity}`, this);
         }
       } else {
         if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {

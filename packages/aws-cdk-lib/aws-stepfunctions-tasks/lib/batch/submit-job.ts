@@ -211,7 +211,7 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
       if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
-        throw new ValidationError('MustBeArraySizeBetween', `arraySize must be between 2 and 10, 000. Received ${arraySize}.`, this);
+        throw new ValidationError('MustBeArraySizeBetween', `arraySize must be between 2 and 10,000. Received ${arraySize}.`, this);
       }
     });
 

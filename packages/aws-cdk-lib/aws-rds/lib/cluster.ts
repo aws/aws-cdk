@@ -1231,7 +1231,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         !this.serverlessV2AutoPauseDuration.isUnresolved() &&
         (this.serverlessV2AutoPauseDuration.toSeconds() < 300 || this.serverlessV2AutoPauseDuration.toSeconds() > 86400)
       ) {
-        throw new ValidationError('InvalidServerlessV2AutoPauseDuration', `serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86, 400 seconds (24 hours), received ${this.serverlessV2AutoPauseDuration.toSeconds()} seconds`, this);
+        throw new ValidationError('InvalidServerlessV2AutoPauseDuration', `serverlessV2AutoPause must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), received ${this.serverlessV2AutoPauseDuration.toSeconds()} seconds`, this);
       }
     }
   }
