@@ -1,9 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnBucket } from '../../../aws-s3';
 import { CfnQueue } from '../../../aws-sqs';
-import { Stack } from '../../lib';
-import { CfnPropsMixin } from '../../lib/mixins/private/cfn-props-mixin';
-import { PropertyMergeStrategy } from '../../lib/mixins/property-merge-strategy';
+import { Stack, PropertyMergeStrategy } from '../../lib';
+import { CfnPropsMixin } from '../../lib/helpers-internal/cfn-props-mixin';
 
 describe('CfnPropsMixin', () => {
   let stack: Stack;

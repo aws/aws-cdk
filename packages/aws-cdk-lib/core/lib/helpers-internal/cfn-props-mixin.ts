@@ -1,11 +1,10 @@
 import type { IConstruct, IMixin } from 'constructs';
-import { CfnResource } from '../../cfn-resource';
-import type { IMergeStrategy } from '../property-merge-strategy';
-import { PropertyMergeStrategy } from '../property-merge-strategy';
+import { CfnResource } from '../cfn-resource';
+import type { IMergeStrategy } from '../mixins/property-merge-strategy';
+import { PropertyMergeStrategy } from '../mixins/property-merge-strategy';
 
 /**
  * Options for CfnPropsMixin
- * @internal
  */
 export interface CfnPropsMixinOptions {
   /**
@@ -44,7 +43,6 @@ type CfnWritableProps<T extends CfnResource> = {
  *     versioningConfiguration: { status: 'Enabled' },
  *   }));
  * ```
- * @internal
  */
 export class CfnPropsMixin<T extends CfnResource> implements IMixin {
   private readonly cfnResourceType: string;
