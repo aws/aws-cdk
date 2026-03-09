@@ -83,7 +83,7 @@ service module in `aws-cdk-lib`. For services that are still in alpha (i.e.
 vended as `@aws-cdk/*-alpha` packages), mixins usually live in the alpha module
 instead. Some cross-cutting mixins may be exceptions to this rule.
 
-```
+```text
 aws-cdk-lib/
   aws-s3/
     lib/
@@ -208,17 +208,36 @@ When a mixin sets properties on an L1 resource, consider how the mixin
 interacts with existing configuration. L1 properties may already be set by the
 user, by the L2, or by another mixin.
 
-**Simple properties** (strings, booleans, numbers) can typically be overwritten.
-This is expected — later mixins override earlier ones:
+For mixins that need to set properties, use `CfnPropsMixin` with a
+`PropertyMergeStrategy` instead of modifying properties directly. This handles
+merge behavior correctly and consistently.
+
+When writing custom `applyTo()` logic that modifies properties directly, choose
+the right merge behavior:
+
+**`PropertyMergeStrategy.combine()` behavior** (deep merge) — nested objects
+are merged recursively. Primitives, arrays, and mismatched types are
+overridden by the new value. This is the default and correct choice for most
+cases:
 
 ```ts
-// Simple override is fine
-construct.versioningConfiguration = { status: 'Enabled' };
+// Existing: { blockPublicAcls: true }
+// Applied:  { ignorePublicAcls: true }
+// Result:   { blockPublicAcls: true, ignorePublicAcls: true }
 ```
 
-**Nested or array properties** require more care. Decide whether the mixin
-should replace or merge with existing values. For example, a mixin that adds
-lifecycle rules should append to existing rules, not replace them:
+**`PropertyMergeStrategy.override()` behavior** (full replacement) — the
+existing value is discarded entirely. Use this for properties where partial
+merging does not make sense, such as tags or ordered lists:
+
+```ts
+// Existing: [{ key: 'Old', value: 'Tag' }]
+// Applied:  [{ key: 'New', value: 'Tag' }]
+// Result:   [{ key: 'New', value: 'Tag' }]
+```
+
+When implementing merge logic manually (because the mixin has additional
+logic beyond property setting), follow the same patterns:
 
 ```ts
 // ❌ Replaces any existing rules
@@ -233,8 +252,8 @@ construct.lifecycleConfiguration = {
 };
 ```
 
-**Document the merge behavior** in the mixin's JSDoc. Users need to understand
-whether applying a mixin will replace or extend existing configuration.
+Document the merge behavior in the mixin's JSDoc. Users must understand
+whether applying a mixin replaces or extends existing configuration.
 
 ## Testing
 
