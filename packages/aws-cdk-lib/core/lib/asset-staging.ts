@@ -242,7 +242,7 @@ export class AssetStaging extends Construct {
 
   private get sourceStats(): fs.Stats {
     if (!this._sourceStats) {
-      throw new AssumptionError('_sourceStats has been unset');
+      throw new AssumptionError('SourceStatusUnset', '_sourceStats has been unset');
     }
     return this._sourceStats;
   }
