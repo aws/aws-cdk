@@ -1,34 +1,4 @@
-import { AssumptionError } from 'aws-cdk-lib/core';
-
-/**
- * Deep merge utility for nested objects
- * @param target The target object to merge into
- * @param source The source object to merge from
- * @param mergeOnly The explicit list of property keys to copy from source
- */
-export function deepMerge(target: any, source: any, mergeOnly: string[]): any {
-  for (const key of mergeOnly) {
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-      continue;
-    }
-
-    if (!(key in source)) {
-      continue;
-    }
-
-    const sourceValue = source[key];
-    const targetValue = target[key];
-
-    if (typeof sourceValue === 'object' && sourceValue != null && !Array.isArray(sourceValue) &&
-        typeof targetValue === 'object' && targetValue != null && !Array.isArray(targetValue)) {
-      target[key] = deepMergeCopy(Object.create(null), targetValue, sourceValue);
-    } else {
-      target[key] = sourceValue;
-    }
-  }
-
-  return target;
-}
+import { AssumptionError } from '../errors';
 
 /**
  * Object keys that deepMerge should not consider. Currently these include
@@ -36,7 +6,6 @@ export function deepMerge(target: any, source: any, mergeOnly: string[]): any {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
-
 const MERGE_EXCLUDE_KEYS: string[] = [
   'Ref',
   'Fn::Base64',
@@ -58,13 +27,10 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 ];
 
 /**
- * This is an unchanged copy from packages/aws-cdk-lib/core/lib/cfn-resource.ts
- * The intention will be to use this function from core once the package is merged.
- *
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
  */
-function deepMergeCopy(target: any, ...sources: any[]) {
+export function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
       throw new AssumptionError(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
@@ -138,7 +104,7 @@ function deepMergeCopy(target: any, ...sources: any[]) {
           }
         }
 
-        deepMergeCopy(target[key], value);
+        deepMerge(target[key], value);
 
         // if the result of the merge is an empty object, it's because the
         // eventual value we assigned is `undefined`, and there are no
@@ -155,24 +121,5 @@ function deepMergeCopy(target: any, ...sources: any[]) {
     }
   }
 
-  return target;
-}
-
-/**
- * Shallow assign utility that explicitly assigns each property
- * @param target The target object to assign properties to
- * @param source The source object to read properties from
- * @param assignOnly The explicit list of property keys that are allowed to be assigned
- */
-export function shallowAssign(target: any, source: any, assignOnly: string[]): any {
-  for (const key of assignOnly) {
-    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-      continue;
-    }
-
-    if (key in source) {
-      target[key] = source[key];
-    }
-  }
   return target;
 }

@@ -243,7 +243,9 @@ When to use a Mixin:
   construct's props.
 
 Mixins are _not_ a replacement for construct properties. They cannot change the
-optionality of properties or change defaults.
+optionality of properties or change defaults. When an L2 property simply passes
+a value through to the L1 resource without additional logic, use `CfnPropsMixin`
+in the L2 glue code instead of writing a standalone mixin.
 
 For detailed implementation guidelines, see the
 [Mixins Design Guidelines](./MIXINS_DESIGN_GUIDELINES.md).

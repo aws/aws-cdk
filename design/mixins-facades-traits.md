@@ -320,6 +320,33 @@ Facades on the interface, and registering Traits. This glue code is necessary
 but should not contain any functionality of its own — all actual behavior lives
 in the building blocks.
 
+For simple L2 properties that pass values straight through to the L1 resource,
+use `CfnPropsMixin` to handle the mapping. This eliminates boilerplate and
+provides type-safe property application with configurable merge behavior:
+
+```ts
+// In an L2 constructor, instead of manually setting L1 properties:
+export class MyBucket extends Resource {
+  constructor(scope: Construct, id: string, props: MyBucketProps) {
+    super(scope, id);
+    const resource = new CfnBucket(this, 'Resource');
+
+    // Use CfnPropsMixin for simple property pass-through
+    if (props.versioned) {
+      resource.with(new CfnPropsMixin(CfnBucket, {
+        versioningConfiguration: { status: 'Enabled' },
+      }));
+    }
+  }
+}
+```
+
+`CfnPropsMixin` deep merges nested properties by default
+(`PropertyMergeStrategy.combine()`), or can replace them entirely
+(`PropertyMergeStrategy.override()`). This is preferable to setting L1
+properties directly, because it handles interactions with other mixins and
+existing configuration correctly.
+
 > [!NOTE]
 > If you find yourself writing logic in the L2 glue code that does more than
 > map props, apply defaults, and wire building blocks, that logic should be
