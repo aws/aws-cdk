@@ -1,9 +1,9 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
-import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { ref } from '@cdklabs/tskb';
-import type { MixinsBuilderProps } from '../../scripts/spec2mixins';
-import { MixinsBuilder } from '../../scripts/spec2mixins';
+import { TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { MixinsBuilderProps } from '../lib/cfn-prop-mixins';
+import { MixinsBuilder } from '../lib/cfn-prop-mixins';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
