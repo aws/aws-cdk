@@ -741,6 +741,24 @@ test('lambda execution role gets permissions to read from the source bucket and 
             },
           ],
         },
+        {
+          Action: 's3:DeleteObject*',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::GetAtt': [
+                    'DestC383B82A',
+                    'Arn',
+                  ],
+                },
+                '/*',
+              ],
+            ],
+          },
+        },
       ],
       Version: '2012-10-17',
     },

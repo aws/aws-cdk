@@ -418,7 +418,7 @@ export class BucketDeployment extends Construct {
 
     const prune = props.prune ?? true;
     if (prune) {
-      this.destinationBucket.grantReadWrite(handler);
+      this.destinationBucket.grantReadWrite(handler, objectPattern);
       this.destinationBucket.grantDelete(handler);
     } else {
       this.destinationBucket.grantReadWrite(handler, objectPattern);
