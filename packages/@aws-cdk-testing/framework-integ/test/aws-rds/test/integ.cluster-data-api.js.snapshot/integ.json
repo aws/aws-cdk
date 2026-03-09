@@ -1,13 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
-    "integ-cluster-data-api/DefaultTest": {
+    "cluster-data-api-integ-test/DefaultTest": {
       "stacks": [
-        "cluster-data-api"
+        "aws-cdk-rds-cluster-data-api"
       ],
-      "assertionStack": "integ-cluster-data-api/DefaultTest/DeployAssert",
-      "assertionStackName": "integclusterdataapiDefaultTestDeployAssertACD87C08"
+      "assertionStack": "cluster-data-api-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterdataapiintegtestDefaultTestDeployAssert4141457D"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1105.0"
 }
