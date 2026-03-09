@@ -1173,7 +1173,7 @@ new ForEachOutput(this, 'BucketArns', {
   loopName: 'Env',
   collection: ['dev', 'prod'],
   outputKeyTemplate: 'BucketArn${Env}',
-  value: buckets.getAtt('Arn'),
+  value: Token.asString(buckets.getAtt('Arn')),
 });
 
 // Create conditions for each environment
