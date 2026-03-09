@@ -172,6 +172,7 @@ new CfnRecordSet(testCase, 'Integ3DomainRecord', {
 thirdDomain.addBasePathMapping(api2.restApi, {
   basePath: 'v2',
 });
+
 /**
  * -------------------------------------------------------
  * ------------------------- THEN ------------------------
