@@ -1577,4 +1577,39 @@ describe('State Machine', () => {
       Match.stringLikeRegexp('timeout is ignored when using FileDefinitionBody'),
     );
   });
+
+  test('FileDefinitionBody emits warning when comment is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
+      comment: 'my comment',
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('comment is ignored when using FileDefinitionBody'),
+    );
+  });
+
+  test('FileDefinitionBody emits warning when queryLanguage is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('queryLanguage is ignored when using FileDefinitionBody'),
+    );
+  });
+
+  test('StringDefinitionBody throws when timeout is not positive', () => {
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}';
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        definitionBody: sfn.DefinitionBody.fromString(body),
+        timeout: cdk.Duration.seconds(0),
+      });
+    }).toThrow('Timeout must be positive');
+  });
 });
