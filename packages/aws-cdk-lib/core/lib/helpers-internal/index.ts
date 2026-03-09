@@ -10,3 +10,4 @@ export { constructAnalyticsFromScope } from '../private/stack-metadata';
 export * from './memoize';
 export * from './reflections';
 export * from './traits';
+export { CfnPropsMixin, type CfnPropsMixinOptions } from '../mixins/private/cfn-props-mixin';
