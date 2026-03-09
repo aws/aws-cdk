@@ -78,7 +78,10 @@ Multiple mixins for the same resource live in the same file.
 
 ## Project Structure
 
-Mixins live in a `lib/mixins/` subdirectory within their service module:
+Mixins for stable services live in a `lib/mixins/` subdirectory within their
+service module in `aws-cdk-lib`. For services that are still in alpha (i.e.
+vended as `@aws-cdk/*-alpha` packages), mixins usually live in the alpha module
+instead. Some cross-cutting mixins may be exceptions to this rule.
 
 ```
 aws-cdk-lib/
