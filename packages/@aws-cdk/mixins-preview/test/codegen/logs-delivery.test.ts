@@ -1,8 +1,7 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import type { MixinsBuilderProps } from '../../scripts/spec2mixins';
-import { LogsDeliveryBuilder } from '../../scripts/spec2logs';
+import { LogsDeliveryBuilder, LogsDeliveryBuilderProps } from '../../scripts/spec2logs';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -92,7 +91,7 @@ test('Logs Delivery Mixin for a resource', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-function moduleForResource(resource: Resource, props: MixinsBuilderProps) {
+function moduleForResource(resource: Resource, props: LogsDeliveryBuilderProps) {
   const ast = new LogsDeliveryBuilder(props);
   const info = ast.addResource(resource);
   return info.locatedModules[0].module;
