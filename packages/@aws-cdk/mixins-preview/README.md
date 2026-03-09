@@ -15,104 +15,25 @@
 
 <!--END STABILITY BANNER-->
 
-> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib/core`. Please update your imports.
-> This package continues to provide additional preview features until they move to their final destinations.
-
-This package provides two main features:
-
-1. **Mixins** - Composable abstractions for adding functionality to constructs
-2. **EventBridge Event Patterns** - Type-safe event patterns for AWS resources
+> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib`.
+> All service Mixins are now available in `aws-cdk-lib`.
+> Please update your imports.
+>
+> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**.
 
 ---
 
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
-
-## Key Benefits
-
-CDK Mixins offer a well-defined way to build self-contained constructs features.
-Mixins are applied during or after construct construction.
-
-* **Universal Compatibility**: Apply the same abstractions to L1 constructs, L2 constructs, or custom constructs
-* **Composable Design**: Mix and match features without being locked into specific implementations
-* **Cross-Service Abstractions**: Use common patterns like encryption across different AWS services
-* **Escape Hatch Freedom**: Customize resources in a safe, typed way while keeping the abstractions you want
-
+Mixins can be applied during or after construct construction.
 Mixins are an _addition_, _not_ a replacement for construct properties.
 By itself, they cannot change optionality of properties or change defaults.
 
-### Usage and documentation
+## Usage and documentation
 
-See the [documentation for `aws-cdk-lib`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins).
+See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) in  `aws-cdk-lib`.
 
 ### Built-in Mixins
-
-#### Cross-Service Mixins
-
-**EncryptionAtRest**: Applies encryption to supported AWS resources
-
-```typescript
-// Works across different resource types
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new EncryptionAtRest());
-
-const myLogGroup = new logs.CfnLogGroup(scope, "LogGroup");
-Mixins.of(myLogGroup).apply(new EncryptionAtRest());
-```
-
-#### S3-Specific Mixins
-
-**AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
-
-```typescript
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new AutoDeleteObjects());
-```
-
-**BucketVersioning**: Enables versioning on S3 buckets
-
-```typescript
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new BucketVersioning());
-```
-
-**BucketBlockPublicAccess**: Enables blocking public-access on S3 buckets
-
-```typescript
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new BucketBlockPublicAccess());
-```
-
-**BucketPolicyStatementsMixin**: Adds IAM policy statements to a bucket policy
-
-```typescript
-const bucketPolicy = new s3.CfnBucketPolicy(scope, "BucketPolicy", {
-  bucket: bucket,
-  policyDocument: new iam.PolicyDocument(),
-});
-Mixins.of(bucketPolicy).apply(new BucketPolicyStatementsMixin([
-  new iam.PolicyStatement({
-    actions: ["s3:GetObject"],
-    resources: ["*"],
-    principals: [new iam.AnyPrincipal()],
-  }),
-]));
-```
-
-#### ECS-Specific Mixins
-
-**ClusterSettings**: Applies one or more cluster settings to ECS clusters
-
-```typescript
-import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { ClusterSettings } from '@aws-cdk/mixins-preview/aws-ecs/mixins';
-
-const cluster = new ecs.CfnCluster(scope, "Cluster");
-Mixins.of(cluster).apply(new ClusterSettings([{
-  name: "containerInsights",
-  value: "enhanced",
-}]));
-```
 
 ### Logs Delivery
 
@@ -259,16 +180,35 @@ new s3.Bucket(scope, "Bucket")
 Property mixins support two merge strategies:
 
 ```typescript
-// MERGE (default): Deep merges properties with existing values
+// COMBINE (default): Deep merges properties with existing values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.MERGE }
+  { strategy: PropertyMergeStrategy.combine() }
 ));
 
 // OVERRIDE: Replaces existing property values
 Mixins.of(bucket).apply(new CfnBucketPropsMixin(
   { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERRIDE }
+  { strategy: PropertyMergeStrategy.override() }
+));
+```
+
+You can also implement `IMergeStrategy` to define a custom strategy:
+
+```typescript
+class MyCustomStrategy implements IMergeStrategy {
+  public apply(target: object, source: object, allowedKeys: string[]) {
+    for (const key of allowedKeys) {
+      if (key in source) {
+        (target as any)[key] = (source as any)[key];
+      }
+    }
+  }
+}
+
+Mixins.of(bucket).apply(new CfnBucketPropsMixin(
+  { tags: [{ key: 'Extra', value: 'Tag' }] },
+  { strategy: new MyCustomStrategy() }
 ));
 ```
 
@@ -278,21 +218,6 @@ Property mixins are available for all AWS services:
 import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
 import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
 import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
-```
-
-### Error Handling
-
-Mixins provide comprehensive error handling:
-
-```typescript
-// Graceful handling of unsupported constructs
-Mixins.of(scope)
-  .apply(new EncryptionAtRest()); // Skips unsupported constructs
-
-// Strict application that requires all constructs to match
-Mixins.of(scope)
-  .requireAll() // Throws if no constructs support the mixin
-  .apply(new EncryptionAtRest());
 ```
 
 ---
