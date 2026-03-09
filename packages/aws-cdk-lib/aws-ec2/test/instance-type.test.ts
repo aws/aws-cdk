@@ -5,4 +5,14 @@ describe('InstanceType', () => {
     const instanceType = InstanceType.of(InstanceClass.MAC2_M1ULTRA, InstanceSize.METAL);
     expect(instanceType.toString()).toEqual('mac2-m1ultra.metal');
   });
+
+  test('c8a', () => {
+    const instanceType = InstanceType.of(InstanceClass.C8A, InstanceSize.XLARGE2);
+    expect(instanceType.toString()).toEqual('c8a.2xlarge');
+  });
+
+  test('compute8-amd', () => {
+    const instanceType = InstanceType.of(InstanceClass.COMPUTE8_AMD, InstanceSize.XLARGE2);
+    expect(instanceType.toString()).toEqual('c8a.2xlarge');
+  });
 });
