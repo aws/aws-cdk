@@ -828,7 +828,7 @@ export class StringDefinitionBody extends DefinitionBody {
   public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     if (sfnProps.timeout !== undefined) {
       if (sfnProps.timeout.toSeconds() <= 0) {
-        throw new Error('Timeout must be positive');
+        throw new ValidationError('Timeout must be positive', _scope);
       }
       const definition = JSON.parse(this.body);
       if (definition.TimeoutSeconds === undefined) {
