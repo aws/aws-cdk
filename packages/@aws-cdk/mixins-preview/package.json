@@ -694,10 +694,7 @@
     "announce": false
   },
   "cdk-build": {
-    "compressAssembly": true,
-    "pre": [
-      "./scripts/airlift-custom-resource-handlers.sh"
-    ]
+    "compressAssembly": true
   },
   "publishConfig": {
     "tag": "latest"
