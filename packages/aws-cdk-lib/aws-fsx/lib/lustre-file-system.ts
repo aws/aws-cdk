@@ -536,7 +536,7 @@ export class LustreFileSystem extends FileSystemBase {
   ): void {
     if (deploymentType === LustreDeploymentType.SCRATCH_1) {
       if (![1200, 2400, 3600].includes(storageCapacity) && storageCapacity % 3600 !== 0) {
-        throw new ValidationError('StorageCapacityMustBeValidForScratch1', `storageCapacity must be 1, 200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`, this);
+        throw new ValidationError('StorageCapacityMustBeValidForScratch1', `storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type, got ${storageCapacity}.`, this);
       }
     }
 
@@ -545,7 +545,7 @@ export class LustreFileSystem extends FileSystemBase {
       || deploymentType === LustreDeploymentType.SCRATCH_2
     ) {
       if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-        throw new ValidationError('StorageCapacityMustBeValidForScratch2AndPersistent2', `storageCapacity must be 1, 200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`, this);
+        throw new ValidationError('StorageCapacityMustBeValidForScratch2AndPersistent2', `storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types, got ${storageCapacity}`, this);
       }
     }
 
@@ -559,7 +559,7 @@ export class LustreFileSystem extends FileSystemBase {
         }
       } else {
         if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-          throw new ValidationError('StorageCapacityMustBeValidForPersistent1Ssd', `storageCapacity must be 1, 200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`, this);
+          throw new ValidationError('StorageCapacityMustBeValidForPersistent1Ssd', `storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage, got ${storageCapacity}`, this);
         }
       }
     }

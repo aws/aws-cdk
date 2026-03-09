@@ -16,7 +16,7 @@ describe('ValidationError', () => {
   test('ValidationError data', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
-    const error = new ValidationError('Error', 'this is an error', stack);
+    const error = new ValidationError('ValidationError', 'this is an error', stack);
 
     expect(error.time).toBe('2020-01-01T00:00:00.000Z');
     expect(error.type).toBe('validation');
@@ -33,7 +33,7 @@ describe('ValidationError', () => {
   });
 
   test('UnscopedValidationError is ValidationError and ConstructError', () => {
-    const error = new UnscopedValidationError('Error', 'this is an error');
+    const error = new UnscopedValidationError('ValidationError', 'this is an error');
 
     expect(Errors.isConstructError(error)).toBe(true);
     expect(Errors.isValidationError(error)).toBe(true);
