@@ -2,7 +2,6 @@ import { Construct } from 'constructs';
 import { Fn } from './cfn-fn';
 import { CfnForEachFragment } from './cfn-foreach-fragment';
 import { UnscopedValidationError } from './errors';
-import type { IResolvable } from './resolvable';
 import { Stack } from './stack';
 
 const FOR_EACH_OUTPUT_SYMBOL = Symbol.for('@aws-cdk/core.ForEachOutput');
@@ -28,8 +27,10 @@ export interface ForEachOutputProps {
 
   /**
    * Output value.
+   *
+   * Use Token.asString() to wrap IResolvable values (e.g. Fn.getAtt()).
    */
-  readonly value: string | IResolvable;
+  readonly value: string;
 
   /**
    * Optional description.
