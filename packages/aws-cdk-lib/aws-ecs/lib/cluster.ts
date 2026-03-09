@@ -186,7 +186,7 @@ export class Cluster extends Resource implements ICluster {
         throw new ValidationError('HasEc2Capacity', `hasEc2Capacity ${errorSuffix}`, this);
       }
       get connections(): ec2.Connections {
-        throw new ValidationError('Connections', `connections ${errorSuffix}`, this);
+        throw new ValidationError('ConnectionsNotAvailable', `connections ${errorSuffix}`, this);
       }
       get vpc(): ec2.IVpc {
         throw new ValidationError('ValidationError', `vpc ${errorSuffix}`, this);

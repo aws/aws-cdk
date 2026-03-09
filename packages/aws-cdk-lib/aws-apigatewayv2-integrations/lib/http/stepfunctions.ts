@@ -58,7 +58,7 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
       this.props.subtype === apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION
       && this.props.stateMachine.stateMachineType === sfn.StateMachineType.STANDARD
     ) {
-      throw new ValidationError('CannotCannotSubtypeStandard', 'Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine', options.scope);
+      throw new ValidationError('CannotSubtypeStandardTypeSta', 'Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine', options.scope);
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {

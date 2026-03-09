@@ -44,7 +44,7 @@ export function setupS3ImportExport(
 
   if (props.s3ImportBuckets && props.s3ImportBuckets.length > 0) {
     if (props.s3ImportRole) {
-      throw new ValidationError('Mustbeonlys3importroles3importbuckets', 'Only one of s3ImportRole or s3ImportBuckets must be specified, not both.', scope);
+      throw new ValidationError('OneImportRoleImportBuckets', 'Only one of s3ImportRole or s3ImportBuckets must be specified, not both.', scope);
     }
 
     s3ImportRole = (combineRoles && s3ExportRole) ? s3ExportRole : new iam.Role(scope, 'S3ImportRole', {
@@ -57,7 +57,7 @@ export function setupS3ImportExport(
 
   if (props.s3ExportBuckets && props.s3ExportBuckets.length > 0) {
     if (props.s3ExportRole) {
-      throw new ValidationError('Mustbeonlys3exportroles3exportbuckets', 'Only one of s3ExportRole or s3ExportBuckets must be specified, not both.', scope);
+      throw new ValidationError('OneExportRoleExportBuckets', 'Only one of s3ExportRole or s3ExportBuckets must be specified, not both.', scope);
     }
 
     s3ExportRole = (combineRoles && s3ImportRole) ? s3ImportRole : new iam.Role(scope, 'S3ExportRole', {

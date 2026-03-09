@@ -167,7 +167,7 @@ export class CfnResource extends CfnRefElement {
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new ValidationError('Doessupportsnapshotremoval', `${this.cfnResourceType} does not support snapshot removal policy`, this);
+            throw new ValidationError('SnapshotRemovalNotSupported', `${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -178,7 +178,7 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new ValidationError('InvalidInvalidinvalidremovalpolicy', `Invalid removal policy: ${policy}`, this);
+        throw new ValidationError('InvalidRemovalPolicy', `Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
@@ -667,7 +667,7 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new AssumptionError('InvalidInvalidUsage', `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+      throw new AssumptionError('InvalidUsageSource', `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
     }
 
     for (const key of Object.keys(source)) {

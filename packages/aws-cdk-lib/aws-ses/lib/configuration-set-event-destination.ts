@@ -314,7 +314,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         resourceName: 'default',
       })
     ) {
-      throw new ValidationError('Onlydefaultusedevent', `Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusRef.eventBusArn}`, this);
+      throw new ValidationError('DefaultBusEventDestination', `Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusRef.eventBusArn}`, this);
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';

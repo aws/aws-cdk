@@ -272,7 +272,7 @@ export class Topic extends TopicBase {
     const fifo = topicName.endsWith('.fifo');
 
     if (attrs.contentBasedDeduplication && !fifo) {
-      throw new ValidationError('CannotCannotcannotimporttopic', 'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
+      throw new ValidationError('CannotImportTopicContentBased', 'Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.', scope);
     }
 
     class Import extends TopicBase {
@@ -323,7 +323,7 @@ export class Topic extends TopicBase {
     this.enforceSSL = props.enforceSSL;
 
     if (props.contentBasedDeduplication && !props.fifo) {
-      throw new ValidationError('Contentbaseddeduplicationonly', 'Content based deduplication can only be enabled for FIFO SNS topics.', this);
+      throw new ValidationError('ContentBasedDeduplicationEnabledTopics', 'Content based deduplication can only be enabled for FIFO SNS topics.', this);
     }
     if (props.messageRetentionPeriodInDays && !props.fifo) {
       throw new ValidationError('OnlyValidFifoTopics', '`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.', this);
@@ -363,11 +363,11 @@ export class Topic extends TopicBase {
       props.signatureVersion !== '1' &&
       props.signatureVersion !== '2'
     ) {
-      throw new ValidationError('MustBeSignatureversion', `signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
+      throw new ValidationError('SignatureVersionReceived', `signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`, this);
     }
 
     if (props.displayName && !Token.isUnresolved(props.displayName) && props.displayName.length > 100) {
-      throw new ValidationError('Mustbedisplaynamelessthan', `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
+      throw new ValidationError('DisplayNameLessEqualCharacters', `displayName must be less than or equal to 100 characters, got ${props.displayName.length}`, this);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -400,7 +400,7 @@ export class Topic extends TopicBase {
       if (spec.successFeedbackSampleRate !== undefined) {
         const rate = spec.successFeedbackSampleRate;
         if (!Number.isInteger(rate) || rate < 0 || rate > 100) {
-          throw new ValidationError('Mustbesuccessfeedbacksample', 'Success feedback sample rate must be an integer between 0 and 100', this);
+          throw new ValidationError('SuccessFeedbackSampleRateInteger', 'Success feedback sample rate must be an integer between 0 and 100', this);
         }
       }
       return {

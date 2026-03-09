@@ -458,7 +458,7 @@ export class CodePipeline extends PipelineBase {
       throw new UnscopedValidationError('CallPipeline', 'Call pipeline.buildPipeline() before reading this property');
     }
     if (!this._selfMutationProject) {
-      throw new UnscopedValidationError('SelfmutationprojectSinceSelfmutationProperty', 'No selfMutationProject since the selfMutation property was set to false');
+      throw new UnscopedValidationError('SelfMutationProjectSinceSelf', 'No selfMutationProject since the selfMutation property was set to false');
     }
     return this._selfMutationProject;
   }
@@ -477,32 +477,32 @@ export class CodePipeline extends PipelineBase {
 
   protected doBuildPipeline(): void {
     if (this._pipeline) {
-      throw new ValidationError('Pipelinealreadycreated', 'Pipeline already created', this);
+      throw new ValidationError('PipelineAlreadyCreated', 'Pipeline already created', this);
     }
 
     this._myCxAsmRoot = path.resolve(assemblyBuilderOf(appOf(this)).outdir);
 
     if (this.props.codePipeline) {
       if (this.props.pipelineName) {
-        throw new ValidationError('CannotCannotPipelinenameExisting', 'Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetPipelineNameExisting', 'Cannot set \'pipelineName\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.crossAccountKeys !== undefined) {
-        throw new ValidationError('CannotCannotCrossaccountkeysExisting', 'Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetCrossAccountKeys', 'Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.enableKeyRotation !== undefined) {
-        throw new ValidationError('CannotCannotEnablekeyrotationExisting', 'Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetEnableKeyRotation', 'Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.crossRegionReplicationBuckets !== undefined) {
-        throw new ValidationError('CannotCannotCrossregionreplicationbucketsExisting', 'Cannot set \'crossRegionReplicationBuckets\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetCrossRegionReplication', 'Cannot set \'crossRegionReplicationBuckets\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
-        throw new ValidationError('CannotCannotReusecrossregionsupportstacksExisting', 'Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetReuseCrossRegion', 'Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.role !== undefined) {
-        throw new ValidationError('CannotCannotRoleExisting', 'Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetRoleExistingCode', 'Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
       if (this.props.artifactBucket !== undefined) {
-        throw new ValidationError('CannotCannotArtifactbucketExisting', 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
+        throw new ValidationError('CannotSetArtifactBucketExisting', 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
 
       this._pipeline = this.props.codePipeline;
@@ -670,7 +670,7 @@ export class CodePipeline extends PipelineBase {
       case 'group':
       case 'stack-group':
       case undefined:
-        throw new ValidationError('Actionfromnodeexpectgroupnodes', `actionFromNode: did not expect to get group nodes: ${node.data?.type}`, this);
+        throw new ValidationError('ActionNodeExpectGroupNodes', `actionFromNode: did not expect to get group nodes: ${node.data?.type}`, this);
 
       case 'self-update':
         return this.selfMutateAction();
@@ -886,7 +886,7 @@ export class CodePipeline extends PipelineBase {
 
     const assetType = assets[0].assetType;
     if (assets.some(a => a.assetType !== assetType)) {
-      throw new ValidationError('Mustbeassetssinglepublishing', 'All assets in a single publishing step must be of the same type', this);
+      throw new ValidationError('AssetsSinglePublishingStepType', 'All assets in a single publishing step must be of the same type', this);
     }
 
     const role = this.obtainAssetCodeBuildRole(assets[0].assetType);

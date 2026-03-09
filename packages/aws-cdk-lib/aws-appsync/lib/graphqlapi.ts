@@ -660,7 +660,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (this.definition.schema) {
       return this.definition.schema;
     }
-    throw new ValidationError('Schemadoesexistappsync', 'Schema does not exist for AppSync merged APIs.', this);
+    throw new ValidationError('SchemaExistAppSyncMerged', 'Schema does not exist for AppSync merged APIs.', this);
   }
 
   /**
@@ -703,16 +703,16 @@ export class GraphqlApi extends GraphqlApiBase {
     this.validateAuthorizationProps(modes);
 
     if (!props.schema && !props.definition) {
-      throw new ValidationError('Specifygraphqlschemasource', 'You must specify a GraphQL schema or source APIs in property definition.', this);
+      throw new ValidationError('SpecifyGraphSchemaSourceProperty', 'You must specify a GraphQL schema or source APIs in property definition.', this);
     }
     if ((props.schema !== undefined) === (props.definition !== undefined)) {
-      throw new ValidationError('CannotCannotspecifybothproperties', 'You cannot specify both properties schema and definition.', this);
+      throw new ValidationError('CannotSpecifyPropertiesSchemaDefinition', 'You cannot specify both properties schema and definition.', this);
     }
     if (props.queryDepthLimit !== undefined && (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)) {
-      throw new ValidationError('Specifyquerydepthlimit', 'You must specify a query depth limit between 0 and 75.', this);
+      throw new ValidationError('SpecifyQueryDepthLimit', 'You must specify a query depth limit between 0 and 75.', this);
     }
     if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
-      throw new ValidationError('Specifyresolvercountlimit', 'You must specify a resolver count limit between 0 and 10000.', this);
+      throw new ValidationError('SpecifyResolverCountLimit', 'You must specify a resolver count limit between 0 and 10000.', this);
     }
     if (!Token.isUnresolved(props.ownerContact) && props.ownerContact !== undefined && (props.ownerContact.length > 256)) {
       throw new ValidationError('SpecifyStringCharactersLess', 'You must specify `ownerContact` as a string of 256 characters or less.', this);
@@ -870,17 +870,17 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
-      throw new ValidationError('Onlysinglelambdafunction', 'You can only have a single AWS Lambda function configured to authorize your API.', this);
+      throw new ValidationError('SingleLambdaFunctionConfiguredAuthorize', 'You can only have a single AWS Lambda function configured to authorize your API.', this);
     }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new ValidationError('MissingMissingmissingoidcconfiguration', 'Missing OIDC Configuration', this);
+        throw new ValidationError('MissingConfiguration', 'Missing OIDC Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new ValidationError('MissingMissingmissinguserpool', 'Missing User Pool Configuration', this);
+        throw new ValidationError('MissingUserPoolConfiguration', 'Missing User Pool Configuration', this);
       }
       if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
-        throw new ValidationError('MissingMissingmissinglambdaconfiguration', 'Missing Lambda Configuration', this);
+        throw new ValidationError('MissingLambdaConfiguration', 'Missing Lambda Configuration', this);
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
@@ -910,7 +910,7 @@ export class GraphqlApi extends GraphqlApiBase {
   @MethodMetadata()
   public addEnvironmentVariable(key: string, value: string) {
     if (this.definition.sourceApiOptions) {
-      throw new ValidationError('Environmentvariablessupportedmerged', 'Environment variables are not supported for merged APIs', this);
+      throw new ValidationError('EnvironmentVariablesSupportedMerged', 'Environment variables are not supported for merged APIs', this);
     }
     if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
       throw new ValidationError('MustBeBeginLetterOnly', `Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`, this);
@@ -1030,7 +1030,7 @@ export class GraphqlApi extends GraphqlApiBase {
    */
   public get appSyncDomainName(): string {
     if (!this.domainNameResource) {
-      throw new ValidationError('CannotCannotcannotretrieveappsyncdomainname', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
+      throw new ValidationError('CannotRetrieveAppSyncDomain', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return this.domainNameResource.attrAppSyncDomainName;
   }

@@ -199,7 +199,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
     if ((!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
       (projectOptions.fileSystemLocations !== undefined && projectOptions.fileSystemLocations.length != 0)) {
-      throw new UnscopedValidationError('RequiresSettingFilesystemlocationsRequires', 'Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
+      throw new UnscopedValidationError('SettingFileSystemLocationsRequires', 'Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
     }
 
     const inputs = this.props.inputs ?? [];

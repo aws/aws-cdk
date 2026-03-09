@@ -228,7 +228,7 @@ export class Integration {
   constructor(private readonly props: IntegrationProps) {
     const options = this.props.options || { };
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new UnscopedValidationError('CredentialspassthroughCredentialsroleMutuallyExclusive', '\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+      throw new UnscopedValidationError('CredentialsPassthroughCredentialsRoleMutually', '\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
@@ -236,7 +236,7 @@ export class Integration {
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new UnscopedValidationError('CannotCannotVpclinkWhere', 'cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+      throw new UnscopedValidationError('CannotSetVpcLinkConnection', 'cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
     if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
@@ -244,14 +244,14 @@ export class Integration {
     }
 
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
-      throw new UnscopedValidationError('IsRequiredIntegrationhttpmethodRequiredNonMock', 'integrationHttpMethod is required for non-mock integration types.');
+      throw new UnscopedValidationError('IntegrationHttpMethodRequiredNon', 'integrationHttpMethod is required for non-mock integration types.');
     }
 
     if (
       options.responseTransferMode === ResponseTransferMode.STREAM &&
       ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type)
     ) {
-      throw new UnscopedValidationError('ResponsetransfermodeStreamOnlySupported', `ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
+      throw new UnscopedValidationError('ResponseTransferModeSupportedInteg', `ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
     }
   }
 

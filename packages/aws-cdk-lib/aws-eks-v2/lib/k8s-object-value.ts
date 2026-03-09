@@ -80,7 +80,7 @@ export class KubernetesObjectValue extends Construct {
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
 
     if (!provider) {
-      throw new ValidationError('Kubectlproviderdefinedcluster', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError('KubectlProviderDefinedClusterDefine', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     this._resource = new CustomResource(this, 'Resource', {

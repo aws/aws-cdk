@@ -260,7 +260,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       return AmazonLinuxCpuType.X86_64;
     }
 
-    throw new UnscopedValidationError('UnsupportedUnsupportedInstanceArchitecture', `Unsupported instance architecture '${architecture}'`);
+    throw new UnscopedValidationError('UnsupportedInstanceArchitecture', `Unsupported instance architecture '${architecture}'`);
   }
 
   /**

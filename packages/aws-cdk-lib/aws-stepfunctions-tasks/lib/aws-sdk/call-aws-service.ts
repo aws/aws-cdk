@@ -109,10 +109,10 @@ export class CallAwsService extends sfn.TaskStateBase {
     super(scope, id, props);
 
     if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new ValidationError('Runjobintegrationpatternsupported', 'The RUN_JOB integration pattern is not supported for CallAwsService', this);
+      throw new ValidationError('IntegrationPatternSupportedCallAws', 'The RUN_JOB integration pattern is not supported for CallAwsService', this);
     }
     if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
-      throw new ValidationError('Mustbeactioncamelcase', `action must be camelCase, got: ${this.props.action}`, this);
+      throw new ValidationError('ActionCamelCase', `action must be camelCase, got: ${this.props.action}`, this);
     }
     if (this.props.parameters) {
       const invalidKeys = Object.keys(this.props.parameters).filter(key => !key.startsWith(key[0]?.toUpperCase()));

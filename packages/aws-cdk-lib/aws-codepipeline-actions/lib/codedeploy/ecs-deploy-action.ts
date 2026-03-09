@@ -215,7 +215,7 @@ export class CodeDeployEcsDeployAction extends Action {
 
 function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.taskDefinitionTemplateFile && props.taskDefinitionTemplateInput) {
-    throw new UnscopedValidationError('ExactlyTaskdefinitiontemplateinputTaskdefinitiontemplatefileProvided', "Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new UnscopedValidationError('ExactlyOneTaskDefinitionTemplate', "Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
   }
   if (props.taskDefinitionTemplateFile) {
     return props.taskDefinitionTemplateFile.artifact;
@@ -223,12 +223,12 @@ function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps):
   if (props.taskDefinitionTemplateInput) {
     return props.taskDefinitionTemplateInput;
   }
-  throw new UnscopedValidationError('IsRequiredSpecifyingTaskdefinitiontemplateinputTaskdefinitiontemplatefile', "Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new UnscopedValidationError('SpecifyingOneTaskDefinitionTemplate', "Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
 }
 
 function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.appSpecTemplateFile && props.appSpecTemplateInput) {
-    throw new UnscopedValidationError('ExactlyAppspectemplateinputAppspectemplatefileProvided', "Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new UnscopedValidationError('ExactlyOneAppSpecTemplate', "Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
   }
   if (props.appSpecTemplateFile) {
     return props.appSpecTemplateFile.artifact;
@@ -236,5 +236,5 @@ function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepi
   if (props.appSpecTemplateInput) {
     return props.appSpecTemplateInput;
   }
-  throw new UnscopedValidationError('IsRequiredSpecifyingAppspectemplateinputAppspectemplatefile', "Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new UnscopedValidationError('SpecifyingOneAppSpecTemplate', "Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
 }

@@ -128,7 +128,7 @@ class Ec2DeploySpecificationsInline extends Ec2DeploySpecifications {
 
   bind(scope: Construct) {
     if (!Token.isUnresolved(this.props.targetDirectory) && !this.props.targetDirectory.startsWith('/')) {
-      throw new ValidationError('Mustbetargetdirectoryabsolutepath', 'The targetDirectory must be an absolute path.', scope);
+      throw new ValidationError('TargetDirectoryAbsolutePath', 'The targetDirectory must be an absolute path.', scope);
     }
 
     return {
@@ -187,7 +187,7 @@ export class Ec2DeployAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     if (Token.isUnresolved(this.props.instanceTagKey)) {
-      throw new ValidationError('Mustbeinstancetagkeynonemptyconcrete', 'The instanceTagKey must be a non-empty concrete value.', scope);
+      throw new ValidationError('InstanceTagKeyNonEmpty', 'The instanceTagKey must be a non-empty concrete value.', scope);
     }
 
     // Permissions based on CodePipeline documentation:

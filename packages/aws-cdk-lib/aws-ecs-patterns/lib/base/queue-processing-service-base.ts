@@ -339,7 +339,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new ValidationError('Onlyspecifyeithercluster', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError('SpecifyVpcClusterAlternativelyLeave', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
@@ -371,7 +371,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
     if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
-      throw new ValidationError('Cooldowncannotmorethan', `cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`, this);
+      throw new ValidationError('CooldownCannotFound', `cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`, this);
     }
     this.cooldown = props.cooldown;
 
@@ -402,7 +402,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
 
     if (!this.desiredCount && !this.maxCapacity) {
-      throw new ValidationError('Mustbemaxscalingcapacitygreaterthan', 'maxScalingCapacity must be set and greater than 0 if desiredCount is 0', this);
+      throw new ValidationError('MaxScalingCapacitySetGreater', 'maxScalingCapacity must be set and greater than 0 if desiredCount is 0', this);
     }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });

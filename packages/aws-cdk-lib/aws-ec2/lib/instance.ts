@@ -571,12 +571,12 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('CannotCannotSpecifyBoth', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new ValidationError('Creditspecificationsupportedonly', `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
+      throw new ValidationError('CreditSpecificationSupportedInstanceType', `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
     }
 
     if (props.securityGroup) {
@@ -593,7 +593,7 @@ export class Instance extends Resource implements IInstance {
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('CannotCannotprovidebothinstanceprofile', 'You cannot provide both instanceProfile and role', this);
+      throw new ValidationError('CannotProvideInstanceProfileRole', 'You cannot provide both instanceProfile and role', this);
     }
 
     let iamInstanceProfile: string | undefined = undefined;
@@ -659,7 +659,7 @@ export class Instance extends Resource implements IInstance {
       }] : undefined;
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
-      throw new ValidationError('Keyscompatiblechosen', `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+      throw new ValidationError('IncompatibleKeyPairType', `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
@@ -677,7 +677,7 @@ export class Instance extends Resource implements IInstance {
     if (
       props.ipv6AddressCount !== undefined &&
       props.associatePublicIpAddress !== undefined) {
-      throw new ValidationError('CanTBothIpv6addresscountAssociatepublicipaddress', 'You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
+      throw new ValidationError('SetIpvAddressCountAssociate', 'You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -717,7 +717,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new ValidationError('AssociatepublicipaddressTrueSelectPublic', "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
+      throw new ValidationError('SetAssociatePublicIpAddress', "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
     }
 
     this.osType = imageConfig.osType;
@@ -893,13 +893,13 @@ export class Instance extends Resource implements IInstance {
     // are set directly on the instance. Using both would result in a CloudFormation
     // deployment error, so we prevent this combination at synthesis time.
     if (props.requireImdsv2) {
-      throw new ValidationError('CannotCannotcannotbothrequireimdsv2', 'Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
+      throw new ValidationError('CannotRequireImdsvMetadataOptions', 'Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
     }
 
     // Validate httpPutResponseHopLimit range
     if (props.httpPutResponseHopLimit !== undefined &&
       (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
-      throw new ValidationError('Mustbehttpputresponsehoplimitbetween', 'httpPutResponseHopLimit must be between 1 and 64', this);
+      throw new ValidationError('HttpPutResponseHopLimit', 'httpPutResponseHopLimit must be between 1 and 64', this);
     }
 
     return {

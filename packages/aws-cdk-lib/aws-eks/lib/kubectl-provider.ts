@@ -142,7 +142,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     }
 
     if (cluster.kubectlPrivateSubnets && !cluster.kubectlSecurityGroup) {
-      throw new ValidationError('IsRequiredKubectlsecuritygroupRequiredKubectlsubnets', '"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
+      throw new ValidationError('KubectlSecurityGroupRequiredKubectl', '"kubectlSecurityGroup" is required if "kubectlSubnets" is specified', this);
     }
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;

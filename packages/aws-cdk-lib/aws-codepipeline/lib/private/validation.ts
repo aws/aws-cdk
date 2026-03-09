@@ -87,10 +87,10 @@ function validateAgainstRegex(scope: Construct | undefined, regex: RegExp, thing
 export function validateTriggers(gitConfiguration: GitConfiguration) {
   const { sourceAction, pushFilter, pullRequestFilter } = gitConfiguration;
   if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
-    throw new UnscopedValidationError('MustBeProviderActionpropertiesSourceaction', `provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
+    throw new UnscopedValidationError('ProviderActionPropertiesSourceAction', `provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
   }
   if (!pushFilter?.length && !pullRequestFilter?.length) {
-    throw new UnscopedValidationError('SpecifyEitherGitpushfilterGitpullrequestfilter', `must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+    throw new UnscopedValidationError('SpecifyGitPushFilterGit', `must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
   }
   if (pushFilter !== undefined) {
     validateGitPushFilter(pushFilter, sourceAction.actionProperties.actionName);
@@ -115,7 +115,7 @@ function validateGitPushFilter(pushFilter: GitPushFilter[], actionName: string) 
 
 function validateGitPullRequestFilter(pullRequestFilter: GitPullRequestFilter[], actionName: string) {
   if (pullRequestFilter.length > 3) {
-    throw new UnscopedValidationError('MustBeLengthGitpullrequestfilterSourceaction', `length of GitPullRequestFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
+    throw new UnscopedValidationError('LengthGitPullRequestFilter', `length of GitPullRequestFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
   }
   pullRequestFilter.forEach(filter =>{
     validateBranchesSpecified(filter, actionName);

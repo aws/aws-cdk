@@ -28,7 +28,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     if (!this.props.vpcLink) {
-      throw new ValidationError('Vpclinkpropertymandatory', 'The vpcLink property is mandatory', options.scope);
+      throw new ValidationError('VpcLinkPropertyMandatory', 'The vpcLink property is mandatory', options.scope);
     }
 
     return {

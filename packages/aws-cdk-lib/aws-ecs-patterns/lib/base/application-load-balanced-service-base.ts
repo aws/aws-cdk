@@ -429,7 +429,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
    */
   public get loadBalancer(): ApplicationLoadBalancer {
     if (!this._applicationLoadBalancer) {
-      throw new ValidationError('Validationerror', '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
+      throw new ValidationError('LoadBalancerAccessedClassConstructed', '.loadBalancer can only be accessed if the class was constructed with an owned, not imported, load balancer', this);
     }
     return this._applicationLoadBalancer;
   }
@@ -468,12 +468,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     super(scope, id);
 
     if (props.cluster && props.vpc) {
-      throw new ValidationError('Onlyspecifyeithercluster', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
+      throw new ValidationError('SpecifyVpcClusterAlternativelyLeave', 'You can only specify either vpc or cluster. Alternatively, you can leave both blank', this);
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
     if (props.desiredCount !== undefined && !Token.isUnresolved(props.desiredCount) && props.desiredCount < 1) {
-      throw new ValidationError('Specifydesiredcountgreaterthan', 'You must specify a desiredCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredCountGreater', 'You must specify a desiredCount greater than 0', this);
     }
 
     this.desiredCount = props.desiredCount || 1;
@@ -484,7 +484,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
       if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
-        throw new ValidationError('Mustbeloadbalanceridle', 'Load balancer idle timeout must be between 1 and 4000 seconds.', this);
+        throw new ValidationError('LoadBalancerIdleTimeoutSeconds', 'Load balancer idle timeout must be between 1 and 4000 seconds.', this);
       }
     }
 
@@ -499,12 +499,12 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
-      throw new ValidationError('Mustbehttpsprotocolused', 'The HTTPS protocol must be used when a certificate is given', this);
+      throw new ValidationError('ProtocolCertificateGiven', 'The HTTPS protocol must be used when a certificate is given', this);
     }
     const protocol = props.protocol ?? (props.certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
 
     if (protocol !== ApplicationProtocol.HTTPS && props.redirectHTTP === true) {
-      throw new ValidationError('Mustbehttpsprotocolused', 'The HTTPS protocol must be used when redirecting HTTP traffic', this);
+      throw new ValidationError('ProtocolRedirectingTraffic', 'The HTTPS protocol must be used when redirecting HTTP traffic', this);
     }
 
     const targetProps: AddApplicationTargetsProps = {
@@ -543,7 +543,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         this.certificate = props.certificate;
       } else {
         if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-          throw new ValidationError('Isrequireddomainnamezone', 'A domain name and zone is required when using the HTTPS protocol', this);
+          throw new ValidationError('DomainNameZoneRequiredProtocol', 'A domain name and zone is required when using the HTTPS protocol', this);
         }
 
         this.certificate = new Certificate(this, 'Certificate', {
@@ -574,7 +574,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     let domainName = loadBalancer.loadBalancerDnsName;
     if (typeof props.domainName !== 'undefined') {
       if (typeof props.domainZone === 'undefined') {
-        throw new ValidationError('Isrequiredroute53hosteddomain', 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
+        throw new ValidationError('RouteHostedDomainZoneName', 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
       switch (props.recordType ?? ApplicationLoadBalancedServiceRecordType.ALIAS) {

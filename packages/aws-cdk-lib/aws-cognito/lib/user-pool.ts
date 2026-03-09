@@ -1103,7 +1103,7 @@ export class UserPool extends UserPoolBase {
     const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!arnParts.resourceName) {
-      throw new ValidationError('InvalidInvalidinvaliduserpool', 'invalid user pool ARN', scope);
+      throw new ValidationError('InvalidUserPool', 'invalid user pool ARN', scope);
     }
 
     const userPoolId = arnParts.resourceName;
@@ -1170,7 +1170,7 @@ export class UserPool extends UserPoolBase {
           case 'customSmsSender':
           case 'customEmailSender':
             if (!this.triggers.kmsKeyId) {
-              throw new ValidationError('Specifyusingcustomsmssendercustomemailsender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
+              throw new ValidationError('SpecifyKeyCustomSmsSender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
             }
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
@@ -1217,7 +1217,7 @@ export class UserPool extends UserPoolBase {
 
     if (props.passkeyRelyingPartyId !== undefined && !Token.isUnresolved(props.passkeyRelyingPartyId)) {
       if (props.passkeyRelyingPartyId.length < 1 || props.passkeyRelyingPartyId.length > 63) {
-        throw new ValidationError('Mustbepasskeyrelyingpartyidlengthinclusively', `passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got ${props.passkeyRelyingPartyId.length}`, this);
+        throw new ValidationError('PasskeyRelyingPartyIdLength', `passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got ${props.passkeyRelyingPartyId.length}`, this);
       }
     }
 
@@ -1242,7 +1242,7 @@ export class UserPool extends UserPoolBase {
       props.advancedSecurityMode &&
       (props.standardThreatProtectionMode || advancedSecurityAdditionalFlows)
     ) {
-      throw new ValidationError('CannotCannotthreatprotectionadvanced', 'you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
+      throw new ValidationError('CannotSetThreatProtectionAdvanced', 'you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
     }
 
     let chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode;
@@ -1299,7 +1299,7 @@ export class UserPool extends UserPoolBase {
   @MethodMetadata()
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
     if (operation.operationName in this.triggers) {
-      throw new ValidationError('Triggeroperationalreadyexists', `A trigger for the operation ${operation.operationName} already exists.`, this);
+      throw new ValidationError('TriggerOperation', `A trigger for the operation ${operation.operationName} already exists.`, this);
     }
     if (
       operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG &&
@@ -1314,7 +1314,7 @@ export class UserPool extends UserPoolBase {
       case 'customEmailSender':
       case 'customSmsSender':
         if (!this.triggers.kmsKeyId) {
-          throw new ValidationError('Specifyusingcustomsmssendercustomemailsender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
+          throw new ValidationError('SpecifyKeyCustomSmsSender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
         }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
@@ -1352,7 +1352,7 @@ export class UserPool extends UserPoolBase {
       }
 
       if (message.length > MAX_LENGTH) {
-        throw new ValidationError('Mustbemessagebetweencharacters', `MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`, this);
+        throw new ValidationError('Message', `MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`, this);
       }
     }
 
@@ -1409,7 +1409,7 @@ export class UserPool extends UserPoolBase {
     const signIn: SignInAliases = props.signInAliases ?? { username: true };
 
     if (signIn.preferredUsername && !signIn.username) {
-      throw new ValidationError('Mustbeusernamesigninenabled', 'username signIn must be enabled if preferredUsername is enabled', this);
+      throw new ValidationError('UsernameSignEnabledPreferredUsername', 'username signIn must be enabled if preferredUsername is enabled', this);
     }
 
     if (signIn.username) {
@@ -1439,7 +1439,7 @@ export class UserPool extends UserPoolBase {
 
   private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
     if (props.enableSmsRole === false && props.smsRole) {
-      throw new ValidationError('Enablesmsrolecannotdisabledsmsrole', 'enableSmsRole cannot be disabled when smsRole is specified', this);
+      throw new ValidationError('EnableSmsRoleCannotDisabled', 'enableSmsRole cannot be disabled when smsRole is specified', this);
     }
 
     if (props.smsRole) {
@@ -1516,11 +1516,11 @@ export class UserPool extends UserPoolBase {
   private configurePasswordPolicy(props: UserPoolProps): CfnUserPool.PasswordPolicyProperty | undefined {
     const tempPasswordValidity = props.passwordPolicy?.tempPasswordValidity;
     if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
-      throw new ValidationError('Temppasswordvaliditycannotgreaterthan', `tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`, this);
+      throw new ValidationError('TempPasswordValidityCannotGreater', `tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`, this);
     }
     const minLength = props.passwordPolicy ? props.passwordPolicy.minLength ?? 8 : undefined;
     if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
-      throw new ValidationError('Mustbeminlengthpasswordbetween', `minLength for password must be between 6 and 99 (received: ${minLength})`, this);
+      throw new ValidationError('MinLengthPasswordReceived', `minLength for password must be between 6 and 99 (received: ${minLength})`, this);
     }
     const passwordHistorySize = props.passwordPolicy?.passwordHistorySize;
     if (passwordHistorySize !== undefined) {
@@ -1547,7 +1547,7 @@ export class UserPool extends UserPoolBase {
     if (props.signInPolicy?.allowedFirstAuthFactors) {
       // As of writing, from testing, CFN deployment will fail if `PASSWORD` is not enabled.
       if (!props.signInPolicy.allowedFirstAuthFactors.password) {
-        throw new ValidationError('Passwordauthenticationcannotdisabled', 'The password authentication cannot be disabled.', this);
+        throw new ValidationError('PasswordAuthenticationCannotDisabled', 'The password authentication cannot be disabled.', this);
       }
 
       allowedFirstAuthFactors = [];
@@ -1658,7 +1658,7 @@ export class UserPool extends UserPoolBase {
       case AccountRecovery.PHONE_AND_EMAIL:
         return undefined;
       default:
-        throw new ValidationError('UnsupportedUnsupportedunsupportedaccountrecoverytype', `Unsupported AccountRecovery type - ${accountRecovery}`, this);
+        throw new ValidationError('UnsupportedAccountRecoveryType', `Unsupported AccountRecovery type - ${accountRecovery}`, this);
     }
   }
 

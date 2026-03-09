@@ -74,7 +74,7 @@ export abstract class PipelineBase extends Construct {
     }
 
     if (!props.synth.primaryOutput) {
-      throw new ValidationError('Synthstepproduceprimaryoutput', `synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`, this);
+      throw new ValidationError('SynthStep', `synthStep ${props.synth} must produce a primary output, but is not producing anything. Configure the Step differently or use a different Step type.`, this);
     }
 
     this.synth = props.synth;
@@ -130,7 +130,7 @@ export abstract class PipelineBase extends Construct {
    */
   public buildPipeline() {
     if (this.built) {
-      throw new ValidationError('Buildalreadycalledonly', 'build() has already been called: can only call it once', this);
+      throw new ValidationError('BuildAlreadyCalledCall', 'build() has already been called: can only call it once', this);
     }
     this.doBuildPipeline();
     this.built = true;

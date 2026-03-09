@@ -176,11 +176,11 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('Isrequiredcoderequiredspecifying', 'Code is required when specifying a runtime', scope);
+      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('Mappingtemplatescannotused', 'Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError('MappingTemplatesCannotAlongsideCode', 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {

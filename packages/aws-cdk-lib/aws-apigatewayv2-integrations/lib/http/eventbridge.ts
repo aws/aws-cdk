@@ -94,7 +94,7 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
           .custom('DetailType', '$request.body.DetailType')
           .custom('Source', '$request.body.Source');
       default:
-        throw new ValidationError('UnsupportedUnsupportedunsupportedsubtype', `Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError('UnsupportedSubtype', `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 }

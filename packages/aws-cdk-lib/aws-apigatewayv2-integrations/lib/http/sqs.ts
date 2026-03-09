@@ -90,7 +90,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return 'sqs:PurgeQueue';
       default:
-        throw new ValidationError('UnsupportedUnsupportedunsupportedsubtype', `Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError('UnsupportedSubtype', `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 
@@ -111,7 +111,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
         return new apigwv2.ParameterMapping()
           .custom('QueueUrl', this.props.queue.queueUrl);
       default:
-        throw new ValidationError('UnsupportedUnsupportedunsupportedsubtype', `Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError('UnsupportedSubtype', `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 }

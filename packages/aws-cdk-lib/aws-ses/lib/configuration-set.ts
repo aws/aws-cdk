@@ -229,18 +229,18 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     addConstructMetadata(this, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new ValidationError('Disablesuppressionlisttrue', 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
+      throw new ValidationError('DisableSuppressionListTrueSuppression', 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
-        throw new ValidationError('Mustbemaximumdeliveryduration', `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError('MaximumDeliveryDurationGreaterEqual', `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
-        throw new ValidationError('Mustbemaximumdeliveryduration', `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
+        throw new ValidationError('MaximumDeliveryDurationLessEqual', `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
     if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
-      throw new ValidationError('Customtrackinghttpspolicyonlycustomtrackingredirectdomainalso', 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+      throw new ValidationError('CustomTrackingHttpsPolicySet', 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
     }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {

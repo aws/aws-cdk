@@ -208,13 +208,13 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       !Token.isUnresolved(minimumCapacityUnit) &&
       (!Number.isInteger(minimumCapacityUnit) || minimumCapacityUnit < 100)
     ) {
-      throw new ValidationError('MustBeMinimumcapacityunitPositiveInteger', `'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
+      throw new ValidationError('MinimumCapacityUnitPositiveInteger', `'minimumCapacityUnit' must be a positive integer greater than or equal to 100 for Application Load Balancer, got: ${minimumCapacityUnit}.`, this);
     }
 
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
 
     if (props.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 && !props.internetFacing) {
-      throw new ValidationError('Dualstackwithoutpublicipv4', 'dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
+      throw new ValidationError('DualStackWithoutPublicPv', 'dual-stack without public IPv4 address can only be used with internet-facing scheme.', this);
     }
 
     const securityGroups = [props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -249,7 +249,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     }
 
     if (props.crossZoneEnabled === false) {
-      throw new ValidationError('Crosszoneenabledcannotfalseapplication', 'crossZoneEnabled cannot be false with Application Load Balancers.', this);
+      throw new ValidationError('CrossZoneEnabledCannotFalse', 'crossZoneEnabled cannot be false with Application Load Balancers.', this);
     }
   }
 
@@ -299,7 +299,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      */
 
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryptiondetected', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError('EncryptionKeyDetectedBucketEncryption', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -360,7 +360,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
      * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-connection-logging.html#bucket-permissions-troubleshooting-connection
      */
     if (bucket.encryptionKey) {
-      throw new ValidationError('Encryptiondetected', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
+      throw new ValidationError('EncryptionKeyDetectedBucketEncryption', 'Encryption key detected. Bucket encryption using KMS keys is unsupported', this);
     }
 
     prefix = prefix || '';
@@ -1291,13 +1291,13 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public get loadBalancerCanonicalHostedZoneId(): string {
     if (this.props.loadBalancerCanonicalHostedZoneId) { return this.props.loadBalancerCanonicalHostedZoneId; }
 
-    throw new ValidationError('LoadbalancercanonicalhostedzoneidProvidedConstructingApplication', `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError('LoadBalancerCanonicalHostedZone', `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 
   public get loadBalancerDnsName(): string {
     if (this.props.loadBalancerDnsName) { return this.props.loadBalancerDnsName; }
 
-    throw new ValidationError('LoadbalancerdnsnameProvidedConstructingApplication', `'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
+    throw new ValidationError('LoadBalancerDnsNameProvided', `'loadBalancerDnsName' was not provided when constructing Application Load Balancer ${this.node.path} from attributes`, this);
   }
 }
 

@@ -399,7 +399,7 @@ export class HttpApi extends HttpApiBase {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('Apiendpointconfiguredimportedhttpapi', 'apiEndpoint is not configured on the imported HttpApi.', scope);
+          throw new ValidationError('ApiEndpointConfiguredImportedHttp', 'apiEndpoint is not configured on the imported HttpApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -454,7 +454,7 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new ValidationError('CorsPreflightAllowcredentialsSupported', "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
+        throw new ValidationError('PreflightAllowCredentialsSupportedAllow', "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
       }
       const {
         allowCredentials,
@@ -515,7 +515,7 @@ export class HttpApi extends HttpApiBase {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new ValidationError('Defaultdomainmappingsupportedcreatedefaultstagedisabled', 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
+      throw new ValidationError('DefaultDomainMappingSupportedCreate', 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
     }
   }
 
@@ -524,7 +524,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new ValidationError('Apiendpointaccessibledisableexecuteapiendpointtrue', 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
+      throw new ValidationError('ApiEndpointAccessibleDisableExecute', 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
     }
     return this._apiEndpoint;
   }

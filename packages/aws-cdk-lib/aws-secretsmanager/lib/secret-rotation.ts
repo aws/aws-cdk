@@ -151,7 +151,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
-      throw new UnscopedValidationError('UnsupportedUnsupportedPartition', `unsupported partition: ${partition}`);
+      throw new UnscopedValidationError('UnsupportedPartition', `unsupported partition: ${partition}`);
     }
   }
 
@@ -167,7 +167,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return '1.1.213';
     } else {
-      throw new UnscopedValidationError('UnsupportedUnsupportedPartition', `unsupported partition: ${partition}`);
+      throw new UnscopedValidationError('UnsupportedPartition', `unsupported partition: ${partition}`);
     }
   }
 }

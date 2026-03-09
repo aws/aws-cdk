@@ -327,7 +327,7 @@ export class ServiceManagedVolume extends Construct {
     if (iops !== undefined && !Token.isUnresolved(iops)) {
       const { min, max } = iopsRanges[volumeType];
       if ((iops < min || iops > max)) {
-        throw new ValidationError('Volumesiopsbetween', `'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`, this);
+        throw new ValidationError('IopsOutOfRange', `'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`, this);
       }
     }
   }

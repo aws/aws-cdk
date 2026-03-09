@@ -165,7 +165,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new ValidationError('Mustbeassetpatheither', 'Asset path must be either a .zip file or a directory', scope);
+          throw new ValidationError('AssetPathZipFileDirectory', 'Asset path must be either a .zip file or a directory', scope);
         }
         asset.grantRead(context.handlerRole);
 

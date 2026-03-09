@@ -23,7 +23,7 @@ export class AssetManifestReader {
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e: any) {
-      throw new UnscopedValidationError('CannotCannotReadAsset', `Cannot read asset manifest '${fileName}': ${e.message}`);
+      throw new UnscopedValidationError('CannotReadAssetManifest', `Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
@@ -37,7 +37,7 @@ export class AssetManifestReader {
     try {
       st = fs.statSync(filePath);
     } catch (e: any) {
-      throw new UnscopedValidationError('CannotCannotReadAsset', `Cannot read asset manifest at '${filePath}': ${e.message}`);
+      throw new UnscopedValidationError('CannotReadAssetManifest', `Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
       return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));

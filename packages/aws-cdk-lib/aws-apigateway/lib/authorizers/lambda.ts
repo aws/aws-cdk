@@ -94,7 +94,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: IRestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new ValidationError('CannotCannotcannotattachauthorizer', 'Cannot attach authorizer to two different rest APIs', this);
+      throw new ValidationError('CannotAttachAuthorizerTwoDifferent', 'Cannot attach authorizer to two different rest APIs', this);
     }
 
     this.restApiId = restApi.restApiId;
@@ -165,7 +165,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
-          throw new ValidationError('Mustbeauthorizerattachedrestapi', `Authorizer (${this.node.path}) must be attached to a RestApi`, this);
+          throw new ValidationError('Authorizer', `Authorizer (${this.node.path}) must be attached to a RestApi`, this);
         }
         return this.restApiId;
       },
@@ -287,7 +287,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     addConstructMetadata(this, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new ValidationError('Isrequiredleastidentitysource', 'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.', scope);
+      throw new ValidationError('LeastOneIdentitySourceRequired', 'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.', scope);
     }
 
     const restApiId = this.lazyRestApiId();

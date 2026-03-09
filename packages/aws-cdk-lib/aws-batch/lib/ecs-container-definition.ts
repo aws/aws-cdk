@@ -734,7 +734,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               };
             }
 
-            throw new ValidationError('UnsupportedUnsupportedunsupportedvolumeencountered', 'unsupported Volume encountered', this);
+            throw new ValidationError('UnsupportedVolumeEncountered', 'unsupported Volume encountered', this);
           });
         },
       }),
@@ -1162,15 +1162,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new ValidationError('Isrequiredreadonlyrootfilesystem', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
+      throw new ValidationError('ReadonlyRootFilesystemPossibleWindows', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new ValidationError('FargateContainerSpecifiesEphemeralstoragesize', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
+        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new ValidationError('FargateContainerSpecifiesEphemeralstoragesize', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
+        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }

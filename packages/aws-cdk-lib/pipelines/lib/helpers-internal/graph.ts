@@ -44,7 +44,7 @@ export class GraphNode<A> {
 
   public dependOn(...dependencies: Array<GraphNode<A> | undefined>) {
     if (dependencies.includes(this)) {
-      throw new UnscopedValidationError('CannotCannotDependencySelf', `Cannot add dependency on self: ${this}`);
+      throw new UnscopedValidationError('CannotAddDependencySelf', `Cannot add dependency on self: ${this}`);
     }
     this.dependencies.push(...dependencies.filter(isDefined));
   }
@@ -496,13 +496,13 @@ export class GraphNodeCollection<A> {
     }
 
     if (paths.length === 0) {
-      throw new UnscopedValidationError('CannotCannotFindCommon', 'Cannot find common ancestor between an empty set of nodes');
+      throw new UnscopedValidationError('CannotFindCommonAncestorEmpty', 'Cannot find common ancestor between an empty set of nodes');
     }
     if (paths.length === 1) {
       const path = paths[0];
 
       if (path.length < 2) {
-        throw new UnscopedValidationError('CannotCannotFindAncestor', `Cannot find ancestor of node without ancestor: ${path[0]}`);
+        throw new UnscopedValidationError('CannotFindAncestorNodeWithout', `Cannot find ancestor of node without ancestor: ${path[0]}`);
       }
       return path[path.length - 2];
     }

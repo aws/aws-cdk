@@ -49,7 +49,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('CannotCannotSupplyBoth', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError('CannotSupplyDayWeekDay', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');

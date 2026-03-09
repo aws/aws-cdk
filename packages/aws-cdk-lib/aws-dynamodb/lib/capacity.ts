@@ -93,7 +93,7 @@ export abstract class Capacity {
         }
 
         if (options.targetUtilizationPercent !== undefined && (options.targetUtilizationPercent < 20 || options.targetUtilizationPercent > 90)) {
-          throw new UnscopedValidationError('CannotCannotLessThan', '`targetUtilizationPercent` cannot be less than 20 or greater than 90');
+          throw new UnscopedValidationError('TargetUtilizationPercentCannotLess', '`targetUtilizationPercent` cannot be less than 20 or greater than 90');
         }
 
         if (options.seedCapacity !== undefined && (options.seedCapacity < 1)) {

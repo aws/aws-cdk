@@ -220,7 +220,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
-      throw new ValidationError('Mustbeargumentslookload', 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookUpLoadBalancer', 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
@@ -327,7 +327,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new ValidationError('SpecifyMostDefaultactionDefaulttargetgroups', 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
+      throw new ValidationError('SpecifyOneDefaultActionDefault', 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -464,7 +464,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      throw new ValidationError('Onlycalladdtargetsusing', 'Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
+      throw new ValidationError('CallAddTargetsConstructedLoad', 'Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -505,7 +505,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-      throw new ValidationError('CannotCannotMoreThan', '`messageBody` cannot have more than 1024 characters.', this);
+      throw new ValidationError('MessageBodyCannotCharacters', '`messageBody` cannot have more than 1024 characters.', this);
     }
 
     if (props.priority) {
@@ -550,7 +550,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     }
 
     if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-      throw new ValidationError('MustBeHttp301Http302', '`statusCode` must be HTTP_301 or HTTP_302.', this);
+      throw new ValidationError('StatusCode', '`statusCode` must be HTTP_301 or HTTP_302.', this);
     }
 
     if (props.priority) {
@@ -776,7 +776,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new ValidationError('CannotCannotcannotdefaulttarget', 'Cannot add default Target Groups to imported ApplicationListener', this);
+      throw new ValidationError('CannotAddDefaultTargetGroups', 'Cannot add default Target Groups to imported ApplicationListener', this);
     }
   }
 
@@ -792,7 +792,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    throw new ValidationError('Onlycalladdtargetsusing', 'Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
+    throw new ValidationError('CallAddTargetsConstructedApplication', 'Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
   }
 
   /**
@@ -827,7 +827,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new ValidationError('Mustbepriorityactionsadded', 'priority must be set for actions added to an imported listener', this);
+      throw new ValidationError('PrioritySetActionsAddedImported', 'priority must be set for actions added to an imported listener', this);
     }
   }
 }
@@ -1144,11 +1144,11 @@ function validateMutualAuthentication(scope: Construct, mutualAuthentication?: M
     }
 
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-      throw new ValidationError('CannotIgnoreclientcertificateexpiryMode', `You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+      throw new ValidationError('CannotSetIgnoreClientCertificate', `You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
 
     if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
-      throw new ValidationError('CannotAdvertisetruststorecanamesMode', `You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+      throw new ValidationError('CannotSetAdvertiseTrustStore', `You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
   }
 }

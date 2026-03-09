@@ -137,7 +137,7 @@ export class LifecycleHook extends Resource implements ILifecycleHook {
       this._role = props.role;
 
       if (!props.notificationTarget) {
-        throw new ValidationError('NotificationtargetParameterRequiredRole', "'notificationTarget' parameter required when 'role' parameter is specified", this);
+        throw new ValidationError('NotificationTargetParameterRequiredRole', "'notificationTarget' parameter required when 'role' parameter is specified", this);
       }
     } else {
       this._role = targetProps ? targetProps.createdRole : undefined;

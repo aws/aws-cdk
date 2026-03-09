@@ -71,7 +71,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
   const sourceStage = Stage.of(sourceStack);
   const targetStage = Stage.of(targetStack);
   if (sourceStage !== targetStage) {
-    throw new UnscopedValidationError('CannotDependencyDependencyCannot', `You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
+    throw new UnscopedValidationError('CannotDependency', `You cannot have a dependency from '${source.node.path}' (in ${describeStage(sourceStage)}) to '${target.node.path}' (in ${describeStage(targetStage)}): dependency cannot cross stage boundaries`);
   }
 
   // find the deepest common stack between the two elements
@@ -95,7 +95,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
         break;
       }
       default: {
-        throw new AssumptionError('UnsupportedUnsupportedDependencyOperation', `Unsupported dependency operation: ${operation}`);
+        throw new AssumptionError('UnsupportedDependencyOperation', `Unsupported dependency operation: ${operation}`);
       }
     }
     return;
@@ -136,7 +136,7 @@ function operateOnDependency(operation: DependencyOperation, source: Element, ta
       break;
     }
     default: {
-      throw new AssumptionError('UnsupportedUnsupportedDependencyOperation', `Unsupported dependency operation: ${operation}`);
+      throw new AssumptionError('UnsupportedDependencyOperation', `Unsupported dependency operation: ${operation}`);
     }
   }
 }
@@ -168,7 +168,7 @@ function resourceInCommonStackFor(element: Element, commonStack: Stack): CfnReso
   const resource: CfnResource = (Stack.isStack(element) ? element.nestedStackResource : element) as CfnResource;
   if (!resource) {
     // see "assertion" in operateOnDependency above
-    throw new AssumptionError('UnexpectedUnexpectedValueResource', `Unexpected value for resource when looking at ${element}!`);
+    throw new AssumptionError('UnexpectedValueResourceLooking', `Unexpected value for resource when looking at ${element}!`);
   }
 
   const resourceStack = Stack.of(resource);

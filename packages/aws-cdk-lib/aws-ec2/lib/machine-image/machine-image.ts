@@ -716,7 +716,7 @@ export class LookupMachineImage implements IMachineImage {
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
-      throw new ValidationError('Responselookupinvalid', `Response to AMI lookup invalid, got: ${value}`, scope);
+      throw new ValidationError('ResponseLookupInvalid', `Response to AMI lookup invalid, got: ${value}`, scope);
     }
 
     const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;

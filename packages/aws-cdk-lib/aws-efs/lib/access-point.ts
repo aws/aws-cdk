@@ -281,20 +281,20 @@ class ImportedAccessPoint extends AccessPointBase {
 
     if (!attrs.accessPointId) {
       if (!attrs.accessPointArn) {
-        throw new ValidationError('Isrequiredaccesspointidaccesspointarnrequired', 'One of accessPointId or AccessPointArn is required!', this);
+        throw new ValidationError('OneAccessPointIdAccess', 'One of accessPointId or AccessPointArn is required!', this);
       }
 
       this.accessPointArn = attrs.accessPointArn;
       let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
-        throw new ValidationError('Accesspointprovideresourcename', 'ARN for AccessPoint must provide the resource name.', this);
+        throw new ValidationError('AccessPointProvideResourceName', 'ARN for AccessPoint must provide the resource name.', this);
       }
 
       this.accessPointId = maybeApId;
     } else {
       if (attrs.accessPointArn) {
-        throw new ValidationError('Onlyaccesspointidaccesspointarnprovided', 'Only one of accessPointId or AccessPointArn can be provided!', this);
+        throw new ValidationError('OneAccessPointIdAccess', 'Only one of accessPointId or AccessPointArn can be provided!', this);
       }
 
       this.accessPointId = attrs.accessPointId;
@@ -310,7 +310,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
   public get fileSystem() {
     if (!this._fileSystem) {
-      throw new ValidationError('FilesystemOnlyAvailableFromaccesspointattributes', "fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
+      throw new ValidationError('FileSystemAvailableAccessPoint', "fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
     }
 
     return toIFileSystem(this._fileSystem);

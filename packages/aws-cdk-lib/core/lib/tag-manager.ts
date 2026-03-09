@@ -68,7 +68,7 @@ interface ITagFormatter {
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new UnscopedValidationError('InvalidInvalidInputExpected', `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError('InvalidTagInputExpectedArray', `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -106,7 +106,7 @@ class StandardFormatter implements ITagFormatter {
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new UnscopedValidationError('InvalidInvalidInputExpected', `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError('InvalidTagInputExpectedArray', `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -149,7 +149,7 @@ class AsgFormatter implements ITagFormatter {
 class MapFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (Array.isArray(cfnPropertyTags) || typeof(cfnPropertyTags) !== 'object') {
-      throw new UnscopedValidationError('InvalidInvalidInputExpected', `Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError('InvalidTagInputExpectedMap', `Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];

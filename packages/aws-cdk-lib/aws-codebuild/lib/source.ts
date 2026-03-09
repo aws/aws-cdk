@@ -589,11 +589,11 @@ abstract class ThirdPartyGitSource extends GitSource {
     const webhook = this.webhook ?? (anyFilterGroupsProvided ? true : undefined);
 
     if (!webhook && anyFilterGroupsProvided) {
-      throw new UnscopedValidationError('CannotCannotUsed', '`webhookFilters` cannot be used when `webhook` is `false`');
+      throw new UnscopedValidationError('WebhookFiltersCannotWebhookFalse', '`webhookFilters` cannot be used when `webhook` is `false`');
     }
 
     if (!webhook && this.webhookTriggersBatchBuild) {
-      throw new UnscopedValidationError('CannotCannotUsed', '`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
+      throw new UnscopedValidationError('WebhookTriggersBatchBuildCannot', '`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
     }
 
     const superConfig = super.bind(_scope, project);

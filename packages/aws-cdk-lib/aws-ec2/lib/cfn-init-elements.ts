@@ -221,7 +221,7 @@ export class InitCommand extends InitElement {
    */
   public static argvCommand(argv: string[], options: InitCommandOptions = {}): InitCommand {
     if (argv.length === 0) {
-      throw new UnscopedValidationError('CannotCannotDefineArgvcommand', 'Cannot define argvCommand with an empty arguments');
+      throw new UnscopedValidationError('CannotDefineArgvCommandEmpty', 'Cannot define argvCommand with an empty arguments');
     }
     return new InitCommand(argv, options);
   }
@@ -237,7 +237,7 @@ export class InitCommand extends InitElement {
     const commandKey = this.options.key || `${options.index}`.padStart(3, '0'); // 001, 005, etc.
 
     if (options.platform !== InitPlatform.WINDOWS && this.options.waitAfterCompletion !== undefined) {
-      throw new ValidationError('CommandWaitaftercompletionOnlyValid', `Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`, options.scope);
+      throw new ValidationError('Command', `Command '${this.command}': 'waitAfterCompletion' is only valid for Windows systems.`, options.scope);
     }
 
     for (const handle of this.options.serviceRestartHandles ?? []) {

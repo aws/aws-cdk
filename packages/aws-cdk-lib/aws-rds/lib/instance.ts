@@ -254,15 +254,15 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new ValidationError('CannotCannotcannotgrantconnect', 'Cannot grant connect when IAM authentication is disabled', this);
+      throw new ValidationError('CannotGrantConnectAuthenticationDisabled', 'Cannot grant connect when IAM authentication is disabled', this);
     }
 
     if (!this.instanceResourceId) {
-      throw new ValidationError('Importeddatabaseinstances', 'For imported Database Instances, instanceResourceId is required to grantConnect()', this);
+      throw new ValidationError('ImportedDatabaseInstancesInstanceResource', 'For imported Database Instances, instanceResourceId is required to grantConnect()', this);
     }
 
     if (!dbUser) {
-      throw new ValidationError('Importeddatabaseinstances', 'For imported Database Instances, the dbUser is required to grantConnect()', this);
+      throw new ValidationError('ImportedDatabaseInstancesDbUser', 'For imported Database Instances, the dbUser is required to grantConnect()', this);
     }
 
     this.enableIamAuthentication = true;
@@ -930,7 +930,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
-      throw new ValidationError('Requestingspecificavailabilityzone', 'Requesting a specific availability zone is not valid for Multi-AZ instances', this);
+      throw new ValidationError('RequestingSpecificAvailabilityZoneValid', 'Requesting a specific availability zone is not valid for Multi-AZ instances', this);
     }
 
     const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
@@ -961,12 +961,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new ValidationError('Storagethroughputonlyspecified', `The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
+      throw new ValidationError('StorageThroughputSpecifiedStorageType', `The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
     }
     if (storageType === StorageType.GP3 && props.storageThroughput && iops
         && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
         && props.storageThroughput/iops > 0.25) {
-      throw new ValidationError('Maximumratiostoragethroughput', `The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
+      throw new ValidationError('MaximumRatioStorageThroughput', `The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
     }
 
     this.cloudwatchLogGroups = {};
@@ -1151,7 +1151,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineType = props.engine.engineType;
 
     if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
-      throw new ValidationError('EnginelifecyclesupportOnlySpecifiedMysql', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+      throw new ValidationError('EngineLifecycleSupportSpecifiedMy', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // only Oracle and SQL Server require the import and export Roles to be the same
@@ -1184,7 +1184,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
-      throw new ValidationError('CannotCannotspecifybothparametergroup', 'You cannot specify both parameterGroup and parameters', this);
+      throw new ValidationError('CannotSpecifyParameterGroupParameters', 'You cannot specify both parameterGroup and parameters', this);
     }
 
     const dbParameterGroupName = props.parameters
@@ -1217,13 +1217,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('CannotCannotcannotsingleuser', 'Cannot add single user rotation for an instance without secret.', this);
+      throw new ValidationError('CannotAddSingleUserRotation', 'Cannot add single user rotation for an instance without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('Singleuserrotationalready', 'A single user rotation was already added to this instance.', this);
+      throw new ValidationError('SingleUserRotationAlreadyAdded', 'A single user rotation was already added to this instance.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1240,7 +1240,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('CannotCannotcannotmultiuser', 'Cannot add multi user rotation for an instance without secret.', this);
+      throw new ValidationError('CannotAddMultiUserRotation', 'Cannot add multi user rotation for an instance without secret.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1265,7 +1265,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (!this.secret) {
-        throw new ValidationError('Isrequiredsecretdbuserrequired', 'A secret or dbUser is required to grantConnect()', this);
+        throw new ValidationError('SecretDbUserRequiredGrant', 'A secret or dbUser is required to grantConnect()', this);
       }
 
       dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
@@ -1587,12 +1587,12 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
         && props.backupRetention) {
-      throw new ValidationError('CannotCannotBackupretention', `Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
+      throw new ValidationError('CannotSetBackupRetentionEngine', `Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
     const engineType = props.sourceDatabaseInstance.engine?.engineType;
     if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
-      throw new ValidationError('EnginelifecyclesupportOnlySpecifiedMysql', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+      throw new ValidationError('EngineLifecycleSupportSpecifiedMy', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // The read replica instance always uses the same engine as the source instance

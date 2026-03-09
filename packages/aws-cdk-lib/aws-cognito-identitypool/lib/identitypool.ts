@@ -391,15 +391,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
     const res = pool.resourceName || '';
     if (!res) {
-      throw new ValidationError('InvalidInvalidinvalididentitypool', 'Invalid Identity Pool ARN', scope);
+      throw new ValidationError('InvalidIdentityPool', 'Invalid Identity Pool ARN', scope);
     }
     if (!Token.isUnresolved(res)) {
       const idParts = res.split(':');
       if (!(idParts.length === 2)) {
-        throw new ValidationError('InvalidInvalidinvalididentitypool', 'Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>', scope);
+        throw new ValidationError('InvalidIdentityPoolIdIdentity', 'Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>', scope);
       }
       if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
-        throw new ValidationError('InvalidInvalidinvalididentitypool', 'Invalid Identity Pool Id: Region in Identity Pool Id must match stack region', scope);
+        throw new ValidationError('InvalidIdentityPoolIdRegion', 'Invalid Identity Pool Id: Region in Identity Pool Id must match stack region', scope);
       }
     }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
@@ -661,7 +661,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       };
       if (roleMapping.type === 'Rules') {
         if (!prop.rules) {
-          throw new UnscopedValidationError('Identitypoolrolemapping', 'IdentityPoolRoleMapping.rules is required when useToken is false');
+          throw new UnscopedValidationError('IdentityPoolRoleMappingRules', 'IdentityPoolRoleMapping.rules is required when useToken is false');
         }
         roleMapping.rulesConfiguration = {
           rules: prop.rules.map(rule => {

@@ -103,7 +103,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('Specifyonlytaskdefinitiontaskimageoptions', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError('SpecifyOneTaskDefinitionTask', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -132,10 +132,10 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         }
       }
     } else {
-      throw new ValidationError('Specifytaskdefinitionimage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('Mustbeleastessentialcontainer', 'At least one essential container must be specified', this);
+      throw new ValidationError('LeastOneEssentialContainerSpecified', 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

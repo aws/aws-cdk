@@ -124,11 +124,11 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new ValidationError('MustBeExactlyCustommetricPredefinedmetric', 'Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
+      throw new ValidationError('ExactlyOneCustomMetricPredefined', 'Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new ValidationError('Onlydirectmetricssupported', 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
+      throw new ValidationError('DirectMetricsSupportedTargetTracking', 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
     }
 
     super(scope, id);
@@ -164,7 +164,7 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new ValidationError('CannotCannotStatisticTarget', `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+    throw new ValidationError('CannotStatistic', `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
   return {

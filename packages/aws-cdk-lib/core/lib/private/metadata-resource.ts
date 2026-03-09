@@ -147,7 +147,7 @@ export function parseAnalytics(analyticsString: string): ConstructInfo[] {
     const trie = parsePrefixEncodedList(prefixEncodedList);
     return trieToConstructInfos(trie);
   } else {
-    throw new AssumptionError('InvalidInvalidAnalyticsString', `Invalid analytics string: ${analyticsString}`);
+    throw new AssumptionError('InvalidAnalyticsString', `Invalid analytics string: ${analyticsString}`);
   }
 }
 

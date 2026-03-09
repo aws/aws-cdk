@@ -69,7 +69,7 @@ export class WarmPool extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxGroupPreparedCapacity && props.maxGroupPreparedCapacity < -1) {
-      throw new ValidationError('ShouldBeMaxgrouppreparedcapacityParameterShould', '\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
+      throw new ValidationError('MaxGroupPreparedCapacityParameter', '\'maxGroupPreparedCapacity\' parameter should be greater than or equal to -1', this);
     }
 
     if (props.minSize && props.minSize < 0) {

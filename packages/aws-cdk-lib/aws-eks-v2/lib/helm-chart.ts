@@ -170,12 +170,12 @@ export class HelmChart extends Construct {
 
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new ValidationError('Kubectlproviderdefinedcluster', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError('KubectlProviderDefinedClusterDefine', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new ValidationError('Helmcharttimeoutcannot', 'Helm chart timeout cannot be higher than 15 minutes.', this);
+      throw new ValidationError('HelmChartTimeoutCannotHigher', 'Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {

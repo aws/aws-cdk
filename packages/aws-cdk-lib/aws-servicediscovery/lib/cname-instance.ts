@@ -60,7 +60,7 @@ export class CnameInstance extends InstanceBase {
     addConstructMetadata(this, props);
 
     if (props.service.namespace.type === NamespaceType.HTTP) {
-      throw new ValidationError('Mustbenamespaceassociatedservice', 'Namespace associated with Service must be a DNS Namespace.', this);
+      throw new ValidationError('NamespaceAssociatedServiceNamespace', 'Namespace associated with Service must be a DNS Namespace.', this);
     }
 
     if (props.service.dnsRecordType !== DnsRecordType.CNAME) {

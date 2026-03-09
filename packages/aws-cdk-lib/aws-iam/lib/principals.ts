@@ -879,7 +879,7 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new UnscopedValidationError('MustBeCompositeprincipalsConstructedLeast', 'CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+      throw new UnscopedValidationError('CompositePrincipalsConstructedLeastPrincipal', 'CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);

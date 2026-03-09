@@ -63,7 +63,7 @@ export class StageDeployment {
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
     for (const artifact of assembly.stacks) {
       if (artifact.assumeRoleAdditionalOptions?.Tags && artifact.assumeRoleArn) {
-        throw new ValidationError('RequiresRequiresdeploymentstackrequires', `Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`, stage);
+        throw new ValidationError('DeploymentStack', `Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`, stage);
       }
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
@@ -73,7 +73,7 @@ export class StageDeployment {
         const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
         const thisStep = stepFromArtifact.get(stackArtifact);
         if (!thisStep) {
-          throw new ValidationError('Logicerrorjustadded', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
+          throw new ValidationError('LogicErrorAddedStepArtifact', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
         }
         thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
       }
@@ -82,7 +82,7 @@ export class StageDeployment {
     for (const artifact of assembly.stacks) {
       const thisStep = stepFromArtifact.get(artifact);
       if (!thisStep) {
-        throw new ValidationError('Logicerrorjustadded', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
+        throw new ValidationError('LogicErrorAddedStepArtifact', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
       }
 
       const stackDependencies = artifact.dependencies.filter(isStackArtifact);

@@ -125,7 +125,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
         return {
           domain: userPoolDomainName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('UserpooldomainrefAvailableImportedUserpooldomain', 'userPoolDomainRef is not available on imported UserPoolDomain.');
+            throw new UnscopedValidationError('UserPoolDomainRefAvailable', 'userPoolDomainRef is not available on imported UserPoolDomain.');
           },
         };
       }
@@ -156,13 +156,13 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this._userPool = props.userPool;
 
     if (!!props.customDomain === !!props.cognitoDomain) {
-      throw new ValidationError('Validationerror', 'One of, and only one of, cognitoDomain or customDomain must be specified', this);
+      throw new ValidationError('ExactlyOneDomainRequired', 'One of, and only one of, cognitoDomain or customDomain must be specified', this);
     }
 
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
-      throw new ValidationError('Domainprefixcognitodomaincontainonly', 'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
+      throw new ValidationError('DomainPrefixCognitoDomainContain', 'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -245,7 +245,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else if (client.oAuthFlows.implicitCodeGrant) {
       responseType = 'token';
     } else {
-      throw new ValidationError('Signinurlsupportedclientswithout', 'signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
+      throw new ValidationError('SignUrlSupportedClientsWithout', 'signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
     }
     const path = options.signInPath ?? '/login';
     return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;

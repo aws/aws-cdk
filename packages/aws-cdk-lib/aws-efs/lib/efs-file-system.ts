@@ -775,21 +775,21 @@ export class FileSystem extends FileSystemBase {
     this.props = props;
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new ValidationError('Performancemodemaxiosupportedzone', 'performanceMode MAX_IO is not supported for One Zone file systems.', this);
+      throw new ValidationError('PerformanceModeSupportedOneZone', 'performanceMode MAX_IO is not supported for One Zone file systems.', this);
     }
 
     if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
-      throw new ValidationError('Isrequiredpropertyprovisionedthroughputpersecondrequired', 'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
+      throw new ValidationError('PropertyProvisionedThroughputPerSecond', 'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
     }
 
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new ValidationError('Throughputmodeelasticsupportedfile', 'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
+      throw new ValidationError('ThroughputModeSupportedFileSystems', 'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
     }
 
     if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-      throw new ValidationError('CannotCannotConfigureReplicationconfiguration', 'Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
+      throw new ValidationError('CannotConfigureReplicationConfigurationReplication', 'Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
     }
 
     // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -933,13 +933,13 @@ export class FileSystem extends FileSystemBase {
   private oneZoneValidation() {
     // validate when props.oneZone is enabled
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
-      throw new ValidationError('Onezoneenabledvpcsubnetsdefined', 'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
+      throw new ValidationError('OneZoneEnabledVpcSubnets', 'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
     }
     // when vpcSubnets.availabilityZones is defined
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new ValidationError('Onezoneenabled', 'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
+        throw new ValidationError('OneZoneEnabledVpcSubnets', 'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
@@ -995,7 +995,7 @@ class ImportedFileSystem extends FileSystemBase {
     addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
-      throw new ValidationError('Filesystemidfilesystemarn', 'One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
+      throw new ValidationError('OneFileSystemIdFile', 'One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
@@ -1007,7 +1007,7 @@ class ImportedFileSystem extends FileSystemBase {
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new ValidationError('InvalidInvalidinvalidfilesystem', `Invalid FileSystem Arn ${this.fileSystemArn}`, this);
+      throw new ValidationError('InvalidFileSystemArn', `Invalid FileSystem Arn ${this.fileSystemArn}`, this);
     }
 
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;

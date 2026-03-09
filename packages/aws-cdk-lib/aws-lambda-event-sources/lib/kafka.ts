@@ -314,7 +314,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new UnscopedValidationError('KafkaeventsourceBoundEventSource', 'KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSourceYetBound', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -324,7 +324,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new UnscopedValidationError('KafkaeventsourceBoundEventSource', 'KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSourceYetBound', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -372,11 +372,11 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('MustBeStartingpositiontimestampProvidedStartingposition', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingPositionTimestampProvidedStarting', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('StartingpositiontimestampOnlyUsedStartingposition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingPositionTimestampStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.metricsConfig) {
@@ -389,7 +389,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new ValidationError('Functionconstruct', 'Function is not a construct. Unexpected error.', target); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError('FunctionConstructUnexpectedError', 'Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({

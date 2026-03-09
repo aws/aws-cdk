@@ -315,7 +315,7 @@ export class SpaceDelimitedTextPattern implements IFilterPattern {
     // going through the factory
     for (const column of columns) {
       if (!validColumnName(column)) {
-        throw new UnscopedValidationError('InvalidInvalidColumnName', `Invalid column name: ${column}`);
+        throw new UnscopedValidationError('InvalidColumnName', `Invalid column name: ${column}`);
       }
     }
 
@@ -447,7 +447,7 @@ function validateStringOperator(operator: string) {
   if (operator === '==') { operator = '='; }
 
   if (operator !== '=' && operator !== '!=') {
-    throw new UnscopedValidationError('InvalidInvalidComparisonOperator', `Invalid comparison operator ('${operator}'), must be either '=' or '!='`);
+    throw new UnscopedValidationError('InvalidComparisonOperator', `Invalid comparison operator ('${operator}'), must be either '=' or '!='`);
   }
 
   return operator;
@@ -465,7 +465,7 @@ function validateNumericalOperator(operator: string) {
   if (operator === '==') { operator = '='; }
 
   if (VALID_OPERATORS.indexOf(operator) === -1) {
-    throw new UnscopedValidationError('InvalidInvalidComparisonOperator', `Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
+    throw new UnscopedValidationError('InvalidComparisonOperator', `Invalid comparison operator ('${operator}'), must be one of ${VALID_OPERATORS.join(', ')}`);
   }
 
   return operator;
@@ -480,7 +480,7 @@ function renderRestriction(column: string, restriction: ColumnRestriction) {
   } else if (restriction.stringValue) {
     return `${column} ${restriction.comparison} ${quoteTerm(restriction.stringValue)}`;
   } else {
-    throw new UnscopedValidationError('InvalidInvalidRestriction', 'Invalid restriction');
+    throw new UnscopedValidationError('InvalidRestriction', 'Invalid restriction');
   }
 }
 

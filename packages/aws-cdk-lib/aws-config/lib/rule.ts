@@ -108,7 +108,7 @@ abstract class RuleBase extends Resource implements IRule {
   public get configRuleRef(): ConfigRuleReference {
     const self = this;
     return {
-      get configRuleArn(): string { throw new ValidationError('CannotCannotcannotconfigrulecreated', 'Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
+      get configRuleArn(): string { throw new ValidationError('CannotConfigRuleCreatedWithout', 'Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
       configRuleName: this.configRuleName,
     };
   }
@@ -579,10 +579,10 @@ export class CustomPolicy extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new ValidationError('Policytextcannotempty', 'Policy Text cannot be empty.', this);
+      throw new ValidationError('PolicyTextCannotEmpty', 'Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new ValidationError('Policytextlimited', 'Policy Text is limited to 10,000 characters or less.', this);
+      throw new ValidationError('PolicyTextLimitedCharactersLess', 'Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];

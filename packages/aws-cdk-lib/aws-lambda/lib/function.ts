@@ -1703,13 +1703,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private renderDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
     Annotations.of(this).addInfoV2('aws-lambda:Function.DurableConfig', 'Modifying an existing lambda to use durability will trigger a resource replacement');
     if (!config.executionTimeout.isUnresolved() && (config.executionTimeout.toSeconds() < 1 || config.executionTimeout.toSeconds() > 31622400)) {
-      throw new ValidationError('Mustbeexecutiontimeoutbetween31622400', `executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
+      throw new ValidationError('ExecutionTimeoutSeconds', `executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
     }
 
     let retentionDays: number | undefined;
     if (config.retentionPeriod) {
       if (!config.retentionPeriod.isUnresolved() && (config.retentionPeriod.toDays() < 1 || config.retentionPeriod.toDays() > 90)) {
-        throw new ValidationError('Mustberetentionperiodindaysbetweendays', `retentionPeriodInDays must be between 1 and 90 days, got ${config.retentionPeriod.toDays()}`, this);
+        throw new ValidationError('RetentionPeriodOutOfRange', `retentionPeriodInDays must be between 1 and 90 days, got ${config.retentionPeriod.toDays()}`, this);
       }
       retentionDays = config.retentionPeriod.toDays();
     }
@@ -1734,19 +1734,19 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
     if (!props.runtime.supportsSnapStart) {
-      throw new ValidationError('Snapstartcurrentlysupportedruntime', `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError('SnapStartCurrentlySupportedRuntime', `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
     }
 
     if (props.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('Snapstartsupportedfunctionstenant', 'SnapStart is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError('SnapStartSupportedFunctionsTenant', 'SnapStart is not supported for functions with tenant isolation mode', this);
     }
 
     if (props.filesystem) {
-      throw new ValidationError('Snapstartcurrentlysupportedusing', 'SnapStart is currently not supported using EFS', this);
+      throw new ValidationError('SnapStartCurrentlySupported', 'SnapStart is currently not supported using EFS', this);
     }
 
     if (props.ephemeralStorageSize && props.ephemeralStorageSize?.toMebibytes() > 512) {
-      throw new ValidationError('Snapstartcurrentlysupportedusing', 'SnapStart is currently not supported using more than 512 MiB Ephemeral Storage', this);
+      throw new ValidationError('SnapStartCurrentlySupportedMi', 'SnapStart is currently not supported using more than 512 MiB Ephemeral Storage', this);
     }
 
     return props.snapStart._render();
@@ -1764,7 +1764,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       throw Error('deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false');
     }
     if (props.deadLetterTopic && (props.deadLetterQueue || props.deadLetterQueueEnabled !== undefined)) {
-      throw new ValidationError('Deadletterqueuedeadlettertopiccannotspecified', 'deadLetterQueue and deadLetterTopic cannot be specified together at the same time', this);
+      throw new ValidationError('DeadLetterQueueDeadLetter', 'deadLetterQueue and deadLetterTopic cannot be specified together at the same time', this);
     }
 
     let deadLetterQueue: sqs.IQueue | sns.ITopic;
@@ -1814,7 +1814,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
   private validateProfiling(props: FunctionProps) {
     if (!props.runtime.supportsCodeGuruProfiling) {
-      throw new ValidationError('Codeguruprofilingsupportedruntime', `CodeGuru profiling is not supported by runtime ${props.runtime.name}`, this);
+      throw new ValidationError('CodeGuruProfilingSupportedRuntime', `CodeGuru profiling is not supported by runtime ${props.runtime.name}`, this);
     }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
       || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN

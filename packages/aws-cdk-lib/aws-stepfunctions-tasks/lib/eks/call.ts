@@ -107,7 +107,7 @@ export class EksCall extends sfn.TaskStateBase {
     try {
       this.clusterCertificateAuthorityData = this.props.cluster.clusterCertificateAuthorityData;
     } catch {
-      throw new ValidationError('MustBeClustercertificateauthoritydataPropertySpecified', 'The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.', this);
+      throw new ValidationError('ClusterCertificateAuthorityDataProperty', 'The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.', this);
     }
   }
 

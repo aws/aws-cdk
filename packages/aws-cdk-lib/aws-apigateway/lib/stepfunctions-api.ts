@@ -121,7 +121,7 @@ export class StepFunctionsRestApi extends RestApi {
 
   constructor(scope: Construct, id: string, props: StepFunctionsRestApiProps) {
     if (props.defaultIntegration) {
-      throw new ValidationError('CannotCannotSpecifyDefaultintegration', 'Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
+      throw new ValidationError('CannotSpecifyDefaultIntegrationSince', 'Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
     }
 
     if ((props.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineType !== sfn.StateMachineType.EXPRESS) {

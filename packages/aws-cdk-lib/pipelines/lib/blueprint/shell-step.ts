@@ -202,7 +202,7 @@ export class ShellStep extends Step {
   public primaryOutputDirectory(directory: string): FileSet {
     if (this._primaryOutputDirectory !== undefined) {
       if (this._primaryOutputDirectory !== directory) {
-        throw new UnscopedValidationError('Primaryoutputdirectory', `${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
+        throw new UnscopedValidationError('PrimaryOutputDirectoryConflict', `${this}: primaryOutputDirectory is '${this._primaryOutputDirectory}', cannot be changed to '${directory}'`);
       }
 
       return this.primaryOutput!;

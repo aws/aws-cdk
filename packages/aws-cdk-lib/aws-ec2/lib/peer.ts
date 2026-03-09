@@ -100,7 +100,7 @@ class CidrIPv4 implements IPeer {
       const cidrMatch = cidrIp.match(/^(\d{1,3}\.){3}\d{1,3}(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new UnscopedValidationError('InvalidInvalidIpv4Cidr', `Invalid IPv4 CIDR: "${cidrIp}"`);
+        throw new UnscopedValidationError('InvalidPv', `Invalid IPv4 CIDR: "${cidrIp}"`);
       }
 
       if (!cidrMatch[2]) {
@@ -147,7 +147,7 @@ class CidrIPv6 implements IPeer {
       const cidrMatch = cidrIpv6.match(/^([\da-f]{0,4}:){2,7}([\da-f]{0,4})?(\/\d+)?$/);
 
       if (!cidrMatch) {
-        throw new UnscopedValidationError('InvalidInvalidIpv6Cidr', `Invalid IPv6 CIDR: "${cidrIpv6}"`);
+        throw new UnscopedValidationError('InvalidPv', `Invalid IPv6 CIDR: "${cidrIpv6}"`);
       }
 
       if (!cidrMatch[3]) {
@@ -225,7 +225,7 @@ class SecurityGroupId implements IPeer {
       const securityGroupMatch = securityGroupId.match(/^sg-[a-z0-9]{8,17}$/);
 
       if (!securityGroupMatch) {
-        throw new UnscopedValidationError('InvalidInvalidSecurityGroup', `Invalid security group ID: "${securityGroupId}"`);
+        throw new UnscopedValidationError('InvalidSecurityGroup', `Invalid security group ID: "${securityGroupId}"`);
       }
     }
 
@@ -233,7 +233,7 @@ class SecurityGroupId implements IPeer {
       const accountNumberMatch = sourceSecurityGroupOwnerId.match(/^[0-9]{12}$/);
 
       if (!accountNumberMatch) {
-        throw new UnscopedValidationError('InvalidInvalidSecurityGroup', `Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
+        throw new UnscopedValidationError('InvalidSecurityGroupOwner', `Invalid security group owner ID: "${sourceSecurityGroupOwnerId}"`);
       }
     }
     this.uniqueId = securityGroupId;

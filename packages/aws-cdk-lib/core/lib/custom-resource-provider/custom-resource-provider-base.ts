@@ -45,7 +45,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get codeHash(): string {
     if (!this._codeHash) {
-      throw new ValidationError('Customresourceusesinlinecode', 'This custom resource uses inlineCode: true and does not have a codeHash', this);
+      throw new ValidationError('CustomResourceUsesInlineCode', 'This custom resource uses inlineCode: true and does not have a codeHash', this);
     }
     return this._codeHash;
   }
@@ -72,7 +72,7 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new ValidationError('CannotCannotcannotfindindex', `cannot find ${props.codeDirectory}/index.js`, this);
+      throw new ValidationError('CannotFind', `cannot find ${props.codeDirectory}/index.js`, this);
     }
 
     if (props.policyStatements) {

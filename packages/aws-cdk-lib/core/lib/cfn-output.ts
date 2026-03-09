@@ -56,7 +56,7 @@ export class CfnOutput extends CfnElement {
     super(scope, id);
 
     if (props.value === undefined) {
-      throw new ValidationError('MissingMissingValueCloudformation', `Missing value for CloudFormation output at path "${this.node.path}"`, this);
+      throw new ValidationError('MissingValueCloudFormationOutput', `Missing value for CloudFormation output at path "${this.node.path}"`, this);
     } else if (Array.isArray(props.value)) {
       // `props.value` is a string, but because cross-stack exports allow passing any,
       // we need to check for lists here.

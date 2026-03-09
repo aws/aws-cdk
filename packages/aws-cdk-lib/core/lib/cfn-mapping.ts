@@ -55,7 +55,7 @@ export class CfnMapping extends CfnRefElement {
    */
   public setValue(key1: string, key2: string, value: any) {
     if ([key1, key2].some(k => ['__proto__', 'constructor'].includes(k))) {
-      throw new ValidationError('CannotCannotProtoConstructor', 'Cannot use \'__proto__\' or \'constructor\' as keys', this);
+      throw new ValidationError('CannotProtoConstructorKeys', 'Cannot use \'__proto__\' or \'constructor\' as keys', this);
     }
 
     this.validateAlphanumeric(key2);

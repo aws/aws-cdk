@@ -1355,7 +1355,7 @@ export class PortMap {
       }
 
       if (this.portmapping.hostPort !== undefined) {
-        throw new UnscopedValidationError('Cannotcannothostportwhile', 'Cannot set "hostPort" while using a port range for the container.');
+        throw new UnscopedValidationError('CannotSetHostPortWithRange', 'Cannot set "hostPort" while using a port range for the container.');
       }
 
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {

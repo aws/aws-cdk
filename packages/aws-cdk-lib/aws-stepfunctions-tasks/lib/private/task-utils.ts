@@ -11,7 +11,7 @@ import { Aws, UnscopedValidationError } from '../../../core';
  */
 export function validatePatternSupported(integrationPattern: IntegrationPattern, supportedPatterns: IntegrationPattern[]) {
   if (!supportedPatterns.includes(integrationPattern)) {
-    throw new UnscopedValidationError('UnsupportedUnsupportedServiceIntegration', `Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
+    throw new UnscopedValidationError('UnsupportedServiceIntegrationPatternSupported', `Unsupported service integration pattern. Supported Patterns: ${supportedPatterns}. Received: ${integrationPattern}`);
   }
 }
 

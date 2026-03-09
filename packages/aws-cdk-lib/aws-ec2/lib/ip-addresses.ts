@@ -334,7 +334,7 @@ export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
   }
 
   if (split.netmask - MAX_COUNT_BITS < 1) {
-    throw new UnscopedValidationError('CannotCannotSplitRange', `Cannot split an IP range into ${split.count} /${split.netmask}s`);
+    throw new UnscopedValidationError('CannotSplitRange', `Cannot split an IP range into ${split.count} /${split.netmask}s`);
   }
 
   const parentSplit = {

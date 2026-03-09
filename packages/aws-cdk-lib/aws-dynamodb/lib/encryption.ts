@@ -61,7 +61,7 @@ export abstract class TableEncryptionV2 {
       public _renderReplicaSseSpecification(scope: Construct, replicaRegion: string) {
         const stackRegion = Stack.of(scope).region;
         if (Token.isUnresolved(stackRegion)) {
-          throw new ValidationError('Replicaspecificationcannotrendered', 'Replica SSE specification cannot be rendered in a region agnostic stack', scope);
+          throw new ValidationError('ReplicaSpecificationCannotRenderedRegion', 'Replica SSE specification cannot be rendered in a region agnostic stack', scope);
         }
 
         if (replicaKeyArns.hasOwnProperty(stackRegion)) {

@@ -691,7 +691,7 @@ export class CfnParser {
         if (this.options.context === CfnParsingContext.RULES) {
           return this.handleRulesIntrinsic(key, object);
         } else {
-          throw new UnscopedValidationError('UnsupportedUnsupportedCloudformationFunction', `Unsupported CloudFormation function '${key}'`);
+          throw new UnscopedValidationError('UnsupportedCloudFormationFunction', `Unsupported CloudFormation function '${key}'`);
         }
     }
   }
@@ -701,11 +701,11 @@ export class CfnParser {
     // calling `looksLikeCfnIntrinsic`. Helper parsing functions check after we call
     // `parseValue`, which requires calling `isResolvableObject`.
     if (!this.stack) {
-      throw new UnscopedValidationError('CannotCannotCallMethod', 'cannot call this method before handleAttributes!');
+      throw new UnscopedValidationError('CannotCallMethodHandleAttributes', 'cannot call this method before handleAttributes!');
     }
     if (FeatureFlags.of(this.stack).isEnabled(CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS)) {
       if (isResolvableObject(object ?? {}) || this.looksLikeCfnIntrinsic(object ?? {})) {
-        throw new UnscopedValidationError('CannotCannotConvertResource', `Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
+        throw new UnscopedValidationError('CannotConvertResource', `Cannot convert resource '${logicalId}' to CDK objects: it uses an intrinsic in a resource update or deletion policy to represent a non-primitive value. Specify '${logicalId}' in the 'dehydratedResources' prop to skip parsing this resource, while still including it in the output.`);
       }
     }
   }
@@ -812,7 +812,7 @@ export class CfnParser {
         if (parameterName in this.parameters) {
           // since ValueOf returns the value of a specific attribute,
           // fail here - this substitution is not allowed
-          throw new UnscopedValidationError('CannotCannotSubstituteParameter', `Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
+          throw new UnscopedValidationError('CannotSubstituteParameter', `Cannot substitute parameter '${parameterName}' used in Fn::ValueOf expression with attribute '${value[1]}'`);
         }
         const param = this.finder.findRefTarget(parameterName);
         if (!param) {

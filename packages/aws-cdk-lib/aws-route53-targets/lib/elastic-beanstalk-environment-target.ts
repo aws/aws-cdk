@@ -32,7 +32,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     }
 
     if (!this.hostedZoneId) {
-      throw new ValidationError('CannotCannotFindBeanstalk', 'Cannot find Beanstalk `hostedZoneId`. You must specify either `hostedZoneId` using `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` or Stack region or find correct EBS environment endpoint via AWS console. See Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
+      throw new ValidationError('CannotFindBeanstalkHostedZone', 'Cannot find Beanstalk `hostedZoneId`. You must specify either `hostedZoneId` using `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` or Stack region or find correct EBS environment endpoint via AWS console. See Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
     }
 
     return {

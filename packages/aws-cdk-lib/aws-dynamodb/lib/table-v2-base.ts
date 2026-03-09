@@ -124,7 +124,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError('Streamfoundtable', `No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -164,7 +164,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError('Streamfoundtable', `No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -457,7 +457,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('InvalidInvalidinvalidproperties', 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
+      throw new ValidationError('InvalidPropertiesOperationDimensionSupported', 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
     }
 
     for (const operation of operations) {
@@ -469,7 +469,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
       if (firstChar === firstChar.toUpperCase()) {
-        throw new ValidationError('Mappergeneratedillegaloperation', `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
+        throw new ValidationError('MapperGeneratedIllegalOperationMetric', `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
       }
 
       metrics[operationMetricName] = metric;
@@ -520,7 +520,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
     if (options.streamActions) {
       if (!this.tableStreamArn) {
-        throw new ValidationError('Streamarnsfoundtable', `No stream ARNs found on the table ${this.node.path}`, this);
+        throw new ValidationError('StreamNsFoundTable', `No stream ARNs found on the table ${this.node.path}`, this);
       }
 
       return Grant.addToPrincipal({
@@ -530,7 +530,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       });
     }
 
-    throw new ValidationError('UnexpectedUnexpectedAction', `Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
+    throw new ValidationError('UnexpectedAction', `Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
   }
 
   private configureMetric(props: MetricProps) {

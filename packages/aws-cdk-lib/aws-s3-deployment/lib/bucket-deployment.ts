@@ -334,7 +334,7 @@ export class BucketDeployment extends Construct {
 
     if (props.distributionPaths) {
       if (!props.distribution) {
-        throw new ValidationError('Mustbedistributionspecifieddistribution', 'Distribution must be specified if distribution paths are specified', this);
+        throw new ValidationError('DistributionSpecifiedDistributionPathsSpecified', 'Distribution must be specified if distribution paths are specified', this);
       }
       if (!cdk.Token.isUnresolved(props.distributionPaths)) {
         if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
@@ -344,7 +344,7 @@ export class BucketDeployment extends Construct {
     }
 
     if (props.useEfs && !props.vpc) {
-      throw new ValidationError('Mustbespecifieduseefs', 'Vpc must be specified if useEfs is set', this);
+      throw new ValidationError('VpcSpecifiedEfsSet', 'Vpc must be specified if useEfs is set', this);
     }
 
     this.destinationBucket = props.destinationBucket;
@@ -499,7 +499,7 @@ export class BucketDeployment extends Construct {
     // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
     // better to throw an error here than wait for CloudFormation to fail
     if (!cdk.Token.isUnresolved(tagKey) && tagKey.length > 128) {
-      throw new ValidationError('RequiresBucketdeploymentConstructRequires', 'The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
+      throw new ValidationError('BucketDeploymentConstructRequiresDestination', 'The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters.', this);
     }
 
     /*
@@ -621,7 +621,7 @@ export class BucketDeployment extends Construct {
     // configurations since we have a singleton.
     if (ephemeralStorageSize) {
       if (ephemeralStorageSize.isUnresolved()) {
-        throw new ValidationError('CanTTokensSpecifyingEphemeralstoragesize', "Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
+        throw new ValidationError('TokensSpecifyingEphemeralStorageSize', "Can't use tokens when specifying 'ephemeralStorageSize' since we use it to identify the singleton custom resource handler.", this);
       }
 
       uuid += `-${ephemeralStorageSize.toMebibytes().toString()}MiB`;

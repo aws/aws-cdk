@@ -448,7 +448,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
           break;
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
           if (!Number.isInteger(+value) || +value < 1) {
-            throw new ValidationError('Mustbeintegergreaterthan', `${key} must be an integer greater than 0. Received: ${value}`, this);
+            throw new ValidationError('MustBePositiveInteger', `${key} must be an integer greater than 0. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
@@ -475,7 +475,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.targetType = props.targetType;
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new ValidationError('Targetgrouponlycontainlambda', 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
+      throw new ValidationError('TargetGroupContainOneTarget', 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {

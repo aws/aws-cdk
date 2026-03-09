@@ -382,7 +382,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
     if (this.enableDataApi === false) {
-      throw new ValidationError('CannotCannotcannotgrantdata', 'Cannot grant Data API access when the Data API is disabled', this);
+      throw new ValidationError('CannotGrantDataAccessData', 'Cannot grant Data API access when the Data API is disabled', this);
     }
 
     this.enableDataApi = true;
@@ -422,13 +422,13 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
 
     if (props.vpc === undefined) {
       if (props.vpcSubnets !== undefined) {
-        throw new ValidationError('Isrequiredrequiredvpcsubnetsserverlesscluster', 'A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets', this);
+        throw new ValidationError('RequiredVpcSubnetsServerlessCluster', 'A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets', this);
       }
       if (props.subnetGroup !== undefined) {
-        throw new ValidationError('Isrequiredrequiredsubnetgroupserverlesscluster', 'A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup', this);
+        throw new ValidationError('RequiredSubnetGroupServerlessCluster', 'A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup', this);
       }
       if (props.securityGroups !== undefined) {
-        throw new ValidationError('Isrequiredrequiredsecuritygroupsserverlesscluster', 'A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups', this);
+        throw new ValidationError('RequiredSecurityGroupsServerlessCluster', 'A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups', this);
       }
     }
 
@@ -460,7 +460,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     if (props.backupRetention) {
       const backupRetentionDays = props.backupRetention.toDays();
       if (backupRetentionDays < 1 || backupRetentionDays > 35) {
-        throw new ValidationError('Mustbebackupretentionperiod', `backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`, this);
+        throw new ValidationError('BackupRetentionPeriodDaysReceived', `backup retention period must be between 1 and 35 days. received: ${backupRetentionDays}`, this);
       }
     }
 
@@ -504,16 +504,16 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     const timeout = options.timeout?.toSeconds();
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
-      throw new ValidationError('Mustbemaximumcapacitygreater', 'maximum capacity must be greater than or equal to minimum capacity.', this);
+      throw new ValidationError('MaximumCapacityGreaterEqualMinimum', 'maximum capacity must be greater than or equal to minimum capacity.', this);
     }
 
     const secondsToAutoPause = options.autoPause?.toSeconds();
     if (secondsToAutoPause && (secondsToAutoPause < 300 || secondsToAutoPause > 86400)) {
-      throw new ValidationError('Mustbeautopausetime', 'auto pause time must be between 5 minutes and 1 day.', this);
+      throw new ValidationError('AutoPauseTimeMinutesDay', 'auto pause time must be between 5 minutes and 1 day.', this);
     }
 
     if (timeout && (timeout < 60 || timeout > 600)) {
-      throw new ValidationError('Mustbetimeoutbetweenseconds', `timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`, this);
+      throw new ValidationError('TimeoutSeconds', `timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`, this);
     }
 
     return {
@@ -623,17 +623,17 @@ export class ServerlessCluster extends ServerlessClusterNew {
   @MethodMetadata()
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('CannotCannotcannotsingleuser', 'Cannot add single user rotation for a cluster without secret.', this);
+      throw new ValidationError('CannotAddSingleUserRotation', 'Cannot add single user rotation for a cluster without secret.', this);
     }
 
     if (this.vpc === undefined) {
-      throw new ValidationError('CannotCannotcannotsingleuser', 'Cannot add single user rotation for a cluster without VPC.', this);
+      throw new ValidationError('CannotAddSingleUserRotation', 'Cannot add single user rotation for a cluster without VPC.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('Singleuserrotationalready', 'A single user rotation was already added to this cluster.', this);
+      throw new ValidationError('SingleUserRotationAlreadyAdded', 'A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -651,11 +651,11 @@ export class ServerlessCluster extends ServerlessClusterNew {
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('CannotCannotcannotmultiuser', 'Cannot add multi user rotation for a cluster without secret.', this);
+      throw new ValidationError('CannotAddMultiUserRotation', 'Cannot add multi user rotation for a cluster without secret.', this);
     }
 
     if (this.vpc === undefined) {
-      throw new ValidationError('CannotCannotcannotmultiuser', 'Cannot add multi user rotation for a cluster without VPC.', this);
+      throw new ValidationError('CannotAddMultiUserRotation', 'Cannot add multi user rotation for a cluster without VPC.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -707,14 +707,14 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 
   public get clusterEndpoint() {
     if (!this._clusterEndpoint) {
-      throw new ValidationError('CannotCannotAccessImported', 'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port', this);
+      throw new ValidationError('CannotAccessClusterEndpointImported', 'Cannot access `clusterEndpoint` of an imported cluster without an endpoint address and port', this);
     }
     return this._clusterEndpoint;
   }
 
   public get clusterReadEndpoint() {
     if (!this._clusterReadEndpoint) {
-      throw new ValidationError('CannotCannotAccessImported', 'Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port', this);
+      throw new ValidationError('CannotAccessClusterReadEndpoint', 'Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port', this);
     }
     return this._clusterReadEndpoint;
   }

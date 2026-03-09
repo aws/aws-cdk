@@ -213,7 +213,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     });
 
     if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
-      throw new ValidationError('AuthorizationtypeShouldEitherAwsIam', `authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`, scope);
+      throw new ValidationError('AuthorizationType', `authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`, scope);
     }
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
@@ -262,12 +262,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
   @MethodMetadata()
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
     if (!this.authBindResult || this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM) {
-      throw new ValidationError('Grantinvoke', 'To use grantInvoke, you must use IAM authorization', this);
+      throw new ValidationError('GrantInvokeAuthorization', 'To use grantInvoke, you must use IAM authorization', this);
     }
 
     const httpMethods = Array.from(new Set(options.httpMethods ?? [this.method]));
     if (this.method !== HttpMethod.ANY && httpMethods.some(method => method !== this.method)) {
-      throw new ValidationError('Routedoessupportgranting', 'This route does not support granting invoke for all requested http methods', this);
+      throw new ValidationError('RouteSupportGrantingInvokeRequested', 'This route does not support granting invoke for all requested http methods', this);
     }
 
     const resourceArns = httpMethods.map(httpMethod => {

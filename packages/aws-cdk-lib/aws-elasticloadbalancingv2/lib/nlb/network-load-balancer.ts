@@ -270,13 +270,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public get loadBalancerCanonicalHostedZoneId(): string {
         if (attrs.loadBalancerCanonicalHostedZoneId) { return attrs.loadBalancerCanonicalHostedZoneId; }
 
-        throw new ValidationError('LoadbalancercanonicalhostedzoneidProvidedConstructingNetwork', `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
+        throw new ValidationError('LoadBalancerCanonicalHostedZone', `'loadBalancerCanonicalHostedZoneId' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
 
       public get loadBalancerDnsName(): string {
         if (attrs.loadBalancerDnsName) { return attrs.loadBalancerDnsName; }
 
-        throw new ValidationError('LoadbalancerdnsnameProvidedConstructingNetwork', `'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
+        throw new ValidationError('LoadBalancerDnsNameProvided', `'loadBalancerDnsName' was not provided when constructing Network Load Balancer ${this.node.path} from attributes`, this);
       }
     }
 
@@ -318,13 +318,13 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
     if (props.subnetMappings && props.subnetMappings.length > 0) {
       if (props.internetFacing && props.subnetMappings.some(sm => sm.privateIpv4Address !== undefined)) {
-        throw new ValidationError('CannotCannotSpecifyInternet', 'Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
+        throw new ValidationError('CannotSpecifyPrivateIpvAddress', 'Cannot specify `privateIpv4Address` for a internet facing load balancer.', this);
       }
       if (props.internetFacing !== true && props.subnetMappings.some(sm => sm.allocationId !== undefined)) {
-        throw new ValidationError('CannotCannotSpecifyInternal', 'Cannot specify `allocationId` for a internal load balancer.', this);
+        throw new ValidationError('CannotSpecifyAllocationIdInternal', 'Cannot specify `allocationId` for a internal load balancer.', this);
       }
       if (props.enablePrefixForIpv6SourceNat !== true && props.subnetMappings.some(sm => sm.sourceNatIpv6Prefix !== undefined)) {
-        throw new ValidationError('CannotCannotSpecifyLoad', 'Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
+        throw new ValidationError('CannotSpecifySourceNatIpv', 'Cannot specify `sourceNatIpv6Prefix` for a load balancer that does not have `enablePrefixForIpv6SourceNat` enabled.', this);
       }
     }
 
@@ -333,7 +333,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (minimumCapacityUnit && !Token.isUnresolved(minimumCapacityUnit)) {
       const capacityUnitPerAz = minimumCapacityUnit / props.vpc.availabilityZones.length;
       if (!Number.isInteger(minimumCapacityUnit) || capacityUnitPerAz < 2750 || capacityUnitPerAz > 45000) {
-        throw new ValidationError('MustBeMinimumcapacityunitPositiveValue', `'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
+        throw new ValidationError('MinimumCapacityUnitPositiveValue', `'minimumCapacityUnit' must be a positive value between 2750 and 45000 per AZ for Network Load Balancer, got ${capacityUnitPerAz} LCU per AZ.`, this);
       }
     }
 
@@ -343,7 +343,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
 
     let securityGroups: ec2.ISecurityGroup[] | undefined;
     if (props.securityGroups && props.disableSecurityGroups) {
-      throw new ValidationError('CannotCannotSpecifyBoth', 'Cannot specify both `securityGroups` and `disableSecurityGroups` properties.', this);
+      throw new ValidationError('CannotSpecifySecurityGroupsDisable', 'Cannot specify both `securityGroups` and `disableSecurityGroups` properties.', this);
     }
     if (FeatureFlags.of(this).isEnabled(cxapi.NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT) && !props.disableSecurityGroups) {
       securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {

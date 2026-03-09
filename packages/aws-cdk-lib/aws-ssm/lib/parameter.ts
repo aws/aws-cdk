@@ -828,7 +828,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     addConstructMetadata(this, props);
 
     if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
-      throw new ValidationError('StringListParameterCannotContainCommas', 'Values of a StringList SSM Parameter cannot contain the \', \' character. Use a string parameter instead.', this);
+      throw new ValidationError('StringListParameterCannotContainCommas', 'Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.', this);
     }
 
     if (props.allowedPattern && !Token.isUnresolved(props.stringListValue)) {

@@ -19,7 +19,7 @@ import { CfnKey } from '../kms.generated';
 class KeyWithPolicyFactory implements IResourcePolicyFactory {
   public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     if (!CfnKey.isCfnKey(resource)) {
-      throw new ValidationError('Constructtypecfnkey', `Construct ${resource.node.path} is not of type CfnKey`, resource);
+      throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnKey`, resource);
     }
 
     return new CfnKeyWithPolicy(resource);

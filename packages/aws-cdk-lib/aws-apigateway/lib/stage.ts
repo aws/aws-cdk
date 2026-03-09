@@ -416,7 +416,7 @@ export class Stage extends StageBase {
         throw new ValidationError('AccessIncludeEither', 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new ValidationError('Accessformatspecifiedwithout', 'Access log format is specified without a destination', this);
+        throw new ValidationError('AccessLogFormatSpecifiedWithout', 'Access log format is specified without a destination', this);
       }
 
       accessLogSetting = {
@@ -430,7 +430,7 @@ export class Stage extends StageBase {
       if (this.enableCacheCluster === undefined) {
         this.enableCacheCluster = true;
       } else if (this.enableCacheCluster === false) {
-        throw new ValidationError('CannotCannotCacheclustersizeCacheclusterenabled', `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
+        throw new ValidationError('CannotSetCacheClusterSize', `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
       }
     }
 
@@ -493,7 +493,7 @@ export class Stage extends StageBase {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new ValidationError('CannotCannotcannotenablecaching', `Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
+          throw new ValidationError('CannotEnableCachingMethod', `Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
         }
       }
 

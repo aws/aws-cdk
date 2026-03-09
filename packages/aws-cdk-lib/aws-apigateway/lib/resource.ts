@@ -211,11 +211,11 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Origin
 
     if (options.allowOrigins.length === 0) {
-      throw new ValidationError('Alloworiginscontainleastorigin', 'allowOrigins must contain at least one origin', this);
+      throw new ValidationError('AllowOriginsContainLeastOne', 'allowOrigins must contain at least one origin', this);
     }
 
     if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
-      throw new ValidationError('InvalidInvalidAlloworiginsCannot', `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
+      throw new ValidationError('InvalidAllowOriginsCannotMix', `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
     }
 
     // we use the first origin here and if there are more origins in the list, we
@@ -370,7 +370,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new ValidationError('Resourceforpathcannotcalledempty', 'resourceForPath cannot be called with an empty path', this);
+      throw new ValidationError('ResourcePathCannotCalledEmpty', 'resourceForPath cannot be called with an empty path', this);
     }
 
     let resource = this.getResource(next);
@@ -434,11 +434,11 @@ export class Resource extends ResourceBase {
       public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
 
       public get parentResource(): IResource {
-        throw new ValidationError('Parentresourceconfiguredimportedresource', 'parentResource is not configured for imported resource.', scope);
+        throw new ValidationError('ParentResourceConfiguredImportedResource', 'parentResource is not configured for imported resource.', scope);
       }
 
       public get restApi(): RestApi {
-        throw new ValidationError('Restapiconfiguredimportedresource', 'restApi is not configured for imported resource.', scope);
+        throw new ValidationError('RestApiConfiguredImportedResource', 'restApi is not configured for imported resource.', scope);
       }
     }
 
@@ -508,7 +508,7 @@ export class Resource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this.parentResource) {
-      throw new ValidationError('Parentresourceunexpectedlydefined', 'parentResource was unexpectedly not defined', this);
+      throw new ValidationError('ParentResourceUnexpectedlyDefined', 'parentResource was unexpectedly not defined', this);
     }
     return this.parentResource.restApi;
   }

@@ -142,7 +142,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new ValidationError('Endpointserviceleastload', 'VPC Endpoint Service must have at least one load balancer specified.', this);
+      throw new ValidationError('EndpointServiceLeastOneLoad', 'VPC Endpoint Service must have at least one load balancer specified.', this);
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;

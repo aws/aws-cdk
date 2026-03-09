@@ -555,7 +555,7 @@ abstract class VpcBase extends Resource implements IVpc {
    */
   public enableVpnGateway(options: EnableVpnGatewayOptions): void {
     if (this.vpnGatewayId) {
-      throw new ValidationError('Gatewayalreadyenabled', 'The VPN Gateway has already been enabled.', this);
+      throw new ValidationError('GatewayAlreadyEnabled', 'The VPN Gateway has already been enabled.', this);
     }
 
     const vpnGateway = new VpnGateway(this, 'VpnGateway', {
@@ -1584,7 +1584,7 @@ export class Vpc extends VpcBase {
     }
 
     if (props.availabilityZones && props.maxAzs) {
-      throw new ValidationError('SupportsAvailabilityzonesMaxazs', 'Vpc supports \'availabilityZones\' or \'maxAzs\', but not both.', this);
+      throw new ValidationError('VpcSupportsAvailabilityZonesMax', 'Vpc supports \'availabilityZones\' or \'maxAzs\', but not both.', this);
     }
 
     const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
@@ -1593,7 +1593,7 @@ export class Vpc extends VpcBase {
     }
 
     if (props.ipAddresses && props.cidr) {
-      throw new ValidationError('Supplymostipaddressescidr', 'supply at most one of ipAddresses or cidr', this);
+      throw new ValidationError('SupplyOneIpAddressesCidr', 'supply at most one of ipAddresses or cidr', this);
     }
 
     const ipProtocol = props.ipProtocol ?? IpProtocol.IPV4_ONLY;
@@ -1606,7 +1606,7 @@ export class Vpc extends VpcBase {
     if (!this.useIpv6) {
       for (const prop of ipv6OnlyProps) {
         if (props[prop] !== undefined) {
-          throw new ValidationError('Onlyipv6enabled', `${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`, this);
+          throw new ValidationError('RequiresIpv6Enabled', `${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`, this);
         }
       }
     }
@@ -1644,7 +1644,7 @@ export class Vpc extends VpcBase {
       const areGivenAzsSubsetOfStack = resolvedStackAzs.length === 0 ||
         props.availabilityZones.every(az => Token.isUnresolved(az) ||resolvedStackAzs.includes(az));
       if (!areGivenAzsSubsetOfStack) {
-        throw new ValidationError('MustBeGivenAvailabilityzonesSubset', `Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`, this);
+        throw new ValidationError('GivenAvailabilityZones', `Given VPC 'availabilityZones' ${props.availabilityZones} must be a subset of the stack's availability zones ${resolvedStackAzs}`, this);
       }
       this.availabilityZones = props.availabilityZones;
     } else {
@@ -1735,11 +1735,11 @@ export class Vpc extends VpcBase {
     }
 
     if (props.vpnGateway && this.publicSubnets.length === 0 && this.privateSubnets.length === 0 && this.isolatedSubnets.length === 0) {
-      throw new ValidationError('CannotCannotenablegatewaywhile', 'Can not enable the VPN gateway while the VPC has no subnets at all', this);
+      throw new ValidationError('EnableGatewaySubnets', 'Can not enable the VPN gateway while the VPC has no subnets at all', this);
     }
 
     if ((props.vpnConnections || props.vpnGatewayAsn) && props.vpnGateway === false) {
-      throw new ValidationError('CannotCannotSpecifyFalse', 'Cannot specify `vpnConnections` or `vpnGatewayAsn` when `vpnGateway` is set to false.', this);
+      throw new ValidationError('CannotSpecifyVpnConnectionsVpn', 'Cannot specify `vpnConnections` or `vpnGatewayAsn` when `vpnGateway` is set to false.', this);
     }
 
     if (props.vpnGateway || props.vpnConnections || props.vpnGatewayAsn) {
@@ -1811,7 +1811,7 @@ export class Vpc extends VpcBase {
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
-        throw new ValidationError('Natgatewayplacementcontainspublicsubnet', `natGatewayPlacement ${placement} contains non public subnet ${sub}`, this);
+        throw new ValidationError('NatGatewayPlacement', `natGatewayPlacement ${placement} contains non public subnet ${sub}`, this);
       }
     }
 
@@ -1845,15 +1845,15 @@ export class Vpc extends VpcBase {
     });
 
     if (allocatedSubnets.length != requestedSubnets.length) {
-      throw new ValidationError('Incompletesubnetallocationresponse', 'Incomplete Subnet Allocation; response array dose not equal input array', this);
+      throw new ValidationError('IncompleteSubnetAllocationResponseArray', 'Incomplete Subnet Allocation; response array dose not equal input array', this);
     }
 
     if (this.useIpv6) {
       if (this.ipv6SelectedCidr === undefined) {
-        throw new ValidationError('Ipv6cidrblockassociated', 'No IPv6 CIDR block associated with this VPC could be found', this);
+        throw new ValidationError('PvBlockAssociatedFound', 'No IPv6 CIDR block associated with this VPC could be found', this);
       }
       if (this.ipv6Addresses === undefined) {
-        throw new ValidationError('Ipv6ipaddresseswerefound', 'No IPv6 IpAddresses were found', this);
+        throw new ValidationError('PvIpAddressesFound', 'No IPv6 IpAddresses were found', this);
       }
       // create the IPv6 CIDR blocks
       const subnetIpv6Cidrs = this.ipv6Addresses.createIpv6CidrBlocks({
@@ -1907,7 +1907,7 @@ export class Vpc extends VpcBase {
         : !this.useIpv6; // changes default based on protocol of vpc
     } else {
       if (subnetConfig.mapPublicIpOnLaunch !== undefined) {
-        throw new ValidationError('Subnetcannotincludemappubliciponlaunch', `${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`, this);
+        throw new ValidationError('MapPublicIpNotAllowed', `${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`, this);
       }
       return false;
     }
@@ -1930,7 +1930,7 @@ export class Vpc extends VpcBase {
       if (!this.useIpv6) {
         for (const prop of ipv6OnlyProps) {
           if (subnetConfig[prop] !== undefined) {
-            throw new ValidationError('Onlyipv6enabled', `${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`, this);
+            throw new ValidationError('RequiresIpv6Enabled', `${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`, this);
           }
         }
       }
@@ -1965,7 +1965,7 @@ export class Vpc extends VpcBase {
           subnet = isolatedSubnet;
           break;
         default:
-          throw new ValidationError('Unrecognizedsubnettype', `Unrecognized subnet type: ${subnetConfig.subnetType}`, this);
+          throw new ValidationError('UnrecognizedSubnetType', `Unrecognized subnet type: ${subnetConfig.subnetType}`, this);
       }
 
       // These values will be used to recover the config upon provider import
@@ -2315,7 +2315,7 @@ export class Subnet extends Resource implements ISubnet {
   @MethodMetadata()
   public addRoute(id: string, options: AddRouteOptions) {
     if (options.destinationCidrBlock && options.destinationIpv6CidrBlock) {
-      throw new ValidationError('CannotCannotSpecifyBoth', 'Cannot specify both \'destinationCidrBlock\' and \'destinationIpv6CidrBlock\'', this);
+      throw new ValidationError('CannotSpecifyDestinationCidrBlock', 'Cannot specify both \'destinationCidrBlock\' and \'destinationIpv6CidrBlock\'', this);
     }
 
     const route = new CfnRoute(this, id, {
@@ -2589,7 +2589,7 @@ class ImportedVpc extends VpcBase {
 
   public get vpcCidrBlock(): string {
     if (this.cidr === undefined) {
-      throw new ValidationError('CannotCannotPerformOperation', 'Cannot perform this operation: \'vpcCidrBlock\' was not supplied when creating this VPC', this);
+      throw new ValidationError('CannotPerformOperationVpcCidr', 'Cannot perform this operation: \'vpcCidrBlock\' was not supplied when creating this VPC', this);
     }
     return this.cidr;
   }
@@ -2644,7 +2644,7 @@ class LookedUpVpc extends VpcBase {
     if (this.cidr === undefined) {
       // Value might be cached from an old CLI version, so bumping the CX API protocol to
       // force the value to exist would not have helped.
-      throw new ValidationError('CannotCannotPerformOperation', 'Cannot perform this operation: \'vpcCidrBlock\' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.', this);
+      throw new ValidationError('CannotPerformOperationVpcCidr', 'Cannot perform this operation: \'vpcCidrBlock\' was not found when looking up this VPC. Use a newer version of the CDK CLI and clear the old context value.', this);
     }
     return this.cidr;
   }
@@ -2811,7 +2811,7 @@ function determineNatGatewayCount(requestedCount: number | undefined, subnetConf
   }
 
   if (count > 0 && !hasPublicSubnets) {
-    throw new UnscopedValidationError('ConfigurePrivateSubnetsSubnetconfiguration', `If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
+    throw new UnscopedValidationError('ConfigureSubnetsSubnetConfigurationConfigu', `If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into (got ${JSON.stringify(subnetConfig)}.`);
   }
 
   return count;

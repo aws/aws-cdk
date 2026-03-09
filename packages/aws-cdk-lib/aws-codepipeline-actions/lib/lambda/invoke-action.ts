@@ -84,7 +84,7 @@ export class LambdaInvokeAction extends Action {
     this.props = props;
 
     if (props.userParameters && props.userParametersString) {
-      throw new UnscopedValidationError('OnlyUserparametersUserparametersstringSpecified', 'Only one of userParameters or userParametersString can be specified');
+      throw new UnscopedValidationError('OneUserParametersUserParameters', 'Only one of userParameters or userParametersString can be specified');
     }
   }
 

@@ -196,7 +196,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new ValidationError('Onlysecuritygroupsecuritygroupspopulated', 'Only one of SecurityGroup or SecurityGroups can be populated.', scope);
+      throw new ValidationError('OneSecurityGroupSecurityGroups', 'Only one of SecurityGroup or SecurityGroups can be populated.', scope);
     }
 
     if (props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED) {

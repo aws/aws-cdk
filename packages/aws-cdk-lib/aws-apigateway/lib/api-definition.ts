@@ -138,7 +138,7 @@ export class S3ApiDefinition extends ApiDefinition {
     super();
 
     if (!bucket.bucketRef.bucketName) {
-      throw new ValidationError('Bucketnameundefinedprovidedbucket', 'bucketName is undefined for the provided bucket', bucket);
+      throw new ValidationError('BucketNameUndefinedProvidedBucket', 'bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketRef.bucketName;
@@ -198,7 +198,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (this.asset.isZipArchive) {
-      throw new ValidationError('Assetcannot', `Asset cannot be a .zip file or a directory (${this.path})`, scope);
+      throw new ValidationError('AssetCannotZipFileDirectory', `Asset cannot be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -215,7 +215,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (!this.asset) {
-      throw new ValidationError('Mustbebindtoresourcecalledafter', 'bindToResource() must be called after bind()', scope);
+      throw new ValidationError('BindResourceCalledBind', 'bindToResource() must be called after bind()', scope);
     }
 
     const child = Node.of(restApi).defaultChild as CfnRestApi;

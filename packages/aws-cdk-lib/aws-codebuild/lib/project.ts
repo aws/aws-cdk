@@ -1107,7 +1107,7 @@ export class Project extends ProjectBase {
     this.source = props.source || new NoSource();
     const sourceConfig = this.source.bind(this, this);
     if (props.badge && !this.source.badgeSupported) {
-      throw new ValidationError('Badgesupportedsourcetype', `Badge is not supported for source type ${this.source.type}`, this);
+      throw new ValidationError('BadgeSupportedSourceType', `Badge is not supported for source type ${this.source.type}`, this);
     }
 
     const artifacts = props.artifacts
@@ -1149,7 +1149,7 @@ export class Project extends ProjectBase {
 
     if (!Token.isUnresolved(props.autoRetryLimit) && (props.autoRetryLimit !== undefined)) {
       if (props.autoRetryLimit < 0 || props.autoRetryLimit > 10) {
-        throw new ValidationError('Mustbeautoretrylimitvaluebetween', `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
+        throw new ValidationError('AutoRetryLimitValue', `autoRetryLimit must be a value between 0 and 10, got ${props.autoRetryLimit}.`, this);
       }
     }
 
@@ -1277,7 +1277,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondarySource(secondarySource: ISource): void {
     if (!secondarySource.identifier) {
-      throw new ValidationError('Identifierattributemandatorysecondary', 'The identifier attribute is mandatory for secondary sources', this);
+      throw new ValidationError('IdentifierAttributeMandatorySecondarySources', 'The identifier attribute is mandatory for secondary sources', this);
     }
     const secondarySourceConfig = secondarySource.bind(this, this);
     this._secondarySources.push(secondarySourceConfig.sourceProperty);
@@ -1309,7 +1309,7 @@ export class Project extends ProjectBase {
   @MethodMetadata()
   public addSecondaryArtifact(secondaryArtifact: IArtifacts): void {
     if (!secondaryArtifact.identifier) {
-      throw new ValidationError('Identifierattributemandatorysecondary', 'The identifier attribute is mandatory for secondary artifacts', this);
+      throw new ValidationError('IdentifierAttributeMandatorySecondaryArtifacts', 'The identifier attribute is mandatory for secondary artifacts', this);
     }
     this._secondaryArtifacts.push(secondaryArtifact.bind(this, this).artifactsProperty);
   }
@@ -1478,7 +1478,7 @@ export class Project extends ProjectBase {
 
     // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
     if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
-      throw new ValidationError('Environmenttypefleetmatch', `The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
+      throw new ValidationError('EnvironmentTypeFleet', `The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`, this);
     }
 
     return { fleetArn: fleet.fleetArn };
@@ -1492,7 +1492,7 @@ export class Project extends ProjectBase {
    */
   private configureVpc(props: ProjectProps): CfnProject.VpcConfigProperty | undefined {
     if ((props.securityGroups || props.allowAllOutbound !== undefined) && !props.vpc) {
-      throw new ValidationError('CannotCannotConfigureSecuritygroup', 'Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
+      throw new ValidationError('CannotConfigureSecurityGroupAllow', 'Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC', this);
     }
 
     if (!props.vpc) { return undefined; }
@@ -1507,7 +1507,7 @@ export class Project extends ProjectBase {
     }
 
     if ((props.securityGroups && props.securityGroups.length > 0) && props.allowAllOutbound !== undefined) {
-      throw new ValidationError('ConfigureAllowalloutboundDirectlySupplied', 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
+      throw new ValidationError('ConfigureAllowOutboundDirectlySupplied', 'Configure \'allowAllOutbound\' directly on the supplied SecurityGroup.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -1553,7 +1553,7 @@ export class Project extends ProjectBase {
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
 
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
-        throw new ValidationError('Isrequiredspecifyingloggrouprequired', 'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
+        throw new ValidationError('SpecifyingLogGroupRequiredCloud', 'Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled', this);
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
 
@@ -1629,7 +1629,7 @@ export class Project extends ProjectBase {
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
         (sourceType !== artifactsType)) {
-      throw new ValidationError('Mustbebothsourceartifacts', 'Both source and artifacts must be set to CodePipeline', this);
+      throw new ValidationError('SourceArtifactsSetCodePipeline', 'Both source and artifacts must be set to CodePipeline', this);
     }
   }
 

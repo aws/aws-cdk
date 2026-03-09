@@ -156,7 +156,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('Apiendpointconfiguredimportedwebsocketapi', 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
+          throw new ValidationError('ApiEndpointConfiguredImportedWeb', 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }

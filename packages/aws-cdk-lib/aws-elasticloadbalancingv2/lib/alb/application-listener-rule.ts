@@ -227,7 +227,7 @@ export class ApplicationListenerRule extends Construct {
     }
 
     if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
-      throw new ValidationError('Priorityvaluegreaterthan', 'Priority must have value greater than or equal to 1', this);
+      throw new ValidationError('PriorityValueGreaterEqual', 'Priority must have value greater than or equal to 1', this);
     }
 
     this.listener = props.listener;
@@ -398,7 +398,7 @@ function validateFixedResponse(fixedResponse: FixedResponse) {
   }
 
   if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-    throw new UnscopedValidationError('CannotCannotMoreThan', '`messageBody` cannot have more than 1024 characters.');
+    throw new UnscopedValidationError('MessageBodyCannotCharacters', '`messageBody` cannot have more than 1024 characters.');
   }
 }
 
@@ -413,6 +413,6 @@ function validateRedirectResponse(redirectResponse: RedirectResponse) {
   }
 
   if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-    throw new UnscopedValidationError('MustBeHttp301Http302', '`statusCode` must be HTTP_301 or HTTP_302.');
+    throw new UnscopedValidationError('StatusCode', '`statusCode` must be HTTP_301 or HTTP_302.');
   }
 }

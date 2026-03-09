@@ -220,7 +220,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
-      throw new ValidationError('Mustbeargumentslookload', 'All arguments to look up a load balancer must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookUpLoadBalancer', 'All arguments to look up a load balancer must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;
@@ -395,7 +395,7 @@ export abstract class BaseLoadBalancer extends Resource {
       if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
         this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
       } else {
-        throw new ValidationError('DenyalligwtrafficOnlyLoadBalancers', `'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`, this);
+        throw new ValidationError('DenyIgwTrafficSetLoad', `'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`, this);
       }
     }
 
@@ -478,7 +478,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected resourcePolicyPrincipal(): iam.IPrincipal {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('Isrequiredregionrequiredenable', 'Region is required to enable ELBv2 access logging', this);
+      throw new ValidationError('RegionRequiredEnableBvAccess', 'Region is required to enable ELBv2 access logging', this);
     }
 
     const account = RegionInfo.get(region).elbv2Account;

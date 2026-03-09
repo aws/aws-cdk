@@ -241,7 +241,7 @@ export class QueryDefinition extends Resource {
     addConstructMetadata(this, props);
 
     if (props.queryString.statsStatementsLength && props.queryString.statsStatementsLength > 2) {
-      throw new ValidationError('Cloudwatchlogsinsightsonly', `CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
+      throw new ValidationError('CloudWatchLogsInsightsSupports', `CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
     }
 
     if (props.queryString.hasStatsAndStatsStatements) {

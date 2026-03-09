@@ -23,7 +23,7 @@ export function shouldFollow(mode: SymlinkFollowMode, sourceRoot: string, realPa
     case SymlinkFollowMode.NEVER:
       return false;
     default:
-      throw new UnscopedValidationError('UnsupportedUnsupportedFollowmode', `Unsupported FollowMode: ${mode}`);
+      throw new UnscopedValidationError('UnsupportedFollowMode', `Unsupported FollowMode: ${mode}`);
   }
 
   function _isInternal(): boolean {

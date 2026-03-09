@@ -262,7 +262,7 @@ export class Schedule extends Resource implements ISchedule {
     const parsedName = Arn.split(scheduleArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName?.split('/')[1];
 
     if (!parsedName) {
-      throw new UnscopedValidationError('InvalidInvalidScheduleFormat', `Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
+      throw new UnscopedValidationError('InvalidScheduleFormatExpectedArn', `Invalid schedule ARN format. Expected: arn:<partition>:scheduler:<region>:<account>:schedule/<group-name>/<schedule-name>, got: ${scheduleArn}`);
     }
 
     const scheduleName = parsedName;
@@ -339,7 +339,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.validateTimeFrame(props.start, props.end);
     if (props.scheduleName && !Token.isUnresolved(props.scheduleName) && props.scheduleName.length > 64) {
-      throw new ValidationError('Schedulenamecannotlongerthan', `scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`, this);
+      throw new ValidationError('ScheduleNameCannotLongerCharacters', `scheduleName cannot be longer than 64 characters, got: ${props.scheduleName.length}`, this);
     }
 
     const resource = new CfnSchedule(this, 'Resource', {
@@ -379,10 +379,10 @@ export class Schedule extends Resource implements ISchedule {
     };
 
     if (policy.maximumEventAgeInSeconds && (policy.maximumEventAgeInSeconds < 60 || policy.maximumEventAgeInSeconds > 86400)) {
-      throw new ValidationError('Mustbemaximumeventageinsecondsbetween86400', `maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`, this);
+      throw new ValidationError('MaximumEventAgeSeconds', `maximumEventAgeInSeconds must be between 60 and 86400, got ${policy.maximumEventAgeInSeconds}`, this);
     }
     if (policy.maximumRetryAttempts && (policy.maximumRetryAttempts < 0 || policy.maximumRetryAttempts > 185)) {
-      throw new ValidationError('Mustbemaximumretryattemptsbetween', `maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`, this);
+      throw new ValidationError('MaximumRetryAttempts', `maximumRetryAttempts must be between 0 and 185, got ${policy.maximumRetryAttempts}`, this);
     }
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
@@ -391,7 +391,7 @@ export class Schedule extends Resource implements ISchedule {
 
   private validateTimeFrame(start?: Date, end?: Date) {
     if (start && end && start >= end) {
-      throw new ValidationError('Startprecede', `start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
+      throw new ValidationError('StartPrecedeEndStart', `start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`, this);
     }
   }
 

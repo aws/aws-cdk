@@ -400,7 +400,7 @@ export abstract class Action implements IAction {
       produce: () => {
         // make sure the action was bound (= added to a pipeline)
         if (this._actualNamespace === undefined) {
-          throw new UnscopedValidationError('CannotCannotReferenceVariables', `Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
+          throw new UnscopedValidationError('CannotReferenceVariablesAction', `Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
         } else {
           return this._customerProvidedNamespace !== undefined
             // if a customer passed a namespace explicitly, always use that

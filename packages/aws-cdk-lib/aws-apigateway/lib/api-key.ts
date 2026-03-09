@@ -229,7 +229,7 @@ export class ApiKey extends ApiKeyBase {
       ? resources.map((resource: IRestApi) => {
         const restApi = resource;
         if (!restApi.deploymentStage) {
-          throw new ValidationError('CannotCannotApikeyRestapi', 'Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          throw new ValidationError('CannotAddApiKeyRest', 'Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
           'Either set the RestApi.deploymentStage or create an ApiKey from a Stage', this);
         }
         const restApiId = restApi.restApiId;

@@ -518,7 +518,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
-      throw new ValidationError('Mustbepromotiontierbetween015', 'promotionTier must be between 0-15', this);
+      throw new ValidationError('PromotionTier', 'promotionTier must be between 0-15', this);
     }
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);

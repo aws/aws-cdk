@@ -43,7 +43,7 @@ export function toILambdaApplication(app: IApplicationRef): ILambdaApplication {
  */
 export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServerDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError('DeploymentconfigInstanceShouldImplement', `'deploymentConfig' instance should implement IServerDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementServer', `'deploymentConfig' instance should implement IServerDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as IServerDeploymentConfig;
 }
@@ -53,7 +53,7 @@ export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServer
  */
 export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError('DeploymentconfigInstanceShouldImplement', `'deploymentConfig' instance should implement IEcsDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementEcs', `'deploymentConfig' instance should implement IEcsDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as IEcsDeploymentConfig;
 }
@@ -63,7 +63,7 @@ export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploy
  */
 export function toIBaseDeploymentConfig(config: IDeploymentConfigRef): IBaseDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError('DeploymentconfigInstanceShouldImplement', `'deploymentConfig' instance should implement ILambdaDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementLambda', `'deploymentConfig' instance should implement ILambdaDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as ILambdaDeploymentConfig;
 }

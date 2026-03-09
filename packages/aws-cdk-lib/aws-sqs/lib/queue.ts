@@ -462,7 +462,7 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new ValidationError('EncryptionmasterkeySupportedEncryptionType', "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
+        throw new ValidationError('EncryptionMasterKeySupportedEncryption', "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
@@ -523,7 +523,7 @@ export class Queue extends QueueBase {
         };
       }
 
-      throw new ValidationError('UnexpectedUnexpectedEncryptiontype', `Unexpected 'encryptionType': ${encryption}`, this);
+      throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryption}`, this);
     }
 
     // Enforce encryption of data in transit
@@ -555,15 +555,15 @@ export class Queue extends QueueBase {
     }
 
     if (props.contentBasedDeduplication && !fifoQueue) {
-      throw new ValidationError('Contentbaseddeduplicationonlydefined', 'Content-based deduplication can only be defined for FIFO queues', this);
+      throw new ValidationError('ContentBasedDeduplicationDefinedQueues', 'Content-based deduplication can only be defined for FIFO queues', this);
     }
 
     if (props.deduplicationScope && !fifoQueue) {
-      throw new ValidationError('Deduplicationscopeonlydefined', 'Deduplication scope can only be defined for FIFO queues', this);
+      throw new ValidationError('DeduplicationScopeDefinedQueues', 'Deduplication scope can only be defined for FIFO queues', this);
     }
 
     if (props.fifoThroughputLimit && !fifoQueue) {
-      throw new ValidationError('Fifothroughputlimitonly', 'FIFO throughput limit can only be defined for FIFO queues', this);
+      throw new ValidationError('ThroughputLimitDefinedQueues', 'FIFO throughput limit can only be defined for FIFO queues', this);
     }
 
     return {

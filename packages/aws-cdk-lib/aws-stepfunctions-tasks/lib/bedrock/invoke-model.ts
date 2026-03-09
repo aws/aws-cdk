@@ -209,16 +209,16 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       throw new ValidationError('MustBeEitherSpecified', 'Either `body` or `input` must be specified.', this);
     }
     if (props.input?.s3Location?.objectVersion !== undefined) {
-      throw new ValidationError('Inputobjectversionsupported', 'Input S3 object version is not supported.', this);
+      throw new ValidationError('InputObjectVersionSupported', 'Input S3 object version is not supported.', this);
     }
     if (props.output?.s3Location?.objectVersion !== undefined) {
-      throw new ValidationError('Outputobjectversionsupported', 'Output S3 object version is not supported.', this);
+      throw new ValidationError('OutputObjectVersionSupported', 'Output S3 object version is not supported.', this);
     }
     if (props.input?.s3InputUri && props.input.s3Location || props.output?.s3OutputUri && props.output.s3Location) {
-      throw new ValidationError('Eitherspecifylocation', 'Either specify S3 Uri or S3 location, but not both.', this);
+      throw new ValidationError('SpecifyUriLocation', 'Either specify S3 Uri or S3 location, but not both.', this);
     }
     if (useNewS3UriParamsForTask && (props.input?.s3InputUri === '' || props.output?.s3OutputUri === '')) {
-      throw new ValidationError('CannotCannotemptystring', 'S3 Uri cannot be an empty string', this);
+      throw new ValidationError('UriCannotEmptyString', 'S3 Uri cannot be an empty string', this);
     }
 
     // Warning to let users know about the newly introduced props
