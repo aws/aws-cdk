@@ -47,6 +47,13 @@ export interface DomainOptions {
    * @default - Amplify uses the default certificate that it provisions and manages for you
    */
   readonly customCertificate?: acm.ICertificate;
+
+  /**
+   * The IAM role with access to Route53 when using enableAutoSubdomain
+   *
+   * @default - the IAM role from App.grantPrincipal
+   */
+  readonly autoSubDomainIamRole?: iam.IRole;
 }
 
 /**
@@ -57,12 +64,6 @@ export interface DomainProps extends DomainOptions {
    * The application to which the domain must be connected
    */
   readonly app: IApp;
-
-  /**
-   * The IAM role with access to Route53 when using enableAutoSubdomain
-   * @default - the IAM role from App.grantPrincipal
-   */
-  readonly autoSubDomainIamRole?: iam.IRole;
 }
 
 /**

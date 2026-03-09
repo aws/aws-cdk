@@ -353,3 +353,37 @@ test('auto subdomain with IAM role', () => {
     },
   });
 });
+
+test('auto subdomain with custom IAM role via addDomain', () => {
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+  const customRole = new iam.Role(stack, 'CustomDomainRole', {
+    assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+  });
+
+  // WHEN
+  const domain = app.addDomain('amazon.com', {
+    enableAutoSubdomain: true,
+    autoSubDomainIamRole: customRole,
+  });
+  domain.mapRoot(prodBranch);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
+    EnableAutoSubDomain: true,
+    AutoSubDomainIAMRole: {
+      'Fn::GetAtt': [
+        'CustomDomainRoleB8521CEC',
+        'Arn',
+      ],
+    },
+  });
+});
