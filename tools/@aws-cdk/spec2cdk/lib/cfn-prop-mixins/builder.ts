@@ -1,17 +1,17 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { naming, util } from '@aws-cdk/spec2cdk';
-import { CDK_CORE, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
-import { ResourceDecider } from '@aws-cdk/spec2cdk/lib/cdk/resource-decider';
-import { TypeConverter } from '@aws-cdk/spec2cdk/lib/cdk/type-converter';
-import { RelationshipDecider } from '@aws-cdk/spec2cdk/lib/cdk/relationship-decider';
-import { ResolverBuilder } from '@aws-cdk/spec2cdk/lib/cdk/resolver-builder';
 import type { Expression, Method } from '@cdklabs/typewriter';
 import { ExternalModule, FreeFunction, Module, ClassType, Stability, StructType, Type, expr, stmt, $T, ThingSymbol, $this, CallableProxy } from '@cdklabs/typewriter';
+import { CDK_CORE, CONSTRUCTS } from '../cdk/cdk';
+import type { AddServiceProps, LibraryBuilderProps } from '../cdk/library-builder';
+import { LibraryBuilder } from '../cdk/library-builder';
+import { RelationshipDecider } from '../cdk/relationship-decider';
+import { ResolverBuilder } from '../cdk/resolver-builder';
+import { ResourceDecider } from '../cdk/resource-decider';
+import type { LocatedModule, ServiceSubmoduleProps } from '../cdk/service-submodule';
+import { BaseServiceSubmodule } from '../cdk/service-submodule';
+import { TypeConverter } from '../cdk/type-converter';
+import { naming, util } from '../index';
 import { MIXINS_COMMON } from './helpers';
-import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
 
 class MixinsServiceModule extends BaseServiceSubmodule {
   public readonly constructLibModule: ExternalModule;
