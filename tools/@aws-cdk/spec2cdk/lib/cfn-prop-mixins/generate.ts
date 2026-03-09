@@ -1,17 +1,18 @@
-import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '@aws-cdk/spec2cdk';
-import { generate, loadPatchedSpec } from '@aws-cdk/spec2cdk';
-import { LogsDeliveryBuilder } from './builder';
-import { MIXINS_PREVIEW_BASE_NAMES } from '../config';
-import type { GeneratorResult } from '@aws-cdk/spec2cdk/lib/module-topology';
-import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
+import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '../generate';
+import { generate, loadPatchedSpec } from '../generate';
+import { MixinsBuilder } from './builder';
+import { loadModuleMap, type GeneratorResult, type ModuleMap } from '../module-topology';import type { PackageBaseNames } from '../util/jsii';
 
-type GenerateOptions = Pick<Spec2CdkOptions<typeof LogsDeliveryBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
+export interface MixinsGenerateOptions extends Pick<Spec2CdkOptions<typeof MixinsBuilder>, 'outputPath' | 'clearOutput' | 'debug'> {
+  readonly packageBases: PackageBaseNames;
+}
 
-export async function generateAll(options: GenerateOptions): Promise<GeneratorResult> {
+export async function generateAll(options: MixinsGenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
   const services = await db.all('service');
   const moduleMap: ModuleMap = loadModuleMap({
-    packageBases: MIXINS_PREVIEW_BASE_NAMES,
+    packageBases: options.packageBases,
+    respectOverrides: false,
   });
   const moduleRequests: GenerateModuleMap = {};
 
@@ -23,10 +24,10 @@ export async function generateAll(options: GenerateOptions): Promise<GeneratorRe
     }
   }
 
-  const generated = await generate<typeof LogsDeliveryBuilder>(moduleRequests, {
+  const generated = await generate<typeof MixinsBuilder>(moduleRequests, {
     ...options,
     db,
-    astBuilder: LogsDeliveryBuilder,
+    astBuilder: MixinsBuilder,
   });
 
   return {
@@ -43,7 +44,7 @@ export async function generateAll(options: GenerateOptions): Promise<GeneratorRe
     ])),
     contributions: [{
       barrelFile: 'mixins.ts',
-      exportLines: ["export * from './logs-delivery-mixins.generated';"],
+      exportLines: ["export * from './cfn-props-mixins.generated';"],
       jsiircNamespace: 'mixins',
     }],
   };
