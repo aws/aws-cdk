@@ -287,3 +287,16 @@ repo.onEvent('OnEventTargetLambda', {
   target: new LambdaFunction(lambdaHandler),
 });
 ```
+
+## Mixins
+
+ECR provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### RepositoryAutoDeleteImages
+
+Automatically deletes all images from a repository when it is removed from the stack or when the stack is deleted. Requires the repository's removal policy to be set to `DESTROY`:
+
+```ts
+new ecr.CfnRepository(this, 'Repo')
+  .with(new ecr.mixins.RepositoryAutoDeleteImages());
+```
