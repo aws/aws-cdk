@@ -16,14 +16,14 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
-import { DataSourceConfig } from './data-source';
-import { EvaluatorReference } from './evaluator';
-import { IOnlineEvaluation, OnlineEvaluationBase } from './online-evaluation-base';
+import type { Construct } from 'constructs';
+import type { DataSourceConfig } from './data-source';
+import type { EvaluatorReference } from './evaluator';
+import { type IOnlineEvaluation, OnlineEvaluationBase } from './online-evaluation-base';
 import { EvaluationPerms } from './perms';
 import {
-  OnlineEvaluationBaseProps,
-  OnlineEvaluationAttributes,
+  type OnlineEvaluationBaseProps,
+  type OnlineEvaluationAttributes,
   ExecutionStatus,
 } from './types';
 import {
