@@ -2328,6 +2328,53 @@ describe('cluster', () => {
       });
     });
 
+    test('throws when kubectl private subnets include isolated subnets', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 0,
+        subnetConfiguration: [
+          { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+        ],
+      });
+
+      // THEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+          prune: false,
+        });
+      }).toThrow(/Isolated subnets cannot be used for kubectl private subnets/);
+    });
+
+    test('does not throw when kubectl private subnets are PRIVATE_WITH_EGRESS', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: ec2.SubnetType.PUBLIC, cidrMask: 24 },
+          { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, cidrMask: 24 },
+        ],
+      });
+
+      // THEN - should not throw
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+    });
+
     test('if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
