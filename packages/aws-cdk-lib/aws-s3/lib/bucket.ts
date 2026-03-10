@@ -3693,7 +3693,10 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
  *
  * Use a single class instance.
  */
+@propertyInjectable
 class ReferencedBucket extends BucketBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.ReferencedBucket';
   public bucketArn: string;
   public bucketName: string;
   public bucketDomainName: string;
@@ -3731,6 +3734,8 @@ class ReferencedBucket extends BucketBase {
       account: props.account,
       region: props.region,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
     this.bucketArn = props.bucketArn;
     this.bucketName = props.bucketName;
     this.bucketDomainName = props.bucketDomainName;

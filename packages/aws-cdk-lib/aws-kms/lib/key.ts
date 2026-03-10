@@ -958,7 +958,10 @@ export class Key extends KeyBase {
  *
  * Use a single class instance.
  */
+@propertyInjectable
 class ReferencedKey extends KeyBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.ReferencedKey';
   public keyArn: string;
   public keyId: string;
   protected policy?: iam.PolicyDocument | undefined;
@@ -974,6 +977,8 @@ class ReferencedKey extends KeyBase {
     super(scope, id, {
       environmentFromArn: props.environmentFromArn,
     });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     this.keyArn = props.keyArn;
     this.keyId = props.keyId;
