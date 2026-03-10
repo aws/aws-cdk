@@ -49,3 +49,8 @@ if (s3ApiCall instanceof AwsApiCall) {
     Resource: ['*'],
   });
 }
+
+// Disable the rule before teardown to prevent race condition with bucket deletion
+testCase.assertions.awsApiCall('EventBridge', 'disableRule', {
+  Name: event.ruleName,
+});

@@ -78,6 +78,8 @@
     "./aws-bedrock/mixins": "./lib/services/aws-bedrock/mixins.js",
     "./aws-bedrockagentcore": "./lib/services/aws-bedrockagentcore/index.js",
     "./aws-bedrockagentcore/mixins": "./lib/services/aws-bedrockagentcore/mixins.js",
+    "./aws-bedrockmantle": "./lib/services/aws-bedrockmantle/index.js",
+    "./aws-bedrockmantle/mixins": "./lib/services/aws-bedrockmantle/mixins.js",
     "./aws-billing": "./lib/services/aws-billing/index.js",
     "./aws-billing/mixins": "./lib/services/aws-billing/mixins.js",
     "./aws-billingconductor": "./lib/services/aws-billingconductor/index.js",
@@ -137,6 +139,8 @@
     "./aws-cognito/mixins": "./lib/services/aws-cognito/mixins.js",
     "./aws-comprehend": "./lib/services/aws-comprehend/index.js",
     "./aws-comprehend/mixins": "./lib/services/aws-comprehend/mixins.js",
+    "./aws-computeoptimizer": "./lib/services/aws-computeoptimizer/index.js",
+    "./aws-computeoptimizer/mixins": "./lib/services/aws-computeoptimizer/mixins.js",
     "./aws-config": "./lib/services/aws-config/index.js",
     "./aws-config/mixins": "./lib/services/aws-config/mixins.js",
     "./aws-connect": "./lib/services/aws-connect/index.js",
@@ -172,6 +176,8 @@
     "./aws-devopsagent/mixins": "./lib/services/aws-devopsagent/mixins.js",
     "./aws-devopsguru": "./lib/services/aws-devopsguru/index.js",
     "./aws-devopsguru/mixins": "./lib/services/aws-devopsguru/mixins.js",
+    "./aws-directconnect": "./lib/services/aws-directconnect/index.js",
+    "./aws-directconnect/mixins": "./lib/services/aws-directconnect/mixins.js",
     "./aws-directoryservice": "./lib/services/aws-directoryservice/index.js",
     "./aws-directoryservice/mixins": "./lib/services/aws-directoryservice/mixins.js",
     "./aws-dlm": "./lib/services/aws-dlm/index.js",
@@ -663,7 +669,7 @@
     "@aws-cdk/integ-runner": "^2.196.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/service-spec-types": "^0.0.220",
+    "@aws-cdk/service-spec-types": "^0.0.226",
     "@aws-cdk/spec2cdk": "0.0.0",
     "@cdklabs/tskb": "^0.0.4",
     "@cdklabs/typewriter": "^0.0.16",
@@ -673,19 +679,14 @@
     "jest": "^29.7.0",
     "tsx": "^4.21.0"
   },
-  "dependencies": {
-    "minimatch": "^10.2.2"
-  },
-  "bundleDependencies": [
-    "minimatch"
-  ],
+  "dependencies": {},
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.5.0"
   },
   "separate-module": false,
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -693,10 +694,7 @@
     "announce": false
   },
   "cdk-build": {
-    "compressAssembly": true,
-    "pre": [
-      "./scripts/airlift-custom-resource-handlers.sh"
-    ]
+    "compressAssembly": true
   },
   "publishConfig": {
     "tag": "latest"

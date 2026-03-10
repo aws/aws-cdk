@@ -1,16 +1,6 @@
-/**
- * Strategy for handling nested properties in L1 property mixins
- */
-export enum PropertyMergeStrategy {
-  /**
-   * Override all properties
-   */
-  OVERRIDE = 'override',
-  /**
-   * Deep merge nested objects, override primitives and arrays
-   */
-  MERGE = 'merge',
-}
+import type { IMergeStrategy } from 'aws-cdk-lib/core';
+
+export { type IMergeStrategy, PropertyMergeStrategy } from 'aws-cdk-lib/core';
 
 /**
  * Options for applying CfnProperty mixins
@@ -19,7 +9,7 @@ export interface CfnPropertyMixinOptions {
   /**
    * Strategy for merging nested properties
    *
-   * @default - PropertyMergeStrategy.MERGE
+   * @default - PropertyMergeStrategy.combine()
    */
-  readonly strategy?: PropertyMergeStrategy;
+  readonly strategy?: IMergeStrategy;
 }
