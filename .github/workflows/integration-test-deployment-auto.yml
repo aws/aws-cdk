@@ -152,6 +152,6 @@ jobs:
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           # GitHub context for preflight check (validates CDK team membership)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
