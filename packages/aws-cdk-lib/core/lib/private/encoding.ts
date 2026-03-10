@@ -62,7 +62,7 @@ export class TokenString {
       m = this.re.exec(this.str);
     }
 
-    if (rest < this.str.length) {
+    if (rest < (this.str ?? '').length) {
       ret.addLiteral(this.str.substring(rest));
     }
 
