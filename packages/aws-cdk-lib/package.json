@@ -313,6 +313,7 @@
     "./aws-ec2": "./aws-ec2/index.js",
     "./aws-ecr": "./aws-ecr/index.js",
     "./aws-ecr-assets": "./aws-ecr-assets/index.js",
+    "./aws-ecr/mixins": "./aws-ecr/lib/mixins/index.js",
     "./aws-ecs": "./aws-ecs/index.js",
     "./aws-ecs-patterns": "./aws-ecs-patterns/index.js",
     "./aws-ecs/mixins": "./aws-ecs/lib/mixins/index.js",
