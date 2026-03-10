@@ -1,8 +1,10 @@
+import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import type { ModuleMap, ModuleMapEntry } from '../module-topology';
+import { writeJsiiRc } from '../util/submodule-files';
 
 /**
  * Make sure that a number of expected files exist for every service submodule
@@ -13,6 +15,7 @@ export default async function generateServiceSubmoduleFiles(modules: ModuleMap, 
   for (const submodule of Object.values(modules)) {
     await ensureSubmodule(submodule, outPath);
     await ensureInterfaceSubmoduleJsiiJsonRc(submodule, path.join(outPath, 'interfaces'));
+    await ensureMixinsSubmoduleJsiiRc(submodule, outPath);
   }
 }
 
@@ -21,19 +24,19 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
 
   // README.md
   const readmePath = path.join(modulePath, 'README.md');
-  if (!fs.existsSync(readmePath)) {
+  if (!existsSync(readmePath)) {
     await createLibraryReadme(submodule.scopes[0].namespace, readmePath);
   }
 
   // index.ts
-  if (!fs.existsSync(path.join(modulePath, 'index.ts'))) {
+  if (!existsSync(path.join(modulePath, 'index.ts'))) {
     const lines = ['export * from \'./lib\';'];
     await fs.writeFile(path.join(modulePath, 'index.ts'), lines.join('\n') + '\n');
   }
 
   // lib/index.ts
   const sourcePath = path.join(modulePath, 'lib');
-  if (!fs.existsSync(path.join(sourcePath, 'index.ts'))) {
+  if (!existsSync(path.join(sourcePath, 'index.ts'))) {
     const lines = submodule.scopes.map(({ namespace }) => `// ${namespace} Cloudformation Resources`);
     lines.push(...submodule.files
       .map((f) => {
@@ -45,34 +48,17 @@ async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
   }
 
   // .jsiirc.json
-  // We always re-create this file. Any historic deviations are stored in scopes-map.json
   if (!submodule.definition) {
     throw new Error(
       `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
     );
   }
 
-  const jsiirc = {
-    targets: {
-      java: {
-        package: submodule.definition.javaPackage,
-      },
-      dotnet: {
-        namespace: submodule.definition.dotnetPackage,
-      },
-      python: {
-        module: submodule.definition.pythonModuleName,
-      },
-    },
-  };
-  await fs.writeJson(path.join(modulePath, '.jsiirc.json'), jsiirc, { spaces: 2 });
+  await writeJsiiRc(path.join(modulePath, '.jsiirc.json'), submodule.definition);
 }
 
 /**
  * Make a jsiirc file for every service-specific interfaces submodule
- *
- * Do that by taking the namespaces of the parent `interfaces` submodule and concatenating the last part
- * of the names corresponding services namespace.
  */
 async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, interfacesModulePath: string) {
   if (!submodule.definition) {
@@ -108,4 +94,23 @@ async function ensureInterfaceSubmoduleJsiiJsonRc(submodule: ModuleMapEntry, int
 
 function lastPart(x: string): string {
   return x.split('.').slice(-1)[0];
+}
+
+/**
+ * If a service submodule has a `lib/mixins/` directory, generate a `.jsiirc.json`
+ */
+async function ensureMixinsSubmoduleJsiiRc(submodule: ModuleMapEntry, outPath: string) {
+  const mixinsDir = path.join(outPath, submodule.name, 'lib', 'mixins');
+  if (!existsSync(mixinsDir)) {
+    return;
+  }
+
+  if (!submodule.definition) {
+    throw new Error(`Cannot infer namespace for mixins submodule of "${submodule.name}".`);
+  }
+
+  await writeJsiiRc(path.join(mixinsDir, '.jsiirc.json'), submodule.definition, {
+    namespaceSuffix: 'mixins',
+    goPrefix: '',
+  });
 }
