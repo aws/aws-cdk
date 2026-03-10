@@ -59,7 +59,7 @@ jobs:
         id: check_team
         if: steps.check_snapshots.outputs.has_snapshots == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           APPROVER: ${{ github.event.review.user.login }}
         run: |
           # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
