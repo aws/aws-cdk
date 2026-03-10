@@ -524,7 +524,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
           throw new ValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined && !cdk.Token.isUnresolved(minimumPollers) && !cdk.Token.isUnresolved(maximumPollers)) {
+      if (minimumPollers != undefined && maximumPollers != undefined
+        && !cdk.Token.isUnresolved(minimumPollers) && !cdk.Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
           throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
         }

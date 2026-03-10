@@ -195,7 +195,8 @@ export abstract class StreamEventSource implements lambda.IEventSource {
           throw new UnscopedValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive');
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined && !Token.isUnresolved(minimumPollers) && !Token.isUnresolved(maximumPollers)) {
+      if (minimumPollers != undefined && maximumPollers != undefined
+        && !Token.isUnresolved(minimumPollers) && !Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
           throw new UnscopedValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
         }
