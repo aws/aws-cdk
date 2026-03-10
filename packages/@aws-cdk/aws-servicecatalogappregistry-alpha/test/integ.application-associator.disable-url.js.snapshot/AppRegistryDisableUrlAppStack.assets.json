@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "da69ef51de94dbb5a011ccfec2c888287e65fdd72fd6145449b2eb9f393550a4": {
+      "displayName": "AppRegistryDisableUrlAppStack Template",
+      "source": {
+        "path": "AppRegistryDisableUrlAppStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6d509313": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "da69ef51de94dbb5a011ccfec2c888287e65fdd72fd6145449b2eb9f393550a4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
