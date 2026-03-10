@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "integ-distribution-lambda-cross-region.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/937394c8d0a6e575548b6362ddc21f7a02d4d4b3bff17e372a39ed6b1e4d74b1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/e312b007d9b46735cec917dae8d1558107d04f674da0f5fddb473291cf39adae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -173,7 +173,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/a5be72178391bf129c1a7dc594b3e03eada849abc27ca78caf45351146045c2e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1531827cfc2113cd0afe2b615ac43cf45f8fbb48b1c4e328b8ec79dfe426b484.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -201,14 +201,18 @@
         ],
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/Resource": [
@@ -248,7 +252,7 @@
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+            "data": "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360"
           }
         ],
         "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Parameter": [
@@ -319,7 +323,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/dc2b1c3d6bdb7621c89c512e7b7934abaec4875e9744da627742e8014a610668.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2832c76cd628c65482503e36846159da4206642a66d7c47cca72ba7e8804074e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -347,14 +351,18 @@
         ],
         "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource": [
@@ -394,7 +402,7 @@
         "/edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
+            "data": "Lambda2CurrentVersion72012B74c1f6734ecb54ea821fc6141f309901b4"
           }
         ],
         "/edge-lambda-stack-eu-west-1-2/Lambda2/Parameter": [
@@ -793,6 +801,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -824,16 +836,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -980,6 +982,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -991,12 +994,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1106.1"
 }
