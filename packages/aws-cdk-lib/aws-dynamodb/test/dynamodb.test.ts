@@ -2424,8 +2424,6 @@ describe('grants', () => {
                 'mytable0324D45C',
                 'Arn',
               ],
-            }, {
-              'Ref': 'AWS::NoValue',
             }],
           },
         ],
@@ -2721,8 +2719,6 @@ describe('grants', () => {
                   ':table/my-table',
                 ],
               ],
-            }, {
-              'Ref': 'AWS::NoValue',
             }],
           },
         ],
@@ -2799,7 +2795,7 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': [tableArn, { 'Ref': 'AWS::NoValue' }],
+            'Resource': [tableArn],
           },
           {
             'Action': [
@@ -2807,7 +2803,7 @@ describe('import', () => {
               'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
-            'Resource': [tableArn, { 'Ref': 'AWS::NoValue' }],
+            'Resource': [tableArn],
           },
         ],
         'Version': '2012-10-17',
@@ -2868,8 +2864,6 @@ describe('import', () => {
                   ':table/MyTable',
                 ],
               ],
-            }, {
-              'Ref': 'AWS::NoValue',
             }],
           },
           {
@@ -2897,8 +2891,6 @@ describe('import', () => {
                   ':table/MyTable',
                 ],
               ],
-            }, {
-              'Ref': 'AWS::NoValue',
             }],
           },
         ],
@@ -4462,7 +4454,7 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
 
   for (const statement of capture.asArray()) {
     if (statement.Effect === 'Allow' &&
-        JSON.stringify(statement.Resource) === JSON.stringify([tableResource, { 'Ref': 'AWS::NoValue' }])) {
+        JSON.stringify(statement.Resource) === JSON.stringify([tableResource])) {
       if (Array.isArray(statement.Action)) {
         allActions.push(...statement.Action);
       } else {

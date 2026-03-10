@@ -1,7 +1,7 @@
 import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Aws, Lazy, Stack, ValidationError } from '../../core';
+import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
 
 /**
  * Construction properties for TableGrants
@@ -85,7 +85,7 @@ export class TableGrants {
     const arnForIndex = (arn: string): string => Lazy.string({
       produce() {
         const hasIndex = props.hasIndex ?? (('hasIndex' in table) ? table.hasIndex as boolean : false);
-        return hasIndex ? `${arn}/index/*` : Aws.NO_VALUE;
+        return hasIndex ? `${arn}/index/*` : undefined;
       },
     });
 
