@@ -13,16 +13,14 @@
 
 import type { IResource } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
-import type { MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
-import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import { EvaluationPerms } from './perms';
 
 /**
- * Interface for OnlineEvaluation resources.
+ * Interface for OnlineEvaluationConfig resources.
  */
-export interface IOnlineEvaluation extends IResource, iam.IGrantable {
+export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
   /**
    * The ARN of the online evaluation configuration.
    * @attribute
@@ -67,33 +65,13 @@ export interface IOnlineEvaluation extends IResource, iam.IGrantable {
    * Grant the given principal identity permissions to manage this configuration.
    */
   grantAdmin(grantee: iam.IGrantable): iam.Grant;
-
-  /**
-   * Return the given named metric for this evaluation configuration.
-   */
-  metric(metricName: string, props?: MetricOptions): Metric;
-
-  /**
-   * Return a metric for the total number of evaluations performed.
-   */
-  metricEvaluationCount(props?: MetricOptions): Metric;
-
-  /**
-   * Return a metric for evaluation errors.
-   */
-  metricEvaluationErrors(props?: MetricOptions): Metric;
-
-  /**
-   * Return a metric for evaluation latency.
-   */
-  metricEvaluationLatency(props?: MetricOptions): Metric;
 }
 
 /**
- * Abstract base class for OnlineEvaluation.
+ * Abstract base class for OnlineEvaluationConfig.
  * Contains methods and attributes valid for configurations either created with CDK or imported.
  */
-export abstract class OnlineEvaluationBase extends Resource implements IOnlineEvaluation {
+export abstract class OnlineEvaluationBase extends Resource implements IOnlineEvaluationConfig {
   public abstract readonly configArn: string;
   public abstract readonly configId: string;
   public abstract readonly configName: string;
@@ -138,53 +116,5 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
    */
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...EvaluationPerms.ADMIN_PERMS);
-  }
-
-  /**
-   * Return the given named metric for this evaluation configuration.
-   *
-   * By default, the metric will be calculated as a sum over a period of 5 minutes.
-   * You can customize this by using the `statistic` and `period` properties.
-   */
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    const metricProps: MetricProps = {
-      namespace: 'AWS/Bedrock-AgentCore',
-      metricName,
-      dimensionsMap: { OnlineEvaluationId: this.configId },
-      ...props,
-    };
-    return this.configureMetric(metricProps);
-  }
-
-  /**
-   * Return a metric for the total number of evaluations performed.
-   */
-  public metricEvaluationCount(props?: MetricOptions): Metric {
-    return this.metric('EvaluationCount', { statistic: Stats.SUM, ...props });
-  }
-
-  /**
-   * Return a metric for evaluation errors.
-   */
-  public metricEvaluationErrors(props?: MetricOptions): Metric {
-    return this.metric('EvaluationErrors', { statistic: Stats.SUM, ...props });
-  }
-
-  /**
-   * Return a metric for evaluation latency.
-   */
-  public metricEvaluationLatency(props?: MetricOptions): Metric {
-    return this.metric('EvaluationLatency', { statistic: Stats.AVERAGE, ...props });
-  }
-
-  /**
-   * Internal method to create a metric.
-   */
-  private configureMetric(props: MetricProps): Metric {
-    return new Metric({
-      ...props,
-      region: props?.region ?? this.stack.region,
-      account: props?.account ?? this.stack.account,
-    });
   }
 }

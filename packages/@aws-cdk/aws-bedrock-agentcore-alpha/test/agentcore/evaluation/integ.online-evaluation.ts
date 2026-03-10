@@ -1,5 +1,5 @@
 /*
- * Integration test for Bedrock AgentCore OnlineEvaluation construct
+ * Integration test for Bedrock AgentCore OnlineEvaluationConfig construct
  */
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-online-evaluation
@@ -21,7 +21,7 @@ const logGroup = new logs.LogGroup(stack, 'AgentLogGroup', {
 });
 
 // Create an online evaluation configuration with basic settings
-new agentcore.OnlineEvaluation(stack, 'BasicEvaluation', {
+new agentcore.OnlineEvaluationConfig(stack, 'BasicEvaluation', {
   configName: 'integ_test_basic_eval',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),

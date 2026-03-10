@@ -132,23 +132,6 @@ export enum FilterOperator {
 }
 
 /**
- * Execution status for online evaluation configurations.
- *
- * @internal
- */
-export enum ExecutionStatus {
-  /**
-   * The evaluation job runs continuously, processing incoming traces.
-   */
-  ENABLED = 'ENABLED',
-
-  /**
-   * The evaluation configuration exists but the job is paused.
-   */
-  DISABLED = 'DISABLED',
-}
-
-/**
  * Filter configuration for online evaluation.
  *
  * Filters determine which agent traces should be included in the evaluation
@@ -196,7 +179,7 @@ export interface CloudWatchLogsDataSourceConfig {
 }
 
 /**
- * Base properties for creating an OnlineEvaluation.
+ * Base properties for creating an OnlineEvaluationConfig.
  * The actual OnlineEvaluationProps is defined in online-evaluation-config.ts
  * to avoid circular dependencies.
  */
@@ -256,13 +239,6 @@ export interface OnlineEvaluationBaseProps {
   readonly sessionTimeoutMinutes?: number;
 
   /**
-   * Whether to enable the evaluation configuration immediately after creation.
-   *
-   * @default true
-   */
-  readonly enableOnCreate?: boolean;
-
-  /**
    * Tags for the online evaluation configuration.
    *
    * @default - No tags
@@ -271,9 +247,9 @@ export interface OnlineEvaluationBaseProps {
 }
 
 /**
- * Attributes for importing an existing OnlineEvaluation.
+ * Attributes for importing an existing OnlineEvaluationConfig.
  */
-export interface OnlineEvaluationAttributes {
+export interface OnlineEvaluationConfigAttributes {
   /**
    * The ARN of the online evaluation configuration.
    */

@@ -86,6 +86,7 @@
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
     "constructs": "^10.5.0",
+    "fast-check": "^3.23.2",
     "jest": "^29.7.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -119,7 +120,7 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeEndpointProps",
-      "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationProps",
+      "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationConfigProps",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.BrowserCustomAttributes.securityGroups",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.BrowserCustomProps.executionRole",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.CodeInterpreterCustomAttributes.securityGroups",
@@ -151,7 +152,7 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.AgentRuntimeAttributes.securityGroups",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeProps.executionRole",
-      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationProps.executionRole",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationConfigProps.executionRole",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBedrockAgentRuntime",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBrowserCustom",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.ICodeInterpreterCustom",
@@ -160,7 +161,7 @@
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMcpGatewayTarget",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMemory",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IRuntimeEndpoint",
-      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IOnlineEvaluation"
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IOnlineEvaluationConfig"
     ]
   },
   "jsiiRosetta": {

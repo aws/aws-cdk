@@ -224,175 +224,50 @@
     ]
    }
   },
-  "BasicEvaluation44DD84CD": {
-   "Type": "Custom::BedrockAgentCoreOnlineEvaluation",
+  "BasicEvaluationB20A0A46": {
+   "Type": "AWS::BedrockAgentCore::OnlineEvaluationConfig",
    "Properties": {
-    "ServiceToken": {
+    "DataSourceConfig": {
+     "CloudWatchLogs": {
+      "LogGroupNames": [
+       {
+        "Ref": "AgentLogGroupFDA72973"
+       }
+      ],
+      "ServiceNames": [
+       "integ-test-agent.default"
+      ]
+     }
+    },
+    "Description": "Basic integration test evaluation with CloudWatch Logs",
+    "EvaluationExecutionRoleArn": {
      "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "BasicEvaluationExecutionRoleFB7E4913",
       "Arn"
      ]
     },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"bedrock-agentcore-control\",\"action\":\"CreateOnlineEvaluationConfig\",\"parameters\":{\"onlineEvaluationConfigName\":\"integ_test_basic_eval\",\"evaluators\":[{\"evaluatorId\":\"Builtin.Helpfulness\"},{\"evaluatorId\":\"Builtin.Correctness\"}],\"dataSourceConfig\":{\"cloudWatchLogs\":{\"logGroupNames\":[\"",
-       {
-        "Ref": "AgentLogGroupFDA72973"
-       },
-       "\"],\"serviceNames\":[\"integ-test-agent.default\"]}},\"evaluationExecutionRoleArn\":\"",
-       {
-        "Fn::GetAtt": [
-         "BasicEvaluationExecutionRoleFB7E4913",
-         "Arn"
-        ]
-       },
-       "\",\"enableOnCreate\":true,\"description\":\"Basic integration test evaluation with CloudWatch Logs\",\"rule\":{\"samplingConfig\":{\"samplingPercentage\":10},\"sessionConfig\":{\"sessionTimeoutMinutes\":15}}},\"physicalResourceId\":{\"responsePath\":\"onlineEvaluationConfigId\"}}"
-      ]
-     ]
-    },
-    "Update": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"bedrock-agentcore-control\",\"action\":\"UpdateOnlineEvaluationConfig\",\"parameters\":{\"onlineEvaluationConfigId\":\"PHYSICAL:RESOURCEID:\",\"evaluators\":[{\"evaluatorId\":\"Builtin.Helpfulness\"},{\"evaluatorId\":\"Builtin.Correctness\"}],\"dataSourceConfig\":{\"cloudWatchLogs\":{\"logGroupNames\":[\"",
-       {
-        "Ref": "AgentLogGroupFDA72973"
-       },
-       "\"],\"serviceNames\":[\"integ-test-agent.default\"]}},\"evaluationExecutionRoleArn\":\"",
-       {
-        "Fn::GetAtt": [
-         "BasicEvaluationExecutionRoleFB7E4913",
-         "Arn"
-        ]
-       },
-       "\",\"description\":\"Basic integration test evaluation with CloudWatch Logs\",\"rule\":{\"samplingConfig\":{\"samplingPercentage\":10},\"sessionConfig\":{\"sessionTimeoutMinutes\":15}},\"executionStatus\":\"ENABLED\"},\"physicalResourceId\":{\"responsePath\":\"onlineEvaluationConfigId\"}}"
-      ]
-     ]
-    },
-    "Delete": "{\"service\":\"bedrock-agentcore-control\",\"action\":\"DeleteOnlineEvaluationConfig\",\"parameters\":{\"onlineEvaluationConfigId\":\"PHYSICAL:RESOURCEID:\"}}",
-    "InstallLatestAwsSdk": true
-   },
-   "DependsOn": [
-    "BasicEvaluationCustomResourcePolicyFCBDE3A0"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "BasicEvaluationCustomResourcePolicyFCBDE3A0": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "bedrock-agentcore:CreateOnlineEvaluationConfig",
-        "bedrock-agentcore:DeleteOnlineEvaluationConfig",
-        "bedrock-agentcore:GetOnlineEvaluationConfig",
-        "bedrock-agentcore:ListOnlineEvaluationConfigs",
-        "bedrock-agentcore:UpdateOnlineEvaluationConfig",
-        "logs:CreateLogGroup",
-        "logs:DescribeIndexPolicies",
-        "logs:PutIndexPolicy"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "BasicEvaluationExecutionRoleFB7E4913",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "BasicEvaluationCustomResourcePolicyFCBDE3A0",
-    "Roles": [
+    "Evaluators": [
      {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-     }
-    ]
-   }
-  },
-  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "EvaluatorId": "Builtin.Helpfulness"
      },
-     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
-    },
-    "Handler": "index.handler",
-    "MemorySize": 512,
-    "Role": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x",
-    "Timeout": 120
+     {
+      "EvaluatorId": "Builtin.Correctness"
+     }
+    ],
+    "OnlineEvaluationConfigName": "integ_test_basic_eval",
+    "Rule": {
+     "SamplingConfig": {
+      "SamplingPercentage": 10
+     },
+     "SessionConfig": {
+      "SessionTimeoutMinutes": 15
+     }
+    }
    },
    "DependsOn": [
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+    "BasicEvaluationExecutionRoleDefaultPolicy6E0AF966",
+    "BasicEvaluationExecutionRoleFB7E4913"
    ]
-  },
-  "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

@@ -12,19 +12,18 @@
  */
 
 import { Arn, ArnFormat, Aws, Stack } from 'aws-cdk-lib';
+import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as cr from 'aws-cdk-lib/custom-resources';
 import type { Construct } from 'constructs';
 import type { DataSourceConfig } from './data-source';
 import type { EvaluatorReference } from './evaluator';
-import { type IOnlineEvaluation, OnlineEvaluationBase } from './online-evaluation-base';
+import { type IOnlineEvaluationConfig, OnlineEvaluationBase } from './online-evaluation-base';
 import { EvaluationPerms } from './perms';
 import {
   type OnlineEvaluationBaseProps,
-  type OnlineEvaluationAttributes,
-  ExecutionStatus,
+  type OnlineEvaluationConfigAttributes,
 } from './types';
 import {
   validateConfigName,
@@ -37,9 +36,9 @@ import {
 } from './validation-helpers';
 
 /**
- * Properties for creating an OnlineEvaluation.
+ * Properties for creating an OnlineEvaluationConfig.
  */
-export interface OnlineEvaluationProps extends OnlineEvaluationBaseProps {
+export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
   /**
    * The list of evaluators to apply during online evaluation.
    *
@@ -62,11 +61,11 @@ export interface OnlineEvaluationProps extends OnlineEvaluationBaseProps {
  * Enables continuous evaluation of agent performance using built-in or custom evaluators.
  * Supports CloudWatch Logs and Agent Endpoint data sources.
  *
- * @resource AWS::CloudFormation::CustomResource
+ * @resource AWS::BedrockAgentCore::OnlineEvaluationConfig
  *
  * @example
  * // Basic usage with built-in evaluators
- * const evaluation = new agentcore.OnlineEvaluation(this, 'MyEvaluation', {
+ * const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
  *   configName: 'my_evaluation',
  *   evaluators: [
  *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
@@ -79,77 +78,77 @@ export interface OnlineEvaluationProps extends OnlineEvaluationBaseProps {
  * });
  */
 @propertyInjectable
-export class OnlineEvaluation extends OnlineEvaluationBase {
+export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string =
-    '@aws-cdk.aws-bedrock-agentcore-alpha.OnlineEvaluation';
+    '@aws-cdk.aws-bedrock-agentcore-alpha.OnlineEvaluationConfig';
 
   /**
-   * Import an existing OnlineEvaluation by its ID.
+   * Import an existing OnlineEvaluationConfig by its ID.
    *
    * @param scope - The construct scope
    * @param id - Construct identifier
-   * @param configId - The configuration ID to import
-   * @returns An IOnlineEvaluation reference
+   * @param onlineEvaluationConfigId - The configuration ID to import
+   * @returns An IOnlineEvaluationConfig reference
    */
-  public static fromConfigId(
+  public static fromOnlineEvaluationConfigId(
     scope: Construct,
     id: string,
-    configId: string,
-  ): IOnlineEvaluation {
+    onlineEvaluationConfigId: string,
+  ): IOnlineEvaluationConfig {
     const stack = Stack.of(scope);
     const configArn = Arn.format(
       {
         service: 'bedrock-agentcore',
         resource: 'online-evaluation-config',
-        resourceName: configId,
+        resourceName: onlineEvaluationConfigId,
       },
       stack,
     );
 
-    return OnlineEvaluation.fromAttributes(scope, id, {
+    return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
       configArn,
-      configId,
-      configName: configId, // Use ID as name when importing by ID
+      configId: onlineEvaluationConfigId,
+      configName: onlineEvaluationConfigId, // Use ID as name when importing by ID
     });
   }
 
   /**
-   * Import an existing OnlineEvaluation by its ARN.
+   * Import an existing OnlineEvaluationConfig by its ARN.
    *
    * @param scope - The construct scope
    * @param id - Construct identifier
-   * @param configArn - The configuration ARN to import
-   * @returns An IOnlineEvaluation reference
+   * @param onlineEvaluationConfigArn - The configuration ARN to import
+   * @returns An IOnlineEvaluationConfig reference
    */
-  public static fromConfigArn(
+  public static fromOnlineEvaluationConfigArn(
     scope: Construct,
     id: string,
-    configArn: string,
-  ): IOnlineEvaluation {
-    const arnParts = Arn.split(configArn, ArnFormat.SLASH_RESOURCE_NAME);
+    onlineEvaluationConfigArn: string,
+  ): IOnlineEvaluationConfig {
+    const arnParts = Arn.split(onlineEvaluationConfigArn, ArnFormat.SLASH_RESOURCE_NAME);
     const configId = arnParts.resourceName!;
 
-    return OnlineEvaluation.fromAttributes(scope, id, {
-      configArn,
+    return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
+      configArn: onlineEvaluationConfigArn,
       configId,
       configName: configId, // Use ID as name when importing by ARN
     });
   }
 
   /**
-   * Import an existing OnlineEvaluation from its attributes.
+   * Import an existing OnlineEvaluationConfig from its attributes.
    *
    * @param scope - The construct scope
    * @param id - Construct identifier
    * @param attrs - The configuration attributes
-   * @returns An IOnlineEvaluation reference
+   * @returns An IOnlineEvaluationConfig reference
    */
-  public static fromAttributes(
+  public static fromOnlineEvaluationConfigAttributes(
     scope: Construct,
     id: string,
-    attrs: OnlineEvaluationAttributes,
-  ): IOnlineEvaluation {
+    attrs: OnlineEvaluationConfigAttributes,
+  ): IOnlineEvaluationConfig {
     class Import extends OnlineEvaluationBase {
       public readonly configArn = attrs.configArn;
       public readonly configId = attrs.configId;
@@ -210,7 +209,7 @@ export class OnlineEvaluation extends OnlineEvaluationBase {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  constructor(scope: Construct, id: string, props: OnlineEvaluationProps) {
+  constructor(scope: Construct, id: string, props: OnlineEvaluationConfigProps) {
     super(scope, id);
 
     addConstructMetadata(this, props);
@@ -226,53 +225,31 @@ export class OnlineEvaluation extends OnlineEvaluationBase {
     this.executionRole = props.executionRole ?? this.createExecutionRole();
     this.grantPrincipal = this.executionRole;
 
-    const createParams = this.buildCreateParams(props);
-    const updateParams = this.buildUpdateParams(props);
+    // Convert tags from Record<string,string> to Array<CfnTag>
+    const cfnTags = props.tags
+      ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
+      : undefined;
 
-    const customResource = new cr.AwsCustomResource(this, 'Resource', {
-      resourceType: 'Custom::BedrockAgentCoreOnlineEvaluation',
-      installLatestAwsSdk: true,
-      onCreate: {
-        service: 'bedrock-agentcore-control',
-        action: 'CreateOnlineEvaluationConfig',
-        parameters: createParams,
-        physicalResourceId: cr.PhysicalResourceId.fromResponse('onlineEvaluationConfigId'),
-      },
-      onUpdate: {
-        service: 'bedrock-agentcore-control',
-        action: 'UpdateOnlineEvaluationConfig',
-        parameters: updateParams,
-        physicalResourceId: cr.PhysicalResourceId.fromResponse('onlineEvaluationConfigId'),
-      },
-      onDelete: {
-        service: 'bedrock-agentcore-control',
-        action: 'DeleteOnlineEvaluationConfig',
-        parameters: {
-          onlineEvaluationConfigId: new cr.PhysicalResourceIdReference(),
-        },
-      },
-      policy: cr.AwsCustomResourcePolicy.fromStatements([
-        new iam.PolicyStatement({
-          actions: EvaluationPerms.ADMIN_PERMS,
-          resources: ['*'],
-        }),
-        new iam.PolicyStatement({
-          actions: ['iam:PassRole'],
-          resources: [this.executionRole.roleArn],
-        }),
-        new iam.PolicyStatement({
-          actions: [
-            'logs:DescribeIndexPolicies',
-            'logs:PutIndexPolicy',
-            'logs:CreateLogGroup',
-          ],
-          resources: ['*'],
-        }),
-      ]),
+    const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
+      onlineEvaluationConfigName: props.configName,
+      evaluators: props.evaluators.map((e) => e._render()),
+      dataSourceConfig: props.dataSource._render(),
+      evaluationExecutionRoleArn: this.executionRole!.roleArn,
+      rule: this.buildRuleConfig(props),
+      description: props.description,
+      tags: cfnTags,
     });
 
-    this.configId = customResource.getResponseField('onlineEvaluationConfigId');
-    this.configArn = customResource.getResponseField('onlineEvaluationConfigArn');
+    // Ensure the execution role's policies are created before the L1 resource,
+    // because BedrockAgentCore validates role permissions at create time.
+    if (this.executionRole instanceof iam.Role && this.executionRole.node.defaultChild) {
+      resource.node.addDependency(this.executionRole);
+    }
+
+    this.configArn = resource.attrOnlineEvaluationConfigArn;
+    this.configId = resource.attrOnlineEvaluationConfigId;
+    this.status = resource.attrStatus;
+    this.executionStatus = resource.attrExecutionStatus;
   }
 
   private createExecutionRole(): iam.IRole {
@@ -385,38 +362,7 @@ export class OnlineEvaluation extends OnlineEvaluationBase {
     return role;
   }
 
-  private buildCreateParams(props: OnlineEvaluationProps): any {
-    const params: any = {
-      onlineEvaluationConfigName: props.configName,
-      evaluators: props.evaluators.map((e) => e._render()),
-      dataSourceConfig: props.dataSource._render(),
-      evaluationExecutionRoleArn: this.executionRole!.roleArn,
-      enableOnCreate: props.enableOnCreate !== false,
-    };
-
-    if (props.description) {
-      params.description = props.description;
-    }
-
-    params.rule = this.buildRuleConfig(props);
-
-    return params;
-  }
-
-  private buildUpdateParams(props: OnlineEvaluationProps): any {
-    return {
-      onlineEvaluationConfigId: new cr.PhysicalResourceIdReference(),
-      evaluators: props.evaluators.map((e) => e._render()),
-      dataSourceConfig: props.dataSource._render(),
-      evaluationExecutionRoleArn: this.executionRole!.roleArn,
-      description: props.description,
-      rule: this.buildRuleConfig(props),
-      executionStatus:
-        props.enableOnCreate === false ? ExecutionStatus.DISABLED : ExecutionStatus.ENABLED,
-    };
-  }
-
-  private buildRuleConfig(props: OnlineEvaluationProps): any {
+  private buildRuleConfig(props: OnlineEvaluationConfigProps): any {
     const rule: any = {
       samplingConfig: {
         samplingPercentage: props.samplingPercentage ?? 10,
