@@ -529,6 +529,8 @@ export class Instance extends Resource implements IInstance {
 
   /**
    * the underlying instance resource
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   public readonly instance: CfnInstance;
   /**

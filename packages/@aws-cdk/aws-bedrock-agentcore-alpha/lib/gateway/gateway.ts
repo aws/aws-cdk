@@ -1,9 +1,11 @@
 import { Stack, Token, Lazy, Names } from 'aws-cdk-lib';
+import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -21,7 +23,8 @@ import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } fr
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -161,6 +164,56 @@ export interface AddMcpServerTargetOptions {
    * OAuth2 is strongly recommended over NoAuth.
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+}
+
+/**
+ * Options for adding an API Gateway target to a gateway
+ */
+export interface AddApiGatewayTargetOptions {
+  /**
+   * The name of the gateway target
+   * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
+   */
+  readonly gatewayTargetName?: string;
+
+  /**
+   * Optional description for the gateway target
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * The REST API to integrate with
+   * Must be in the same account and region as the gateway
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly restApi: IRestApi;
+
+  /**
+   * The stage name of the REST API
+   * @default - Uses the deployment stage from the RestApi (restApi.deploymentStage.stageName)
+   */
+  readonly stage?: string;
+
+  /**
+   * Tool configuration defining which operations to expose
+   */
+  readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
+
+  /**
+   * Credential providers for authentication
+   * API Gateway targets support IAM and API key authentication
+   * @default - Empty array (service handles IAM automatically)
+   */
+  readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+
+  /**
+   * Metadata configuration for passing headers and query parameters
+   * Allows you to pass additional context through headers and query parameters
+   * @default - No metadata configuration
+   */
+  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -641,6 +694,36 @@ export class Gateway extends GatewayBase {
   }
 
   /**
+   * Add an API Gateway target to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the API Gateway target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-api-gateway.html
+   */
+  @MethodMetadata()
+  public addApiGatewayTarget(
+    id: string,
+    props: AddApiGatewayTargetOptions,
+  ): GatewayTarget {
+    // API Gateway targets require explicit credential configuration or defaults to IAM
+    // GetExport and execute-api:Invoke permissions are automatically granted in ApiGatewayTargetConfiguration.bind()
+    const target = GatewayTarget.forApiGateway(this, id, {
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      gateway: this,
+      restApi: props.restApi,
+      stage: props.stage,
+      apiGatewayToolConfiguration: props.apiGatewayToolConfiguration,
+      credentialProviderConfigurations: props.credentialProviderConfigurations,
+      metadataConfiguration: props.metadataConfiguration,
+    });
+
+    return target;
+  }
+
+  /**
    * Creates the service role for the gateway to assume
    *
    * The service role starts with minimal permissions. Additional permissions
@@ -710,7 +793,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError(lengthErrors.join('\n'));
+      throw new ValidationError(lengthErrors.join('\n'), this);
     }
 
     const patternErrors = validateFieldPattern(
@@ -721,7 +804,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError(patternErrors.join('\n'), this);
     }
   }
 
@@ -745,7 +828,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError(errors.join('\n'), this);
     }
   }
 
@@ -860,6 +943,7 @@ export class Gateway extends GatewayBase {
       if (this.requestInterceptorConfig) {
         throw new ValidationError(
           'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+          this,
         );
       }
       this.requestInterceptorConfig = interceptor.bind(this, this);
@@ -867,6 +951,7 @@ export class Gateway extends GatewayBase {
       if (this.responseInterceptorConfig) {
         throw new ValidationError(
           'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+          this,
         );
       }
       this.responseInterceptorConfig = interceptor.bind(this, this);
@@ -884,12 +969,14 @@ export class Gateway extends GatewayBase {
     if (requestCount > 1) {
       throw new ValidationError(
         `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+        this,
       );
     }
 
     if (responseCount > 1) {
       throw new ValidationError(
         `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
+        this,
       );
     }
 
