@@ -150,6 +150,7 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1762,6 +1763,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  [AUTOMATIC_L1_TRAITS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Automatically use the default L1 traits for L1 constructs`',
+    detailsMd: `
+      When enabled, the construct library will apply default L1 traits for types that 
+      have no traits defined yet. Traits regulate behaviors such as how to create 
+      resource policies, or how to find an encryption key for a given L1 construct.
+      `,
+    introducedIn: { v2: '2.239.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
   },
 };
 
