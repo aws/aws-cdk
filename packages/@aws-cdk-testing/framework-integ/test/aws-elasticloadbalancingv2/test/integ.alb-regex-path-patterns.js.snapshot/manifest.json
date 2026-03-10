@@ -1,0 +1,42 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-elbv2-regex-path-patterns.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-elbv2-regex-path-patterns.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-elbv2-regex-path-patterns": {
+      "type": "aws:cloudformation:stack",
+      "properties": {
+        "templateFile": "aws-cdk-elbv2-regex-path-patterns.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTelemetryOptions": {
+          "method": "POST",
+          "url": "https://telemetry.sdk.cloudformation.us-east-1.amazonaws.com/metrics"
+        },
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-elbv2-regex-path-patterns.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-elbv2-regex-path-patterns/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPC8378EB38"
+          }
+        ]
+      }
+    }
+  }
+}

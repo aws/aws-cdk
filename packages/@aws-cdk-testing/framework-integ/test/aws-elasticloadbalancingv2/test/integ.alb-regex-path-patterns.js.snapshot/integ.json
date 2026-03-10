@@ -1,0 +1,9 @@
+{
+  "version": "v1.33.0",
+  "testCases": {
+    "AlbRegexPathPatternsTest": {
+      "stackName": "aws-cdk-elbv2-regex-path-patterns",
+      "path": "test/aws-elasticloadbalancingv2/test/integ.alb-regex-path-patterns.ts"
+    }
+  }
+}

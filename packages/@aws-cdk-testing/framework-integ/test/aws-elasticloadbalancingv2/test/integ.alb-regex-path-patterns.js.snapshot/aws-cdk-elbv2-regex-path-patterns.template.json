@@ -1,0 +1,132 @@
+{
+ "Resources": {
+  "VPC8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-elbv2-regex-path-patterns/VPC"
+     }
+    ]
+   }
+  },
+  "LB8A12904C": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "Subnets": [
+     { "Ref": "VPCPublicSubnet1Subnet5C2D37C4" },
+     { "Ref": "VPCPublicSubnet2Subnet691E08A3" }
+    ],
+    "Type": "application"
+   }
+  },
+  "Listener81B0E9AD": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": { "Ref": "ListenerDefaultTargetGroupABCDEF01" },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": { "Ref": "LB8A12904C" },
+    "Port": 80,
+    "Protocol": "HTTP"
+   }
+  },
+  "ListenerApiRoutes69696969": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "application/json",
+       "MessageBody": "{"message":"API route matched"}",
+       "StatusCode": "200"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "RegexValues": [
+        "^/api/?.*$"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": { "Ref": "Listener81B0E9AD" },
+    "Priority": 10
+   }
+  },
+  "ListenerVersionedRoutes12345678": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "application/json",
+       "MessageBody": "{"message":"Versioned API route matched"}",
+       "StatusCode": "200"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "RegexValues": [
+        "^/v[0-9]+/.*$",
+        "^/api/v[0-9]+/.*$"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": { "Ref": "Listener81B0E9AD" },
+    "Priority": 20
+   }
+  },
+  "ListenerStaticFilesABCDEF01": {
+   "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
+   "Properties": {
+    "Actions": [
+     {
+      "FixedResponseConfig": {
+       "ContentType": "text/plain",
+       "MessageBody": "Static file",
+       "StatusCode": "200"
+      },
+      "Type": "fixed-response"
+     }
+    ],
+    "Conditions": [
+     {
+      "Field": "path-pattern",
+      "PathPatternConfig": {
+       "RegexValues": [
+        "^/static/.*\.(js|css|png|jpg)$"
+       ]
+      }
+     }
+    ],
+    "ListenerArn": { "Ref": "Listener81B0E9AD" },
+    "Priority": 30
+   }
+  }
+ }
+}
