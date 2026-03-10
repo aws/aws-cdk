@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { BuiltinEvaluator } from './types';
+import type { BuiltinEvaluator } from './types';
 
 /**
  * Represents a reference to a built-in evaluator for online evaluation.

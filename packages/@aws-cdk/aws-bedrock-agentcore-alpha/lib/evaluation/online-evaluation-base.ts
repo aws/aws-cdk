@@ -11,10 +11,12 @@
  *  and limitations under the License.
  */
 
-import { IResource, Resource } from 'aws-cdk-lib';
-import { Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { EvaluationPerms } from './perms';
 
 /**

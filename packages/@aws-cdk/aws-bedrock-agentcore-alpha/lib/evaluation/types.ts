@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Built-in evaluators provided by Amazon Bedrock AgentCore.

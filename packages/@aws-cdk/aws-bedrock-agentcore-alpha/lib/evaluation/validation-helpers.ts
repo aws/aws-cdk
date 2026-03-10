@@ -13,8 +13,8 @@
 
 import { Token } from 'aws-cdk-lib';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import { IConstruct } from 'constructs';
-import { FilterConfig } from './types';
+import type { IConstruct } from 'constructs';
+import type { FilterConfig } from './types';
 
 /**
  * Interface for evaluator references used in validation.

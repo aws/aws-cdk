@@ -11,9 +11,9 @@
  *  and limitations under the License.
  */
 
-import { CloudWatchLogsDataSourceConfig } from './types';
-import { IBedrockAgentRuntime } from '../runtime/runtime-base';
-import { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
+import type { CloudWatchLogsDataSourceConfig } from './types';
+import type { IBedrockAgentRuntime } from '../runtime/runtime-base';
+import type { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
 
 /**
  * Configuration for the data source used in online evaluation.
