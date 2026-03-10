@@ -591,6 +591,9 @@
            "/index/*"
           ]
          ]
+        },
+        {
+         "Ref": "AWS::NoValue"
         }
        ]
       }

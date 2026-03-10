@@ -1,7 +1,7 @@
 import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Stack, ValidationError } from '../../core';
+import { ArnFormat, Aws, Lazy, Stack, ValidationError } from '../../core';
 
 /**
  * Construction properties for TableGrants
@@ -71,20 +71,30 @@ export class TableGrants {
     this.policyResource = props.policyResource ?? iam.ResourceWithPolicies.of(this.table);
 
     const stack = Stack.of(this.table);
+    const table = this.table;
 
-    this.arns = [
-      this.table.tableRef.tableArn,
-      ...(props.regions ?? []).map((region) => stack.formatArn({
+    const formatRegionalTableArn = (region: string): string => {
+      return stack.formatArn({
         region,
         service: 'dynamodb',
         resource: 'table',
-        resourceName: this.table.tableRef.tableName,
-      })),
-    ];
+        resourceName: table.tableRef.tableName,
+      });
+    };
 
-    if (props.hasIndex) {
-      this.arns.push(...this.arns.map((arn) => `${arn}/index/*`));
-    }
+    const arnForIndex = (arn: string): string => Lazy.string({
+      produce() {
+        const hasIndex = props.hasIndex ?? (('hasIndex' in table) ? table.hasIndex as boolean : false);
+        return hasIndex ? `${arn}/index/*` : Aws.NO_VALUE;
+      },
+    });
+
+    this.arns = [
+      table.tableRef.tableArn,
+      ...(props.regions ?? []).map(formatRegionalTableArn),
+      arnForIndex(table.tableRef.tableArn),
+      ...(props.regions ?? []).map(region => arnForIndex(formatRegionalTableArn(region))),
+    ];
   }
 
   /**
