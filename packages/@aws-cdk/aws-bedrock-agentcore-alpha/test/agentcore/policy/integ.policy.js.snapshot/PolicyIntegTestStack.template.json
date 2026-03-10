@@ -1,0 +1,414 @@
+{
+ "Resources": {
+  "BasicPolicyEngine05C42F5C": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "Basic policy engine for integration testing",
+    "Name": "basic_engine_integ_test"
+   }
+  },
+  "BasicPolicy1D506E88": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(principal, action, resource);"
+     }
+    },
+    "Description": "Basic permit-all policy for testing",
+    "Name": "basic_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "BasicPolicyEngine05C42F5C",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "BasicPolicyEngine05C42F5C"
+   ]
+  },
+  "PolicyEngineKeyF386A3BD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "KMS key for PolicyEngine encryption",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedPolicyEngineBC14AF35": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine with custom KMS encryption",
+    "EncryptionKeyArn": {
+     "Fn::GetAtt": [
+      "PolicyEngineKeyF386A3BD",
+      "Arn"
+     ]
+    },
+    "Name": "encrypted_engine_integ",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "Test"
+     },
+     {
+      "Key": "Purpose",
+      "Value": "Integration"
+     }
+    ]
+   }
+  },
+  "RawCedarPolicy334AC182": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(principal, action in [AgentCore::Action::\"GetData\", AgentCore::Action::\"PutData\"], resource);"
+     }
+    },
+    "Description": "Policy with raw Cedar definition",
+    "Name": "raw_cedar_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderSimplePolicy88B111D7": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal,\n  action,\n  resource\n);"
+     }
+    },
+    "Description": "Simple policy using builder pattern",
+    "Name": "builder_simple_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderSpecificPolicyCDF7CA29": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal == AgentCore::OAuthUser::\"user123\",\n  action in [AgentCore::Action::\"GetData\", AgentCore::Action::\"PutData\"],\n  resource == AgentCore::Gateway::\"arn:aws:bedrock:us-east-1:123456789012:gateway/gw-abc\"\n);"
+     }
+    },
+    "Description": "Policy with specific principal, actions, and resource",
+    "Name": "builder_specific_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderConditionsPolicy13D2B4B7": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal,\n  action,\n  resource\n)\nwhen {\n  principal.department == \"Engineering\" && principal.role == \"Developer\"\n};"
+     }
+    },
+    "Description": "Policy with when conditions",
+    "Name": "builder_conditions_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderComplexPolicy4617DB4E": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal,\n  action,\n  resource == AgentCore::Gateway::\"arn:aws:bedrock:us-east-1:123:gateway/gw-123\"\n)\nwhen {\n  principal.department == \"Engineering\" && context.sourceIp isInRange ip(\"192.168.1.0/24\")\n}\nunless {\n  principal.suspended == true || principal.accessLevel < 3\n};"
+     }
+    },
+    "Description": "Complex policy with when and unless conditions",
+    "Name": "builder_complex_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "BuilderForbidPolicy1444DBB2": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "forbid(\n  principal,\n  action == AgentCore::Action::\"DeleteData\",\n  resource\n)\nwhen {\n  principal.role == \"ReadOnly\"\n};"
+     }
+    },
+    "Description": "Forbid policy to deny delete action",
+    "Name": "builder_forbid_policy",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EncryptedPolicyEngineBC14AF35",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EncryptedPolicyEngineBC14AF35"
+   ]
+  },
+  "EngineWithAddedPoliciesDE8D5253": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine using addPolicy() method",
+    "Name": "engine_with_added_policies"
+   }
+  },
+  "EngineWithAddedPoliciesAddedPolicy1330DF90C": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(principal, action, resource);"
+     }
+    },
+    "Description": "First policy added via addPolicy()",
+    "Name": "added_policy_1",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EngineWithAddedPoliciesDE8D5253",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EngineWithAddedPoliciesAddedPolicy2A0914D25",
+    "EngineWithAddedPoliciesAddedPolicy3ACD13EB4",
+    "EngineWithAddedPoliciesDE8D5253"
+   ]
+  },
+  "EngineWithAddedPoliciesAddedPolicy2A0914D25": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal is AgentCore::OAuthUser,\n  action,\n  resource\n);"
+     }
+    },
+    "Description": "Second policy added via addPolicy()",
+    "Name": "added_policy_2",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EngineWithAddedPoliciesDE8D5253",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "EngineWithAddedPoliciesAddedPolicy1330DF90C",
+    "EngineWithAddedPoliciesAddedPolicy3ACD13EB4",
+    "EngineWithAddedPoliciesDE8D5253"
+   ]
+  },
+  "EngineWithAddedPoliciesAddedPolicy3ACD13EB4": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "forbid(\n  principal,\n  action in [AgentCore::Action::\"DeleteData\", AgentCore::Action::\"ModifyData\"],\n  resource\n);"
+     }
+    },
+    "Description": "Third policy added via addPolicy()",
+    "Name": "added_policy_3",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "EngineWithAddedPoliciesDE8D5253",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "IGNORE_ALL_FINDINGS"
+   },
+   "DependsOn": [
+    "EngineWithAddedPoliciesAddedPolicy1330DF90C",
+    "EngineWithAddedPoliciesAddedPolicy2A0914D25",
+    "EngineWithAddedPoliciesDE8D5253"
+   ]
+  },
+  "AutoNamedEngine3770C869": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine with auto-generated name",
+    "Name": "PolicyIntegTestStackAutoNamedEngine7605637D"
+   }
+  },
+  "AutoNamedPolicy6F9030FE": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal,\n  action,\n  resource\n);"
+     }
+    },
+    "Description": "Policy with auto-generated name",
+    "Name": "PolicyIntegTestStackAutoNamedPolicy3A8223AC",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "AutoNamedEngine3770C869",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "AutoNamedEngine3770C869"
+   ]
+  }
+ },
+ "Outputs": {
+  "BasicEngineArn": {
+   "Description": "ARN of the basic policy engine",
+   "Value": {
+    "Fn::GetAtt": [
+     "BasicPolicyEngine05C42F5C",
+     "PolicyEngineArn"
+    ]
+   }
+  },
+  "EncryptedEngineArn": {
+   "Description": "ARN of the encrypted policy engine",
+   "Value": {
+    "Fn::GetAtt": [
+     "EncryptedPolicyEngineBC14AF35",
+     "PolicyEngineArn"
+    ]
+   }
+  },
+  "EngineWithAddedPoliciesArn": {
+   "Description": "ARN of the engine with added policies",
+   "Value": {
+    "Fn::GetAtt": [
+     "EngineWithAddedPoliciesDE8D5253",
+     "PolicyEngineArn"
+    ]
+   }
+  },
+  "KmsKeyArn": {
+   "Description": "ARN of the KMS key used for encryption",
+   "Value": {
+    "Fn::GetAtt": [
+     "PolicyEngineKeyF386A3BD",
+     "Arn"
+    ]
+   }
+  },
+  "AutoNamedEngineArn": {
+   "Description": "ARN of the auto-named policy engine",
+   "Value": {
+    "Fn::GetAtt": [
+     "AutoNamedEngine3770C869",
+     "PolicyEngineArn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

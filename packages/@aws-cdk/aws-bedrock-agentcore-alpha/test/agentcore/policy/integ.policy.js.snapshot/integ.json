@@ -1,0 +1,30 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "PolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "PolicyIntegTestStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        },
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "stackUpdateWorkflow": true,
+      "assertionStack": "PolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyIntegTestDefaultTestDeployAssert9E9AFC28"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

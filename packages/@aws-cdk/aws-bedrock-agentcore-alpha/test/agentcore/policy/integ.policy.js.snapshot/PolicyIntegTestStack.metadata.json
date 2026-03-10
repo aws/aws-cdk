@@ -1,0 +1,252 @@
+{
+  "/PolicyIntegTestStack/BasicPolicyEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyEngineKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "enableKeyRotation": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedPolicyEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/RawCedarPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSimplePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSpecificPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderConditionsPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderComplexPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderForbidPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPoliciesArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesArn"
+    }
+  ],
+  "/PolicyIntegTestStack/KmsKeyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KmsKeyArn"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PolicyIntegTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPolicyEngine05C42F5C"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPolicy1D506E88"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyEngineKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyEngineKeyF386A3BD"
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedPolicyEngineBC14AF35"
+    }
+  ],
+  "/PolicyIntegTestStack/RawCedarPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RawCedarPolicy334AC182"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSimplePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderSimplePolicy88B111D7"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSpecificPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderSpecificPolicyCDF7CA29"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderConditionsPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderConditionsPolicy13D2B4B7"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderComplexPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderComplexPolicy4617DB4E"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderForbidPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderForbidPolicy1444DBB2"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesDE8D5253"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngine3770C869"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedPolicy6F9030FE"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy1330DF90C"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy2A0914D25"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy3ACD13EB4"
+    }
+  ]
+}
