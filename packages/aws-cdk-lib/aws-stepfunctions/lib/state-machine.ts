@@ -471,6 +471,9 @@ export class StateMachine extends StateMachineBase {
     if (props.logs) {
       this.validateLogOptions(props.logs);
     }
+    if (props.timeout !== undefined && props.timeout.toSeconds() <= 0) {
+      throw new ValidationError('Timeout must be positive', this);
+    }
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
@@ -827,9 +830,6 @@ export class StringDefinitionBody extends DefinitionBody {
 
   public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     if (sfnProps.timeout !== undefined) {
-      if (sfnProps.timeout.toSeconds() <= 0) {
-        throw new ValidationError('Timeout must be positive', _scope);
-      }
       const definition = JSON.parse(this.body);
       if (definition.TimeoutSeconds === undefined) {
         definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
