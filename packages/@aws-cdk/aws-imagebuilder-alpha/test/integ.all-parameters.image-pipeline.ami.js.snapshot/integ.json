@@ -9,5 +9,5 @@
       "assertionStackName": "ImagePipelineTestAMIAllParametersDefaultTestDeployAssertE01BE77E"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

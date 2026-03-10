@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
     "522d6260dfc0bbab14e341974c657c8f9a469b6a774a1d95c6c497e1e836e5fe": {
       "displayName": "aws-cdk-bedrock-memory-1 Template",

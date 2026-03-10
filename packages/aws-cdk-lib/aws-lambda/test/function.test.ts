@@ -2061,7 +2061,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -2086,7 +2086,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -4264,7 +4264,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
     });
 
@@ -4280,7 +4280,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       // No tenancyConfig specified
     });
 

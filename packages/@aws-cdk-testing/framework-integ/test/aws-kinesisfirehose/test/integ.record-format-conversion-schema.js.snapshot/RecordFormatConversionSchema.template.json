@@ -156,7 +156,7 @@
   "SchemaRegistry": {
    "Type": "AWS::Glue::Registry",
    "Properties": {
-    "Name": "my_schema_registry"
+    "Name": "schema-registry-RecordFormatConversionSchema"
    }
   },
   "InlineSchemaTable": {
@@ -447,7 +447,7 @@
    "Properties": {
     "Compatibility": "NONE",
     "DataFormat": "AVRO",
-    "Name": "my_schema",
+    "Name": "schema-RecordFormatConversionSchema",
     "Registry": {
      "Arn": {
       "Fn::GetAtt": [

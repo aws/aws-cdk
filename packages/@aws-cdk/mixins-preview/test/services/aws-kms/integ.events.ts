@@ -62,8 +62,8 @@ exports.handler = async (event) => {
       targets: [new LambdaFunction(fn)],
     });
 
-    rule.addEventPattern(l2KeyWithEvent.kMSCMKDeletionPattern({}));
-    rule.addEventPattern(l2KeyWithEvent.kMSCMKRotationPattern({}));
+    rule.addEventPattern(l2KeyWithEvent.kmsCMKDeletionPattern({}));
+    rule.addEventPattern(l2KeyWithEvent.kmsCMKRotationPattern({}));
   }
 }
 

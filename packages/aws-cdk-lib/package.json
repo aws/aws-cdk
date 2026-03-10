@@ -135,7 +135,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
-    "@aws-cdk/aws-service-spec": "^0.1.157",
+    "@aws-cdk/aws-service-spec": "^0.1.160",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -190,7 +190,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "keywords": [
     "aws",
@@ -251,6 +251,7 @@
     "./aws-bcmdataexports": "./aws-bcmdataexports/index.js",
     "./aws-bedrock": "./aws-bedrock/index.js",
     "./aws-bedrockagentcore": "./aws-bedrockagentcore/index.js",
+    "./aws-bedrockmantle": "./aws-bedrockmantle/index.js",
     "./aws-billing": "./aws-billing/index.js",
     "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
@@ -312,8 +313,10 @@
     "./aws-ec2": "./aws-ec2/index.js",
     "./aws-ecr": "./aws-ecr/index.js",
     "./aws-ecr-assets": "./aws-ecr-assets/index.js",
+    "./aws-ecr/mixins": "./aws-ecr/lib/mixins/index.js",
     "./aws-ecs": "./aws-ecs/index.js",
     "./aws-ecs-patterns": "./aws-ecs-patterns/index.js",
+    "./aws-ecs/mixins": "./aws-ecs/lib/mixins/index.js",
     "./aws-efs": "./aws-efs/index.js",
     "./aws-eks": "./aws-eks/index.js",
     "./aws-eks-v2": "./aws-eks-v2/index.js",
@@ -466,6 +469,7 @@
     "./aws-s3-assets": "./aws-s3-assets/index.js",
     "./aws-s3-deployment": "./aws-s3-deployment/index.js",
     "./aws-s3-notifications": "./aws-s3-notifications/index.js",
+    "./aws-s3/mixins": "./aws-s3/lib/mixins/index.js",
     "./aws-s3express": "./aws-s3express/index.js",
     "./aws-s3objectlambda": "./aws-s3objectlambda/index.js",
     "./aws-s3outposts": "./aws-s3outposts/index.js",

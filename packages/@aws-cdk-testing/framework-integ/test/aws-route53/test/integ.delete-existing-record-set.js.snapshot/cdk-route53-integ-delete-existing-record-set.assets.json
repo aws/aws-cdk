@@ -1,16 +1,30 @@
 {
   "version": "48.0.0",
   "files": {
-    "d31ae6d66f2c01cc155b32bebe939459536ed5a9454d1d680af65fd95e46e5ae": {
+    "d987236da5ebc3d733b03c9fb0a622d05c93a9a0639b9466a525dab23a40868a": {
+      "displayName": "cdk-route53-integ-delete-existing-record-set/Custom::DeleteExistingRecordSetCustomResourceProvider Code",
+      "source": {
+        "path": "asset.d987236da5ebc3d733b03c9fb0a622d05c93a9a0639b9466a525dab23a40868a",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-1ca94a67": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d987236da5ebc3d733b03c9fb0a622d05c93a9a0639b9466a525dab23a40868a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cfbbcb3abc7fccac5236c217e5d54a1f13fc8c63a6228133f37a1df2c58337cf": {
       "displayName": "cdk-route53-integ-delete-existing-record-set Template",
       "source": {
         "path": "cdk-route53-integ-delete-existing-record-set.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9d02a993": {
+        "current_account-current_region-4d266ba7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d31ae6d66f2c01cc155b32bebe939459536ed5a9454d1d680af65fd95e46e5ae.json",
+          "objectKey": "cfbbcb3abc7fccac5236c217e5d54a1f13fc8c63a6228133f37a1df2c58337cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

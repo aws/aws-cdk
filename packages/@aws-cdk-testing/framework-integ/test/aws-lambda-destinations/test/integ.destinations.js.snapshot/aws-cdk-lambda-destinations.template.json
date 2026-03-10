@@ -89,7 +89,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "SnsSqsServiceRoleDefaultPolicy82E7B09F",
@@ -177,7 +177,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "OnSuccesServiceRole75E399CF"
@@ -293,7 +293,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6",
@@ -502,7 +502,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "S3ServiceRoleDefaultPolicyF2AA3BE6",

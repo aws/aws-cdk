@@ -108,16 +108,6 @@ class MyMixin extends Mixin {
   applyTo(_construct: IConstruct): void { }
 }
 
-class EncryptionAtRest extends Mixin {
-  supports(_construct: IConstruct): boolean { return true; }
-  applyTo(_construct: IConstruct): void { }
-}
-
-class AutoDeleteObjects extends Mixin {
-  supports(_construct: IConstruct): boolean { return true; }
-  applyTo(_construct: IConstruct): void { }
-}
-
 class fixture$construct extends Construct {
   public constructor(scope: Construct, id: string) {
     super(scope, id);
