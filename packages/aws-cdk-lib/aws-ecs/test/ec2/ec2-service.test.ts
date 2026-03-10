@@ -2695,6 +2695,34 @@ describe('ec2 service', () => {
         });
       });
 
+      test('enableDeploymentAlarms concatenates alarms when called multiple times', () => {
+        const alarm1 = cloudwatch.Alarm.fromAlarmArn(stack, 'alarm1', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const alarm2 = cloudwatch.Alarm.fromAlarmArn(stack, 'alarm2', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm2');
+        const alarm3 = cloudwatch.Alarm.fromAlarmArn(stack, 'alarm3', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm3');
+
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+
+        service.enableDeploymentAlarms([alarm1.alarmName]);
+        service.enableDeploymentAlarms([alarm2.alarmName, alarm3.alarmName]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              Enable: true,
+              Rollback: true,
+              AlarmNames: [
+                alarm1.alarmName,
+                alarm2.alarmName,
+                alarm3.alarmName,
+              ],
+            },
+          },
+        });
+      });
+
       test('use enableDeploymentAlarms() and explicitly set behavior to ROLLBACK_ON_ALARM', () => {
         const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
 
