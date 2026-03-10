@@ -1,4 +1,5 @@
-import { Connections, IConnectable } from './connections';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
 import { Token, UnscopedValidationError } from '../../core';
 
 /**

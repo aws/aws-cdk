@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { VirtualNodeGrants } from './appmesh-grants.generated';
-import { CfnVirtualNode, IVirtualNodeRef, VirtualNodeReference } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import type { IVirtualNodeRef, VirtualNodeReference } from './appmesh.generated';
+import { CfnVirtualNode } from './appmesh.generated';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
-import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
-import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
-import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
-import * as iam from '../../aws-iam';
+import type { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
+import type { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
+import type { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
+import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -129,6 +132,9 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.streamAggregatedResources()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
@@ -183,12 +189,22 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * The name of the VirtualNode
    */
-  public readonly virtualNodeName: string;
+  @memoizedGetter
+  public get virtualNodeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualNodeName);
+  }
 
   /**
    * The Amazon Resource Name belonging to the VirtualNode
    */
-  public readonly virtualNodeArn: string;
+  @memoizedGetter
+  public get virtualNodeArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualNode`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh which the VirtualNode belongs to
@@ -199,6 +215,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
+  private readonly resource: CfnVirtualNode;
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
@@ -214,7 +231,7 @@ export class VirtualNode extends VirtualNodeBase {
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
 
-    const node = new CfnVirtualNode(this, 'Resource', {
+    this.resource = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
@@ -233,13 +250,6 @@ export class VirtualNode extends VirtualNodeBase {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
       },
-    });
-
-    this.virtualNodeName = this.getResourceNameAttribute(node.attrVirtualNodeName);
-    this.virtualNodeArn = this.getResourceArnAttribute(node.ref, {
-      service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualNode`,
-      resourceName: this.physicalName,
     });
   }
 

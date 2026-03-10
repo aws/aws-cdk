@@ -1,11 +1,15 @@
-import { Construct } from 'constructs';
-import { HttpMethod, IConnection } from './connection';
-import { CfnApiDestination, IConnectionRef } from './events.generated';
+import type { Construct } from 'constructs';
+import type { IConnection } from './connection';
+import { HttpMethod } from './connection';
+import type { IConnectionRef } from './events.generated';
+import { CfnApiDestination } from './events.generated';
 import { toIConnection } from './private/ref-utils';
-import { ArnFormat, IResource, Resource, Stack, UnscopedValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { ApiDestinationReference, IApiDestinationRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The event API Destination properties
@@ -150,22 +154,36 @@ export class ApiDestination extends Resource implements IApiDestination {
   private readonly _connection: IConnectionRef;
 
   /**
+   * The CfnApiDestination resource
+   */
+  private readonly _resource: CfnApiDestination;
+
+  /**
    * The Name of the Api Destination created.
    * @attribute
    */
-  public readonly apiDestinationName: string;
+  @memoizedGetter
+  public get apiDestinationName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The ARN of the Api Destination created.
    * @attribute
    */
-  public readonly apiDestinationArn: string;
+  @memoizedGetter
+  public get apiDestinationArn(): string {
+    return this._resource.attrArn;
+  }
 
   /**
    * The Amazon Resource Name (ARN) of an API destination in resource format.
    * @attribute
    */
-  public readonly apiDestinationArnForPolicy?: string;
+  @memoizedGetter
+  public get apiDestinationArnForPolicy(): string | undefined {
+    return this._resource.attrArnForPolicy;
+  }
 
   /**
    * The Connection to associate with Api Destination
@@ -190,7 +208,7 @@ export class ApiDestination extends Resource implements IApiDestination {
 
     this._connection = props.connection;
 
-    let apiDestination = new CfnApiDestination(this, 'ApiDestination', {
+    this._resource = new CfnApiDestination(this, 'ApiDestination', {
       connectionArn: this._connection.connectionRef.connectionArn,
       description: props.description,
       httpMethod: props.httpMethod ?? HttpMethod.POST,
@@ -198,9 +216,5 @@ export class ApiDestination extends Resource implements IApiDestination {
       invocationRateLimitPerSecond: props.rateLimitPerSecond,
       name: this.physicalName,
     });
-
-    this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
-    this.apiDestinationArn = apiDestination.attrArn;
-    this.apiDestinationArnForPolicy = apiDestination.attrArnForPolicy;
   }
 }

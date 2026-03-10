@@ -1,22 +1,24 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IDistributionConfiguration } from './distribution-configuration';
-import { IInfrastructureConfiguration, InfrastructureConfiguration } from './infrastructure-configuration';
+import type { Construct } from 'constructs';
+import type { IDistributionConfiguration } from './distribution-configuration';
+import type { IInfrastructureConfiguration } from './infrastructure-configuration';
+import { InfrastructureConfiguration } from './infrastructure-configuration';
 import {
   buildImageScanningConfiguration,
   buildImageTestsConfiguration,
   buildWorkflows,
 } from './private/image-and-pipeline-props-helper';
 import { defaultExecutionRolePolicy, getExecutionRole } from './private/policy-helper';
-import { IRecipeBase } from './recipe-base';
-import { WorkflowConfiguration } from './workflow';
+import type { IRecipeBase } from './recipe-base';
+import type { WorkflowConfiguration } from './workflow';
 
 const IMAGE_PIPELINE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImagePipeline');
 
@@ -606,16 +608,6 @@ export class ImagePipeline extends ImagePipelineBase {
   }
 
   /**
-   * The ARN of the image pipeline
-   */
-  public readonly imagePipelineArn: string;
-
-  /**
-   * The name of the image pipeline
-   */
-  public readonly imagePipelineName: string;
-
-  /**
    * The infrastructure configuration used for the image build
    */
   public readonly infrastructureConfiguration: IInfrastructureConfiguration;
@@ -627,6 +619,7 @@ export class ImagePipeline extends ImagePipelineBase {
   public readonly executionRole?: iam.IRole;
 
   private readonly props: ImagePipelineProps;
+  private readonly resource: CfnImagePipeline;
 
   public constructor(scope: Construct, id: string, props: ImagePipelineProps) {
     super(scope, id, {
@@ -694,8 +687,17 @@ export class ImagePipeline extends ImagePipelineBase {
       tags: props.tags,
     });
 
-    this.imagePipelineName = this.getResourceNameAttribute(imagePipeline.attrName);
-    this.imagePipelineArn = this.getResourceArnAttribute(imagePipeline.attrArn, {
+    this.resource = imagePipeline;
+  }
+
+  @memoizedGetter
+  public get imagePipelineName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get imagePipelineArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'image-pipeline',
       resourceName: this.physicalName,

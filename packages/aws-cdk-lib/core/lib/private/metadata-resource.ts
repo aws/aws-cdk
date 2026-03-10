@@ -1,6 +1,5 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { ConstructInfo, constructInfoFromStack } from './runtime-info';
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnCondition } from '../cfn-condition';
@@ -10,8 +9,11 @@ import { CfnResource } from '../cfn-resource';
 import { AssumptionError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
+import type { ConstructInfo } from './runtime-info';
+import type { ConstructAnalytics } from './stack-metadata';
+import { constructAnalyticsFromScope } from './stack-metadata';
 
 /**
  * Construct that will render the metadata resource
@@ -20,13 +22,12 @@ export class MetadataResource extends Construct {
   constructor(scope: Stack, id: string) {
     super(scope, id);
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
-    const enableAdditionalTelemtry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
     if (metadataServiceExists) {
-      const constructInfo = constructInfoFromStack(scope);
+      const constructAnalytics = filteredConstructAnalyticsFromStack(scope);
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
-          Analytics: Lazy.string({ produce: () => formatAnalytics(constructInfo, enableAdditionalTelemtry) }),
+          Analytics: Lazy.string({ produce: () => formatAnalytics(constructAnalytics) }),
         },
       });
 
@@ -42,6 +43,32 @@ export class MetadataResource extends Construct {
         resource.cfnOptions.condition = condition;
       }
     }
+  }
+}
+
+/**
+ * For a given stack, walks the tree and finds the runtime info for all constructs within the tree.
+ * Will remove certain telemetry data based on the ENABLE_ADDITIONAL_METADATA_COLLECTION feature flag.
+ */
+function filteredConstructAnalyticsFromStack(scope: Stack ) {
+  const includeAdditionalTelemetry = FeatureFlags.of(scope).isEnabled(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION) ?? false;
+  const constructAnalytics = constructAnalyticsFromScope(scope);
+
+  // only include additional telemetry information if feature flag is enabled
+  // this is a safety net, the data should have never been collected before reaching this point
+  if (includeAdditionalTelemetry) {
+    return constructAnalytics;
+  }
+
+  // otherwise we filter it out now
+  return constructAnalytics.map(retainAlwaysReportedAnalytics);
+
+  function retainAlwaysReportedAnalytics(analytics: ConstructAnalytics): ConstructAnalytics {
+    return {
+      fqn: analytics.fqn,
+      version: analytics.version,
+      metadata: analytics.metadata,
+    };
   }
 }
 
@@ -81,16 +108,10 @@ class Trie extends Map<string, Trie> { }
  *
  * Exported/visible for ease of testing.
  */
-export function formatAnalytics(infos: ConstructInfo[], enableAdditionalTelemtry: boolean = false) {
+export function formatAnalytics(infos: ConstructAnalytics[]) {
   const trie = new Trie();
 
-  // only append additional telemetry information to prefix encoding and gzip compress
-  // if feature flag is enabled; otherwise keep the old behaviour.
-  if (enableAdditionalTelemtry) {
-    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, info.metadata));
-  } else {
-    infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
-  }
+  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie, [info.metadata, info.additionalTelemetry].flatMap(a => a ?? [])));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructsBuffer = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs));
@@ -152,15 +173,15 @@ function trieToConstructInfos(trie: Trie): ConstructInfo[] {
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
-function insertFqnInTrie(fqn: string, trie: Trie, metadata?: Record<string, any>[]) {
+function insertFqnInTrie(fqn: string, trie: Trie, metadata?: unknown[]) {
   for (const fqnPart of fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ')) {
     const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
     trie.set(fqnPart, nextLevelTreeRef);
     trie = nextLevelTreeRef;
   }
 
-  // if 'metadata' is defined, add it to end of Trie
-  if (metadata) {
+  // if 'metadata' is defined and not empty, add it to end of Trie
+  if (metadata?.length) {
     trie.set(JSON.stringify(metadata), new Trie());
   }
   return trie;

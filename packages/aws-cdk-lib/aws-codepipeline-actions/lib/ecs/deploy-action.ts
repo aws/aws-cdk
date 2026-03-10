@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as ecs from '../../../aws-ecs';
+import type * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
-import { Duration, UnscopedValidationError } from '../../../core';
+import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 

@@ -1,4 +1,4 @@
-import * as ses from '../../aws-ses';
+import type * as ses from '../../aws-ses';
 import { UnscopedValidationError } from '../../core';
 
 /**

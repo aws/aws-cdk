@@ -2,10 +2,13 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingFileAccess, BundlingOptions, BundlingOutput } from './bundling';
+import type { AssetOptions } from './assets';
+import { AssetHashType, FileAssetPackaging } from './assets';
+import type { BundlingOptions } from './bundling';
+import { BundlingFileAccess, BundlingOutput } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
-import { FileSystem, FingerprintOptions } from './fs';
+import type { FingerprintOptions } from './fs';
+import { FileSystem } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
@@ -158,7 +161,7 @@ export class AssetStaging extends Construct {
 
   private readonly cacheKey: string;
 
-  private readonly sourceStats: fs.Stats;
+  private readonly _sourceStats?: fs.Stats;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
@@ -176,7 +179,7 @@ export class AssetStaging extends Construct {
       throw new ValidationError(`Cannot find asset at ${this.sourcePath}`, this);
     }
 
-    this.sourceStats = fs.statSync(this.sourcePath);
+    this._sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
@@ -227,6 +230,21 @@ export class AssetStaging extends Construct {
     this.assetHash = staged.assetHash;
     this.packaging = staged.packaging;
     this.isArchive = staged.isArchive;
+
+    // Memory optimization: this._sourceStats is used as a field to covertly pass
+    // arguments between functions in the constructor, but the size of that object is 1.8kB
+    //
+    // That's holding on to a lot of unnecessary memory if there are a lot of assets (think 100k+).
+    //
+    // Release the object here, we don't need it again.
+    this._sourceStats = undefined;
+  }
+
+  private get sourceStats(): fs.Stats {
+    if (!this._sourceStats) {
+      throw new AssumptionError('_sourceStats has been unset');
+    }
+    return this._sourceStats;
   }
 
   /**

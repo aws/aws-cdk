@@ -2,9 +2,9 @@
 // CROSS REFERENCES
 // ----------------------------------------------------
 
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { CfnReference } from './cfn-reference';
-import { Intrinsic } from './intrinsic';
+import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
@@ -15,11 +15,12 @@ import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
-import { Reference } from '../reference';
-import { IResolvable } from '../resolvable';
+import type { Reference } from '../reference';
+import type { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+import { iterateDfsPreorder } from './construct-iteration';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -153,7 +154,7 @@ function renderReference(ref: CfnReference) {
  */
 function findAllReferences(root: IConstruct) {
   const result = new Array<{ source: CfnElement; value: CfnReference }>();
-  for (const consumer of root.node.findAll()) {
+  for (const consumer of iterateDfsPreorder(root)) {
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
       continue;

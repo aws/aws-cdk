@@ -1,7 +1,8 @@
 // FIXME: copied from `ckd-assets`, because this tool needs to read the asset manifest aswell.
 import * as fs from 'fs';
 import * as path from 'path';
-import { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource, Manifest } from '../../../cloud-assembly-schema';
+import type { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource } from '../../../cloud-assembly-schema';
+import { Manifest } from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../../../core';
 
 /**

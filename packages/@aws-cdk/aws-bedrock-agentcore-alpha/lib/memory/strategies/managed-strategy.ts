@@ -11,12 +11,13 @@
  *  and limitations under the License.
  */
 
-import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
+import type { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { IConstruct } from 'constructs';
-import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IConstruct } from 'constructs';
+import type { MemoryStrategyCommonProps, IMemoryStrategy } from '../memory-strategy';
+import { MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -50,6 +51,17 @@ export interface OverrideConfig {
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/system-prompts.html
    */
   readonly appendToPrompt: string;
+}
+
+/**
+ * Configuration for episodic memory reflection
+ */
+export interface EpisodicReflectionConfiguration {
+  /**
+   * Namespaces for episodic reflection
+   * Minimum 1 namespace required
+   */
+  readonly namespaces: string[];
 }
 
 /**
@@ -90,6 +102,12 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
    * /actor/actor-3afc5aa8fef9/strategy/summarization-fy5c5fwc7/session/session-qj7tpd1kvr8
    */
   readonly namespaces: string[];
+  /**
+   * Configuration for episodic memory reflection (only applicable for EPISODIC strategy type)
+   * Defines additional namespaces for reflection-based episodic recall
+   * @default - No reflection configuration
+   */
+  readonly reflectionConfiguration?: EpisodicReflectionConfiguration;
 }
 
 /**
@@ -112,6 +130,10 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * The configuration for the custom extraction.
    */
   public readonly extractionOverride?: OverrideConfig;
+  /**
+   * The configuration for episodic reflection.
+   */
+  public readonly reflectionConfiguration?: EpisodicReflectionConfiguration;
   public readonly strategyType: MemoryStrategyType;
 
   /**
@@ -129,6 +151,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
     this.strategyType = strategyType;
     this.consolidationOverride = props.customConsolidation;
     this.extractionOverride = props.customExtraction;
+    this.reflectionConfiguration = props.reflectionConfiguration;
 
     // ------------------------------------------------------
     // Validations
@@ -139,6 +162,9 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
     if (this.namespaces) {
       throwIfInvalid(this._validateMemoryStrategyNamespaces, this.namespaces);
     }
+    if (this.reflectionConfiguration) {
+      throwIfInvalid(this._validateReflectionConfiguration, this.reflectionConfiguration);
+    }
   }
 
   /**
@@ -146,12 +172,13 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * @returns The CloudFormation property for the memory strategy.
    */
   public render(): bedrockagentcore.CfnMemory.MemoryStrategyProperty {
-    // If no overrides, use built-in strategy format
-    if (!this.consolidationOverride && !this.extractionOverride) {
+    // If no overrides and no reflection config, use built-in strategy format
+    if (!this.consolidationOverride && !this.extractionOverride && !this.reflectionConfiguration) {
       const cfnStrategyMap: Record<MemoryStrategyType, string> = {
         [MemoryStrategyType.USER_PREFERENCE]: 'userPreferenceMemoryStrategy',
         [MemoryStrategyType.SEMANTIC]: 'semanticMemoryStrategy',
         [MemoryStrategyType.SUMMARIZATION]: 'summaryMemoryStrategy',
+        [MemoryStrategyType.EPISODIC]: 'episodicMemoryStrategy',
         [MemoryStrategyType.CUSTOM]: 'customMemoryStrategy',
       };
       const strategyKey = cfnStrategyMap[this.strategyType];
@@ -165,11 +192,28 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
       };
     }
 
+    // For episodic with reflection config only (no other overrides)
+    if (this.strategyType === MemoryStrategyType.EPISODIC && this.reflectionConfiguration &&
+        !this.consolidationOverride && !this.extractionOverride) {
+      return {
+        episodicMemoryStrategy: {
+          name: this.name,
+          description: this.description,
+          namespaces: this.namespaces,
+          type: this.strategyType,
+          reflectionConfiguration: {
+            namespaces: this.reflectionConfiguration.namespaces,
+          },
+        },
+      };
+    }
+
     // If overrides are provided, use custom strategy format
     const cfnStrategyMap: Record<MemoryStrategyType, string> = {
       [MemoryStrategyType.USER_PREFERENCE]: 'userPreferenceOverride',
       [MemoryStrategyType.SEMANTIC]: 'semanticOverride',
       [MemoryStrategyType.SUMMARIZATION]: 'summaryOverride',
+      [MemoryStrategyType.EPISODIC]: 'episodicOverride',
       [MemoryStrategyType.CUSTOM]: '',
     };
 
@@ -282,6 +326,27 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
       )) {
         errors.push(`Namespace with templates should contain valid variables: ${namespace}`);
       }
+    }
+
+    return errors;
+  };
+
+  /**
+   * Validates the episodic reflection configuration
+   * @param config - The reflection configuration to validate
+   * @returns Array of validation error messages, empty if valid
+   */
+  private _validateReflectionConfiguration = (config: EpisodicReflectionConfiguration): string[] => {
+    let errors: string[] = [];
+
+    // Validate that namespaces array is not empty
+    if (!config.namespaces || config.namespaces.length === 0) {
+      errors.push('Reflection configuration must have at least one namespace');
+    }
+
+    // Validate each namespace in reflection configuration
+    if (config.namespaces) {
+      errors.push(...this._validateMemoryStrategyNamespaces(config.namespaces));
     }
 
     return errors;

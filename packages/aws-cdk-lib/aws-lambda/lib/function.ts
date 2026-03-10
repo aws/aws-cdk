@@ -1,41 +1,49 @@
-import { Construct, IConstruct } from 'constructs';
-import { AdotInstrumentationConfig, AdotLambdaExecWrapper } from './adot-layers';
-import { AliasOptions, Alias } from './alias';
+import type { Construct, IConstruct } from 'constructs';
+import type { AdotInstrumentationConfig } from './adot-layers';
+import { AdotLambdaExecWrapper } from './adot-layers';
+import type { AliasOptions, Alias } from './alias';
 import { Architecture } from './architecture';
-import { Code, CodeConfig } from './code';
-import { DurableConfig } from './durable-config';
-import { EventInvokeConfigOptions } from './event-invoke-config';
-import { IEventSource } from './event-source';
-import { FileSystem } from './filesystem';
-import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
+import type { Code, CodeConfig } from './code';
+import type { DurableConfig } from './durable-config';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
+import type { IEventSource } from './event-source';
+import type { FileSystem } from './filesystem';
+import type { FunctionAttributes, IFunction } from './function-base';
+import { FunctionBase } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
-import { LambdaInsightsVersion } from './lambda-insights';
-import { Version, VersionOptions } from './lambda-version';
-import { CfnFunction, ICodeSigningConfigRef } from './lambda.generated';
-import { LayerVersion, ILayerVersion } from './layers';
-import { LogRetentionRetryOptions } from './log-retention';
-import { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
+import type { LambdaInsightsVersion } from './lambda-insights';
+import type { VersionOptions } from './lambda-version';
+import { Version } from './lambda-version';
+import type { ICodeSigningConfigRef } from './lambda.generated';
+import { CfnFunction } from './lambda.generated';
+import type { ILayerVersion } from './layers';
+import { LayerVersion } from './layers';
+import type { LogRetentionRetryOptions } from './log-retention';
+import type { ParamsAndSecretsLayerVersion } from './params-and-secrets-layers';
 import { determineLatestNodeRuntime, Runtime, RuntimeFamily } from './runtime';
-import { RuntimeManagementMode } from './runtime-management';
-import { SnapStartConf } from './snapstart-config';
-import { TenancyConfig } from './tenancy-config';
+import type { RuntimeManagementMode } from './runtime-management';
+import type { SnapStartConf } from './snapstart-config';
+import type { TenancyConfig } from './tenancy-config';
 import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
+import type { IProfilingGroup } from '../../aws-codeguruprofiler';
+import { ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
+import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
-  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy,
-  Names, RemovalPolicy, Size, Stack, Token,
+  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, Lazy,
+  Names, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
@@ -889,15 +897,7 @@ export class Function extends FunctionBase {
     return this.metricAll('UnreservedConcurrentExecutions', { statistic: 'max', ...props });
   }
 
-  /**
-   * Name of this function
-   */
-  public readonly functionName: string;
-
-  /**
-   * ARN of this function
-   */
-  public readonly functionArn: string;
+  private readonly resource: CfnFunction;
 
   /**
    * Execution role associated with this function
@@ -945,6 +945,27 @@ export class Function extends FunctionBase {
   public _logRetention?: logs.LogRetention;
 
   private _logGroup?: logs.ILogGroup;
+
+  /**
+   * Name of this function
+   */
+  @memoizedGetter
+  public get functionName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  /**
+   * ARN of this function
+   */
+  @memoizedGetter
+  public get functionArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'lambda',
+      resource: 'function',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Environment variables for this function
@@ -1092,7 +1113,7 @@ export class Function extends FunctionBase {
 
     const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
 
-    const resource: CfnFunction = new CfnFunction(this, 'Resource', {
+    this.resource = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
       code: {
@@ -1137,20 +1158,12 @@ export class Function extends FunctionBase {
     });
 
     if ((props.tracing !== undefined) || (props.adotInstrumentation !== undefined)) {
-      resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
+      this.resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
     this._logGroup = props.logGroup ? toILogGroup(props.logGroup) : undefined;
 
-    resource.node.addDependency(this.role);
-
-    this.functionName = this.getResourceNameAttribute(resource.ref);
-    this.functionArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'lambda',
-      resource: 'function',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource.node.addDependency(this.role);
 
     this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
@@ -1197,7 +1210,7 @@ export class Function extends FunctionBase {
       });
     }
 
-    props.code.bindToResource(resource);
+    props.code.bindToResource(this.resource);
 
     // Event Invoke Config
     if (props.onFailure || props.onSuccess || props.maxEventAge || props.retryAttempts !== undefined) {
@@ -1225,14 +1238,14 @@ export class Function extends FunctionBase {
       this.connections.securityGroups.forEach(sg => {
         sg.node.findAll().forEach(child => {
           if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
-            resource.node.addDependency(child);
+            this.resource.node.addDependency(child);
           }
         });
       });
       config.connections?.securityGroups.forEach(sg => {
         sg.node.findAll().forEach(child => {
           if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
-            resource.node.addDependency(child);
+            this.resource.node.addDependency(child);
           }
         });
       });

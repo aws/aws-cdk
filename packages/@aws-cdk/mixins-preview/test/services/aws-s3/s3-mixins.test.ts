@@ -1,8 +1,10 @@
 import { Construct } from 'constructs';
 import { Stack, App } from 'aws-cdk-lib/core';
 import { Template } from 'aws-cdk-lib/assertions';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3Mixins from '../../../lib/services/aws-s3/mixins';
+import '../../../lib/with';
 import { PropertyMergeStrategy } from '../../../lib/mixins';
 
 class TestConstruct extends Construct {
@@ -18,51 +20,6 @@ describe('S3 Mixins', () => {
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'TestStack');
-  });
-
-  describe('AutoDeleteObjects', () => {
-    test('applies to S3 bucket', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.AutoDeleteObjects();
-
-      expect(mixin.supports(bucket)).toBe(true);
-      mixin.applyTo(bucket);
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
-        BucketName: { Ref: 'Bucket' },
-      });
-      template.hasResourceProperties('AWS::S3::BucketPolicy', {
-        Bucket: { Ref: 'Bucket' },
-      });
-    });
-
-    test('does not support non-S3 constructs', () => {
-      const construct = new TestConstruct(stack, 'test');
-      const mixin = new s3Mixins.AutoDeleteObjects();
-
-      expect(mixin.supports(construct)).toBe(false);
-    });
-  });
-
-  describe('EnableVersioning', () => {
-    test('applies to S3 bucket', () => {
-      const bucket = new s3.CfnBucket(stack, 'Bucket');
-      const mixin = new s3Mixins.EnableVersioning();
-
-      expect(mixin.supports(bucket)).toBe(true);
-      mixin.applyTo(bucket);
-
-      const versionConfig = bucket.versioningConfiguration as any;
-      expect(versionConfig?.status).toBe('Enabled');
-    });
-
-    test('does not support non-S3 constructs', () => {
-      const construct = new TestConstruct(stack, 'test');
-      const mixin = new s3Mixins.EnableVersioning();
-
-      expect(mixin.supports(construct)).toBe(false);
-    });
   });
 
   describe('CfnBucketPropsMixin', () => {
@@ -113,7 +70,7 @@ describe('S3 Mixins', () => {
 
       const mixin = new s3Mixins.CfnBucketPropsMixin(
         { versioningConfiguration: { mfaDelete: 'Disabled' } as any },
-        { strategy: PropertyMergeStrategy.OVERRIDE },
+        { strategy: PropertyMergeStrategy.override() },
       );
       mixin.applyTo(bucket);
 
@@ -140,6 +97,78 @@ describe('S3 Mixins', () => {
       const mixin = new s3Mixins.CfnBucketPropsMixin({ bucketName: 'test' });
 
       expect(mixin.supports(construct)).toBe(false);
+    });
+
+    test('accepts deeply nested properties with cross-service references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('accepts deeply nested properties with string token references', () => {
+      const key = new kms.Key(stack, 'Key');
+
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms',
+              kmsMasterKeyId: key.keyArn,
+            },
+          }],
+        },
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [{
+            ServerSideEncryptionByDefault: {
+              SSEAlgorithm: 'aws:kms',
+              KMSMasterKeyID: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+            },
+          }],
+        },
+      });
+    });
+
+    test('handles undefined nested properties through flatten path', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      // Only set a non-relationship property, leaving bucketEncryption undefined
+      const mixin = new s3Mixins.CfnBucketPropsMixin({
+        bucketName: 'my-bucket',
+      });
+      mixin.applyTo(bucket);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::Bucket', {
+        BucketName: 'my-bucket',
+      });
     });
   });
 });

@@ -1,27 +1,30 @@
 import { URL } from 'url';
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { OpenSearchAccessPolicy } from './opensearch-access-policy';
 import { DomainGrants } from './opensearchservice-grants.generated';
-import { CfnDomain, DomainReference, IDomainRef } from './opensearchservice.generated';
+import type { DomainReference, IDomainRef } from './opensearchservice.generated';
+import { CfnDomain } from './opensearchservice.generated';
 import * as perms from './perms';
-import { EngineVersion } from './version';
+import type { EngineVersion } from './version';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, MetricOptions, Statistic } from '../../aws-cloudwatch';
+import type { MetricOptions } from '../../aws-cloudwatch';
+import { Metric, Statistic } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Configures the capacity of the cluster such as the instance type and the
@@ -758,6 +761,21 @@ export interface DomainProps {
    * @default - undefined
    */
   readonly coldStorageEnabled?: boolean;
+
+  /**
+   * Whether to enable S3 vectors engine.
+   * This feature allows you to offload vector data to Amazon S3 while maintaining sub-second vector search capabilities at low cost.
+   *
+   * Requirements:
+   * - OpenSearch version 2.19 or later
+   * - OpenSearch Optimized instance types (OR*, OM*, OI*) for data nodes
+   * - Encryption at rest must be enabled
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
+   *
+   * @default undefined - AWS OpenSearch Service default is false
+   */
+  readonly s3VectorsEngineEnabled?: boolean;
 }
 
 /**
@@ -1424,8 +1442,20 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
   }
 
-  public readonly domainArn: string;
-  public readonly domainName: string;
+  @memoizedGetter
+  public get domainArn(): string {
+    return this.getResourceArnAttribute(this.domain.attrArn, {
+      service: 'es',
+      resource: 'domain',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get domainName(): string {
+    return this.getResourceNameAttribute(this.domain.ref);
+  }
+
   public readonly domainId: string;
   public readonly domainEndpoint: string;
 
@@ -1682,6 +1712,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       ec2.InstanceClass.IM4GN,
       ec2.InstanceClass.R7GD,
       ec2.InstanceClass.R8GD,
+      'oi2', // OpenSearch-specific instance type with local NVMe storage
     ];
 
     const supportInstanceStorageInstanceType = [
@@ -1718,8 +1749,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new ValidationError(`${formatInstanceTypesList(unSupportUltraWarmInstanceType, 'and')} instance types do not support UltraWarm storage.`, this);
     }
 
-    // Only R3, I3, R6GD, I4G, I4I, IM4GN and R7GD support instance storage, per
+    // Only R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html
     if (!ebsEnabled && !isEveryDatanodeInstanceType(...supportInstanceStorageInstanceType)) {
       throw new ValidationError(`EBS volumes are required when using instance types other than ${formatInstanceTypesList(supportInstanceStorageInstanceType, 'or')}.`, this);
     }
@@ -1824,6 +1856,29 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.coldStorageEnabled && !warmEnabled) {
       throw new ValidationError('You must enable UltraWarm storage to enable cold storage.', this);
+    }
+
+    // Validate S3 Vectors Engine requirements
+    // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/s3-vector-opensearch-integration-engine.html
+    if (props.s3VectorsEngineEnabled) {
+      // S3 Vectors Engine requires OpenSearch version 2.19 or later
+      if (isElasticsearchVersion) {
+        throw new ValidationError('S3 Vectors Engine requires OpenSearch version 2.19 or later. Elasticsearch versions are not supported.', this);
+      }
+      if (versionNum < 2.19) {
+        throw new ValidationError(`S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version ${versionNum}.`, this);
+      }
+
+      // S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*)
+      const isOpenSearchOptimizedInstance = instanceType.startsWith('or') || instanceType.startsWith('om') || instanceType.startsWith('oi');
+      if (!cdk.Token.isUnresolved(instanceType) && !isOpenSearchOptimizedInstance) {
+        throw new ValidationError(`S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*). Got ${instanceType}.`, this);
+      }
+
+      // S3 Vectors Engine requires encryption at rest
+      if (!encryptionAtRestEnabled) {
+        throw new ValidationError('S3 Vectors Engine requires encryption at rest to be enabled.', this);
+      }
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
@@ -2076,10 +2131,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         },
       } : undefined,
-      softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
+      softwareUpdateOptions: props.enableAutoSoftwareUpdate !== undefined ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
+      aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
+        s3VectorsEngine: {
+          enabled: props.s3VectorsEngineEnabled,
+        },
+      } : undefined,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
@@ -2108,17 +2168,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
 
-    this.domainName = this.getResourceNameAttribute(this.domain.ref);
-
     this.domainId = this.domain.getAtt('Id').toString();
 
     this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
-
-    this.domainArn = this.getResourceArnAttribute(this.domain.attrArn, {
-      service: 'es',
-      resource: 'domain',
-      resourceName: this.physicalName,
-    });
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {

@@ -1,17 +1,19 @@
-import { Construct } from 'constructs';
-import * as appscaling from '../../../aws-applicationautoscaling';
-import * as ec2 from '../../../aws-ec2';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import * as cloudmap from '../../../aws-servicediscovery';
+import type { Construct } from 'constructs';
+import type * as appscaling from '../../../aws-applicationautoscaling';
+import type * as ec2 from '../../../aws-ec2';
+import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import type * as cloudmap from '../../../aws-servicediscovery';
 import { ArnFormat, Resource, Stack, Annotations, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
+import type { AssociateCloudMapServiceOptions, BaseServiceOptions, CloudMapOptions, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService } from '../base/base-service';
+import { BaseService, DeploymentControllerType, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAttributes } from '../base/from-service-attributes';
-import { ScalableTaskCount } from '../base/scalable-task-count';
-import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
-import { ServiceReference } from '../ecs.generated';
+import type { ScalableTaskCount } from '../base/scalable-task-count';
+import type { LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
+import { Compatibility } from '../base/task-definition';
+import type { ICluster } from '../cluster';
+import type { ServiceReference } from '../ecs.generated';
 
 /**
  * The properties for defining a service using the External launch type.

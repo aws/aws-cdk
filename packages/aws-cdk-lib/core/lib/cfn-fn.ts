@@ -1,9 +1,9 @@
-import { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
+import type { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { UnscopedValidationError } from './errors';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
-import { IResolvable, IResolveContext } from './resolvable';
+import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 import { Token } from './token';

@@ -1,5 +1,5 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import type { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { IStateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 
 /**
  * Syntax sugar for `StartExecution` and `DescribeExecution`.

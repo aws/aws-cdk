@@ -1,4 +1,5 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token, UnscopedValidationError } from '../../core';
+import type { IResolvable, IResolveContext } from '../../core';
+import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 
@@ -225,7 +226,14 @@ export class Match implements IResolvable {
       throw new UnscopedValidationError('A list of matchers must contain at least one element.');
     }
 
-    return matchers.map(match => match.map(Token.asString)).flatMap(a => a);
+    return matchers.flatMap(match => {
+      // If it's already an array (from other Match methods), process each element
+      if (Array.isArray(match)) {
+        return match.map((m: any) => Token.asString(m));
+      }
+      // If it's a raw value (string, number, etc.), wrap it as a single element
+      return [Token.asString(match)];
+    });
   }
 
   private static anythingButConjunction(filterKey: string, values: string[]): string[] {

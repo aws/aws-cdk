@@ -1,46 +1,43 @@
 import { EOL } from 'os';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
-import { IBucketNotificationDestination } from './destination';
+import type { IBucketNotificationDestination } from './destination';
+import { BucketAutoDeleteObjects } from './mixins';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
-import { LifecycleRule, StorageClass } from './rule';
-import { BucketReference, CfnBucket, IBucketRef } from './s3.generated';
+import type { LifecycleRule, StorageClass } from './rule';
+import type { BucketReference, IBucketRef } from './s3.generated';
+import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import type {
+  Duration,
+  IResource,
+  ResourceProps,
+} from '../../core';
 import {
   Annotations,
-  CustomResource,
-  Duration,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   PhysicalName,
   RemovalPolicy,
   Resource,
-  ResourceProps,
   Stack,
-  Tags,
   Token,
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import {
-  AutoDeleteObjectsProvider,
-} from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
-
-const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
-const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 export interface IBucket extends IResource, IBucketRef {
   /**
@@ -367,7 +364,8 @@ export interface IBucket extends IResource, IBucketRef {
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -620,11 +618,6 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
 
   protected objectOwnership?: ObjectOwnership;
 
-  /**
-   * Collection of grant methods for a Bucket
-   */
-  public grants = BucketGrants.fromBucket(this);
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -635,6 +628,14 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     return {
       grant: this.encryptionKey?.grant(grantee, ...actions),
     };
+  }
+
+  /**
+   * Collection of grant methods for a Bucket
+   */
+  @memoizedGetter
+  public get grants() {
+    return BucketGrants.fromBucket(this);
   }
 
   /**
@@ -739,9 +740,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * silently, which may be confusing.
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
-    }
+    this.maybeAutoCreatePolicy();
 
     if (this.policy) {
       this.policy.document.addStatements(permission);
@@ -749,6 +748,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     }
 
     return { statementAdded: false };
+  }
+
+  /**
+   * Ensures a bucket policy exists on the L2 if `autoCreatePolicy` is set.
+   */
+  protected maybeAutoCreatePolicy() {
+    if (!this.policy && this.autoCreatePolicy) {
+      this.policy = new BucketPolicy(this, 'Policy', { bucket: this });
+    }
   }
 
   /**
@@ -844,7 +852,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    */
   public arnForObjects(keyPattern: string): string {
-    return `${this.bucketArn}/${keyPattern}`;
+    return perms.arnForObjects(this.bucketArn, keyPattern);
   }
 
   /**
@@ -853,6 +861,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * If encryption is used, permission to use the key to decrypt the contents
    * of the bucket will also be granted to the same principal.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -864,6 +875,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
@@ -876,6 +890,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.put()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param identity The principal
@@ -886,6 +903,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.putAcl()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
@@ -895,6 +915,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.delete()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -906,6 +929,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
@@ -918,6 +944,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    * Note that when calling this function for source or destination buckets that support KMS encryption,
    * you need to specify the KMS key for encryption and the KMS key for decryption, respectively.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.replicationPermission()` instead.
    *
    * [disable-awslint:no-grants]
    *
@@ -950,6 +979,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * managed by CloudFormation, this method will have no effect, since it's
    * impossible to modify the policy of an existing bucket.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.publicAccess()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
@@ -975,7 +1007,8 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    *
    *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
-   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+   *    const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -1796,6 +1829,16 @@ export interface BucketProps {
   readonly objectLockEnabled?: boolean;
 
   /**
+   * Enables Amazon S3 to evaluate the ABAC policy in the request.
+   * Set to true to enable ABAC, false to explicitly disable it.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-s3-bucket.html#cfn-s3-bucket-abacstatus
+   *
+   * @default - The ABAC status is not set
+   */
+  readonly abacStatus?: boolean;
+
+  /**
    * The default retention mode and rules for S3 Object Lock.
    *
    * Default retention can be configured after a bucket is created if the bucket already
@@ -2086,34 +2129,21 @@ export class Bucket extends BucketBase {
 
     const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
-    class Import extends BucketBase {
-      public readonly bucketName = bucketName!;
-      public readonly bucketArn = parseBucketArn(scope, attrs);
-      public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
-      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
-      public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
-      public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
-      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
-      public readonly encryptionKey = attrs.encryptionKey;
-      public readonly isWebsite = attrs.isWebsite ?? false;
-      public policy?: BucketPolicy = undefined;
-      public replicationRoleArn?: string = undefined;
-      protected autoCreatePolicy = false;
-      public disallowPublicAccess = false;
-      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
-
-      /**
-       * Exports this bucket from the stack.
-       */
-      public export() {
-        return attrs;
-      }
-    }
-
-    return new Import(scope, id, {
+    return new ReferencedBucket(scope, id, {
       account: attrs.account,
       region: attrs.region,
+      bucketName: bucketName!,
+      bucketArn: parseBucketArn(scope, attrs),
+      bucketDomainName: attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`,
+      bucketWebsiteUrl: attrs.bucketWebsiteUrl || `http://${websiteDomain}`,
+      bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
+      bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
+      bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
+      encryptionKey: attrs.encryptionKey,
+      isWebsite: attrs.isWebsite ?? false,
+      autoCreatePolicy: false,
+      disallowPublicAccess: false,
+      notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
   }
 
@@ -2237,8 +2267,20 @@ export class Bucket extends BucketBase {
     }
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
+  @memoizedGetter
+  public get bucketArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get bucketName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
   public readonly bucketWebsiteDomainName: string;
@@ -2307,20 +2349,13 @@ export class Bucket extends BucketBase {
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
+      abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
     });
     this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.eventBridgeEnabled = props.eventBridgeEnabled;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
@@ -3068,49 +3103,11 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects() {
-    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      useCfnResponseWrapper: false,
-      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
-    });
-
-    // Use a bucket policy to allow the custom resource to delete
-    // objects in the bucket
-    this.addToResourcePolicy(new iam.PolicyStatement({
-      actions: [
-        // prevent further PutObject calls
-        ...perms.BUCKET_PUT_POLICY_ACTIONS,
-        // list objects
-        ...perms.BUCKET_READ_METADATA_ACTIONS,
-        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
-      ],
-      resources: [
-        this.bucketArn,
-        this.arnForObjects('*'),
-      ],
-      principals: [new iam.ArnPrincipal(provider.roleArn)],
-    }));
-
-    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
-      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        BucketName: this.bucketName,
-      },
-    });
-
-    // Ensure bucket policy is deleted AFTER the custom resource otherwise
-    // we don't have permissions to list and delete in the bucket.
-    // (add a `if` to make TS happy)
-    if (this.policy) {
-      customResource.node.addDependency(this.policy);
-    }
-
-    // We also tag the bucket to record the fact that we want it autodeleted.
-    // The custom resource will check this tag before actually doing the delete.
-    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
-    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
-    // the bucket as a side effect.
-    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
+    // When called from the constructor, this is the first time the bucket policy
+    // might be auto created. For backwards compatibility, we need to make sure the
+    // L2 owned policy already exists, so it will be used by the Mixin.
+    this.maybeAutoCreatePolicy();
+    this.with(new BucketAutoDeleteObjects());
   }
 
   /**
@@ -3684,4 +3681,69 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
   }
 
   return list.map(callback);
+}
+
+/**
+ * An instance of a referenced Bucket
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromBucketAttributes()` etc. used to declare an anonymous subclass of
+ * `BucketBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+class ReferencedBucket extends BucketBase {
+  public bucketArn: string;
+  public bucketName: string;
+  public bucketDomainName: string;
+  public bucketWebsiteUrl: string;
+  public bucketWebsiteDomainName: string;
+  public bucketRegionalDomainName: string;
+  public bucketDualStackDomainName: string;
+  public encryptionKey?: kms.IKey | undefined;
+  public isWebsite?: boolean | undefined;
+  public policy?: BucketPolicy | undefined;
+  public replicationRoleArn?: string | undefined;
+  protected autoCreatePolicy: boolean;
+  public disallowPublicAccess?: boolean | undefined;
+  protected notificationsHandlerRole?: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: {
+    account?: string;
+    region?: string;
+    bucketArn: string;
+    bucketName: string;
+    bucketDomainName: string;
+    bucketWebsiteUrl: string;
+    bucketWebsiteDomainName: string;
+    bucketRegionalDomainName: string;
+    bucketDualStackDomainName: string;
+    encryptionKey?: kms.IKey | undefined;
+    isWebsite?: boolean | undefined;
+    policy?: BucketPolicy | undefined;
+    replicationRoleArn?: string | undefined;
+    autoCreatePolicy: boolean;
+    disallowPublicAccess?: boolean | undefined;
+    notificationsHandlerRole?: iam.IRole;
+  }) {
+    super(scope, id, {
+      account: props.account,
+      region: props.region,
+    });
+    this.bucketArn = props.bucketArn;
+    this.bucketName = props.bucketName;
+    this.bucketDomainName = props.bucketDomainName;
+    this.bucketWebsiteUrl = props.bucketWebsiteUrl;
+    this.bucketWebsiteDomainName = props.bucketWebsiteDomainName;
+    this.bucketRegionalDomainName = props.bucketRegionalDomainName;
+    this.bucketDualStackDomainName = props.bucketDualStackDomainName;
+    this.encryptionKey = props.encryptionKey;
+    this.isWebsite = props.isWebsite;
+    this.policy = props.policy;
+    this.replicationRoleArn = props.replicationRoleArn;
+    this.autoCreatePolicy = props.autoCreatePolicy;
+    this.disallowPublicAccess = props.disallowPublicAccess;
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
+  }
 }

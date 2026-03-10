@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
-import { IResource, Resource, Stack, SecretValue, UnscopedValidationError } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { Resource, Stack, UnscopedValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ConnectionReference, IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { ConnectionReference, IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * An API Destination Connection
@@ -327,22 +329,36 @@ export class Connection extends Resource implements IConnection {
   }
 
   /**
+   * The CfnConnection resource
+   */
+  private readonly _resource: CfnConnection;
+
+  /**
    * The Name for the connection.
    * @attribute
    */
-  public readonly connectionName: string;
+  @memoizedGetter
+  public get connectionName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * The ARN of the connection created.
    * @attribute
    */
-  public readonly connectionArn: string;
+  @memoizedGetter
+  public get connectionArn(): string {
+    return this._resource.attrArn;
+  }
 
   /**
    * The ARN for the secret created for the connection.
    * @attribute
    */
-  public readonly connectionSecretArn: string;
+  @memoizedGetter
+  public get connectionSecretArn(): string {
+    return this._resource.attrSecretArn;
+  }
 
   public get connectionRef(): ConnectionReference {
     return {
@@ -366,7 +382,7 @@ export class Connection extends Resource implements IConnection {
       queryStringParameters: renderHttpParameters(props.queryStringParameters),
     } : undefined;
 
-    let connection = new CfnConnection(this, 'Connection', {
+    this._resource = new CfnConnection(this, 'Connection', {
       authorizationType: authBind.authorizationType,
       authParameters: {
         ...authBind.authParameters,
@@ -375,10 +391,6 @@ export class Connection extends Resource implements IConnection {
       description: props.description,
       name: this.physicalName,
     });
-
-    this.connectionName = this.getResourceNameAttribute(connection.ref);
-    this.connectionArn = connection.attrArn;
-    this.connectionSecretArn = connection.attrSecretArn;
   }
 }
 

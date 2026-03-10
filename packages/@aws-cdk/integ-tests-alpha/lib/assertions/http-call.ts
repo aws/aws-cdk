@@ -1,9 +1,12 @@
 import { AspectPriority, Aspects, CfnOutput, CustomResource, Lazy, Token } from 'aws-cdk-lib';
-import { Construct, IConstruct } from 'constructs';
-import { ApiCallBase, IApiCall } from './api-call-base';
-import { ExpectedResult } from './common';
-import { AssertionsProvider, HttpRequestParameters, HTTP_RESOURCE_TYPE } from './providers';
-import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
+import type { Construct, IConstruct } from 'constructs';
+import type { IApiCall } from './api-call-base';
+import { ApiCallBase } from './api-call-base';
+import type { ExpectedResult } from './common';
+import type { HttpRequestParameters } from './providers';
+import { AssertionsProvider, HTTP_RESOURCE_TYPE } from './providers';
+import type { WaiterStateMachineOptions } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
 
 /**
  * Options for creating an HttpApiCall provider

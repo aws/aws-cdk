@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import { CfnResource } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
 
 const app = new cdk.App({
   postCliContext: {
