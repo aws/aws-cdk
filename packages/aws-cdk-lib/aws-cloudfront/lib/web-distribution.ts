@@ -621,7 +621,7 @@ export interface CloudFrontWebDistributionProps {
   readonly enableIpV6?: boolean;
 
   /**
-   * The max supported HTTP Versions.
+   * The HTTP version(s) to enable for viewers communicating with CloudFront.
    *
    * @default HttpVersion.HTTP2
    */
