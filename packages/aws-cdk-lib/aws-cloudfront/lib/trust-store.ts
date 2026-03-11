@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnTrustStore } from './cloudfront.generated';
 import type { ITrustStoreRef, TrustStoreReference } from './cloudfront.generated';
-import type { IBucket } from '../../aws-s3';
+import type { IBucketRef } from '../../aws-s3';
 import type { IResource } from '../../core';
 import { Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -32,7 +32,7 @@ export interface CaCertificatesBundleS3Location {
    * The S3 bucket containing the CA certificates bundle.
    * The bucket's region will be used as the region for the CA bundle.
    */
-  readonly bucket: IBucket;
+  readonly bucket: IBucketRef;
 
   /**
    * The key (path) to the CA certificates bundle file in the S3 bucket.
@@ -180,7 +180,7 @@ export class TrustStore extends Resource implements ITrustStore {
     const location = props.caCertificatesBundleS3Location;
     return {
       caCertificatesBundleS3Location: {
-        bucket: location.bucket.bucketName,
+        bucket: location.bucket.bucketRef.bucketName,
         key: location.key,
         region: location.bucket.env.region,
         version: location.version,

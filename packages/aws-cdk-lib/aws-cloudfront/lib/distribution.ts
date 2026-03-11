@@ -18,7 +18,7 @@ import type { GeoRestriction } from './geo-restriction';
 import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import type { ITrustStore } from './trust-store';
+import type { ITrustStoreRef } from './cloudfront.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
@@ -901,7 +901,7 @@ export class Distribution extends Resource implements IDistribution {
     return {
       mode: config.mode,
       trustStoreConfig: {
-        trustStoreId: config.trustStore.trustStoreId,
+        trustStoreId: config.trustStore.trustStoreRef.trustStoreId,
         advertiseTrustStoreCaNames: config.advertiseTrustStoreCaNames,
         ignoreCertificateExpiry: config.ignoreCertificateExpiry,
       },
@@ -1093,7 +1093,7 @@ export interface ViewerMtlsConfig {
    * The trust store contains CA certificates that CloudFront uses to
    * authenticate client certificates during mTLS handshakes.
    */
-  readonly trustStore: ITrustStore;
+  readonly trustStore: ITrustStoreRef;
 
   /**
    * Whether to advertise trust store CA names to clients during the TLS handshake.
