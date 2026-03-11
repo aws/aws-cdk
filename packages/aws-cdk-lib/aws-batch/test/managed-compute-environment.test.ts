@@ -4,7 +4,8 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as eks from '../../aws-eks';
 import { ArnPrincipal, Role, ServicePrincipal } from '../../aws-iam';
-import { Stack, Duration, Tags, CfnParameter } from '../../core';
+import { App, Stack, Duration, Tags, CfnParameter } from '../../core';
+import * as cxapi from '../../cx-api';
 import type { CfnComputeEnvironmentProps, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironmentProps } from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment, FargateComputeEnvironment, EcsMachineImageType, EksMachineImageType, DefaultInstanceClass } from '../lib';
 
@@ -1049,6 +1050,60 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
         }),
       });
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotFleetRole' without specifying 'spot'/);
+  });
+
+  test('default imageType is ECS_AL2 when feature flag is not set', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      vpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EcsMachineImageType.ECS_AL2,
+          },
+        ],
+      },
+    });
+  });
+
+  test('default imageType is ECS_AL2023 when feature flag is set', () => {
+    // GIVEN
+    const app = new App({
+      context: { [cxapi.BATCH_DEFAULT_ECS_AL2023]: true },
+    });
+    const flagStack = new Stack(app, 'FlagStack');
+    const flagVpc = new ec2.Vpc(flagStack, 'vpc');
+
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(flagStack, 'MyCE', {
+      vpc: flagVpc,
+      images: [
+        {
+          image: ec2.MachineImage.latestAmazonLinux2(),
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: {
+        Ec2Configuration: [
+          {
+            ImageType: EcsMachineImageType.ECS_AL2023,
+          },
+        ],
+      },
+    });
   });
 });
 

@@ -111,6 +111,7 @@ Flags come in three types:
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
 | [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
+| [@aws-cdk/aws-batch:defaultEcsAL2023](#aws-cdkaws-batchdefaultecsal2023) | Use ECS_AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated ECS_AL2 | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -203,7 +204,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
-    "@aws-cdk/aws-route53-patterns:useDistribution": true
+    "@aws-cdk/aws-route53-patterns:useDistribution": true,
+    "@aws-cdk/aws-batch:defaultEcsAL2023": true
   }
 }
 ```
@@ -2344,8 +2346,8 @@ When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OI
 
 Flag type: New default behavior
 
-When enabled, the construct library will apply default L1 traits for types that 
-have no traits defined yet. Traits regulate behaviors such as how to create 
+When enabled, the construct library will apply default L1 traits for types that
+have no traits defined yet. Traits regulate behaviors such as how to create
 resource policies, or how to find an encryption key for a given L1 construct.
 
 
@@ -2355,6 +2357,24 @@ resource policies, or how to find an encryption key for a given L1 construct.
 | 2.239.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Register traits explicitly for each resource type
+
+
+### @aws-cdk/aws-batch:defaultEcsAL2023
+
+*Use ECS_AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated ECS_AL2*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, EC2 Batch compute environments that do not specify an `imageType` will default
+to `ECS_AL2023` instead of the deprecated `ECS_AL2` (Amazon Linux 2, reaching EOL June 2026).
+
+When disabled, the default `imageType` remains `ECS_AL2` for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
