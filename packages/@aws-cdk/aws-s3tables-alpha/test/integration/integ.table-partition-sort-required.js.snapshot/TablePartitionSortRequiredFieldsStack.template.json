@@ -3,7 +3,7 @@
   "PartitionSortRequiredFieldsBucketD7ACD847": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "partition-sort-required-bucket-test",
+    "TableBucketName": "partition-sort-req-bucket-v2",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -23,7 +23,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PartitionSortRequiredTable50FB0F5A": {
+  "PartitionSortRequiredTable715788E1": {
    "Type": "AWS::S3Tables::Table",
    "Properties": {
     "IcebergMetadata": {
@@ -43,12 +43,6 @@
         "Name": "day",
         "Required": true,
         "Type": "date"
-       },
-       {
-        "Id": 2,
-        "Name": "person_name",
-        "Required": true,
-        "Type": "string"
        }
       ]
      },
@@ -71,7 +65,7 @@
       "TableBucketARN"
      ]
     },
-    "TableName": "events_by_day_required"
+    "TableName": "events_by_day_v2"
    },
    "DependsOn": [
     "PartitionSortRequiredNamespace06DC1795"

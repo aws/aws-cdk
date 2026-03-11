@@ -11,7 +11,7 @@
     },
     "service": "@aws-sdk/client-s3tables",
     "api": "ListTablesCommand",
-    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"events_by_day_required\"}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"tables\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"name\":\"events_by_day_v2\"}}]}}}",
     "parameters": {
      "tableBucketARN": {
       "Fn::Join": [
@@ -28,7 +28,7 @@
      "namespace": "\"partition_sort_required_ns\""
     },
     "flattenResponse": "false",
-    "salt": "1772771858533"
+    "salt": "1773200785826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -91,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2625955975aad0df2cfc5e0416c2d98a9ec11cfc4261b1d20bd9fc899a566330.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -103,7 +103,7 @@
     }
    }
   },
-  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607": {
+  "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75": {
    "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
    "Properties": {
     "ServiceToken": {
@@ -129,10 +129,10 @@
       ]
      },
      "namespace": "\"partition_sort_required_ns\"",
-     "name": "\"events_by_day_required\""
+     "name": "\"events_by_day_v2\""
     },
     "flattenResponse": "false",
-    "salt": "1772771858536"
+    "salt": "1773200785829"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -147,10 +147,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607",
+     "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75",
      "assertion"
     ]
    }

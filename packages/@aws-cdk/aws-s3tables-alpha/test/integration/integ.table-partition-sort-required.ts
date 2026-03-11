@@ -16,7 +16,7 @@ class TablePartitionSortRequiredStack extends Stack {
     super(scope, id, props);
 
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortRequiredFieldsBucket', {
-      tableBucketName: 'partition-sort-required-bucket-test',
+      tableBucketName: 'partition-sort-req-bucket-v2',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -27,21 +27,20 @@ class TablePartitionSortRequiredStack extends Stack {
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortRequiredTable', {
-      tableName: 'events_by_day_required',
+      tableName: 'events_by_day_v2',
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       icebergMetadata: {
         icebergSchema: {
           schemaFieldList: [
             { id: 1, name: 'day', type: 'date', required: true },
-            { id: 2, name: 'person_name', type: 'string', required: true },
           ],
         },
         icebergPartitionSpec: {
           fields: [
             {
               sourceId: 1,
-              transform: s3tables.PartitionTransform.IDENTITY,
+              transform: s3tables.IcebergTransform.IDENTITY,
               name: 'day_partition',
             },
           ],
@@ -50,7 +49,7 @@ class TablePartitionSortRequiredStack extends Stack {
           fields: [
             {
               sourceId: 1,
-              transform: 'identity',
+              transform: s3tables.IcebergTransform.IDENTITY,
               direction: s3tables.SortDirection.ASC,
               nullOrder: s3tables.NullOrder.NULLS_LAST,
             },

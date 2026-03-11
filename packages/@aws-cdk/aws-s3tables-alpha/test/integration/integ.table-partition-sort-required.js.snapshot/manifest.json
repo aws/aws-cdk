@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "TablePartitionSortRequiredFieldsStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d649fd9fa6bd2823e873fdbf9f3a5fa43cf3ac5dc42ebaf13a48a7061d858980.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba719bfc00c6bda8e89166a36bb0401f4653c001201fd947e1d9e049a4feb8e8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,7 +43,10 @@
         "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredFieldsBucket/PartitionSortRequiredFieldsBucket": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PartitionSortRequiredFieldsBucketD7ACD847"
+            "data": "PartitionSortRequiredFieldsBucketD7ACD847",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredNamespace": [
@@ -55,7 +58,10 @@
         "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredNamespace/PartitionSortRequiredNamespace": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PartitionSortRequiredNamespace06DC1795"
+            "data": "PartitionSortRequiredNamespace06DC1795",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredTable": [
@@ -64,10 +70,13 @@
             "data": "*"
           }
         ],
-        "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredTable/Resource": [
+        "/TablePartitionSortRequiredFieldsStack/PartitionSortRequiredTable/PartitionSortRequiredTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PartitionSortRequiredTable50FB0F5A"
+            "data": "PartitionSortRequiredTable715788E1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/TablePartitionSortRequiredFieldsStack/Exports/Output{\"Fn::GetAtt\":[\"PartitionSortRequiredFieldsBucketD7ACD847\",\"TableBucketARN\"]}": [
@@ -108,7 +117,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73b48d829f4c6b40b91bb32413c7b77c2d3944344107e59ca98e6fc08151bec5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83738533a4d7fbd257c9b0c1e6240f390c591245d8adb645747b2868f86f4772.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -163,7 +172,7 @@
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607/Default": [
+        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75/Default": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -177,16 +186,16 @@
             "data": "*"
           }
         ],
-        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607/Default/Default": [
+        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607"
+            "data": "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75"
           }
         ],
-        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607/AssertionResults": [
+        "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand0954ef36e64d842b5b68aa70a18a4607"
+            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommandbf480ffc88975aab0bb85bb7eb098f75"
           }
         ],
         "/TablePartitionSortRequiredIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -699,6 +708,7 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
@@ -706,5 +716,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }

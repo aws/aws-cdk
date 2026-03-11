@@ -178,8 +178,7 @@ abstract class TableBase extends Resource implements ITable {
     tableActions: string[],
     resourceArn: string,
     ...otherResourceArns: (string | undefined)[]) {
-    const resources = [resourceArn, ...otherResourceArns].filter((arn): arn is string => arn !== undefined);
-
+    const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: tableActions,
@@ -224,7 +223,7 @@ export interface TableProps {
    */
   readonly snapshotManagement?: SnapshotManagementProperty;
   /**
-   * Controls what happens to this table it it stoped being managed by cloudformation.
+   * Controls what happens to this table if it stops being managed by CloudFormation.
    *
    * @default RETAIN
    */
@@ -280,37 +279,47 @@ export enum Status {
 }
 
 /**
- * Partition transform values for Iceberg partition fields.
+ * Iceberg transform values for partition and sort fields.
  */
-export enum PartitionTransform {
+export class IcebergTransform {
   /**
-   * Use the column value as the partition value without transformation.
+   * Use the column value as the transform value without transformation.
    */
-  IDENTITY = 'identity',
+  public static readonly IDENTITY = 'identity';
+
   /**
-   * Partition by year extracted from a timestamp/date field.
+   * Transform a timestamp/date field to year.
    */
-  YEAR = 'year',
+  public static readonly YEAR = 'year';
+
   /**
-   * Partition by month extracted from a timestamp/date field.
+   * Transform a timestamp/date field to month.
    */
-  MONTH = 'month',
+  public static readonly MONTH = 'month';
+
   /**
-   * Partition by day extracted from a timestamp/date field.
+   * Transform a timestamp/date field to day.
    */
-  DAY = 'day',
+  public static readonly DAY = 'day';
+
   /**
-   * Partition by hour extracted from a timestamp field.
+   * Transform a timestamp field to hour.
    */
-  HOUR = 'hour',
+  public static readonly HOUR = 'hour';
+
   /**
-   * Hash partition into a fixed number of buckets.
+   * Transform values into a fixed number of buckets.
    */
-  BUCKET = 'bucket',
+  public static bucket(n: number): string {
+    return `bucket[${n}]`;
+  }
+
   /**
-   * Truncate the value to a fixed width.
+   * Truncate values to a fixed width.
    */
-  TRUNCATE = 'truncate',
+  public static truncate(width: number): string {
+    return `truncate[${width}]`;
+  }
 }
 
 /**
@@ -355,9 +364,11 @@ export interface IcebergPartitionField {
 
   /**
    * The partition transform function.
+   *
+   * Use `IcebergTransform` helpers for common transforms. The underlying type remains string
+   * to support parameterized Iceberg transforms such as `bucket[16]` and `truncate[8]`.
    */
-  readonly transform: PartitionTransform;
-
+  readonly transform: string;
   /**
    * The name of the partition field.
    */
@@ -379,16 +390,16 @@ export interface IcebergPartitionField {
  */
 export interface IcebergPartitionSpec {
   /**
+   * The list of partition fields.
+   */
+  readonly fields: IcebergPartitionField[];
+
+  /**
    * The unique identifier for the partition specification.
    *
    * @default 0
    */
   readonly specId?: number;
-
-  /**
-   * The list of partition fields.
-   */
-  readonly fields: IcebergPartitionField[];
 }
 
 /**
@@ -401,7 +412,10 @@ export interface IcebergSortField {
   readonly sourceId: number;
 
   /**
-   * The sort transform function (e.g., 'identity', 'bucket', 'truncate').
+   * The sort transform function.
+   *
+   * Use `IcebergTransform` helpers for common transforms. The underlying type remains string
+   * to support parameterized Iceberg transforms such as `bucket[16]` and `truncate[8]`.
    */
   readonly transform: string;
 
@@ -421,16 +435,16 @@ export interface IcebergSortField {
  */
 export interface IcebergSortOrder {
   /**
+   * The list of sort fields.
+   */
+  readonly fields: IcebergSortField[];
+
+  /**
    * The unique identifier for the sort order.
    *
    * @default 1
    */
   readonly orderId?: number;
-
-  /**
-   * The list of sort fields.
-   */
-  readonly fields: IcebergSortField[];
 }
 
 /**
@@ -498,16 +512,16 @@ export interface IcebergSchemaProperty {
  */
 export interface SchemaFieldProperty {
   /**
-   * The unique identifier for the field.
-   *
-   * @default - Auto-assigned by S3 Tables
-   */
-  readonly id?: number;
-
-  /**
    * The name of the field.
    */
   readonly name: string;
+
+  /**
+   * The field type.
+   *
+   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://iceberg.apache.org/spec/#primitive-types).
+   */
+  readonly type: string;
 
   /**
    * A Boolean value that specifies whether values are required for each row in this field.
@@ -519,11 +533,11 @@ export interface SchemaFieldProperty {
   readonly required?: boolean;
 
   /**
-   * The field type.
+   * The unique identifier for the field.
    *
-   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://iceberg.apache.org/spec/#primitive-types).
+   * @default - Auto-assigned by S3 Tables
    */
-  readonly type: string;
+  readonly id?: number;
 }
 
 /**
@@ -604,7 +618,7 @@ export class Table extends TableBase {
       protected autoCreatePolicy: boolean = false;
 
       /**
-       * Exports this  from the stack.
+       * Exports this from the stack.
        */
       public export() {
         return attrs;
@@ -645,7 +659,7 @@ export class Table extends TableBase {
     if (illegalCharMatch) {
       errors.push(
         'Table name must only contain lowercase characters, numbers, and underscores (_)' +
-        ` (offset: ${illegalCharMatch.index})`,
+          ` (offset: ${illegalCharMatch.index})`,
       );
     }
 
@@ -713,46 +727,13 @@ export class Table extends TableBase {
 
     Table.validateTableName(props.tableName);
 
-    this._resource = new CfnTable(this, 'Resource', {
+    this._resource = new CfnTable(this, id, {
       tableName: props.tableName,
       openTableFormat: props.openTableFormat,
       tableBucketArn: props.namespace.tableBucket.tableBucketArn,
       namespace: props.namespace.namespaceName,
       compaction: props.compaction,
-      icebergMetadata: props.icebergMetadata ? {
-        icebergSchema: {
-          schemaFieldList: props.icebergMetadata.icebergSchema.schemaFieldList.map(f => ({
-            name: f.name,
-            type: f.type,
-            ...(f.id !== undefined && { id: f.id }),
-            ...(f.required !== undefined && { required: f.required }),
-          })),
-        },
-        icebergPartitionSpec: props.icebergMetadata.icebergPartitionSpec ? {
-          specId: props.icebergMetadata.icebergPartitionSpec.specId,
-          fields: props.icebergMetadata.icebergPartitionSpec.fields.map(f => ({
-            sourceId: f.sourceId,
-            transform: f.transform,
-            name: f.name,
-            fieldId: f.fieldId,
-          })),
-        } : undefined,
-        icebergSortOrder: props.icebergMetadata.icebergSortOrder ? {
-          orderId: props.icebergMetadata.icebergSortOrder.orderId,
-          fields: props.icebergMetadata.icebergSortOrder.fields.map(f => ({
-            sourceId: f.sourceId,
-            transform: f.transform,
-            direction: f.direction,
-            nullOrder: f.nullOrder,
-          })),
-        } : undefined,
-        tableProperties: props.icebergMetadata.tableProperties
-          ? props.icebergMetadata.tableProperties.reduce(
-            (acc, entry) => ({ ...acc, [entry.key]: entry.value }),
-            {} as Record<string, string>,
-          )
-          : undefined,
-      } : undefined,
+      icebergMetadata: this.buildIcebergMetadata(props.icebergMetadata),
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
     });
@@ -762,5 +743,84 @@ export class Table extends TableBase {
     this.tableArn = this._resource.attrTableArn;
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.node.addDependency(this.namespace);
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg metadata property from the CDK metadata model.
+   */
+  private buildIcebergMetadata(metadata?: IcebergMetadataProperty): CfnTable.IcebergMetadataProperty | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+
+    return {
+      icebergSchema: this.buildIcebergSchema(metadata.icebergSchema),
+      icebergPartitionSpec: metadata.icebergPartitionSpec
+        ? this.buildIcebergPartitionSpec(metadata.icebergPartitionSpec)
+        : undefined,
+      icebergSortOrder: metadata.icebergSortOrder
+        ? this.buildIcebergSortOrder(metadata.icebergSortOrder)
+        : undefined,
+      tableProperties: metadata.tableProperties
+        ? this.buildTableProperties(metadata.tableProperties)
+        : undefined,
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg schema property.
+   */
+  private buildIcebergSchema(schema: IcebergSchemaProperty): CfnTable.IcebergSchemaProperty {
+    return {
+      schemaFieldList: schema.schemaFieldList.map(field => ({
+        name: field.name,
+        type: field.type,
+        ...(field.required !== undefined && { required: field.required }),
+        ...(field.id !== undefined && { id: field.id }),
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg partition specification property.
+   */
+  private buildIcebergPartitionSpec(spec: IcebergPartitionSpec): CfnTable.IcebergPartitionSpecProperty {
+    return {
+      ...(spec.specId !== undefined && { specId: spec.specId }),
+      fields: spec.fields.map(field => ({
+        sourceId: field.sourceId,
+        transform: field.transform,
+        name: field.name,
+        ...(field.fieldId !== undefined && { fieldId: field.fieldId }),
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg sort order property.
+   */
+  private buildIcebergSortOrder(sortOrder: IcebergSortOrder): CfnTable.IcebergSortOrderProperty {
+    return {
+      ...(sortOrder.orderId !== undefined && { orderId: sortOrder.orderId }),
+      fields: sortOrder.fields.map(field => ({
+        sourceId: field.sourceId,
+        transform: field.transform,
+        direction: field.direction,
+        nullOrder: field.nullOrder,
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation table properties map from key-value entries.
+   */
+  private buildTableProperties(tableProperties: TablePropertyEntry[]): Record<string, string> {
+    return tableProperties.reduce(
+      (acc, entry) => ({
+        ...acc,
+        [entry.key]: entry.value,
+      }),
+      {} as Record<string, string>,
+    );
   }
 }

@@ -101,7 +101,7 @@ describe('Table', () => {
           fields: [
             {
               sourceId: 1,
-              transform: s3tables.PartitionTransform.IDENTITY,
+              transform: s3tables.IcebergTransform.IDENTITY,
               name: 'id_partition',
             },
           ],
@@ -243,8 +243,8 @@ describe('Table', () => {
           icebergPartitionSpec: {
             specId: 0,
             fields: [
-              { sourceId: 2, transform: s3tables.PartitionTransform.DAY, name: 'event_day' },
-              { sourceId: 3, transform: s3tables.PartitionTransform.IDENTITY, name: 'category_partition' },
+              { sourceId: 2, transform: s3tables.IcebergTransform.DAY, name: 'event_day' },
+              { sourceId: 3, transform: s3tables.IcebergTransform.IDENTITY, name: 'category_partition' },
             ],
           },
           icebergSortOrder: {

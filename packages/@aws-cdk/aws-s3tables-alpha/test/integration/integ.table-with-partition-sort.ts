@@ -27,51 +27,34 @@ class TableWithPartitionSortStack extends Stack {
     });
 
     this.table = new s3tables.Table(this, 'PartitionSortTable', {
-      tableName: 'events_by_day_sorted',
+      tableName: 'test_table',
       namespace: this.namespace,
       openTableFormat: s3tables.OpenTableFormat.ICEBERG,
       icebergMetadata: {
         icebergSchema: {
           schemaFieldList: [
-            { id: 1, name: 'day', type: 'date', required: true },
-            { id: 2, name: 'person_name', type: 'string', required: true },
-            { id: 3, name: 'classes_taken', type: 'int', required: false },
+            { id: 1, name: 'event_date', type: 'date', required: true },
           ],
         },
-        // Partition by day
         icebergPartitionSpec: {
-          specId: 0,
           fields: [
             {
-              sourceId: 1, // References 'day' field (id: 1)
-              transform: s3tables.PartitionTransform.IDENTITY,
-              name: 'day_partition',
-              fieldId: 1000,
+              sourceId: 1,
+              transform: s3tables.IcebergTransform.IDENTITY,
+              name: 'date_partition',
             },
           ],
         },
-        // Sort by day ascending, then by person_name
         icebergSortOrder: {
-          orderId: 1,
           fields: [
             {
-              sourceId: 1, // Sort by 'day' first
-              transform: 'identity',
+              sourceId: 1,
+              transform: s3tables.IcebergTransform.IDENTITY,
               direction: s3tables.SortDirection.ASC,
               nullOrder: s3tables.NullOrder.NULLS_LAST,
             },
-            {
-              sourceId: 2, // Then by 'person_name'
-              transform: 'identity',
-              direction: s3tables.SortDirection.ASC,
-              nullOrder: s3tables.NullOrder.NULLS_FIRST,
-            },
           ],
         },
-        tableProperties: [
-          { key: 'write.format.default', value: 'parquet' },
-          { key: 'write.parquet.compression-codec', value: 'zstd' },
-        ],
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });
