@@ -1,0 +1,17 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "CrossAccountSSMReferenceTest/DefaultTest": {
+      "stacks": [
+        "CrossAccountRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CrossAccountSSMReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossAccountSSMReferenceTestDefaultTestDeployAssert9BC30ABC"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

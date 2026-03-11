@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "cb5d9a13440079c2722b9fbc52821965b90eaf42f2fb1b702258430c643fe4b2": {
+      "displayName": "CrossAccountRefProducerInteg Template",
+      "source": {
+        "path": "CrossAccountRefProducerInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "280619947791-us-east-1-8af78a96": {
+          "bucketName": "cdk-hnb659fds-assets-280619947791-us-east-1",
+          "objectKey": "cb5d9a13440079c2722b9fbc52821965b90eaf42f2fb1b702258430c643fe4b2.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::280619947791:role/cdk-hnb659fds-file-publishing-role-280619947791-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
