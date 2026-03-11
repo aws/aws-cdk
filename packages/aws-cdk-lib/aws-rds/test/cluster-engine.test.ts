@@ -130,125 +130,127 @@ describe('cluster engine', () => {
     expect(engine_VER_17_2.parameterGroupFamily).toEqual('aurora-postgresql17');
   });
 
-  testDeprecated('cluster parameter group correctly determined for AURORA and given version', () => {
+  testDeprecated.each([
+    AuroraEngineVersion.VER_1_22_2,
+    AuroraEngineVersion.VER_1_22_3,
+    AuroraEngineVersion.VER_1_22_4,
+    AuroraEngineVersion.VER_1_22_5,
+    AuroraEngineVersion.VER_1_23_0,
+    AuroraEngineVersion.VER_1_23_1,
+    AuroraEngineVersion.VER_1_23_2,
+    AuroraEngineVersion.VER_1_23_3,
+    AuroraEngineVersion.VER_1_23_4,
+  ])('cluster parameter group correctly determined for AURORA_MYSQL 1.x and given version $auroraFullVersion', (version: AuroraEngineVersion) => {
     // GIVEN
-    const engine_ver_1_22_2 = DatabaseClusterEngine.aurora({
-      version: AuroraEngineVersion.VER_1_22_2,
-    });
-    const engine_ver_1_22_3 = DatabaseClusterEngine.aurora({
-      version: AuroraEngineVersion.VER_1_22_3,
-    });
-    const engine_ver_1_22_4 = DatabaseClusterEngine.aurora({
-      version: AuroraEngineVersion.VER_1_22_4,
-    });
-    const engine_ver_1_22_5 = DatabaseClusterEngine.aurora({
-      version: AuroraEngineVersion.VER_1_22_5,
-    });
+    const engine_ver = DatabaseClusterEngine.aurora({ version });
 
     // THEN
-    expect(engine_ver_1_22_2.parameterGroupFamily).toEqual('aurora5.6');
-    expect(engine_ver_1_22_3.parameterGroupFamily).toEqual('aurora5.6');
-    expect(engine_ver_1_22_4.parameterGroupFamily).toEqual('aurora5.6');
-    expect(engine_ver_1_22_5.parameterGroupFamily).toEqual('aurora5.6');
+    expect(engine_ver.parameterGroupFamily).toEqual('aurora5.6');
   });
 
-  test('cluster parameter group correctly determined for AURORA_MYSQL 2.x and given version', () => {
+  test.each([
+    AuroraMysqlEngineVersion.VER_2_02_3,
+    AuroraMysqlEngineVersion.VER_2_03_2,
+    AuroraMysqlEngineVersion.VER_2_03_3,
+    AuroraMysqlEngineVersion.VER_2_03_4,
+    AuroraMysqlEngineVersion.VER_2_04_0,
+    AuroraMysqlEngineVersion.VER_2_04_1,
+    AuroraMysqlEngineVersion.VER_2_04_2,
+    AuroraMysqlEngineVersion.VER_2_04_3,
+    AuroraMysqlEngineVersion.VER_2_04_4,
+    AuroraMysqlEngineVersion.VER_2_04_5,
+    AuroraMysqlEngineVersion.VER_2_04_6,
+    AuroraMysqlEngineVersion.VER_2_04_7,
+    AuroraMysqlEngineVersion.VER_2_04_8,
+    AuroraMysqlEngineVersion.VER_2_04_9,
+    AuroraMysqlEngineVersion.VER_2_05_0,
+    AuroraMysqlEngineVersion.VER_2_05_1,
+    AuroraMysqlEngineVersion.VER_2_06_0,
+    AuroraMysqlEngineVersion.VER_2_07_0,
+    AuroraMysqlEngineVersion.VER_2_07_1,
+    AuroraMysqlEngineVersion.VER_2_07_2,
+    AuroraMysqlEngineVersion.VER_2_07_3,
+    AuroraMysqlEngineVersion.VER_2_07_4,
+    AuroraMysqlEngineVersion.VER_2_07_5,
+    AuroraMysqlEngineVersion.VER_2_07_6,
+    AuroraMysqlEngineVersion.VER_2_07_7,
+    AuroraMysqlEngineVersion.VER_2_07_8,
+    AuroraMysqlEngineVersion.VER_2_07_9,
+    AuroraMysqlEngineVersion.VER_2_07_10,
+    AuroraMysqlEngineVersion.VER_2_08_0,
+    AuroraMysqlEngineVersion.VER_2_08_1,
+    AuroraMysqlEngineVersion.VER_2_08_2,
+    AuroraMysqlEngineVersion.VER_2_08_3,
+    AuroraMysqlEngineVersion.VER_2_08_4,
+    AuroraMysqlEngineVersion.VER_2_09_0,
+    AuroraMysqlEngineVersion.VER_2_09_1,
+    AuroraMysqlEngineVersion.VER_2_09_2,
+    AuroraMysqlEngineVersion.VER_2_09_3,
+    AuroraMysqlEngineVersion.VER_2_10_0,
+    AuroraMysqlEngineVersion.VER_2_10_1,
+    AuroraMysqlEngineVersion.VER_2_10_2,
+    AuroraMysqlEngineVersion.VER_2_10_3,
+    AuroraMysqlEngineVersion.VER_2_11_0,
+    AuroraMysqlEngineVersion.VER_2_11_1,
+    AuroraMysqlEngineVersion.VER_2_11_2,
+    AuroraMysqlEngineVersion.VER_2_11_3,
+    AuroraMysqlEngineVersion.VER_2_11_4,
+    AuroraMysqlEngineVersion.VER_2_11_5,
+    AuroraMysqlEngineVersion.VER_2_11_6,
+    AuroraMysqlEngineVersion.VER_2_12_0,
+    AuroraMysqlEngineVersion.VER_2_12_1,
+    AuroraMysqlEngineVersion.VER_2_12_2,
+    AuroraMysqlEngineVersion.VER_2_12_3,
+    AuroraMysqlEngineVersion.VER_2_12_4,
+    AuroraMysqlEngineVersion.VER_2_12_5,
+  ])('cluster parameter group correctly determined for AURORA_MYSQL 2.x and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
     // GIVEN
-    const engine_ver_2_7_3 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_3,
-    });
-    const engine_ver_2_7_4 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_4,
-    });
-    const engine_ver_2_7_5 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_5,
-    });
-    const engine_ver_2_7_6 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_6,
-    });
-    const engine_ver_2_7_7 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_7,
-    });
-    const engine_ver_2_7_8 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_07_8,
-    });
-    const engine_ver_2_8_3 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_08_3,
-    });
-    const engine_ver_2_8_4 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_08_4,
-    });
-    const engine_ver_2_11_3 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_11_3,
-    });
-    const engine_ver_2_12_3 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_12_3,
-    });
-    const engine_ver_2_12_4 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_12_4,
-    });
-    const engine_ver_2_12_5 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_2_12_5,
-    });
+    const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
 
     // THEN
-    expect(engine_ver_2_7_3.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_7_4.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_7_5.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_7_6.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_7_7.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_7_8.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_8_3.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_8_4.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_11_3.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_12_3.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_12_4.parameterGroupFamily).toEqual('aurora-mysql5.7');
-    expect(engine_ver_2_12_5.parameterGroupFamily).toEqual('aurora-mysql5.7');
+    expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql5.7');
   });
 
-  test('cluster parameter group correctly determined for AURORA_MYSQL 3.x and given version', () => {
+  test.each([
+    AuroraMysqlEngineVersion.VER_3_01_0,
+    AuroraMysqlEngineVersion.VER_3_01_1,
+    AuroraMysqlEngineVersion.VER_3_02_0,
+    AuroraMysqlEngineVersion.VER_3_02_1,
+    AuroraMysqlEngineVersion.VER_3_02_2,
+    AuroraMysqlEngineVersion.VER_3_02_3,
+    AuroraMysqlEngineVersion.VER_3_03_0,
+    AuroraMysqlEngineVersion.VER_3_03_1,
+    AuroraMysqlEngineVersion.VER_3_03_2,
+    AuroraMysqlEngineVersion.VER_3_03_3,
+    AuroraMysqlEngineVersion.VER_3_04_0,
+    AuroraMysqlEngineVersion.VER_3_04_1,
+    AuroraMysqlEngineVersion.VER_3_04_2,
+    AuroraMysqlEngineVersion.VER_3_04_3,
+    AuroraMysqlEngineVersion.VER_3_04_4,
+    AuroraMysqlEngineVersion.VER_3_04_6,
+    AuroraMysqlEngineVersion.VER_3_05_0,
+    AuroraMysqlEngineVersion.VER_3_05_1,
+    AuroraMysqlEngineVersion.VER_3_05_2,
+    AuroraMysqlEngineVersion.VER_3_06_0,
+    AuroraMysqlEngineVersion.VER_3_06_1,
+    AuroraMysqlEngineVersion.VER_3_07_0,
+    AuroraMysqlEngineVersion.VER_3_07_1,
+    AuroraMysqlEngineVersion.VER_3_08_0,
+    AuroraMysqlEngineVersion.VER_3_08_1,
+    AuroraMysqlEngineVersion.VER_3_08_2,
+    AuroraMysqlEngineVersion.VER_3_09_0,
+    AuroraMysqlEngineVersion.VER_3_10_0,
+    AuroraMysqlEngineVersion.VER_3_10_1,
+    AuroraMysqlEngineVersion.VER_3_10_2,
+    AuroraMysqlEngineVersion.VER_3_10_3,
+    AuroraMysqlEngineVersion.VER_3_11_0,
+    AuroraMysqlEngineVersion.VER_3_11_1,
+    AuroraMysqlEngineVersion.VER_3_12_0,
+  ])('cluster parameter group correctly determined for AURORA_MYSQL 3.x and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
     // GIVEN
-    const engine_ver_3_07_1 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_07_1,
-    });
-    const engine_ver_3_08_0 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_08_0,
-    });
-    const engine_ver_3_08_1 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_08_1,
-    });
-    const engine_ver_3_08_2 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_08_2,
-    });
-    const engine_ver_3_09_0 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_09_0,
-    });
-    const engine_ver_3_10_0 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_10_0,
-    });
-    const engine_ver_3_10_1 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_10_1,
-    });
-    const engine_ver_3_10_2 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_10_2,
-    });
-    const engine_ver_3_11_0 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_11_0,
-    });
-    const engine_ver_3_11_1 = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_11_1,
-    });
+    const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
 
     // THEN
-    expect(engine_ver_3_07_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_08_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_08_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_08_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_09_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_10_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_10_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_10_2.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_11_0.parameterGroupFamily).toEqual('aurora-mysql8.0');
-    expect(engine_ver_3_11_1.parameterGroupFamily).toEqual('aurora-mysql8.0');
+    expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
 });
