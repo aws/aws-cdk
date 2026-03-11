@@ -1,30 +1,33 @@
-import * as cdk from 'aws-cdk-lib/core';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
-
-/**
- * This test creates a cluster with an instanceIdentifiers attribute that can return writer and reader IDs.
- */
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app);
+const stack = new IntegTestBaseStack(app, 'Default');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_06_0 }),
-  writer: rds.ClusterInstance.provisioned('Instance', {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
-  readers: [rds.ClusterInstance.provisioned('reader')],
-  instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
   vpc,
+  writer: rds.ClusterInstance.provisioned('writer', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+    instanceIdentifier: 'instanceidentifierbase-0',
+  }),
+  readers: [
+    rds.ClusterInstance.provisioned('reader', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+      instanceIdentifier: 'instanceidentifierbase-1',
+    }),
+  ],
 });
 
-new integ.IntegTest(app, 'instanceIdentifiersTest', {
+new IntegTest(app, 'instanceIdentifiersTest', {
   testCases: [stack],
 });
-
-app.synth();
