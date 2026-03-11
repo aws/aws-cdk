@@ -1630,8 +1630,9 @@ Managed Termination Protection to work.
 
 Managed instance draining facilitates graceful termination of Amazon ECS instances.
 This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
-Infrastructure maintenance and updates are preformed without disruptions to workloads.
-To use managed instance draining, set enableManagedDraining to true.
+Infrastructure maintenance and updates are performed without disruptions to workloads.
+When `enableManagedDraining` is not specified (recommended), CloudFormation will implicitly
+enable managed draining. Set it to `true` for explicit enablement or `false` to disable.
 
 ```ts
 declare const vpc: ec2.Vpc;
