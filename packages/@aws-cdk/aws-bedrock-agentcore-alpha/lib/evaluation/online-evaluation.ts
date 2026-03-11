@@ -158,6 +158,8 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
         : undefined;
       public readonly status = undefined;
       public readonly executionStatus = undefined;
+      public readonly createdAt = undefined;
+      public readonly updatedAt = undefined;
       public readonly grantPrincipal: iam.IPrincipal;
 
       constructor(s: Construct, i: string) {
@@ -205,6 +207,18 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   public readonly executionStatus?: string;
 
   /**
+   * The timestamp when the configuration was created.
+   * @attribute
+   */
+  public readonly createdAt?: string;
+
+  /**
+   * The timestamp when the configuration was last updated.
+   * @attribute
+   */
+  public readonly updatedAt?: string;
+
+  /**
    * The principal to grant permissions to.
    */
   public readonly grantPrincipal: iam.IPrincipal;
@@ -250,6 +264,8 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     this.configId = resource.attrOnlineEvaluationConfigId;
     this.status = resource.attrStatus;
     this.executionStatus = resource.attrExecutionStatus;
+    this.createdAt = resource.attrCreatedAt;
+    this.updatedAt = resource.attrUpdatedAt;
   }
 
   private createExecutionRole(): iam.IRole {

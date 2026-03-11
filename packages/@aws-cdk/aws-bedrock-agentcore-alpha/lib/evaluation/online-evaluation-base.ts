@@ -57,6 +57,18 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
   readonly executionStatus?: string;
 
   /**
+   * The timestamp when the configuration was created.
+   * @attribute
+   */
+  readonly createdAt?: string;
+
+  /**
+   * The timestamp when the configuration was last updated.
+   * @attribute
+   */
+  readonly updatedAt?: string;
+
+  /**
    * Grant the given principal identity permissions to perform actions on this configuration.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
@@ -78,6 +90,8 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
   public abstract readonly executionRole?: iam.IRole;
   public abstract readonly status?: string;
   public abstract readonly executionStatus?: string;
+  public abstract readonly createdAt?: string;
+  public abstract readonly updatedAt?: string;
 
   /**
    * The principal to grant permissions to.
