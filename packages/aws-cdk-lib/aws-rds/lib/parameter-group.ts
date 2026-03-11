@@ -154,7 +154,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   /**
    * Creates a standalone instance parameter group.
-   * 
+   *
    * This method allows you to explicitly create a parameter group
    * without binding it to a database instance.
    *
@@ -171,7 +171,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   /**
    * Creates a standalone cluster parameter group.
-   * 
+   *
    * This method allows you to explicitly create a parameter group
    * without binding it to a database cluster.
    *
