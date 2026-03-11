@@ -1,22 +1,22 @@
 {
  "Resources": {
-  "ParameterGroup5E32DECB": {
+  "InstanceParameterGroupA9FCF4BA": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
-    "DBParameterGroupName": "name",
+    "DBParameterGroupName": "instance",
     "Description": "desc",
-    "Family": "postgres16",
+    "Family": "postgres18",
     "Parameters": {}
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ParameterGroupClusterParameterGroup25FF9360": {
+  "ClusterParameterGroupF60E75FA": {
    "Type": "AWS::RDS::DBClusterParameterGroup",
    "Properties": {
-    "DBClusterParameterGroupName": "name",
+    "DBClusterParameterGroupName": "cluster",
     "Description": "desc",
-    "Family": "postgres16",
+    "Family": "postgres18",
     "Parameters": {}
    },
    "UpdateReplacePolicy": "Delete",

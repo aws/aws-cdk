@@ -158,9 +158,6 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    * This method allows you to explicitly create a parameter group
    * without binding it to a database instance.
    *
-   * @param scope - The scope in which to define this construct
-   * @param id - The scoped construct ID
-   * @param props - The parameter group properties
    * @returns instance parameter group (AWS::RDS::DBParameterGroup)
    */
   public static forInstance(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {
@@ -175,9 +172,6 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    * This method allows you to explicitly create a parameter group
    * without binding it to a database cluster.
    *
-   * @param scope - The scope in which to define this construct
-   * @param id - The scoped construct ID
-   * @param props - The parameter group properties
    * @returns cluster parameter group (AWS::RDS::DBClusterParameterGroup)
    */
   public static forCluster(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {

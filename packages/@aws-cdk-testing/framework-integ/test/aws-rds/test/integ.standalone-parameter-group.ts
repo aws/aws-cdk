@@ -8,18 +8,18 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-standalone-parameter-group', {
   terminationProtection: false,
 });
 
-new rds.ParameterGroup.forInstance(stack, 'ParameterGroup', {
+rds.ParameterGroup.forInstance(stack, 'InstanceParameterGroup', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: INTEG_TEST_LATEST_POSTGRES }),
   description: 'desc',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  name: 'name',
+  name: 'instance',
 });
 
-new rds.ParameterGroup.forCluster(stack, 'ParameterGroup', {
+rds.ParameterGroup.forCluster(stack, 'ClusterParameterGroup', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: INTEG_TEST_LATEST_POSTGRES }),
   description: 'desc',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  name: 'name',
+  name: 'cluster',
 });
 
 new IntegTest(app, 'rds-standalone-parameter-group-integ-test', {
