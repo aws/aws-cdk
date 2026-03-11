@@ -77,7 +77,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
       throw new UnscopedValidationError(
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack' +
-        'Set crossAccountReferences=true to enable cross region references'
+        'Set crossAccountReferences=true to enable cross region references',
       );
     }
   }
