@@ -160,7 +160,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    *
    * @returns instance parameter group (AWS::RDS::DBParameterGroup)
    */
-  public static forInstance(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {
+  public static forInstance(scope: Construct, id: string, props: ParameterGroupProps): IParameterGroup {
     const parameterGroup = new ParameterGroup(scope, id, props);
     parameterGroup.createInstanceParameterGroup();
     return parameterGroup;
@@ -174,7 +174,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    *
    * @returns cluster parameter group (AWS::RDS::DBClusterParameterGroup)
    */
-  public static forCluster(scope: Construct, id: string, props: ParameterGroupProps): ParameterGroup {
+  public static forCluster(scope: Construct, id: string, props: ParameterGroupProps): IParameterGroup {
     const parameterGroup = new ParameterGroup(scope, id, props);
     parameterGroup.createClusterParameterGroup();
     return parameterGroup;
