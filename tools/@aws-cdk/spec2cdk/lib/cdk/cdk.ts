@@ -58,6 +58,8 @@ export class CdkCore extends ExternalModule {
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
 
   public readonly Mixin = Type.fromName(this, 'Mixin');
+  public readonly IMergeStrategy = Type.fromName(this, 'IMergeStrategy');
+  public readonly PropertyMergeStrategy = $T(Type.fromName(this, 'PropertyMergeStrategy'));
 
   constructor(fqn: string) {
     super(fqn);
