@@ -625,10 +625,7 @@
       "Mode": "required",
       "TrustStoreConfig": {
        "TrustStoreId": {
-        "Fn::GetAtt": [
-         "TrustStore982C25D3",
-         "Id"
-        ]
+        "Ref": "TrustStore982C25D3"
        }
       }
      }
