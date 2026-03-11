@@ -13,13 +13,19 @@ For an overview of how Mixins relate to Facades and Traits, see the
 
 Mixins are appropriate when:
 
-- A feature can be expressed as a modification to an L1 resource (e.g.,
-  enabling versioning on a bucket).
+- The feature is *about* the target resource — it extends the resource's own
+  behavior or lifecycle.
+- The feature sets properties on the L1 resource (e.g., enabling versioning on
+  a bucket).
+- The feature creates auxiliary resources that serve the primary resource (e.g.,
+  custom resource handlers, delivery sources, policy resources).
 - The same feature should be applicable to both L1 and L2 constructs.
-- A feature involves creating auxiliary resources (e.g., custom resources,
-  policies) that support the primary resource.
 - You want to allow users to compose features independently of the L2
   construct's props.
+
+Mixins are _not_ appropriate when the feature serves an external consumer rather
+than the target resource (use a Facade). For example, granting a role access to
+a bucket is about the role's needs, not the bucket's behavior.
 
 Mixins are _not_ a replacement for construct properties. They cannot change the
 optionality of properties or change defaults.
