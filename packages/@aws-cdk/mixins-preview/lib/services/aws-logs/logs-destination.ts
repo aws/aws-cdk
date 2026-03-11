@@ -8,7 +8,7 @@ import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrinc
 import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import * as xray from '../aws-xray/policy';
+import * as xray from './xray-policy';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**

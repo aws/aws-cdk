@@ -214,7 +214,7 @@ class L1PropsMixin extends ClassType {
 
     this.addProperty({
       name: 'strategy',
-      type: MIXINS_COMMON.IMergeStrategy,
+      type: CDK_CORE.IMergeStrategy,
       protected: true,
       immutable: true,
     });
@@ -244,7 +244,7 @@ class L1PropsMixin extends ClassType {
       stmt.assign($this.props, flattenFunction
         ? expr.object(expr.splat(props), expr.splat(CallableProxy.fromName(flattenFunction.name, this.scope).invoke(props)))
         : props),
-      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', MIXINS_COMMON.PropertyMergeStrategy.combine())),
+      stmt.assign($this.strategy, expr.binOp(options?.prop('strategy'), '??', CDK_CORE.PropertyMergeStrategy.combine())),
     );
   }
 
