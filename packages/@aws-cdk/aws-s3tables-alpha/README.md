@@ -115,55 +115,27 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
                     type: 'date',
                     required: true,
                 },
-                {
-                    id: 2,
-                    name: 'user_id',
-                    type: 'string',
-                    required: true,
-                },
-                {
-                    id: 3,
-                    name: 'event_count',
-                    type: 'int',
-                },
             ],
         },
-        // Partition by date for efficient time-based queries
         icebergPartitionSpec: {
-            specId: 0,
             fields: [
                 {
                     sourceId: 1,
-                    transform: PartitionTransform.IDENTITY,
-                    name: 'event_date_partition',
-                    fieldId: 1000,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
                 },
             ],
         },
-        // Sort by date and user_id for better query performance
         icebergSortOrder: {
-            orderId: 1,
             fields: [
                 {
                     sourceId: 1,
-                    // Sort transform is a string to support parameterized Iceberg transforms like 'bucket[16]' or 'truncate[8]'
-                    transform: 'identity',
+                    transform: IcebergTransform.IDENTITY,
                     direction: SortDirection.ASC,
                     nullOrder: NullOrder.NULLS_LAST,
                 },
-                {
-                    sourceId: 2,
-                    transform: 'identity',
-                    direction: SortDirection.ASC,
-                    nullOrder: NullOrder.NULLS_FIRST,
-                },
             ],
         },
-        // Configure table properties for Parquet format
-        tableProperties: [
-            { key: 'write.format.default', value: 'parquet' },
-            { key: 'write.parquet.compression-codec', value: 'zstd' },
-        ],
     },
 });
 ```
