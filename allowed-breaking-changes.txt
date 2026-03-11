@@ -4164,3 +4164,8 @@ removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
 # Never intended to be mutable, not usefully mutable
 removed-mutability:aws-cdk-lib.aws_s3.Bucket.grants
 removed-mutability:aws-cdk-lib.aws_s3.BucketBase.grants
+
+# Renamed parameter `tag` to `tagOrDigest` in ContainerImage.fromEcrRepository
+# to be consistent with the underlying EcrImage constructor and
+# ecr.IRepository.repositoryUriForTagOrDigest.
+incompatible-argument:aws-cdk-lib.aws_ecs.ContainerImage.fromEcrRepository
