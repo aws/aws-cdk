@@ -1,0 +1,52 @@
+{
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcEndpointServices758c25bd3e2e76be46ace3992df28c51/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcEndpointServices758c25bd3e2e76be46ace3992df28c51/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEC2describeVpcEndpointServices758c25bd3e2e76be46ace3992df28c51"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert/AwsApiCallEC2describeVpcEndpointServices758c25bd3e2e76be46ace3992df28c51/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeVpcEndpointServices758c25bd3e2e76be46ace3992df28c51"
+    }
+  ]
+}

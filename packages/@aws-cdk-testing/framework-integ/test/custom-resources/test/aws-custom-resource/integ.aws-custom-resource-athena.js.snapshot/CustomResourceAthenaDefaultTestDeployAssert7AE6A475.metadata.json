@@ -1,0 +1,78 @@
+{
+  "/CustomResourceAthena/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistWorkGroups/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistWorkGroups/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallAthenalistWorkGroups"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistWorkGroups/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallAthenalistWorkGroups"
+    }
+  ],
+  "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453"
+    }
+  ]
+}

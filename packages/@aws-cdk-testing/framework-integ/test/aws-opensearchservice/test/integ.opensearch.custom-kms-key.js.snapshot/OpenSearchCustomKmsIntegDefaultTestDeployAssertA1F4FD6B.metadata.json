@@ -1,0 +1,52 @@
+{
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799"
+    }
+  ]
+}

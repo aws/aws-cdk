@@ -1,0 +1,268 @@
+{
+  "/aws-custom-resource-external-id-test": [
+    {
+      "type": "aws:cdk:asset",
+      "data": {
+        "path": "asset.6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d",
+        "id": "6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d",
+        "packaging": "zip",
+        "sourceHash": "6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d",
+        "s3BucketParameter": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dS3BucketE0C64725",
+        "s3KeyParameter": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dS3VersionKeyBAFCA85C",
+        "artifactHashParameter": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dArtifactHash3137DE80"
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/RoleWithExternalId": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "externalIds": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-custom-resource-external-id-test/RoleWithExternalId/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoleWithExternalId8051DA58"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/RoleWithExternalId/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/ExternalIdTest/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/ExternalIdTest/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/ExternalIdTest/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/RoleWithExternalId/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoleWithExternalIdDefaultPolicy2452625E"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/ExternalIdTest/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExternalIdTest50BCDF64"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/ExternalIdTest/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExternalIdTestCustomResourcePolicy066CBBCD"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AssetParameters/6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d/S3Bucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dS3BucketE0C64725"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AssetParameters/6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d/S3VersionKey": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dS3VersionKeyBAFCA85C"
+    }
+  ],
+  "/aws-custom-resource-external-id-test/AssetParameters/6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3d/ArtifactHash": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssetParameters6893eb4b5f0e1696a9b55a641671844e144a9a0ea440edf83e29a90c8e1e8f3dArtifactHash3137DE80"
+    }
+  ]
+}

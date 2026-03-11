@@ -1,0 +1,35 @@
+{
+  "/CreateParameterServiceTimeoutStack/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/CreateParameterServiceTimeoutStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CreateParameterServiceTimeoutStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CreateParameterServiceTimeoutStack/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SecretA720EF05"
+    }
+  ],
+  "/CreateParameterServiceTimeoutStack/Exports/Output{\"Ref\":\"SecretA720EF05\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSecretA720EF052D953DED"
+    }
+  ]
+}
