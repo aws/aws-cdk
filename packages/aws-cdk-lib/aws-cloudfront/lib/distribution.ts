@@ -201,9 +201,10 @@ export interface DistributionProps {
   readonly geoRestriction?: GeoRestriction;
 
   /**
-   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   * Specify the HTTP version(s) that you want viewers to use to communicate with CloudFront.
    *
-   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support Server Name Indication (SNI).
+   * For viewers and CloudFront to use HTTP/3, viewers must support TLS 1.3 and Server Name Indication (SNI).
    *
    * @default HttpVersion.HTTP2
    */
@@ -893,15 +894,15 @@ export class Distribution extends Resource implements IDistribution {
   }
 }
 
-/** Maximum HTTP version to support */
+/** The HTTP version(s) to enable for viewers communicating with CloudFront */
 export enum HttpVersion {
-  /** HTTP 1.1 */
+  /** HTTP 1.1 only */
   HTTP1_1 = 'http1.1',
-  /** HTTP 2 */
+  /** HTTP 2 only */
   HTTP2 = 'http2',
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
-  /** HTTP 3 */
+  /** HTTP 3 only */
   HTTP3 = 'http3',
 }
 
