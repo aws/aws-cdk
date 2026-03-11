@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as https from 'https';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 
