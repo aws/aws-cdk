@@ -4,9 +4,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-ami-all-parameters');
+
+const inspector = enableInspector(stack, ['EC2']);
 
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
@@ -51,6 +54,7 @@ const image = new imagebuilder.Image(stack, 'Image-AMI', {
   deletionExecutionRole,
   tags: { key1: 'value1', key2: 'value2' },
 });
+image.node.addDependency(inspector);
 image.grantDefaultExecutionRolePermissions(executionRole);
 
 new cdk.CfnOutput(stack, 'ImageArn', { value: image.imageArn });

@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "50.0.0",
   "testCases": {
     "postgres-s3-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "postgres-s3-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "postgress3integtestDefaultTestDeployAssert71482B98"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

@@ -26,7 +26,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Dest7C0F50BC": {
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -36,7 +36,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMultGroupA5ACD97D50A7DAB0A"
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMuoupA5ACD97D50A7DAB0A"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -47,7 +47,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Dest7C0F50BC",
+      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB",
       "Arn"
      ]
     },
@@ -56,7 +56,7 @@
     }
    },
    "DependsOn": [
-    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Dest7C0F50BC",
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Desterrorlogs31D810EB",
     "CDKSourceERRORLOGSVendedLogsMultiplesTest"
    ]
   },
@@ -133,7 +133,7 @@
     "PolicyName": "VendedLogsMultiplesTestCdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D50A7DAB0A"
    }
   },
-  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDest3419A983": {
+  "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B": {
    "Type": "AWS::Logs::DeliveryDestination",
    "Properties": {
     "DeliveryDestinationType": "CWL",
@@ -143,7 +143,7 @@
       "Arn"
      ]
     },
-    "Name": "cdk-cwl-error-logs-dest-VendedLogsMultGroupB352246CF12923CAA"
+    "Name": "cdk-cwl-Desterror-logs-dest-VendedLogsMuoupB352246CF12923CAA"
    },
    "DependsOn": [
     "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
@@ -154,7 +154,7 @@
    "Properties": {
     "DeliveryDestinationArn": {
      "Fn::GetAtt": [
-      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDest3419A983",
+      "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B",
       "Arn"
      ]
     },
@@ -164,7 +164,7 @@
    },
    "DependsOn": [
     "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupA5ACD97D5Delivery1DAA8855",
-    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDest3419A983",
+    "CdkLogGroupErrorLogsDeliveryVendedLogsMultiplesTestVendedLogsMultiplesTestDeliveryLogGroupB352246CFDesterrorlogs6406F54B",
     "CDKSourceERRORLOGSVendedLogsMultiplesTest"
    ]
   }

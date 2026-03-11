@@ -62,7 +62,7 @@ test('verify that the app resolves tokens in metadata', () => {
   });
 
   const synth = app.synth().getStackByName(stack.stackName);
-  const meta = synth.manifest.metadata || {};
+  const meta = synth.metadata || {};
   expect(meta['/my-stack']).toBeTruthy();
   expect(meta['/my-stack'][0]).toBeTruthy();
   expect(meta['/my-stack'][0].data).toEqual({
@@ -446,7 +446,7 @@ describe('staging', () => {
     // WHEN
     const session = app.synth();
     const artifact = session.getStackByName(stack.stackName);
-    const metadata = artifact.manifest.metadata || {};
+    const metadata = artifact.metadata || {};
     const md = Object.values(metadata)[0]![0]!.data as cxschema.AssetMetadataEntry;
     expect(md.path).toBe('asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
   });

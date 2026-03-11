@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import type { IConstruct, IMixin } from 'constructs';
 import type { ArnComponents } from './arn';
 import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
@@ -14,10 +15,7 @@ import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
 import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
-
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import type { IConstruct } from 'constructs';
+import { withMixins } from './mixins/private/mixin-metadata';
 
 /**
  * Interface for L2 Resource constructs.
@@ -169,6 +167,10 @@ export abstract class Resource extends Construct implements IResource {
       account: this._customAccount ?? this.stack.account,
       region: this._customRegion ?? this.stack.region,
     };
+  }
+
+  public with(...mixins: IMixin[]): IConstruct {
+    return withMixins(this, ...mixins);
   }
 
   /**

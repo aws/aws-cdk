@@ -1,10 +1,11 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import type { StackProps } from 'aws-cdk-lib';
-import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import { Construct } from 'constructs';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 
 interface TestCaseProps extends Pick<rds.DatabaseClusterProps, 'writer' | 'readers' | 'vpc'> {
 }
@@ -13,10 +14,9 @@ class TestCase extends Construct {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id);
     const cluster = new rds.DatabaseCluster(this, 'Integ-Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_1 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
       writer: props.writer,
       readers: props.readers,
-      removalPolicy: RemovalPolicy.DESTROY,
       vpc: props.vpc,
     });
     cluster.metricServerlessDatabaseCapacity({
@@ -54,9 +54,9 @@ const testCases: TestCaseProps[] = [
   },
 ];
 
-export class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props?: StackProps) {
-    super(scope, id, props);
+export class TestStack extends IntegTestBaseStack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
     const vpc = new Vpc(this, 'Integ-VPC');
     testCases.forEach((p: TestCaseProps, i) =>
       new TestCase(this, `integ-aurora-serverlessv2-${i}`, {

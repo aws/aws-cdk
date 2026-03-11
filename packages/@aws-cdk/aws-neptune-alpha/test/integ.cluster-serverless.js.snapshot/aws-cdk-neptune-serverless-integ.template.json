@@ -395,7 +395,7 @@
    "Type": "AWS::Neptune::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "neptune1.2",
+    "Family": "neptune1.4",
     "Parameters": {
      "neptune_enable_audit_log": "1",
      "neptune_query_timeout": "100000"

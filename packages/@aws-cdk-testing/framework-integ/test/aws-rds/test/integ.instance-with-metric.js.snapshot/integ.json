@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "testCases": {
     "rds-instance-with-metric-integ-test/DefaultTest": {
       "stacks": [
@@ -16,5 +16,5 @@
       "assertionStackName": "rdsinstancewithmetricintegtestDefaultTestDeployAssert50AA4D51"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1107.0"
 }

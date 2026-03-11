@@ -1,13 +1,17 @@
 name: PR Prioritization R5 Check
 on:
   schedule:
-    - cron: '0 6 * * 1-5'  # Runs at 6AM every day during weekdays
-  workflow_dispatch:        # Manual trigger
+    - cron: "0 6 * * 1-5" # Runs at 6AM every day during weekdays
+  workflow_dispatch: # Manual trigger
+
+permissions:
+  contents: read
 
 jobs:
   update_project_status:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - uses: actions/checkout@v6
       - name: Check and Assign R5 Priority to PRs

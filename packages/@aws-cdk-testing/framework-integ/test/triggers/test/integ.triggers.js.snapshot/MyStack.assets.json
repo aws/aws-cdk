@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
     "2fc279f22d70e9de93c69d6da451bbbe64a7387e0966682dd12d943c00a29321": {
       "displayName": "MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "feed0ab52a5a2cef2d43e51e9305c77f6e6bfd43cd1f3479cb5453b6739cf9f1": {
+    "f93ce4bd2a75d305a0ba8a3eeb9f71d8e3358fb9d3c3766f5887dbc607a2131c": {
       "displayName": "MyStack Template",
       "source": {
         "path": "MyStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-adbd7f77": {
+        "current_account-current_region-00d52b0b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "feed0ab52a5a2cef2d43e51e9305c77f6e6bfd43cd1f3479cb5453b6739cf9f1.json",
+          "objectKey": "f93ce4bd2a75d305a0ba8a3eeb9f71d8e3358fb9d3c3766f5887dbc607a2131c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

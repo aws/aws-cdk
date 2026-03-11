@@ -360,8 +360,9 @@ const archive = new Archive(stack, 'Archive', {
 });
 ```
 
-To enable archives or schema discovery on an event bus, customers has the choice of using either an AWS owned key or a customer managed key.
-For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+To enable archives on an event bus, customers have the choice of using either an AWS owned key or a customer managed key.
+Note that schema discovery is not supported for event buses encrypted using a customer managed key. To enable schema discovery on an event bus, choose to use an AWS owned key.
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html) and [Encrypting event buses with customer managed keys](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-cmkey.html).
 
 ## Configuring logging
 

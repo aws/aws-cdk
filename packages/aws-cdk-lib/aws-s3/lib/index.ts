@@ -6,6 +6,7 @@ export * from './bucket-grants';
 export * from './bucket-policy';
 export * from './destination';
 export * from './location';
+export * as mixins from './mixins';
 export * from './rule';
 
 // AWS::S3 CloudFormation Resources:

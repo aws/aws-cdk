@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "52.0.0",
   "testCases": {
     "cdk-rds-cluster-instance-ca-certificate-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-rds-cluster-instance-ca-certificate-test/DefaultTest/DeployAssert",
       "assertionStackName": "cdkrdsclusterinstancecacertificatetestDefaultTestDeployAssertBEAA84EE"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

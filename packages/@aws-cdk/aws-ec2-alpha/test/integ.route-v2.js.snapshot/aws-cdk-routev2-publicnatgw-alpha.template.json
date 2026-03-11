@@ -85,7 +85,14 @@
   "natgwpubSubnet79D316E5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-east-1a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.0.0/24",
     "Ipv6CidrBlock": {
      "Fn::Select": [
@@ -155,13 +162,7 @@
   "testNATgwEIP1C260FAD": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet"
-     }
-    ]
+    "Domain": "vpc"
    }
   },
   "testNATgwNATGateway1533420D": {
@@ -175,13 +176,7 @@
     },
     "SubnetId": {
      "Ref": "natgwpubSubnet79D316E5"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-routev2-publicnatgw-alpha/natgw_pubSubnet"
-     }
-    ]
+    }
    },
    "DependsOn": [
     "natgwpubSubnetRouteTableAssociation019CE26A"

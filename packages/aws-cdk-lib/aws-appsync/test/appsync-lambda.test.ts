@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
@@ -62,6 +62,23 @@ describe('Lambda Data Source configuration', () => {
       Type: 'AWS_LAMBDA',
       Name: 'custom',
       Description: 'custom description',
+    });
+  });
+
+  test.each([
+    [appsync.DataSourceMetricsConfig.ENABLED, 'ENABLED'],
+    [appsync.DataSourceMetricsConfig.DISABLED, 'DISABLED'],
+    [undefined, Match.absent()],
+  ])('appsync configures metrics config correctly to set %s', (metricsConfig, expected) => {
+    // WHEN
+    api.addLambdaDataSource('ds', func, {
+      metricsConfig: metricsConfig,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AWS_LAMBDA',
+      MetricsConfig: expected,
     });
   });
 

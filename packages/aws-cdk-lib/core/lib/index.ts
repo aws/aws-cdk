@@ -1,6 +1,8 @@
 export * from './aspect';
 export * from './tag-aspect';
 
+export * from './mixins';
+
 export * from './token';
 export * from './resolvable';
 export * from './type-hints';

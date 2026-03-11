@@ -1,12 +1,18 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integtest-model/DefaultTest": {
       "stacks": [
         "aws-cdk-vpcv2-alpha-integ-ipam"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "integtest-model/DefaultTest/DeployAssert",
       "assertionStackName": "integtestmodelDefaultTestDeployAssertCF40BD53"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

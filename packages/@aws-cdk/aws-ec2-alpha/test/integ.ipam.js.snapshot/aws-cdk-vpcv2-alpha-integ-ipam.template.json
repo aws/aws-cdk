@@ -5,7 +5,9 @@
    "Properties": {
     "OperatingRegions": [
      {
-      "RegionName": "us-west-2"
+      "RegionName": {
+       "Ref": "AWS::Region"
+      }
      }
     ]
    }
@@ -20,7 +22,9 @@
       "PrivateDefaultScopeId"
      ]
     },
-    "Locale": "us-west-2",
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
     "ProvisionedCidrs": [
      {
       "Cidr": "10.2.0.0/16"
@@ -39,7 +43,9 @@
       "PublicDefaultScopeId"
      ]
     },
-    "Locale": "us-west-2",
+    "Locale": {
+     "Ref": "AWS::Region"
+    },
     "PublicIpSource": "amazon"
    }
   },
@@ -112,7 +118,14 @@
   "testsbubnetSubnet77337845": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.0.0.0/24",
     "Tags": [
      {

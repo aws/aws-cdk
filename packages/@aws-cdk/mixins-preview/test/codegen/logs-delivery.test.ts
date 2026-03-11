@@ -1,8 +1,7 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import type { MixinsBuilderProps } from '../../scripts/spec2mixins';
-import { LogsDeliveryBuilder } from '../../scripts/spec2logs';
+import { LogsDeliveryBuilder, type LogsDeliveryBuilderProps } from '../../scripts/spec2logs';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;
@@ -45,14 +44,18 @@ test('Logs Delivery Mixin for a resource', () => {
         destinations: [
           {
             destinationType: 'S3',
+            outputFormats: ['json', 'plain', 'w3c', 'parquet'],
           },
           {
             destinationType: 'CWL',
+            outputFormats: ['plain', 'json'],
           },
           {
             destinationType: 'FH',
+            outputFormats: ['json', 'raw', 'plain'],
           },
         ],
+        optionalFields: ['resource_id', 'account_id', 'event_type', 'phase1_state'],
       },
       {
         permissionsVersion: 'V2',
@@ -60,14 +63,19 @@ test('Logs Delivery Mixin for a resource', () => {
         destinations: [
           {
             destinationType: 'S3',
+            outputFormats: ['json', 'plain', 'w3c', 'parquet'],
           },
           {
             destinationType: 'CWL',
+            outputFormats: ['plain', 'json'],
           },
           {
             destinationType: 'FH',
+            outputFormats: ['json', 'raw', 'plain'],
           },
         ],
+        mandatoryFields: ['resource-id', 'body'],
+        optionalFields: ['account.id', 'trace/id', 'span*id', '1phase_state', '200version'],
       },
     ],
   });
@@ -83,7 +91,7 @@ test('Logs Delivery Mixin for a resource', () => {
   expect(rendered).toMatchSnapshot();
 });
 
-function moduleForResource(resource: Resource, props: MixinsBuilderProps) {
+function moduleForResource(resource: Resource, props: LogsDeliveryBuilderProps) {
   const ast = new LogsDeliveryBuilder(props);
   const info = ast.addResource(resource);
   return info.locatedModules[0].module;

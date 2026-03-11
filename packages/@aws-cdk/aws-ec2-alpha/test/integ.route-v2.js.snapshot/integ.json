@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integtest-model-8/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-model-8/DefaultTest/DeployAssert",
       "assertionStackName": "integtestmodel8DefaultTestDeployAssert77221752"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

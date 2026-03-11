@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7882d8c208f2adbc103ee01bd821645120048d69d05fcd7ff172e849d3141504.zip"
+     "S3Key": "bcaf256a664b929795454b3716cf40938c046f06d4867d7fb2d313a349e78c12.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "tsdecoratorhandlerServiceRole61E9E52C"
@@ -91,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7882d8c208f2adbc103ee01bd821645120048d69d05fcd7ff172e849d3141504.zip"
+     "S3Key": "bcaf256a664b929795454b3716cf40938c046f06d4867d7fb2d313a349e78c12.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -100,7 +100,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "tsdecoratorhandlertsconfigServiceRoleC4AE481E"

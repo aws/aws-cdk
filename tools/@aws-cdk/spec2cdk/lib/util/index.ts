@@ -4,6 +4,7 @@ export * as jsii from './jsii';
 export * from './jsdoc-tags';
 export * from './patterned-name';
 export * from './split-summary';
+export * from './submodule-files';
 export * from './ts-file-writer';
 
 /**

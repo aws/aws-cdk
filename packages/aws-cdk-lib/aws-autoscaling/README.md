@@ -830,6 +830,29 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Deletion Protection
+
+You can enable deletion protection to prevent your Auto Scaling group from being accidentally deleted. Deletion protection blocks the DeleteAutoScalingGroup API operation, requiring you to first update the deletion protection setting before you can delete the Auto Scaling group.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  deletionProtection: autoscaling.DeletionProtection.PREVENT_ALL_DELETION,
+});
+```
+
+The following deletion protection levels are available:
+
+* `DeletionProtection.NONE` (default) - No deletion protection. The Auto Scaling group can be deleted with or without the force delete option.
+* `DeletionProtection.PREVENT_FORCE_DELETION` - Prevents force deletion operations. This allows deletion of empty Auto Scaling groups but blocks force deletion that would terminate all instances.
+* `DeletionProtection.PREVENT_ALL_DELETION` - Prevents all deletion operations. This provides the strongest protection and requires explicitly disabling deletion protection before the Auto Scaling group can be deleted.
+
+**Note:** When using `PREVENT_ALL_DELETION`, you must first update the deletion protection setting before deleting the CloudFormation stack containing the Auto Scaling group.
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

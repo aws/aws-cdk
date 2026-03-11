@@ -3,18 +3,39 @@ import * as cdk from 'aws-cdk-lib';
 import * as appreg from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-application');
+const stack = new cdk.Stack(app, 'integ-appregistry-no-stackid');
 
 new appreg.ApplicationAssociator(app, 'RegisterCdkApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
-    applicationName: 'AppRegistryAssociatedApplication',
+    applicationName: 'AppRegistryNoStackIdApp',
   })],
 });
 
 new cdk.Stack(stack, 'resourcesStack');
 
-new integ.IntegTest(app, 'ApplicationAssociatorTest', {
+const testCase = new integ.IntegTest(app, 'ApplicationAssociatorTest', {
   testCases: [stack],
+});
+
+// Disassociate stacks from the AppRegistry application before teardown.
+// The integ-runner may destroy the application stack before the associated
+// stacks finish deleting their CfnResourceAssociation, causing DELETE_FAILED.
+const disassoc = testCase.assertions.awsApiCall('ServiceCatalogAppRegistry', 'disassociateResource', {
+  application: 'AppRegistryNoStackIdApp',
+  resourceType: 'CFN_STACK',
+  resource: stack.stackId,
+});
+disassoc.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: [
+    'servicecatalog:DisassociateResource',
+    'resource-groups:DisassociateResource',
+    'cloudformation:UpdateStack',
+    'cloudformation:DescribeStacks',
+    'tag:GetResources',
+    'tag:UntagResources',
+  ],
+  Resource: ['*'],
 });
 
 app.synth();

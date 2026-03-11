@@ -63,3 +63,16 @@ type-fingerprints.txt
 
 # Kiro-specific files
 .kiro/
+
+# Lock files (allow root yarn.lock and anything in test directories)
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+bun.lockb
+bun.lock
+!/yarn.lock
+!**/test/**/yarn.lock
+!**/test/**/package-lock.json
+!**/test/**/pnpm-lock.yaml
+!**/test/**/bun.lockb
+!**/test/**/bun.lock

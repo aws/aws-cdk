@@ -25,9 +25,10 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 ## Security Checks
 
 ### Rule Organization
+
 Guard rules are organized in service-specific directories for granular control:
 
-```
+```text
 rules/
 ├── documentdb/
 │   └── documentdb-encryption-enabled.guard
@@ -66,11 +67,13 @@ rules/
 ```
 
 ### Always Flagged (High Risk)
+
 - **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
 - **Root principals without conditions**: `:root` principals must have restrictive conditions
 - **Broad principals in sensitive resources**: IAM roles, S3 buckets, etc.
 
 ### Smart Exemptions (Configurable)
+
 - **AWS KMS default policies**: Standard root access for IAM integration
 - **Individual rule control**: Enable/disable specific rules per service
 - **Metadata-based suppression**: Use CDK metadata to suppress specific rules
@@ -79,19 +82,19 @@ rules/
 
 ## Inputs (GitHub Action)
 
-| Name            | Description                               | Required | Default       |
-|-----------------|-------------------------------------------|----------|---------------|
-| `rule_set_path` | Local path to the cfn-guard rules file   | Yes      | N/A           |
-| `base_sha`      | Commit SHA to compare against             | No       | `origin/main` |
-| `head_sha`      | The commit SHA for the head branch or PR | No       | `HEAD`        |
-| `enhance_xml`   | Enable XML enhancement for individual failure annotations | No | `true` |
+| Name            | Description                                               | Required | Default       |
+| --------------- | --------------------------------------------------------- | -------- | ------------- |
+| `rule_set_path` | Local path to the cfn-guard rules file                    | Yes      | N/A           |
+| `base_sha`      | Commit SHA to compare against                             | No       | `origin/main` |
+| `head_sha`      | The commit SHA for the head branch or PR                  | No       | `HEAD`        |
+| `enhance_xml`   | Enable XML enhancement for individual failure annotations | No       | `true`        |
 
 ## Outputs (GitHub Action)
 
-| Name         | Description                               |
-|--------------|-------------------------------------------|
-| `junit_files`| Comma-separated list of JUnit XML files  |
-| `all_passed` | Whether all validations passed            |
+| Name          | Description                             |
+| ------------- | --------------------------------------- |
+| `junit_files` | Comma-separated list of JUnit XML files |
+| `all_passed`  | Whether all validations passed          |
 
 ---
 
@@ -121,11 +124,13 @@ rules/
 ## Local Development
 
 ### 1. Install Dependencies
+
 ```bash
 cd tools/@aws-cdk/security-guardian && yarn install
 ```
 
 ### 2. Run Locally
+
 The tool automatically detects changed templates and validates them.
 
 ```bash
@@ -133,6 +138,7 @@ yarn security-guardian
 ```
 
 > You can override defaults using:
+>
 > - `--base_sha=origin/main`  
 > - `--rule_set_path=./custom-rules`
 
@@ -146,6 +152,7 @@ The tool generates JUnit XML reports that can be consumed by GitHub Actions:
 - `test-results/cfn-guard-resolved.xml` - Results from templates with resolved intrinsics
 
 Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.0.1) to display rich test results in GitHub PRs with:
+
 - **Enhanced failure messages** - Automatically parses and formats concatenated CFN Guard failures
 - **Precise line numbers** - Exact file locations for each violation
 - **Resource identification** - Clear resource names and property paths
@@ -154,18 +161,21 @@ Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.
 ### Enhanced Failure Formatting
 
 The tool automatically enhances CFN Guard failure messages by:
+
 - Splitting concatenated failure messages into individual violations
 - Extracting exact line numbers and column positions
 - Identifying specific CloudFormation resources and properties
 - Formatting output for better readability in CI/CD reports
 
 **Before (Raw CFN Guard Output):**
-```
+
+```text
 IAM_NO_WILDCARD_ACTIONS_INLINE for Type: ResolvedCheck was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
 ```
 
 **After (Enhanced Format):**
-```
+
+```text
 Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: Resolved)
 ==================================================
 
@@ -285,11 +295,12 @@ let security_groups = Resources.*[
 - Commit the updated snapshot templates so Security Guardian can read them from git history
 
 **Available Rules to Suppress:**
+
 - `EC2_NO_OPEN_SECURITY_GROUPS`
 - `S3_ENCRYPTION_ENABLED`
 - `S3_NO_WORLD_READABLE`
 - `S3_SECURE_TRANSPORT`
-- `IAM_ROLE_NO_BROAD_PRINCIPALS` 
+- `IAM_ROLE_NO_BROAD_PRINCIPALS`
 - `IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS`
 - `IAM_NO_WILDCARD_ACTIONS`
 - `IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY`

@@ -1,13 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
-    "EnhancedMonitoringClusterInteg/DefaultTest": {
+    "cluster-enhanced-monitoring-integ-test/DefaultTest": {
       "stacks": [
-        "EnhancedMonitoringClusterStack"
+        "aws-cdk-rds-cluster-enhanced-monitoring"
       ],
-      "assertionStack": "EnhancedMonitoringClusterInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "EnhancedMonitoringClusterIntegDefaultTestDeployAssertBBA17BDD"
+      "assertionStack": "cluster-enhanced-monitoring-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterenhancedmonitoringintegtestDefaultTestDeployAssert471BEC35"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1105.0"
 }

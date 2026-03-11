@@ -86,8 +86,8 @@ cacheDescription.expect(ExpectedResult.objectLike({
   }],
 })).waitForAssertions(
   {
-    totalTimeout: Duration.minutes(2),
-    interval: Duration.seconds(5),
+    totalTimeout: Duration.minutes(15),
+    interval: Duration.seconds(30),
   },
 );
 

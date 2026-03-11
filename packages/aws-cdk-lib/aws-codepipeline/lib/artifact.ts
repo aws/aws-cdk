@@ -14,6 +14,8 @@ export class Artifact {
    * @param files file paths that you want to export as the output artifact for the action.
    * This property can only be used in the artifact for `CommandsAction`.
    * The length of the files array must be between 1 and 10.
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   public static artifact(name: string, files?: string[]): Artifact {
     return new Artifact(name, files);
@@ -147,6 +149,7 @@ export class Artifact {
  * for a CloudFormation action.
  */
 export class ArtifactPath {
+  /** @jsii suppress JSII5019 For historic reasons */
   public static artifactPath(artifactName: string, fileName: string): ArtifactPath {
     return new ArtifactPath(Artifact.artifact(artifactName), fileName);
   }

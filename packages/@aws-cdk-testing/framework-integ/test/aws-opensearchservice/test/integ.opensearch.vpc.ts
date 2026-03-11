@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, Stack, RemovalPolicy, CfnResource } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
@@ -8,14 +8,6 @@ import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    const serviceLinkedRole = new CfnResource(this, 'ServiceLinkedRole', {
-      type: 'AWS::IAM::ServiceLinkedRole',
-      properties: {
-        AWSServiceName: 'opensearchservice.amazonaws.com',
-        Description: 'Role for OpenSearch VPC Test',
-      },
-    });
 
     const vpc = new ec2.Vpc(this, 'Vpc', { restrictDefaultSecurityGroup: false });
     const domainProps: opensearch.DomainProps = {
@@ -31,8 +23,7 @@ class TestStack extends Stack {
       },
     };
 
-    const domain = new opensearch.Domain(this, 'Domain', domainProps);
-    domain.node.addDependency(serviceLinkedRole);
+    new opensearch.Domain(this, 'Domain', domainProps);
   }
 }
 

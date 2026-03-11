@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "testCases": {
     "rds-instance-iops-metric-integ-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "rdsinstanceiopsmetricintegtestDefaultTestDeployAssertCE0936F2"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1107.0"
 }

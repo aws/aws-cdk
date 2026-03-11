@@ -80,7 +80,10 @@ export class Platform {
   /**
    * @param platform The platform to use for docker build
    */
-  private constructor(public readonly platform: string) { }
+  private constructor(
+    /** @jsii suppress JSII5019 For historic reasons */
+    public readonly platform: string,
+  ) { }
 }
 
 /**

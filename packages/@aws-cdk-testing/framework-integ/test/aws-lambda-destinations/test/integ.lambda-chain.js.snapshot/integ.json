@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "testCases": {
     "LambdaDestChain3/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LambdaDestChain3/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaDestChain3DefaultTestDeployAssertB72F10E8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

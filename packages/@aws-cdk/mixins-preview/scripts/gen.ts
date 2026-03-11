@@ -1,12 +1,14 @@
-
-import { generateAll as generateCfnPropsMixins } from './spec2mixins';
-import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
-import { generateAll as generateEvents } from './spec2eventbridge';
-import * as path from 'node:path';
-import * as fs from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import type { ModuleMap, ModuleMapEntry } from '@aws-cdk/spec2cdk/lib/module-topology';
-import type { ModuleDefinition } from '@aws-cdk/pkglint';
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+import type { GeneratorResult, ModuleMap, ModuleMapEntry, SubmoduleContribution } from '@aws-cdk/spec2cdk/lib/module-topology';
+import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
+import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
+import { generateAll as generateCfnPropsMixins } from './spec2mixins';
+import { generateAll as generateEvents } from './spec2eventbridge';
+import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
+
+const GO_PREFIX = 'preview';
 
 main().catch(e => {
   console.error(e);
@@ -14,38 +16,70 @@ main().catch(e => {
 });
 
 async function main() {
-  // the path to the mixins package
   const pkgPath = path.join(__dirname, '..');
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
-  const moduleMaps = [
+  const results: GeneratorResult[] = [
     await generateCfnPropsMixins({ outputPath }),
     await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
   ];
 
-  const moduleMap = mergeModuleMaps(...moduleMaps);
+  const moduleMap = mergeModuleMaps(...results.map(r => r.moduleMap));
+  const contributions = results.flatMap(r => r.contributions);
 
-  await submodules(moduleMap, outputPath);
+  await setupSubmodules(moduleMap, contributions, outputPath);
   await updateExportsAndEntryPoints(moduleMap, pkgPath);
 }
 
-function mergeModuleMaps(...maps: ModuleMap[]): ModuleMap {
-  const merged: ModuleMap = {};
-  for (const map of maps) {
-    for (const [name, entry] of Object.entries(map)) {
-      if (!merged[name]) {
-        merged[name] = entry;
-      } else {
-        merged[name] = {
-          ...entry,
-          files: [...new Set([...merged[name].files, ...entry.files])],
-          resources: { ...merged[name].resources, ...entry.resources },
-        };
-      }
+async function setupSubmodules(modules: ModuleMap, contributions: SubmoduleContribution[], outPath: string) {
+  for (const submodule of Object.values(modules)) {
+    await ensureSubmodule(submodule, contributions, outPath);
+  }
+}
+
+async function ensureSubmodule(submodule: ModuleMapEntry, contributions: SubmoduleContribution[], outPath: string) {
+  const modulePath = path.join(outPath, submodule.name);
+  if (!submodule.definition) {
+    throw new Error(
+      `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json files.`,
+    );
+  }
+
+  // Collect which barrel files this submodule needs, based on contributions
+  // that have matching generated files
+  const barrels = new Map<string, { lines: string[]; jsiircNamespace: string }>();
+  for (const c of contributions) {
+    // Only add contribution if the submodule has a matching generated file
+    const hasFile = c.exportLines.some(line => {
+      const match = line.match(/from\s+'\.\/(.+)'/);
+      return match && submodule.files.some(f => f.includes(match[1]));
+    });
+    if (!hasFile) continue;
+
+    const existing = barrels.get(c.barrelFile);
+    if (existing) {
+      existing.lines.push(...c.exportLines);
+    } else {
+      barrels.set(c.barrelFile, { lines: [...c.exportLines], jsiircNamespace: c.jsiircNamespace });
     }
   }
-  return merged;
+
+  // services/<mod>/index.ts — re-exports each barrel as a namespace
+  const subModuleIndex = path.join(modulePath, 'index.ts');
+  const indexLines = [...barrels.keys()].map(barrel => {
+    const ns = path.basename(barrel, '.ts');
+    return `export * as ${ns} from './${ns}';`;
+  });
+  await ensureFileContains(subModuleIndex, indexLines);
+  await writeJsiiRc(jsiiRcPathFor(subModuleIndex), submodule.definition, { goPrefix: GO_PREFIX });
+
+  // Write each barrel file
+  for (const [barrelFile, { lines, jsiircNamespace }] of barrels) {
+    const barrelPath = path.join(modulePath, barrelFile);
+    await ensureFileContains(barrelPath, lines);
+    await writeJsiiRc(jsiiRcPathFor(barrelPath), submodule.definition, { goPrefix: GO_PREFIX, namespaceSuffix: jsiircNamespace });
+  }
 }
 
 async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) {
@@ -69,20 +103,16 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       submodule: moduleName.replace(/-/g, '_'),
     };
 
-    // @aws-cdk/mixins-preview/aws_s3 => ./lib/services/aws-s3/index.js
     const indexExportName = `./${moduleConfig.name}`;
     newExports[indexExportName] = `./lib/services/${moduleConfig.name}/index.js`;
 
-    // @aws-cdk/mixins-preview/aws-s3 => `export * as aws_s3 from './aws-s3';`
     if (!serviceIndexExports.find(e => e.includes(moduleConfig.name))) {
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    // @aws-cdk/mixins-preview/aws_s3/mixins => ./lib/services/aws-s3/mixins.js
     const mixinsExportName = `./${moduleConfig.name}/mixins`;
     newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
 
-    // @aws-cdk/mixins-preview/aws_s3/events => ./lib/services/aws-s3/events.js
     const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
     if (existsSync(eventsFilePath)) {
       const eventsExportName = `./${moduleConfig.name}/events`;
@@ -90,127 +120,8 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
     }
   }
 
-  // sort exports
   pkgJson.exports = Object.fromEntries(Object.entries(newExports).sort(([e1], [e2]) => e1.localeCompare(e2)));
 
-  // package.json
   await fs.writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + '\n');
-  // lib/services/index.ts
   await fs.writeFile(servicesIndexFilePath, serviceIndexExports.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n');
-}
-
-async function submodules(modules: ModuleMap, outPath: string) {
-  for (const submodule of Object.values(modules)) {
-    await ensureSubmodule(submodule, outPath);
-  }
-}
-
-async function ensureSubmodule(submodule: ModuleMapEntry, outPath: string) {
-  const modulePath = path.join(outPath, submodule.name);
-  // Ensure we have a module definition. Should not happen, but need to check.
-  if (!submodule.definition) {
-    throw new Error(
-      `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json files.`,
-    );
-  }
-
-  // services/<mod>/index.ts
-  // These exports make submodules out of 'mixins.ts', 'events.ts'
-  const subModuleIndex = path.join(modulePath, 'index.ts');
-  const indexLines: string[] = [];
-
-  indexLines.push('export * as mixins from \'./mixins\';');
-
-  const hasEvents = submodule.files.some(f => f.includes('events.generated.ts'));
-  if (hasEvents) {
-    indexLines.push('export * as events from \'./events\';');
-  }
-
-  // This file may contain handwritten lines, preserve.
-  await ensureFileContains(subModuleIndex, indexLines);
-  await writeJsiiModuleMetadata(subModuleIndex, submodule.definition);
-
-  // services/<mod>/mixins.ts
-  // This file exists so people can import it directly in JavaScript with a reasonable name:
-  //
-  // ```
-  // import { X } from '@aws-cdk/mixins-preview/aws-s3/mixins';
-  // ```
-  // All it does is re-export the generated file. It can be manually edited so we don't
-  // fully overwrite it.
-  const mixinsModuleFile = path.join(modulePath, 'mixins.ts');
-  const mixinsIndexLines: string[] = [];
-  mixinsIndexLines.push('export * from \'./cfn-props-mixins.generated\';');
-
-  if (existsSync(path.join(modulePath, 'logs-delivery-mixins.generated.ts'))) {
-    mixinsIndexLines.push('export * from \'./logs-delivery-mixins.generated\';');
-  }
-
-  await ensureFileContains(mixinsModuleFile, mixinsIndexLines);
-  await writeJsiiModuleMetadata(mixinsModuleFile, submodule.definition, 'mixins');
-
-  if (hasEvents) {
-    // services/<mod>/events.ts
-    // See mixins.ts for the motivation.
-    const eventsModuleFile = path.join(modulePath, 'events.ts');
-    await fs.writeFile(eventsModuleFile, 'export * from \'./events.generated\';\n');
-    await writeJsiiModuleMetadata(eventsModuleFile, submodule.definition, 'events');
-  }
-}
-
-async function writeJsiiModuleMetadata(moduleFile: string, moduleDef: ModuleDefinition, namespaceLc: string = '') {
-  const base = path.basename(moduleFile, '.ts');
-  const rcFile = base === 'index'
-    ? path.join(path.dirname(moduleFile), '.jsiirc.json')
-    : path.join(path.dirname(moduleFile), `.${base}.jsiirc.json`);
-
-  const namespaceUc = ucfirst(namespaceLc ?? '');
-  const dotnetNamespace = join(moduleDef.dotnetPackage, '.', namespaceUc);
-
-  const mixinsJsiirc = {
-    targets: {
-      java: {
-        package: join(moduleDef.javaPackage, '.', namespaceLc),
-      },
-      dotnet: {
-        namespace: dotnetNamespace,
-        packageId: dotnetNamespace,
-      },
-      python: {
-        module: join(moduleDef.pythonModuleName, '.', namespaceLc),
-      },
-      go: {
-        packageName: `preview${moduleDef.moduleName}${namespaceLc}`.replace(/[^a-z0-9.]/gi, ''),
-      },
-    },
-  };
-  await fs.writeFile(rcFile, JSON.stringify(mixinsJsiirc, null, 2) + '\n');
-}
-
-function ucfirst(x: string) {
-  return x.charAt(0).toUpperCase() + x.slice(1);
-}
-
-function join(a: string, sep: string, b: string) {
-  return b ? `${a}${sep}${b}` : a;
-}
-
-async function ensureFileContains(fileName: string, lines: string[]) {
-  let currentLines = new Array<string>();
-
-  // This index might contain hand-written mixins => ensure they are preserved
-  if (existsSync(fileName)) {
-    // load lines from file
-    currentLines.push(...(await fs.readFile(fileName, 'utf-8')).split('\n')
-      .filter(l => !l.includes('.generated')) // remove all generated files, they are added later anyway
-      .filter(Boolean));
-  }
-
-  for (const line of lines) {
-    if (!currentLines.includes(line)) {
-      currentLines.push(line);
-    }
-  }
-
-  await fs.writeFile(fileName, currentLines.sort().join('\n') + '\n');
 }

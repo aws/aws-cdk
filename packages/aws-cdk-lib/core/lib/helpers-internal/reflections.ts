@@ -1,10 +1,3 @@
-/**
- * ATTENTION: these functions were copied from the mixins-preview package, because we cannot
- * depend on that package from core. When mixins goes GA, this file should be removed
- * and all references to the functions in it should be updated to import from the new
- * location in core.
- */
-
 import type { IConstruct } from 'constructs';
 import { CfnResource } from '../cfn-resource';
 
@@ -115,3 +108,17 @@ export function findL1FromRef<TRef extends IConstruct, TCfn extends CfnResource>
   );
 }
 
+/**
+ * Finds the parent L2 construct scope if this construct is a default child.
+ * L2 constructs create their L1 resource as a child with id 'Resource' or 'Default'.
+ * Only these two ids have special meaning.
+ *
+ * @param construct - The construct to find the parent L2 scope for
+ * @returns The parent L2 scope if the construct is a default child, undefined otherwise
+ */
+export function findParentL2Scope(construct: IConstruct): IConstruct | undefined {
+  if (construct.node.scope && (construct.node.id === 'Resource' || construct.node.id === 'Default')) {
+    return construct.node.scope;
+  }
+  return;
+}

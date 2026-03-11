@@ -76,6 +76,7 @@ export abstract class VpcOrigin extends cloudfront.OriginBase {
     return new VpcOriginWithEndpoint(cloudfront.VpcOriginEndpoint.networkLoadBalancer(nlb), props);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   protected vpcOrigin?: cloudfront.IVpcOrigin;
 
   protected constructor(domainName: string, protected readonly props: VpcOriginProps) {

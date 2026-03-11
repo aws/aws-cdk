@@ -11,14 +11,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'redshift-query-events');
 
 const namespace = new redshiftserverless.CfnNamespace(stack, 'Namespace', {
-  namespaceName: 'namespace',
+  namespaceName: `namespace-${stack.stackName}`,
 });
 
 const workGroup = new redshiftserverless.CfnWorkgroup(stack, 'WorkGroup', {
-  workgroupName: 'workgroup',
+  workgroupName: `workgroup-${stack.stackName}`,
   namespaceName: namespace.namespaceName,
-  subnetIds: ['subnet-06c91b5d4c16df0ff', 'subnet-04b90752f12ed5174', 'subnet-0d42bcb68396ffd19'],
-  securityGroupIds: ['sg-0f3ee03c20cc6056c'],
 });
 workGroup.addDependency(namespace);
 
