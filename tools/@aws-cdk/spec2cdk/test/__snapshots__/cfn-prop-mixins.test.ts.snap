@@ -18,7 +18,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
 
   protected readonly props: CfnThingMixinProps;
 
-  protected readonly strategy: mixins.IMergeStrategy;
+  protected readonly strategy: cdk.IMergeStrategy;
 
   /**
    * Create a mixin to apply properties to \`AWS::Some::Resource\`.
@@ -29,7 +29,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
   public constructor(props: CfnThingMixinProps, options: mixins.CfnPropertyMixinOptions = {}) {
     super();
     this.props = props;
-    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.combine());
+    this.strategy = (options.strategy ?? cdk.PropertyMergeStrategy.combine());
   }
 
   /**
@@ -116,7 +116,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
 
   protected readonly props: CfnThingMixinProps;
 
-  protected readonly strategy: mixins.IMergeStrategy;
+  protected readonly strategy: cdk.IMergeStrategy;
 
   /**
    * Create a mixin to apply properties to \`AWS::Some::Resource\`.
@@ -130,7 +130,7 @@ export class CfnThingPropsMixin extends cdk.Mixin implements constructs.IMixin {
       ...props,
       ...flattenCfnThingMixinProps(props)
     };
-    this.strategy = (options.strategy ?? mixins.PropertyMergeStrategy.combine());
+    this.strategy = (options.strategy ?? cdk.PropertyMergeStrategy.combine());
   }
 
   /**
