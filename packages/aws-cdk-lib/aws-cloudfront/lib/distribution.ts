@@ -8,6 +8,7 @@ import type {
   IOriginRequestPolicyRef,
   IRealtimeLogConfigRef,
   IResponseHeadersPolicyRef,
+  ITrustStoreRef,
 } from './cloudfront.generated';
 import {
   CfnDistribution,
@@ -18,7 +19,6 @@ import type { GeoRestriction } from './geo-restriction';
 import type { IOrigin, OriginBindConfig, OriginBindOptions, OriginSelectionCriteria } from './origin';
 import { CacheBehavior } from './private/cache-behavior';
 import { formatDistributionArn, grant } from './private/utils';
-import type { ITrustStoreRef } from './cloudfront.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
