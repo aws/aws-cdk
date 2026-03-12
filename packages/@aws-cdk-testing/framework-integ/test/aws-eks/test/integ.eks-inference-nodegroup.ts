@@ -43,6 +43,9 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-nodegroup-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
+  // inf1.2xlarge and inf2.xlarge (AWS Inferentia) instances are only available in select regions.
+  // Verified via: aws ec2 describe-instance-type-offerings --filters Name=instance-type,Values=inf2.xlarge
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1'],
   cdkCommandOptions: {
     deploy: {
       args: {
