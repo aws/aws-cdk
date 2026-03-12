@@ -808,6 +808,16 @@ describe('stack', () => {
         },
       },
     });
+
+    const asm = app.synth();
+    const stackArtifact = asm.stacks[0];
+    expect(stackArtifact.metadata?.['/Stack1']).toEqual([
+      {
+        type: 'aws:cdk:warning',
+        data: expect.stringContaining('The use of custom resources ExportWriter and ExportReader for cross-region references is deprecated'),
+        trace: expect.anything(),
+      },
+    ]);
   });
 
   test('cross-region stack references with nativeCrossAccountRegionReferences feature flag', () => {

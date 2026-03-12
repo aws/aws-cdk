@@ -23,6 +23,7 @@ import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
+import { Annotations } from '../annotations';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -140,6 +141,14 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     if (FeatureFlags.of(consumer).isEnabled(cxapi.NATIVE_CROSS_ACCOUNT_REGION_REFERENCES) ?? false) {
       return createGetStackOutput(reference);
     }
+
+    [producer, consumer].forEach(stack => {
+      Annotations.of(stack).addWarningV2(
+        '@aws-cdk/core:Stack.deprecatedCrossRegionImportValue',
+        'The use of custom resources ExportWriter and ExportReader for cross-region references is deprecated. ' +
+        'Prefer native cross-region references by enabling the \'@aws-cdk/core:nativeCrossAccountRegionReferences\' feature flag.',
+      );
+    });
     return createCrossRegionImportValue(reference, consumer);
   }
 
