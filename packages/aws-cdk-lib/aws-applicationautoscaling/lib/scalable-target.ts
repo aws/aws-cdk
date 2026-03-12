@@ -7,7 +7,7 @@ import type { BasicTargetTrackingScalingPolicyProps } from './target-tracking-sc
 import { TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import type { IResource, TimeZone } from '../../core';
-import { Lazy, Resource, withResolved } from '../../core';
+import { Lazy, Resource, Token, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -222,6 +222,15 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
       throw new ValidationError(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
+    }
+
+    const expr = action.schedule.expressionString;
+    if (!Token.isUnresolved(expr) && !expr.startsWith('cron(') && !expr.startsWith('rate(') && !expr.startsWith('at(')) {
+      throw new ValidationError(
+        `Invalid schedule expression: "${expr}". Application Auto Scaling requires expressions in the format \'cron(...)\', \'rate(...)\', or \'at(...)\'. `
+        + 'If you imported Schedule from \'aws-cdk-lib/aws-autoscaling\', use Schedule from \'aws-cdk-lib/aws-applicationautoscaling\' instead.',
+        this,
+      );
     }
 
     // add a warning on synth when minute is not defined in a cron schedule
