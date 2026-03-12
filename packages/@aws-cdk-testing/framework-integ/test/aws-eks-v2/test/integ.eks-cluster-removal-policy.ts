@@ -4,11 +4,13 @@ import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 /**
  * This test checks that all EKS resources can be deployed with removal policies.
- * We use the DESTROY policy here to avoid leaving orphaned resources behind, but if it works for DESTROY, it should work for other values as well.
+ * We use the DESTROY policy here to avoid leaving orphaned resources behind,
+ * but if it works for DESTROY, it should work for other values as well.
  */
 class EksClusterRemovalPolicyStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -34,13 +36,16 @@ class EksClusterRemovalPolicyStack extends Stack {
     );
 
     // Access Entry
+    const accessEntryRole = new iam.Role(this, 'AccessEntryRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
     const accessPolicy = new eks.AccessPolicy({
       accessScope: { type: eks.AccessScopeType.CLUSTER },
       policy: eks.AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
     });
     new eks.AccessEntry(this, 'AccessEntry', {
       cluster,
-      principal: 'arn:aws:iam::123456789012:user/test-user',
+      principal: accessEntryRole.roleArn,
       accessPolicies: [accessPolicy],
       removalPolicy: RemovalPolicy.DESTROY,
     });
@@ -53,7 +58,7 @@ class EksClusterRemovalPolicyStack extends Stack {
     });
 
     // ALB Controller
-    new eks.AlbController(this, 'AlbControllerConstruct', {
+    const albController = new eks.AlbController(this, 'AlbControllerConstruct', {
       cluster,
       version: eks.AlbControllerVersion.V2_8_2,
       removalPolicy: RemovalPolicy.DESTROY,
@@ -73,7 +78,7 @@ class EksClusterRemovalPolicyStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // Service Account
+    // Service Account (Pod Identity)
     new eks.ServiceAccount(this, 'PodIdentityServiceAccount', {
       cluster,
       name: 'test-pod-identity',
@@ -81,19 +86,21 @@ class EksClusterRemovalPolicyStack extends Stack {
       identityType: eks.IdentityType.POD_IDENTITY,
     });
 
+    // Service Account (IRSA)
     new eks.ServiceAccount(this, 'ServiceAccount', {
       cluster,
       name: 'test-irsa',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // Helm Chart
-    new eks.HelmChart(this, 'HelmChart', {
+    // Helm Chart — depends on ALB Controller to ensure webhook is ready
+    const helmChart = new eks.HelmChart(this, 'HelmChart', {
       cluster,
       chart: 'redis',
       repository: 'https://charts.bitnami.com/bitnami',
       removalPolicy: RemovalPolicy.DESTROY,
     });
+    helmChart.node.addDependency(albController);
 
     // Kubernetes Manifest
     new eks.KubernetesManifest(this, 'K8sManifest', {

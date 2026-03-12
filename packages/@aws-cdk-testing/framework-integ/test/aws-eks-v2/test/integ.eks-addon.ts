@@ -18,11 +18,11 @@ class EksClusterStack extends Stack {
     });
 
     new eks.Addon(this, 'Addon', {
-      addonName: 'coredns',
+      addonName: 'snapshot-controller',
       cluster,
       preserveOnDelete: true,
       configurationValues: {
-        replicaCount: 2,
+        logLevel: 3,
       },
     });
   }

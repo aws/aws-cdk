@@ -914,7 +914,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (EksClusterV2RemovalPolicyStack/Cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1140,7 +1140,7 @@
      ]
     },
     "RejectUnauthorized": true,
-    "CodeHash": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a"
+    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1155,6 +1155,23 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "AccessEntryRole0AE13E39": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   },
   "AccessEntry5263FF03": {
    "Type": "AWS::EKS::AccessEntry",
@@ -1181,7 +1198,12 @@
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
-    "PrincipalArn": "arn:aws:iam::123456789012:user/test-user"
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "AccessEntryRole0AE13E39",
+      "Arn"
+     ]
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1762,7 +1784,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a.zip"
+     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -2177,6 +2199,11 @@
     "CreateNamespace": true
    },
    "DependsOn": [
+    "AlbControllerConstructalbsaConditionJson766F08BF",
+    "AlbControllerConstructalbsamanifestalbsaServiceAccountResourceC1E23635",
+    "AlbControllerConstructalbsaRoleDefaultPolicyE0452BBC",
+    "AlbControllerConstructalbsaRoleC6E245FC",
+    "AlbControllerConstruct0D542B18",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
