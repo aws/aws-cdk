@@ -2545,7 +2545,6 @@ The Online Evaluation construct enables continuous monitoring and assessment of 
 | `samplingPercentage` | `number` | No | Percentage of traces to sample (0.01-100). Default: 10 |
 | `filters` | `FilterConfig[]` | No | Filters to determine which traces to evaluate. Maximum 5 |
 | `sessionTimeoutMinutes` | `number` | No | Minutes of inactivity before a session is considered complete (1-1440). Default: 15 |
-| `enableOnCreate` | `boolean` | No | Whether to enable evaluation immediately. Default: true |
 | `tags` | `{ [key: string]: string }` | No | Tags for the evaluation configuration |
 
 ### Basic Online Evaluation Creation

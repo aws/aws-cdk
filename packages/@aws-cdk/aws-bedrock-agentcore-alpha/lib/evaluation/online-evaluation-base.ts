@@ -12,7 +12,7 @@
  */
 
 import type { IResource } from 'aws-cdk-lib';
-import { Resource } from 'aws-cdk-lib';
+import { Resource, type ResourceProps } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 import { EvaluationPerms } from './perms';
@@ -98,8 +98,8 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   /**

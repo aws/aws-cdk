@@ -135,12 +135,4 @@ export class DataSourceConfig {
       },
     };
   }
-
-  /**
-   * Returns the log group names for this data source.
-   * @internal
-   */
-  public _getLogGroupNames(): string[] {
-    return this.cloudWatchLogsConfig.logGroupNames;
-  }
 }

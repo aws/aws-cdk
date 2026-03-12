@@ -37,8 +37,6 @@ const SAMPLING_PERCENTAGE_MAX = 100;
 const FILTERS_MAX_COUNT = 5;
 const SESSION_TIMEOUT_MIN = 1;
 const SESSION_TIMEOUT_MAX = 1440;
-const LOG_GROUPS_MIN_COUNT = 1;
-const LOG_GROUPS_MAX_COUNT = 5;
 
 /******************************************************************************
  *                              TYPES
@@ -225,35 +223,6 @@ export function validateSessionTimeout(minutes: number | undefined, _scope?: ICo
   if (minutes > SESSION_TIMEOUT_MAX) {
     errors.push(
       `Session timeout must be at most ${SESSION_TIMEOUT_MAX} minutes, got ${minutes}`,
-    );
-  }
-
-  return errors;
-}
-
-/**
- * Validates the log group names array.
- * @param names - The log group names array to validate
- * @param _scope - The construct scope for error reporting (optional)
- * @returns Array of validation error messages, empty if valid
- */
-export function validateLogGroupNames(names: string[], _scope?: IConstruct): string[] {
-  const errors: string[] = [];
-
-  if (names == null) {
-    errors.push('Log group names array is required');
-    return errors;
-  }
-
-  if (names.length < LOG_GROUPS_MIN_COUNT) {
-    errors.push(
-      `At least ${LOG_GROUPS_MIN_COUNT} log group name is required, got ${names.length}`,
-    );
-  }
-
-  if (names.length > LOG_GROUPS_MAX_COUNT) {
-    errors.push(
-      `At most ${LOG_GROUPS_MAX_COUNT} log group names are allowed, got ${names.length}`,
     );
   }
 
