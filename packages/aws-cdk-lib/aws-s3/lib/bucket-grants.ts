@@ -142,6 +142,19 @@ export class BucketGrants {
   }
 
   /**
+   * Grant the specified actions on this bucket to an IAM principal.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*').
+   * @param actions The actions to grant (e.g. 's3:GetObject').
+   */
+  public actions(identity: IGrantable, objectsKeyPattern: string = '*', ...actions: string[]) {
+    return this.grant(identity, actions, [],
+      this.bucket.bucketRef.bucketArn,
+      this.arnForObjects(objectsKeyPattern));
+  }
+
+  /**
    * Grant read and write permissions for this bucket and it's contents to an IAM
    * principal (Role/Group/User).
    *
