@@ -62,14 +62,19 @@ enum ActionScope {
 }
 
 /**
- * Scope for resources - whether to apply to all resources or specific ones.
+ * Scope for resources - whether to apply to all resources, resource types, or specific ones.
  * @internal
  */
 enum ResourceScope {
   /**
-   * Apply to all resources
+   * Apply to all resources (wildcard - may be rejected by service)
    */
   ALL = 'all',
+
+  /**
+   * Apply to all resources of a specific type
+   */
+  TYPE = 'type',
 
   /**
    * Apply to specific resource(s)
@@ -510,6 +515,9 @@ export class AttributeAccessor {
  * the Policy construct.
  *
  * @example
+ * import { Policy, PolicyEngine, PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+ * declare const engine: PolicyEngine;
+ *
  * // Example 1: Simple permit policy
  * // Builder format:
  * new Policy(this, 'AllowAll', {
@@ -528,6 +536,10 @@ export class AttributeAccessor {
  * // );
  *
  * @example
+ * import { Policy, PolicyEngine, PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+ * declare const engine: PolicyEngine;
+ * declare const gatewayArn: string;
+ *
  * // Example 2: Specific actions policy
  * // Builder format:
  * new Policy(this, 'AllowSpecificActions', {
@@ -549,6 +561,9 @@ export class AttributeAccessor {
  * // );
  *
  * @example
+ * import { Policy, PolicyEngine, PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+ * declare const engine: PolicyEngine;
+ *
  * // Example 3: Policy with conditions
  * // Builder format:
  * new Policy(this, 'ConditionalPolicy', {
@@ -581,6 +596,9 @@ export class AttributeAccessor {
  * // };
  *
  * @example
+ * import { Policy, PolicyEngine, PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+ * declare const engine: PolicyEngine;
+ *
  * // Example 4: Raw Cedar policy
  * // For advanced Cedar features not supported by the builder
  * new Policy(this, 'CustomPolicy', {
@@ -733,23 +751,86 @@ export class PolicyStatement {
   }
 
   /**
-   * Apply to all resources (any resource).
+   * Apply to all resources of a specific type.
    *
-   * Generates: `resource` in Cedar
+   * **AWS Requirement**: AWS Bedrock AgentCore Policy service does not allow wildcard
+   * resources (`resource`). This method provides type-constrained resources which are
+   * required for policy validation to succeed.
+   *
+   * Generates: `resource is EntityType` in Cedar
+   *
+   * @param entityType - The entity type (default: 'AgentCore::Gateway')
+   *
+   * @example
+   * import { PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+   *
+   * // Constrain to Gateway resources (default)
+   * PolicyStatement.permit()
+   *   .forAllPrincipals()
+   *   .onAllActions()
+   *   .onAllResources()  // → "resource is AgentCore::Gateway"
+   *
+   * // Constrain to Runtime resources
+   * PolicyStatement.permit()
+   *   .forAllPrincipals()
+   *   .onAllActions()
+   *   .onAllResources('AgentCore::Runtime')  // → "resource is AgentCore::Runtime"
    */
-  public onAllResources(): this {
+  public onAllResources(entityType: string = 'AgentCore::Gateway'): this {
     this.validateNotRawCedar();
-    this.resourceConfig = { scope: ResourceScope.ALL };
+    this.resourceConfig = {
+      scope: ResourceScope.TYPE,
+      entityType,
+    };
     return this;
   }
 
   /**
-   * Apply to a specific resource.
+   * Apply to all resources of a specific type (explicit method).
+   *
+   * **AWS Requirement**: Resource type constraints are required by AWS Bedrock
+   * AgentCore when using wildcard principals or actions.
+   *
+   * Generates: `resource is EntityType` in Cedar
+   *
+   * @param entityType - The entity type (e.g., 'AgentCore::Gateway', 'AgentCore::Runtime')
+   *
+   * @example
+   * import { PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+   *
+   * PolicyStatement.permit()
+   *   .forAllPrincipals()
+   *   .onAllActions()
+   *   .onResourceType('AgentCore::Gateway')  // → "resource is AgentCore::Gateway"
+   */
+  public onResourceType(entityType: string): this {
+    this.validateNotRawCedar();
+    this.resourceConfig = {
+      scope: ResourceScope.TYPE,
+      entityType,
+    };
+    return this;
+  }
+
+  /**
+   * Apply to a specific resource instance.
+   *
+   * **AWS Requirement**: When using specific actions (e.g., `action == Action::"Delete"`),
+   * you must constrain the resource to a specific instance, not just a type.
    *
    * Generates: `resource == EntityType::"arn"` in Cedar
    *
    * @param entityType - The entity type (e.g., 'AgentCore::Gateway')
    * @param entityArn - The resource ARN or identifier
+   *
+   * @example
+   * import { PolicyStatement } from '@aws-cdk/aws-bedrock-agentcore-alpha';
+   * declare const gatewayArn: string;
+   *
+   * PolicyStatement.forbid()
+   *   .forAllPrincipals()
+   *   .onAction('AgentCore::Action::Delete')
+   *   .onResource('AgentCore::Gateway', gatewayArn)  // Must be specific resource
    */
   public onResource(entityType: string, entityArn: string): this {
     this.validateNotRawCedar();
@@ -915,11 +996,28 @@ export class PolicyStatement {
       throw new UnscopedValidationError('Resource configuration is required');
     }
 
-    if (this.resourceConfig.scope === ResourceScope.ALL) {
-      return 'resource';
-    }
+    switch (this.resourceConfig.scope) {
+      case ResourceScope.ALL:
+        // Note: Wildcard resources may be rejected by AWS Bedrock AgentCore service
+        return 'resource';
 
-    return `resource == ${this.resourceConfig.entityType}::"${this.resourceConfig.entityArn}"`;
+      case ResourceScope.TYPE:
+        // Resource type constraint: "resource is EntityType"
+        if (!this.resourceConfig.entityType) {
+          throw new UnscopedValidationError('Entity type is required for TYPE resource scope');
+        }
+        return `resource is ${this.resourceConfig.entityType}`;
+
+      case ResourceScope.SPECIFIC:
+        // Specific resource: "resource == EntityType::"arn""
+        if (!this.resourceConfig.entityType || !this.resourceConfig.entityArn) {
+          throw new UnscopedValidationError('Entity type and ARN are required for SPECIFIC resource scope');
+        }
+        return `resource == ${this.resourceConfig.entityType}::"${this.resourceConfig.entityArn}"`;
+
+      default:
+        throw new UnscopedValidationError(`Unknown resource scope: ${this.resourceConfig.scope}`);
+    }
   }
 
   private validateNotRawCedar(): void {

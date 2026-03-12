@@ -45,7 +45,6 @@ export interface IPolicyRef {
 }
 
 /**
- * Full interface for Policy resources.
  * Contains all properties and methods for both created and imported policies.
  */
 export interface IPolicy extends IResource, IPolicyRef, iam.IGrantable {

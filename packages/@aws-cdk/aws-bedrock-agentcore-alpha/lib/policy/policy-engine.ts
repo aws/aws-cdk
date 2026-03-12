@@ -49,13 +49,6 @@ export interface PolicyEngineProps {
 
   /**
    * Custom KMS key for encryption.
-   *
-   * IMPORTANT: Once set, cannot be changed (requires replacement).
-   * Must be symmetric ENCRYPT_DECRYPT key.
-   * Required permissions: CreateGrant, Decrypt, GenerateDataKey, DescribeKey
-   *
-   * If key becomes inaccessible, all authorization decisions will be DENIED.
-   *
    * [disable-awslint:prefer-ref-interface]
    *
    * @default - AWS owned key
@@ -166,7 +159,7 @@ export class PolicyEngine extends PolicyEngineBase {
     class Import extends PolicyEngineBase {
       public readonly policyEngineArn = attrs.policyEngineArn;
       public readonly policyEngineId = Arn.split(attrs.policyEngineArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly policyEngineName = this.policyEngineId; // Name equals ID for imports
+      public readonly policyEngineName = this.policyEngineId;
       public readonly description = undefined;
       public readonly kmsKey = attrs.kmsKeyArn
         ? kms.Key.fromKeyArn(scope, `${id}Key`, attrs.kmsKeyArn)
@@ -232,6 +225,12 @@ export class PolicyEngine extends PolicyEngineBase {
   private readonly _policies: any[] = [];
 
   /**
+   * The last policy added to this engine, used for automatic sequential chaining.
+   * @internal
+   */
+  private _lastPolicy?: any;
+
+  /**
    * Get the list of policies added to this policy engine.
    *
    * Returns an array of Policy constructs that were added using addPolicy().
@@ -243,9 +242,6 @@ export class PolicyEngine extends PolicyEngineBase {
     return [...this._policies];
   }
 
-  // ------------------------------------------------------
-  // Internal Only
-  // ------------------------------------------------------
   private readonly __resource: CfnPolicyEngine;
 
   // ------------------------------------------------------
@@ -272,30 +268,18 @@ export class PolicyEngine extends PolicyEngineBase {
     this.kmsKey = props.kmsKey;
     this.tags = props.tags;
 
-    // PolicyEngine doesn't need an execution role - it's a stateless policy evaluator
-    // The Bedrock AgentCore service itself evaluates policies at runtime
     this.grantPrincipal = new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com');
-
-    // ------------------------------------------------------
-    // Permissions
-    // ------------------------------------------------------
-    // For KMS permissions see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/storage-encryption.html
-    // When a KMS key is provided, the service automatically creates grants for policy management and evaluation
-    // We don't need to manually create grants here as they're service-managed
 
     // ------------------------------------------------------
     // Validations
     // ------------------------------------------------------
 
-    // Validate policy engine name
     throwIfInvalidPolicyEngineName(this.policyEngineName, this);
 
-    // Validate description
     if (this.description) {
       throwIfInvalidDescription(this.description, this);
     }
 
-    // Validate tags (max 50 tags, key 1-128 chars, value 0-256 chars)
     if (this.tags) {
       throwIfInvalidTags(this.tags, this.policyEngineName, this);
     }
@@ -307,7 +291,6 @@ export class PolicyEngine extends PolicyEngineBase {
       name: this.policyEngineName,
       description: this.description,
       encryptionKeyArn: this.kmsKey?.keyArn,
-      // Convert tags map to CFN tag array format
       tags: this.tags
         ? Object.entries(this.tags).map(([key, value]) => ({
           key,
@@ -316,26 +299,27 @@ export class PolicyEngine extends PolicyEngineBase {
         : undefined,
     };
 
-    // ------------------------------------------------------
-    // CFN Resource
-    // ------------------------------------------------------
     this.__resource = new CfnPolicyEngine(this, 'Resource', cfnProps);
 
     this.policyEngineId = this.__resource.attrPolicyEngineId;
     this.policyEngineArn = this.__resource.attrPolicyEngineArn;
   }
 
-  // ------------------------------------------------------
-  // HELPER METHODS - addX()
-  // ------------------------------------------------------
-
   /**
    * Add a policy to this policy engine.
    * Convenience method that creates a Policy construct with this engine as the parent.
    *
+   * **Automatic Sequential Chaining**: By default, policies are automatically chained
+   * sequentially to prevent concurrent creation issues with the AWS Bedrock AgentCore
+   * service. Each new policy will depend on the previous policy added to this engine.
+   *
+   * This ensures policies are created one at a time, avoiding "Resource stabilization
+   * failed" errors that occur with concurrent policy operations.
+   *
    * @param id - Unique identifier for the policy construct
    * @param options - Options for creating the policy
    * @returns The created Policy construct
+   *
    */
   @MethodMetadata()
   public addPolicy(id: string, options: AddPolicyOptions): any {
@@ -352,7 +336,15 @@ export class PolicyEngine extends PolicyEngineBase {
       validationMode: options.validationMode,
     });
 
+    // Automatically chain to previous policy if exists
+    // This prevents concurrent policy creation which causes service-level failures
+    if (this._lastPolicy) {
+      policy.node.addDependency(this._lastPolicy);
+    }
+
     this._policies.push(policy);
+    this._lastPolicy = policy; // Track for next policy
+
     return policy;
   }
 }

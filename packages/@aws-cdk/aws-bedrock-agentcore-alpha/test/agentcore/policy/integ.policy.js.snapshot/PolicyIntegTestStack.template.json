@@ -116,7 +116,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "permit(\n  principal,\n  action,\n  resource\n);"
+      "Statement": "permit(\n  principal,\n  action,\n  resource is AgentCore::Gateway\n);"
      }
     },
     "Description": "Simple policy using builder pattern",
@@ -160,7 +160,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "permit(\n  principal,\n  action,\n  resource\n)\nwhen {\n  principal.department == \"Engineering\" && principal.role == \"Developer\"\n};"
+      "Statement": "permit(\n  principal,\n  action,\n  resource is AgentCore::Gateway\n)\nwhen {\n  principal.department == \"Engineering\" && principal.role == \"Developer\"\n};"
      }
     },
     "Description": "Policy with when conditions",
@@ -204,7 +204,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "forbid(\n  principal,\n  action == AgentCore::Action::\"DeleteData\",\n  resource\n)\nwhen {\n  principal.role == \"ReadOnly\"\n};"
+      "Statement": "forbid(\n  principal,\n  action == AgentCore::Action::\"DeleteData\",\n  resource is AgentCore::Gateway\n)\nwhen {\n  principal.role == \"ReadOnly\"\n};"
      }
     },
     "Description": "Forbid policy to deny delete action",
@@ -247,8 +247,6 @@
     "ValidationMode": "FAIL_ON_ANY_FINDINGS"
    },
    "DependsOn": [
-    "EngineWithAddedPoliciesAddedPolicy2A0914D25",
-    "EngineWithAddedPoliciesAddedPolicy3ACD13EB4",
     "EngineWithAddedPoliciesDE8D5253"
    ]
   },
@@ -257,7 +255,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "permit(\n  principal is AgentCore::OAuthUser,\n  action,\n  resource\n);"
+      "Statement": "permit(\n  principal is AgentCore::OAuthUser,\n  action,\n  resource is AgentCore::Gateway\n);"
      }
     },
     "Description": "Second policy added via addPolicy()",
@@ -272,7 +270,6 @@
    },
    "DependsOn": [
     "EngineWithAddedPoliciesAddedPolicy1330DF90C",
-    "EngineWithAddedPoliciesAddedPolicy3ACD13EB4",
     "EngineWithAddedPoliciesDE8D5253"
    ]
   },
@@ -281,7 +278,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "forbid(\n  principal,\n  action in [AgentCore::Action::\"DeleteData\", AgentCore::Action::\"ModifyData\"],\n  resource\n);"
+      "Statement": "forbid(\n  principal,\n  action in [AgentCore::Action::\"DeleteData\", AgentCore::Action::\"ModifyData\"],\n  resource is AgentCore::Gateway\n);"
      }
     },
     "Description": "Third policy added via addPolicy()",
@@ -295,7 +292,6 @@
     "ValidationMode": "IGNORE_ALL_FINDINGS"
    },
    "DependsOn": [
-    "EngineWithAddedPoliciesAddedPolicy1330DF90C",
     "EngineWithAddedPoliciesAddedPolicy2A0914D25",
     "EngineWithAddedPoliciesDE8D5253"
    ]
@@ -312,7 +308,7 @@
    "Properties": {
     "Definition": {
      "Cedar": {
-      "Statement": "permit(\n  principal,\n  action,\n  resource\n);"
+      "Statement": "permit(\n  principal,\n  action,\n  resource is AgentCore::Gateway\n);"
      }
     },
     "Description": "Policy with auto-generated name",

@@ -43,31 +43,6 @@ export namespace PolicyEnginePerms {
   ];
 
   /**
-   * Policy generation permissions (optional AI-powered feature).
-   *
-   * These permissions enable natural language to Cedar policy conversion.
-   * This is an optional feature that allows generating Cedar policies from
-   * natural language descriptions using AI.
-   *
-   * Only grant these to roles that need policy authoring capabilities.
-   * This is NOT required for runtime policy evaluation.
-   *
-   * Actions:
-   * - `bedrock-agentcore:StartPolicyGeneration` - Start a policy generation job
-   * - `bedrock-agentcore:GetPolicyGeneration` - Get policy generation job status and results
-   * - `bedrock-agentcore:ListPolicyGenerations` - List policy generation jobs
-   * - `bedrock-agentcore:ListPolicyGenerationAssets` - List policy generation assets
-   *
-   * Usage: policyEngine.grantGeneratePolicy(authoringRole)
-   */
-  export const POLICY_GENERATION_PERMS = [
-    'bedrock-agentcore:StartPolicyGeneration',
-    'bedrock-agentcore:GetPolicyGeneration',
-    'bedrock-agentcore:ListPolicyGenerations',
-    'bedrock-agentcore:ListPolicyGenerationAssets',
-  ];
-
-  /**
    * KMS permissions for encrypted policy engines.
    *
    * NOTE: These permissions are automatically managed by AWS KMS grants when you specify

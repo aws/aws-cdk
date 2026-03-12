@@ -407,36 +407,6 @@ describe('PolicyEngine grant methods tests', () => {
       },
     });
   });
-
-  test('grantGeneratePolicy should grant policy generation permissions', () => {
-    const newApp = new cdk.App();
-    const newStack = new cdk.Stack(newApp, 'generate-stack');
-    const newEngine = new PolicyEngine(newStack, 'generate-engine', {
-      policyEngineName: 'generate_engine',
-    });
-    const newRole = new iam.Role(newStack, 'generate-role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    newEngine.grantGeneratePolicy(newRole);
-
-    const template = Template.fromStack(newStack);
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith([
-              'bedrock-agentcore:StartPolicyGeneration',
-              'bedrock-agentcore:GetPolicyGeneration',
-              'bedrock-agentcore:ListPolicyGenerations',
-              'bedrock-agentcore:ListPolicyGenerationAssets',
-            ]),
-            Effect: 'Allow',
-          }),
-        ]),
-      },
-    });
-  });
 });
 
 describe('PolicyEngine metrics tests', () => {

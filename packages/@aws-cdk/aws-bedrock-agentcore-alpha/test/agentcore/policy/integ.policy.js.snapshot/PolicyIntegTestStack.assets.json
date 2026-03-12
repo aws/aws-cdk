@@ -1,18 +1,17 @@
 {
   "version": "52.0.0",
   "files": {
-    "c962c14ddb09a0d73a8ee4b37d3b764c2e77c61683238cac132a876601797daf": {
+    "976ec7173964ba623c145ddea7135d9823d45fa0490fbbb99f7f8f7eafb7cbc5": {
       "displayName": "PolicyIntegTestStack Template",
       "source": {
         "path": "PolicyIntegTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-test-region-08a254a8": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-test-region",
-          "objectKey": "c962c14ddb09a0d73a8ee4b37d3b764c2e77c61683238cac132a876601797daf.json",
-          "region": "test-region",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-test-region"
+        "current_account-current_region-e90d0b8a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "976ec7173964ba623c145ddea7135d9823d45fa0490fbbb99f7f8f7eafb7cbc5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

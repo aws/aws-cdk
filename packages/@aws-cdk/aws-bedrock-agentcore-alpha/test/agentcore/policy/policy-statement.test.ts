@@ -260,7 +260,7 @@ describe('PolicyStatement Builder', () => {
       template.hasResourceProperties('AWS::BedrockAgentCore::Policy', {
         Definition: {
           Cedar: {
-            Statement: 'permit(\n  principal,\n  action,\n  resource\n);',
+            Statement: 'permit(\n  principal,\n  action,\n  resource is AgentCore::Gateway\n);',
           },
         },
       });

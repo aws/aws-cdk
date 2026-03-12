@@ -43,14 +43,12 @@ export interface PolicyProps {
 
   /**
    * The policy engine this policy belongs to.
-   * Strong typing - accepts IPolicyEngine interface.
-   *
    * [disable-awslint:prefer-ref-interface]
    */
   readonly policyEngine: IPolicyEngine;
 
   /**
-   * Cedar policy statement (35-153,600 characters).
+   * Cedar policy statement.
    * The authorization policy written in Cedar policy language.
    *
    * Cedar supports permit and forbid rules with conditions.
@@ -80,8 +78,7 @@ export interface PolicyProps {
 
   /**
    * Optional description for the policy.
-   * Maximum 4,096 characters.
-   *
+   * Maximum length of 4096.
    * @default - No description
    */
   readonly description?: string;
@@ -96,7 +93,7 @@ export interface PolicyProps {
 }
 
 /**
- * Individual Cedar authorization rule defining what agents can access.
+ * Individual Cedar policy defining what agents can access.
  * Policies use Cedar language to specify precise access control rules
  * that are evaluated deterministically by the PolicyEngine.
  *
@@ -126,7 +123,6 @@ export class Policy extends PolicyBase {
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
 
       // For imported policies, we need to reconstruct the policy engine reference
-      // We don't have full details, so we import it as well
       public readonly policyEngine: IPolicyEngine;
 
       constructor(s: Construct, i: string) {
@@ -249,27 +245,21 @@ export class Policy extends PolicyBase {
     this.policyName = this.physicalName;
     this.policyEngine = props.policyEngine;
 
-    // Convert PolicyStatement to Cedar string if provided, otherwise use raw definition
     this.definition = props.statement ? props.statement.toCedar() : props.definition!;
 
     this.description = props.description;
     this.validationMode = props.validationMode ?? PolicyValidationMode.FAIL_ON_ANY_FINDINGS;
 
-    // Policy doesn't need an execution role - it's just a configuration
-    // The PolicyEngine service evaluates policies at runtime
     this.grantPrincipal = new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com');
 
     // ------------------------------------------------------
     // Validations
     // ------------------------------------------------------
 
-    // Validate policy name
     throwIfInvalidPolicyName(this.policyName, this);
 
-    // Validate definition (required and must meet length constraints)
     throwIfInvalidPolicyDefinition(this.definition, this);
 
-    // Validate description
     if (this.description) {
       throwIfInvalidDescription(this.description, this);
     }
@@ -289,19 +279,14 @@ export class Policy extends PolicyBase {
       validationMode: this.validationMode,
     };
 
-    // ------------------------------------------------------
-    // CFN Resource
-    // ------------------------------------------------------
     this.__resource = new CfnPolicy(this, 'Resource', cfnProps);
 
-    // Create dependency on the policy engine
-    // This ensures the policy engine is created before the policy
-    this.__resource.node.addDependency(this.policyEngine);
+    // Create dependency ONLY on the PolicyEngine's CFN resource to avoid circular dependencies with the PolicyEngine construct
+    this.__resource.node.addDependency(this.policyEngine.node.defaultChild!);
 
     this.policyId = this.__resource.attrPolicyId;
     this.policyArn = this.__resource.attrPolicyArn;
   }
 }
 
-// Re-export PolicyValidationMode for convenience
 export { PolicyValidationMode };

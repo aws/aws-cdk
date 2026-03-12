@@ -26,7 +26,6 @@ import { PolicyEnginePerms } from './perms';
  *****************************************************************************/
 
 /**
- * Minimal reference interface for PolicyEngine resources.
  * Used for resource identification and ARN construction.
  */
 export interface IPolicyEngineRef {
@@ -44,7 +43,6 @@ export interface IPolicyEngineRef {
 }
 
 /**
- * Full interface for PolicyEngine resources.
  * Contains all properties and methods for both created and imported policy engines.
  */
 export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantable {
@@ -73,7 +71,7 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grants read permissions on the PolicyEngine (data plane).
+   * Grants read permissions on the PolicyEngine.
    *
    * This grants runtime read access to policy engine configuration. Use this for
    * monitoring, observability, or read-only administrative roles.
@@ -83,7 +81,7 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Grants permissions to evaluate policies at runtime (data plane operations).
+   * Grants permissions to evaluate policies at runtime .
    *
    * This is the primary permission needed by Gateway execution roles to evaluate
    * authorization decisions during agent requests. Grant this to roles that need
@@ -92,20 +90,6 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
    * @param grantee - The IAM principal to grant evaluation permissions to
    */
   grantEvaluate(grantee: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants permissions to generate policies using natural language.
-   *
-   * This optional feature allows AI-powered policy generation from natural language
-   * descriptions. Only grant to roles that need policy authoring capabilities.
-   *
-   * @param grantee - The IAM principal to grant policy generation permissions to
-   */
-  grantGeneratePolicy(grantee: iam.IGrantable): iam.Grant;
-
-  // ------------------------------------------------------
-  // Metrics
-  // ------------------------------------------------------
 
   /**
    * Return the given named metric for this policy engine.
@@ -226,10 +210,6 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    * authorization decisions during agent requests. Grant this to roles that need
    * to call AuthorizeAction or PartiallyAuthorizeActions at runtime.
    *
-   * IMPORTANT: This does NOT grant permissions to create/update/delete the PolicyEngine
-   * resource itself. Those are control plane operations performed by CloudFormation
-   * during `cdk deploy`, not by your application at runtime.
-   *
    * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant evaluation permissions to
@@ -238,25 +218,6 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
   public grantEvaluate(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...PolicyEnginePerms.EVALUATE_PERMS);
   }
-
-  /**
-   * Grants permissions to generate policies using natural language.
-   *
-   * This optional feature allows AI-powered policy generation from natural language
-   * descriptions. Only grant to roles that need policy authoring capabilities.
-   *
-   * [disable-awslint:no-grants]
-   *
-   * @param grantee - The IAM principal to grant policy generation permissions to
-   * @returns An IAM Grant object representing the granted permissions
-   */
-  public grantGeneratePolicy(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PolicyEnginePerms.POLICY_GENERATION_PERMS);
-  }
-
-  // ------------------------------------------------------
-  // Metrics
-  // ------------------------------------------------------
 
   /**
    * Return the given named metric for this policy engine.

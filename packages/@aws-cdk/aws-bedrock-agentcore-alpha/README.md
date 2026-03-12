@@ -2528,21 +2528,6 @@ memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
 ```
 
-## Policy
-
-Policy in Amazon Bedrock AgentCore enables developers to define and enforce security controls for AI agent interactions with tools by creating a protective boundary around agent operations. Developers can create policy engines, create and store deterministic policies in them and associate policy engines with gateways. Policy in AgentCore intercepts all agent traffic through Amazon Bedrock AgentCore Gateways and evaluates each request against defined policies in the policy engine before allowing tool access
-
-### Policy Properties
-
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| `policyName` | `string` | No | The name of the policy. Valid characters: a-z, A-Z, 0-9, _ (underscore). Must start with a letter, 1-48 characters. If not provided, a unique name will be auto-generated |
-| `policyEngine` | `IPolicyEngine` | Yes | The policy engine this policy belongs to. Accepts `IPolicyEngine` interface for strong typing |
-| `definition` | `string` | Either definition or statement | Cedar policy statement as a raw string (35-153,600 characters). The authorization policy written in Cedar policy language. You must specify either `definition` or `statement`, but not both |
-| `statement` | `PolicyStatement` | Either definition or statement | Type-safe Cedar policy statement built using PolicyStatement builder. Provides IDE autocomplete and compile-time validation. You must specify either `definition` or `statement`, but not both |
-| `description` | `string` | No | Optional description for the policy (max 4,096 characters). Default: no description |
-| `validationMode` | `PolicyValidationMode` | No | Validation mode for the policy. Controls how Cedar analyzer validation findings are handled. Default: `FAIL_ON_ANY_FINDINGS` |
-
 ## Policy Engine
 
 A policy engine is a collection of policies that evaluates and authorizes agent tool calls. When associated with a gateway, the policy engine intercepts all agent requests and determines whether to allow or deny each action based on the defined policies.
@@ -2556,140 +2541,204 @@ A policy engine is a collection of policies that evaluates and authorizes agent 
 | `kmsKey` | `IKey` | No | Custom KMS key for encryption. **IMPORTANT**: Once set, cannot be changed (requires replacement). Must be symmetric ENCRYPT_DECRYPT key. If key becomes inaccessible, all authorization decisions will be DENIED. Default: AWS owned key |
 | `tags` | `{ [key: string]: string }` | No | Tags for the policy engine (max 50 tags). Default: no tags |
 
+### Understanding Cedar Policies in AgentCore
+
+Policies are constructed using [Cedar language](https://www.cedarpolicy.com/en/tutorial), an open source language for writing and enforcing authorization policies.
+Cedar policies in AgentCore follow a specific structure with three main components: **Principal**, **Action**, and **Resource**. Understanding how these components work together is critical for writing effective policies.
+
+#### Policy Structure
+
+Every Cedar policy has this basic structure:
+
+```cedar
+permit(              // or forbid
+  principal,         // Who is making the request
+  action,            // What operation they want to perform
+  resource           // What Gateway/tool they want to access
+)
+when {               // Optional conditions
+  // Additional constraints
+};
+```
+
+Example Policy
+
+```cedar
+permit(
+  principal,
+  action == AgentCore::Action::"ApplicationToolTarget___create_application",
+  resource == AgentCore::Gateway::"<gateway-arn>"
+) when {
+  context.input.coverage_amount <= 1000000
+};
+```
+
 ### Basic PolicyEngine and Policy Creation
 
-Create a policy engine and add policies to it:
+Create a policy engine and add policies to it.
 
 ```typescript fixture=default
+// Create a Gateway 
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  description: "Gateway for tool access",
+});
+
+// Create a Policy engine  
 const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
   policyEngineName: "my_policy_engine",
+  description: "Policy engine for access control",
 });
 
-// Add policies using the convenience method
-policyEngine.addPolicy("AdminPolicy", {
+// Add policy to policy engine
+policyEngine.addPolicy("AllowAllActions", {
   definition: `
     permit(
-      principal in Group::"Admins",
+      principal,
       action,
-      resource
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
     );
   `,
-  description: "Allow all actions for admin group",
+  description: "Allow all actions on specific gateway (development)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS, // This will ignore all cedar warnings
 });
 
-policyEngine.addPolicy("ReadOnlyPolicy", {
+// you can add multiple policies to the policy engine
+policyEngine.addPolicy("SpecificToolPolicy", {
   definition: `
     permit(
-      principal in Group::"Users",
-      action == Action::"Read",
-      resource
+      principal is AgentCore::OAuthUser,
+      action == AgentCore::Action::"WeatherTool__get_forecast",
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
     );
   `,
-  description: "Allow read-only access for users",
+  description: "Allow specific weather tool access",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS, // This will fail policy creation for any cedar warning
 });
 ```
 
 ### Type-Safe Policy Builder
 
-For a more type-safe approach, use the `PolicyStatement` builder instead of writing raw Cedar syntax. 
-
-#### Simple Permit Policy with Builder
+For a more type-safe approach, use the `PolicyStatement` builder instead of writing raw Cedar syntax.
 
 ```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
 const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
   policyEngineName: "my_policy_engine",
 });
 
-// Create policy using the builder
 const allowAllPolicy = new agentcore.Policy(this, "AllowAllPolicy", {
   policyEngine: policyEngine,
   policyName: "allow_all",
   statement: agentcore.PolicyStatement.permit()
-    .forAllPrincipals()
+    .forAllPrincipals() // ** This will give overly permission to all principals
     .onAllActions()
-    .onAllResources(),
-  description: "Allow all actions (for development only)",
-});
-```
-
-#### Policy with Specific Actions
-
-```typescript fixture=default
-// Allow specific actions for a group
-policyEngine.addPolicy("EngineersPolicy", {
-  statement: agentcore.PolicyStatement.permit()
-    .forPrincipalInGroup('Group', 'Engineers')
-    .onActions([
-      'AgentCore::Action::putData',
-      'AgentCore::Action::getData',
-    ])
     .onResource('AgentCore::Gateway', gateway.gatewayArn),
-  description: "Allow engineers to access specific actions",
-});
-
-// Generated Cedar:
-// permit(
-//   principal in Group::"Engineers",
-//   action in [AgentCore::Action::"putData", AgentCore::Action::"getData"],
-//   resource == AgentCore::Gateway::"arn:aws:bedrock:us-east-1:123:gateway/gw-123"
-// );
-```
-
-#### Policy with Conditions
-
-```typescript fixture=default
-// Policy with when and unless conditions
-const conditionalPolicy = new agentcore.Policy(this, "ConditionalPolicy", {
-  policyEngine: policyEngine,
-  policyName: "conditional_access",
-  statement: agentcore.PolicyStatement.permit()
-    .forAllPrincipals()
-    .onAllActions()
-    .onAllResources()
-    .when()
-      .principalAttribute('department').equalTo('Engineering')
-      .and()
-      .contextAttribute('sourceIp').isInRange('192.168.1.0/24')
-      .done()
-    .unless()
-      .principalAttribute('suspended').equalTo(true)
-      .or()
-      .principalAttribute('accessLevel').lessThan(3)
-      .done(),
-  description: "Allow engineers from office IP, excluding suspended users",
+  description: "Allow all actions on specific gateway (development only)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS,
 });
 
 // Generated Cedar:
 // permit(
 //   principal,
 //   action,
-//   resource
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:region:account:gateway/gateway-id"
+// );
+```
+
+#### Policy with Specific Actions
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow specific tool actions on specific gateway
+// Action names follow pattern: "ToolName__operation"
+policyEngine.addPolicy("SpecificToolPolicy", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser::your-client-id') 
+    .onActions([
+      'AgentCore::Action::WeatherTool__get_forecast',
+      'AgentCore::Action::WeatherTool__get_current',
+    ])
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),  
+  description: "Allow specific weather tool operations",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action in [
+//     AgentCore::Action::"WeatherTool__get_forecast",
+//     AgentCore::Action::"WeatherTool__get_current"
+//   ],
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:us-east-1:123:gateway/gw-123"
+// );
+```
+
+#### Policy with Conditions
+
+Use `when` clauses to add advanced conditions based on principal tags (from OAuth token) or context:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Policy with when conditions using principal tags
+const conditionalPolicy = new agentcore.Policy(this, "ConditionalPolicy", {
+  policyEngine: policyEngine,
+  policyName: "conditional_access",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')  // Type constraint
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)  // Specific ARN
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .and()
+      .contextAttribute('input.priority').equalTo('high')
+      .done(),
+  description: "Allow engineers for high-priority requests",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
 // )
 // when {
-//   principal.department == "Engineering" && context.sourceIp isInRange ip("192.168.1.0/24")
-// }
-// unless {
-//   principal.suspended == true || principal.accessLevel < 3
+//   principal.department == "Engineering" && context.input.priority == "high"
 // };
 ```
 
 #### Forbid (Deny) Policy
 
+Use `forbid` to explicitly deny access. Forbid policies override permit policies.
+
 ```typescript fixture=default
-// Explicitly deny dangerous actions
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Explicitly deny dangerous tool operations
 policyEngine.addPolicy("DenyDangerous", {
   statement: agentcore.PolicyStatement.forbid()
     .forAllPrincipals()
-    .onAction('AgentCore::Action::DeleteAll')
-    .onAllResources(),
-  description: "Forbid deletion of all data",
+    .onAction('AgentCore::Action::DeleteTool__delete_all')
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),
+  description: "Forbid delete_all operation for all users",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
 });
 
 // Generated Cedar:
 // forbid(
 //   principal,
-//   action == AgentCore::Action::"DeleteAll",
-//   resource
+//   action == AgentCore::Action::"DeleteTool__delete_all",
+//   resource == AgentCore::Gateway::"arn:..."
 // );
 ```
 
@@ -2698,6 +2747,8 @@ policyEngine.addPolicy("DenyDangerous", {
 For advanced Cedar features not supported by the builder, use raw Cedar strings:
 
 ```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+
 // Option 1: Using definition property
 const advancedPolicy = new agentcore.Policy(this, "AdvancedPolicy", {
   policyEngine: policyEngine,
@@ -2718,33 +2769,11 @@ policyEngine.addPolicy("CustomPolicy", {
 
 #### Accessing Policies on PolicyEngine
 
-You can access the list of policies added to a PolicyEngine:
-
-```typescript fixture=default
-const policyEngine = new agentcore.PolicyEngine(this, "MyEngine", {
-  policyEngineName: "my_engine",
-});
-
-// Add multiple policies
-policyEngine.addPolicy("Policy1", {
-  statement: agentcore.PolicyStatement.permit()
-    .forAllPrincipals()
-    .onAllActions()
-    .onAllResources(),
-});
-
-policyEngine.addPolicy("Policy2", {
-  definition: "forbid(principal, action, resource) when { resource.sensitive == true };",
-});
-
-// Access the policies
-const policies = policyEngine.policies;
-console.log(`Policy engine has ${policies.length} policies`);
-```
+You can access the list of policies added to a PolicyEngine using policyEngine.policies.
 
 ### PolicyEngine with KMS Encryption
 
-Encrypt policy data with a custom KMS key. **Note**: The KMS key is immutable once set and requires replacement to change.
+Encrypt policy data with a custom KMS key.
 
 ```typescript fixture=default
 // Create a custom KMS key
@@ -2759,64 +2788,6 @@ const policyEngine = new agentcore.PolicyEngine(this, "EncryptedEngine", {
   description: "Policy engine with KMS encryption",
   kmsKey: policyKey,
 });
-
-// AWS automatically creates grants for:
-// - Policy Management (Create/Update/Delete policies)
-// - Policy Evaluation (Runtime authorization checks)
-```
-
-### Policy Validation Modes
-
-Control how Cedar policy validation findings are handled:
-
-```typescript fixture=default
-const policyEngine = new agentcore.PolicyEngine(this, "MyEngine", {
-  policyEngineName: "validation_engine",
-});
-
-// Fail on any validation findings (default - safer)
-const strictPolicy = new agentcore.Policy(this, "StrictPolicy", {
-  policyEngine,
-  definition: "permit(principal, action, resource);",
-  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
-});
-
-// Ignore validation findings (use with caution)
-const permissivePolicy = new agentcore.Policy(this, "PermissivePolicy", {
-  policyEngine,
-  definition: "permit(principal, action, resource);",
-  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS,
-});
-```
-
-#### Multiple Statements in One Policy
-
-```typescript fixture=default
-policyEngine.addPolicy("ComplexPolicy", {
-  definition: `
-    // Allow read access for all users
-    permit(
-      principal in Group::"Users",
-      action in [Action::"ReadModel", Action::"ListModels"],
-      resource
-    );
-
-    // Forbid sensitive actions for regular users
-    forbid(
-      principal in Group::"Users",
-      action in [Action::"DeleteModel", Action::"UpdateModel"],
-      resource
-    );
-
-    // Allow full access for admins
-    permit(
-      principal in Group::"Admins",
-      action,
-      resource
-    );
-  `,
-  description: "Multi-statement access control",
-});
 ```
 
 ### Importing Existing PolicyEngine
@@ -2830,7 +2801,6 @@ const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
   {
     policyEngineArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/my-engine-id",
     kmsKeyArn: "arn:aws:kms:us-east-1:123456789012:key/my-key-id",
-    status: "ACTIVE",
   }
 );
 
@@ -2852,7 +2822,6 @@ const importedPolicy = agentcore.Policy.fromPolicyAttributes(
   {
     policyArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/my-policy-id",
     policyEngineId: "my-engine-id",
-    status: "ACTIVE",
   }
 );
 
@@ -2877,75 +2846,10 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
   assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
 });
 
-// Grant read permissions (Get, List)
+// Grant read permissions 
 policyEngine.grantRead(lambdaRole);
 
-// Grant management permissions (Create, Update, Delete, Get)
-policyEngine.grantManage(lambdaRole);
-
-// Grant evaluation permissions (data plane operations)
+// Grant evaluation permissions 
 policyEngine.grantEvaluate(lambdaRole);
 
-// Grant policy generation permissions (natural language to Cedar)
-policyEngine.grantGeneratePolicy(lambdaRole);
-
-// Grant custom permissions
-policyEngine.grant(lambdaRole, "bedrock-agentcore:GetPolicyEngine");
-```
-
-### Policy IAM Permissions
-
-Grant access to individual policies:
-
-```typescript fixture=default
-const policy = new agentcore.Policy(this, "MyPolicy", {
-  policyEngine: policyEngine,
-  definition: "permit(principal, action, resource);",
-});
-
-const role = new iam.Role(this, "PolicyAdminRole", {
-  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
-});
-
-// Grant read permissions
-policy.grantRead(role);
-
-// Grant management permissions
-policy.grantManage(role);
-
-// Grant custom permissions
-policy.grant(role, "bedrock-agentcore:GetPolicy");
-```
-
-### CloudWatch Metrics
-
-Monitor policy engine and policy performance:
-
-```typescript fixture=default
-const policyEngine = new agentcore.PolicyEngine(this, "MetricsEngine", {
-  policyEngineName: "metrics_engine",
-});
-
-// PolicyEngine metrics
-const authorizationMetric = policyEngine.metricAuthorizations();
-const latencyMetric = policyEngine.metricAuthorizationLatency();
-const deniedMetric = policyEngine.metricDeniedRequests();
-const errorMetric = policyEngine.metricErrors();
-
-// Create CloudWatch alarms
-new cloudwatch.Alarm(this, "HighDeniedRequests", {
-  metric: deniedMetric,
-  threshold: 100,
-  evaluationPeriods: 2,
-  alarmDescription: "Alert when denied requests exceed threshold",
-});
-
-// Policy metrics
-const policy = new agentcore.Policy(this, "MonitoredPolicy", {
-  policyEngine,
-  definition: "permit(principal, action, resource);",
-});
-
-const policyEvaluations = policy.metricEvaluations();
-const policyLatency = policy.metricEvaluationLatency();
 ```
