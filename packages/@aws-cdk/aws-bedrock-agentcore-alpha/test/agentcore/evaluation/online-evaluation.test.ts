@@ -442,6 +442,33 @@ describe('OnlineEvaluationConfig', () => {
         });
       }).toThrow(/at most 200 characters/);
     });
+
+    test('throws error for empty log group names', () => {
+      expect(() => {
+        DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: [],
+          serviceNames: ['service'],
+        });
+      }).toThrow(/At least 1 log group name is required/);
+    });
+
+    test('throws error for too many log group names', () => {
+      expect(() => {
+        DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: Array(6).fill('/aws/log-group'),
+          serviceNames: ['service'],
+        });
+      }).toThrow(/At most 5 log group names are allowed/);
+    });
+
+    test('throws error for empty service names', () => {
+      expect(() => {
+        DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/log-group'],
+          serviceNames: [],
+        });
+      }).toThrow(/At least 1 service name is required/);
+    });
   });
 
   describe('IAM role', () => {

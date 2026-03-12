@@ -27,14 +27,6 @@ export namespace EvaluationPerms {
   ];
 
   /**
-   * Permissions to read online evaluation configurations.
-   */
-  export const READ_PERMS = [
-    'bedrock-agentcore:GetOnlineEvaluationConfig',
-    'bedrock-agentcore:ListOnlineEvaluationConfigs',
-  ];
-
-  /**
    * Permissions for the execution role to read CloudWatch Logs.
    */
   export const CLOUDWATCH_LOGS_READ_PERMS = [

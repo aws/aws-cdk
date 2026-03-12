@@ -12,6 +12,7 @@
  */
 
 import type { CloudWatchLogsDataSourceConfig } from './types';
+import { throwIfInvalid, validateLogGroupNames, validateServiceNames } from './validation-helpers';
 import type { IBedrockAgentRuntime } from '../runtime/runtime-base';
 import type { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
 
@@ -57,6 +58,8 @@ export class DataSourceConfig {
    * });
    */
   public static fromCloudWatchLogs(config: CloudWatchLogsDataSourceConfig): DataSourceConfig {
+    throwIfInvalid(validateLogGroupNames, config.logGroupNames);
+    throwIfInvalid(validateServiceNames, config.serviceNames);
     return new DataSourceConfig({
       logGroupNames: config.logGroupNames,
       serviceNames: config.serviceNames,
