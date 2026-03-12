@@ -2,14 +2,11 @@ import * as path from 'path';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as elasticbeanstalk from 'aws-cdk-lib/aws-elasticbeanstalk';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import type { IManagedPolicy, ManagedPolicyReference } from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as deploy from 'aws-cdk-lib/aws-s3-deployment';
-import type { ResourceEnvironment } from 'aws-cdk-lib';
-import { App, Fn, RemovalPolicy, Stack, UnscopedValidationError } from 'aws-cdk-lib';
+import { App, Fn, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import type { Node } from 'constructs';
 import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 /**
@@ -46,37 +43,20 @@ const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
   extract: false,
 });
 
-function makePolicy(arn: string): IManagedPolicy {
-  return {
-    managedPolicyArn: arn,
-    get managedPolicyRef(): ManagedPolicyReference {
-      return {
-        policyArn: this.managedPolicyArn,
-      };
-    },
-    get node(): Node {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-    },
-    get env(): ResourceEnvironment {
-      throw new UnscopedValidationError('The result of fromAwsManagedPolicyName can not be used in this API');
-    },
-  };
-}
-
 const serviceRole = new iam.Role(stack, 'service-role', {
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
-    makePolicy('arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth'),
-    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkEnhancedHealth'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 
 const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier'),
-    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker'),
-    makePolicy('arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkMulticontainerDocker'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWorkerTier'),
   ],
 });
 
