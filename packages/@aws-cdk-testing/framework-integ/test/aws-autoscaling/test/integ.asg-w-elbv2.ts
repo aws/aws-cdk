@@ -22,9 +22,7 @@ class ElbV2AsgStack extends cdk.Stack {
         ec2.InstanceClass.BURSTABLE3,
         ec2.InstanceSize.MICRO,
       ),
-      machineImage: new ec2.AmazonLinuxImage({
-        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      }),
+      machineImage: new ec2.AmazonLinuxImage(),
     });
 
     const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
@@ -68,9 +66,7 @@ class ElbV2AsgAtgStack extends cdk.Stack {
     const asg = new autoscaling.AutoScalingGroup(this, 'Asg', {
       vpc,
       instanceType: new ec2.InstanceType('t3.micro'),
-      machineImage: new ec2.AmazonLinuxImage({
-        generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-      }),
+      machineImage: new ec2.AmazonLinuxImage(),
     });
 
     const atg1 = new elbv2.ApplicationTargetGroup(this, 'ATG1', {
