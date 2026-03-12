@@ -66,8 +66,8 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    const role = producer.synthesizer.cloudFormationExecutionRole ?? producer.synthesizer.lookupRole;
-    if (role == null) {
+    const roleArn = producer.synthesizer.cloudFormationExecutionRole ?? producer.synthesizer.lookupRole;
+    if (roleArn == null) {
       // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
       throw new UnscopedValidationError(
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
@@ -75,7 +75,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
         'Use a different synthesizer, such as DefaultStackSynthesizer.',
       );
     }
-    return createGetStackOutput(reference, producer.synthesizer.cloudFormationExecutionRole);
+    return createGetStackOutput(reference, roleArn);
   }
 
   // Stacks are in the same account, but different regions
