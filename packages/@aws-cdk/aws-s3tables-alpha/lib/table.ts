@@ -179,6 +179,7 @@ abstract class TableBase extends Resource implements ITable {
     resourceArn: string,
     ...otherResourceArns: (string | undefined)[]) {
     const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
+
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: tableActions,
@@ -223,7 +224,7 @@ export interface TableProps {
    */
   readonly snapshotManagement?: SnapshotManagementProperty;
   /**
-   * Controls what happens to this table if it stops being managed by CloudFormation.
+   * Controls what happens to this table it it stoped being managed by cloudformation.
    *
    * @default RETAIN
    */
@@ -512,16 +513,16 @@ export interface IcebergSchemaProperty {
  */
 export interface SchemaFieldProperty {
   /**
+   * The unique identifier for the field.
+   *
+   * @default - Auto-assigned by S3 Tables
+   */
+  readonly id?: number;
+
+  /**
    * The name of the field.
    */
   readonly name: string;
-
-  /**
-   * The field type.
-   *
-   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://iceberg.apache.org/spec/#primitive-types).
-   */
-  readonly type: string;
 
   /**
    * A Boolean value that specifies whether values are required for each row in this field.
@@ -533,11 +534,11 @@ export interface SchemaFieldProperty {
   readonly required?: boolean;
 
   /**
-   * The unique identifier for the field.
+   * The field type.
    *
-   * @default - Auto-assigned by S3 Tables
+   * S3 Tables supports all Apache Iceberg primitive types. For more information, see the [Apache Iceberg documentation](https://iceberg.apache.org/spec/#primitive-types).
    */
-  readonly id?: number;
+  readonly type: string;
 }
 
 /**
@@ -618,7 +619,7 @@ export class Table extends TableBase {
       protected autoCreatePolicy: boolean = false;
 
       /**
-       * Exports this from the stack.
+       * Exports this  from the stack.
        */
       public export() {
         return attrs;

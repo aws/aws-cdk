@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46a157b85bbbea8e347a1bae69d2272580be3664a0c2ab4294a49e4bfa24759e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a4f7bb632725d8d348b576149f631126b58fa7991ee57c5cba1eeb3399aa896.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,71 +33,7 @@
       "dependencies": [
         "TableWithPartitionSortStack.assets"
       ],
-      "metadata": {
-        "/TableWithPartitionSortStack/PartitionSortBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TableWithPartitionSortStack/PartitionSortBucket/PartitionSortBucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PartitionSortBucket153171A7"
-          }
-        ],
-        "/TableWithPartitionSortStack/PartitionSortNamespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TableWithPartitionSortStack/PartitionSortNamespace/PartitionSortNamespace": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PartitionSortNamespace4C784AE5"
-          }
-        ],
-        "/TableWithPartitionSortStack/PartitionSortTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/TableWithPartitionSortStack/PartitionSortTable/PartitionSortTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PartitionSortTable417E5D04"
-          }
-        ],
-        "/TableWithPartitionSortStack/Exports/Output{\"Fn::GetAtt\":[\"PartitionSortBucket153171A7\",\"TableBucketARN\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttPartitionSortBucket153171A7TableBucketARND5608456"
-          }
-        ],
-        "/TableWithPartitionSortStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TableWithPartitionSortStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ],
-        "PartitionSortTable2D020B75": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PartitionSortTable2D020B75",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ]
-      },
+      "additionalMetadataFile": "TableWithPartitionSortStack.metadata.json",
       "displayName": "TableWithPartitionSortStack"
     },
     "TablePartitionSortIntegTestDefaultTestDeployAssertC1659EB1.assets": {
@@ -117,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4782a6489f2f234a246f915bf192e9ee7586d9df70b2f669a68c292c35c0d2e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe331119480e23de522bd607456b97c14969f67c350ea8326c9ac804a72fa349.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -133,84 +69,7 @@
         "TableWithPartitionSortStack",
         "TablePartitionSortIntegTestDefaultTestDeployAssertC1659EB1.assets"
       ],
-      "metadata": {
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "TablePartitionSortIntegTestDefaultTestDeployAssertC1659EB1.metadata.json",
       "displayName": "TablePartitionSortIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -711,6 +570,13 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }

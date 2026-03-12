@@ -62,7 +62,26 @@ const minimalTable = new Table(scope, 'MinimalTable', {
 ```
 
 ```ts
-// Build a table with an Iceberg Schema
+// Build a table with minimal Iceberg metadata
+const minimalIcebergTable = new Table(scope, 'MinimalIcebergMetadataTable', {
+    tableName: 'minimal_iceberg_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                {
+                    name: 'event_date',
+                    type: 'date',
+                },
+            ],
+        },
+    },
+});
+```
+
+```ts
+// Build a table with Iceberg schema and maintenance settings
 const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
     tableName: 'example_table_with_schema',
     namespace: namespace,

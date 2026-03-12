@@ -28,7 +28,7 @@
      "namespace": "\"partition_sort_ns\""
     },
     "flattenResponse": "false",
-    "salt": "1773195355616"
+    "salt": "1773347128798"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -132,7 +132,7 @@
      "name": "\"test_table\""
     },
     "flattenResponse": "false",
-    "salt": "1773195355618"
+    "salt": "1773347128805"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

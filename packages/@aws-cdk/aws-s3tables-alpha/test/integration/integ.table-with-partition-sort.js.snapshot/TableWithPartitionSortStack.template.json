@@ -3,7 +3,7 @@
   "PartitionSortBucket153171A7": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "cdk-partition-sort",
+    "TableBucketName": "cdk-partition-sort-test-bucket",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -30,11 +30,13 @@
      "IcebergPartitionSpec": {
       "Fields": [
        {
+        "FieldId": 1000,
         "Name": "date_partition",
         "SourceId": 1,
         "Transform": "identity"
        }
-      ]
+      ],
+      "SpecId": 0
      },
      "IcebergSchema": {
       "SchemaFieldList": [
@@ -43,6 +45,17 @@
         "Name": "event_date",
         "Required": true,
         "Type": "date"
+       },
+       {
+        "Id": 2,
+        "Name": "user_id",
+        "Required": true,
+        "Type": "string"
+       },
+       {
+        "Id": 3,
+        "Name": "event_count",
+        "Type": "int"
        }
       ]
      },
@@ -53,8 +66,19 @@
         "NullOrder": "nulls-last",
         "SourceId": 1,
         "Transform": "identity"
+       },
+       {
+        "Direction": "asc",
+        "NullOrder": "nulls-first",
+        "SourceId": 2,
+        "Transform": "identity"
        }
-      ]
+      ],
+      "OrderId": 1
+     },
+     "TableProperties": {
+      "write.format.default": "parquet",
+      "write.parquet.compression-codec": "zstd"
      }
     },
     "Namespace": "partition_sort_ns",

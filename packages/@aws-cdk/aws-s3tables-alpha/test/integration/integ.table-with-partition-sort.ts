@@ -16,7 +16,7 @@ class TableWithPartitionSortStack extends Stack {
     super(scope, id, props);
 
     this.tableBucket = new s3tables.TableBucket(this, 'PartitionSortBucket', {
-      tableBucketName: 'cdk-partition-sort',
+      tableBucketName: 'cdk-partition-sort-test-bucket',
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
@@ -34,18 +34,23 @@ class TableWithPartitionSortStack extends Stack {
         icebergSchema: {
           schemaFieldList: [
             { id: 1, name: 'event_date', type: 'date', required: true },
+            { id: 2, name: 'user_id', type: 'string', required: true },
+            { id: 3, name: 'event_count', type: 'int' },
           ],
         },
         icebergPartitionSpec: {
+          specId: 0,
           fields: [
             {
               sourceId: 1,
               transform: s3tables.IcebergTransform.IDENTITY,
               name: 'date_partition',
+              fieldId: 1000,
             },
           ],
         },
         icebergSortOrder: {
+          orderId: 1,
           fields: [
             {
               sourceId: 1,
@@ -53,8 +58,18 @@ class TableWithPartitionSortStack extends Stack {
               direction: s3tables.SortDirection.ASC,
               nullOrder: s3tables.NullOrder.NULLS_LAST,
             },
+            {
+              sourceId: 2,
+              transform: s3tables.IcebergTransform.IDENTITY,
+              direction: s3tables.SortDirection.ASC,
+              nullOrder: s3tables.NullOrder.NULLS_FIRST,
+            },
           ],
         },
+        tableProperties: [
+          { key: 'write.format.default', value: 'parquet' },
+          { key: 'write.parquet.compression-codec', value: 'zstd' },
+        ],
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });
