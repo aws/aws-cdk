@@ -84,8 +84,13 @@ rule.addTarget(
   }),
 );
 
-new integ.IntegTest(app, 'EcsFargateTest', {
+const test = new integ.IntegTest(app, 'EcsFargateTest', {
   testCases: [stack],
+});
+
+// Disable the rule before teardown to prevent active tasks during cluster deletion
+test.assertions.awsApiCall('EventBridge', 'disableRule', {
+  Name: rule.ruleName,
 });
 
 app.synth();

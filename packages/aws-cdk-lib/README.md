@@ -1775,17 +1775,17 @@ They are applied during or after construct construction using the `.with()` meth
 ```ts fixture=README-mixins
 // Apply mixins fluently with .with()
 new s3.CfnBucket(scope, "MyL1Bucket")
-  .with(new EncryptionAtRest())
-  .with(new AutoDeleteObjects());
+  .with(new BucketBlockPublicAccess())
+  .with(new BucketAutoDeleteObjects());
 
 // Apply multiple mixins to the same construct
 new s3.CfnBucket(scope, "MyL1Bucket")
-  .with(new EncryptionAtRest(), new AutoDeleteObjects());
+  .with(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
 
 // Mixins work with all types of constructs:
 // L1, L2 and even custom constructs
-new s3.Bucket(stack, 'MyL2Bucket').with(new EncryptionAtRest());
-new CustomBucket(stack, 'MyCustomBucket').with(new EncryptionAtRest());
+new s3.Bucket(stack, 'MyL2Bucket').with(new BucketBlockPublicAccess());
+new CustomBucket(stack, 'MyCustomBucket').with(new BucketBlockPublicAccess());
 ```
 
 There is an alternative form available that allows additional, advanced configuration of Mixin application: `Mixins.of()`.
@@ -1796,22 +1796,22 @@ import { ConstructSelector } from "aws-cdk-lib/core";
 // Basic: Apply mixins to any construct, calls can be chained
 const myBucket = new s3.CfnBucket(scope, "MyBucket");
 Mixins.of(myBucket)
-  .apply(new EncryptionAtRest())
-  .apply(new AutoDeleteObjects());
+  .apply(new BucketBlockPublicAccess())
+  .apply(new BucketAutoDeleteObjects());
 
 // Basic: Or multiple Mixins passed to apply
 Mixins.of(myBucket)
-  .apply(new EncryptionAtRest(), new AutoDeleteObjects());
+  .apply(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
 
 // Advanced: Apply to constructs matching a selector, e.g. match by ID
 Mixins.of(
   scope,
   ConstructSelector.byId("prod/**") 
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 
 // Advanced: Require a mixin to be applied to every node in the construct tree
 Mixins.of(stack)
-  .apply(new ProductionSecurityMixin())
+  .apply(new CustomProdSecurityConfig())
   .requireAll();
 ```
 
@@ -1832,7 +1832,7 @@ By default, Mixins are applied to all supported constructs in the tree:
 
 ```ts fixture=README-mixins
 // Apply to all constructs in a scope
-Mixins.of(scope).apply(new EncryptionAtRest());
+Mixins.of(scope).apply(new BucketBlockPublicAccess());
 ```
 
 Optionally, you may select specific constructs:
@@ -1844,31 +1844,31 @@ import { ConstructSelector } from "aws-cdk-lib/core";
 Mixins.of(
   bucket,
   ConstructSelector.cfnResource() // provided CfnResource or a CfnResource default child
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Apply to all resources of a specific type
 Mixins.of(
   scope,
   ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME)
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Alternative: select by CloudFormation resource type name
 Mixins.of(
   scope,
   ConstructSelector.resourcesOfType("AWS::S3::Bucket")
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Apply to constructs matching a pattern
 Mixins.of(
   scope,
   ConstructSelector.byId("prod/**") 
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 
 // The default is to apply to all constructs in the scope
 Mixins.of(
   scope,
   ConstructSelector.all() // pass through to IConstruct.findAll()
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 ```
 
 #### Mixins that must be used
@@ -1891,10 +1891,10 @@ Mixins.of(scope, selector)
   .requireAll()
   // Or assert Mixin was applied to at least one construct in the selection
   // .requireAny()
-  .apply(new EncryptionAtRest());
+  .apply(new BucketBlockPublicAccess());
 
 // Get an application report for manual assertions
-const report = Mixins.of(scope).apply(new EncryptionAtRest()).report;
+const report = Mixins.of(scope).apply(new BucketBlockPublicAccess()).report;
 ```
 
 ### Creating Custom Mixins

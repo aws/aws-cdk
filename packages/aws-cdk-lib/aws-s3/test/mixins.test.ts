@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
-import { Stack, App } from '../../core';
+import * as cdk from '../../core';
 import * as s3 from '../lib';
-import { BucketVersioning, BucketBlockPublicAccess, BucketPolicyStatements } from '../lib/mixins';
+import { BucketAutoDeleteObjects, BucketVersioning, BucketBlockPublicAccess, BucketPolicyStatements } from '../lib/mixins';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -12,12 +12,131 @@ class TestConstruct extends Construct {
 }
 
 describe('S3 Mixins', () => {
-  let app: App;
-  let stack: Stack;
+  let app: cdk.App;
+  let stack: cdk.Stack;
 
   beforeEach(() => {
-    app = new App();
-    stack = new Stack(app, 'TestStack');
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+  });
+
+  describe('AutoDeleteObjects', () => {
+    test('applies to S3 bucket', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket.with(new BucketAutoDeleteObjects());
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+        BucketName: { Ref: 'Bucket' },
+      });
+    });
+
+    test('creates bucket policy with correct permissions', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket.with(new BucketAutoDeleteObjects());
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        Bucket: { Ref: 'Bucket' },
+        PolicyDocument: {
+          Statement: [{
+            Action: [
+              's3:PutBucketPolicy',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['Bucket', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket', 'Arn'] }, '/*']] },
+            ],
+          }],
+        },
+      });
+    });
+
+    test('custom resource depends on bucket policy', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket.with(new BucketAutoDeleteObjects());
+
+      const template = Template.fromStack(stack);
+      template.hasResource('Custom::S3AutoDeleteObjects', {
+        DependsOn: ['BucketS3BucketPolicyF025ED2B'],
+      });
+    });
+
+    test('only one lambda is created for multiple buckets', () => {
+      const bucket1 = new s3.CfnBucket(stack, 'Bucket1');
+      bucket1.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket1.with(new BucketAutoDeleteObjects());
+      const bucket2 = new s3.CfnBucket(stack, 'Bucket2');
+      bucket2.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket2.with(new BucketAutoDeleteObjects());
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+    });
+
+    test('validation fails if deletion policy is not DELETE', () => {
+      new s3.CfnBucket(stack, 'Bucket')
+        .with(new BucketAutoDeleteObjects());
+
+      expect(() => app.synth()).toThrow(/AutoDeleteObjects/);
+    });
+
+    test('removal policy can be set after mixin is applied', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      bucket.with(new BucketAutoDeleteObjects());
+      bucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3AutoDeleteObjects', {
+        BucketName: { Ref: 'Bucket' },
+      });
+    });
+
+    test('shares lambda provider with L2 autoDeleteObjects property', () => {
+      const bucket1 = new s3.CfnBucket(stack, 'Bucket1');
+      bucket1.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+      bucket1.with(new BucketAutoDeleteObjects());
+
+      new s3.Bucket(stack, 'Bucket2', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+    });
+
+    test('can be applied retrospectively to an L2 bucket', () => {
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      bucket.with(new BucketAutoDeleteObjects());
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('Custom::S3AutoDeleteObjects', 1);
+      template.resourceCountIs('AWS::S3::BucketPolicy', 1);
+    });
+
+    test('throws when applied to an L2 bucket that already has autoDeleteObjects enabled', () => {
+      const bucket = new s3.Bucket(stack, 'Bucket', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      });
+
+      expect(() => bucket.with(new BucketAutoDeleteObjects())).toThrow(/AutoDeleteObjectsCustomResource/);
+    });
+
+    test('does not support non-S3 constructs', () => {
+      const construct = new TestConstruct(stack, 'test');
+      const mixin = new BucketAutoDeleteObjects();
+
+      expect(mixin.supports(construct)).toBe(false);
+    });
   });
 
   describe('BucketVersioning', () => {

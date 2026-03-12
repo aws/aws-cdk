@@ -35,15 +35,6 @@ See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/do
 
 ### Built-in Mixins
 
-#### S3-Specific Mixins
-
-**AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
-
-```typescript
-const myBucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(myBucket).apply(new AutoDeleteObjects());
-```
-
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:
@@ -151,63 +142,6 @@ const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourc
 
 distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
-```
-
-### L1 Property Mixins
-
-For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
-
-```typescript
-new s3.Bucket(scope, "Bucket")
-  .with(new CfnBucketPropsMixin({
-    versioningConfiguration: { status: "Enabled" },
-    publicAccessBlockConfiguration: {
-      blockPublicAcls: true,
-      blockPublicPolicy: true
-    }
-  }));
-```
-
-Deeply nested properties support cross-service references, such as passing a KMS key for encryption:
-
-```typescript
-const key = new kms.Key(scope, "Key");
-
-new s3.Bucket(scope, "Bucket")
-  .with(new CfnBucketPropsMixin({
-    bucketEncryption: {
-      serverSideEncryptionConfiguration: [{
-        serverSideEncryptionByDefault: {
-          sseAlgorithm: "aws:kms",
-          kmsMasterKeyId: key,
-        },
-      }],
-    },
-  }));
-```
-
-Property mixins support two merge strategies:
-
-```typescript
-// MERGE (default): Deep merges properties with existing values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.MERGE }
-));
-
-// OVERRIDE: Replaces existing property values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERRIDE }
-));
-```
-
-Property mixins are available for all AWS services:
-
-```typescript
-import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
-import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
-import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
 ```
 
 ---
