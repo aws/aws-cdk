@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -36,7 +37,7 @@ const lambdaProcessor = new lambda.Function(stack, 'LambdaProcessor', {
     };
   `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_24_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   architecture: lambda.Architecture.ARM_64,
   loggingFormat: lambda.LoggingFormat.JSON,
 });
