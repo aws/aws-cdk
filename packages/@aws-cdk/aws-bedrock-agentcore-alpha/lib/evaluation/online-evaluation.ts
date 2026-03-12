@@ -378,28 +378,25 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     return role;
   }
 
-  private buildRuleConfig(props: OnlineEvaluationConfigProps): any {
-    const rule: any = {
+  private buildRuleConfig(props: OnlineEvaluationConfigProps): bedrockagentcore.CfnOnlineEvaluationConfig.RuleProperty {
+    return {
       samplingConfig: {
         samplingPercentage: props.samplingPercentage ?? 10,
       },
       sessionConfig: {
         sessionTimeoutMinutes: props.sessionTimeoutMinutes ?? 15,
       },
+      ...(props.filters && props.filters.length > 0 ? {
+        filters: props.filters.map((f) => ({
+          key: f.key,
+          operator: f.operator,
+          value: this.formatFilterValue(f.value),
+        })),
+      } : {}),
     };
-
-    if (props.filters && props.filters.length > 0) {
-      rule.filters = props.filters.map((f) => ({
-        key: f.key,
-        operator: f.operator,
-        value: this.formatFilterValue(f.value),
-      }));
-    }
-
-    return rule;
   }
 
-  private formatFilterValue(value: string | number | boolean): any {
+  private formatFilterValue(value: string | number | boolean): bedrockagentcore.CfnOnlineEvaluationConfig.FilterValueProperty {
     if (typeof value === 'string') {
       return { stringValue: value };
     } else if (typeof value === 'number') {
