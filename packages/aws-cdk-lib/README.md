@@ -2136,6 +2136,23 @@ for (const aspectApplication of aspectApplications) {
 }
 ```
 
+### Converting between Aspects and Mixins
+
+Since Mixins and Aspects are both implementations of the visitor pattern, they can be converted from each other using the `Shims` class:
+
+```ts fixture=README-mixins
+// Applies an Aspect immediately as a Mixin
+const versioningMixin = Shims.asMixin(new EnableBucketVersioning());
+Mixins.of(scope).apply(versioningMixin);
+
+// Delays application of a Mixin to the synthesis phase
+const publicAccessAspect = Shims.asAspect(new BucketBlockPublicAccess());
+Aspects.of(scope).add(publicAccessAspect);
+```
+
+When shimming a Mixin to an Aspect, the Mixin will automatically only be applied to supported constructs (via `supports()`).
+Going from an Aspect to a Mixin, the Aspect will be applied to every node.
+
 ## Blueprint Property Injection
 
 The goal of Blueprint Property Injection is to provide builders an automatic way to set default property values.
