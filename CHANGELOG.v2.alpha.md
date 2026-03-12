@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.243.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.242.0-alpha.0...v2.243.0-alpha.0) (2026-03-11)
+
+## [2.242.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.241.0-alpha.0...v2.242.0-alpha.0) (2026-03-10)
+
+
+### Features
+
+* **mixins-preview:** allow passing resource objects into properties in CFN Property mixins ([#37148](https://github.com/aws/aws-cdk/issues/37148)) ([f238629](https://github.com/aws/aws-cdk/commit/f2386291a50961660135b6d13b576a3744fa5ecf))
+* **mixins-preview:** generate EventBridge pattern for all events ([#37081](https://github.com/aws/aws-cdk/issues/37081)) ([f30e836](https://github.com/aws/aws-cdk/commit/f30e8360112c724ce386f26d7d2bf10d6a58e479))
+* **mixins-preview:** support custom merge strategies via IMergeStrategy ([#37170](https://github.com/aws/aws-cdk/issues/37170)) ([0dec011](https://github.com/aws/aws-cdk/commit/0dec0113c45f5808e2afd45ac5be1d044e577a4b))
+
 ## [2.241.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.240.0-alpha.0...v2.241.0-alpha.0) (2026-03-02)
 
 
