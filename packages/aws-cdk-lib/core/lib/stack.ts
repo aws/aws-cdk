@@ -191,18 +191,6 @@ export interface StackProps {
   readonly crossRegionReferences?: boolean;
 
   /**
-   * Enable this flag to allow native cross account stack references.
-   *
-   * Enabling this will create a CloudFormation custom resource
-   * in both the producing stack and consuming stack in order to perform the export/import
-   *
-   * This feature is currently experimental
-   *
-   * @default false
-   */
-  readonly crossAccountReferences?: boolean;
-
-  /**
    * Options for applying a permissions boundary to all IAM Roles
    * and Users created within this Stage
    *
@@ -405,13 +393,6 @@ export class Stack extends Construct implements ITaggable {
   public readonly _crossRegionReferences: boolean;
 
   /**
-   * Whether cross account references are enabled for this stack
-   *
-   * @internal
-   */
-  public readonly _crossAccountReferences: boolean;
-
-  /**
    * SNS Notification ARNs to receive stack events.
    *
    * @internal
@@ -481,7 +462,6 @@ export class Stack extends Construct implements ITaggable {
     this._stackDependencies = { };
     this.templateOptions = { };
     this._crossRegionReferences = !!props.crossRegionReferences;
-    this._crossAccountReferences = !!props.crossAccountReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });

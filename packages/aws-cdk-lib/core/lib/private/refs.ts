@@ -66,20 +66,16 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    // only supported if the customer opts in
-    if (consumer._crossAccountReferences) {
-      // We are not passing a role ARN to create the reference because,
-      // by default, it uses the destination stack's role. In the CDK
-      // that role is the CloudFormation execution role, which, by default,
-      // has admin permissions.
-      return createGetStackOutput(reference);
-    } else {
+    const role = producer.synthesizer.cloudFormationExecutionRole ?? producer.synthesizer.lookupRole;
+    if (role == null) {
+      // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
       throw new UnscopedValidationError(
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Cross stack references are only supported for stacks deployed to the same account or between nested stacks and their parent stack' +
-        'Set crossAccountReferences=true to enable cross region references',
+        'Could not find either a CloudFormation execution role or a lookup role. ' +
+        'Use a different synthesizer, such as DefaultStackSynthesizer.',
       );
     }
+    return createGetStackOutput(reference, producer.synthesizer.cloudFormationExecutionRole);
   }
 
   // Stacks are in the same account, but different regions

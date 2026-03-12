@@ -870,7 +870,7 @@ describe('stack', () => {
     });
   });
 
-  test('cross-account stack references with crossAccountReferences=true', () => {
+  test('cross-account stack references', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -878,7 +878,6 @@ describe('stack', () => {
         region: 'us-east-1',
         account: '111111111111',
       },
-      crossAccountReferences: true,
     });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -888,7 +887,6 @@ describe('stack', () => {
         region: 'us-east-2',
         account: '222222222222',
       },
-      crossAccountReferences: true,
     });
 
     // WHEN - used in another account and region
@@ -1985,7 +1983,7 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('cannot create references to stacks in other accounts', () => {
+  test('can create references to stacks in other accounts', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -1997,7 +1995,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow(/Stack "Stack2" cannot reference [^ ]+ in stack "Stack1"/);
+    }).not.toThrow();
   });
 
   test('urlSuffix does not imply a stack dependency', () => {

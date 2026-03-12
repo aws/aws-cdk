@@ -5,7 +5,6 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 const app = new cdk.App();
 
 const producingStack = new cdk.Stack(app, 'CrossAccountRefProducerInteg', {
-  crossAccountReferences: true,
   env: {
     region: 'us-east-1',
     account: '280619947791',
@@ -24,7 +23,6 @@ const param = new ssm.StringParameter(producingStack, 'SomeParameter', {
 });
 
 const consumingStack = new cdk.Stack(app, 'CrossAccountRefConsumerInteg', {
-  crossAccountReferences: true,
   env: {
     region: 'eu-central-1',
     account: '669420849322',
