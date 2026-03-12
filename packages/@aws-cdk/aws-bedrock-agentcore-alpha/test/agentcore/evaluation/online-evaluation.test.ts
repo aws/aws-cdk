@@ -627,8 +627,8 @@ describe('OnlineEvaluationConfig', () => {
     test('fromConfigId imports by ID', () => {
       const imported = OnlineEvaluationConfig.fromOnlineEvaluationConfigId(stack, 'Imported', 'my-config-id');
 
-      expect(imported.configId).toBe('my-config-id');
-      expect(imported.configArn).toContain('my-config-id');
+      expect(imported.onlineEvaluationConfigId).toBe('my-config-id');
+      expect(imported.onlineEvaluationConfigArn).toContain('my-config-id');
     });
 
     test('fromConfigArn imports by ARN', () => {
@@ -638,22 +638,22 @@ describe('OnlineEvaluationConfig', () => {
         'arn:aws:bedrock-agentcore:us-east-1:123456789012:online-evaluation-config/my-config-id',
       );
 
-      expect(imported.configId).toBe('my-config-id');
-      expect(imported.configArn).toBe(
+      expect(imported.onlineEvaluationConfigId).toBe('my-config-id');
+      expect(imported.onlineEvaluationConfigArn).toBe(
         'arn:aws:bedrock-agentcore:us-east-1:123456789012:online-evaluation-config/my-config-id',
       );
     });
 
     test('fromAttributes imports with all attributes', () => {
       const imported = OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(stack, 'Imported', {
-        configArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:online-evaluation-config/my-config-id',
-        configId: 'my-config-id',
-        configName: 'my_config',
+        onlineEvaluationConfigArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:online-evaluation-config/my-config-id',
+        onlineEvaluationConfigId: 'my-config-id',
+        onlineEvaluationConfigName: 'my_config',
         executionRoleArn: 'arn:aws:iam::123456789012:role/MyRole',
       });
 
-      expect(imported.configId).toBe('my-config-id');
-      expect(imported.configName).toBe('my_config');
+      expect(imported.onlineEvaluationConfigId).toBe('my-config-id');
+      expect(imported.onlineEvaluationConfigName).toBe('my_config');
       expect(imported.executionRole).toBeDefined();
     });
   });

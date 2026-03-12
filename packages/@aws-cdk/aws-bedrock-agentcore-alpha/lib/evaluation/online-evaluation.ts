@@ -107,9 +107,9 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     );
 
     return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
-      configArn,
-      configId: onlineEvaluationConfigId,
-      configName: onlineEvaluationConfigId, // Use ID as name when importing by ID
+      onlineEvaluationConfigArn: configArn,
+      onlineEvaluationConfigId: onlineEvaluationConfigId,
+      onlineEvaluationConfigName: onlineEvaluationConfigId,
     });
   }
 
@@ -130,9 +130,9 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     const configId = arnParts.resourceName!;
 
     return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
-      configArn: onlineEvaluationConfigArn,
-      configId,
-      configName: configId, // Use ID as name when importing by ARN
+      onlineEvaluationConfigArn: onlineEvaluationConfigArn,
+      onlineEvaluationConfigId: configId,
+      onlineEvaluationConfigName: configId,
     });
   }
 
@@ -150,9 +150,9 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     attrs: OnlineEvaluationConfigAttributes,
   ): IOnlineEvaluationConfig {
     class Import extends OnlineEvaluationBase {
-      public readonly configArn = attrs.configArn;
-      public readonly configId = attrs.configId;
-      public readonly configName = attrs.configName;
+      public readonly onlineEvaluationConfigArn = attrs.onlineEvaluationConfigArn;
+      public readonly onlineEvaluationConfigId = attrs.onlineEvaluationConfigId;
+      public readonly onlineEvaluationConfigName = attrs.onlineEvaluationConfigName;
       public readonly executionRole = attrs.executionRoleArn
         ? iam.Role.fromRoleArn(scope, `${id}Role`, attrs.executionRoleArn)
         : undefined;
@@ -175,19 +175,19 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
    * The ARN of the online evaluation configuration.
    * @attribute
    */
-  public readonly configArn: string;
+  public readonly onlineEvaluationConfigArn: string;
 
   /**
    * The unique identifier of the online evaluation configuration.
    * @attribute
    */
-  public readonly configId: string;
+  public readonly onlineEvaluationConfigId: string;
 
   /**
    * The name of the online evaluation configuration.
    * @attribute
    */
-  public readonly configName: string;
+  public readonly onlineEvaluationConfigName: string;
 
   /**
    * The IAM execution role for the evaluation.
@@ -235,7 +235,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     throwIfInvalid(validateFilters, props.filters, this);
     throwIfInvalid(validateSessionTimeout, props.sessionTimeoutMinutes, this);
 
-    this.configName = props.configName;
+    this.onlineEvaluationConfigName = props.configName;
     this.executionRole = props.executionRole ?? this.createExecutionRole();
     this.grantPrincipal = this.executionRole;
 
@@ -260,8 +260,8 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       resource.node.addDependency(this.executionRole);
     }
 
-    this.configArn = resource.attrOnlineEvaluationConfigArn;
-    this.configId = resource.attrOnlineEvaluationConfigId;
+    this.onlineEvaluationConfigArn = resource.attrOnlineEvaluationConfigArn;
+    this.onlineEvaluationConfigId = resource.attrOnlineEvaluationConfigId;
     this.status = resource.attrStatus;
     this.executionStatus = resource.attrExecutionStatus;
     this.createdAt = resource.attrCreatedAt;

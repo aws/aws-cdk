@@ -25,19 +25,19 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
    * The ARN of the online evaluation configuration.
    * @attribute
    */
-  readonly configArn: string;
+  readonly onlineEvaluationConfigArn: string;
 
   /**
    * The unique identifier of the online evaluation configuration.
    * @attribute
    */
-  readonly configId: string;
+  readonly onlineEvaluationConfigId: string;
 
   /**
    * The name of the online evaluation configuration.
    * @attribute
    */
-  readonly configName: string;
+  readonly onlineEvaluationConfigName: string;
 
   /**
    * The IAM execution role for the evaluation.
@@ -84,9 +84,9 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
  * Contains methods and attributes valid for configurations either created with CDK or imported.
  */
 export abstract class OnlineEvaluationBase extends Resource implements IOnlineEvaluationConfig {
-  public abstract readonly configArn: string;
-  public abstract readonly configId: string;
-  public abstract readonly configName: string;
+  public abstract readonly onlineEvaluationConfigArn: string;
+  public abstract readonly onlineEvaluationConfigId: string;
+  public abstract readonly onlineEvaluationConfigName: string;
   public abstract readonly executionRole?: iam.IRole;
   public abstract readonly status?: string;
   public abstract readonly executionStatus?: string;
@@ -115,7 +115,7 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.configArn],
+      resourceArns: [this.onlineEvaluationConfigArn],
       scope: this,
     });
   }

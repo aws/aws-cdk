@@ -253,17 +253,17 @@ export interface OnlineEvaluationConfigAttributes {
   /**
    * The ARN of the online evaluation configuration.
    */
-  readonly configArn: string;
+  readonly onlineEvaluationConfigArn: string;
 
   /**
    * The ID of the online evaluation configuration.
    */
-  readonly configId: string;
+  readonly onlineEvaluationConfigId: string;
 
   /**
    * The name of the online evaluation configuration.
    */
-  readonly configName: string;
+  readonly onlineEvaluationConfigName: string;
 
   /**
    * The ARN of the IAM execution role.
