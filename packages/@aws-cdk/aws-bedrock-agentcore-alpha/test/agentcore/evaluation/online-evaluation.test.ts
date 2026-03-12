@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { App, Stack, Tags } from 'aws-cdk-lib';
+import { App, Lazy, Stack, Tags } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import {
@@ -441,6 +441,74 @@ describe('OnlineEvaluationConfig', () => {
           description: 'a'.repeat(201),
         });
       }).toThrow(/at most 200 characters/);
+    });
+
+    test('throws error for empty config name', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+          configName: '',
+          evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/log-group'],
+            serviceNames: ['service'],
+          }),
+        });
+      }).toThrow(/at least 1 character/);
+    });
+
+    test('accepts token config name without validation', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+          configName: Lazy.string({ produce: () => 'resolved_later' }),
+          evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/log-group'],
+            serviceNames: ['service'],
+          }),
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts token description without validation', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+          configName: 'test_evaluation',
+          evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/log-group'],
+            serviceNames: ['service'],
+          }),
+          description: Lazy.string({ produce: () => 'a'.repeat(300) }),
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts token sampling percentage without validation', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+          configName: 'test_evaluation',
+          evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/log-group'],
+            serviceNames: ['service'],
+          }),
+          samplingPercentage: Lazy.number({ produce: () => 999 }),
+        });
+      }).not.toThrow();
+    });
+
+    test('accepts token session timeout without validation', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+          configName: 'test_evaluation',
+          evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/log-group'],
+            serviceNames: ['service'],
+          }),
+          sessionTimeoutMinutes: Lazy.number({ produce: () => 9999 }),
+        });
+      }).not.toThrow();
     });
 
     test('throws error for empty log group names', () => {

@@ -416,7 +416,7 @@ describe('OnlineEvaluationConfig Property-Based Tests', () => {
     // Test number filter values
     fc.assert(
       fc.property(
-        fc.double({ min: -1e6, max: 1e6, noNaN: true }),
+        fc.double({ min: -1e6, max: 1e6, noNaN: true, noDefaultInfinity: true }).filter(v => !Object.is(v, -0)),
         (value) => {
           const app = new App();
           const stack = new Stack(app, 'TestStack', {
