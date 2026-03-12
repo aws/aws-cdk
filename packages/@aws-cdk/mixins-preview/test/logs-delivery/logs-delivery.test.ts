@@ -600,7 +600,6 @@ describe('S3 Delivery', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -655,7 +654,6 @@ describe('S3 Delivery', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -702,7 +700,6 @@ describe('S3 Delivery', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -734,31 +731,6 @@ describe('S3 Delivery', () => {
         ]),
       },
     });
-  });
-
-  test('KMS key policy is not duplicated when multiple buckets use the same key for encryption', () => {
-    const key = new Key(stack, 'EncryptionKey');
-    const bucket1 = new Bucket(stack, 'Destination1', {
-      encryptionKey: key,
-    });
-
-    const bucket2 = new Bucket(stack, 'Destination2', {
-      encryptionKey: key,
-    });
-
-    const s3Logs1 = new S3LogsDelivery(bucket1, { kmsKey: key });
-    const s3Logs2 = new S3LogsDelivery(bucket2);
-    s3Logs1.bind(source, logType, source.bucketArn);
-    s3Logs2.bind(source, logType, source.bucketArn);
-
-    const template = Template.fromStack(stack);
-    const keyResource = template.findResources('AWS::KMS::Key');
-    const keyPolicy = Object.values(keyResource)[0].Properties.KeyPolicy;
-    const logsDeliveryStatements = keyPolicy.Statement.filter((stmt: any) =>
-      stmt.Sid === 'AWS CDK: Allow Logs Delivery to use the key',
-    );
-
-    expect(logsDeliveryStatements).toHaveLength(1);
   });
 
   test('does not add KMS key policy when bucket is encrypted using AWS managed keys', () => {
@@ -862,11 +834,11 @@ describe('Cloudwatch Logs Delivery', () => {
                 'Arn',
               ],
             },
-            ':log-stream:*"}],"Version":"2012-10-17"}',
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
-      PolicyName: 'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupDelivery72DADCC3',
+      PolicyName: 'LogGroupDeliveryPolicy7F26860F',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -984,15 +956,15 @@ describe('Cloudwatch Logs Delivery', () => {
                 'Arn',
               ],
             },
-            ':log-stream:*"}],"Version":"2012-10-17"}',
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
-      PolicyName: 'SourceBucketCdkLogGroupAccessLogsDeliverySourceBucketLogGroupB6CEE4EE',
+      PolicyName: 'LogGroup',
     });
   });
 
-  test('if there is an exsiting Cloudwatch resource policy but it is not attached to the root of the stack, make a new one', () => {
+  test('if there is an existing policy attached to the LogGroup, update it', () => {
     const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
       logGroupName: 'test-log-group',
       retention: RetentionDays.ONE_WEEK,
@@ -1008,13 +980,19 @@ describe('Cloudwatch Logs Delivery', () => {
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
     cwlLogs.bind(source, logType, source.bucketArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
   });
 
-  test('if there is an existing Cloudwatch resource policy at the root of the stack, update it', () => {
+  test('if there is an existing Cloudwatch resource policy at the root of the stack, make a new one', () => {
     new ResourcePolicy(stack, 'CdkLogGroupLogsDeliveryPolicy', {
       resourcePolicyName: 'singletonPolicy',
-      policyStatements: [],
+      policyStatements: [
+        new PolicyStatement({
+          actions: ['logs:PutLogEvents'],
+          principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+          resources: ['*'],
+        }),
+      ],
     });
     const logGroup = new LogGroup(stack, 'LogGroupDelivery', {
       logGroupName: 'test-log-group',
@@ -1024,10 +1002,10 @@ describe('Cloudwatch Logs Delivery', () => {
     const cwlLogs = new LogGroupLogsDelivery(logGroup);
     cwlLogs.bind(source, logType, source.bucketArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
   });
 
-  test('creates only one resource policy if multiple Log Delivery Destinations are created', () => {
+  test('creates one resource policy for each log delivery destination that uses a different LogGroup', () => {
     const logGroup1 = new LogGroup(stack, 'LogGroup1Delivery', {
       logGroupName: 'test-1-log-group',
       retention: RetentionDays.ONE_WEEK,
@@ -1044,7 +1022,7 @@ describe('Cloudwatch Logs Delivery', () => {
     const cwlLogs2 = new LogGroupLogsDelivery(logGroup2);
     cwlLogs2.bind(source, logType, source.bucketArn);
 
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::ResourcePolicy', 2);
   });
 
   test('creates a new resource policy if there is an existing resource policy unrelated to Cloudwatch logs', () => {
