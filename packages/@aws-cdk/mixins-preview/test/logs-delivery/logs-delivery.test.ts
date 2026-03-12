@@ -1,5 +1,5 @@
 import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketEncryption, BucketPolicy, CfnBucket, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
+import { Bucket, BucketEncryption, CfnBucket, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnDeliveryStream, DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
@@ -182,24 +182,32 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Destination',
+                  'Arn',
                 ],
-              ],
-            },
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
@@ -301,24 +309,32 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
+            Resource: [ 
+              {
+                'Fn::GetAtt': [
+                  'Destination920A3C57',
+                  'Arn',
                 ],
-              ],
-            },
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination920A3C57',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
           {
             Action: [
@@ -358,12 +374,28 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::GetAtt': [
-                'Destination920A3C57',
-                'Arn',
-              ],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Destination920A3C57',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination920A3C57',
+                        'Arn',
+                      ],
+                    },
+                    '/*'
+                  ],
+                ]
+              },
+            ],
           },
         ],
       },
@@ -419,44 +451,49 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Destination920A3C57',
+                  'Arn',
                 ],
-              ],
-            },
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination920A3C57',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              }
+            ],
           },
         ],
       },
     });
   });
 
+  /**
+   * L2s Buckets are weird about not being able to find bucketPolicies if they have not been added via addToResourcePolicy
+   */
   test('adds to existing policy if a BucketPolicy already exists', () => {
     const bucket = new Bucket(stack, 'Destination');
-
-    new BucketPolicy(stack, 'S3BucketPolicy', {
-      bucket: bucket,
-      document: new PolicyDocument({
-        statements: [new PolicyStatement({
-          effect: Effect.ALLOW,
-          principals: [new AccountRootPrincipal()],
-          actions: ['s3:GetObject'],
-          resources: [bucket.arnForObjects('*')],
-        })],
-      }),
-    });
+    bucket.addToResourcePolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new AccountRootPrincipal()],
+      actions: ['s3:GetObject'],
+      resources: [bucket.arnForObjects('*')],
+    }));
 
     const s3Logs = new S3LogsDelivery(bucket);
     s3Logs.bind(source, logType, source.bucketArn);
@@ -465,16 +502,16 @@ describe('S3 Delivery', () => {
   });
 
   test('adds to existing policy if a CfnBucketPolicy already exists', () => {
-    const bucket = new Bucket(stack, 'Destination');
+    const bucket = new CfnBucket(stack, 'Destination');
 
     new CfnBucketPolicy(stack, 'S3BucketPolicy', {
-      bucket: bucket.bucketName,
+      bucket: bucket,
       policyDocument: new PolicyDocument({
         statements: [new PolicyStatement({
           effect: Effect.ALLOW,
           principals: [new AccountRootPrincipal()],
           actions: ['s3:GetObject'],
-          resources: [bucket.arnForObjects('*')],
+          resources: [bucket.attrArn],
         })],
       }).toJSON(),
     });
@@ -485,7 +522,7 @@ describe('S3 Delivery', () => {
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
-        Ref: 'Destination920A3C57',
+        Ref: 'Destination',
       },
       PolicyDocument: {
         Statement: [
@@ -511,17 +548,9 @@ describe('S3 Delivery', () => {
               },
             },
             Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
+              'Fn::GetAtt': [
+                'Destination',
+                'Arn',
               ],
             },
           },
@@ -561,24 +590,32 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'Destination920A3C57',
-                      'Arn',
-                    ],
-                  },
-                  '/AWSLogs/',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  '/*',
+            Resource: [ 
+              {
+                'Fn::GetAtt': [
+                  'Destination',
+                  'Arn',
                 ],
-              ],
-            },
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination',
+                        'Arn',
+                      ],
+                    },
+                    '/AWSLogs/',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
