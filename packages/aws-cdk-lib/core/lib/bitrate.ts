@@ -1,10 +1,13 @@
 import { UnscopedValidationError } from './errors';
+import { Token } from './token';
 
 /**
  * Represents a bitrate value.
  *
- * This class provides a type-safe way to specify bitrates with clear units,
- * preventing confusion between bits per second, kilobits per second, etc.
+ * The amount can be specified either as a literal value (e.g: `10`) which
+ * cannot be negative, or as an unresolved number token.
+ *
+ * When the amount is passed as a token, unit conversion is not possible.
  */
 export class Bitrate {
   /**
@@ -44,7 +47,7 @@ export class Bitrate {
   }
 
   private constructor(private readonly bps: number) {
-    if (bps < 0) {
+    if (!Token.isUnresolved(bps) && bps < 0) {
       throw new UnscopedValidationError('Bitrate cannot be negative');
     }
   }
@@ -75,5 +78,12 @@ export class Bitrate {
    */
   public toGbps(): number {
     return this.bps / 1000000000;
+  }
+
+  /**
+   * Checks if bitrate is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.bps);
   }
 }
