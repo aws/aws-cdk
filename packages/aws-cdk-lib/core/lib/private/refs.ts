@@ -67,13 +67,12 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    const roleArn = producer.synthesizer.cloudFormationExecutionRole ?? producer.synthesizer.lookupRole;
+    const roleArn = producer.synthesizer.lookupRole;
     if (roleArn == null) {
       // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
       throw new UnscopedValidationError(
-        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Could not find either a CloudFormation execution role or a lookup role. ' +
-        'Use a different synthesizer, such as DefaultStackSynthesizer.',
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". Could not find a lookup role. ` +
+        `Use a different stack synthesizer, such as DefaultStackSynthesizer, that has a lookup role with at least DescribeStacks permission on account ${producerAccount}.`,
       );
     }
     return createGetStackOutput(reference, roleArn);

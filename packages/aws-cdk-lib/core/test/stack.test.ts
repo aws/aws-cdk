@@ -942,7 +942,7 @@ describe('stack', () => {
                 StackName: 'Stack1',
                 OutputName: outputName,
                 Region: 'us-east-1',
-                RoleArn: 'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-cfn-exec-role-111111111111-us-east-1',
+                RoleArn: 'arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1',
               },
             },
           },

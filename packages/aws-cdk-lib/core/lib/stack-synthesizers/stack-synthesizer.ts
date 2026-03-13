@@ -36,10 +36,6 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     return undefined;
   }
 
-  public get cloudFormationExecutionRole(): string | undefined {
-    return undefined;
-  }
-
   private _boundStack?: Stack;
 
   /**
