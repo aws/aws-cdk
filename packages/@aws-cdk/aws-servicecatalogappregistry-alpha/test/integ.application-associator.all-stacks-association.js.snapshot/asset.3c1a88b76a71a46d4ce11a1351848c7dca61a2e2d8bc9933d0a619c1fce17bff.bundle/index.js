@@ -326,7 +326,7 @@ var ASSERTION_ERROR_SYMBOL, AssertionError;
 var init_error = __esm({
   "../../aws-cdk-lib/assertions/lib/private/error.ts"() {
     "use strict";
-    ASSERTION_ERROR_SYMBOL = Symbol.for("@aws-cdk/assertions.AssertionError");
+    ASSERTION_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/assertions.AssertionError");
     AssertionError = class _AssertionError extends Error {
       #time;
       /**
@@ -819,7 +819,7 @@ var init_match = __esm({
 var require_helpers_internal = __commonJS({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -829,11 +829,11 @@ var require_helpers_internal = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m)
         if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
@@ -12513,7 +12513,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? function(o, m, k, k2) {
+    __createBinding = Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -12522,13 +12522,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    };
-    __setModuleDefault = Object.create ? function(o, v) {
+    });
+    __setModuleDefault = Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -21069,7 +21069,7 @@ var require_dist_cjs66 = __commonJS({
 var require_fromWebToken = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -21078,13 +21078,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -26698,7 +26698,7 @@ var init_api_call = __esm({
 var require_lib = __commonJS({
   "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -26707,10 +26707,10 @@ var require_lib = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
     };
@@ -26898,8 +26898,13 @@ var require_utils = __commonJS({
         Object.defineProperty(target, keys[i], Object.getOwnPropertyDescriptor(source, keys[i]));
       }
     };
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    module2.exports.wrapperSymbol = /* @__PURE__ */ Symbol("wrapper");
+    module2.exports.implSymbol = /* @__PURE__ */ Symbol("impl");
+========
     module2.exports.wrapperSymbol = Symbol("wrapper");
     module2.exports.implSymbol = Symbol("impl");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     module2.exports.wrapperForImpl = function(impl) {
       return impl[module2.exports.wrapperSymbol];
     };
@@ -27092,7 +27097,11 @@ var require_url_state_machine = __commonJS({
       ws: 80,
       wss: 443
     };
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var failure = /* @__PURE__ */ Symbol("failure");
+========
     var failure = Symbol("failure");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     function countSymbols(str) {
       return punycode.ucs2.decode(str).length;
     }
@@ -32203,8 +32212,13 @@ var require_lib4 = __commonJS({
     var https2 = _interopDefault(require("https"));
     var zlib2 = _interopDefault(require("zlib"));
     var Readable = Stream.Readable;
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var BUFFER = /* @__PURE__ */ Symbol("buffer");
+    var TYPE = /* @__PURE__ */ Symbol("type");
+========
     var BUFFER = Symbol("buffer");
     var TYPE = Symbol("type");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     var Blob2 = class _Blob {
       constructor() {
         this[TYPE] = "";
@@ -32319,7 +32333,11 @@ var require_lib4 = __commonJS({
       convert = require_encoding().convert;
     } catch (e) {
     }
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var INTERNALS = /* @__PURE__ */ Symbol("Body internals");
+========
     var INTERNALS = Symbol("Body internals");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     var PassThrough = Stream.PassThrough;
     function Body(body) {
       var _this = this;
@@ -32659,7 +32677,11 @@ var require_lib4 = __commonJS({
       }
       return void 0;
     }
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var MAP = /* @__PURE__ */ Symbol("map");
+========
     var MAP = Symbol("map");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     var Headers2 = class _Headers {
       /**
        * Headers class
@@ -32867,7 +32889,11 @@ var require_lib4 = __commonJS({
         return [k.toLowerCase(), headers[MAP][k].join(", ")];
       });
     }
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var INTERNAL = /* @__PURE__ */ Symbol("internal");
+========
     var INTERNAL = Symbol("internal");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     function createHeadersIterator(target, kind) {
       const iterator = Object.create(HeadersIteratorPrototype);
       iterator[INTERNAL] = {
@@ -32936,7 +32962,11 @@ var require_lib4 = __commonJS({
       }
       return headers;
     }
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var INTERNALS$1 = /* @__PURE__ */ Symbol("Response internals");
+========
     var INTERNALS$1 = Symbol("Response internals");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     var STATUS_CODES = http.STATUS_CODES;
     var Response = class _Response {
       constructor() {
@@ -33012,7 +33042,11 @@ var require_lib4 = __commonJS({
       enumerable: false,
       configurable: true
     });
+<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js.snapshot/asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle/index.js
+    var INTERNALS$2 = /* @__PURE__ */ Symbol("Request internals");
+========
     var INTERNALS$2 = Symbol("Request internals");
+>>>>>>>> origin/main:packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
     var URL3 = Url.URL || whatwgUrl.URL;
     var parse_url = Url.parse;
     var format_url = Url.format;
