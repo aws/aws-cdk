@@ -340,9 +340,9 @@ There are two ways cross-region references can be implemented:
 
 ### 1. Using Fn::GetStackOutput (Recommended)
 
-When the `@aws-cdk/core:useGetStackOutput` feature flag is enabled, cross-region references use the
-CloudFormation intrinsic function `Fn::GetStackOutput`. This is the simpler and more efficient 
-approach:
+When the `@aws-cdk/core:nativeCrossAccountRegionReferences` feature flag is enabled, cross-region 
+references use the CloudFormation intrinsic function `Fn::GetStackOutput`. This is the simpler and 
+more efficient approach:
 
 ```ts
 const app = new App({
