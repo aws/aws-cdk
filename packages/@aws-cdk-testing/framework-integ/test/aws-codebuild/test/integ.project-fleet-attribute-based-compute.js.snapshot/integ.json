@@ -8,9 +8,21 @@
         "AttributeBasedComputeFleetIntegStack2",
         "AttributeBasedComputeFleetIntegStack3"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "AttributeBasedComputeFleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "AttributeBasedComputeFleetIntegTestDefaultTestDeployAssertDD94353E"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }
