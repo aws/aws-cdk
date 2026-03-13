@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.243.0](https://github.com/aws/aws-cdk/compare/v2.242.0...v2.243.0) (2026-03-11)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37201](https://github.com/aws/aws-cdk/issues/37201)) ([85daaf5](https://github.com/aws/aws-cdk/commit/85daaf5b58ca6c4184f215e48a4e953e228fd42e))
+* **cfn-property-mixins:** graduate to stable @aws-cdk/cfn-property-mixins package ([#37215](https://github.com/aws/aws-cdk/issues/37215)) ([f071e67](https://github.com/aws/aws-cdk/commit/f071e67878cf27aefd07c8820b2de8bdf5431d56))
+
+
+### Bug Fixes
+
+* **dynamodb:** resource policies don't have the index ARNs when indexes are added after granting permissions ([#37213](https://github.com/aws/aws-cdk/issues/37213)) ([eb37071](https://github.com/aws/aws-cdk/commit/eb37071ac4ce0c2aaef850315d6b2d7e0149fcdc))
+
 ## [2.242.0](https://github.com/aws/aws-cdk/compare/v2.241.0...v2.242.0) (2026-03-10)
 
 
