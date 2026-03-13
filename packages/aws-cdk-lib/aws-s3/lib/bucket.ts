@@ -618,11 +618,6 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
 
   protected objectOwnership?: ObjectOwnership;
 
-  /**
-   * Collection of grant methods for a Bucket
-   */
-  public grants = BucketGrants.fromBucket(this);
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -633,6 +628,14 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     return {
       grant: this.encryptionKey?.grant(grantee, ...actions),
     };
+  }
+
+  /**
+   * Collection of grant methods for a Bucket
+   */
+  @memoizedGetter
+  public get grants() {
+    return BucketGrants.fromBucket(this);
   }
 
   /**
@@ -2126,34 +2129,21 @@ export class Bucket extends BucketBase {
 
     const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
-    class Import extends BucketBase {
-      public readonly bucketName = bucketName!;
-      public readonly bucketArn = parseBucketArn(scope, attrs);
-      public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
-      public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
-      public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
-      public readonly bucketRegionalDomainName = attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`;
-      public readonly bucketDualStackDomainName = attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`;
-      public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
-      public readonly encryptionKey = attrs.encryptionKey;
-      public readonly isWebsite = attrs.isWebsite ?? false;
-      public policy?: BucketPolicy = undefined;
-      public replicationRoleArn?: string = undefined;
-      protected autoCreatePolicy = false;
-      public disallowPublicAccess = false;
-      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
-
-      /**
-       * Exports this bucket from the stack.
-       */
-      public export() {
-        return attrs;
-      }
-    }
-
-    return new Import(scope, id, {
+    return new ReferencedBucket(scope, id, {
       account: attrs.account,
       region: attrs.region,
+      bucketName: bucketName!,
+      bucketArn: parseBucketArn(scope, attrs),
+      bucketDomainName: attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`,
+      bucketWebsiteUrl: attrs.bucketWebsiteUrl || `http://${websiteDomain}`,
+      bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
+      bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
+      bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
+      encryptionKey: attrs.encryptionKey,
+      isWebsite: attrs.isWebsite ?? false,
+      autoCreatePolicy: false,
+      disallowPublicAccess: false,
+      notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
   }
 
@@ -3691,4 +3681,74 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
   }
 
   return list.map(callback);
+}
+
+/**
+ * An instance of a referenced Bucket
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromBucketAttributes()` etc. used to declare an anonymous subclass of
+ * `BucketBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+@propertyInjectable
+class ReferencedBucket extends BucketBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3.ReferencedBucket';
+  public bucketArn: string;
+  public bucketName: string;
+  public bucketDomainName: string;
+  public bucketWebsiteUrl: string;
+  public bucketWebsiteDomainName: string;
+  public bucketRegionalDomainName: string;
+  public bucketDualStackDomainName: string;
+  public encryptionKey?: kms.IKey | undefined;
+  public isWebsite?: boolean | undefined;
+  public policy?: BucketPolicy | undefined;
+  public replicationRoleArn?: string | undefined;
+  protected autoCreatePolicy: boolean;
+  public disallowPublicAccess?: boolean | undefined;
+  protected notificationsHandlerRole?: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: {
+    account?: string;
+    region?: string;
+    bucketArn: string;
+    bucketName: string;
+    bucketDomainName: string;
+    bucketWebsiteUrl: string;
+    bucketWebsiteDomainName: string;
+    bucketRegionalDomainName: string;
+    bucketDualStackDomainName: string;
+    encryptionKey?: kms.IKey | undefined;
+    isWebsite?: boolean | undefined;
+    policy?: BucketPolicy | undefined;
+    replicationRoleArn?: string | undefined;
+    autoCreatePolicy: boolean;
+    disallowPublicAccess?: boolean | undefined;
+    notificationsHandlerRole?: iam.IRole;
+  }) {
+    super(scope, id, {
+      account: props.account,
+      region: props.region,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+    this.bucketArn = props.bucketArn;
+    this.bucketName = props.bucketName;
+    this.bucketDomainName = props.bucketDomainName;
+    this.bucketWebsiteUrl = props.bucketWebsiteUrl;
+    this.bucketWebsiteDomainName = props.bucketWebsiteDomainName;
+    this.bucketRegionalDomainName = props.bucketRegionalDomainName;
+    this.bucketDualStackDomainName = props.bucketDualStackDomainName;
+    this.encryptionKey = props.encryptionKey;
+    this.isWebsite = props.isWebsite;
+    this.policy = props.policy;
+    this.replicationRoleArn = props.replicationRoleArn;
+    this.autoCreatePolicy = props.autoCreatePolicy;
+    this.disallowPublicAccess = props.disallowPublicAccess;
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
+  }
 }
