@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"status\\\":\\\"OK\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1772551999545"
+    "salt": "1772224727471"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -184,7 +184,7 @@
      "Messages.0.Body.responseContext.statusCode",
      "Messages.0.Body.responsePayload"
     ],
-    "salt": "1772551999546"
+    "salt": "1772224727472"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
