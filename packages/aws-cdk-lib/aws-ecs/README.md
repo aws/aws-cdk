@@ -2480,6 +2480,24 @@ service.forceNewDeployment();
 service.forceNewDeployment('my-custom-nonce-v2');
 ```
 
+Alternatively, you can configure `forceNewDeployment` declaratively as a constructor option.
+This approach also allows you to explicitly disable the feature with `enabled: false`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Force a new deployment with a stable nonce
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: 'v1.2.3',
+  },
+});
+```
+
 ## Mixins
 
 ECS provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.

@@ -935,3 +935,265 @@ describe('forceNewDeployment', () => {
     });
   });
 });
+
+describe('forceNewDeployment constructor option', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+  });
+
+  test('should set forceNewDeployment with enabled true by default', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {},
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+      },
+    });
+  });
+
+  test('should set forceNewDeployment with enabled and nonce', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'my-unique-nonce-123',
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'my-unique-nonce-123',
+      },
+    });
+  });
+
+  test('should set forceNewDeployment with enabled false', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: false,
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: false,
+      },
+    });
+  });
+
+  test('should set forceNewDeployment with only nonce specified', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        nonce: 'deployment-2024-01-01',
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'deployment-2024-01-01',
+      },
+    });
+  });
+
+  test('should work with Ec2Service', () => {
+    // GIVEN
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      minCapacity: 1,
+    });
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    ec2TaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition: ec2TaskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'ec2-deployment-nonce',
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'ec2-deployment-nonce',
+      },
+    });
+  });
+
+  test('should not set forceNewDeployment when not specified', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: Match.absent(),
+    });
+  });
+
+  test('should throw error when nonce is empty string', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          nonce: '',
+        },
+      });
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 0/);
+  });
+
+  test('should throw error when nonce exceeds 255 characters', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          nonce: 'a'.repeat(256),
+        },
+      });
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 256/);
+  });
+
+  test('should accept nonce with exactly 255 characters', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        nonce: 'a'.repeat(255),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'a'.repeat(255),
+      },
+    });
+  });
+
+  test('should throw error when using CODE_DEPLOY deployment controller', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+        forceNewDeployment: {
+          enabled: true,
+        },
+      });
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should throw error when using EXTERNAL deployment controller', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.EXTERNAL,
+        },
+        forceNewDeployment: {
+          enabled: true,
+        },
+      });
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should accept unresolved tokens as nonce without length validation', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        nonce: cdk.Lazy.string({ produce: () => 'resolved-later' }),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'resolved-later',
+      },
+    });
+  });
+
+  test('method call should override constructor option', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'constructor-nonce',
+      },
+    });
+
+    // WHEN
+    service.forceNewDeployment('method-nonce');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'method-nonce',
+      },
+    });
+  });
+});

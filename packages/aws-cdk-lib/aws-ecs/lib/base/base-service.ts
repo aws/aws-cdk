@@ -96,6 +96,38 @@ export interface DeploymentCircuitBreaker {
 }
 
 /**
+ * Configuration for forcing a new deployment of the service.
+ */
+export interface ForceNewDeployment {
+  /**
+   * Whether to force a new deployment of the service.
+   *
+   * When set to `true`, Amazon ECS will start a new deployment even if there
+   * are no changes to the service configuration. When set to `false`, the
+   * `ForceNewDeployment` property is explicitly set with `EnableForceNewDeployment: false`.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * A unique nonce value that signals Amazon ECS to start a new deployment.
+   *
+   * When you change this value, it triggers a new deployment even though no
+   * other service parameters have changed. Use a stable, time-varying value
+   * like a commit hash, image digest, or version string.
+   *
+   * If not provided and `enabled` is `true`, only `EnableForceNewDeployment`
+   * is set without a nonce.
+   *
+   * Must be between 1 and 255 characters.
+   *
+   * @default - no nonce
+   */
+  readonly nonce?: string;
+}
+
+/**
  * Configuration for traffic shift during progressive deployments
  */
 export interface TrafficShiftConfig {
@@ -501,6 +533,24 @@ export interface BaseServiceOptions {
    */
   readonly canaryConfiguration?: TrafficShiftConfig;
 
+  /**
+   * Configuration for forcing a new deployment of the service.
+   *
+   * By default, deployments aren't forced. You can use this option to start
+   * a new deployment with no service definition changes. For example, you can
+   * update a service's tasks to use a newer Docker image with the same
+   * image/tag combination (`my_image:latest`) or to roll Fargate tasks onto
+   * a newer platform version.
+   *
+   * This is equivalent to calling the `forceNewDeployment()` method, but allows
+   * you to configure it declaratively at construction time, including the ability
+   * to explicitly disable it with `enabled: false`.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-forcenewdeployment.html
+   * @default - no forced deployment
+   */
+  readonly forceNewDeployment?: ForceNewDeployment;
+
 }
 
 /**
@@ -852,6 +902,24 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
+    }
+
+    if (props.forceNewDeployment !== undefined) {
+      if (!this.isEcsDeploymentController) {
+        throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+      }
+
+      const enabled = props.forceNewDeployment.enabled ?? true;
+      const nonce = props.forceNewDeployment.nonce;
+
+      if (nonce !== undefined && !Token.isUnresolved(nonce) && (nonce.length < 1 || nonce.length > 255)) {
+        throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
+      }
+
+      this.resource.forceNewDeployment = {
+        enableForceNewDeployment: enabled,
+        forceNewDeploymentNonce: nonce,
+      };
     }
 
     if (
