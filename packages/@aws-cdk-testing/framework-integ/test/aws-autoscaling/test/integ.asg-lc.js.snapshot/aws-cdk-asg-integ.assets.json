@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "files": {
     "d11c2e9516038ce38cd876c558c454aabd845251087cb95e2c794895f728ca45": {
       "displayName": "aws-cdk-asg-integ Template",
