@@ -19,7 +19,7 @@ class ElbV2AsgStack extends cdk.Stack {
     const asg = new autoscaling.AutoScalingGroup(this, 'Fleet', {
       vpc,
       instanceType: ec2.InstanceType.of(
-        ec2.InstanceClass.BURSTABLE2,
+        ec2.InstanceClass.BURSTABLE3,
         ec2.InstanceSize.MICRO,
       ),
       machineImage: new ec2.AmazonLinuxImage(),
