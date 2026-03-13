@@ -70,7 +70,7 @@ export function findUpMultiple(names: string[], directory: string = process.cwd(
 }
 
 /**
- * Spawn sync with error handling
+ * Spawn sync with error handling.
  */
 export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(cmd, args, options);
@@ -87,6 +87,76 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+/**
+ * Escape a string for safe interpolation into a shell command.
+ *
+ * This function ensures proper quoting of values interpolated into shell command
+ * strings used in the Docker bundling path, where commands are executed via
+ * `bash -c` or `cmd /c`.
+ *
+ * The escaping strategy differs by platform:
+ *
+ * POSIX (Linux/macOS):
+ *   - Wrap the value in single quotes
+ *   - Escape embedded single quotes using the '\'' pattern
+ *   - Single quotes prevent ALL shell interpretation except for the quote itself
+ *   - Example: "foo & bar" becomes "'foo & bar'"
+ *   - Example: "foo'bar" becomes "'foo'\\''bar'"
+ *
+ * Windows (cmd.exe):
+ *   - Wrap the value in double quotes
+ *   - Escape embedded double quotes as ""
+ *   - Escape % as %% (prevents environment variable expansion)
+ *   - Escape ! as ^! (prevents delayed expansion)
+ *   - Example: "foo & bar" becomes '"foo & bar"'
+ *   - Example: 'foo"bar' becomes '"foo""bar"'
+ *
+ * @param value - The string to escape (may contain shell metacharacters)
+ * @param platform - The target platform ('linux', 'darwin', 'win32', etc.)
+ * @returns The escaped string, safe for interpolation into a shell command
+ */
+export function shellEscapeForBundlingCommand(value: string, platform: NodeJS.Platform): string {
+  if (platform === 'win32') {
+    return escapeForWindowsCmd(value);
+  }
+  return escapeForPosixShell(value);
+}
+
+/**
+ * Escape a string for POSIX shell (bash, sh, zsh, etc.)
+ *
+ * Strategy: Wrap in single quotes and escape embedded single quotes.
+ * Single quotes in POSIX shells prevent ALL interpretation of special characters
+ * except for the single quote itself.
+ *
+ * To include a literal single quote, we use the pattern: '\''
+ * This works by: ending the single-quoted string, adding an escaped single quote,
+ * then starting a new single-quoted string.
+ */
+function escapeForPosixShell(value: string): string {
+  // Replace each single quote with: end quote, escaped quote, start quote
+  const escaped = value.replace(/'/g, "'\\''");
+  return `'${escaped}'`;
+}
+
+/**
+ * Escape a string for Windows cmd.exe
+ *
+ * Strategy: Wrap in double quotes and escape special characters.
+ * Double quotes in cmd.exe prevent interpretation of most special characters,
+ * but we still need to handle: ", %, and !
+ */
+function escapeForWindowsCmd(value: string): string {
+  let escaped = value;
+  // Escape double quotes by doubling them
+  escaped = escaped.replace(/"/g, '""');
+  // Escape percent signs (environment variable expansion)
+  escaped = escaped.replace(/%/g, '%%');
+  // Escape exclamation marks (delayed expansion)
+  escaped = escaped.replace(/!/g, '^!');
+  return `"${escaped}"`;
 }
 
 /**

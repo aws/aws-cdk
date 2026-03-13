@@ -78,6 +78,11 @@ export class PackageManager {
     this.argsSeparator = props.argsSeparator;
   }
 
+  /**
+   * Returns a shell command string to run a binary from node_modules/.bin
+   *
+   * NOTE: This returns a space-joined string intended for shell execution.
+   */
   public runBinCommand(bin: string): string {
     const [runCommand, ...runArgs] = this.runCommand;
     return [
