@@ -5,7 +5,7 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import { testFixture, testFixtureNoVpc } from './util';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as asg from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -3054,6 +3054,159 @@ describe('cluster', () => {
 
       Template.fromStack(stack).hasResource('AWS::EKS::Addon', {
         DeletionPolicy: 'Retain',
+      });
+    });
+  });
+
+  describe('kubectl security groups', () => {
+    test('respects securityGroups when specified', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+      const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroups: [sg1, sg2],
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+            { 'Fn::GetAtt': ['SG20CE3219C', 'GroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('respects securityGroup when specified (backwards compatibility)', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroup: customSg,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['CustomSG353C444F', 'GroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('prefers securityGroups when both are specified and issues warning', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+      const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+      const singleSg = new ec2.SecurityGroup(stack, 'SingleSG', { vpc });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroup: singleSg, // Should be ignored
+          securityGroups: [sg1, sg2], // Should be used
+        },
+      });
+
+      // THEN
+      // Verify securityGroups are used
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+            { 'Fn::GetAtt': ['SG20CE3219C', 'GroupId'] },
+          ],
+        },
+      });
+
+      // Verify warning is issued
+      Annotations.fromStack(stack).hasWarning('*',
+        Match.stringLikeRegexp('.*securityGroup.*securityGroups.*'));
+    });
+
+    test('uses cluster security group when neither is specified (default behavior)', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          // No securityGroup or securityGroups specified
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            // Cluster security group should be used
+            { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('empty securityGroups array is treated as unspecified', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroups: [], // Empty array
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            // Should fall back to cluster security group
+            { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
+          ],
+        },
       });
     });
   });

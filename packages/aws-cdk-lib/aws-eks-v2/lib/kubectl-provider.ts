@@ -7,7 +7,7 @@ import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import type { RemovalPolicy, Size } from '../../core';
-import { Duration, CfnCondition, Fn, Aws, RemovalPolicies } from '../../core';
+import { Duration, CfnCondition, Fn, Aws, RemovalPolicies, Annotations } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -45,10 +45,24 @@ export interface KubectlProviderOptions {
   /**
    * A security group to use for `kubectl` execution.
    *
+   * If you specify both `securityGroup` and `securityGroups`, a warning will be issued
+   * and `securityGroups` will be used.
+   *
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Security groups to use for `kubectl` execution.
+   *
+   * If you specify both `securityGroup` and `securityGroups`, a warning will be issued
+   * and `securityGroups` will be used.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
@@ -178,10 +192,30 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
     super(scope, id);
 
     const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
-    let securityGroups;
-    if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
-      securityGroups = [props.cluster.clusterSecurityGroup];
+    let securityGroups: ec2.ISecurityGroup[] | undefined;
+
+    if (props.privateSubnets) {
+      // Determine security groups with priority order:
+      // 1. securityGroups (array) - highest priority
+      // 2. securityGroup (single) - fallback
+      // 3. clusterSecurityGroup - default (backwards compatibility)
+      if (props.securityGroups && props.securityGroups.length > 0) {
+        securityGroups = props.securityGroups;
+
+        // Issue warning if both properties are specified
+        if (props.securityGroup) {
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks-v2:securityGroupConflict',
+            'Both securityGroup and securityGroups are specified. Using securityGroups.');
+        }
+      } else if (props.securityGroup) {
+        // Convert single security group to array
+        securityGroups = [props.securityGroup];
+      } else if (props.cluster.clusterSecurityGroup) {
+        // Default: use cluster security group (backwards compatibility)
+        securityGroups = [props.cluster.clusterSecurityGroup];
+      }
     }
+
     const privateSubnets = props.privateSubnets ? { subnets: props.privateSubnets } : undefined;
 
     const handler = new lambda.Function(this, 'Handler', {
