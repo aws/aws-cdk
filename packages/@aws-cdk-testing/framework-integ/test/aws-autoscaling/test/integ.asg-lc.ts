@@ -80,9 +80,7 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithGp3Blockdevice', {
   maxCapacity: 10,
   desiredCapacity: 5,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
-  machineImage: new ec2.AmazonLinuxImage({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: new ec2.AmazonLinuxImage(),
   blockDevices: [{
     deviceName: '/dev/xvdf',
     mappingEnabled: true,
