@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
@@ -570,6 +570,129 @@ test('imported alias by name - grant methods are no-op when feature flag disable
 
   // should not create any IAM policy statements
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+});
+
+test('fromAliasName adds "alias/" prefix if not given', () => {
+  const stack = new Stack();
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
+test('fromAliasName does not add prefix if already present', () => {
+  const stack = new Stack();
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
+test('fromAliasName fails if alias is "alias/" (and nothing more)', () => {
+  const stack = new Stack();
+
+  expect(() => Alias.fromAliasName(stack, 'Alias', 'alias/')).toThrow(/Alias must include a value after/);
+});
+
+test('fromAliasName fails if alias contains illegal characters', () => {
+  const stack = new Stack();
+
+  expect(() => Alias.fromAliasName(stack, 'Alias', 'alias/@Nope')).toThrow('a-zA-Z0-9:/_-');
+});
+
+test('fromAliasName fails if alias starts with "alias/aws/"', () => {
+  const stack = new Stack();
+
+  expect(() => Alias.fromAliasName(stack, 'Alias', 'alias/aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
+});
+
+test('fromAliasName fails if unprefixed alias starts with "aws/"', () => {
+  const stack = new Stack();
+
+  expect(() => Alias.fromAliasName(stack, 'Alias', 'aws/myAlias')).toThrow(/Alias cannot start with alias\/aws\//);
+});
+
+test('fromAliasName adds prefix to token with string prefix', () => {
+  const stack = new Stack();
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', `MyKey${Aws.ACCOUNT_ID}`);
+
+  new CfnOutput(stack, 'AliasName', { value: myAlias.aliasName });
+
+  Template.fromStack(stack).hasOutput('AliasName', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          'alias/MyKey',
+          { Ref: 'AWS::AccountId' },
+        ],
+      ],
+    },
+  });
+});
+
+test('fromAliasName does not modify token starting with token', () => {
+  const stack = new Stack();
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', `${Aws.ACCOUNT_ID}MyKey`);
+
+  new CfnOutput(stack, 'AliasName', { value: myAlias.aliasName });
+
+  Template.fromStack(stack).hasOutput('AliasName', {
+    Value: {
+      'Fn::Join': [
+        '',
+        [
+          { Ref: 'AWS::AccountId' },
+          'MyKey',
+        ],
+      ],
+    },
+  });
+});
+
+test('fromAliasName emits warning when token cannot be validated', () => {
+  const stack = new Stack();
+  Alias.fromAliasName(stack, 'MyAlias', `${Aws.ACCOUNT_ID}MyKey`);
+
+  Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('.*cannot be validated at synthesis time.*'));
+});
+
+test('fromAliasAttributes adds "alias/" prefix if not given', () => {
+  const stack = new Stack();
+  const key = new Key(stack, 'Key');
+  const myAlias = Alias.fromAliasAttributes(stack, 'MyAlias', {
+    aliasName: 'myAlias',
+    aliasTargetKey: key,
+  });
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
+test('fromAliasAttributes validates alias name', () => {
+  const stack = new Stack();
+  const key = new Key(stack, 'Key');
+
+  expect(() => Alias.fromAliasAttributes(stack, 'Alias', {
+    aliasName: 'alias/aws/reserved',
+    aliasTargetKey: key,
+  })).toThrow(/Alias cannot start with alias\/aws\//);
+});
+
+test('fromAliasName and new Alias behave consistently', () => {
+  const stack = new Stack();
+  const key = new Key(stack, 'Key');
+
+  const importedAlias = Alias.fromAliasName(stack, 'Imported', 'my-alias-name');
+  new Alias(stack, 'Constructed', {
+    aliasName: 'my-alias-name',
+    targetKey: key,
+  });
+
+  // fromAliasName should normalize to include the prefix
+  expect(importedAlias.aliasName).toEqual('alias/my-alias-name');
+
+  // Constructed alias should also normalize in the CloudFormation template
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+    AliasName: 'alias/my-alias-name',
+  });
 });
 
 test('fails if alias policy is invalid', () => {
