@@ -19,7 +19,7 @@
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": [
-          "234567890123"
+          "888048201993"
          ]
         },
         "ArnLike": {
@@ -32,7 +32,7 @@
              {
               "Ref": "AWS::Partition"
              },
-             ":logs:us-east-1:234567890123:delivery-source:*"
+             ":logs:us-east-1:888048201993:delivery-source:*"
             ]
            ]
           }
@@ -43,8 +43,7 @@
        "Principal": {
         "Service": "delivery.logs.amazonaws.com"
        },
-       "Resource": "*",
-       "Sid": "AWS CDK: Allow Logs Delivery to use the key"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -133,10 +132,21 @@
        "Condition": {
         "StringEquals": {
          "s3:x-amz-acl": "bucket-owner-full-control",
-         "aws:SourceAccount": "234567890123"
+         "aws:SourceAccount": "888048201993"
         },
         "ArnLike": {
-         "aws:SourceArn": "arn:aws:logs:us-east-1:234567890123:delivery-source:*"
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:us-east-1:888048201993:delivery-source:*"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",
@@ -153,7 +163,7 @@
             "Arn"
            ]
           },
-          "/AWSLogs/234567890123/*"
+          "/AWSLogs/888048201993/*"
          ]
         ]
        }
@@ -418,7 +428,7 @@
         "Action": "logs:CreateDelivery",
         "Effect": "Allow",
         "Principal": {
-         "AWS": "arn:aws:iam::234567890123:root"
+         "AWS": "arn:aws:iam::888048201993:root"
         },
         "Resource": {
          "Fn::Join": [
@@ -460,7 +470,7 @@
         "Action": "logs:CreateDelivery",
         "Effect": "Allow",
         "Principal": {
-         "AWS": "arn:aws:iam::234567890123:root"
+         "AWS": "arn:aws:iam::888048201993:root"
         },
         "Resource": {
          "Fn::Join": [

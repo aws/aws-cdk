@@ -125,9 +125,9 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
       },
       ArnLike: {
         'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${this.bucket.env.region}:${account}:delivery-source:*`,
-      }
-    })
-    const bucketGrants = s3.BucketGrants.fromBucket(this.bucket).actions(principal, `AWSLogs/${account}/*`, 's3:PutObject');
+      },
+    });
+    const bucketGrants = s3.BucketGrants.fromBucket(this.bucket).actionsOnObjectKeys(principal, `AWSLogs/${account}/*`, 's3:PutObject');
 
     if (this.permissions == 'V1') {
       const v1Principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
@@ -138,7 +138,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
           'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${this.bucket.env.region}:${account}:*`,
         },
       });
-      s3.BucketGrants.fromBucket(this.bucket).actions(v1Principal, undefined, 's3:GetBucketAcl', 's3:ListBucket');
+      s3.BucketGrants.fromBucket(this.bucket).actionsOnBucketAndObjectKeys(v1Principal, undefined, 's3:GetBucketAcl', 's3:ListBucket');
     }
 
     return bucketGrants;

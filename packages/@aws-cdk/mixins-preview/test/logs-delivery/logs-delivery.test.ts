@@ -182,32 +182,24 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Destination',
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Destination',
+                      'Arn',
+                    ],
+                  },
+                  '/AWSLogs/',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'Destination',
-                        'Arn',
-                      ],
-                    },
-                    '/AWSLogs/',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
@@ -309,32 +301,24 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: [ 
-              {
-                'Fn::GetAtt': [
-                  'Destination920A3C57',
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Destination920A3C57',
+                      'Arn',
+                    ],
+                  },
+                  '/AWSLogs/',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'Destination920A3C57',
-                        'Arn',
-                      ],
-                    },
-                    '/AWSLogs/',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+              ],
+            },
           },
           {
             Action: [
@@ -391,9 +375,9 @@ describe('S3 Delivery', () => {
                         'Arn',
                       ],
                     },
-                    '/*'
+                    '/*',
                   ],
-                ]
+                ],
               },
             ],
           },
@@ -451,32 +435,24 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: [
-              {
-                'Fn::GetAtt': [
-                  'Destination920A3C57',
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Destination920A3C57',
+                      'Arn',
+                    ],
+                  },
+                  '/AWSLogs/',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'Destination920A3C57',
-                        'Arn',
-                      ],
-                    },
-                    '/AWSLogs/',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    '/*',
-                  ],
-                ],
-              }
-            ],
+              ],
+            },
           },
         ],
       },
@@ -590,32 +566,24 @@ describe('S3 Delivery', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: [ 
-              {
-                'Fn::GetAtt': [
-                  'Destination',
-                  'Arn',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'Destination',
+                      'Arn',
+                    ],
+                  },
+                  '/AWSLogs/',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  '/*',
                 ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      'Fn::GetAtt': [
-                        'Destination',
-                        'Arn',
-                      ],
-                    },
-                    '/AWSLogs/',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    '/*',
-                  ],
-                ],
-              },
-            ],
+              ],
+            },
           },
         ],
         Version: '2012-10-17',
