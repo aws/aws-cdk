@@ -152,6 +152,16 @@
      "Statement": [
       {
        "Action": "sns:Publish",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "Trail022F0CF2",
+           "Arn"
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "cloudtrail.amazonaws.com"
