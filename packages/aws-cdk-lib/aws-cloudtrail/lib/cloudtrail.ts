@@ -321,9 +321,6 @@ export class Trail extends Resource {
     }
 
     this.topic = props.snsTopic;
-    if (this.topic) {
-      this.topic.grantPublish(cloudTrailPrincipal);
-    }
 
     let logsRole: iam.IRole | undefined;
 
@@ -383,6 +380,22 @@ export class Trail extends Resource {
 
     this.resource = trail;
     this.trailSnsTopicArn = trail.attrSnsTopicArn;
+
+    // Add the SNS topic policy after the trail resource is created, so we can reference the trail ARN.
+    // Using addToResourcePolicy (instead of grantPublish) with an aws:SourceArn condition
+    // ensures cross-account SNS topics get the correct policy allowing CloudTrail to publish.
+    if (this.topic) {
+      this.topic.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['sns:Publish'],
+        principals: [cloudTrailPrincipal],
+        resources: [this.topic.topicArn],
+        conditions: {
+          StringEquals: {
+            'aws:SourceArn': this.trailArn,
+          },
+        },
+      }));
+    }
 
     // Add a dependency on the bucket policy being updated, CloudTrail will test this upon creation.
     if (this.s3bucket.policy) {
