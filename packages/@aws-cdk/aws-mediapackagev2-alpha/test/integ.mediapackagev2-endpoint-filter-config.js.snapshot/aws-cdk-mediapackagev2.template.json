@@ -1,0 +1,90 @@
+{
+ "Resources": {
+  "ChannelGroupD4C484BD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "streaming-group"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "streaming-group",
+    "ChannelName": "live-channel",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "ChannelGroupD4C484BD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "streaming-group",
+    "ChannelName": "live-channel",
+    "ContainerType": "TS",
+    "HlsManifests": [
+     {
+      "FilterConfiguration": {
+       "DrmSettings": "exclude_session_keys",
+       "End": "2025-12-15T17:20:00+00:00",
+       "ManifestFilter": "audio_sample_rate:0-50000;video_codec:h264;video_height:240,360,720",
+       "Start": "2025-12-15T17:15:00+00:00",
+       "TimeDelaySeconds": 1
+      },
+      "ManifestName": "index",
+      "ManifestWindowSeconds": 60,
+      "ProgramDateTimeIntervalSeconds": 60
+     }
+    ],
+    "OriginEndpointName": "hls-endpoint",
+    "Segment": {},
+    "StartoverWindowSeconds": 900
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "ChannelGroupD4C484BD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

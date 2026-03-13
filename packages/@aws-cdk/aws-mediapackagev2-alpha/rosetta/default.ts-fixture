@@ -1,0 +1,24 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Duration, Stack, App, Fn, Tags } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as certificatemanager from 'aws-cdk-lib/aws-certificatemanager';
+import { Effect, ArnPrincipal, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import {
+  OriginEndpoint, Channel, ChannelGroup, OriginEndpointPolicy, ChannelPolicy,
+  Manifest, ContainerType, InputType, InputConfiguration, Segment,
+  CmafEncryption, CmafEncryptionMethod, TsEncryption, TsEncryptionMethod, IsmEncryption,
+  CmafDrmSystem, TsDrmSystem, IsmDrmSystem, PresetSpeke20Audio, PresetSpeke20Video,
+  ManifestFilter, ManifestFilterKeys, StartTag, ScteMessageType,
+  SegmentTemplateFormat, DashPeriodTriggers, MssManifestLayout,
+  DrmSettingsKey, HeadersCMSD, AdMarkerHls,
+} from '@aws-cdk/aws-mediapackagev2-alpha';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

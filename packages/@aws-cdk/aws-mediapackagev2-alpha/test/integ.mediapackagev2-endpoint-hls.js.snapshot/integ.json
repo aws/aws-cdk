@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-endpoint-hls/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-endpoint-hls/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackageendpointhlsDefaultTestDeployAssert2B0BAF40"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

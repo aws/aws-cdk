@@ -1,0 +1,26 @@
+{
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-mediapackagev2-alpha.ChannelPolicyProps",
+      "props-physical-name:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointPolicyProps",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.ChannelProps.channelGroup",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointProps.channel",
+      "no-grants:@aws-cdk/aws-mediapackagev2-alpha.Channel.grantIngest",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointPolicyProps.originEndpoint",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.ChannelPolicyProps.channel",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.EncryptionConfiguration.spekeRole",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.CdnAuthConfiguration.role",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.CdnAuthConfiguration.secrets",
+      "prefer-ref-interface:aws-cdk-lib.aws_secretsmanager.RotationScheduleOptions.rotationLambda",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSource.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.EventSourceMappingOptions.filterEncryption",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.targetHandler",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.targetHandler",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IDestination.bind.fn",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IFunction.grantInvokeVersion.version",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IVersion.grantInvokeVersion.version",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version",
+      "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.EncryptionConfiguration.certificate"
+    ]
+}

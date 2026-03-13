@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-endpoint-mqcs-enabled/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-endpoint-mqcs-enabled/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackageendpointmqcsenabledDefaultTestDeployAssert6BA949B4"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,62 @@
+{
+  "/aws-cdk-mediapackagev2/MyChannelGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myChannel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/MyChannelGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyChannelGroup365BB055"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myChannel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myChannel4B408FFD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myEndpoint864D0BBD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myEndpoint/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2/myEndpoint/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myEndpointPolicy9AB9FD80"
+    }
+  ]
+}

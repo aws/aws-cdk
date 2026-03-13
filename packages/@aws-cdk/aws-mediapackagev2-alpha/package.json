@@ -1,0 +1,119 @@
+{
+  "name": "@aws-cdk/aws-mediapackagev2-alpha",
+  "private": false,
+  "version": "0.0.0",
+  "description": "The CDK construct library for MediaPackageV2",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.services.mediapackagev2.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "mediapackagev2-alpha"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.mediapackagev2.Alpha",
+        "packageId": "Amazon.CDK.AWS.mediapackagev2.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-mediapackagev2-alpha",
+        "module": "aws_cdk.aws_mediapackagev2_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awsmediapackagev2alpha"
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-mediapackagev2-alpha"
+  },
+  "scripts": {
+    "gen": "gen-cdk",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner --language javascript",
+    "pkglint": "pkglint -f",
+    "awslint": "cdk-awslint",
+    "package": "cdk-package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MediaPackageV2",
+    "aws-mediapackagev2"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "^2.192.2",
+    "@aws-cdk/integ-tests-alpha": "^0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.14",
+    "aws-cdk-lib": "0.0.0",
+    "jest": "^29.7.0"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.5.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 20.0.0"
+  },
+  "stability": "experimental",
+  "maturity": "developer-preview",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
+}
