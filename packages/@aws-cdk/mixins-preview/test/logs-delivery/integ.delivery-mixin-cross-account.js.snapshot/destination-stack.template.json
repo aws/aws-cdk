@@ -19,7 +19,7 @@
        "Condition": {
         "StringEquals": {
          "aws:SourceAccount": [
-          "888048201993"
+          "234567890123"
          ]
         },
         "ArnLike": {
@@ -32,7 +32,7 @@
              {
               "Ref": "AWS::Partition"
              },
-             ":logs:us-east-1:888048201993:delivery-source:*"
+             ":logs:us-east-1:234567890123:delivery-source:*"
             ]
            ]
           }
@@ -132,7 +132,7 @@
        "Condition": {
         "StringEquals": {
          "s3:x-amz-acl": "bucket-owner-full-control",
-         "aws:SourceAccount": "888048201993"
+         "aws:SourceAccount": "234567890123"
         },
         "ArnLike": {
          "aws:SourceArn": {
@@ -143,7 +143,7 @@
             {
              "Ref": "AWS::Partition"
             },
-            ":logs:us-east-1:888048201993:delivery-source:*"
+            ":logs:us-east-1:234567890123:delivery-source:*"
            ]
           ]
          }
@@ -163,7 +163,7 @@
             "Arn"
            ]
           },
-          "/AWSLogs/888048201993/*"
+          "/AWSLogs/234567890123/*"
          ]
         ]
        }
@@ -428,7 +428,7 @@
         "Action": "logs:CreateDelivery",
         "Effect": "Allow",
         "Principal": {
-         "AWS": "arn:aws:iam::888048201993:root"
+         "AWS": "arn:aws:iam::234567890123:root"
         },
         "Resource": {
          "Fn::Join": [
@@ -470,7 +470,7 @@
         "Action": "logs:CreateDelivery",
         "Effect": "Allow",
         "Principal": {
-         "AWS": "arn:aws:iam::888048201993:root"
+         "AWS": "arn:aws:iam::234567890123:root"
         },
         "Resource": {
          "Fn::Join": [
