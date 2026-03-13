@@ -37,9 +37,8 @@
     "RecordingGroup": {
      "AllSupported": false,
      "ResourceTypes": [
-      "AWS::EC2::Instance",
-      "AWS::DynamoDB::Table",
-      "AWS::EC2::EIP"
+      "AWS::CloudFormation::Stack",
+      "AWS::EC2::Instance"
      ]
     },
     "RoleARN": {
@@ -320,14 +319,9 @@
     }
    }
   },
-  "CustomRuleB1CBBADE": {
+  "Custom8166710A": {
    "Type": "AWS::Config::ConfigRule",
    "Properties": {
-    "EvaluationModes": [
-     {
-      "Mode": "DETECTIVE"
-     }
-    ],
     "Scope": {
      "ComplianceResourceTypes": [
       "AWS::EC2::Instance"
@@ -338,7 +332,11 @@
      "SourceDetails": [
       {
        "EventSource": "aws.config",
-       "MessageType": "ScheduledNotification"
+       "MessageType": "ConfigurationItemChangeNotification"
+      },
+      {
+       "EventSource": "aws.config",
+       "MessageType": "OversizedConfigurationItemChangeNotification"
       }
      ],
      "SourceIdentifier": {
@@ -357,17 +355,25 @@
     "CustomFunctionServiceRoleD3F73B79"
    ]
   },
-  "ManagedRule7126A2A0": {
+  "Drift34D3210F": {
    "Type": "AWS::Config::ConfigRule",
    "Properties": {
-    "EvaluationModes": [
-     {
-      "Mode": "DETECTIVE"
+    "InputParameters": {
+     "cloudformationRoleArn": {
+      "Fn::GetAtt": [
+       "DriftRole8A5FB833",
+       "Arn"
+      ]
      }
-    ],
+    },
+    "Scope": {
+     "ComplianceResourceTypes": [
+      "AWS::CloudFormation::Stack"
+     ]
+    },
     "Source": {
      "Owner": "AWS",
-     "SourceIdentifier": "EIP_ATTACHED"
+     "SourceIdentifier": "CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK"
     }
    },
    "DependsOn": [
@@ -375,42 +381,102 @@
     "ConfigPrerequisitesRecorderF50F1E3E"
    ]
   },
-  "CustomPolicy6CB3FDA5": {
-   "Type": "AWS::Config::ConfigRule",
+  "DriftRole8A5FB833": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "EvaluationModes": [
-     {
-      "Mode": "DETECTIVE"
-     }
-    ],
-    "Scope": {
-     "ComplianceResourceTypes": [
-      "AWS::DynamoDB::Table"
-     ]
-    },
-    "Source": {
-     "CustomPolicyDetails": {
-      "EnableDebugLogDelivery": true,
-      "PolicyRuntime": "guard-2.x.x",
-      "PolicyText": "\n# This rule checks if point in time recovery (PITR) is enabled on active Amazon DynamoDB tables\nlet status = ['ACTIVE']\n\nrule tableisactive when\n    resourceType == \"AWS::DynamoDB::Table\" {\n    configuration.tableStatus == %status\n}\n\nrule checkcompliance when\n    resourceType == \"AWS::DynamoDB::Table\"\n    tableisactive {\n        let pitr = supplementaryConfiguration.ContinuousBackupsDescription.pointInTimeRecoveryDescription.pointInTimeRecoveryStatus\n        %pitr == \"ENABLED\"\n}\n"
-     },
-     "Owner": "CUSTOM_POLICY",
-     "SourceDetails": [
+    "AssumeRolePolicyDocument": {
+     "Statement": [
       {
-       "EventSource": "aws.config",
-       "MessageType": "ConfigurationItemChangeNotification"
-      },
-      {
-       "EventSource": "aws.config",
-       "MessageType": "OversizedConfigurationItemChangeNotification"
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "config.amazonaws.com"
+       }
       }
-     ]
-    }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/ReadOnlyAccess"
+       ]
+      ]
+     }
+    ]
    },
    "DependsOn": [
     "ConfigPrerequisitesDeliveryChannelF524911C",
     "ConfigPrerequisitesRecorderF50F1E3E"
    ]
+  },
+  "DriftComplianceChange4C0F2B82": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "aws.config"
+     ],
+     "detail": {
+      "configRuleName": [
+       {
+        "Ref": "Drift34D3210F"
+       }
+      ]
+     },
+     "detail-type": [
+      "Config Rules Compliance Change"
+     ]
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "ComplianceTopic0229448B"
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
+   ]
+  },
+  "ComplianceTopic0229448B": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "ComplianceTopicPolicyF8BC46F0": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "ComplianceTopic0229448B"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "ComplianceTopic0229448B"
+     }
+    ]
+   }
   }
  },
  "Parameters": {

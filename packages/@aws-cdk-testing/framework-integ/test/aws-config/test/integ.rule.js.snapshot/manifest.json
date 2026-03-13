@@ -1,28 +1,28 @@
 {
   "version": "52.0.0",
   "artifacts": {
-    "aws-cdk-config-custompolicy.assets": {
+    "aws-cdk-config-rule.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-config-custompolicy.assets.json",
+        "file": "aws-cdk-config-rule.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-config-custompolicy": {
+    "aws-cdk-config-rule": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-config-custompolicy.template.json",
+        "templateFile": "aws-cdk-config-rule.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9f80ccfe0b05b1a9c0c970f6412697eb92533a898d110af8b1d14be9c0e954ef.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6e09302e1e06d3a8194d6020153faef4f89346841b13c8ef2934d7a239398c9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-config-custompolicy.assets"
+          "aws-cdk-config-rule.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,10 +31,103 @@
         }
       },
       "dependencies": [
-        "aws-cdk-config-custompolicy.assets"
+        "aws-cdk-config-rule.assets"
       ],
       "metadata": {
-        "/aws-cdk-config-custompolicy/CustomFunction": [
+        "/aws-cdk-config-rule/ConfigPrerequisites/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesRoleAB65121E"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/Recorder": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesRecorderF50F1E3E"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketC25E0643"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketPolicy19A7503F"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketAutoDeleteObjectsCustomResource0F5D7204"
+          }
+        ],
+        "/aws-cdk-config-rule/ConfigPrerequisites/DeliveryChannel": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryChannelF524911C"
+          }
+        ],
+        "/aws-cdk-config-rule/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/aws-cdk-config-rule/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-config-rule/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-config-rule/CustomFunction": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -44,7 +137,7 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/CustomFunction/ServiceRole": [
+        "/aws-cdk-config-rule/CustomFunction/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -70,25 +163,25 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/CustomFunction/ServiceRole/Resource": [
+        "/aws-cdk-config-rule/CustomFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomFunctionServiceRoleD3F73B79"
           }
         ],
-        "/aws-cdk-config-custompolicy/CustomFunction/Resource": [
+        "/aws-cdk-config-rule/CustomFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomFunctionBADD59E7"
           }
         ],
-        "/aws-cdk-config-custompolicy/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": [
+        "/aws-cdk-config-rule/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8"
           }
         ],
-        "/aws-cdk-config-custompolicy/Custom": [
+        "/aws-cdk-config-rule/Custom": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -98,13 +191,13 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/Custom/Resource": [
+        "/aws-cdk-config-rule/Custom/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Custom8166710A"
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift": [
+        "/aws-cdk-config-rule/Drift": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -116,13 +209,13 @@
             "data": "*"
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift/Resource": [
+        "/aws-cdk-config-rule/Drift/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Drift34D3210F"
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift/Role": [
+        "/aws-cdk-config-rule/Drift/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -138,13 +231,13 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift/Role/Resource": [
+        "/aws-cdk-config-rule/Drift/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DriftRole8A5FB833"
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift/ComplianceChange": [
+        "/aws-cdk-config-rule/Drift/ComplianceChange": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {}
@@ -187,25 +280,25 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/Drift/ComplianceChange/Resource": [
+        "/aws-cdk-config-rule/Drift/ComplianceChange/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DriftComplianceChange4C0F2B82"
           }
         ],
-        "/aws-cdk-config-custompolicy/ComplianceTopic": [
+        "/aws-cdk-config-rule/ComplianceTopic": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-config-custompolicy/ComplianceTopic/Resource": [
+        "/aws-cdk-config-rule/ComplianceTopic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ComplianceTopic0229448B"
           }
         ],
-        "/aws-cdk-config-custompolicy/ComplianceTopic/Policy": [
+        "/aws-cdk-config-rule/ComplianceTopic/Policy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -215,26 +308,80 @@
             }
           }
         ],
-        "/aws-cdk-config-custompolicy/ComplianceTopic/Policy/Resource": [
+        "/aws-cdk-config-rule/ComplianceTopic/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ComplianceTopicPolicyF8BC46F0"
           }
         ],
-        "/aws-cdk-config-custompolicy/BootstrapVersion": [
+        "/aws-cdk-config-rule/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-config-custompolicy/CheckBootstrapVersion": [
+        "/aws-cdk-config-rule/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "ConfigRecorderRoleC4E33AA3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigRecorderRoleC4E33AA3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigRecorder": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigRecorder",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucket004ED7F3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucket004ED7F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucketPolicy210B6CAB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucketPolicy210B6CAB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucketAutoDeleteObjectsCustomResourceCB369B77": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucketAutoDeleteObjectsCustomResourceCB369B77",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryChannel": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryChannel",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
-      "displayName": "aws-cdk-config-custompolicy"
+      "displayName": "aws-cdk-config-rule"
     },
     "awscdkconfigruleintegDefaultTestDeployAssert37C5819B.assets": {
       "type": "cdk:asset-manifest",
