@@ -1126,6 +1126,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Grab",
     "Here"
   ],
+  "DataSourceLevelMetricsBehavior": [
+    "FULL_REQUEST_DATA_SOURCE_METRICS",
+    "PER_DATA_SOURCE_METRICS"
+  ],
+  "DataSourceMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "DataStorageUnit": [
     "GB"
   ],
@@ -1187,6 +1195,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SAFE_DELETE",
     "FORCE_DELETE",
     "RETAIN"
+  ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
   ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
@@ -1402,6 +1415,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE_S3",
     "SSE_KMS",
     "CSE_KMS"
+  ],
+  "EndpointAccessMode": [
+    "STRICT",
+    "BASIC"
   ],
   "EndpointType": [
     "EDGE",
@@ -2953,6 +2970,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "BatchExecuteStatement",
     "ExecuteStatement"
   ],
+  "OperationLevelMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "Operator": [
     "AND",
     "OR",
@@ -3280,10 +3301,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
-  "PropertyMergeStrategy": [
-    "override",
-    "merge"
-  ],
   "Protocol": [
     "HTTP",
     "HTTPS",
@@ -3451,6 +3468,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "string",
     "number",
     "string-list"
+  ],
+  "ResolverLevelMetricsBehavior": [
+    "FULL_REQUEST_RESOLVER_METRICS",
+    "PER_RESOLVER_METRICS"
+  ],
+  "ResolverMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
   "ResourceAction": [
     "pause-cluster",
