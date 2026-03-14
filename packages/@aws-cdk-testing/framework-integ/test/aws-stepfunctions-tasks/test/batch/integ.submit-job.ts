@@ -13,6 +13,11 @@ import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * *
  * * aws batch describe-jobs --jobs <job-id returned by list-jobs> --query 'jobs[0].status': wait until the status is 'SUCCEEDED'
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'status': should return status as SUCCEEDED
+ * *
+ * * IAM policy verification:
+ * * aws iam get-role-policy --role-name <state machine execution role name> --policy-name <inline policy name>
+ * * The batch:SubmitJob action should be scoped to the specific job definition ARN (with :* revision wildcard)
+ * * and job queue ARN, not a wildcard (*).
  */
 
 class RunBatchStack extends cdk.Stack {
