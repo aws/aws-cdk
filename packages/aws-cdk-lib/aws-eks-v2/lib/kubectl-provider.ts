@@ -59,6 +59,8 @@ export interface KubectlProviderOptions {
    * If you specify both `securityGroup` and `securityGroups`, a warning will be issued
    * and `securityGroups` will be used.
    *
+   * [disable-awslint:prefer-ref-interface]
+   *
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
    */

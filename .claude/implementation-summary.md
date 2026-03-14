@@ -150,6 +150,10 @@ const cluster = new eksv2.Cluster(this, 'Cluster', {
 2. **既存の全テストが通ることを確認**
 3. **警告メッセージは`Annotations.of(this).addWarningV2`を使用**
 4. **空配列は「指定なし」と同じ扱い**
+5. **awslint警告の抑制**: `ISecurityGroup`を使用（`ISecurityGroupRef`ではない）
+   - 理由: Lambda Functionが`ISecurityGroup[]`を期待するため
+   - `[disable-awslint:prefer-ref-interface]`で警告を抑制
+   - 詳細は`pr-notes.md`を参照
 
 ## 📦 関連Issue
 

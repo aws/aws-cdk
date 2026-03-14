@@ -61,6 +61,7 @@ class EksKubectlSecurityGroupsStack extends Stack {
       vpc,
       version: eks.KubernetesVersion.V1_34,
       endpointAccess: eks.EndpointAccess.PRIVATE,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0, // No default capacity to speed up test
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV34Layer(this, 'KubectlLayer1'),
@@ -115,6 +116,7 @@ class EksKubectlSecurityGroupsStack extends Stack {
       vpc,
       version: eks.KubernetesVersion.V1_34,
       endpointAccess: eks.EndpointAccess.PRIVATE,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV34Layer(this, 'KubectlLayer2'),
@@ -151,6 +153,7 @@ class EksKubectlSecurityGroupsStack extends Stack {
       vpc,
       version: eks.KubernetesVersion.V1_34,
       endpointAccess: eks.EndpointAccess.PRIVATE,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 0,
       kubectlProviderOptions: {
         kubectlLayer: new KubectlV34Layer(this, 'KubectlLayer3'),
