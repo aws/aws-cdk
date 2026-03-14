@@ -1,0 +1,1921 @@
+{
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": true
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "version": "*",
+        "endpointAccess": "*",
+        "defaultCapacityType": 0,
+        "defaultCapacity": "*",
+        "kubectlProviderOptions": {
+          "privateSubnets": [
+            "*",
+            "*"
+          ]
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantClusterAdmin": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "version": "*",
+        "endpointAccess": "*",
+        "defaultCapacityType": 0,
+        "defaultCapacity": "*",
+        "kubectlProviderOptions": {
+          "privateSubnets": [
+            "*",
+            "*"
+          ],
+          "securityGroup": "*"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantClusterAdmin": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "version": "*",
+        "endpointAccess": "*",
+        "defaultCapacityType": 0,
+        "defaultCapacity": "*",
+        "kubectlProviderOptions": {
+          "privateSubnets": [
+            "*",
+            "*"
+          ]
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantClusterAdmin": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlSG13A1E7139"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlSG265C12831"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlLayer195BEFA1D"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ControlPlaneSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroups2FD0854B"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlReadyBarrier": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlReadyBarrier262A3B6A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterAdminRoleAccess": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "principal": "*",
+        "cluster": "*",
+        "accessPolicies": [
+          {
+            "policy": "*",
+            "accessScope": {
+              "type": "cluster",
+              "namespaces": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlSG3DD1E6514"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlLayer2FC7F83EB"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ControlPlaneSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroup59490EB9"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlReadyBarrier": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlReadyBarrierB48D74F1"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ClusterAdminRoleAccess": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "principal": "*",
+        "cluster": "*",
+        "accessPolicies": [
+          {
+            "policy": "*",
+            "accessScope": {
+              "type": "cluster",
+              "namespaces": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlLayer37CD5C874"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ControlPlaneSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroup92D008A5"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlReadyBarrier": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlReadyBarrier5B665DE2"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ClusterAdminRoleAccess": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "principal": "*",
+        "cluster": "*",
+        "accessPolicies": [
+          {
+            "policy": "*",
+            "accessScope": {
+              "type": "cluster",
+              "namespaces": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer1/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsRoleD6349A7A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ControlPlaneSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsControlPlaneSecurityGroup02DC8786"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterSecurityGroup/from awscdkekskubectlsecuritygroupstestKubectlSG108323F96:443": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsClusterSecurityGroupfromawscdkekskubectlsecuritygroupstestKubectlSG108323F96443AE6188CA"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterSecurityGroup/from awscdkekskubectlsecuritygroupstestKubectlSG2D56CD3A1:443": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsClusterSecurityGroupfromawscdkekskubectlsecuritygroupstestKubectlSG2D56CD3A1443E7BFABF2"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "description": "*",
+        "memorySize": "*",
+        "environment": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*",
+        "vpc": "*",
+        "securityGroups": [
+          "*",
+          "*"
+        ],
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/ClusterAdminRoleAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsClusterAdminRoleAccessDE040553"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/manifest-TestConfigMap1/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer2/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupRole07D5A59A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ControlPlaneSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupControlPlaneSecurityGroupB8BD3D4D"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ClusterSecurityGroup/from awscdkekskubectlsecuritygroupstestKubectlSG34449FC9E:443": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupClusterSecurityGroupfromawscdkekskubectlsecuritygroupstestKubectlSG34449FC9E4433E598E84"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "description": "*",
+        "memorySize": "*",
+        "environment": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*",
+        "vpc": "*",
+        "securityGroups": [
+          "*"
+        ],
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/ClusterAdminRoleAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupClusterAdminRoleAccess74369EF0"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/manifest-TestConfigMap2/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/KubectlLayer3/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupRoleD2E3CE46"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ControlPlaneSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupControlPlaneSecurityGroupEFDF73E5"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "description": "*",
+        "memorySize": "*",
+        "environment": "*",
+        "role": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*",
+        "vpc": "*",
+        "securityGroups": [
+          "*"
+        ],
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/ClusterAdminRoleAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupClusterAdminRoleAccess28201079"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/manifest-TestConfigMap3/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderHandlerD53E963C"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/HasEcrPublic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderHandlerHasEcrPublic95CE49DC"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderAwsCliLayer0E18BF70"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "securityGroups": [
+          "*",
+          "*"
+        ],
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/manifest-TestConfigMap1/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsmanifestTestConfigMap12F445FFD"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderHandler7A70B734"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/HasEcrPublic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderHandlerHasEcrPublic8193E1FE"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderAwsCliLayerAC53DDB9"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "securityGroups": [
+          "*"
+        ],
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/manifest-TestConfigMap2/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupmanifestTestConfigMap237699E7B"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderHandlerF1E3C1E2"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/HasEcrPublic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderHandlerHasEcrPublic7A60CE45"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderAwsCliLayer992FD6E2"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "securityGroups": [
+          "*"
+        ],
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/manifest-TestConfigMap3/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupmanifestTestConfigMap3EDFCD1C7"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderHandlerServiceRole2BF49541"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderframeworkonEventB0F2A709"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderHandlerServiceRole0942F883"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderframeworkonEvent1EDD294B"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderHandlerServiceRole87CA2DA3"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderframeworkonEventC96ABBEA"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderHandlerServiceRoleDefaultPolicy201FB317"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderframeworkonEventServiceRole466E39D9"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0CFE936A1"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderHandlerServiceRoleDefaultPolicy2996146A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderframeworkonEventServiceRole552DFA32"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0668385D2"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderHandlerServiceRoleDefaultPolicy10180EB1"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderframeworkonEventServiceRoleEEBA60AC"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole0C148A235"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster1-MultipleSecurityGroups/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster1MultipleSecurityGroupsKubectlProviderframeworkonEventServiceRoleDefaultPolicy9C583FB9"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster2-SingleSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster2SingleSecurityGroupKubectlProviderframeworkonEventServiceRoleDefaultPolicyE89E3A7A"
+    }
+  ],
+  "/aws-cdk-eks-kubectl-security-groups-test/Cluster3-DefaultSecurityGroup/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster3DefaultSecurityGroupKubectlProviderframeworkonEventServiceRoleDefaultPolicy12320A95"
+    }
+  ]
+}
