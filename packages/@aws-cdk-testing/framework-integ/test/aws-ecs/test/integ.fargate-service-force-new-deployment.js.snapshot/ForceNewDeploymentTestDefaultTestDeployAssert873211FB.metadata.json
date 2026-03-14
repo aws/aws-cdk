@@ -11,6 +11,20 @@
       "data": "CheckBootstrapVersion"
     }
   ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
   "/ForceNewDeploymentTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f/AssertionResults": [
     {
       "type": "aws:cdk:logicalId",
