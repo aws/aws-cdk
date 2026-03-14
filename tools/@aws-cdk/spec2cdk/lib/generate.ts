@@ -13,6 +13,7 @@ import { queryDb, log, TsFileWriter } from './util';
 export type BuilderProps<T> = T extends new (first: infer P, ...args: any[]) => any ? P : never;
 
 export interface GenerateServiceRequest {
+  
   /**
    * The namespace of the service to generate files for.
    * In CloudFormation notation.
