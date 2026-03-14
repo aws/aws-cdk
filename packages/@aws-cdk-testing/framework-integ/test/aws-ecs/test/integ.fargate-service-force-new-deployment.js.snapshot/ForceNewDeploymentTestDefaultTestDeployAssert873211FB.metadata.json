@@ -1,0 +1,38 @@
+{
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f"
+    }
+  ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ForceNewDeploymentTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f"
+    }
+  ]
+}
