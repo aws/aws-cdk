@@ -514,6 +514,119 @@ test('throws if tags has invalid value', () => {
   );
 });
 
+test('grants tighter permissions when jobDefinitionArn and jobQueueArn are static', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    jobName: 'JobName',
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN - should grant permissions to specific job definition name:* (not wildcard job-definition/*)
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: [
+            {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':batch:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':job-definition/',
+                { 'Fn::Select': [0, { 'Fn::Split': [':', { 'Fn::Select': [1, { 'Fn::Split': ['/', { Ref: 'JobDefinition24FFE3ED' }] }] }] }] },
+                ':*',
+              ]],
+            },
+            { 'Fn::GetAtt': ['JobQueueEE3AD499', 'JobQueueArn'] },
+          ],
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForBatchJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('falls back to wildcard permissions when jobDefinitionArn is JSONPath', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: sfn.JsonPath.stringAt('$.jobDefinitionArn'),
+    jobQueueArn: batchJobQueue.jobQueueArn,
+    jobName: 'JobName',
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN - should fall back to wildcard when jobDefinitionArn is dynamic
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForBatchJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('supports passing jobQueueArn as JsonPath or JSONata', () => {
   // WHEN
   const task = new BatchSubmitJob(stack, 'Task', {

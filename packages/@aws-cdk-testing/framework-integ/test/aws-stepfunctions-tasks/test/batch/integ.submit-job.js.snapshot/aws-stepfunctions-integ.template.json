@@ -663,12 +663,6 @@
        "Effect": "Allow",
        "Resource": [
         {
-         "Fn::GetAtt": [
-          "JobQueueEE3AD499",
-          "JobQueueArn"
-         ]
-        },
-        {
          "Fn::Join": [
           "",
           [
@@ -684,8 +678,38 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":job-definition/*"
+           ":job-definition/",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Fn::Select": [
+                 1,
+                 {
+                  "Fn::Split": [
+                   "/",
+                   {
+                    "Ref": "JobDefinition24FFE3ED"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
           ]
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "JobQueueEE3AD499",
+          "JobQueueArn"
          ]
         }
        ]
