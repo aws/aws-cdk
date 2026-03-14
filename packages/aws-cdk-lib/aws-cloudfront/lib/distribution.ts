@@ -390,6 +390,20 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    if (props.minimumProtocolVersion && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:minimumProtocolVersionWithoutCertificate',
+        'Setting \'minimumProtocolVersion\' without a \'certificate\' has no effect. The distribution will use the CloudFront default certificate with a fixed security policy.',
+      );
+    }
+
+    if (props.sslSupportMethod && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:sslSupportMethodWithoutCertificate',
+        'Setting \'sslSupportMethod\' without a \'certificate\' has no effect. The distribution will use the CloudFront default certificate.',
+      );
+    }
+
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 
