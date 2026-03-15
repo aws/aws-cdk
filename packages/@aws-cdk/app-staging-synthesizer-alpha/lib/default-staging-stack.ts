@@ -59,7 +59,7 @@ export interface DefaultStagingStackOptions {
   /**
    * Explicit name for the staging bucket
    *
-   * @default - a well-known name unique to this app/env.
+   * @default - a well-known name unique to this app/env, using account regional namespace suffix (-an)
    */
   readonly stagingBucketName?: string;
 
@@ -377,7 +377,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
   }
 
   private getCreateBucket() {
-    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}`;
+    const stagingBucketName = this.stagingBucketName ?? `cdk-${this.appId}-staging-${this.account}-${this.region}-an`;
     const bucketId = 'CdkStagingBucket';
     const createdBucket = this.node.tryFindChild(bucketId) as s3.Bucket;
     if (createdBucket) {
