@@ -8,7 +8,7 @@
       },
       "destinations": {
         "current_account-current_region": {
-          "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
+          "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}-an",
           "objectKey": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
         }
@@ -21,7 +21,7 @@
       },
       "destinations": {
         "current_account-current_region": {
-          "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
+          "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}-an",
           "objectKey": "deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
         }

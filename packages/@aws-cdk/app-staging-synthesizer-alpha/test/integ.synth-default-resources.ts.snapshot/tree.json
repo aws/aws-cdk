@@ -111,7 +111,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Fn::Sub": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}"
+                        "Fn::Sub": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}-an"
                       },
                       "s3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
