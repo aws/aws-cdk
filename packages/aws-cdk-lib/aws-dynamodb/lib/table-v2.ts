@@ -734,7 +734,7 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
-   * @attribute
+   * Resource policy associated with this table's stream.
    */
   public streamResourcePolicy?: PolicyDocument;
 
@@ -1454,7 +1454,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
-   * @attribute
+   * Resource policy associated with this table's stream.
    */
   public streamResourcePolicy?: PolicyDocument;
 
