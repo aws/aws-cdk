@@ -68,7 +68,7 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack');
 
     const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-000000000000-us-east-1-an/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -82,7 +82,7 @@ describe(AppStagingSynthesizer, () => {
       displayName: 'Stack Template',
       destinations: {
         '000000000000-us-east-1-73879080': {
-          bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
+          bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1-an`,
           objectKey: templateObjectKey,
           region: 'us-east-1',
           assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-role-us-east-1`,
@@ -116,7 +116,7 @@ describe(AppStagingSynthesizer, () => {
     const stackArtifact = asm.getStackArtifact('Stack2');
 
     const templateObjectKey = `${DEPLOY_TIME_PREFIX}${last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'))}`;
-    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}/${templateObjectKey}`);
+    expect(stackArtifact.stackTemplateAssetObjectUrl).toEqual(`s3://cdk-${APP_ID}-staging-${accountToken}-${regionToken}-an/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -130,7 +130,7 @@ describe(AppStagingSynthesizer, () => {
       displayName: 'Stack2 Template',
       destinations: {
         '111111111111-us-east-2-d91bfa77': {
-          bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2`,
+          bucketName: `cdk-${APP_ID}-staging-111111111111-us-east-2-an`,
           objectKey: templateObjectKey,
           region: 'us-east-2',
           assumeRoleArn: `arn:\${AWS::Partition}:iam::111111111111:role/cdk-${APP_ID}-file-role-us-east-2`,
@@ -168,8 +168,8 @@ describe(AppStagingSynthesizer, () => {
     });
 
     // THEN - we have a fixed asset location
-    expect(evalCFN(location.bucketName)).toEqual(`cdk-${APP_ID}-staging-000000000000-us-east-1`);
-    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1/abcdef.ts`);
+    expect(evalCFN(location.bucketName)).toEqual(`cdk-${APP_ID}-staging-000000000000-us-east-1-an`);
+    expect(evalCFN(location.httpUrl)).toEqual(`https://s3.us-east-1.domain.aws/cdk-${APP_ID}-staging-000000000000-us-east-1-an/abcdef.ts`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -249,7 +249,7 @@ describe(AppStagingSynthesizer, () => {
         },
         destinations: {
           '000000000000-us-east-1-daac07d9': {
-            bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1`,
+            bucketName: `cdk-${APP_ID}-staging-000000000000-us-east-1-an`,
             objectKey: `${DEPLOY_TIME_PREFIX}${assetHash}.zip`,
             region: 'us-east-1',
             assumeRoleArn: `arn:\${AWS::Partition}:iam::000000000000:role/cdk-${APP_ID}-file-role-us-east-1`,
