@@ -682,8 +682,14 @@ export abstract class BaseService extends Resource
 
   /**
    * The task definition to use for tasks in the service.
+   *
+   * Note: When the service was created with an imported task definition (`ITaskDefinition`),
+   * some `TaskDefinition`-specific properties (e.g. `defaultContainer`, `addToTaskRolePolicy`)
+   * may not be available at runtime.
+   *
+   * [disable-awslint:ref-via-interface]
    */
-  public readonly taskDefinition: ITaskDefinition;
+  public readonly taskDefinition: TaskDefinition;
 
   /**
    * The cluster that hosts the service.
@@ -781,7 +787,10 @@ export abstract class BaseService extends Resource
       throw new ValidationError('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
-    this.taskDefinition = taskDefinition;
+    // Type assertion: props accept ITaskDefinition (backward-compatible widening),
+    // but the public property retains TaskDefinition type to avoid a breaking API change.
+    // TaskDefinition-specific methods are guarded with isTaskDefinition() throughout this class.
+    this.taskDefinition = taskDefinition as TaskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
