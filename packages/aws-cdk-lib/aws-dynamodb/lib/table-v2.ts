@@ -289,6 +289,13 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
    * @default - No resource policy statements are added to the created table.
    */
   readonly resourcePolicy?: PolicyDocument;
+
+  /**
+   * Resource policy to assign to DynamoDB Stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicastreamspecification.html#cfn-dynamodb-globaltable-replicastreamspecification-resourcepolicy
+   * @default - No resource policy statements are added to the stream.
+   */
+  readonly streamResourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -727,6 +734,11 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
+   * @attribute
+   */
+  public streamResourcePolicy?: PolicyDocument;
+
+  /**
    * Grants for this table
    */
   public readonly grants: TableGrants;
@@ -832,6 +844,7 @@ export class TableV2 extends TableBaseV2 {
 
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
+    this.streamResourcePolicy = props.streamResourcePolicy;
 
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
@@ -894,6 +907,28 @@ export class TableV2 extends TableBaseV2 {
     return {
       statementAdded: true,
       policyDependable: this.resourcePolicy,
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   * A stream resource policy will be automatically created upon the first call to `addToStreamResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
     };
   }
 
@@ -1045,7 +1080,20 @@ export class TableV2 extends TableBaseV2 {
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
+      replicaStreamSpecification: this.renderReplicaStreamSpecification(props),
       globalTableSettingsReplicationMode: this.globalTableSettingsReplicationMode,
+    };
+  }
+
+  private renderReplicaStreamSpecification(props: ReplicaTableProps): CfnGlobalTable.ReplicaStreamSpecificationProperty | undefined {
+    const streamResourcePolicy = props.region === this.region
+      ? this.streamResourcePolicy
+      : props.streamResourcePolicy;
+
+    if (!streamResourcePolicy) return undefined;
+
+    return {
+      resourcePolicy: { policyDocument: streamResourcePolicy },
     };
   }
 
@@ -1406,6 +1454,11 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
+   * @attribute
+   */
+  public streamResourcePolicy?: PolicyDocument;
+
+  /**
    * Grants for this table
    */
   public readonly grants: TableGrants;
@@ -1443,6 +1496,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this._hasIndex = props.grantIndexPermissions ?? true;
 
     this.resourcePolicy = props.resourcePolicy;
+    this.streamResourcePolicy = props.streamResourcePolicy;
 
     this.encryptionKey = props.encryption?.tableKey;
 
@@ -1457,6 +1511,11 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
         contributorInsightsSpecification: props.contributorInsightsSpecification,
         pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
         resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
+        replicaStreamSpecification: Lazy.any({
+          produce: () => this.streamResourcePolicy
+            ? { resourcePolicy: { policyDocument: this.streamResourcePolicy } }
+            : undefined,
+        }),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
         globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
@@ -1515,6 +1574,23 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     return {
       statementAdded: true,
       policyDependable: this.resourcePolicy,
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
     };
   }
 

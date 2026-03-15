@@ -4326,3 +4326,182 @@ test('can add GSI with both multi-attribute partition and sort keys', () => {
     ],
   });
 });
+
+test('stream resource policy on primary table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+    streamResourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    'dynamodb:DescribeStream',
+                    'dynamodb:GetRecords',
+                    'dynamodb:GetShardIterator',
+                  ],
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('stream resource policy on replica table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetRecords'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+    replicas: [
+      {
+        region: 'us-west-2',
+        streamResourcePolicy: doc,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: Match.arrayWith([
+      Match.objectLike({
+        Region: 'us-west-2',
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetRecords',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      }),
+      Match.objectLike({
+        Region: 'us-east-1',
+        ReplicaStreamSpecification: Match.absent(),
+      }),
+    ]),
+  });
+});
+
+test('addToStreamResourcePolicy on primary table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+  });
+
+  // WHEN
+  table.addToStreamResourcePolicy(new PolicyStatement({
+    actions: ['dynamodb:GetRecords'],
+    principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+    resources: ['*'],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetRecords',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('no stream resource policy by default', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: Match.absent(),
+      },
+    ],
+  });
+});

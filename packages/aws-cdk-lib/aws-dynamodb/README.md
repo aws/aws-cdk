@@ -1050,6 +1050,51 @@ This behavior follows the same pattern as other AWS services like KMS and S3, wh
 
 **To avoid wildcards in resource policies:** If you need scoped resource ARNs instead of wildcards, use `addToResourcePolicy()` directly with an explicit table name instead of grant methods. See the "Scoped Resource Policies (Advanced)" section above for details.
 
+### Stream Resource Policy
+
+You can attach a resource policy to a DynamoDB stream using `streamResourcePolicy`. This applies per-replica, so you can set different policies for the primary table and each replica:
+
+```ts
+const streamPolicy = new iam.PolicyDocument({
+  statements: [
+    new iam.PolicyStatement({
+      actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+      principals: [new iam.AccountRootPrincipal()],
+      resources: ['*'],
+    }),
+  ],
+});
+
+new dynamodb.TableV2(this, 'GlobalTable', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  dynamoStream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+  streamResourcePolicy: streamPolicy,
+  replicas: [
+    {
+      region: 'us-west-2',
+      streamResourcePolicy: streamPolicy,
+    },
+  ],
+});
+```
+
+You can also add stream resource policy statements dynamically using `addToStreamResourcePolicy`:
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  dynamoStream: dynamodb.StreamViewType.NEW_AND_OLD_IMAGES,
+});
+
+table.addToStreamResourcePolicy(new iam.PolicyStatement({
+  actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+  principals: [new iam.AccountRootPrincipal()],
+  resources: ['*'],
+}));
+```
+
+Note: `addToStreamResourcePolicy` applies to the primary table's stream only. To set a stream resource policy on a replica, pass `streamResourcePolicy` in the replica props.
+
 ## Grants
 
 Using any of the `grant*` methods on an instance of the `TableV2` construct will only apply to the primary table, its indexes, and any associated `encryptionKey`. As an example, `grantReadData` used below will only apply the table in `us-west-2`:
