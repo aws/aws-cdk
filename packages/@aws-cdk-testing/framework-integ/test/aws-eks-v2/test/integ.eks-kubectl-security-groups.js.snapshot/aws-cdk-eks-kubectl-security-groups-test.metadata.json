@@ -17,20 +17,6 @@
         "description": "*",
         "allowAllOutbound": true
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*"
-        ]
-      }
     }
   ],
   "/aws-cdk-eks-kubectl-security-groups-test/KubectlSG2": [
@@ -84,20 +70,6 @@
         "vpc": "*",
         "description": "*",
         "allowAllOutbound": true
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*"
-        ]
       }
     }
   ],

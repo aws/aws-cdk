@@ -51,12 +51,6 @@ class EksKubectlSecurityGroupsStack extends Stack {
       allowAllOutbound: true,
     });
 
-    kubectlSg1.addIngressRule(
-      ec2.Peer.ipv4(vpc.vpcCidrBlock),
-      ec2.Port.tcp(443),
-      'Allow HTTPS from VPC',
-    );
-
     const cluster1 = new eks.Cluster(this, 'Cluster1-MultipleSecurityGroups', {
       vpc,
       version: eks.KubernetesVersion.V1_34,
@@ -105,12 +99,6 @@ class EksKubectlSecurityGroupsStack extends Stack {
       description: 'Custom security group for kubectl handler (Cluster2)',
       allowAllOutbound: true,
     });
-
-    kubectlSg3.addIngressRule(
-      ec2.Peer.ipv4(vpc.vpcCidrBlock),
-      ec2.Port.tcp(443),
-      'Allow HTTPS from VPC',
-    );
 
     const cluster2 = new eks.Cluster(this, 'Cluster2-SingleSecurityGroup', {
       vpc,

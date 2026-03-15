@@ -406,20 +406,6 @@
       "IpProtocol": "-1"
      }
     ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "Vpc8378EB38",
-        "CidrBlock"
-       ]
-      },
-      "Description": "Allow HTTPS from VPC",
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
@@ -1113,20 +1099,6 @@
       "CidrIp": "0.0.0.0/0",
       "Description": "Allow all outbound traffic by default",
       "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "Vpc8378EB38",
-        "CidrBlock"
-       ]
-      },
-      "Description": "Allow HTTPS from VPC",
-      "FromPort": 443,
-      "IpProtocol": "tcp",
-      "ToPort": 443
      }
     ],
     "VpcId": {
