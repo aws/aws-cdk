@@ -957,6 +957,41 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Forces a new deployment of the service.
+   *
+   * This can be used to trigger a deployment without changing the task definition or desired count.
+   * ECS will start a new deployment even if there are no changes to the service configuration.
+   *
+   * **Important:** When called without a nonce, a timestamp is generated automatically, which means
+   * every `cdk synth` produces a different template and every `cdk deploy` triggers a new deployment
+   * regardless of whether any code has changed. To avoid this, provide a stable nonce value that only
+   * changes when you intentionally want to force a redeployment (e.g., an image digest or a version string).
+   *
+   * @param nonce - A unique string (1-255 characters) that signals ECS to start a new deployment.
+   * If not provided, a timestamp-based nonce is generated.
+   */
+  public forceNewDeployment(nonce?: string) {
+    // ForceNewDeployment is only supported with the ECS deployment controller.
+    // CODE_DEPLOY and EXTERNAL controllers manage deployments externally and do not
+    // support this CloudFormation property. The AWS documentation does not explicitly
+    // state this restriction; a documentation update has been requested.
+    if (!this.isEcsDeploymentController) {
+      throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+    }
+
+    const resolvedNonce = nonce ?? new Date().toISOString();
+
+    if (!Token.isUnresolved(resolvedNonce) && (resolvedNonce.length < 1 || resolvedNonce.length > 255)) {
+      throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+    }
+
+    this.resource.forceNewDeployment = {
+      enableForceNewDeployment: true,
+      forceNewDeploymentNonce: resolvedNonce,
+    };
+  }
+
+  /**
    * Add a deployment lifecycle hook target
    * @param target The lifecycle hook target to add
    */
