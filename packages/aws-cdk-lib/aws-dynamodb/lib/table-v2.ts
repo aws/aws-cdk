@@ -732,7 +732,7 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
-   * @attribute
+   * Resource policy associated with this table's stream.
    */
   public streamResourcePolicy?: PolicyDocument;
 
@@ -1452,7 +1452,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   private readonly _resourcePolicy: IBox<PolicyDocument | undefined>;
 
   /**
-   * @attribute
+   * Resource policy associated with this table's stream.
    */
   public get streamResourcePolicy(): PolicyDocument | undefined {
     return this._streamResourcePolicy.getMutable();
