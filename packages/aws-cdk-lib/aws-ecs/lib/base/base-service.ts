@@ -959,13 +959,13 @@ export abstract class BaseService extends Resource
     // support this CloudFormation property. The AWS documentation does not explicitly
     // state this restriction; a documentation update has been requested.
     if (!this.isEcsDeploymentController) {
-      throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+      throw new ValidationError('EcsControllerRequired', 'forceNewDeployment requires the ECS deployment controller.', this);
     }
 
     const resolvedNonce = nonce ?? new Date().toISOString();
 
     if (!Token.isUnresolved(resolvedNonce) && (resolvedNonce.length < 1 || resolvedNonce.length > 255)) {
-      throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+      throw new ValidationError('ForceDeploymentErrorInvalidLength', `forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
     }
 
     this.resource.forceNewDeployment = {
