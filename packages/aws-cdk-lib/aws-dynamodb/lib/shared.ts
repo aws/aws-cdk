@@ -3,8 +3,7 @@ import type { GlobalSecondaryIndexProps } from './table';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
-import type { IResource } from '../../core';
-import { ValidationError } from '../../core';
+import { ValidationError, type IResource } from '../../core';
 import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
@@ -175,6 +174,25 @@ export enum ContributorInsightsMode {
    * Emits metrics for read and write requests that were throttled.
    */
   THROTTLED_KEYS = 'THROTTLED_KEYS',
+}
+
+/**
+ * The replication mode for global table settings across multiple accounts.
+ *
+ * Note: In a multi-account global table, you cannot make changes to a synchronized setting using CDK.
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2globaltables_MA_HowItWorks.html
+ */
+export enum GlobalTableSettingsReplicationMode {
+  /**
+   * All synchronizable settings are replicated across all replicas.
+   *
+   * Synchronizable settings include: billing mode, provisioned throughput, auto-scaling,
+   * on-demand throughput, warm throughput, TTL, streams view type, and GSIs.
+   *
+   * Note: Some settings are always synchronized (key schema, LSIs) and some are never
+   * synchronized (table class, SSE, deletion protection, PITR, tags, resource policy, CCI).
+   */
+  ALL = 'ENABLED',
 }
 
 /**
@@ -539,7 +557,7 @@ export function validateContributorInsights(
   construct: Construct,
 ): ContributorInsightsSpecification | undefined {
   if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
-    throw new ValidationError(`\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+    throw new ValidationError('ContributorInsightsConflict', `\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
   }
 
   return contributorInsightsSpecification ??
@@ -579,24 +597,24 @@ type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'par
  */
 export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
   if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {
-    throw new ValidationError('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
+    throw new ValidationError('ExactlyOnePartitionKey', 'Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
   }
   if ((schema.sortKey !== undefined) && (schema.sortKeys !== undefined)) {
-    throw new ValidationError('At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
+    throw new ValidationError('AtMostOneSortKey', 'At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
   }
 
   const partitionKeys = schema.partitionKeys ?? (schema.partitionKey ? [schema.partitionKey] : []);
   const sortKeys = schema.sortKeys ?? (schema.sortKey ? [schema.sortKey] : []);
 
   if (partitionKeys.length === 0) {
-    throw new ValidationError('\'partitionKeys\' must contain at least one element', scope);
+    throw new ValidationError('PartitionKeysRequired', '\'partitionKeys\' must contain at least one element', scope);
   }
 
   if (partitionKeys.length > 4) {
-    throw new ValidationError('Maximum of 4 partition keys allowed', scope);
+    throw new ValidationError('MaxPartitionKeysExceeded', 'Maximum of 4 partition keys allowed', scope);
   }
   if (sortKeys.length > 4) {
-    throw new ValidationError('Maximum of 4 sort keys allowed', scope);
+    throw new ValidationError('MaxSortKeysExceeded', 'Maximum of 4 sort keys allowed', scope);
   }
 
   return { partitionKeys, sortKeys };

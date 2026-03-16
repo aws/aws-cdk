@@ -23,7 +23,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "eslint": "^9",
-    "@cdklabs/eslint-plugin": "^1.5.3",
+    "@cdklabs/eslint-plugin": "^1.5.4",
     "typescript-eslint": "^8",
     "@stylistic/eslint-plugin": "^5",
     "eslint-import-resolver-node": "^0.3.9",
