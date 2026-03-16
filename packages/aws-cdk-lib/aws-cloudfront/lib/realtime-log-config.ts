@@ -86,7 +86,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
     addConstructMetadata(this, props);
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
-      throw new ValidationError(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`, scope);
+      throw new ValidationError('SamplingRateMustBeBetween1And100', `Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`, scope);
     }
 
     const resource = new CfnRealtimeLogConfig(this, 'Resource', {
