@@ -104,7 +104,7 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
         return {
           identifier: userPoolResourceServerId,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
+            throw new UnscopedValidationError('UserPoolIdAvailableUser', 'userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
           },
         };
       }
