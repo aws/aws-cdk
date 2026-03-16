@@ -95,7 +95,7 @@ export class DynamoProjectionExpression {
    */
   public atIndex(index: number): DynamoProjectionExpression {
     if (!this.expression.length) {
-      throw new UnscopedValidationError('Expression must start with an attribute');
+      throw new UnscopedValidationError('ExpressionStartAttribute', 'Expression must start with an attribute');
     }
 
     this.expression.push(`[${index}]`);
