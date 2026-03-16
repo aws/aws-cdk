@@ -17,7 +17,8 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
-import { AssumptionError, ValidationError } from './errors';
+import { ValidationError } from './errors';
+import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
 
 export interface CfnResourceProps {
@@ -631,131 +632,6 @@ export interface ICfnResourceOptions {
    * using construct.addMetadata(), but would not appear in the CloudFormation template automatically.
    */
   metadata?: { [key: string]: any };
-}
-
-/**
- * Object keys that deepMerge should not consider. Currently these include
- * CloudFormation intrinsics
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
- */
-
-const MERGE_EXCLUDE_KEYS: string[] = [
-  'Ref',
-  'Fn::Base64',
-  'Fn::Cidr',
-  'Fn::FindInMap',
-  'Fn::GetAtt',
-  'Fn::GetAZs',
-  'Fn::ImportValue',
-  'Fn::Join',
-  'Fn::Select',
-  'Fn::Split',
-  'Fn::Sub',
-  'Fn::Transform',
-  'Fn::And',
-  'Fn::Equals',
-  'Fn::If',
-  'Fn::Not',
-  'Fn::Or',
-];
-
-/**
- * Merges `source` into `target`, overriding any existing values.
- * `null`s will cause a value to be deleted.
- */
-function deepMerge(target: any, ...sources: any[]) {
-  for (const source of sources) {
-    if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new AssumptionError('InvalidUsageSource', `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
-    }
-
-    for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-        continue;
-      }
-
-      const value = source[key];
-      if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
-        // if the value at the target is not an object, override it with an
-        // object so we can continue the recursion
-        if (typeof(target[key]) !== 'object') {
-          target[key] = {};
-
-          /**
-           * If we have something that looks like:
-           *
-           *   target: { Type: 'MyResourceType', Properties: { prop1: { Ref: 'Param' } } }
-           *   sources: [ { Properties: { prop1: [ 'Fn::Join': ['-', 'hello', 'world'] ] } } ]
-           *
-           * Eventually we will get to the point where we have
-           *
-           *   target: { prop1: { Ref: 'Param' } }
-           *   sources: [ { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } } ]
-           *
-           * We need to recurse 1 more time, but if we do we will end up with
-           *   { prop1: { Ref: 'Param', 'Fn::Join': ['-', 'hello', 'world'] } }
-           * which is not what we want.
-           *
-           * Instead we check to see whether the `target` value (i.e. target.prop1)
-           * is an object that contains a key that we don't want to recurse on. If it does
-           * then we essentially drop it and end up with:
-           *
-           *   { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } }
-           */
-        } else if (Object.keys(target[key]).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
-            target[key] = {};
-          }
-        }
-
-        /**
-         * There might also be the case where the source is an intrinsic
-         *
-         *    target: {
-         *      Type: 'MyResourceType',
-         *      Properties: {
-         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *      }
-         *    }
-         *    sources: [ {
-         *      Properties: {
-         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
-         *      }
-         *    } ]
-         *
-         * We end up in a place that is the reverse of the above check, the source
-         * becomes an intrinsic before the target
-         *
-         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *   sources: [{
-         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
-         *   }]
-         */
-        if (Object.keys(value).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
-            target[key] = {};
-          }
-        }
-
-        deepMerge(target[key], value);
-
-        // if the result of the merge is an empty object, it's because the
-        // eventual value we assigned is `undefined`, and there are no
-        // sibling concrete values alongside, so we can delete this tree.
-        const output = target[key];
-        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
-          delete target[key];
-        }
-      } else if (value === undefined) {
-        delete target[key];
-      } else {
-        target[key] = value;
-      }
-    }
-  }
-
-  return target;
 }
 
 /**
