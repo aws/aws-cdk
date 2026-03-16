@@ -1,0 +1,12 @@
+import { Construct } from 'constructs';
+import { PropertyMergeStrategy, IMergeStrategy, Stack } from 'aws-cdk-lib/core';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import { Mixins } from 'aws-cdk-lib/core';
+import { CfnBucketPropsMixin } from '@aws-cdk/cfn-property-mixins/aws-s3';
+
+declare const scope: Construct;
+declare const stack: Stack;
+declare const bucket: s3.CfnBucket;
+
+/// here
