@@ -6,14 +6,14 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "lerna run build --scope @aws-cdk/pkglint --include-dependencies && lerna run pkglint",
+    "pkglint": "nx run @aws-cdk/pkglint:build && nx run-many -t pkglint",
     "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
     "build-all": "tsc -b",
-    "atmosphere-integ-test": "lerna run build --scope @aws-cdk/integration-test-deployment && node tools/@aws-cdk/integration-test-deployment/bin/index.js",
+    "atmosphere-integ-test": "nx run @aws-cdk/integration-test-deployment:build && node tools/@aws-cdk/integration-test-deployment/bin/index.js",
     "rosetta": "jsii-rosetta",
     "synthetic-examples": "cdk-generate-synthetic-examples"
   },
@@ -32,7 +32,6 @@
     "jsii-pacmak": "1.127.0",
     "jsii-reflect": "1.127.0",
     "jsii-rosetta": "~5.9.32",
-    "lerna": "^8.2.4",
     "nx": "^22",
     "semver": "^7.7.4",
     "standard-version": "^9.5.0",
