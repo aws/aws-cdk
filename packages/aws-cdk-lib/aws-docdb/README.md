@@ -31,7 +31,8 @@ Your cluster will be empty by default.
 ## Serverless Clusters
 
 DocumentDB supports serverless clusters that automatically scale capacity based on your application's needs.
-To create a serverless cluster, specify the `serverlessV2ScalingConfiguration` instead of `instanceType`:
+To create a serverless cluster, specify the `serverlessV2ScalingConfiguration` and `serverlessInstances`.
+Set `instances` to zero if you would like to create cluster with only serverless instances.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -44,6 +45,8 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     minCapacity: 0.5,
     maxCapacity: 2,
   },
+  serverlessInstances: 1,
+  instances: 0,
   engineVersion: '5.0.0', // Serverless requires engine version 5.0.0 or higher
 });
 ```

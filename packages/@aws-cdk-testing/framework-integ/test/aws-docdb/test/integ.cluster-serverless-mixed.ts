@@ -3,7 +3,6 @@ import * as cdk from 'aws-cdk-lib';
 import type * as constructs from 'constructs';
 import { DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { DOCDB_SERVERLESS_ENGINE_VERSION, DOCDB_SERVERLESS_SUPPORTED_REGIONS } from './docdb-integ-test-constraints';
 
 class TestStack extends cdk.Stack {
   constructor(scope: constructs.Construct, id: string, props?: cdk.StackProps) {
@@ -21,8 +20,9 @@ class TestStack extends cdk.Stack {
         maxCapacity: 2,
       },
       serverlessInstances: 1,
-      instances: 0,
-      engineVersion: DOCDB_SERVERLESS_ENGINE_VERSION,
+      instances: 1,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+      engineVersion: '5.0.0',
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   }
@@ -30,9 +30,8 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-const stack = new TestStack(app, 'aws-cdk-docdb-cluster-serverless');
+const stack = new TestStack(app, 'aws-cdk-docdb-cluster-serverless-mixed');
 
 new IntegTest(app, 'aws-cdk-docdb-cluster-serverless-integ', {
   testCases: [stack],
-  regions: DOCDB_SERVERLESS_SUPPORTED_REGIONS,
 });

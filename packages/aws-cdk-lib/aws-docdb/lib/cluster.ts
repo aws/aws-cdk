@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
@@ -18,6 +18,7 @@ import type { DBClusterReference, IDBClusterParameterGroupRef } from '../../inte
 
 const MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE = 5;
 const MIN_ENGINE_VERSION_FOR_SERVERLESS = 5;
+const SERVERLESS_DB_INSTANCE_CLASS = 'db.serverless';
 
 /**
  * ServerlessV2 scaling configuration for DocumentDB clusters
@@ -107,7 +108,6 @@ export interface DatabaseClusterProps {
    * Base identifier for instances
    *
    * Every replica is named by appending the replica number to this string, 1-based.
-   * Only applicable for provisioned clusters.
    *
    * @default - `dbClusterName` is used with the word "Instance" appended. If `dbClusterName` is not provided, the
    * identifier is automatically generated.
@@ -123,18 +123,23 @@ export interface DatabaseClusterProps {
   readonly instanceType?: ec2.InstanceType;
 
   /**
-   * Number of DocDB compute instances
+   * Number of DocDB provisioned compute instances
    * @default 1
    */
   readonly instances?: number;
 
   /**
    * ServerlessV2 scaling configuration.
-   * When specified, the cluster will be created as a serverless cluster.
    *
    * @default None
    */
   readonly serverlessV2ScalingConfiguration?: ServerlessV2ScalingConfiguration;
+
+  /**
+   * Number of DocDB serverless instances
+   * @default 0
+   */
+  readonly serverlessInstances?: number;
 
   /**
    * The identifier of the CA certificate used for the instances.
@@ -373,6 +378,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public static readonly DEFAULT_NUM_INSTANCES = 1;
 
   /**
+   * The default number of serverless instances in the DocDB cluster if none are
+   * specified
+   */
+  public static readonly DEFAULT_NUM_SERVERLESS_INSTANCES = 0;
+
+  /**
    * The default port Document DB listens on
    */
   public static readonly DEFAULT_PORT = 27017;
@@ -513,14 +524,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // Validate exactly one of instanceType or serverlessV2ScalingConfiguration is provided
-    if (!props.instanceType && !props.serverlessV2ScalingConfiguration) {
-      throw new ValidationError('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified', this);
-    }
-    const isServerless = !!props.serverlessV2ScalingConfiguration;
-    if (isServerless && props.instanceType) {
-      throw new ValidationError('Cannot specify both instanceType and serverlessV2ScalingConfiguration', this);
-    }
+    const hasServerless = !!props.serverlessV2ScalingConfiguration;
 
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
@@ -598,8 +602,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new ValidationError(`I/O-optimized storage is supported starting with engine version 5.0.0, got '${props.engineVersion}'`, this);
     }
 
-    // Validate engine version for serverless clusters: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
-    if (isServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
+    // Validate engine version for cluster with serverless instances: https://docs.aws.amazon.com/documentdb/latest/developerguide/docdb-serverless-limitations.html
+    if (hasServerless && props.engineVersion !== undefined && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_SERVERLESS) {
       throw new ValidationError(`DocumentDB serverless requires engine version 5.0.0 or higher, got '${props.engineVersion}'`, this);
     }
 
@@ -652,48 +656,71 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Create instances only for provisioned clusters
-    if (!isServerless) {
-      const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
-      if (instanceCount < 1) {
-        throw new ValidationError('At least one instance is required for provisioned clusters', this);
-      }
+    const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
+    const serverlessInstanceCount = props.serverlessInstances ?? DatabaseCluster.DEFAULT_NUM_SERVERLESS_INSTANCES;
 
-      const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
-      const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
+    // Validate serverlessInstances requires serverlessV2ScalingConfiguration
+    if (serverlessInstanceCount > 0 && !hasServerless) {
+      throw new ValidationError('serverlessV2ScalingConfiguration is required when serverlessInstances is specified', this);
+    }
 
-      for (let i = 0; i < instanceCount; i++) {
-        const instanceIndex = i + 1;
+    // Validate instanceType is required when creating provisioned instances
+    if (instanceCount > 0 && !props.instanceType) {
+      throw new ValidationError('instanceType is required when instances count is greater than 0', this);
+    }
 
-        const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
-          : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
+    if (instanceCount < 1 && serverlessInstanceCount < 1) {
+      throw new ValidationError('At least one instance is required for DocDB clusters', this);
+    }
 
-        const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
-          // Link to cluster
-          dbClusterIdentifier: this.cluster.ref,
-          dbInstanceIdentifier: instanceIdentifier,
-          // Instance properties
-          dbInstanceClass: databaseInstanceType(props.instanceType!),
-          enablePerformanceInsights: props.enablePerformanceInsights,
-          caCertificateIdentifier: caCertificateIdentifier,
-        });
+    // Create provisioned instances first
+    for (let i = 0; i < instanceCount; i++) {
+      const instanceIndex = i + 1;
 
-        instance.applyRemovalPolicy(instanceRemovalPolicy, {
-          applyToUpdateReplacePolicy: true,
-        });
+      this.createDBInstance(instanceIndex, databaseInstanceType(props.instanceType!), internetConnectivityEstablished, props, port, false);
+    }
+    // Create serverless instances with 'Serverless' in the identifier to distinguish from provisioned instances
+    for (let i = 0; i < serverlessInstanceCount; i++) {
+      const instanceIndex = i + 1;
 
-        // We must have a dependency on the NAT gateway provider here to create
-        // things in the right order.
-        instance.node.addDependency(internetConnectivityEstablished);
-
-        this.instanceIdentifiers.push(instance.ref);
-        this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
-      }
+      this.createDBInstance(instanceIndex, SERVERLESS_DB_INSTANCE_CLASS, internetConnectivityEstablished, props, port, true);
     }
 
     this.connections = new ec2.Connections({
       defaultPort: ec2.Port.tcp(port),
       securityGroups: [securityGroup],
     });
+  }
+
+  private createDBInstance(instanceIndex: number, dbInstanceClass: string,
+    internetConnectivityEstablished: IDependable, props: DatabaseClusterProps, port: number, isServerless: boolean) {
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
+    const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+    const serverlessSuffix = isServerless ? 'serverless' : '';
+    const constructSuffix = isServerless ? 'Serverless' : '';
+    const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${serverlessSuffix}${instanceIndex}`
+      : props.dbClusterName != null ? `${props.dbClusterName}instance${serverlessSuffix}${instanceIndex}` : undefined;
+
+    const instance = new CfnDBInstance(this, `Instance${constructSuffix}${instanceIndex}`, {
+      // Link to cluster
+      dbClusterIdentifier: this.cluster.ref,
+      dbInstanceIdentifier: instanceIdentifier,
+      // Instance properties
+      dbInstanceClass: dbInstanceClass,
+      enablePerformanceInsights: props.enablePerformanceInsights,
+      caCertificateIdentifier: caCertificateIdentifier,
+    });
+
+    instance.applyRemovalPolicy(instanceRemovalPolicy, {
+      applyToUpdateReplacePolicy: true,
+    });
+
+    // We must have a dependency on the NAT gateway provider here to create
+    // things in the right order.
+    instance.node.addDependency(internetConnectivityEstablished);
+
+    this.instanceIdentifiers.push(instance.ref);
+    this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
   }
 
   /**

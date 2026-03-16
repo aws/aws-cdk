@@ -1249,7 +1249,7 @@ describe('DatabaseCluster', () => {
   });
 
   describe('serverless clusters', () => {
-    test('can create a serverless cluster', () => {
+    test('can create a serverless cluster with serverless instances', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1261,6 +1261,8 @@ describe('DatabaseCluster', () => {
           password: cdk.SecretValue.unsafePlainText('tooshort'),
         },
         vpc,
+        instances: 0,
+        serverlessInstances: 1,
         serverlessV2ScalingConfiguration: {
           minCapacity: 0.5,
           maxCapacity: 1,
@@ -1274,11 +1276,14 @@ describe('DatabaseCluster', () => {
           MaxCapacity: 1,
         },
       });
-      // Should not create any instances
-      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 0);
+      // Should create one serverless instance
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceClass: 'db.serverless',
+      });
     });
 
-    test('serverless cluster has empty instance arrays', () => {
+    test('serverless cluster populates instance arrays when serverlessInstances specified', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1289,6 +1294,8 @@ describe('DatabaseCluster', () => {
           username: 'admin',
         },
         vpc,
+        instances: 0,
+        serverlessInstances: 2,
         serverlessV2ScalingConfiguration: {
           minCapacity: 0.5,
           maxCapacity: 2,
@@ -1296,11 +1303,33 @@ describe('DatabaseCluster', () => {
       });
 
       // THEN
-      expect(cluster.instanceIdentifiers).toEqual([]);
-      expect(cluster.instanceEndpoints).toEqual([]);
+      expect(cluster.instanceIdentifiers.length).toEqual(2);
+      expect(cluster.instanceEndpoints.length).toEqual(2);
     });
 
-    test('cannot specify instanceType with serverless configuration', () => {
+    test('throws when instances and serverlessInstances are both zero', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+          instances: 0,
+          serverlessInstances: 0,
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
+        });
+      }).toThrow('At least one instance is required for DocDB clusters');
+    });
+
+    test('throws when serverlessInstances specified without serverlessV2ScalingConfiguration', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1313,15 +1342,12 @@ describe('DatabaseCluster', () => {
           },
           vpc,
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-          serverlessV2ScalingConfiguration: {
-            minCapacity: 0.5,
-            maxCapacity: 1,
-          },
+          serverlessInstances: 1,
         });
-      }).toThrow('Cannot specify both instanceType and serverlessV2ScalingConfiguration');
+      }).toThrow('serverlessV2ScalingConfiguration is required when serverlessInstances is specified');
     });
 
-    test('provisioned cluster requires instanceType', () => {
+    test('throws when instances count greater than 0 but no instanceType specified', () => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -1333,8 +1359,14 @@ describe('DatabaseCluster', () => {
             username: 'admin',
           },
           vpc,
+          instances: 1,
+          serverlessInstances: 1,
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
         });
-      }).toThrow('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified');
+      }).toThrow('instanceType is required when instances count is greater than 0');
     });
 
     test('serverless cluster with all configuration options', () => {
@@ -1348,6 +1380,8 @@ describe('DatabaseCluster', () => {
           username: 'admin',
         },
         vpc,
+        instances: 0,
+        serverlessInstances: 1,
         serverlessV2ScalingConfiguration: {
           minCapacity: 1,
           maxCapacity: 4,
@@ -1381,6 +1415,8 @@ describe('DatabaseCluster', () => {
             username: 'admin',
           },
           vpc,
+          instances: 0,
+          serverlessInstances: 1,
           serverlessV2ScalingConfiguration: {
             minCapacity: 0.5,
             maxCapacity: 1,
@@ -1401,6 +1437,8 @@ describe('DatabaseCluster', () => {
           username: 'admin',
         },
         vpc,
+        instances: 0,
+        serverlessInstances: 1,
         serverlessV2ScalingConfiguration: {
           minCapacity: 0.5,
           maxCapacity: 1,
@@ -1415,6 +1453,108 @@ describe('DatabaseCluster', () => {
           MinCapacity: 0.5,
           MaxCapacity: 1,
         },
+      });
+    });
+
+    test('can create mixed cluster with provisioned and serverless instances', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        instances: 2,
+        serverlessInstances: 1,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 2,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 2,
+        },
+      });
+      // Should create 2 provisioned + 1 serverless = 3 instances
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 3);
+      // Verify provisioned instance
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceClass: 'db.r5.large',
+      });
+      // Verify serverless instance
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceClass: 'db.serverless',
+      });
+      // Verify instance arrays include all instances
+      expect(cluster.instanceIdentifiers.length).toEqual(3);
+      expect(cluster.instanceEndpoints.length).toEqual(3);
+    });
+
+    test('serverless instance identifiers include serverless suffix', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        dbClusterName: 'mycluster',
+        instances: 0,
+        serverlessInstances: 1,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 1,
+        },
+      });
+
+      // THEN - serverless instances have 'serverless' in the identifier
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceIdentifier: 'myclusterinstanceserverless1',
+        DBInstanceClass: 'db.serverless',
+      });
+    });
+
+    test('mixed cluster has correct instance identifiers for both types', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        instanceIdentifierBase: 'mydb-',
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        instances: 1,
+        serverlessInstances: 1,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 2,
+        },
+      });
+
+      // THEN - provisioned instance has normal identifier
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceIdentifier: 'mydb-1',
+        DBInstanceClass: 'db.r5.large',
+      });
+      // serverless instance has 'serverless' suffix
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+        DBInstanceIdentifier: 'mydb-serverless1',
+        DBInstanceClass: 'db.serverless',
       });
     });
   });
