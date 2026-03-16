@@ -52,6 +52,8 @@ export * from './runtime-platform';
 export * from './deployment-lifecycle-hook-target';
 export * from './alternate-target-configuration';
 
+export * as mixins from './mixins';
+
 // AWS::ECS CloudFormation Resources:
 //
 export * from './ecs.generated';
