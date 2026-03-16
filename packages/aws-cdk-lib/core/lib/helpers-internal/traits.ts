@@ -30,7 +30,7 @@ export class Traits<
     if (factory == null) {
       if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
         const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
-        throw new ValidationError(msg, resource);
+        throw new ValidationError('TraitNotFound', msg, resource);
       }
       factory = this.defaultFactoryFor(resource.cfnResourceType);
     }

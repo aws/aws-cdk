@@ -51,6 +51,7 @@ export class GatewayCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
     if (operator !== CustomClaimOperator.CONTAINS && operator !== CustomClaimOperator.CONTAINS_ANY) {
       throw new UnscopedValidationError(
+        'CustomClaimOperatorInvalid',
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
     }
@@ -68,10 +69,10 @@ export class GatewayCustomClaim {
     }
     // Validate that value matches the valueType
     if (valueType === CustomClaimValueType.STRING && typeof value !== 'string') {
-      throw new UnscopedValidationError(`Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
+      throw new UnscopedValidationError('CustomClaimStringTypeInvalid', `Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
     }
     if (valueType === CustomClaimValueType.STRING_ARRAY && !Array.isArray(value)) {
-      throw new UnscopedValidationError(`Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
+      throw new UnscopedValidationError('CustomClaimStringArrayTypeInvalid', `Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
     }
   }
 
@@ -94,6 +95,7 @@ export class GatewayCustomClaim {
         const values = this.value as string[];
         if (!Token.isUnresolved(values[0]) && values.length !== 1) {
           throw new UnscopedValidationError(
+            'CustomClaimContainsOperatorInvalid',
             `Custom claim '${this.name}': CONTAINS operator requires exactly one value, got ${values.length} values`,
           );
         }

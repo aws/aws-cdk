@@ -81,7 +81,7 @@ class EncryptedCfnTopic implements IEncryptedResource {
 
 function ifCfnTopic<A>(resource: IConstruct, factory: (r: CfnTopic) => A): A {
   if (!CfnTopic.isCfnTopic(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTopic`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnTopic`, resource);
   }
 
   return factory(resource);

@@ -139,10 +139,10 @@ export class Schema {
    */
   public static char(length: number): Type {
     if (length <= 0 || length > 255) {
-      throw new UnscopedValidationError(`char length must be (inclusively) between 1 and 255, but was ${length}`);
+      throw new UnscopedValidationError('CharLengthOutOfRange', `char length must be (inclusively) between 1 and 255, but was ${length}`);
     }
     if (length % 1 !== 0) {
-      throw new UnscopedValidationError(`char length must be a positive integer, was ${length}`);
+      throw new UnscopedValidationError('CharLengthNotInteger', `char length must be a positive integer, was ${length}`);
     }
     return {
       isPrimitive: true,
@@ -157,10 +157,10 @@ export class Schema {
    */
   public static varchar(length: number): Type {
     if (length <= 0 || length > 65535) {
-      throw new UnscopedValidationError(`varchar length must be (inclusively) between 1 and 65535, but was ${length}`);
+      throw new UnscopedValidationError('VarcharLengthOutOfRange', `varchar length must be (inclusively) between 1 and 65535, but was ${length}`);
     }
     if (length % 1 !== 0) {
-      throw new UnscopedValidationError(`varchar length must be a positive integer, was ${length}`);
+      throw new UnscopedValidationError('VarcharLengthNotInteger', `varchar length must be a positive integer, was ${length}`);
     }
     return {
       isPrimitive: true,
@@ -188,7 +188,7 @@ export class Schema {
    */
   public static map(keyType: Type, valueType: Type): Type {
     if (!keyType.isPrimitive) {
-      throw new UnscopedValidationError(`the key type of a 'map' must be a primitive, but was ${keyType.inputString}`);
+      throw new UnscopedValidationError('MapKeyTypeNotPrimitive', `the key type of a 'map' must be a primitive, but was ${keyType.inputString}`);
     }
     return {
       isPrimitive: false,

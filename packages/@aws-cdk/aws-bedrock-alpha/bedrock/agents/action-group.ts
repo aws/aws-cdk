@@ -192,6 +192,7 @@ export class AgentActionGroup {
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
       throw new UnscopedValidationError(
+        'ParentActionGroupSignatureConflict',
         'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );

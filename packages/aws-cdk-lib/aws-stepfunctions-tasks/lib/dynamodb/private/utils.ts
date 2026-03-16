@@ -26,12 +26,12 @@ export function transformAttributeValueMap(attrMap?: { [key: string]: DynamoAttr
 
 export function validateJsonPath(value: string) {
   if (!value.startsWith('$')) {
-    throw new UnscopedValidationError("Data JSON path values must either be exactly equal to '$' or start with '$.'");
+    throw new UnscopedValidationError('DataJsonPathValues', "Data JSON path values must either be exactly equal to '$' or start with '$.'");
   }
 }
 
 export function validateJsonata(value: string) {
   if (!value.startsWith('{%') || !value.endsWith('%}')) {
-    throw new UnscopedValidationError("Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
+    throw new UnscopedValidationError('DataJsonataExpressionValues', "Data JSONata expression values must either be exactly start with '{%' and end with '%}'");
   }
 }

@@ -239,7 +239,7 @@ export class PromptOverrideConfiguration {
    */
   public static fromSteps(steps: PromptStepConfigBase[]): PromptOverrideConfiguration {
     if (!steps || steps.length === 0) {
-      throw new UnscopedValidationError('Steps array cannot be empty');
+      throw new UnscopedValidationError('EmptyStepsArray', 'Steps array cannot be empty');
     }
 
     // Convert steps array to props format

@@ -230,7 +230,7 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
       return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
-    throw new ExecutionError([
+    throw new ExecutionError('CommandExecutionFailed', [
       `${prog} exited with ${reason}`,
       ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
       ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],

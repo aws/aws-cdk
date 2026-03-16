@@ -143,7 +143,7 @@ export class FunctionParameter {
       });
 
       if (descErrors.length > 0) {
-        throw new UnscopedValidationError(descErrors.join('\n'));
+        throw new UnscopedValidationError('InvalidParameterDescription', descErrors.join('\n'));
       }
     }
 
@@ -199,7 +199,7 @@ export class Function {
     });
 
     if (nameErrors.length > 0) {
-      throw new UnscopedValidationError(nameErrors.join('\n'));
+      throw new UnscopedValidationError('InvalidFunctionName', nameErrors.join('\n'));
     }
 
     // Validate function description
@@ -211,7 +211,7 @@ export class Function {
     });
 
     if (descErrors.length > 0) {
-      throw new UnscopedValidationError(descErrors.join('\n'));
+      throw new UnscopedValidationError('InvalidFunctionDescription', descErrors.join('\n'));
     }
 
     this.name = props.name;
@@ -230,7 +230,7 @@ export class Function {
         });
 
         if (paramNameErrors.length > 0) {
-          throw new UnscopedValidationError(paramNameErrors.join('\n'));
+          throw new UnscopedValidationError('InvalidParameterName', paramNameErrors.join('\n'));
         }
 
         this.parameters[name] = new FunctionParameter(paramProps);
@@ -272,7 +272,7 @@ export class FunctionSchema extends ActionGroupSchema {
     super();
 
     if (!props.functions || props.functions.length === 0) {
-      throw new UnscopedValidationError('At least one function must be defined in the function schema');
+      throw new UnscopedValidationError('EmptyFunctionSchema', 'At least one function must be defined in the function schema');
     }
 
     this.functions = props.functions.map(f => new Function(f));

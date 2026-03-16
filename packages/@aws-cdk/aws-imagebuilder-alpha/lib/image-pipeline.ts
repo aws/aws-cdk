@@ -656,11 +656,11 @@ export class ImagePipeline extends ImagePipelineBase {
     }
 
     if (props.recipe._isImageRecipe() && props.recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
+      throw new cdk.ValidationError('RecipeCannotBeBoth', 'the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
     }
 
     if (!props.recipe._isImageRecipe() && !props.recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+      throw new cdk.ValidationError('RecipeRequired', 'the recipe must either be an IImageRecipe or IContainerRecipe', this);
     }
 
     const imagePipeline = new CfnImagePipeline(this, 'Resource', {
@@ -730,19 +730,19 @@ export class ImagePipeline extends ImagePipelineBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('The imagePipelineName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('ImagePipelineNameTooLong', 'The imagePipelineName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('The imagePipelineName cannot contain spaces', this);
+      throw new cdk.ValidationError('ImagePipelineNameNoSpaces', 'The imagePipelineName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('The imagePipelineName cannot contain underscores', this);
+      throw new cdk.ValidationError('ImagePipelineNameNoUnderscores', 'The imagePipelineName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('The imagePipelineName must be lowercase', this);
+      throw new cdk.ValidationError('ImagePipelineNameMustBeLowercase', 'The imagePipelineName must be lowercase', this);
     }
   }
 
@@ -754,7 +754,7 @@ export class ImagePipeline extends ImagePipelineBase {
 
     if (schedule.autoDisableFailureCount !== undefined && !cdk.Token.isUnresolved(schedule.autoDisableFailureCount)) {
       if (schedule.autoDisableFailureCount < 1 || schedule.autoDisableFailureCount > 10) {
-        throw new cdk.ValidationError('the autoDisableFailureCount must be between 1 and 10', this);
+        throw new cdk.ValidationError('AutoDisableFailureCountOutOfRange', 'the autoDisableFailureCount must be between 1 and 10', this);
       }
     }
 

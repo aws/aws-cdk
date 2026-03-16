@@ -112,15 +112,15 @@ export class SecretValue extends Intrinsic {
    */
   public static cfnDynamicReferenceKey(secretId: string, options: SecretsManagerSecretOptions = {}): string {
     if (!secretId) {
-      throw new UnscopedValidationError('secretId cannot be empty');
+      throw new UnscopedValidationError('SecretIdCannotBeEmpty', 'secretId cannot be empty');
     }
 
     if (!Token.isUnresolved(secretId) && !secretId.startsWith('arn:') && secretId.includes(':')) {
-      throw new UnscopedValidationError(`secret id "${secretId}" is not an ARN but contains ":"`);
+      throw new UnscopedValidationError('SecretIdContainsColon', `secret id "${secretId}" is not an ARN but contains ":"`);
     }
 
     if (options.versionStage && options.versionId) {
-      throw new UnscopedValidationError(`versionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
+      throw new UnscopedValidationError('VersionStageAndVersionIdBothProvided', `versionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
     }
 
     const parts = [
@@ -175,7 +175,7 @@ export class SecretValue extends Intrinsic {
    */
   public static cfnParameter(param: CfnParameter) {
     if (!param.noEcho) {
-      throw new UnscopedValidationError('CloudFormation parameter must be configured with "NoEcho"');
+      throw new UnscopedValidationError('CloudFormationParameterMustHaveNoEcho', 'CloudFormation parameter must be configured with "NoEcho"');
     }
 
     return new SecretValue(param.value);
@@ -187,7 +187,7 @@ export class SecretValue extends Intrinsic {
   public static resourceAttribute(attr: string) {
     const resolved = Tokenization.reverseCompleteString(attr);
     if (!resolved || !CfnReference.isCfnReference(resolved) || !CfnResource.isCfnResource(resolved.target)) {
-      throw new UnscopedValidationError('SecretValue.resourceAttribute() must be used with a resource attribute');
+      throw new UnscopedValidationError('SecretValueMustUseResourceAttribute', 'SecretValue.resourceAttribute() must be used with a resource attribute');
     }
 
     return new SecretValue(attr);
@@ -234,7 +234,7 @@ export class SecretValue extends Intrinsic {
    */
   public resolve(context: IResolveContext) {
     if (FeatureFlags.of(context.scope).isEnabled(CHECK_SECRET_USAGE)) {
-      throw new UnscopedValidationError(
+      throw new UnscopedValidationError('SecretValueExposureRisk',
         `Synthing a secret value to ${context.documentPath.join('/')}. Using a SecretValue here risks exposing your secret. Only pass SecretValues to constructs that accept a SecretValue property, or call AWS Secrets Manager directly in your runtime code. Call 'secretValue.unsafeUnwrap()' if you understand and accept the risks.`,
       );
     }
