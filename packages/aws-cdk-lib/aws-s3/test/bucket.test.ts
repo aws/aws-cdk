@@ -2404,7 +2404,7 @@ describe('bucket', () => {
 
     // when
     bucket.grantDelete(deleter);
-    console.log(JSON.stringify(Template.fromStack(stack), null, 2));
+
     // then
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {

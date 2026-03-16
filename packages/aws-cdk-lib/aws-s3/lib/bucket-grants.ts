@@ -147,16 +147,7 @@ export class BucketGrants {
    * @param actions The S3 and/or KMS actions to grant.
    */
   public actionsOnObjectKeys(identity: IGrantable, objectsKeyPattern: string = '*', ...actions: string[]) {
-    const keyActions: string[] = [];
-    const bucketActions: string[] = [];
-    for (const action of actions) {
-      if (action.startsWith('kms:')) {
-        keyActions.push(action);
-      } else {
-        bucketActions.push(action);
-      }
-    }
-    return this.grant(identity, bucketActions, keyActions, this.arnForObjects(objectsKeyPattern));
+    return this.grantActions(identity, actions, this.arnForObjects(objectsKeyPattern));
   }
 
   /**
@@ -169,17 +160,7 @@ export class BucketGrants {
    * @param actions The S3 and/or KMS actions to grant.
    */
   public actionsOnBucketAndObjectKeys(identity: IGrantable, objectsKeyPattern: string = '*', ...actions: string[]) {
-    const keyActions: string[] = [];
-    const bucketActions: string[] = [];
-    for (const action of actions) {
-      if (action.startsWith('kms:')) {
-        keyActions.push(action);
-      } else {
-        bucketActions.push(action);
-      }
-    }
-    return this.grant(identity, bucketActions, keyActions,
-      this.bucket.bucketRef.bucketArn, this.arnForObjects(objectsKeyPattern));
+    return this.grantActions(identity, actions, this.bucket.bucketRef.bucketArn, this.arnForObjects(objectsKeyPattern));
   }
 
   /**
@@ -271,6 +252,19 @@ export class BucketGrants {
     }
 
     return result;
+  }
+
+  private grantActions(identity: IGrantable, actions: string[], resourceArn: string, ...otherResourceArns: string[]) {
+    const keyActions: string[] = [];
+    const bucketActions: string[] = [];
+    for (const action of actions) {
+      if (action.startsWith('kms:')) {
+        keyActions.push(action);
+      } else {
+        bucketActions.push(action);
+      }
+    }
+    return this.grant(identity, bucketActions, keyActions, resourceArn, ...otherResourceArns);
   }
 
   private grant(
