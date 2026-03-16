@@ -2052,7 +2052,7 @@ constructor(scope: Scope, id: string, props: MyConstructProps) {
 in a `Lazy`.
 
 * The why:
- - `Lazy`s are called after the construct tree has already been sythesized. Mutating it
+ - `Lazy`s are called after the construct tree has already been synthesized. Mutating it
  at this point could have not-obvious consequences.
 
 ## Documentation
