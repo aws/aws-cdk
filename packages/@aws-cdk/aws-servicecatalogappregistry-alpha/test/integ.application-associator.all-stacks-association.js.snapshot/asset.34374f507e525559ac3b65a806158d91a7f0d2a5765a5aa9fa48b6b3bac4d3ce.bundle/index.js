@@ -326,7 +326,7 @@ var ASSERTION_ERROR_SYMBOL, AssertionError;
 var init_error = __esm({
   "../../aws-cdk-lib/assertions/lib/private/error.ts"() {
     "use strict";
-    ASSERTION_ERROR_SYMBOL = Symbol.for("@aws-cdk/assertions.AssertionError");
+    ASSERTION_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/assertions.AssertionError");
     AssertionError = class _AssertionError extends Error {
       #time;
       /**
@@ -819,7 +819,7 @@ var init_match = __esm({
 var require_helpers_internal = __commonJS({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -829,11 +829,11 @@ var require_helpers_internal = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m)
         if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
@@ -5517,6 +5517,126 @@ var require_getSSOTokenFromFile = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/types/dist-cjs/index.js
+var require_dist_cjs25 = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/types/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AlgorithmId: () => AlgorithmId,
+      EndpointURLScheme: () => EndpointURLScheme,
+      FieldPosition: () => FieldPosition,
+      HttpApiKeyAuthLocation: () => HttpApiKeyAuthLocation3,
+      HttpAuthLocation: () => HttpAuthLocation,
+      IniSectionType: () => IniSectionType,
+      RequestHandlerProtocol: () => RequestHandlerProtocol,
+      SMITHY_CONTEXT_KEY: () => SMITHY_CONTEXT_KEY5,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var HttpAuthLocation = /* @__PURE__ */ ((HttpAuthLocation2) => {
+      HttpAuthLocation2["HEADER"] = "header";
+      HttpAuthLocation2["QUERY"] = "query";
+      return HttpAuthLocation2;
+    })(HttpAuthLocation || {});
+    var HttpApiKeyAuthLocation3 = /* @__PURE__ */ ((HttpApiKeyAuthLocation22) => {
+      HttpApiKeyAuthLocation22["HEADER"] = "header";
+      HttpApiKeyAuthLocation22["QUERY"] = "query";
+      return HttpApiKeyAuthLocation22;
+    })(HttpApiKeyAuthLocation3 || {});
+    var EndpointURLScheme = /* @__PURE__ */ ((EndpointURLScheme2) => {
+      EndpointURLScheme2["HTTP"] = "http";
+      EndpointURLScheme2["HTTPS"] = "https";
+      return EndpointURLScheme2;
+    })(EndpointURLScheme || {});
+    var AlgorithmId = /* @__PURE__ */ ((AlgorithmId2) => {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+      return AlgorithmId2;
+    })(AlgorithmId || {});
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "sha256",
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "md5",
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getDefaultClientConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig)
+      };
+    }, "getDefaultClientConfiguration");
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    var FieldPosition = /* @__PURE__ */ ((FieldPosition2) => {
+      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
+      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
+      return FieldPosition2;
+    })(FieldPosition || {});
+    var SMITHY_CONTEXT_KEY5 = "__smithy_context";
+    var IniSectionType = /* @__PURE__ */ ((IniSectionType2) => {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+      return IniSectionType2;
+    })(IniSectionType || {});
+    var RequestHandlerProtocol = /* @__PURE__ */ ((RequestHandlerProtocol2) => {
+      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
+      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
+      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
+      return RequestHandlerProtocol2;
+    })(RequestHandlerProtocol || {});
+  }
+});
+
 // ../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
 var require_slurpFile = __commonJS({
   "../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
@@ -5537,7 +5657,7 @@ var require_slurpFile = __commonJS({
 });
 
 // ../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs25 = __commonJS({
+var require_dist_cjs26 = __commonJS({
   "../../../node_modules/@smithy/node-config-provider/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5575,7 +5695,7 @@ var require_dist_cjs25 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile(), module2.exports);
-    var import_types7 = require_dist_cjs();
+    var import_types7 = require_dist_cjs25();
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
@@ -5702,7 +5822,7 @@ var require_dist_cjs25 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs26 = __commonJS({
+var require_dist_cjs27 = __commonJS({
   "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5754,7 +5874,7 @@ var require_dist_cjs26 = __commonJS({
         );
       }
     }, "fromEnv");
-    var import_shared_ini_file_loader = require_dist_cjs25();
+    var import_shared_ini_file_loader = require_dist_cjs26();
     var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
       const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
       const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
@@ -5855,6 +5975,126 @@ var require_getSSOTokenFromFile2 = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/types/dist-cjs/index.js
+var require_dist_cjs28 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/types/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AlgorithmId: () => AlgorithmId,
+      EndpointURLScheme: () => EndpointURLScheme,
+      FieldPosition: () => FieldPosition,
+      HttpApiKeyAuthLocation: () => HttpApiKeyAuthLocation3,
+      HttpAuthLocation: () => HttpAuthLocation,
+      IniSectionType: () => IniSectionType,
+      RequestHandlerProtocol: () => RequestHandlerProtocol,
+      SMITHY_CONTEXT_KEY: () => SMITHY_CONTEXT_KEY5,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var HttpAuthLocation = /* @__PURE__ */ ((HttpAuthLocation2) => {
+      HttpAuthLocation2["HEADER"] = "header";
+      HttpAuthLocation2["QUERY"] = "query";
+      return HttpAuthLocation2;
+    })(HttpAuthLocation || {});
+    var HttpApiKeyAuthLocation3 = /* @__PURE__ */ ((HttpApiKeyAuthLocation22) => {
+      HttpApiKeyAuthLocation22["HEADER"] = "header";
+      HttpApiKeyAuthLocation22["QUERY"] = "query";
+      return HttpApiKeyAuthLocation22;
+    })(HttpApiKeyAuthLocation3 || {});
+    var EndpointURLScheme = /* @__PURE__ */ ((EndpointURLScheme2) => {
+      EndpointURLScheme2["HTTP"] = "http";
+      EndpointURLScheme2["HTTPS"] = "https";
+      return EndpointURLScheme2;
+    })(EndpointURLScheme || {});
+    var AlgorithmId = /* @__PURE__ */ ((AlgorithmId2) => {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+      return AlgorithmId2;
+    })(AlgorithmId || {});
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "sha256",
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "md5",
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getDefaultClientConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig)
+      };
+    }, "getDefaultClientConfiguration");
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    var FieldPosition = /* @__PURE__ */ ((FieldPosition2) => {
+      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
+      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
+      return FieldPosition2;
+    })(FieldPosition || {});
+    var SMITHY_CONTEXT_KEY5 = "__smithy_context";
+    var IniSectionType = /* @__PURE__ */ ((IniSectionType2) => {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+      return IniSectionType2;
+    })(IniSectionType || {});
+    var RequestHandlerProtocol = /* @__PURE__ */ ((RequestHandlerProtocol2) => {
+      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
+      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
+      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
+      return RequestHandlerProtocol2;
+    })(RequestHandlerProtocol || {});
+  }
+});
+
 // ../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
 var require_slurpFile2 = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
@@ -5875,7 +6115,7 @@ var require_slurpFile2 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs27 = __commonJS({
+var require_dist_cjs29 = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -5913,29 +6153,17 @@ var require_dist_cjs27 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath2(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile2(), module2.exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_types5 = require_dist_cjs();
-========
-    var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_types7 = require_dist_cjs28();
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -5955,11 +6183,7 @@ var require_dist_cjs27 = __commonJS({
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const map = {};
-========
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -5972,11 +6196,7 @@ var require_dist_cjs27 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -5998,24 +6218,14 @@ var require_dist_cjs27 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile2();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -6045,11 +6255,7 @@ var require_dist_cjs27 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile2();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -6079,7 +6285,7 @@ var require_getEndpointUrlConfig = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointUrlConfig = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs27();
+    var shared_ini_file_loader_1 = require_dist_cjs29();
     var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
     var CONFIG_ENDPOINT_URL = "endpoint_url";
     var getEndpointUrlConfig = (serviceId) => ({
@@ -6120,7 +6326,7 @@ var require_getEndpointFromConfig = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointFromConfig = void 0;
-    var node_config_provider_1 = require_dist_cjs26();
+    var node_config_provider_1 = require_dist_cjs27();
     var getEndpointUrlConfig_1 = require_getEndpointUrlConfig();
     var getEndpointFromConfig = async (serviceId) => (0, node_config_provider_1.loadConfig)((0, getEndpointUrlConfig_1.getEndpointUrlConfig)(serviceId !== null && serviceId !== void 0 ? serviceId : ""))();
     exports2.getEndpointFromConfig = getEndpointFromConfig;
@@ -6128,7 +6334,7 @@ var require_getEndpointFromConfig = __commonJS({
 });
 
 // ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs28 = __commonJS({
+var require_dist_cjs30 = __commonJS({
   "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6179,7 +6385,7 @@ var require_dist_cjs28 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs29 = __commonJS({
+var require_dist_cjs31 = __commonJS({
   "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6204,7 +6410,7 @@ var require_dist_cjs29 = __commonJS({
       parseUrl: () => parseUrl
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_querystring_parser = require_dist_cjs28();
+    var import_querystring_parser = require_dist_cjs30();
     var parseUrl = /* @__PURE__ */ __name((url2) => {
       if (typeof url2 === "string") {
         return parseUrl(new URL(url2));
@@ -6226,7 +6432,7 @@ var require_dist_cjs29 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs30 = __commonJS({
+var require_dist_cjs32 = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6328,7 +6534,7 @@ var require_dist_cjs30 = __commonJS({
       return configProvider;
     }, "createConfigValueProvider");
     var import_getEndpointFromConfig = require_getEndpointFromConfig();
-    var import_url_parser = require_dist_cjs29();
+    var import_url_parser = require_dist_cjs31();
     var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
       if (typeof endpoint === "object") {
         if ("url" in endpoint) {
@@ -6835,7 +7041,7 @@ var init_esm_node = __esm({
 });
 
 // ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
-var require_dist_cjs31 = __commonJS({
+var require_dist_cjs33 = __commonJS({
   "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6922,7 +7128,7 @@ var require_dist_cjs31 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/dist-cjs/index.js
-var require_dist_cjs32 = __commonJS({
+var require_dist_cjs34 = __commonJS({
   "../../../node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -6969,7 +7175,7 @@ var require_dist_cjs32 = __commonJS({
     })(RETRY_MODES || {});
     var DEFAULT_MAX_ATTEMPTS = 3;
     var DEFAULT_RETRY_MODE = "standard";
-    var import_service_error_classification = require_dist_cjs31();
+    var import_service_error_classification = require_dist_cjs33();
     var _DefaultRateLimiter = class _DefaultRateLimiter2 {
       constructor(options) {
         this.currentCapacity = 0;
@@ -7237,7 +7443,7 @@ var require_dist_cjs32 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs33 = __commonJS({
+var require_dist_cjs35 = __commonJS({
   "../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7554,7 +7760,7 @@ var require_dist_cjs33 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs34 = __commonJS({
+var require_dist_cjs36 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -7639,7 +7845,7 @@ var require_dist_cjs34 = __commonJS({
       withBaseException: () => withBaseException
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_middleware_stack = require_dist_cjs33();
+    var import_middleware_stack = require_dist_cjs35();
     var _Client = class _Client {
       constructor(config) {
         this.config = config;
@@ -8743,7 +8949,7 @@ var require_isStreamingPayload = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
-var require_dist_cjs35 = __commonJS({
+var require_dist_cjs37 = __commonJS({
   "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -8785,14 +8991,9 @@ var require_dist_cjs35 = __commonJS({
       retryMiddlewareOptions: () => retryMiddlewareOptions
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_protocol_http8 = require_dist_cjs2();
-    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
-========
     var import_protocol_http18 = require_dist_cjs2();
     var import_uuid3 = (init_esm_node(), __toCommonJS(esm_node_exports));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var import_util_retry = require_dist_cjs32();
+    var import_util_retry = require_dist_cjs34();
     var getDefaultRetryQuota = /* @__PURE__ */ __name((initialRetryTokens, options) => {
       const MAX_CAPACITY = initialRetryTokens;
       const noRetryIncrement = (options == null ? void 0 : options.noRetryIncrement) ?? import_util_retry.NO_RETRY_INCREMENT;
@@ -8820,14 +9021,9 @@ var require_dist_cjs35 = __commonJS({
       });
     }, "getDefaultRetryQuota");
     var defaultDelayDecider = /* @__PURE__ */ __name((delayBase, attempts) => Math.floor(Math.min(import_util_retry.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase)), "defaultDelayDecider");
-    var import_service_error_classification = require_dist_cjs31();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var defaultRetryDecider = /* @__PURE__ */ __name((error) => {
-      if (!error) {
-========
+    var import_service_error_classification = require_dist_cjs33();
     var defaultRetryDecider = /* @__PURE__ */ __name((error3) => {
       if (!error3) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         return false;
       }
       return (0, import_service_error_classification.isRetryableByTrait)(error3) || (0, import_service_error_classification.isClockSkewError)(error3) || (0, import_service_error_classification.isThrottlingError)(error3) || (0, import_service_error_classification.isTransientError)(error3);
@@ -9017,7 +9213,7 @@ var require_dist_cjs35 = __commonJS({
         clientStack.addRelativeTo(omitRetryHeadersMiddleware(), omitRetryHeadersMiddlewareOptions);
       }
     }), "getOmitRetryHeadersPlugin");
-    var import_smithy_client4 = require_dist_cjs34();
+    var import_smithy_client4 = require_dist_cjs36();
     var import_isStreamingPayload = require_isStreamingPayload();
     var retryMiddleware = /* @__PURE__ */ __name((options) => (next, context) => async (args) => {
       var _a;
@@ -9153,7 +9349,7 @@ var init_client = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
+var require_dist_cjs38 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2) {
     "use strict";
     var types = require_dist_cjs();
@@ -9314,7 +9510,7 @@ var require_dist_cjs36 = __commonJS({
 var import_protocol_http5, getDateHeader;
 var init_getDateHeader = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/utils/getDateHeader.js"() {
-    import_protocol_http5 = __toESM(require_dist_cjs36());
+    import_protocol_http5 = __toESM(require_dist_cjs38());
     getDateHeader = (response) => import_protocol_http5.HttpResponse.isInstance(response) ? response.headers?.date ?? response.headers?.Date : void 0;
   }
 });
@@ -9364,7 +9560,7 @@ var init_utils = __esm({
 var import_protocol_http6, throwSigningPropertyError, validateSigningProperties, AwsSdkSigV4Signer, AWSSDKSigV4Signer;
 var init_AwsSdkSigV4Signer = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/AwsSdkSigV4Signer.js"() {
-    import_protocol_http6 = __toESM(require_dist_cjs36());
+    import_protocol_http6 = __toESM(require_dist_cjs38());
     init_utils();
     throwSigningPropertyError = (name, property) => {
       if (!property) {
@@ -9443,7 +9639,7 @@ var init_AwsSdkSigV4Signer = __esm({
 var import_protocol_http7, AwsSdkSigV4ASigner;
 var init_AwsSdkSigV4ASigner = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/AwsSdkSigV4ASigner.js"() {
-    import_protocol_http7 = __toESM(require_dist_cjs36());
+    import_protocol_http7 = __toESM(require_dist_cjs38());
     init_utils();
     init_AwsSdkSigV4Signer();
     AwsSdkSigV4ASigner = class extends AwsSdkSigV4Signer {
@@ -9465,10 +9661,6 @@ var init_AwsSdkSigV4ASigner = __esm({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-// ../../../node_modules/@aws-sdk/core/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
-========
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/getSmithyContext.js
 var import_types5;
 var init_getSmithyContext2 = __esm({
@@ -9478,7 +9670,7 @@ var init_getSmithyContext2 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-middleware/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
+var require_dist_cjs39 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2) {
     "use strict";
     var types = require_dist_cjs();
@@ -9507,10 +9699,10 @@ var init_getHttpAuthSchemeEndpointRuleSetPlugin2 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/middleware-serde/dist-cjs/index.js
-var require_dist_cjs38 = __commonJS({
+var require_dist_cjs40 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2) {
     "use strict";
-    var protocolHttp = require_dist_cjs36();
+    var protocolHttp = require_dist_cjs38();
     var deserializerMiddleware = (options, deserializer) => (next, context) => async (args) => {
       const { response } = await next(args);
       try {
@@ -9608,7 +9800,7 @@ var require_dist_cjs38 = __commonJS({
 var import_middleware_serde2, httpAuthSchemeMiddlewareOptions2;
 var init_getHttpAuthSchemePlugin2 = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/middleware-http-auth-scheme/getHttpAuthSchemePlugin.js"() {
-    import_middleware_serde2 = __toESM(require_dist_cjs38());
+    import_middleware_serde2 = __toESM(require_dist_cjs40());
     httpAuthSchemeMiddlewareOptions2 = {
       step: "serialize",
       tags: ["HTTP_AUTH_SCHEME"],
@@ -9663,7 +9855,7 @@ var init_normalizeProvider2 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/is-array-buffer/dist-cjs/index.js
-var require_dist_cjs39 = __commonJS({
+var require_dist_cjs41 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2) {
     "use strict";
     var isArrayBuffer = (arg) => typeof ArrayBuffer === "function" && arg instanceof ArrayBuffer || Object.prototype.toString.call(arg) === "[object ArrayBuffer]";
@@ -9672,10 +9864,10 @@ var require_dist_cjs39 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-buffer-from/dist-cjs/index.js
-var require_dist_cjs40 = __commonJS({
+var require_dist_cjs42 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2) {
     "use strict";
-    var isArrayBuffer = require_dist_cjs39();
+    var isArrayBuffer = require_dist_cjs41();
     var buffer = require("buffer");
     var fromArrayBuffer = (input, offset = 0, length = input.byteLength - offset) => {
       if (!isArrayBuffer.isArrayBuffer(input)) {
@@ -9700,7 +9892,7 @@ var require_fromBase642 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs40();
+    var util_buffer_from_1 = require_dist_cjs42();
     var BASE64_REGEX = /^[A-Za-z0-9+/]*={0,2}$/;
     var fromBase644 = (input) => {
       if (input.length * 3 % 4 !== 0) {
@@ -9717,10 +9909,10 @@ var require_fromBase642 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-utf8/dist-cjs/index.js
-var require_dist_cjs41 = __commonJS({
+var require_dist_cjs43 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilBufferFrom = require_dist_cjs40();
+    var utilBufferFrom = require_dist_cjs42();
     var fromUtf85 = (input) => {
       const buf = utilBufferFrom.fromString(input, "utf8");
       return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
@@ -9755,8 +9947,8 @@ var require_toBase642 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs40();
-    var util_utf8_1 = require_dist_cjs41();
+    var util_buffer_from_1 = require_dist_cjs42();
+    var util_utf8_1 = require_dist_cjs43();
     var toBase644 = (_input) => {
       let input;
       if (typeof _input === "string") {
@@ -9774,7 +9966,7 @@ var require_toBase642 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-base64/dist-cjs/index.js
-var require_dist_cjs42 = __commonJS({
+var require_dist_cjs44 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2) {
     "use strict";
     var fromBase644 = require_fromBase642();
@@ -9804,7 +9996,7 @@ var require_ChecksumStream2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ChecksumStream = void 0;
-    var util_base64_1 = require_dist_cjs42();
+    var util_base64_1 = require_dist_cjs44();
     var stream_1 = require("stream");
     var ChecksumStream2 = class extends stream_1.Duplex {
       expectedChecksum;
@@ -9889,7 +10081,7 @@ var require_createChecksumStream_browser2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createChecksumStream = void 0;
-    var util_base64_1 = require_dist_cjs42();
+    var util_base64_1 = require_dist_cjs44();
     var stream_type_check_1 = require_stream_type_check2();
     var ChecksumStream_browser_1 = require_ChecksumStream_browser2();
     var createChecksumStream2 = ({ expectedChecksum, checksum, source, checksumSourceLocation, base64Encoder }) => {
@@ -10333,7 +10525,7 @@ var require_headStream2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-uri-escape/dist-cjs/index.js
-var require_dist_cjs43 = __commonJS({
+var require_dist_cjs45 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2) {
     "use strict";
     var escapeUri = (uri) => encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
@@ -10345,10 +10537,10 @@ var require_dist_cjs43 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
+var require_dist_cjs46 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilUriEscape = require_dist_cjs43();
+    var utilUriEscape = require_dist_cjs45();
     function buildQueryString(query) {
       const parts = [];
       for (let key of Object.keys(query).sort()) {
@@ -10373,11 +10565,11 @@ var require_dist_cjs44 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs45 = __commonJS({
+var require_dist_cjs47 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2) {
     "use strict";
-    var protocolHttp = require_dist_cjs36();
-    var querystringBuilder = require_dist_cjs44();
+    var protocolHttp = require_dist_cjs38();
+    var querystringBuilder = require_dist_cjs46();
     var http = require("http");
     var https2 = require("https");
     var stream = require("stream");
@@ -11074,12 +11266,12 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js
-var require_dist_cjs46 = __commonJS({
+var require_dist_cjs48 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js"(exports2) {
     "use strict";
-    var protocolHttp = require_dist_cjs36();
-    var querystringBuilder = require_dist_cjs44();
-    var utilBase64 = require_dist_cjs42();
+    var protocolHttp = require_dist_cjs38();
+    var querystringBuilder = require_dist_cjs46();
+    var utilBase64 = require_dist_cjs44();
     function createRequest(url2, requestOptions) {
       return new Request(url2, requestOptions);
     }
@@ -11289,7 +11481,7 @@ var require_dist_cjs46 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-hex-encoding/dist-cjs/index.js
-var require_dist_cjs47 = __commonJS({
+var require_dist_cjs49 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2) {
     "use strict";
     var SHORT_TO_HEX = {};
@@ -11335,10 +11527,10 @@ var require_sdk_stream_mixin_browser2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var fetch_http_handler_1 = require_dist_cjs46();
-    var util_base64_1 = require_dist_cjs42();
-    var util_hex_encoding_1 = require_dist_cjs47();
-    var util_utf8_1 = require_dist_cjs41();
+    var fetch_http_handler_1 = require_dist_cjs48();
+    var util_base64_1 = require_dist_cjs44();
+    var util_hex_encoding_1 = require_dist_cjs49();
+    var util_utf8_1 = require_dist_cjs43();
     var stream_type_check_1 = require_stream_type_check2();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin4 = (stream) => {
@@ -11402,8 +11594,8 @@ var require_sdk_stream_mixin2 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var node_http_handler_1 = require_dist_cjs45();
-    var util_buffer_from_1 = require_dist_cjs40();
+    var node_http_handler_1 = require_dist_cjs47();
+    var util_buffer_from_1 = require_dist_cjs42();
     var stream_1 = require("stream");
     var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser2();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
@@ -11493,11 +11685,11 @@ var require_splitStream2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-stream/dist-cjs/index.js
-var require_dist_cjs48 = __commonJS({
+var require_dist_cjs50 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilBase64 = require_dist_cjs42();
-    var utilUtf8 = require_dist_cjs41();
+    var utilBase64 = require_dist_cjs44();
+    var utilUtf8 = require_dist_cjs43();
     var ChecksumStream2 = require_ChecksumStream2();
     var createChecksumStream2 = require_createChecksumStream2();
     var createBufferedReadable = require_createBufferedReadable();
@@ -11603,7 +11795,7 @@ var require_dist_cjs48 = __commonJS({
 var import_util_stream2, collectBody3;
 var init_collect_stream_body2 = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/collect-stream-body.js"() {
-    import_util_stream2 = __toESM(require_dist_cjs48());
+    import_util_stream2 = __toESM(require_dist_cjs50());
     collectBody3 = async (streamBody = new Uint8Array(), context) => {
       if (streamBody instanceof Uint8Array) {
         return import_util_stream2.Uint8ArrayBlobAdapter.mutate(streamBody);
@@ -11659,8 +11851,8 @@ var init_operation = __esm({
 var import_protocol_http8, import_util_middleware3, schemaDeserializationMiddleware, findHeader;
 var init_schemaDeserializationMiddleware = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/middleware/schemaDeserializationMiddleware.js"() {
-    import_protocol_http8 = __toESM(require_dist_cjs36());
-    import_util_middleware3 = __toESM(require_dist_cjs37());
+    import_protocol_http8 = __toESM(require_dist_cjs38());
+    import_util_middleware3 = __toESM(require_dist_cjs39());
     init_operation();
     schemaDeserializationMiddleware = (config) => (next, context) => async (args) => {
       const { response } = await next(args);
@@ -11727,7 +11919,7 @@ var init_schemaDeserializationMiddleware = __esm({
 var import_util_middleware4, schemaSerializationMiddleware;
 var init_schemaSerializationMiddleware = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/middleware/schemaSerializationMiddleware.js"() {
-    import_util_middleware4 = __toESM(require_dist_cjs37());
+    import_util_middleware4 = __toESM(require_dist_cjs39());
     init_operation();
     schemaSerializationMiddleware = (config) => (next, context) => async (args) => {
       const { operationSchema } = (0, import_util_middleware4.getSmithyContext)(context);
@@ -11809,7 +12001,7 @@ var init_ListSchema = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/schemas/ListSchema.js"() {
     init_Schema();
     ListSchema = class _ListSchema extends Schema {
-      static symbol = Symbol.for("@smithy/lis");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/lis");
       name;
       traits;
       valueSchema;
@@ -11830,7 +12022,7 @@ var init_MapSchema = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/schemas/MapSchema.js"() {
     init_Schema();
     MapSchema = class _MapSchema extends Schema {
-      static symbol = Symbol.for("@smithy/map");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/map");
       name;
       traits;
       keySchema;
@@ -11853,7 +12045,7 @@ var init_OperationSchema = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/schemas/OperationSchema.js"() {
     init_Schema();
     OperationSchema = class _OperationSchema extends Schema {
-      static symbol = Symbol.for("@smithy/ope");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/ope");
       name;
       traits;
       input;
@@ -11876,7 +12068,7 @@ var init_StructureSchema = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/schemas/StructureSchema.js"() {
     init_Schema();
     StructureSchema = class _StructureSchema extends Schema {
-      static symbol = Symbol.for("@smithy/str");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/str");
       name;
       traits;
       memberNames;
@@ -11900,7 +12092,7 @@ var init_ErrorSchema = __esm({
     init_Schema();
     init_StructureSchema();
     ErrorSchema = class _ErrorSchema extends StructureSchema {
-      static symbol = Symbol.for("@smithy/err");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/err");
       ctor;
       symbol = _ErrorSchema.symbol;
     };
@@ -11960,12 +12152,12 @@ var init_NormalizedSchema = __esm({
     init_deref();
     init_translateTraits();
     anno = {
-      it: Symbol.for("@smithy/nor-struct-it")
+      it: /* @__PURE__ */ Symbol.for("@smithy/nor-struct-it")
     };
     NormalizedSchema = class _NormalizedSchema {
       ref;
       memberName;
-      static symbol = Symbol.for("@smithy/nor");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/nor");
       symbol = _NormalizedSchema.symbol;
       name;
       schema;
@@ -12205,7 +12397,7 @@ var init_SimpleSchema = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/schema/schemas/SimpleSchema.js"() {
     init_Schema();
     SimpleSchema = class _SimpleSchema extends Schema {
-      static symbol = Symbol.for("@smithy/sim");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/sim");
       name;
       schemaRef;
       traits;
@@ -13257,7 +13449,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? function(o, m, k, k2) {
+    __createBinding = Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -13266,13 +13458,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    };
-    __setModuleDefault = Object.create ? function(o, v) {
+    });
+    __setModuleDefault = Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -13337,7 +13529,7 @@ var require_randomUUID = __commonJS({
 });
 
 // ../../../node_modules/@smithy/uuid/dist-cjs/index.js
-var require_dist_cjs49 = __commonJS({
+var require_dist_cjs51 = __commonJS({
   "../../../node_modules/@smithy/uuid/dist-cjs/index.js"(exports2) {
     "use strict";
     var randomUUID = require_randomUUID();
@@ -13360,7 +13552,7 @@ var require_dist_cjs49 = __commonJS({
 var import_uuid;
 var init_generateIdempotencyToken = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/serde/generateIdempotencyToken.js"() {
-    import_uuid = __toESM(require_dist_cjs49());
+    import_uuid = __toESM(require_dist_cjs51());
   }
 });
 
@@ -13696,7 +13888,7 @@ var init_SerdeContext = __esm({
 var import_util_utf8, EventStreamSerde;
 var init_EventStreamSerde = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/event-streams/EventStreamSerde.js"() {
-    import_util_utf8 = __toESM(require_dist_cjs41());
+    import_util_utf8 = __toESM(require_dist_cjs43());
     EventStreamSerde = class {
       marshaller;
       serializer;
@@ -13716,7 +13908,7 @@ var init_EventStreamSerde = __esm({
         const unionSchema = requestSchema.getMemberSchema(eventStreamMember);
         const serializer = this.serializer;
         const defaultContentType = this.defaultContentType;
-        const initialRequestMarker = Symbol("initialRequestMarker");
+        const initialRequestMarker = /* @__PURE__ */ Symbol("initialRequestMarker");
         const eventStreamIterable = {
           async *[Symbol.asyncIterator]() {
             if (initialRequest) {
@@ -13766,7 +13958,7 @@ var init_EventStreamSerde = __esm({
         const eventStreamMember = responseSchema.getEventStreamMember();
         const unionSchema = responseSchema.getMemberSchema(eventStreamMember);
         const memberSchemas = unionSchema.getMemberSchemas();
-        const initialResponseMarker = Symbol("initialResponseMarker");
+        const initialResponseMarker = /* @__PURE__ */ Symbol("initialResponseMarker");
         const asyncIterable = marshaller.deserialize(response.body, async (event) => {
           const unionMember = Object.keys(event).find((key) => {
             return key !== "__type";
@@ -13943,7 +14135,7 @@ var import_protocol_http9, HttpProtocol;
 var init_HttpProtocol = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/HttpProtocol.js"() {
     init_schema();
-    import_protocol_http9 = __toESM(require_dist_cjs36());
+    import_protocol_http9 = __toESM(require_dist_cjs38());
     init_SerdeContext();
     HttpProtocol = class extends SerdeContext {
       options;
@@ -14075,8 +14267,8 @@ var init_HttpBindingProtocol = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/HttpBindingProtocol.js"() {
     init_schema();
     init_serde();
-    import_protocol_http10 = __toESM(require_dist_cjs36());
-    import_util_stream3 = __toESM(require_dist_cjs48());
+    import_protocol_http10 = __toESM(require_dist_cjs38());
+    import_util_stream3 = __toESM(require_dist_cjs50());
     init_collect_stream_body2();
     init_extended_encode_uri_component2();
     init_HttpProtocol();
@@ -14331,7 +14523,7 @@ var import_protocol_http11, RpcProtocol;
 var init_RpcProtocol = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/RpcProtocol.js"() {
     init_schema();
-    import_protocol_http11 = __toESM(require_dist_cjs36());
+    import_protocol_http11 = __toESM(require_dist_cjs38());
     init_collect_stream_body2();
     init_HttpProtocol();
     RpcProtocol = class extends HttpProtocol {
@@ -14452,7 +14644,7 @@ function requestBuilder2(input, context) {
 var import_protocol_http12, RequestBuilder2;
 var init_requestBuilder3 = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js"() {
-    import_protocol_http12 = __toESM(require_dist_cjs36());
+    import_protocol_http12 = __toESM(require_dist_cjs38());
     init_resolve_path2();
     RequestBuilder2 = class {
       input;
@@ -14543,8 +14735,8 @@ var init_FromStringShapeDeserializer = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/serde/FromStringShapeDeserializer.js"() {
     init_schema();
     init_serde();
-    import_util_base64 = __toESM(require_dist_cjs42());
-    import_util_utf82 = __toESM(require_dist_cjs41());
+    import_util_base64 = __toESM(require_dist_cjs44());
+    import_util_utf82 = __toESM(require_dist_cjs43());
     init_SerdeContext();
     init_determineTimestampFormat();
     FromStringShapeDeserializer = class extends SerdeContext {
@@ -14615,7 +14807,7 @@ var import_util_utf83, HttpInterceptingShapeDeserializer;
 var init_HttpInterceptingShapeDeserializer = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/serde/HttpInterceptingShapeDeserializer.js"() {
     init_schema();
-    import_util_utf83 = __toESM(require_dist_cjs41());
+    import_util_utf83 = __toESM(require_dist_cjs43());
     init_SerdeContext();
     init_FromStringShapeDeserializer();
     HttpInterceptingShapeDeserializer = class extends SerdeContext {
@@ -14664,7 +14856,7 @@ var init_ToStringShapeSerializer = __esm({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/core/dist-es/submodules/protocols/serde/ToStringShapeSerializer.js"() {
     init_schema();
     init_serde();
-    import_util_base642 = __toESM(require_dist_cjs42());
+    import_util_base642 = __toESM(require_dist_cjs44());
     init_SerdeContext();
     init_determineTimestampFormat();
     ToStringShapeSerializer = class extends SerdeContext {
@@ -14962,8 +15154,7 @@ var init_dist_es2 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs52 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -14996,15 +15187,6 @@ var require_dist_cjs50 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -15012,29 +15194,19 @@ var require_dist_cjs50 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -15134,13 +15306,8 @@ var require_dist_cjs50 = __commonJS({
 var import_property_provider, resolveAwsSdkSigV4AConfig, NODE_SIGV4A_CONFIG_OPTIONS;
 var init_resolveAwsSdkSigV4AConfig = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/resolveAwsSdkSigV4AConfig.js"() {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    init_dist_es();
-    import_property_provider = __toESM(require_dist_cjs36());
-========
     init_dist_es2();
-    import_property_provider = __toESM(require_dist_cjs50());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    import_property_provider = __toESM(require_dist_cjs52());
     resolveAwsSdkSigV4AConfig = (config) => {
       config.sigv4aSigningRegionSet = normalizeProvider2(config.sigv4aSigningRegionSet);
       return config;
@@ -15167,55 +15334,16 @@ var init_resolveAwsSdkSigV4AConfig = __esm({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      SignatureV4: () => SignatureV42,
-      clearCredentialCache: () => clearCredentialCache,
-      createScope: () => createScope,
-      getCanonicalHeaders: () => getCanonicalHeaders,
-      getCanonicalQuery: () => getCanonicalQuery,
-      getPayloadHash: () => getPayloadHash,
-      getSigningKey: () => getSigningKey,
-      moveHeadersToQuery: () => moveHeadersToQuery,
-      prepareRequest: () => prepareRequest
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var import_util_middleware3 = require_dist_cjs10();
-    var import_util_utf84 = require_dist_cjs15();
-========
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/signature-v4/dist-cjs/index.js
-var require_dist_cjs51 = __commonJS({
+var require_dist_cjs53 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/signature-v4/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilHexEncoding = require_dist_cjs47();
-    var utilUtf8 = require_dist_cjs41();
-    var isArrayBuffer = require_dist_cjs39();
-    var protocolHttp = require_dist_cjs36();
-    var utilMiddleware = require_dist_cjs37();
-    var utilUriEscape = require_dist_cjs43();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var utilHexEncoding = require_dist_cjs49();
+    var utilUtf8 = require_dist_cjs43();
+    var isArrayBuffer = require_dist_cjs41();
+    var protocolHttp = require_dist_cjs38();
+    var utilMiddleware = require_dist_cjs39();
+    var utilUriEscape = require_dist_cjs45();
     var ALGORITHM_QUERY_PARAM = "X-Amz-Algorithm";
     var CREDENTIAL_QUERY_PARAM = "X-Amz-Credential";
     var AMZ_DATE_QUERY_PARAM = "X-Amz-Date";
@@ -15731,13 +15859,8 @@ ${utilHexEncoding.toHex(hashedRequest)}`;
 var import_signature_v4, resolveAwsSdkSigV4Config, resolveAWSSDKSigV4Config;
 var init_resolveAwsSdkSigV4Config = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/httpAuthSchemes/aws_sdk/resolveAwsSdkSigV4Config.js"() {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    init_dist_es();
-    import_signature_v4 = __toESM(require_dist_cjs37());
-========
     init_dist_es2();
-    import_signature_v4 = __toESM(require_dist_cjs51());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    import_signature_v4 = __toESM(require_dist_cjs53());
     resolveAwsSdkSigV4Config = (config) => {
       let normalizedCreds;
       if (config.credentials) {
@@ -15894,7 +16017,7 @@ var init_coercing_serializers = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs52 = __commonJS({
+var require_dist_cjs54 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2) {
     "use strict";
     var getAllAliases = (name, aliases) => {
@@ -16165,10 +16288,10 @@ var require_dist_cjs52 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs53 = __commonJS({
+var require_dist_cjs55 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2) {
     "use strict";
-    var middlewareStack = require_dist_cjs52();
+    var middlewareStack = require_dist_cjs54();
     var protocols = (init_protocols2(), __toCommonJS(protocols_exports2));
     var types = require_dist_cjs();
     var schema = (init_schema(), __toCommonJS(schema_exports));
@@ -16742,11 +16865,7 @@ var require_dist_cjs53 = __commonJS({
 var import_smithy_client, awsExpectUnion;
 var init_awsExpectUnion = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/json/awsExpectUnion.js"() {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    import_smithy_client = __toESM(require_dist_cjs34());
-========
-    import_smithy_client = __toESM(require_dist_cjs53());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    import_smithy_client = __toESM(require_dist_cjs55());
     awsExpectUnion = (value) => {
       if (value == null) {
         return void 0;
@@ -16763,11 +16882,7 @@ var init_awsExpectUnion = __esm({
 var import_smithy_client2, collectBodyString;
 var init_common = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/common.js"() {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    import_smithy_client2 = __toESM(require_dist_cjs34());
-========
-    import_smithy_client2 = __toESM(require_dist_cjs53());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    import_smithy_client2 = __toESM(require_dist_cjs55());
     collectBodyString = (streamBody, context) => (0, import_smithy_client2.collectBody)(streamBody, context).then((body) => context.utf8Encoder(body));
   }
 });
@@ -16829,9 +16944,9 @@ var init_parseJsonBody = __esm({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/util.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/util.js
 var require_util = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/util.js"(exports2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/util.js"(exports2) {
     "use strict";
     var nameStartChar = ":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
     var nameChar = nameStartChar + "\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
@@ -16888,9 +17003,9 @@ var require_util = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/validator.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/validator.js
 var require_validator = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/validator.js"(exports2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/validator.js"(exports2) {
     "use strict";
     var util = require_util();
     var defaultOptions = {
@@ -17200,9 +17315,9 @@ var require_validator = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js
 var require_OptionsBuilder = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js"(exports2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js"(exports2) {
     var defaultOptions = {
       preserveOrder: false,
       attributeNamePrefix: "@_",
@@ -17255,9 +17370,9 @@ var require_OptionsBuilder = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/xmlNode.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js
 var require_xmlNode = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports2, module2) {
     "use strict";
     var XmlNode = class {
       constructor(tagname) {
@@ -17282,9 +17397,9 @@ var require_xmlNode = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
 var require_DocTypeReader = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports2, module2) {
     var util = require_util();
     function readDocType(xmlData, i) {
       const entities = {};
@@ -17380,9 +17495,9 @@ var require_DocTypeReader = __commonJS({
   }
 });
 
-// ../../../node_modules/strnum/strnum.js
+// ../../../node_modules/@aws-sdk/core/node_modules/strnum/strnum.js
 var require_strnum = __commonJS({
-  "../../../node_modules/strnum/strnum.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/strnum/strnum.js"(exports2, module2) {
     var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
     var numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
     var consider = {
@@ -17468,9 +17583,9 @@ var require_strnum = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
 var require_OrderedObjParser = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports2, module2) {
     "use strict";
     var util = require_util();
     var xmlNode = require_xmlNode();
@@ -17958,9 +18073,9 @@ var require_OrderedObjParser = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/node2json.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/node2json.js
 var require_node2json = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/node2json.js"(exports2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/node2json.js"(exports2) {
     "use strict";
     function prettify(node, options) {
       return compress(node, options);
@@ -18045,9 +18160,9 @@ var require_node2json = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlparser/XMLParser.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js
 var require_XMLParser = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports2, module2) {
     var { buildOptions } = require_OptionsBuilder();
     var OrderedObjParser = require_OrderedObjParser();
     var { prettify } = require_node2json();
@@ -18103,9 +18218,9 @@ var require_XMLParser = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js
 var require_orderedJs2Xml = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports2, module2) {
     var EOL = "\n";
     function toXml(jArray, options) {
       let indentation = "";
@@ -18228,9 +18343,9 @@ var require_orderedJs2Xml = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js
 var require_json2xml = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports2, module2) {
     "use strict";
     var buildFromOrderedJs = require_orderedJs2Xml();
     var defaultOptions = {
@@ -18469,9 +18584,9 @@ var require_json2xml = __commonJS({
   }
 });
 
-// ../../../node_modules/fast-xml-parser/src/fxp.js
+// ../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/fxp.js
 var require_fxp = __commonJS({
-  "../../../node_modules/fast-xml-parser/src/fxp.js"(exports2, module2) {
+  "../../../node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/fxp.js"(exports2, module2) {
     "use strict";
     var validator = require_validator();
     var XMLParser2 = require_XMLParser();
@@ -18488,11 +18603,7 @@ var require_fxp = __commonJS({
 var import_smithy_client3, import_fast_xml_parser, parseXmlBody, parseXmlErrorBody, loadRestXmlErrorCode;
 var init_parseXmlBody = __esm({
   "../../../node_modules/@aws-sdk/core/dist-es/submodules/protocols/xml/parseXmlBody.js"() {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    import_smithy_client3 = __toESM(require_dist_cjs34());
-========
-    import_smithy_client3 = __toESM(require_dist_cjs53());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    import_smithy_client3 = __toESM(require_dist_cjs55());
     import_fast_xml_parser = __toESM(require_fxp());
     init_common();
     parseXmlBody = (streamBody, context) => collectBodyString(streamBody, context).then((encoded) => {
@@ -18754,11 +18865,7 @@ var require_package = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-env/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs38 = __commonJS({
-========
-var require_dist_cjs54 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs56 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-env/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -18791,15 +18898,6 @@ var require_dist_cjs54 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -18807,29 +18905,19 @@ var require_dist_cjs54 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -18926,11 +19014,7 @@ var require_dist_cjs54 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs39 = __commonJS({
-========
-var require_dist_cjs55 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs57 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18962,11 +19046,7 @@ var require_dist_cjs55 = __commonJS({
       fromEnv: () => fromEnv
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_property_provider2 = require_dist_cjs38();
-========
-    var import_property_provider2 = require_dist_cjs54();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_property_provider2 = require_dist_cjs56();
     var ENV_KEY = "AWS_ACCESS_KEY_ID";
     var ENV_SECRET = "AWS_SECRET_ACCESS_KEY";
     var ENV_SESSION = "AWS_SESSION_TOKEN";
@@ -19065,6 +19145,126 @@ var require_getSSOTokenFromFile3 = __commonJS({
   }
 });
 
+// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/types/dist-cjs/index.js
+var require_dist_cjs58 = __commonJS({
+  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/types/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AlgorithmId: () => AlgorithmId,
+      EndpointURLScheme: () => EndpointURLScheme,
+      FieldPosition: () => FieldPosition,
+      HttpApiKeyAuthLocation: () => HttpApiKeyAuthLocation3,
+      HttpAuthLocation: () => HttpAuthLocation,
+      IniSectionType: () => IniSectionType,
+      RequestHandlerProtocol: () => RequestHandlerProtocol,
+      SMITHY_CONTEXT_KEY: () => SMITHY_CONTEXT_KEY5,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var HttpAuthLocation = /* @__PURE__ */ ((HttpAuthLocation2) => {
+      HttpAuthLocation2["HEADER"] = "header";
+      HttpAuthLocation2["QUERY"] = "query";
+      return HttpAuthLocation2;
+    })(HttpAuthLocation || {});
+    var HttpApiKeyAuthLocation3 = /* @__PURE__ */ ((HttpApiKeyAuthLocation22) => {
+      HttpApiKeyAuthLocation22["HEADER"] = "header";
+      HttpApiKeyAuthLocation22["QUERY"] = "query";
+      return HttpApiKeyAuthLocation22;
+    })(HttpApiKeyAuthLocation3 || {});
+    var EndpointURLScheme = /* @__PURE__ */ ((EndpointURLScheme2) => {
+      EndpointURLScheme2["HTTP"] = "http";
+      EndpointURLScheme2["HTTPS"] = "https";
+      return EndpointURLScheme2;
+    })(EndpointURLScheme || {});
+    var AlgorithmId = /* @__PURE__ */ ((AlgorithmId2) => {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+      return AlgorithmId2;
+    })(AlgorithmId || {});
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "sha256",
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "md5",
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getDefaultClientConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig)
+      };
+    }, "getDefaultClientConfiguration");
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    var FieldPosition = /* @__PURE__ */ ((FieldPosition2) => {
+      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
+      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
+      return FieldPosition2;
+    })(FieldPosition || {});
+    var SMITHY_CONTEXT_KEY5 = "__smithy_context";
+    var IniSectionType = /* @__PURE__ */ ((IniSectionType2) => {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+      return IniSectionType2;
+    })(IniSectionType || {});
+    var RequestHandlerProtocol = /* @__PURE__ */ ((RequestHandlerProtocol2) => {
+      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
+      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
+      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
+      return RequestHandlerProtocol2;
+    })(RequestHandlerProtocol || {});
+  }
+});
+
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
 var require_slurpFile3 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports2) {
@@ -19085,11 +19285,7 @@ var require_slurpFile3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs40 = __commonJS({
-========
-var require_dist_cjs56 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs59 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -19127,29 +19323,17 @@ var require_dist_cjs56 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath3(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile3(), module2.exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_types5 = require_dist_cjs();
-========
-    var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_types7 = require_dist_cjs58();
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -19169,11 +19353,7 @@ var require_dist_cjs56 = __commonJS({
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const map = {};
-========
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -19186,11 +19366,7 @@ var require_dist_cjs56 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -19212,24 +19388,14 @@ var require_dist_cjs56 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile3();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -19259,11 +19425,7 @@ var require_dist_cjs56 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile3();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -19288,11 +19450,7 @@ var require_dist_cjs56 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs41 = __commonJS({
-========
-var require_dist_cjs57 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs60 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -19325,15 +19483,6 @@ var require_dist_cjs57 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -19341,29 +19490,19 @@ var require_dist_cjs57 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -19459,164 +19598,9 @@ var require_dist_cjs57 = __commonJS({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-// ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs42 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    __export2(src_exports, {
-      CredentialsProviderError: () => CredentialsProviderError,
-      ProviderError: () => ProviderError2,
-      TokenProviderError: () => TokenProviderError,
-      chain: () => chain,
-      fromStatic: () => fromStatic,
-      memoize: () => memoize
-    });
-    module2.exports = __toCommonJS2(src_exports);
-    var _ProviderError = class _ProviderError2 extends Error {
-      constructor(message, options = true) {
-        var _a;
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-          tryNextLink = options.tryNextLink ?? true;
-        }
-        super(message);
-        this.name = "ProviderError";
-        this.tryNextLink = tryNextLink;
-        Object.setPrototypeOf(this, _ProviderError2.prototype);
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-      }
-      /**
-       * @deprecated use new operator.
-       */
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-      }
-    };
-    __name(_ProviderError, "ProviderError");
-    var ProviderError2 = _ProviderError;
-    var _CredentialsProviderError = class _CredentialsProviderError2 extends ProviderError2 {
-      /**
-       * @override
-       */
-      constructor(message, options = true) {
-        super(message, options);
-        this.name = "CredentialsProviderError";
-        Object.setPrototypeOf(this, _CredentialsProviderError2.prototype);
-      }
-    };
-    __name(_CredentialsProviderError, "CredentialsProviderError");
-    var CredentialsProviderError = _CredentialsProviderError;
-    var _TokenProviderError = class _TokenProviderError2 extends ProviderError2 {
-      /**
-       * @override
-       */
-      constructor(message, options = true) {
-        super(message, options);
-        this.name = "TokenProviderError";
-        Object.setPrototypeOf(this, _TokenProviderError2.prototype);
-      }
-    };
-    __name(_TokenProviderError, "TokenProviderError");
-    var TokenProviderError = _TokenProviderError;
-    var chain = /* @__PURE__ */ __name((...providers) => async () => {
-      if (providers.length === 0) {
-        throw new ProviderError2("No providers in chain");
-      }
-      let lastProviderError;
-      for (const provider of providers) {
-        try {
-          const credentials = await provider();
-          return credentials;
-        } catch (err) {
-          lastProviderError = err;
-          if (err == null ? void 0 : err.tryNextLink) {
-            continue;
-          }
-          throw err;
-        }
-      }
-      throw lastProviderError;
-    }, "chain");
-    var fromStatic = /* @__PURE__ */ __name((staticValue) => () => Promise.resolve(staticValue), "fromStatic");
-    var memoize = /* @__PURE__ */ __name((provider, isExpired, requiresRefresh) => {
-      let resolved;
-      let pending;
-      let hasResult;
-      let isConstant = false;
-      const coalesceProvider = /* @__PURE__ */ __name(async () => {
-        if (!pending) {
-          pending = provider();
-        }
-        try {
-          resolved = await pending;
-          hasResult = true;
-          isConstant = false;
-        } finally {
-          pending = void 0;
-        }
-        return resolved;
-      }, "coalesceProvider");
-      if (isExpired === void 0) {
-        return async (options) => {
-          if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
-            resolved = await coalesceProvider();
-          }
-          return resolved;
-        };
-      }
-      return async (options) => {
-        if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
-          resolved = await coalesceProvider();
-        }
-        if (isConstant) {
-          return resolved;
-        }
-        if (requiresRefresh && !requiresRefresh(resolved)) {
-          isConstant = true;
-          return resolved;
-        }
-        if (isExpired(resolved)) {
-          await coalesceProvider();
-          return resolved;
-        }
-        return resolved;
-      };
-    }, "memoize");
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs43 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
-========
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs58 = __commonJS({
+var require_dist_cjs61 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -19651,11 +19635,7 @@ var require_dist_cjs58 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_property_provider2 = require_dist_cjs42();
-========
-    var import_property_provider2 = require_dist_cjs57();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_property_provider2 = require_dist_cjs60();
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -19800,8 +19780,8 @@ var require_dist_cjs58 = __commonJS({
     };
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
-    var import_node_config_provider = require_dist_cjs26();
-    var import_url_parser = require_dist_cjs29();
+    var import_node_config_provider = require_dist_cjs27();
+    var import_url_parser = require_dist_cjs31();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -20015,12 +19995,8 @@ For more information, please visit: ` + STATIC_STABILITY_DOC_URL
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-// ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
-========
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs59 = __commonJS({
+var require_dist_cjs62 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2) {
     "use strict";
     var types = require_dist_cjs();
@@ -20178,7 +20154,7 @@ var require_dist_cjs59 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-uri-escape/dist-cjs/index.js
-var require_dist_cjs60 = __commonJS({
+var require_dist_cjs63 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2) {
     "use strict";
     var escapeUri = (uri) => encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
@@ -20190,10 +20166,10 @@ var require_dist_cjs60 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs61 = __commonJS({
+var require_dist_cjs64 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilUriEscape = require_dist_cjs60();
+    var utilUriEscape = require_dist_cjs63();
     function buildQueryString(query) {
       const parts = [];
       for (let key of Object.keys(query).sort()) {
@@ -20218,11 +20194,11 @@ var require_dist_cjs61 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs62 = __commonJS({
+var require_dist_cjs65 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2) {
     "use strict";
-    var protocolHttp = require_dist_cjs59();
-    var querystringBuilder = require_dist_cjs61();
+    var protocolHttp = require_dist_cjs62();
+    var querystringBuilder = require_dist_cjs64();
     var http = require("http");
     var https2 = require("https");
     var stream = require("stream");
@@ -20919,8 +20895,7 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs63 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs66 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -20953,15 +20928,6 @@ var require_dist_cjs63 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -20969,29 +20935,19 @@ var require_dist_cjs63 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -21093,11 +21049,7 @@ var require_checkUrl = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.checkUrl = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var property_provider_1 = require_dist_cjs44();
-========
-    var property_provider_1 = require_dist_cjs63();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var property_provider_1 = require_dist_cjs66();
     var ECS_CONTAINER_HOST = "169.254.170.2";
     var EKS_CONTAINER_HOST_IPv4 = "169.254.170.23";
     var EKS_CONTAINER_HOST_IPv6 = "[fd00:ec2::23]";
@@ -21135,7 +21087,7 @@ var require_checkUrl = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs64 = __commonJS({
+var require_dist_cjs67 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2) {
     "use strict";
     var getAllAliases = (name, aliases) => {
@@ -21406,7 +21358,7 @@ var require_dist_cjs64 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/is-array-buffer/dist-cjs/index.js
-var require_dist_cjs65 = __commonJS({
+var require_dist_cjs68 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2) {
     "use strict";
     var isArrayBuffer = (arg) => typeof ArrayBuffer === "function" && arg instanceof ArrayBuffer || Object.prototype.toString.call(arg) === "[object ArrayBuffer]";
@@ -21415,10 +21367,10 @@ var require_dist_cjs65 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-buffer-from/dist-cjs/index.js
-var require_dist_cjs66 = __commonJS({
+var require_dist_cjs69 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2) {
     "use strict";
-    var isArrayBuffer = require_dist_cjs65();
+    var isArrayBuffer = require_dist_cjs68();
     var buffer = require("buffer");
     var fromArrayBuffer = (input, offset = 0, length = input.byteLength - offset) => {
       if (!isArrayBuffer.isArrayBuffer(input)) {
@@ -21443,7 +21395,7 @@ var require_fromBase643 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs66();
+    var util_buffer_from_1 = require_dist_cjs69();
     var BASE64_REGEX = /^[A-Za-z0-9+/]*={0,2}$/;
     var fromBase644 = (input) => {
       if (input.length * 3 % 4 !== 0) {
@@ -21460,10 +21412,10 @@ var require_fromBase643 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-utf8/dist-cjs/index.js
-var require_dist_cjs67 = __commonJS({
+var require_dist_cjs70 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilBufferFrom = require_dist_cjs66();
+    var utilBufferFrom = require_dist_cjs69();
     var fromUtf85 = (input) => {
       const buf = utilBufferFrom.fromString(input, "utf8");
       return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
@@ -21498,8 +21450,8 @@ var require_toBase643 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs66();
-    var util_utf8_1 = require_dist_cjs67();
+    var util_buffer_from_1 = require_dist_cjs69();
+    var util_utf8_1 = require_dist_cjs70();
     var toBase644 = (_input) => {
       let input;
       if (typeof _input === "string") {
@@ -21517,7 +21469,7 @@ var require_toBase643 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-base64/dist-cjs/index.js
-var require_dist_cjs68 = __commonJS({
+var require_dist_cjs71 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2) {
     "use strict";
     var fromBase644 = require_fromBase643();
@@ -21547,7 +21499,7 @@ var require_ChecksumStream3 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.ChecksumStream = void 0;
-    var util_base64_1 = require_dist_cjs68();
+    var util_base64_1 = require_dist_cjs71();
     var stream_1 = require("stream");
     var ChecksumStream2 = class extends stream_1.Duplex {
       expectedChecksum;
@@ -21632,7 +21584,7 @@ var require_createChecksumStream_browser3 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.createChecksumStream = void 0;
-    var util_base64_1 = require_dist_cjs68();
+    var util_base64_1 = require_dist_cjs71();
     var stream_type_check_1 = require_stream_type_check3();
     var ChecksumStream_browser_1 = require_ChecksumStream_browser3();
     var createChecksumStream2 = ({ expectedChecksum, checksum, source, checksumSourceLocation, base64Encoder }) => {
@@ -22076,12 +22028,12 @@ var require_headStream3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js
-var require_dist_cjs69 = __commonJS({
+var require_dist_cjs72 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/fetch-http-handler/dist-cjs/index.js"(exports2) {
     "use strict";
-    var protocolHttp = require_dist_cjs59();
-    var querystringBuilder = require_dist_cjs61();
-    var utilBase64 = require_dist_cjs68();
+    var protocolHttp = require_dist_cjs62();
+    var querystringBuilder = require_dist_cjs64();
+    var utilBase64 = require_dist_cjs71();
     function createRequest(url2, requestOptions) {
       return new Request(url2, requestOptions);
     }
@@ -22291,7 +22243,7 @@ var require_dist_cjs69 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-hex-encoding/dist-cjs/index.js
-var require_dist_cjs70 = __commonJS({
+var require_dist_cjs73 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2) {
     "use strict";
     var SHORT_TO_HEX = {};
@@ -22337,10 +22289,10 @@ var require_sdk_stream_mixin_browser3 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var fetch_http_handler_1 = require_dist_cjs69();
-    var util_base64_1 = require_dist_cjs68();
-    var util_hex_encoding_1 = require_dist_cjs70();
-    var util_utf8_1 = require_dist_cjs67();
+    var fetch_http_handler_1 = require_dist_cjs72();
+    var util_base64_1 = require_dist_cjs71();
+    var util_hex_encoding_1 = require_dist_cjs73();
+    var util_utf8_1 = require_dist_cjs70();
     var stream_type_check_1 = require_stream_type_check3();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
     var sdkStreamMixin4 = (stream) => {
@@ -22404,8 +22356,8 @@ var require_sdk_stream_mixin3 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.sdkStreamMixin = void 0;
-    var node_http_handler_1 = require_dist_cjs62();
-    var util_buffer_from_1 = require_dist_cjs66();
+    var node_http_handler_1 = require_dist_cjs65();
+    var util_buffer_from_1 = require_dist_cjs69();
     var stream_1 = require("stream");
     var sdk_stream_mixin_browser_1 = require_sdk_stream_mixin_browser3();
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
@@ -22495,11 +22447,11 @@ var require_splitStream3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-stream/dist-cjs/index.js
-var require_dist_cjs71 = __commonJS({
+var require_dist_cjs74 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2) {
     "use strict";
-    var utilBase64 = require_dist_cjs68();
-    var utilUtf8 = require_dist_cjs67();
+    var utilBase64 = require_dist_cjs71();
+    var utilUtf8 = require_dist_cjs70();
     var ChecksumStream2 = require_ChecksumStream3();
     var createChecksumStream2 = require_createChecksumStream3();
     var createBufferedReadable = require_createBufferedReadable2();
@@ -22605,7 +22557,7 @@ var require_dist_cjs71 = __commonJS({
 var import_util_stream4, collectBody5;
 var init_collect_stream_body3 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/collect-stream-body.js"() {
-    import_util_stream4 = __toESM(require_dist_cjs71());
+    import_util_stream4 = __toESM(require_dist_cjs74());
     collectBody5 = async (streamBody = new Uint8Array(), context) => {
       if (streamBody instanceof Uint8Array) {
         return import_util_stream4.Uint8ArrayBlobAdapter.mutate(streamBody);
@@ -22644,7 +22596,7 @@ var init_deref2 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-middleware/dist-cjs/index.js
-var require_dist_cjs72 = __commonJS({
+var require_dist_cjs75 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2) {
     "use strict";
     var types = require_dist_cjs();
@@ -22678,8 +22630,8 @@ var init_operation2 = __esm({
 var import_protocol_http13, import_util_middleware5, schemaDeserializationMiddleware2, findHeader2;
 var init_schemaDeserializationMiddleware2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/middleware/schemaDeserializationMiddleware.js"() {
-    import_protocol_http13 = __toESM(require_dist_cjs59());
-    import_util_middleware5 = __toESM(require_dist_cjs72());
+    import_protocol_http13 = __toESM(require_dist_cjs62());
+    import_util_middleware5 = __toESM(require_dist_cjs75());
     init_operation2();
     schemaDeserializationMiddleware2 = (config) => (next, context) => async (args) => {
       const { response } = await next(args);
@@ -22746,7 +22698,7 @@ var init_schemaDeserializationMiddleware2 = __esm({
 var import_util_middleware6, schemaSerializationMiddleware2;
 var init_schemaSerializationMiddleware2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/middleware/schemaSerializationMiddleware.js"() {
-    import_util_middleware6 = __toESM(require_dist_cjs72());
+    import_util_middleware6 = __toESM(require_dist_cjs75());
     init_operation2();
     schemaSerializationMiddleware2 = (config) => (next, context) => async (args) => {
       const { operationSchema } = (0, import_util_middleware6.getSmithyContext)(context);
@@ -22828,7 +22780,7 @@ var init_ListSchema2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/schemas/ListSchema.js"() {
     init_Schema2();
     ListSchema2 = class _ListSchema extends Schema2 {
-      static symbol = Symbol.for("@smithy/lis");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/lis");
       name;
       traits;
       valueSchema;
@@ -22849,7 +22801,7 @@ var init_MapSchema2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/schemas/MapSchema.js"() {
     init_Schema2();
     MapSchema2 = class _MapSchema extends Schema2 {
-      static symbol = Symbol.for("@smithy/map");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/map");
       name;
       traits;
       keySchema;
@@ -22872,7 +22824,7 @@ var init_OperationSchema2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/schemas/OperationSchema.js"() {
     init_Schema2();
     OperationSchema2 = class _OperationSchema extends Schema2 {
-      static symbol = Symbol.for("@smithy/ope");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/ope");
       name;
       traits;
       input;
@@ -22895,7 +22847,7 @@ var init_StructureSchema2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/schemas/StructureSchema.js"() {
     init_Schema2();
     StructureSchema2 = class _StructureSchema extends Schema2 {
-      static symbol = Symbol.for("@smithy/str");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/str");
       name;
       traits;
       memberNames;
@@ -22919,7 +22871,7 @@ var init_ErrorSchema2 = __esm({
     init_Schema2();
     init_StructureSchema2();
     ErrorSchema2 = class _ErrorSchema extends StructureSchema2 {
-      static symbol = Symbol.for("@smithy/err");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/err");
       ctor;
       symbol = _ErrorSchema.symbol;
     };
@@ -22979,12 +22931,12 @@ var init_NormalizedSchema2 = __esm({
     init_deref2();
     init_translateTraits2();
     anno2 = {
-      it: Symbol.for("@smithy/nor-struct-it")
+      it: /* @__PURE__ */ Symbol.for("@smithy/nor-struct-it")
     };
     NormalizedSchema2 = class _NormalizedSchema {
       ref;
       memberName;
-      static symbol = Symbol.for("@smithy/nor");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/nor");
       symbol = _NormalizedSchema.symbol;
       name;
       schema;
@@ -23224,7 +23176,7 @@ var init_SimpleSchema2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/schema/schemas/SimpleSchema.js"() {
     init_Schema2();
     SimpleSchema2 = class _SimpleSchema extends Schema2 {
-      static symbol = Symbol.for("@smithy/sim");
+      static symbol = /* @__PURE__ */ Symbol.for("@smithy/sim");
       name;
       schemaRef;
       traits;
@@ -23822,7 +23774,7 @@ var init_date_utils2 = __esm({
 var import_uuid2;
 var init_generateIdempotencyToken2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/serde/generateIdempotencyToken.js"() {
-    import_uuid2 = __toESM(require_dist_cjs49());
+    import_uuid2 = __toESM(require_dist_cjs51());
   }
 });
 
@@ -24158,7 +24110,7 @@ var init_SerdeContext2 = __esm({
 var import_util_utf84, EventStreamSerde2;
 var init_EventStreamSerde2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/event-streams/EventStreamSerde.js"() {
-    import_util_utf84 = __toESM(require_dist_cjs67());
+    import_util_utf84 = __toESM(require_dist_cjs70());
     EventStreamSerde2 = class {
       marshaller;
       serializer;
@@ -24178,7 +24130,7 @@ var init_EventStreamSerde2 = __esm({
         const unionSchema = requestSchema.getMemberSchema(eventStreamMember);
         const serializer = this.serializer;
         const defaultContentType = this.defaultContentType;
-        const initialRequestMarker = Symbol("initialRequestMarker");
+        const initialRequestMarker = /* @__PURE__ */ Symbol("initialRequestMarker");
         const eventStreamIterable = {
           async *[Symbol.asyncIterator]() {
             if (initialRequest) {
@@ -24228,7 +24180,7 @@ var init_EventStreamSerde2 = __esm({
         const eventStreamMember = responseSchema.getEventStreamMember();
         const unionSchema = responseSchema.getMemberSchema(eventStreamMember);
         const memberSchemas = unionSchema.getMemberSchemas();
-        const initialResponseMarker = Symbol("initialResponseMarker");
+        const initialResponseMarker = /* @__PURE__ */ Symbol("initialResponseMarker");
         const asyncIterable = marshaller.deserialize(response.body, async (event) => {
           const unionMember = Object.keys(event).find((key) => {
             return key !== "__type";
@@ -24405,7 +24357,7 @@ var import_protocol_http14, HttpProtocol2;
 var init_HttpProtocol2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/HttpProtocol.js"() {
     init_schema2();
-    import_protocol_http14 = __toESM(require_dist_cjs59());
+    import_protocol_http14 = __toESM(require_dist_cjs62());
     init_SerdeContext2();
     HttpProtocol2 = class extends SerdeContext2 {
       options;
@@ -24537,8 +24489,8 @@ var init_HttpBindingProtocol2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/HttpBindingProtocol.js"() {
     init_schema2();
     init_serde2();
-    import_protocol_http15 = __toESM(require_dist_cjs59());
-    import_util_stream5 = __toESM(require_dist_cjs71());
+    import_protocol_http15 = __toESM(require_dist_cjs62());
+    import_util_stream5 = __toESM(require_dist_cjs74());
     init_collect_stream_body3();
     init_extended_encode_uri_component3();
     init_HttpProtocol2();
@@ -24793,7 +24745,7 @@ var import_protocol_http16, RpcProtocol2;
 var init_RpcProtocol2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/RpcProtocol.js"() {
     init_schema2();
-    import_protocol_http16 = __toESM(require_dist_cjs59());
+    import_protocol_http16 = __toESM(require_dist_cjs62());
     init_collect_stream_body3();
     init_HttpProtocol2();
     RpcProtocol2 = class extends HttpProtocol2 {
@@ -24914,7 +24866,7 @@ function requestBuilder3(input, context) {
 var import_protocol_http17, RequestBuilder3;
 var init_requestBuilder5 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/requestBuilder.js"() {
-    import_protocol_http17 = __toESM(require_dist_cjs59());
+    import_protocol_http17 = __toESM(require_dist_cjs62());
     init_resolve_path3();
     RequestBuilder3 = class {
       input;
@@ -25005,8 +24957,8 @@ var init_FromStringShapeDeserializer2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/serde/FromStringShapeDeserializer.js"() {
     init_schema2();
     init_serde2();
-    import_util_base643 = __toESM(require_dist_cjs68());
-    import_util_utf85 = __toESM(require_dist_cjs67());
+    import_util_base643 = __toESM(require_dist_cjs71());
+    import_util_utf85 = __toESM(require_dist_cjs70());
     init_SerdeContext2();
     init_determineTimestampFormat2();
     FromStringShapeDeserializer2 = class extends SerdeContext2 {
@@ -25077,7 +25029,7 @@ var import_util_utf86, HttpInterceptingShapeDeserializer2;
 var init_HttpInterceptingShapeDeserializer2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/serde/HttpInterceptingShapeDeserializer.js"() {
     init_schema2();
-    import_util_utf86 = __toESM(require_dist_cjs67());
+    import_util_utf86 = __toESM(require_dist_cjs70());
     init_SerdeContext2();
     init_FromStringShapeDeserializer2();
     HttpInterceptingShapeDeserializer2 = class extends SerdeContext2 {
@@ -25126,7 +25078,7 @@ var init_ToStringShapeSerializer2 = __esm({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/core/dist-es/submodules/protocols/serde/ToStringShapeSerializer.js"() {
     init_schema2();
     init_serde2();
-    import_util_base644 = __toESM(require_dist_cjs68());
+    import_util_base644 = __toESM(require_dist_cjs71());
     init_SerdeContext2();
     init_determineTimestampFormat2();
     ToStringShapeSerializer2 = class extends SerdeContext2 {
@@ -25294,10 +25246,10 @@ var init_protocols4 = __esm({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs73 = __commonJS({
+var require_dist_cjs76 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2) {
     "use strict";
-    var middlewareStack = require_dist_cjs64();
+    var middlewareStack = require_dist_cjs67();
     var protocols = (init_protocols4(), __toCommonJS(protocols_exports3));
     var types = require_dist_cjs();
     var schema = (init_schema2(), __toCommonJS(schema_exports2));
@@ -25873,17 +25825,10 @@ var require_requestHelpers = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCredentials = exports2.createGetRequest = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var property_provider_1 = require_dist_cjs44();
-    var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_stream_1 = require_dist_cjs22();
-========
-    var property_provider_1 = require_dist_cjs63();
-    var protocol_http_1 = require_dist_cjs59();
-    var smithy_client_1 = require_dist_cjs73();
-    var util_stream_1 = require_dist_cjs71();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var property_provider_1 = require_dist_cjs66();
+    var protocol_http_1 = require_dist_cjs62();
+    var smithy_client_1 = require_dist_cjs76();
+    var util_stream_1 = require_dist_cjs74();
     function createGetRequest(url2) {
       return new protocol_http_1.HttpRequest({
         protocol: url2.protocol,
@@ -25959,13 +25904,8 @@ var require_fromHttp = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromHttp = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var node_http_handler_1 = require_dist_cjs19();
-    var property_provider_1 = require_dist_cjs44();
-========
-    var node_http_handler_1 = require_dist_cjs62();
-    var property_provider_1 = require_dist_cjs63();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var node_http_handler_1 = require_dist_cjs65();
+    var property_provider_1 = require_dist_cjs66();
     var promises_1 = tslib_1.__importDefault(require("fs/promises"));
     var checkUrl_1 = require_checkUrl();
     var requestHelpers_1 = require_requestHelpers();
@@ -26025,11 +25965,7 @@ Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs45 = __commonJS({
-========
-var require_dist_cjs74 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs77 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -26219,11 +26155,7 @@ var require_package2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs46 = __commonJS({
-========
-var require_dist_cjs75 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs78 = __commonJS({
   "../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -26252,7 +26184,7 @@ var require_dist_cjs75 = __commonJS({
       defaultUserAgent: () => defaultUserAgent
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_node_config_provider = require_dist_cjs26();
+    var import_node_config_provider = require_dist_cjs27();
     var import_os = require("os");
     var import_process = require("process");
     var crtAvailability = {
@@ -26307,11 +26239,7 @@ var require_dist_cjs75 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/hash-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs47 = __commonJS({
-========
-var require_dist_cjs76 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs79 = __commonJS({
   "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -26375,11 +26303,7 @@ var require_dist_cjs76 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs48 = __commonJS({
-========
-var require_dist_cjs77 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs80 = __commonJS({
   "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -26490,8 +26414,8 @@ var require_runtimeConfig_shared = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs34();
-    var url_parser_1 = require_dist_cjs29();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs31();
     var util_base64_1 = require_dist_cjs16();
     var util_utf8_1 = require_dist_cjs15();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider2();
@@ -26529,11 +26453,7 @@ var require_runtimeConfig_shared = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs49 = __commonJS({
-========
-var require_dist_cjs78 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs81 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -26566,15 +26486,6 @@ var require_dist_cjs78 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -26582,29 +26493,19 @@ var require_dist_cjs78 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -26700,12 +26601,8 @@ var require_dist_cjs78 = __commonJS({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
-========
 // ../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs79 = __commonJS({
+var require_dist_cjs82 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -26741,7 +26638,7 @@ var require_dist_cjs79 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-    var import_property_provider2 = require_dist_cjs78();
+    var import_property_provider2 = require_dist_cjs81();
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -26886,8 +26783,8 @@ var require_dist_cjs79 = __commonJS({
     };
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
-    var import_node_config_provider = require_dist_cjs26();
-    var import_url_parser = require_dist_cjs29();
+    var import_node_config_provider = require_dist_cjs27();
+    var import_url_parser = require_dist_cjs31();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -27102,8 +26999,7 @@ For more information, please visit: ` + STATIC_STABILITY_DOC_URL
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs80 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs83 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
     var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
@@ -27139,12 +27035,8 @@ var require_dist_cjs80 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_config_resolver = require_dist_cjs11();
-    var import_node_config_provider = require_dist_cjs26();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_property_provider2 = require_dist_cjs49();
-========
-    var import_property_provider2 = require_dist_cjs78();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_node_config_provider = require_dist_cjs27();
+    var import_property_provider2 = require_dist_cjs81();
     var AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
     var AWS_REGION_ENV = "AWS_REGION";
     var AWS_DEFAULT_REGION_ENV = "AWS_DEFAULT_REGION";
@@ -27205,11 +27097,7 @@ var require_dist_cjs80 = __commonJS({
       }
       if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-========
-          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs79()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs82()));
           const endpoint = await getInstanceMetadataEndpoint();
           return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
@@ -27227,34 +27115,19 @@ var require_runtimeConfig = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var util_user_agent_node_1 = require_dist_cjs46();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs47();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs48();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs50();
-========
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
-    var util_user_agent_node_1 = require_dist_cjs75();
+    var util_user_agent_node_1 = require_dist_cjs78();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs76();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
+    var hash_node_1 = require_dist_cjs79();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs77();
-    var util_retry_1 = require_dist_cjs32();
+    var util_body_length_node_1 = require_dist_cjs80();
+    var util_retry_1 = require_dist_cjs34();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs80();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var smithy_client_2 = require_dist_cjs34();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs83();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -27286,11 +27159,7 @@ var require_runtimeConfig = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs51 = __commonJS({
-========
-var require_dist_cjs81 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs84 = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -27388,11 +27257,7 @@ var require_dist_cjs81 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs52 = __commonJS({
-========
-var require_dist_cjs82 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs85 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -27444,8 +27309,8 @@ var require_dist_cjs82 = __commonJS({
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs23();
-    var import_middleware_endpoint = require_dist_cjs30();
-    var import_middleware_retry = require_dist_cjs35();
+    var import_middleware_endpoint = require_dist_cjs32();
+    var import_middleware_retry = require_dist_cjs37();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider2();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -27462,14 +27327,9 @@ var require_dist_cjs82 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_region_config_resolver = require_dist_cjs51();
-    var import_protocol_http8 = require_dist_cjs2();
-========
-    var import_region_config_resolver = require_dist_cjs81();
+    var import_region_config_resolver = require_dist_cjs84();
     var import_protocol_http18 = require_dist_cjs2();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var import_smithy_client4 = require_dist_cjs34();
+    var import_smithy_client4 = require_dist_cjs36();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -28175,8 +28035,8 @@ var require_runtimeConfig_shared2 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs34();
-    var url_parser_1 = require_dist_cjs29();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs31();
     var util_base64_1 = require_dist_cjs16();
     var util_utf8_1 = require_dist_cjs15();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider3();
@@ -28221,36 +28081,20 @@ var require_runtimeConfig2 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package3());
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs69();
-    var util_user_agent_node_1 = require_dist_cjs46();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs47();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs48();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs50();
-========
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs105();
-    var util_user_agent_node_1 = require_dist_cjs75();
+    var credential_provider_node_1 = require_dist_cjs108();
+    var util_user_agent_node_1 = require_dist_cjs78();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs76();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
+    var hash_node_1 = require_dist_cjs79();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs77();
-    var util_retry_1 = require_dist_cjs32();
+    var util_body_length_node_1 = require_dist_cjs80();
+    var util_retry_1 = require_dist_cjs34();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs80();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var smithy_client_2 = require_dist_cjs34();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs83();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -28283,11 +28127,7 @@ var require_runtimeConfig2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs53 = __commonJS({
-========
-var require_dist_cjs83 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs86 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -28347,8 +28187,8 @@ var require_dist_cjs83 = __commonJS({
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs23();
-    var import_middleware_endpoint = require_dist_cjs30();
-    var import_middleware_retry = require_dist_cjs35();
+    var import_middleware_endpoint = require_dist_cjs32();
+    var import_middleware_retry = require_dist_cjs37();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider3();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -28365,14 +28205,9 @@ var require_dist_cjs83 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig2();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_region_config_resolver = require_dist_cjs51();
-    var import_protocol_http8 = require_dist_cjs2();
-========
-    var import_region_config_resolver = require_dist_cjs81();
+    var import_region_config_resolver = require_dist_cjs84();
     var import_protocol_http18 = require_dist_cjs2();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var import_smithy_client4 = require_dist_cjs34();
+    var import_smithy_client4 = require_dist_cjs36();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -29269,11 +29104,7 @@ var require_dist_cjs83 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs54 = __commonJS({
-========
-var require_dist_cjs84 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs87 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -29306,15 +29137,6 @@ var require_dist_cjs84 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -29322,29 +29144,19 @@ var require_dist_cjs84 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -29528,11 +29340,7 @@ var require_slurpFile4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs55 = __commonJS({
-========
-var require_dist_cjs85 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs88 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -29570,29 +29378,17 @@ var require_dist_cjs85 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath4(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile4(), module2.exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_types5 = require_dist_cjs();
-========
     var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -29612,11 +29408,7 @@ var require_dist_cjs85 = __commonJS({
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const map = {};
-========
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -29629,11 +29421,7 @@ var require_dist_cjs85 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -29655,24 +29443,14 @@ var require_dist_cjs85 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile4();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -29702,11 +29480,7 @@ var require_dist_cjs85 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile4();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -29731,11 +29505,7 @@ var require_dist_cjs85 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs56 = __commonJS({
-========
-var require_dist_cjs86 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs89 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -29777,11 +29547,7 @@ var require_dist_cjs86 = __commonJS({
     var REFRESH_MESSAGE = `To refresh this SSO session run 'aws sso login' with the corresponding profile.`;
     var ssoOidcClientsHash = {};
     var getSsoOidcClient = /* @__PURE__ */ __name(async (ssoRegion) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs53()));
-========
-      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs83()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs86()));
       if (ssoOidcClientsHash[ssoRegion]) {
         return ssoOidcClientsHash[ssoRegion];
       }
@@ -29790,11 +29556,7 @@ var require_dist_cjs86 = __commonJS({
       return ssoOidcClient;
     }, "getSsoOidcClient");
     var getNewSsoOidcToken = /* @__PURE__ */ __name(async (ssoToken, ssoRegion) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs53()));
-========
-      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs83()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs86()));
       const ssoOidcClient = await getSsoOidcClient(ssoRegion);
       return ssoOidcClient.send(
         new CreateTokenCommand({
@@ -29805,11 +29567,7 @@ var require_dist_cjs86 = __commonJS({
         })
       );
     }, "getNewSsoOidcToken");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_property_provider2 = require_dist_cjs54();
-========
-    var import_property_provider2 = require_dist_cjs84();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_property_provider2 = require_dist_cjs87();
     var validateTokenExpiry = /* @__PURE__ */ __name((token) => {
       if (token.expiration && token.expiration.getTime() < Date.now()) {
         throw new import_property_provider2.TokenProviderError(`Token is expired. ${REFRESH_MESSAGE}`, false);
@@ -29823,11 +29581,7 @@ var require_dist_cjs86 = __commonJS({
         );
       }
     }, "validateTokenKey");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_shared_ini_file_loader = require_dist_cjs55();
-========
-    var import_shared_ini_file_loader = require_dist_cjs85();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_shared_ini_file_loader = require_dist_cjs88();
     var import_fs = require("fs");
     var { writeFile } = import_fs.promises;
     var writeSSOTokenToFile = /* @__PURE__ */ __name((id, ssoToken) => {
@@ -29931,11 +29685,7 @@ var require_dist_cjs86 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs57 = __commonJS({
-========
-var require_dist_cjs87 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs90 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -29968,15 +29718,6 @@ var require_dist_cjs87 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -29984,29 +29725,19 @@ var require_dist_cjs87 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -30190,11 +29921,7 @@ var require_slurpFile5 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs58 = __commonJS({
-========
-var require_dist_cjs88 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs91 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -30232,29 +29959,17 @@ var require_dist_cjs88 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath5(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile5(), module2.exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_types5 = require_dist_cjs();
-========
     var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -30274,11 +29989,7 @@ var require_dist_cjs88 = __commonJS({
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const map = {};
-========
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -30291,11 +30002,7 @@ var require_dist_cjs88 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -30317,24 +30024,14 @@ var require_dist_cjs88 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile5();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -30364,11 +30061,7 @@ var require_dist_cjs88 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile5();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -30393,11 +30086,7 @@ var require_dist_cjs88 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs59 = __commonJS({
-========
-var require_dist_cjs89 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs92 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -30430,11 +30119,7 @@ var require_dist_cjs89 = __commonJS({
     var init_loadSso = __esm2({
       "src/loadSso.ts"() {
         "use strict";
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        import_client_sso = require_dist_cjs52();
-========
-        import_client_sso = require_dist_cjs82();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+        import_client_sso = require_dist_cjs85();
       }
     });
     var src_exports = {};
@@ -30445,15 +30130,9 @@ var require_dist_cjs89 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var isSsoProfile = /* @__PURE__ */ __name((arg) => arg && (typeof arg.sso_start_url === "string" || typeof arg.sso_account_id === "string" || typeof arg.sso_session === "string" || typeof arg.sso_region === "string" || typeof arg.sso_role_name === "string"), "isSsoProfile");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_token_providers = require_dist_cjs56();
-    var import_property_provider2 = require_dist_cjs57();
-    var import_shared_ini_file_loader = require_dist_cjs58();
-========
-    var import_token_providers = require_dist_cjs86();
-    var import_property_provider2 = require_dist_cjs87();
-    var import_shared_ini_file_loader = require_dist_cjs88();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_token_providers = require_dist_cjs89();
+    var import_property_provider2 = require_dist_cjs90();
+    var import_shared_ini_file_loader = require_dist_cjs91();
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
     var resolveSSOCredentials = /* @__PURE__ */ __name(async ({
       ssoStartUrl,
@@ -30709,11 +30388,7 @@ var require_slurpFile6 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs60 = __commonJS({
-========
-var require_dist_cjs90 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs93 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -30751,29 +30426,17 @@ var require_dist_cjs90 = __commonJS({
     var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
     __reExport(src_exports, require_getSSOTokenFilepath6(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile6(), module2.exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_types5 = require_dist_cjs();
-========
     var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -30793,11 +30456,7 @@ var require_dist_cjs90 = __commonJS({
     var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const map = {};
-========
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -30810,11 +30469,7 @@ var require_dist_cjs90 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -30836,24 +30491,14 @@ var require_dist_cjs90 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile6();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -30883,11 +30528,7 @@ var require_dist_cjs90 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile6();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -30912,11 +30553,7 @@ var require_dist_cjs90 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs61 = __commonJS({
-========
-var require_dist_cjs91 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs94 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -30949,15 +30586,6 @@ var require_dist_cjs91 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -30965,29 +30593,19 @@ var require_dist_cjs91 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -31083,10 +30701,8 @@ var require_dist_cjs91 = __commonJS({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-========
 // ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs92 = __commonJS({
+var require_dist_cjs95 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -31328,7 +30944,7 @@ var require_readFile = __commonJS({
 });
 
 // ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs93 = __commonJS({
+var require_dist_cjs96 = __commonJS({
   "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2) {
     "use strict";
     var getHomeDir2 = require_getHomeDir7();
@@ -31506,11 +31122,11 @@ var require_dist_cjs93 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs94 = __commonJS({
+var require_dist_cjs97 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2) {
     "use strict";
-    var propertyProvider = require_dist_cjs92();
-    var sharedIniFileLoader = require_dist_cjs93();
+    var propertyProvider = require_dist_cjs95();
+    var sharedIniFileLoader = require_dist_cjs96();
     function getSelectorName(functionString) {
       try {
         const constants = new Set(Array.from(functionString.match(/([A-Z_]){3,}/g) ?? []));
@@ -31562,7 +31178,7 @@ var require_dist_cjs94 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs95 = __commonJS({
+var require_dist_cjs98 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2) {
     "use strict";
     function parseQueryString(querystring) {
@@ -31591,10 +31207,10 @@ var require_dist_cjs95 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs96 = __commonJS({
+var require_dist_cjs99 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2) {
     "use strict";
-    var querystringParser = require_dist_cjs95();
+    var querystringParser = require_dist_cjs98();
     var parseUrl = (url2) => {
       if (typeof url2 === "string") {
         return parseUrl(new URL(url2));
@@ -31617,7 +31233,7 @@ var require_dist_cjs96 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs97 = __commonJS({
+var require_dist_cjs100 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -31653,7 +31269,7 @@ var require_dist_cjs97 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-    var import_property_provider2 = require_dist_cjs92();
+    var import_property_provider2 = require_dist_cjs95();
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -31798,8 +31414,8 @@ var require_dist_cjs97 = __commonJS({
     };
     __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
-    var import_node_config_provider = require_dist_cjs94();
-    var import_url_parser = require_dist_cjs96();
+    var import_node_config_provider = require_dist_cjs97();
+    var import_url_parser = require_dist_cjs99();
     var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
@@ -32013,7 +31629,6 @@ For more information, please visit: ` + STATIC_STABILITY_DOC_URL
   }
 });
 
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/auth/httpAuthSchemeProvider.js
 var require_httpAuthSchemeProvider4 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/auth/httpAuthSchemeProvider.js"(exports2) {
@@ -32295,8 +31910,8 @@ var require_runtimeConfig_shared3 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var smithy_client_1 = require_dist_cjs34();
-    var url_parser_1 = require_dist_cjs29();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs31();
     var util_base64_1 = require_dist_cjs16();
     var util_utf8_1 = require_dist_cjs15();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider4();
@@ -32341,38 +31956,21 @@ var require_runtimeConfig3 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package4());
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs69();
-    var util_user_agent_node_1 = require_dist_cjs46();
-    var config_resolver_1 = require_dist_cjs11();
-    var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var hash_node_1 = require_dist_cjs47();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs48();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs50();
-========
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs105();
-    var util_user_agent_node_1 = require_dist_cjs75();
+    var credential_provider_node_1 = require_dist_cjs108();
+    var util_user_agent_node_1 = require_dist_cjs78();
     var config_resolver_1 = require_dist_cjs11();
     var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var hash_node_1 = require_dist_cjs76();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
+    var hash_node_1 = require_dist_cjs79();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs77();
-    var util_retry_1 = require_dist_cjs32();
+    var util_body_length_node_1 = require_dist_cjs80();
+    var util_retry_1 = require_dist_cjs34();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs80();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var smithy_client_2 = require_dist_cjs34();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs83();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -32470,13 +32068,9 @@ var require_runtimeExtensions = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveRuntimeExtensions = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var region_config_resolver_1 = require_dist_cjs51();
-========
-    var region_config_resolver_1 = require_dist_cjs81();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var region_config_resolver_1 = require_dist_cjs84();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs34();
+    var smithy_client_1 = require_dist_cjs36();
     var httpAuthExtensionConfiguration_1 = require_httpAuthExtensionConfiguration();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
@@ -32512,9 +32106,9 @@ var require_STSClient = __commonJS({
     var config_resolver_1 = require_dist_cjs11();
     var core_1 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var middleware_content_length_1 = require_dist_cjs23();
-    var middleware_endpoint_1 = require_dist_cjs30();
-    var middleware_retry_1 = require_dist_cjs35();
-    var smithy_client_1 = require_dist_cjs34();
+    var middleware_endpoint_1 = require_dist_cjs32();
+    var middleware_retry_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports2, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -32558,11 +32152,7 @@ var require_STSClient = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs62 = __commonJS({
-========
-var require_dist_cjs98 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs101 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -32619,14 +32209,10 @@ var require_dist_cjs98 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     __reExport(src_exports, require_STSClient(), module2.exports);
-    var import_middleware_endpoint = require_dist_cjs30();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_middleware_serde2 = require_dist_cjs12();
-========
+    var import_middleware_endpoint = require_dist_cjs32();
     var import_middleware_serde3 = require_dist_cjs12();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_EndpointParameters = require_EndpointParameters();
-    var import_smithy_client4 = require_dist_cjs34();
+    var import_smithy_client4 = require_dist_cjs36();
     var _STSServiceException = class _STSServiceException2 extends import_smithy_client4.ServiceException {
       /**
        * @internal
@@ -33938,11 +33524,7 @@ var require_dist_cjs98 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_getHomeDir7 = __commonJS({
-========
 var require_getHomeDir8 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -33974,22 +33556,14 @@ var require_getHomeDir8 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_getSSOTokenFilepath7 = __commonJS({
-========
 var require_getSSOTokenFilepath8 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getSSOTokenFilepath = void 0;
     var crypto_1 = require("crypto");
     var path_1 = require("path");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getHomeDir_1 = require_getHomeDir7();
-========
     var getHomeDir_1 = require_getHomeDir8();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var getSSOTokenFilepath2 = (id) => {
       const hasher = (0, crypto_1.createHash)("sha1");
       const cacheName = hasher.update(id).digest("hex");
@@ -34000,21 +33574,13 @@ var require_getSSOTokenFilepath8 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_getSSOTokenFromFile7 = __commonJS({
-========
 var require_getSSOTokenFromFile8 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getSSOTokenFromFile = void 0;
     var fs_1 = require("fs");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath7();
-========
     var getSSOTokenFilepath_1 = require_getSSOTokenFilepath8();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var { readFile } = fs_1.promises;
     var getSSOTokenFromFile2 = async (id) => {
       const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
@@ -34045,11 +33611,7 @@ var require_slurpFile7 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs63 = __commonJS({
-========
-var require_dist_cjs99 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs102 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -34081,15 +33643,6 @@ var require_dist_cjs99 = __commonJS({
       parseKnownFiles: () => parseKnownFiles
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    __reExport(src_exports, require_getHomeDir7(), module2.exports);
-    var ENV_PROFILE = "AWS_PROFILE";
-    var DEFAULT_PROFILE = "default";
-    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
-    __reExport(src_exports, require_getSSOTokenFilepath7(), module2.exports);
-    __reExport(src_exports, require_getSSOTokenFromFile7(), module2.exports);
-    var import_types5 = require_dist_cjs();
-========
     __reExport(src_exports, require_getHomeDir8(), module2.exports);
     var ENV_PROFILE = "AWS_PROFILE";
     var DEFAULT_PROFILE = "default";
@@ -34097,25 +33650,16 @@ var require_dist_cjs99 = __commonJS({
     __reExport(src_exports, require_getSSOTokenFilepath8(), module2.exports);
     __reExport(src_exports, require_getSSOTokenFromFile8(), module2.exports);
     var import_types7 = require_dist_cjs();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
       const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
       if (indexOfSeparator === -1) {
         return false;
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return Object.values(import_types5.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce(
-      (acc, [key, value]) => {
-        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
-        const updatedKey = key.substring(0, indexOfSeparator) === import_types5.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-========
       return Object.values(import_types7.IniSectionType).includes(key.substring(0, indexOfSeparator));
     }).reduce(
       (acc, [key, value]) => {
         const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
         const updatedKey = key.substring(0, indexOfSeparator) === import_types7.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
         acc[updatedKey] = value;
         return acc;
       },
@@ -34125,19 +33669,6 @@ var require_dist_cjs99 = __commonJS({
       }
     ), "getConfigData");
     var import_path = require("path");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_getHomeDir = require_getHomeDir7();
-    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
-    var import_getHomeDir2 = require_getHomeDir7();
-    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
-    var import_getHomeDir3 = require_getHomeDir7();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = /* @__PURE__ */ __name((iniData) => {
-      const map = {};
-========
     var import_getHomeDir = require_getHomeDir8();
     var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
     var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
@@ -34149,7 +33680,6 @@ var require_dist_cjs99 = __commonJS({
     var profileNameBlockList = ["__proto__", "profile __proto__"];
     var parseIni = /* @__PURE__ */ __name((iniData) => {
       const map3 = {};
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       let currentSection;
       let currentSubSection;
       for (const iniLine of iniData.split(/\r?\n/)) {
@@ -34162,11 +33692,7 @@ var require_dist_cjs99 = __commonJS({
           const matches = prefixKeyRegex.exec(sectionName);
           if (matches) {
             const [, prefix, , name] = matches;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-            if (Object.values(import_types5.IniSectionType).includes(prefix)) {
-========
             if (Object.values(import_types7.IniSectionType).includes(prefix)) {
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
               currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
             }
           } else {
@@ -34188,24 +33714,14 @@ var require_dist_cjs99 = __commonJS({
               if (currentSubSection && iniLine.trimStart() === iniLine) {
                 currentSubSection = void 0;
               }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-========
               map3[currentSection] = map3[currentSection] || {};
               const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
               map3[currentSection][key] = value;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
             }
           }
         }
       }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      return map;
-========
       return map3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     }, "parseIni");
     var import_slurpFile = require_slurpFile7();
     var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
@@ -34235,11 +33751,7 @@ var require_dist_cjs99 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types5.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
-========
     var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types7.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
     var import_slurpFile2 = require_slurpFile7();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -34264,11 +33776,7 @@ var require_dist_cjs99 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs64 = __commonJS({
-========
-var require_dist_cjs100 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs103 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -34301,15 +33809,6 @@ var require_dist_cjs100 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -34317,29 +33816,19 @@ var require_dist_cjs100 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -34436,11 +33925,7 @@ var require_dist_cjs100 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs65 = __commonJS({
-========
-var require_dist_cjs101 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs104 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -34466,13 +33951,8 @@ var require_dist_cjs101 = __commonJS({
       fromProcess: () => fromProcess
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_shared_ini_file_loader = require_dist_cjs63();
-    var import_property_provider2 = require_dist_cjs64();
-========
-    var import_shared_ini_file_loader = require_dist_cjs99();
-    var import_property_provider2 = require_dist_cjs100();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var import_shared_ini_file_loader = require_dist_cjs102();
+    var import_property_provider2 = require_dist_cjs103();
     var import_child_process = require("child_process");
     var import_util = require("util");
     var getValidatedProcessCredentials = /* @__PURE__ */ __name((profileName, data, profiles) => {
@@ -34540,11 +34020,7 @@ var require_dist_cjs101 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-web-identity/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs66 = __commonJS({
-========
-var require_dist_cjs102 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs105 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -34577,15 +34053,6 @@ var require_dist_cjs102 = __commonJS({
     var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, options = true) {
         var _a;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        let logger;
-        let tryNextLink = true;
-        if (typeof options === "boolean") {
-          logger = void 0;
-          tryNextLink = options;
-        } else if (options != null && typeof options === "object") {
-          logger = options.logger;
-========
         let logger3;
         let tryNextLink = true;
         if (typeof options === "boolean") {
@@ -34593,29 +34060,19 @@ var require_dist_cjs102 = __commonJS({
           tryNextLink = options;
         } else if (options != null && typeof options === "object") {
           logger3 = options.logger;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
           tryNextLink = options.tryNextLink ?? true;
         }
         super(message);
         this.name = "ProviderError";
         this.tryNextLink = tryNextLink;
         Object.setPrototypeOf(this, _ProviderError2.prototype);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        (_a = logger == null ? void 0 : logger.debug) == null ? void 0 : _a.call(logger, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
-========
         (_a = logger3 == null ? void 0 : logger3.debug) == null ? void 0 : _a.call(logger3, `@smithy/property-provider ${tryNextLink ? "->" : "(!)"} ${message}`);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
       /**
        * @deprecated use new operator.
        */
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      static from(error, options = true) {
-        return Object.assign(new this(error.message, options), error);
-========
       static from(error3, options = true) {
         return Object.assign(new this(error3.message, options), error3);
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
       }
     };
     __name(_ProviderError, "ProviderError");
@@ -34715,7 +34172,7 @@ var require_dist_cjs102 = __commonJS({
 var require_fromWebToken = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -34724,13 +34181,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -34749,11 +34206,7 @@ var require_fromWebToken = __commonJS({
       const { roleArn, roleSessionName, webIdentityToken, providerId, policyArns, policy, durationSeconds } = init;
       let { roleAssumerWithWebIdentity } = init;
       if (!roleAssumerWithWebIdentity) {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs62()));
-========
-        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs98()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs101()));
         roleAssumerWithWebIdentity = getDefaultRoleAssumerWithWebIdentity({
           ...init.clientConfig,
           credentialProviderLogger: init.logger,
@@ -34780,11 +34233,7 @@ var require_fromTokenFile = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromTokenFile = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var property_provider_1 = require_dist_cjs66();
-========
-    var property_provider_1 = require_dist_cjs102();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var property_provider_1 = require_dist_cjs105();
     var fs_1 = require("fs");
     var fromWebToken_1 = require_fromWebToken();
     var ENV_TOKEN_FILE = "AWS_WEB_IDENTITY_TOKEN_FILE";
@@ -34812,11 +34261,7 @@ var require_fromTokenFile = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs67 = __commonJS({
-========
-var require_dist_cjs103 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs106 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -34841,11 +34286,7 @@ var require_dist_cjs103 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs68 = __commonJS({
-========
-var require_dist_cjs104 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs107 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -34881,45 +34322,24 @@ var require_dist_cjs104 = __commonJS({
       fromIni: () => fromIni
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_shared_ini_file_loader = require_dist_cjs60();
-    var import_property_provider2 = require_dist_cjs61();
-    var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger) => {
-      const sourceProvidersMap = {
-        EcsContainer: async (options) => {
-          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
-          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-          logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is EcsContainer");
-          return (0, import_property_provider2.chain)(fromHttp(options ?? {}), fromContainerMetadata(options));
-        },
-        Ec2InstanceMetadata: async (options) => {
-          logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata");
-          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-          return fromInstanceMetadata(options);
-        },
-        Environment: async (options) => {
-          logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Environment");
-          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
-========
-    var import_shared_ini_file_loader = require_dist_cjs90();
-    var import_property_provider2 = require_dist_cjs91();
+    var import_shared_ini_file_loader = require_dist_cjs93();
+    var import_property_provider2 = require_dist_cjs94();
     var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger3) => {
       const sourceProvidersMap = {
         EcsContainer: async (options) => {
-          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs74()));
-          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs97()));
+          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs77()));
+          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs100()));
           logger3 == null ? void 0 : logger3.debug("@aws-sdk/credential-provider-ini - credential_source is EcsContainer");
           return (0, import_property_provider2.chain)(fromHttp(options ?? {}), fromContainerMetadata(options));
         },
         Ec2InstanceMetadata: async (options) => {
           logger3 == null ? void 0 : logger3.debug("@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata");
-          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs97()));
+          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs100()));
           return fromInstanceMetadata(options);
         },
         Environment: async (options) => {
           logger3 == null ? void 0 : logger3.debug("@aws-sdk/credential-provider-ini - credential_source is Environment");
-          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs57()));
           return fromEnv(options);
         }
       };
@@ -34956,11 +34376,7 @@ var require_dist_cjs104 = __commonJS({
       (_a = options.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-ini - resolveAssumeRoleCredentials (STS)");
       const data = profiles[profileName];
       if (!options.roleAssumer) {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs62()));
-========
-        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs98()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs101()));
         options.roleAssumer = getDefaultRoleAssumer(
           {
             ...options.clientConfig,
@@ -35019,22 +34435,14 @@ var require_dist_cjs104 = __commonJS({
       return options.roleAssumer(sourceCreds, params);
     }, "resolveAssumeRoleCredentials");
     var isProcessProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.credential_process === "string", "isProcessProfile");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs65())).then(
-========
-    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs101())).then(
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs104())).then(
       ({ fromProcess }) => fromProcess({
         ...options,
         profile
       })()
     ), "resolveProcessCredentials");
     var resolveSsoCredentials = /* @__PURE__ */ __name(async (profile, options = {}) => {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs59()));
-========
-      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs89()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs92()));
       return fromSSO({
         profile,
         logger: options.logger
@@ -35054,11 +34462,7 @@ var require_dist_cjs104 = __commonJS({
       });
     }, "resolveStaticCredentials");
     var isWebIdentityProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1, "isWebIdentityProfile");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs67())).then(
-========
-    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs103())).then(
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs106())).then(
       ({ fromTokenFile: fromTokenFile2 }) => fromTokenFile2({
         webIdentityTokenFile: profile.web_identity_token_file,
         roleArn: profile.role_arn,
@@ -35103,11 +34507,7 @@ var require_dist_cjs104 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs69 = __commonJS({
-========
-var require_dist_cjs105 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs108 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -35145,29 +34545,16 @@ var require_dist_cjs105 = __commonJS({
       defaultProvider: () => defaultProvider
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_credential_provider_env = require_dist_cjs39();
-    var import_shared_ini_file_loader = require_dist_cjs40();
-    var import_property_provider2 = require_dist_cjs41();
+    var import_credential_provider_env = require_dist_cjs57();
+    var import_shared_ini_file_loader = require_dist_cjs59();
+    var import_property_provider2 = require_dist_cjs60();
     var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
     var remoteProvider = /* @__PURE__ */ __name(async (init) => {
       var _a, _b;
-      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
+      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs61()));
       if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
         (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
-        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
-========
-    var import_credential_provider_env = require_dist_cjs55();
-    var import_shared_ini_file_loader = require_dist_cjs56();
-    var import_property_provider2 = require_dist_cjs57();
-    var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
-    var remoteProvider = /* @__PURE__ */ __name(async (init) => {
-      var _a, _b;
-      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs58()));
-      if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
-        (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
-        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs74()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs77()));
         return (0, import_property_provider2.chain)(fromHttp(init), fromContainerMetadata(init));
       }
       if (process.env[ENV_IMDS_DISABLED]) {
@@ -35221,41 +34608,25 @@ var require_dist_cjs105 = __commonJS({
               { logger: init.logger }
             );
           }
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs59()));
-========
-          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs89()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs92()));
           return fromSSO(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromIni");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs68()));
-========
-          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs104()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs107()));
           return fromIni(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromProcess");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs65()));
-========
-          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs101()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs104()));
           return fromProcess(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromTokenFile");
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs67()));
-========
-          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs103()));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs106()));
           return fromTokenFile2(init)();
         },
         async () => {
@@ -35338,13 +34709,9 @@ var require_runtimeConfig_shared4 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getRuntimeConfig = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-========
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var smithy_client_1 = require_dist_cjs34();
-    var url_parser_1 = require_dist_cjs29();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs31();
     var util_base64_1 = require_dist_cjs16();
     var util_utf8_1 = require_dist_cjs15();
     var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider();
@@ -35384,36 +34751,20 @@ var require_runtimeConfig4 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs69();
-    var util_user_agent_node_1 = require_dist_cjs46();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs47();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs48();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs50();
-========
     var core_1 = (init_dist_es3(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs105();
-    var util_user_agent_node_1 = require_dist_cjs75();
+    var credential_provider_node_1 = require_dist_cjs108();
+    var util_user_agent_node_1 = require_dist_cjs78();
     var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs76();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
+    var hash_node_1 = require_dist_cjs79();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs27();
     var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs77();
-    var util_retry_1 = require_dist_cjs32();
+    var util_body_length_node_1 = require_dist_cjs80();
+    var util_retry_1 = require_dist_cjs34();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs80();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var smithy_client_2 = require_dist_cjs34();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs83();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -35446,11 +34797,7 @@ var require_runtimeConfig4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var require_dist_cjs70 = __commonJS({
-========
-var require_dist_cjs106 = __commonJS({
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var require_dist_cjs109 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -35626,8 +34973,8 @@ var require_dist_cjs106 = __commonJS({
     var import_config_resolver = require_dist_cjs11();
     var import_core3 = (init_dist_es(), __toCommonJS(dist_es_exports));
     var import_middleware_content_length = require_dist_cjs23();
-    var import_middleware_endpoint = require_dist_cjs30();
-    var import_middleware_retry = require_dist_cjs35();
+    var import_middleware_endpoint = require_dist_cjs32();
+    var import_middleware_retry = require_dist_cjs37();
     var import_httpAuthSchemeProvider = require_httpAuthSchemeProvider();
     var resolveClientEndpointParameters = /* @__PURE__ */ __name((options) => {
       return {
@@ -35644,14 +34991,9 @@ var require_dist_cjs106 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig4();
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    var import_region_config_resolver = require_dist_cjs51();
-    var import_protocol_http8 = require_dist_cjs2();
-========
-    var import_region_config_resolver = require_dist_cjs81();
+    var import_region_config_resolver = require_dist_cjs84();
     var import_protocol_http18 = require_dist_cjs2();
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
-    var import_smithy_client4 = require_dist_cjs34();
+    var import_smithy_client4 = require_dist_cjs36();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
       let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
@@ -38811,19 +38153,11 @@ function coerceValueToNumber(x) {
 }
 function coerceValueToDate(x) {
   if (typeof x === "string" || typeof x === "number") {
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-    const date = new Date(x);
-    if (isNaN(date.getTime())) {
-      return x;
-    }
-    return date;
-========
     const date3 = new Date(x);
     if (isNaN(date3.getTime())) {
       return x;
     }
     return date3;
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
   }
   return x;
 }
@@ -40467,7 +39801,7 @@ var init_api_call = __esm({
 var require_lib = __commonJS({
   "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -40476,10 +39810,10 @@ var require_lib = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
     };
@@ -40667,8 +40001,8 @@ var require_utils = __commonJS({
         Object.defineProperty(target, keys[i], Object.getOwnPropertyDescriptor(source, keys[i]));
       }
     };
-    module2.exports.wrapperSymbol = Symbol("wrapper");
-    module2.exports.implSymbol = Symbol("impl");
+    module2.exports.wrapperSymbol = /* @__PURE__ */ Symbol("wrapper");
+    module2.exports.implSymbol = /* @__PURE__ */ Symbol("impl");
     module2.exports.wrapperForImpl = function(impl) {
       return impl[module2.exports.wrapperSymbol];
     };
@@ -40861,7 +40195,7 @@ var require_url_state_machine = __commonJS({
       ws: 80,
       wss: 443
     };
-    var failure = Symbol("failure");
+    var failure = /* @__PURE__ */ Symbol("failure");
     function countSymbols(str) {
       return punycode.ucs2.decode(str).length;
     }
@@ -45972,8 +45306,8 @@ var require_lib4 = __commonJS({
     var https2 = _interopDefault(require("https"));
     var zlib2 = _interopDefault(require("zlib"));
     var Readable = Stream.Readable;
-    var BUFFER = Symbol("buffer");
-    var TYPE = Symbol("type");
+    var BUFFER = /* @__PURE__ */ Symbol("buffer");
+    var TYPE = /* @__PURE__ */ Symbol("type");
     var Blob2 = class _Blob {
       constructor() {
         this[TYPE] = "";
@@ -46088,7 +45422,7 @@ var require_lib4 = __commonJS({
       convert = require_encoding().convert;
     } catch (e) {
     }
-    var INTERNALS = Symbol("Body internals");
+    var INTERNALS = /* @__PURE__ */ Symbol("Body internals");
     var PassThrough = Stream.PassThrough;
     function Body(body) {
       var _this = this;
@@ -46428,7 +45762,7 @@ var require_lib4 = __commonJS({
       }
       return void 0;
     }
-    var MAP = Symbol("map");
+    var MAP = /* @__PURE__ */ Symbol("map");
     var Headers2 = class _Headers {
       /**
        * Headers class
@@ -46636,7 +45970,7 @@ var require_lib4 = __commonJS({
         return [k.toLowerCase(), headers[MAP][k].join(", ")];
       });
     }
-    var INTERNAL = Symbol("internal");
+    var INTERNAL = /* @__PURE__ */ Symbol("internal");
     function createHeadersIterator(target, kind) {
       const iterator = Object.create(HeadersIteratorPrototype);
       iterator[INTERNAL] = {
@@ -46705,7 +46039,7 @@ var require_lib4 = __commonJS({
       }
       return headers;
     }
-    var INTERNALS$1 = Symbol("Response internals");
+    var INTERNALS$1 = /* @__PURE__ */ Symbol("Response internals");
     var STATUS_CODES = http.STATUS_CODES;
     var Response = class _Response {
       constructor() {
@@ -46781,7 +46115,7 @@ var require_lib4 = __commonJS({
       enumerable: false,
       configurable: true
     });
-    var INTERNALS$2 = Symbol("Request internals");
+    var INTERNALS$2 = /* @__PURE__ */ Symbol("Request internals");
     var URL3 = Url.URL || whatwgUrl.URL;
     var parse_url = Url.parse;
     var format_url = Url.format;
@@ -47211,11 +46545,7 @@ var import_helpers_internal = __toESM(require_helpers_internal());
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-<<<<<<<< HEAD:packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway-with-runtime-m2m.js.snapshot/asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle/index.js
-var import_client_sfn = __toESM(require_dist_cjs70());
-========
-var import_client_sfn = __toESM(require_dist_cjs106());
->>>>>>>> 65108656ce (fix(redshift-alpha): make integration tests region-agnostic):packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-reboot.js.snapshot/asset.0547dcaa94284a4ab9bd8effeaebf4c87e32066048457683769d7f63a41484e7.bundle/index.js
+var import_client_sfn = __toESM(require_dist_cjs109());
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;

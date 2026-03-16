@@ -205,13 +205,13 @@ export class TableGrants {
    */
   public multiAccountReplicationTo(destinationReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError('CannotGrantMultiAccountReplication', 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(destinationReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError(`Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError('InvalidTable', `Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
@@ -247,13 +247,13 @@ export class TableGrants {
    */
   public multiAccountReplicationFrom(sourceReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError('CannotGrantMultiAccountReplication', 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(sourceReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError(`Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError('InvalidTable', `Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
