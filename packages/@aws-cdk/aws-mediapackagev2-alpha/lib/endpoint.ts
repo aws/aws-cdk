@@ -475,6 +475,15 @@ function validateFilterConfiguration(filterConfig?: FilterConfiguration): CfnOri
     throw new UnscopedValidationError('ManifestFilterLength', 'Manifest filter needs to be between 1-1024 characters in length.');
   }
 
+  if (filterConfig.manifestFilter && filterConfig.manifestFilter.length > 1) {
+    const keys = filterConfig.manifestFilter.map(f => f.filterString.split(':')[0]);
+    keys.forEach((key, i) => {
+      if (keys.indexOf(key) !== i) {
+        throw new UnscopedValidationError('DuplicateManifestFilterKey', `Duplicate manifest filter key '${key}'. Use a single filter with comma-separated values instead (e.g. ManifestFilter.numericList() or ManifestFilter.custom()).`);
+      }
+    });
+  }
+
   return {
     manifestFilter,
     drmSettings: filterConfig.drmSettings ? filterConfig.drmSettings.filter((v, i, a) => a.indexOf(v) === i).join(';') : undefined,

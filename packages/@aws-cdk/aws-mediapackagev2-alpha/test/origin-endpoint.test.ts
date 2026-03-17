@@ -454,6 +454,32 @@ test('ManifestFilter numeric rejects framerate with more than 3 decimal places',
   }).toThrow(/allows up to 3 decimal places, got 23.9764/);
 });
 
+test('ManifestFilter rejects duplicate filter keys', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.cmaf(),
+  });
+
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'origin', {
+      channel,
+      segment: mediapackagev2.Segment.cmaf(),
+      manifests: [
+        mediapackagev2.Manifest.hls({
+          manifestName: 'index',
+          filterConfiguration: {
+            manifestFilter: [
+              mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, 240, 360),
+              mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, 720, 1080),
+            ],
+          },
+        }),
+      ],
+    });
+  }).toThrow(/Duplicate manifest filter key 'video_height'/);
+});
+
 test('Invalid time delay in filter configuration.', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {
