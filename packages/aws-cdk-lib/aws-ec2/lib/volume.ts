@@ -523,6 +523,62 @@ export interface VolumeAttributes {
   readonly encryptionKey?: IKey;
 }
 
+type NumericRange = {
+  readonly min: number;
+  readonly max: number;
+};
+
+type VolumeTypeValidationRules = {
+  readonly sizeRange?: NumericRange;
+  readonly iopsRange?: NumericRange;
+  readonly maxIopsPerGiB?: number;
+  readonly iopsRequired?: boolean;
+  readonly multiAttachSupported?: boolean;
+  readonly throughputSupported?: boolean;
+  readonly maxThroughputPerIops?: number;
+};
+
+const DEFAULT_VOLUME_TYPE = EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
+
+const GP3_THROUGHPUT_RANGE: NumericRange = { min: 125, max: 2000 };
+const VOLUME_INITIALIZATION_RATE_RANGE: NumericRange = { min: 100, max: 300 };
+
+const VOLUME_TYPE_VALIDATION_RULES: Partial<Record<EbsDeviceVolumeType, VolumeTypeValidationRules>> = {
+  [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD]: {
+    sizeRange: { min: 1, max: 16384 },
+  },
+  [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3]: {
+    sizeRange: { min: 1, max: 16384 },
+    iopsRange: { min: 3000, max: 80000 },
+    maxIopsPerGiB: 500,
+    throughputSupported: true,
+    maxThroughputPerIops: 0.25,
+  },
+  [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD]: {
+    sizeRange: { min: 4, max: 16384 },
+    iopsRange: { min: 100, max: 64000 },
+    maxIopsPerGiB: 50,
+    iopsRequired: true,
+    multiAttachSupported: true,
+  },
+  [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2]: {
+    sizeRange: { min: 4, max: 16384 },
+    iopsRange: { min: 100, max: 256000 },
+    maxIopsPerGiB: 500,
+    iopsRequired: true,
+    multiAttachSupported: true,
+  },
+  [EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD]: {
+    sizeRange: { min: 125, max: 16384 },
+  },
+  [EbsDeviceVolumeType.COLD_HDD]: {
+    sizeRange: { min: 125, max: 16384 },
+  },
+  [EbsDeviceVolumeType.MAGNETIC]: {
+    sizeRange: { min: 1, max: 1024 },
+  },
+};
+
 /**
  * Common behavior of Volumes. Users should not use this class directly, and instead use ``Volume``.
  */
@@ -697,13 +753,16 @@ export class Volume extends VolumeBase {
       snapshotId: props.snapshotId,
       throughput: props.throughput,
       volumeType: props.volumeType ??
-        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
-          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3)
+          ? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3
+          : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
       volumeInitializationRate: props.volumeInitializationRate?.toMebibytes(),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
-    if (props.volumeName) Tags.of(resource).add('Name', props.volumeName);
+    if (props.volumeName) {
+      Tags.of(resource).add('Name', props.volumeName);
+    }
 
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;
@@ -730,26 +789,49 @@ export class Volume extends VolumeBase {
   }
 
   protected validateProps(props: VolumeProps) {
+    this.validateRequiredFields(props);
+    this.validateSnapshotId(props);
+    this.validateEncryptionSettings(props);
+
+    const volumeType = this.resolveVolumeType(props);
+
+    this.validateIops(props, volumeType);
+    this.validateMultiAttach(props, volumeType);
+    this.validateSize(props, volumeType);
+    this.validateThroughput(props, volumeType);
+    this.validateVolumeInitializationRate(props);
+  }
+
+  private resolveVolumeType(props: VolumeProps): EbsDeviceVolumeType {
+    return props.volumeType ?? DEFAULT_VOLUME_TYPE;
+  }
+
+  private validateRequiredFields(props: VolumeProps) {
     if (!(props.size || props.snapshotId)) {
       throw new ValidationError('SizeOrSnapshotRequired', 'Must provide at least one of `size` or `snapshotId`', this);
     }
+  }
 
+  private validateSnapshotId(props: VolumeProps) {
     if (props.snapshotId && !Token.isUnresolved(props.snapshotId) && !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)) {
-      throw new ValidationError('SnapshotIdPatternMismatch', '`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
+      throw new ValidationError(
+        'SnapshotIdPatternMismatch',
+        '`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token',
+        this,
+      );
     }
+  }
 
+  private validateEncryptionSettings(props: VolumeProps) {
     if (props.encryptionKey && !props.encrypted) {
       throw new ValidationError('EncryptedRequiredWithKey', '`encrypted` must be true when providing an `encryptionKey`.', this);
     }
+  }
 
-    if (
-      props.volumeType &&
-      [
-        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
-      ].includes(props.volumeType) &&
-      !props.iops
-    ) {
+  private validateIops(props: VolumeProps, volumeType: EbsDeviceVolumeType) {
+    const rules = VOLUME_TYPE_VALIDATION_RULES[volumeType];
+
+    if (rules?.iopsRequired && props.iops === undefined) {
       throw new ValidationError(
         'IopsRequiredForProvisionedVolumes',
         '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
@@ -757,115 +839,133 @@ export class Volume extends VolumeBase {
       );
     }
 
-    if (props.iops) {
-      const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
-      if (
-        ![
-          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
-          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-        ].includes(volumeType)
-      ) {
-        throw new ValidationError(
-          'IopsOnlyForSpecificVolumeTypes',
-          '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
-          this,
-        );
-      }
-      // Enforce minimum & maximum IOPS:
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
-      const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
-      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 80000 };
-      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
-      const { Min, Max } = iopsRanges[volumeType];
-      if (props.iops < Min || props.iops > Max) {
-        throw new ValidationError('IopsOutOfRange', `\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
-      }
-
-      // Enforce maximum ratio of IOPS/GiB:
-      // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-      const maximumRatios: { [key: string]: number } = {};
-      maximumRatios[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = 500;
-      maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = 50;
-      maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
-      const maximumRatio = maximumRatios[volumeType];
-      if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
-        throw new ValidationError('IopsToSizeRatioExceeded', `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
-      }
-
-      const maximumThroughputRatios: { [key: string]: number } = {};
-      maximumThroughputRatios[EbsDeviceVolumeType.GP3] = 0.25;
-      const maximumThroughputRatio = maximumThroughputRatios[volumeType];
-      if (props.throughput && props.iops) {
-        const iopsRatio = (props.throughput / props.iops);
-        if (iopsRatio > maximumThroughputRatio) {
-          throw new ValidationError('ThroughputToIopsRatioExceeded', `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
-        }
-      }
+    if (props.iops === undefined) {
+      return;
     }
 
-    if (props.enableMultiAttach) {
-      const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
-      if (
-        ![
-          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
-        ].includes(volumeType)
-      ) {
-        throw new ValidationError('MultiAttachOnlyForProvisionedIops', 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
-      }
+    if (!rules?.iopsRange) {
+      throw new ValidationError(
+        'IopsOnlyForSpecificVolumeTypes',
+        '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+        this,
+      );
     }
 
-    if (props.size) {
-      const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
-      // Enforce minimum & maximum volume size:
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
-      const sizeRanges: { [key: string]: { Min: number; Max: number } } = {};
-      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 4, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD] = { Min: 125, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.COLD_HDD] = { Min: 125, Max: 16384 };
-      sizeRanges[EbsDeviceVolumeType.MAGNETIC] = { Min: 1, Max: 1024 };
-      const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
-      const { Min, Max } = sizeRanges[volumeType];
-      if (size < Min || size > Max) {
-        throw new ValidationError('VolumeSizeOutOfRange', `\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
-      }
-    }
+    this.validateNumericRange(
+      'IopsOutOfRange',
+      props.iops,
+      rules.iopsRange,
+      `\`${volumeType}\` volumes iops must be between ${rules.iopsRange.min} and ${rules.iopsRange.max}.`,
+    );
 
-    if (props.throughput) {
-      const throughputRange = { Min: 125, Max: 2000 };
-      const { Min, Max } = throughputRange;
-      if (props.volumeType != EbsDeviceVolumeType.GP3) {
+    if (props.size && rules.maxIopsPerGiB !== undefined) {
+      const sizeGiB = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
+      if (props.iops > rules.maxIopsPerGiB * sizeGiB) {
         throw new ValidationError(
-          'ThroughputRequiresGp3',
-          'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
-          this,
-        );
-      }
-      if (props.throughput < Min || props.throughput > Max) {
-        throw new ValidationError(
-          'ThroughputOutOfRange',
-          `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
+          'IopsToSizeRatioExceeded',
+          `\`${volumeType}\` volumes iops has a maximum ratio of ${rules.maxIopsPerGiB} IOPS/GiB.`,
           this,
         );
       }
     }
 
-    if (props.volumeInitializationRate) {
-      if (!props.snapshotId) {
-        throw new ValidationError('VolumeInitializationRateRequiresSnapshot', 'volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
+    if (props.throughput !== undefined && rules.maxThroughputPerIops !== undefined) {
+      const throughputToIopsRatio = props.throughput / props.iops;
+      if (throughputToIopsRatio > rules.maxThroughputPerIops) {
+        throw new ValidationError(
+          'ThroughputToIopsRatioExceeded',
+          `Throughput (MiBps) to iops ratio of ${throughputToIopsRatio} is too high; maximum is ${rules.maxThroughputPerIops} MiBps per iops`,
+          this,
+        );
       }
+    }
+  }
 
-      if (!props.volumeInitializationRate.isUnresolved()) {
-        const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
-        if (rateMiBs < 100 || rateMiBs > 300) {
-          throw new ValidationError('VolumeInitializationRateOutOfRange', `volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
-        }
-      }
+  private validateMultiAttach(props: VolumeProps, volumeType: EbsDeviceVolumeType) {
+    if (!props.enableMultiAttach) {
+      return;
+    }
+
+    const rules = VOLUME_TYPE_VALIDATION_RULES[volumeType];
+    if (!rules?.multiAttachSupported) {
+      throw new ValidationError(
+        'MultiAttachOnlyForProvisionedIops',
+        'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.',
+        this,
+      );
+    }
+  }
+
+  private validateSize(props: VolumeProps, volumeType: EbsDeviceVolumeType) {
+    if (!props.size) {
+      return;
+    }
+
+    const rules = VOLUME_TYPE_VALIDATION_RULES[volumeType];
+    if (!rules?.sizeRange) {
+      return;
+    }
+
+    const sizeGiB = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
+    this.validateNumericRange(
+      'VolumeSizeOutOfRange',
+      sizeGiB,
+      rules.sizeRange,
+      `\`${volumeType}\` volumes must be between ${rules.sizeRange.min} GiB and ${rules.sizeRange.max} GiB in size.`,
+    );
+  }
+
+  private validateThroughput(props: VolumeProps, volumeType: EbsDeviceVolumeType) {
+    if (props.throughput === undefined) {
+      return;
+    }
+
+    const rules = VOLUME_TYPE_VALIDATION_RULES[volumeType];
+    if (!rules?.throughputSupported) {
+      throw new ValidationError(
+        'ThroughputRequiresGp3',
+        'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
+        this,
+      );
+    }
+
+    this.validateNumericRange(
+      'ThroughputOutOfRange',
+      props.throughput,
+      GP3_THROUGHPUT_RANGE,
+      `throughput property takes a minimum of ${GP3_THROUGHPUT_RANGE.min} and a maximum of ${GP3_THROUGHPUT_RANGE.max}`,
+    );
+  }
+
+  private validateVolumeInitializationRate(props: VolumeProps) {
+    if (!props.volumeInitializationRate) {
+      return;
+    }
+
+    if (!props.snapshotId) {
+      throw new ValidationError(
+        'VolumeInitializationRateRequiresSnapshot',
+        'volumeInitializationRate can only be specified when creating a volume from a snapshot.',
+        this,
+      );
+    }
+
+    if (props.volumeInitializationRate.isUnresolved()) {
+      return;
+    }
+
+    const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
+    this.validateNumericRange(
+      'VolumeInitializationRateOutOfRange',
+      rateMiBs,
+      VOLUME_INITIALIZATION_RATE_RANGE,
+      `volumeInitializationRate must be between ${VOLUME_INITIALIZATION_RATE_RANGE.min} and ${VOLUME_INITIALIZATION_RATE_RANGE.max} MiB/s, got: ${rateMiBs} MiB/s`,
+    );
+  }
+
+  private validateNumericRange(errorId: string, value: number, range: NumericRange, message: string) {
+    if (value < range.min || value > range.max) {
+      throw new ValidationError(errorId, message, this);
     }
   }
 }
