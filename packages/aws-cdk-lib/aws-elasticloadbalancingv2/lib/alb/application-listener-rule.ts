@@ -420,10 +420,10 @@ export class ApplicationListenerRule extends Construct {
     const urlRewriteCount = this.transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
 
     if (hostHeaderRewriteCount > 1) {
-      throw new ValidationError('Only one host-header-rewrite transform is allowed per rule', this);
+      throw new ValidationError('HostHeaderRewriteLimit', 'Only one host-header-rewrite transform is allowed per rule', this);
     }
     if (urlRewriteCount > 1) {
-      throw new ValidationError('Only one url-rewrite transform is allowed per rule', this);
+      throw new ValidationError('UrlRewriteLimit', 'Only one url-rewrite transform is allowed per rule', this);
     }
 
     return this.transforms.map(transform => transform.renderRawTransform());

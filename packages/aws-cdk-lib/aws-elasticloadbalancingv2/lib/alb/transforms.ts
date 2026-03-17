@@ -63,15 +63,15 @@ export class ListenerTransform {
 
   private validateRewrites(rewrites: RewriteRule[]): void {
     if (rewrites.length !== 1) {
-      throw new UnscopedValidationError(`Exactly one rewrite rule must be specified, got ${rewrites.length}.`);
+      throw new UnscopedValidationError('RewriteCount', `Exactly one rewrite rule must be specified, got ${rewrites.length}.`);
     }
 
     rewrites.forEach((rewrite, index) => {
       if (!rewrite.regex) {
-        throw new UnscopedValidationError(`Rewrite rule at index ${index}: regex cannot be empty`);
+        throw new UnscopedValidationError('EmptyRegex', `Rewrite rule at index ${index}: regex cannot be empty`);
       }
       if (!rewrite.replace) {
-        throw new UnscopedValidationError(`Rewrite rule at index ${index}: replace cannot be empty`);
+        throw new UnscopedValidationError('EmptyReplace', `Rewrite rule at index ${index}: replace cannot be empty`);
       }
     });
   }
@@ -101,7 +101,7 @@ export class ListenerTransform {
           },
         };
       default:
-        throw new UnscopedValidationError(`Unsupported transform type: ${this._type}`);
+        throw new UnscopedValidationError('UnsupportedTransformType', `Unsupported transform type: ${this._type}`);
     }
   }
 }
