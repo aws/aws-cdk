@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "6bbf20ae3a7c3cdb4ddd57e402f46bd34a13bee7e45d12fa4ca8c939bfd89deb": {
+      "displayName": "aws-ecr-auto-delete-images-mixin-stack Template",
+      "source": {
+        "path": "aws-ecr-auto-delete-images-mixin-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f66d0bca": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6bbf20ae3a7c3cdb4ddd57e402f46bd34a13bee7e45d12fa4ca8c939bfd89deb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
