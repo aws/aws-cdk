@@ -454,6 +454,40 @@ test('ManifestFilter numeric rejects framerate with more than 3 decimal places',
   }).toThrow(/allows up to 3 decimal places, got 23.9764/);
 });
 
+test('ManifestFilter numericCombo renders correct filter string', () => {
+  const filter = mediapackagev2.ManifestFilter.numericCombo(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, [
+    mediapackagev2.NumericExpression.range(240, 360),
+    mediapackagev2.NumericExpression.range(720, 1080),
+    mediapackagev2.NumericExpression.value(1440),
+  ]);
+  expect(filter.filterString).toBe('video_height:240-360,720-1080,1440');
+});
+
+test('ManifestFilter bitrateCombo renders correct filter string', () => {
+  const filter = mediapackagev2.ManifestFilter.bitrateCombo(mediapackagev2.BitrateFilterKey.VIDEO_BITRATE, [
+    mediapackagev2.BitrateExpression.range(Bitrate.mbps(1), Bitrate.mbps(3)),
+    mediapackagev2.BitrateExpression.value(Bitrate.mbps(5)),
+  ]);
+  expect(filter.filterString).toBe('video_bitrate:1000000-3000000,5000000');
+});
+
+test('ManifestFilter numericCombo validates each expression segment', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.numericCombo(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, [
+      mediapackagev2.NumericExpression.range(240, 360),
+      mediapackagev2.NumericExpression.value(40000),
+    ]);
+  }).toThrow(/must be between 1 and 32767, got 40000/);
+});
+
+test('ManifestFilter bitrateCombo validates each expression segment', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.bitrateCombo(mediapackagev2.BitrateFilterKey.AUDIO_BITRATE, [
+      mediapackagev2.BitrateExpression.value(Bitrate.gbps(3)),
+    ]);
+  }).toThrow(/must be between 0 and 2147483647, got 3000000000/);
+});
+
 test('ManifestFilter rejects duplicate filter keys', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {

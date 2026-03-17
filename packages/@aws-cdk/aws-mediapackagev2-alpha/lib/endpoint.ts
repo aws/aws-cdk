@@ -186,6 +186,64 @@ export enum BitrateFilterKey {
 }
 
 /**
+ * Represents a numeric filter expression segment — either a single value or a range.
+ *
+ * Use with `ManifestFilter.numericCombo()` to build filters that combine
+ * ranges and individual values (e.g. `video_height:240-360,720-1080,1440`).
+ */
+export class NumericExpression {
+  /**
+   * A single numeric value.
+   */
+  public static value(v: number): NumericExpression {
+    return new NumericExpression(`${v}`, [v]);
+  }
+
+  /**
+   * An inclusive numeric range.
+   */
+  public static range(start: number, end: number): NumericExpression {
+    return new NumericExpression(`${start}-${end}`, [start, end]);
+  }
+
+  protected constructor(
+    /** @internal */
+    public readonly _expression: string,
+    /** @internal */
+    public readonly _values: number[],
+  ) {}
+}
+
+/**
+ * Represents a bitrate filter expression segment — either a single value or a range.
+ *
+ * Use with `ManifestFilter.bitrateCombo()` to build filters that combine
+ * ranges and individual bitrate values.
+ */
+export class BitrateExpression {
+  /**
+   * A single bitrate value.
+   */
+  public static value(v: Bitrate): BitrateExpression {
+    return new BitrateExpression(`${v.toBps()}`, [v.toBps()]);
+  }
+
+  /**
+   * An inclusive bitrate range.
+   */
+  public static range(start: Bitrate, end: Bitrate): BitrateExpression {
+    return new BitrateExpression(`${start.toBps()}-${end.toBps()}`, [start.toBps(), end.toBps()]);
+  }
+
+  protected constructor(
+    /** @internal */
+    public readonly _expression: string,
+    /** @internal */
+    public readonly _values: number[],
+  ) {}
+}
+
+/**
  * Enables you to create filters for your Origin Endpoint.
  *
  * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/manifest-filtering.html
@@ -304,6 +362,37 @@ export class ManifestFilter {
    */
   public static trickplayTypeList(values: TrickplayType[]) {
     return new ManifestFilter(`trickplay_type:${values.join(',')}`);
+  }
+
+  /**
+   * Filter by a combination of numeric ranges and individual values.
+   *
+   * Use this for advanced patterns like `video_height:240-360,720-1080,1440`.
+   *
+   * @example
+   * ManifestFilter.numericCombo(NumericFilterKey.VIDEO_HEIGHT, [
+   *   NumericExpression.range(240, 360),
+   *   NumericExpression.range(720, 1080),
+   *   NumericExpression.value(1440),
+   * ])
+   */
+  public static numericCombo(key: NumericFilterKey, expressions: NumericExpression[]) {
+    expressions.forEach(expr => expr._values.forEach(v => validateNumericFilterValue(v, key)));
+    return new ManifestFilter(`${key}:${expressions.map(e => e._expression).join(',')}`);
+  }
+
+  /**
+   * Filter by a combination of bitrate ranges and individual values.
+   *
+   * @example
+   * ManifestFilter.bitrateCombo(BitrateFilterKey.VIDEO_BITRATE, [
+   *   BitrateExpression.range(Bitrate.mbps(1), Bitrate.mbps(3)),
+   *   BitrateExpression.value(Bitrate.mbps(5)),
+   * ])
+   */
+  public static bitrateCombo(key: BitrateFilterKey, expressions: BitrateExpression[]) {
+    expressions.forEach(expr => expr._values.forEach(v => validateBitrateFilterValue(v, key)));
+    return new ManifestFilter(`${key}:${expressions.map(e => e._expression).join(',')}`);
   }
 
   /**

@@ -351,8 +351,8 @@ Manifest filters control which variants are included in the manifest. Filters ar
 
 | Filter | Method |
 |--------|--------|
-| Audio / video bitrate | `bitrate()`, `bitrateRange()` |
-| Audio channels, sample rate, video height, framerate, trickplay height | `numeric()`, `numericList()`, `numericRange()` |
+| Audio / video bitrate | `bitrate()`, `bitrateRange()`, `bitrateCombo()` |
+| Audio channels, sample rate, video height, framerate, trickplay height | `numeric()`, `numericList()`, `numericRange()`, `numericCombo()` |
 | Audio codec | `audioCodec()`, `audioCodecList()` |
 | Video codec | `videoCodec()`, `videoCodecList()` |
 | Video dynamic range | `videoDynamicRange()`, `videoDynamicRangeList()` |
@@ -386,7 +386,31 @@ new OriginEndpoint(this, 'Endpoint', {
 });
 ```
 
-For advanced patterns that combine ranges and single values (e.g. `video_height:240-360,720-1080,1440`), use `ManifestFilter.custom()`.
+For advanced patterns that combine ranges and single values, use `numericCombo()` or `bitrateCombo()`:
+
+```ts
+declare const channel: Channel;
+
+new OriginEndpoint(this, 'Endpoint', {
+  channel,
+  segment: Segment.cmaf(),
+  manifests: [
+    Manifest.hls({
+      manifestName: 'index',
+      filterConfiguration: {
+        manifestFilter: [
+          // video_height:240-360,720-1080,1440
+          ManifestFilter.numericCombo(NumericFilterKey.VIDEO_HEIGHT, [
+            NumericExpression.range(240, 360),
+            NumericExpression.range(720, 1080),
+            NumericExpression.value(1440),
+          ]),
+        ],
+      },
+    }),
+  ],
+});
+```
 
 ### DRM Settings
 
