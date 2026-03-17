@@ -61,6 +61,7 @@ function main() {
 
   let selectedNodes = new Set(evaluateExpression(expression ?? '', dependencyGraph, {
     jsii: () => new Set(nodes.filter(n => isJsiiPackage(directories[n]))),
+    private: () => new Set(nodes.filter(n => isPrivatePackage(directories[n]))),
   }));
 
   const sortedNodes = new Graph(dependencyGraph).topologicalSort().flatMap(xs => xs).filter(x => selectedNodes.has(x));
@@ -78,6 +79,11 @@ function isJsiiPackage(dir: string) {
   return !!pkgJson.jsii;
 }
 
+function isPrivatePackage(dir: string) {
+  const pkgJson = JSON.parse(readFileSync(`${dir}/package.json`, 'utf-8'));
+  return !!pkgJson.private;
+}
+
 function showHelp() {
   console.error(`Usage: nx-query.mts [--names|-n] <EXPRESSION>
 
@@ -92,6 +98,7 @@ language is based on https://docs.jj-vcs.dev/latest/revsets/. Highlights:
     x & y, x | y   Intersection and union
     x ~ y          All packages in x except those in y
     jsii()         All jsii packages
+    private()      All private packages
 
 By defaults prints directories, unless --names is given.
 
@@ -102,6 +109,7 @@ Always prints packages in topological order.
 
 interface ExpressionFunctions {
   jsii: () => Set<string>;
+  private: () => Set<string>;
 }
 
 /**
@@ -306,6 +314,10 @@ function evaluateExpression(expression: string, edges: AdjacencyList, functions:
     switch (fn.ident) {
       case 'jsii':
         nodeSetStack.push(functions.jsii());
+        break;
+
+      case 'private':
+        nodeSetStack.push(functions.private());
         break;
 
       default:

@@ -14,8 +14,8 @@ fail() {
 
 echo "============================================================================================="
 echo "building required build tools..."
-time npx lerna run --stream build --scope @aws-cdk/spec2cdk --include-dependencies || fail
+time npx nx run @aws-cdk/spec2cdk:build || fail
 
 echo "============================================================================================="
 echo "executing gen..."
-time npx lerna run --stream gen || fail
+time npx nx run-many -t gen || fail
