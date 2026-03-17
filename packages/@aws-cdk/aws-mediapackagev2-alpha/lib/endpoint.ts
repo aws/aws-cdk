@@ -1135,7 +1135,7 @@ export interface FilterConfiguration {
 }
 
 /**
- * StartTag Options
+ * Options for configuring a StartTag.
  */
 export interface StartTagOptions {
   /**
@@ -1482,7 +1482,7 @@ export enum TtmlProfile {
   EBU_TT_D_101='EBU_TT_D_101',
 }
 /**
- * DASH TTML Config
+ * Configuration for TTML subtitles in DASH manifests.
  */
 export interface DashTtmlConfiguration {
   /**
@@ -1495,7 +1495,7 @@ export interface DashTtmlConfiguration {
 
 }
 /**
- * Subtitle config
+ * Configuration for subtitles in DASH manifests.
  */
 export interface DashSubtitleConfiguration {
   /**
@@ -1632,7 +1632,7 @@ export interface DashManifestConfiguration extends ManifestConfigurationBase {
    */
   readonly utcTimingMode?: DashUtcTimingMode;
   /**
-   * The the method that the player uses to synchronize to coordinated universal time (UTC) wall clock time.
+   * The method that the player uses to synchronize to coordinated universal time (UTC) wall clock time.
    *
    * @default undefined - No value is specified
    */
@@ -1839,9 +1839,6 @@ export interface OriginEndpointAttributes {
   readonly originEndpointName: string;
 }
 
-/**
- * The DRM solution provider you're using to protect your content during distribution.
- */
 /**
  * DRM systems available for CMAF encryption.
  *
