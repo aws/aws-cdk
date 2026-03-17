@@ -114,18 +114,14 @@ export enum SslPolicy {
   RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
 
   /**
-   * The recommended post-quantum security policy for TLS listeners.
+   * TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
    *
-   * This policy includes TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
-   * Provides maximum backward compatibility with existing TLS clients while adding quantum resistance.
-   * This policy is nearly 100% backward compatible with the previous CDK recommended default.
-   *
-   * Note: This uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+   * This uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
    * for TLS 1.2 clients, ensuring backward compatibility.
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
    */
-  RECOMMENDED_TLS_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+  TLS13_12_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
 
   /**
    * The recommended policy for http listeners.

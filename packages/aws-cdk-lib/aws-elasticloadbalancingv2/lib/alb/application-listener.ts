@@ -290,7 +290,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     let sslPolicy = props.sslPolicy;
     if (!sslPolicy && protocol === ApplicationProtocol.HTTPS &&
         FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
-      sslPolicy = SslPolicy.RECOMMENDED_TLS_PQ;
+      sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
     super(scope, id, {
