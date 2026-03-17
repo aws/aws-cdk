@@ -159,6 +159,20 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Enabling CloudWatch Metrics
+
+You can enable CloudWatch metrics for your table bucket to monitor storage and request metrics.
+
+```ts
+// Enable CloudWatch metrics for the table bucket
+const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', {
+    tableBucketName: 'metrics-enabled-bucket',
+    metricsConfiguration: {
+        status: MetricsConfigurationStatus.ENABLED,
+    },
+});
+```
+
 ### Controlling Table Permissions
 
 ```ts

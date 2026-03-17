@@ -148,6 +148,34 @@ export enum UnreferencedFileRemovalStatus {
 }
 
 /**
+ * Controls whether CloudWatch metrics are enabled or disabled for the table bucket.
+ */
+export enum MetricsConfigurationStatus {
+  /**
+   * Enable CloudWatch metrics for the table bucket.
+   */
+  ENABLED = 'Enabled',
+
+  /**
+   * Disable CloudWatch metrics for the table bucket.
+   */
+  DISABLED = 'Disabled',
+}
+
+/**
+ * CloudWatch metrics configuration for the table bucket.
+ * When enabled, S3 Tables publishes CloudWatch metrics for the table bucket.
+ */
+export interface MetricsConfiguration {
+  /**
+   * Whether CloudWatch metrics are enabled for the table bucket.
+   *
+   * @default MetricsConfigurationStatus.DISABLED
+   */
+  readonly status?: MetricsConfigurationStatus;
+}
+
+/**
  * Controls Server Side Encryption (SSE) for this TableBucket.
  */
 export enum TableBucketEncryption {
@@ -349,6 +377,15 @@ export interface TableBucketProps {
    * @default RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * CloudWatch metrics configuration for the table bucket.
+   *
+   * When enabled, S3 Tables publishes CloudWatch metrics for the table bucket.
+   *
+   * @default - Metrics are disabled
+   */
+  readonly metricsConfiguration?: MetricsConfiguration;
 }
 
 /**
@@ -601,6 +638,7 @@ export class TableBucket extends TableBucketBase {
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
       encryptionConfiguration: bucketEncryption,
+      metricsConfiguration: props.metricsConfiguration,
     });
 
     this.resource.applyRemovalPolicy(props.removalPolicy);
