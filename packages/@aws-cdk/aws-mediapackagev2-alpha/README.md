@@ -347,7 +347,20 @@ new OriginEndpoint(this, 'Endpoint', {
 
 ## Manifest Filtering
 
-Use manifest filters to customize which variants are included in the manifest based on bitrate, resolution, codec, and other attributes:
+Manifest filters control which variants are included in the manifest. Filters are type-safe and validated against the [MediaPackage manifest filtering rules](https://docs.aws.amazon.com/mediapackage/latest/userguide/manifest-filter-query-parameters.html).
+
+| Filter | Method |
+|--------|--------|
+| Audio / video bitrate | `bitrate()`, `bitrateRange()` |
+| Audio channels, sample rate, video height, framerate, trickplay height | `numeric()`, `numericList()`, `numericRange()` |
+| Audio codec | `audioCodec()`, `audioCodecList()` |
+| Video codec | `videoCodec()`, `videoCodecList()` |
+| Video dynamic range | `videoDynamicRange()`, `videoDynamicRangeList()` |
+| Trickplay type | `trickplayType()`, `trickplayTypeList()` |
+| Audio / subtitle language | `text()`, `textList()` |
+| Advanced patterns | `custom()` |
+
+The following example creates an HD streaming endpoint that serves only H.264/H.265 content between 1–5 Mbps with stereo audio in English or French:
 
 ```ts
 declare const channel: Channel;
@@ -360,12 +373,11 @@ new OriginEndpoint(this, 'Endpoint', {
       manifestName: 'index',
       filterConfiguration: {
         manifestFilter: [
-          // Include only video bitrates between 1-5 Mbps
-          ManifestFilter.range(ManifestFilterKeys.VIDEO_BITRATE, 1000000, 5000000),
-          // Include only 1080p and 720p video
-          ManifestFilter.multiple(ManifestFilterKeys.VIDEO_HEIGHT, [1080, 720]),
-          // Include only stereo audio
-          ManifestFilter.single(ManifestFilterKeys.AUDIO_CHANNELS, 2),
+          ManifestFilter.bitrateRange(BitrateFilterKey.VIDEO_BITRATE, Bitrate.mbps(1), Bitrate.mbps(5)),
+          ManifestFilter.numericRange(NumericFilterKey.VIDEO_HEIGHT, 720, 1080),
+          ManifestFilter.videoCodecList([VideoCodec.H264, VideoCodec.H265]),
+          ManifestFilter.numeric(NumericFilterKey.AUDIO_CHANNELS, 2),
+          ManifestFilter.textList(TextFilterKey.AUDIO_LANGUAGE, ['en-US', 'fr']),
         ],
         timeDelay: Duration.seconds(30),
       },
@@ -373,6 +385,8 @@ new OriginEndpoint(this, 'Endpoint', {
   ],
 });
 ```
+
+For advanced patterns that combine ranges and single values (e.g. `video_height:240-360,720-1080,1440`), use `ManifestFilter.custom()`.
 
 ### DRM Settings
 

@@ -329,16 +329,16 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
     // Validate channelGroupName if provided
     if (props?.channelGroupName != null) {
       if (props.channelGroupName.length < 1 || props.channelGroupName.length > 256) {
-        throw new ValidationError('Channel group name must be between 1 and 256 characters in length.', this);
+        throw new ValidationError('ChannelGroupNameLength', 'Channel group name must be between 1 and 256 characters in length.', this);
       }
       if (!props.channelGroupName.match(/^[a-zA-Z0-9_-]+$/)) {
-        throw new ValidationError('Channel group name must only contain alphanumeric characters, hyphens, and underscores.', this);
+        throw new ValidationError('ChannelGroupNamePattern', 'Channel group name must only contain alphanumeric characters, hyphens, and underscores.', this);
       }
     }
 
     // Validate description if provided
     if (props?.description && props.description.length > 1024) {
-      throw new ValidationError('Channel group description must not exceed 1024 characters.', this);
+      throw new ValidationError('ChannelGroupDescriptionLength', 'Channel group description must not exceed 1024 characters.', this);
     }
 
     const channelGroup = new CfnChannelGroup(this, 'Resource', {

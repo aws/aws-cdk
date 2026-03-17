@@ -3,7 +3,7 @@
   "ChannelGroupD4C484BD": {
    "Type": "AWS::MediaPackageV2::ChannelGroup",
    "Properties": {
-    "ChannelGroupName": "streaming-group"
+    "ChannelGroupName": "hd-streaming-group"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -11,8 +11,8 @@
   "Channel4048F119": {
    "Type": "AWS::MediaPackageV2::Channel",
    "Properties": {
-    "ChannelGroupName": "streaming-group",
-    "ChannelName": "live-channel",
+    "ChannelGroupName": "hd-streaming-group",
+    "ChannelName": "hd-channel",
     "InputType": "CMAF"
    },
    "DependsOn": [
@@ -24,26 +24,20 @@
   "EndpointEEF1FD8F": {
    "Type": "AWS::MediaPackageV2::OriginEndpoint",
    "Properties": {
-    "ChannelGroupName": "streaming-group",
-    "ChannelName": "live-channel",
-    "ContainerType": "TS",
+    "ChannelGroupName": "hd-streaming-group",
+    "ChannelName": "hd-channel",
+    "ContainerType": "CMAF",
     "HlsManifests": [
      {
       "FilterConfiguration": {
-       "DrmSettings": "exclude_session_keys",
-       "End": "2025-12-15T17:20:00+00:00",
-       "ManifestFilter": "audio_sample_rate:0-50000;video_codec:H264;video_height:240,360,720",
-       "Start": "2025-12-15T17:15:00+00:00",
-       "TimeDelaySeconds": 1
+       "ManifestFilter": "video_bitrate:1000000-5000000;video_height:720-1080;video_codec:H264,H265;audio_channels:2;audio_language:en-US,fr",
+       "TimeDelaySeconds": 30
       },
-      "ManifestName": "index",
-      "ManifestWindowSeconds": 60,
-      "ProgramDateTimeIntervalSeconds": 60
+      "ManifestName": "index"
      }
     ],
-    "OriginEndpointName": "hls-endpoint",
-    "Segment": {},
-    "StartoverWindowSeconds": 900
+    "OriginEndpointName": "hd-endpoint",
+    "Segment": {}
    },
    "DependsOn": [
     "Channel4048F119",

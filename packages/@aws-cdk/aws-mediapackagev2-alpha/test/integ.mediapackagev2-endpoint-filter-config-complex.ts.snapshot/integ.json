@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-endpoint-filter-config-complex/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-filter-config-complex"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-endpoint-filter-config-complex/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

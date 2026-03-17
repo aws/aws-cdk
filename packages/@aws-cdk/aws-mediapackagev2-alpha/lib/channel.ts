@@ -578,16 +578,16 @@ export class Channel extends ChannelBase implements IChannel {
     // Validate channelName if provided
     if (props.channelName != null) {
       if (props.channelName.length < 1 || props.channelName.length > 256) {
-        throw new ValidationError('Channel name must be between 1 and 256 characters in length.', this);
+        throw new ValidationError('ChannelNameLength', 'Channel name must be between 1 and 256 characters in length.', this);
       }
       if (!props.channelName.match(/^[a-zA-Z0-9_-]+$/)) {
-        throw new ValidationError('Channel name must only contain alphanumeric characters, hyphens, and underscores.', this);
+        throw new ValidationError('ChannelNamePattern', 'Channel name must only contain alphanumeric characters, hyphens, and underscores.', this);
       }
     }
 
     // Validate description if provided
     if (props.description && props.description.length > 1024) {
-      throw new ValidationError('Channel description must not exceed 1024 characters.', this);
+      throw new ValidationError('ChannelDescriptionLength', 'Channel description must not exceed 1024 characters.', this);
     }
 
     // Default to HLS if no input configuration provided

@@ -32,9 +32,9 @@ new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
         timeDelay: cdk.Duration.seconds(1),
         drmSettings: [mediapackagev2.DrmSettingsKey.EXCLUDE_SESSION_KEYS],
         manifestFilter: [
-          mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000),
-          mediapackagev2.ManifestFilter.single(mediapackagev2.ManifestFilterKeys.VIDEO_CODEC, 'h264'),
-          mediapackagev2.ManifestFilter.multiple(mediapackagev2.ManifestFilterKeys.VIDEO_HEIGHT, ['240', '360', '720']),
+          mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000),
+          mediapackagev2.ManifestFilter.videoCodec(mediapackagev2.VideoCodec.H264),
+          mediapackagev2.ManifestFilter.numericList(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, [240, 360, 720]),
         ],
       },
     }),

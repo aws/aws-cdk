@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-mediapackagev2.assets": {
+    "aws-cdk-mediapackagev2-filter-config-complex.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediapackagev2.assets.json",
+        "file": "aws-cdk-mediapackagev2-filter-config-complex.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediapackagev2": {
+    "aws-cdk-mediapackagev2-filter-config-complex": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediapackagev2.template.json",
+        "templateFile": "aws-cdk-mediapackagev2-filter-config-complex.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26fbb7aaef1c9381361f4bacc49aa527fc9a332d77bc0ab03b10d1a89f389d5d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e7095ad09456f6d0bfed63c37a09345f6345812291328bd08dad31a4ff3c3b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediapackagev2.assets"
+          "aws-cdk-mediapackagev2-filter-config-complex.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediapackagev2.assets"
+        "aws-cdk-mediapackagev2-filter-config-complex.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediapackagev2.metadata.json",
-      "displayName": "aws-cdk-mediapackagev2"
+      "additionalMetadataFile": "aws-cdk-mediapackagev2-filter-config-complex.metadata.json",
+      "displayName": "aws-cdk-mediapackagev2-filter-config-complex"
     },
-    "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.assets": {
+    "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.assets.json",
+        "file": "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0": {
+    "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.template.json",
+        "templateFile": "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.assets"
+          "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.assets"
+        "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.assets"
       ],
-      "additionalMetadataFile": "cdkintegmediapackageendpointfilterDefaultTestDeployAssert38C3EFB0.metadata.json",
-      "displayName": "cdk-integ-mediapackage-endpoint-filter/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "cdkintegmediapackageendpointfilterconfigcomplexDefaultTestDeployAssert60A8F29F.metadata.json",
+      "displayName": "cdk-integ-mediapackage-endpoint-filter-config-complex/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

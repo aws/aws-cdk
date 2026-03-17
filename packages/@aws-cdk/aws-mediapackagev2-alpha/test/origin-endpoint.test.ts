@@ -4,7 +4,7 @@ import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { App, Duration, Stack } from 'aws-cdk-lib/core';
+import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
 
 let app: App;
@@ -196,7 +196,7 @@ test('MediaPackagev2 Channel Configuration - filter configuration', () => {
           end: new Date('2025-04-15T17:25:00Z'),
           start: new Date('2025-04-15T17:20:00Z'),
           timeDelay: Duration.seconds(1),
-          manifestFilter: [mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000)],
+          manifestFilter: [mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000)],
         },
       }),
     ],
@@ -296,7 +296,7 @@ test('MediaPackagev2 Channel Configuration - encryption configuration - filter c
           filterConfiguration: {
             end: new Date('2025-04-15T17:20:00Z'),
             start: new Date('2025-04-15T17:25:00Z'),
-            manifestFilter: [mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000)],
+            manifestFilter: [mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000)],
             timeDelay: Duration.seconds(1),
           },
         }),
@@ -323,7 +323,7 @@ test('MediaPackagev2 Channel Configuration - encryption configuration - filter c
           filterConfiguration: {
             end: new Date('2025-04-15T17:20:00Z'),
             clipStartTime: new Date('2025-04-15T17:25:00Z'),
-            manifestFilter: [mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000)],
+            manifestFilter: [mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000)],
             timeDelay: Duration.seconds(1),
           },
         }),
@@ -351,11 +351,11 @@ test('MediaPackagev2 Channel Configuration - filter configuration multiple', () 
           start: new Date('2025-04-15T17:20:00Z'),
           timeDelay: Duration.seconds(1),
           manifestFilter: [
-            mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000),
-            mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.VIDEO_FRAMERATE, 23.976, 30),
-            mediapackagev2.ManifestFilter.single(mediapackagev2.ManifestFilterKeys.VIDEO_CODEC, 'h264'),
-            mediapackagev2.ManifestFilter.multiple(mediapackagev2.ManifestFilterKeys.VIDEO_HEIGHT, ['240', '360', '720-1080']),
-            mediapackagev2.ManifestFilter.custom('audio_language:fr,en-US,de'),
+            mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000),
+            mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_FRAMERATE, 23.976, 30),
+            mediapackagev2.ManifestFilter.videoCodec(mediapackagev2.VideoCodec.H264),
+            mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, 720, 1080),
+            mediapackagev2.ManifestFilter.textList(mediapackagev2.TextFilterKey.AUDIO_LANGUAGE, ['fr', 'en-US', 'de']),
           ],
         },
       }),
@@ -369,7 +369,7 @@ test('MediaPackagev2 Channel Configuration - filter configuration multiple', () 
       ManifestName: 'index',
       FilterConfiguration: {
         End: '2025-04-15T17:25:00+00:00',
-        ManifestFilter: 'audio_sample_rate:0-50000;video_framerate:23.976-30;video_codec:h264;video_height:240,360,720-1080;audio_language:fr,en-US,de',
+        ManifestFilter: 'audio_sample_rate:0-50000;video_framerate:23.976-30;video_codec:H264;video_height:720-1080;audio_language:fr,en-US,de',
         Start: '2025-04-15T17:20:00+00:00',
         TimeDelaySeconds: 1,
       },
@@ -377,6 +377,81 @@ test('MediaPackagev2 Channel Configuration - filter configuration multiple', () 
     ContainerType: 'CMAF',
     StartoverWindowSeconds: 100,
   });
+});
+
+test('ManifestFilter bitrateRange renders correct filter string', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.cmaf(),
+  });
+
+  new mediapackagev2.OriginEndpoint(stack, 'origin', {
+    channel,
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [
+      mediapackagev2.Manifest.hls({
+        manifestName: 'index',
+        filterConfiguration: {
+          manifestFilter: [
+            mediapackagev2.ManifestFilter.bitrateRange(mediapackagev2.BitrateFilterKey.VIDEO_BITRATE, Bitrate.mbps(1), Bitrate.mbps(5)),
+            mediapackagev2.ManifestFilter.bitrateRange(mediapackagev2.BitrateFilterKey.AUDIO_BITRATE, Bitrate.kbps(64), Bitrate.kbps(320)),
+          ],
+        },
+      }),
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpoint', {
+    HlsManifests: [{
+      ManifestName: 'index',
+      FilterConfiguration: {
+        ManifestFilter: 'video_bitrate:1000000-5000000;audio_bitrate:64000-320000',
+      },
+    }],
+  });
+});
+
+test('ManifestFilter bitrate rejects non-integer bps value', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.bitrate(mediapackagev2.BitrateFilterKey.VIDEO_BITRATE, Bitrate.bps(1.5));
+  }).toThrow(/must resolve to a whole number of bits per second, got 1.5/);
+});
+
+test('ManifestFilter bitrate rejects value exceeding max range', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.bitrate(mediapackagev2.BitrateFilterKey.AUDIO_BITRATE, Bitrate.gbps(3));
+  }).toThrow(/must be between 0 and 2147483647, got 3000000000/);
+});
+
+test('ManifestFilter numeric rejects value outside accepted range', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.numeric(mediapackagev2.NumericFilterKey.AUDIO_CHANNELS, 0);
+  }).toThrow(/must be between 1 and 32767, got 0/);
+
+  expect(() => {
+    mediapackagev2.ManifestFilter.numeric(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, 40000);
+  }).toThrow(/must be between 1 and 32767, got 40000/);
+
+  expect(() => {
+    mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_FRAMERATE, 0, 30);
+  }).toThrow(/must be between 1 and 999.999, got 0/);
+});
+
+test('ManifestFilter numeric rejects non-integer for integer-only keys', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.numeric(mediapackagev2.NumericFilterKey.AUDIO_CHANNELS, 2.5);
+  }).toThrow(/must be an integer, got 2.5/);
+
+  expect(() => {
+    mediapackagev2.ManifestFilter.numeric(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, 720.5);
+  }).toThrow(/must be an integer, got 720.5/);
+});
+
+test('ManifestFilter numeric rejects framerate with more than 3 decimal places', () => {
+  expect(() => {
+    mediapackagev2.ManifestFilter.numeric(mediapackagev2.NumericFilterKey.VIDEO_FRAMERATE, 23.9764);
+  }).toThrow(/allows up to 3 decimal places, got 23.9764/);
 });
 
 test('Invalid time delay in filter configuration.', () => {
@@ -848,11 +923,11 @@ test('Create resources using helper functions', () => {
           start: new Date('2025-04-15T17:20:00Z'),
           timeDelay: Duration.seconds(10),
           manifestFilter: [
-            mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.AUDIO_SAMPLE_RATE, 0, 50000),
-            mediapackagev2.ManifestFilter.range(mediapackagev2.ManifestFilterKeys.VIDEO_FRAMERATE, 23.976, 30),
-            mediapackagev2.ManifestFilter.single(mediapackagev2.ManifestFilterKeys.VIDEO_CODEC, 'h264'),
-            mediapackagev2.ManifestFilter.multiple(mediapackagev2.ManifestFilterKeys.VIDEO_HEIGHT, ['240', '360', '720-1080']),
-            mediapackagev2.ManifestFilter.custom('audio_language:fr,en-US,de'),
+            mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000),
+            mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.VIDEO_FRAMERATE, 23.976, 30),
+            mediapackagev2.ManifestFilter.videoCodec(mediapackagev2.VideoCodec.H264),
+            mediapackagev2.ManifestFilter.numericList(mediapackagev2.NumericFilterKey.VIDEO_HEIGHT, [240, 360]),
+            mediapackagev2.ManifestFilter.textList(mediapackagev2.TextFilterKey.AUDIO_LANGUAGE, ['fr', 'en-US', 'de']),
           ],
         },
       }),
