@@ -1139,7 +1139,9 @@ export interface FilterConfiguration {
  */
 export interface StartTagOptions {
   /**
-   * Use precise
+   * Specify the value for PRECISE within your EXT-X-START tag.
+   *
+   * Leave blank, or choose false, to use the default value NO. Choose true to use the value YES.
    *
    * @default false
    */
@@ -1190,15 +1192,19 @@ export class StartTag {
 export interface StartTag {
   /**
    * Specify the value for PRECISE within your EXT-X-START tag.
+   *
+   * Leave blank, or choose false, to use the default value NO. Choose true to use the value YES.
    */
   readonly precise?: boolean;
   /**
-   * Specify the value for TIME-OFFSET within your EXT-X-START tag. Enter a signed floating point value which, if positive, must be less than the configured
-   * manifest duration minus three times the configured segment target duration.
-   * If negative, the absolute value must be larger than three times the configured segment target duration, and the absolute value must be smaller than
-   * the configured manifest duration.
+   * Specify the value for TIME-OFFSET within your EXT-X-START tag.
+   *
+   * Enter a signed floating point value which, if positive, must be less than the configured
+   * manifest duration minus three times the configured segment target duration. If negative,
+   * the absolute value must be larger than three times the configured segment target duration,
+   * and the absolute value must be smaller than the configured manifest duration.
    */
-  timeOffset: number;
+  readonly timeOffset: number;
 }
 
 /**
