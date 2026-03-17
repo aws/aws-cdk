@@ -449,10 +449,13 @@ new OriginEndpoint(this, 'Endpoint', {
       // Start 10 seconds from the beginning
       startTag: StartTag.of(10),
     }),
-    Manifest.lowLatencyHLS({
-      manifestName: 'll-hls',
+    Manifest.hls({
+      manifestName: 'precise',
       // Start 30 seconds back from live edge with precise positioning
       startTag: StartTag.withPrecise(-30),
+    }),
+    Manifest.lowLatencyHLS({
+      manifestName: 'll-hls',
     }),
   ],
 });
