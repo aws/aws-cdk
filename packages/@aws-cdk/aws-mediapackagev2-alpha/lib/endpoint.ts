@@ -1166,9 +1166,7 @@ export class StartTag {
   }
 
   /**
-   * Create a start tag with precise positioning enabled.
-   *
-   * When PRECISE=YES, clients should start playback at the exact specified point.
+   * Create a start tag with precise positioning enabled (PRECISE=YES).
    *
    * @param timeOffset The time offset in seconds (positive or negative)
    */
