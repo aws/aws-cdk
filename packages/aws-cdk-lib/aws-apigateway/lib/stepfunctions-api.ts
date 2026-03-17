@@ -110,7 +110,7 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
 }
 
 /**
- * Defines an API Gateway REST API with a Synchrounous Express State Machine as a proxy integration.
+ * Defines an API Gateway REST API with a Synchronous Express State Machine as a proxy integration.
  */
 @propertyInjectable
 export class StepFunctionsRestApi extends RestApi {
