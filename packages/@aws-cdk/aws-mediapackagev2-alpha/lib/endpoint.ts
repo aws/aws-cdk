@@ -781,9 +781,6 @@ export enum ContainerType {
 }
 
 /**
- * Encryption method options
- */
-/**
  * Encryption methods for CMAF container type.
  */
 export enum CmafEncryptionMethod {
@@ -839,7 +836,6 @@ export enum PresetSpeke20Audio {
 }
 
 /**
- * The SPEKE Version 2.0 preset video associated with the encryption contract configuration of the origin endpoint.
  * A collection of video encryption presets.
  */
 export enum PresetSpeke20Video {
