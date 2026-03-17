@@ -169,9 +169,9 @@ export class Annotations {
   public _addTrackableError(id: string, message: string) {
     this.addError(message);
 
-    const type = 'aws:cdk:trackable-error';
+    const type = 'aws:cdk:error-code';
 
-    const isNew = !this.scope.node.metadata.find((x) => x.type === type && x.data === message);
+    const isNew = !this.scope.node.metadata.find((x) => x.type === type && x.data === id);
     if (isNew) {
       this.scope.node.addMetadata(type, id);
     }
