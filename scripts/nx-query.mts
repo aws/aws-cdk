@@ -19,6 +19,32 @@ interface NxGraph {
 }
 
 function main() {
+  let names = false;
+  let help = false;
+
+  let args = [...process.argv.slice(2)];
+  while (args.length > 0 && args[0].startsWith('-')) {
+    switch (args[0]) {
+      case '--help':
+      case '-h':
+        help = true;
+        break;
+
+      case '--names':
+      case '-n':
+        names = true;
+        break;
+    }
+
+    args.shift();
+  }
+
+  if (args.length < 1 || help) {
+    showHelp();
+    process.exitCode = 1;
+    return;
+  }
+
   const output: NxGraph = JSON.parse(execFileSync('npx', ['nx', 'graph', '--print'], { encoding: 'utf-8' }));
 
   const nodes = Object.keys(output.graph.nodes);
@@ -30,13 +56,7 @@ function main() {
     }
   }
 
-  if (process.argv.length < 3 || process.argv.includes('--help') || process.argv.includes('-h')) {
-    help();
-    process.exitCode = 1;
-    return;
-  }
-
-  const expression = process.argv[2];
+  const expression = args[0];
   const directories = Object.fromEntries(nodes.map(node => [node, output.graph.nodes[node].data.root]));
 
   let selectedNodes = new Set(evaluateExpression(expression ?? '', dependencyGraph, {
@@ -46,7 +66,7 @@ function main() {
   const sortedNodes = new Graph(dependencyGraph).topologicalSort().flatMap(xs => xs).filter(x => selectedNodes.has(x));
 
   for (const node of sortedNodes) {
-    console.log(directories[node]);
+    console.log(names ? node : directories[node]);
   }
 }
 
@@ -58,8 +78,8 @@ function isJsiiPackage(dir: string) {
   return !!pkgJson.jsii;
 }
 
-function help() {
-  console.error(`Usage: nx-query.mts <EXPRESSION>
+function showHelp() {
+  console.error(`Usage: nx-query.mts [--names|-n] <EXPRESSION>
 
 Query the monorepo graph for packages using an expression language. The
 language is based on https://docs.jj-vcs.dev/latest/revsets/. Highlights:
@@ -71,8 +91,11 @@ language is based on https://docs.jj-vcs.dev/latest/revsets/. Highlights:
     ~x             All packages other than x
     x & y, x | y   Intersection and union
     x ~ y          All packages in x except those in y
-
     jsii()         All jsii packages
+
+By defaults prints directories, unless --names is given.
+
+Always prints packages in topological order.
 `);
 }
 

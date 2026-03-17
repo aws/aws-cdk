@@ -23,7 +23,7 @@ package_exists_on_npm() {
 
 list_jsii_packages() {
     echo "Listing jsii packages..." >&2
-    for dir in $(npx lerna ls -p); do
+    for dir in $($scriptdir/nx-query.mts ::); do
         if [[ -f $dir/.jsii ]]; then
             echo "$dir"
         fi
