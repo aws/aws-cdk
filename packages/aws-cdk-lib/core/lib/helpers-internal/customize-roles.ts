@@ -449,7 +449,8 @@ export function getPrecreatedRoleConfig(scope: Construct, rolePath?: string): Cu
     if (customizeRoles.usePrecreatedRoles?.hasOwnProperty(precreatedRolePath)) {
       if (Token.isUnresolved(customizeRoles.usePrecreatedRoles[precreatedRolePath])) {
         // we do not want to fail synthesis
-        Annotations.of(scope).addError(
+        Annotations.of(scope)._addTrackableError(
+          'UnresolvablePrecreatedRoleName',
           `Cannot resolve precreated role name at path "${precreatedRolePath}". The value may be a token.`,
         );
       } else {
@@ -461,7 +462,8 @@ export function getPrecreatedRoleConfig(scope: Construct, rolePath?: string): Cu
       }
     } else {
       // we do not want to fail synthesis
-      Annotations.of(scope).addError(
+      Annotations.of(scope)._addTrackableError(
+        'MissingPrecreatedRoleName',
         `IAM Role is being created at path "${precreatedRolePath}" and customizeRoles.preventSynthesis is enabled. ` +
           'You must provide a precreated role name in customizeRoles.precreatedRoles',
       );
