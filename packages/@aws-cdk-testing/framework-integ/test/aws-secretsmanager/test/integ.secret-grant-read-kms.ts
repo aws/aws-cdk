@@ -23,6 +23,11 @@ class SecretGrantReadKmsStack extends cdk.Stack {
     const role = new iam.Role(this, 'TestRole', {
       assumedBy: new iam.AccountRootPrincipal(),
     });
+    // Suppress guard check: AccountRootPrincipal is intentional here for integ test purposes;
+    // the role is used only to verify grantRead grants kms:Decrypt to the grantee.
+    (role.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
+      SuppressedRules: ['IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS'],
+    });
 
     // grantRead should also grant kms:Decrypt directly to the role
     secret.grantRead(role);
