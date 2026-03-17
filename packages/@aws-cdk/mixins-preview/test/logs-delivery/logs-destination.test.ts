@@ -223,12 +223,28 @@ describe('cross acount destination', () => {
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
             },
-            Resource: {
-              'Fn::GetAtt': [
-                'Destination920A3C57',
-                'Arn',
-              ],
-            },
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'Destination920A3C57',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'Destination920A3C57',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
       },
@@ -315,7 +331,6 @@ describe('cross acount destination', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -538,11 +553,11 @@ describe('Cloudwatch destination', () => {
                 'Arn',
               ],
             },
-            ':log-stream:*"}],"Version":"2012-10-17"}',
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
-      PolicyName: 'LogGroupDelivery',
+      PolicyName: 'LogGroupDeliveryPolicy7F26860F',
     });
 
     // Validate that DeliveryDestination depends on the Cloudwatch resource policy
@@ -605,7 +620,7 @@ describe('Cloudwatch destination', () => {
                 'Arn',
               ],
             },
-            ':log-stream:*"}],"Version":"2012-10-17"}',
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
@@ -803,7 +818,6 @@ describe('S3 Destination', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',
@@ -852,7 +866,6 @@ describe('S3 Destination', () => {
       KeyPolicy: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Sid: 'AWS CDK: Allow Logs Delivery to use the key',
             Effect: 'Allow',
             Principal: {
               Service: 'delivery.logs.amazonaws.com',

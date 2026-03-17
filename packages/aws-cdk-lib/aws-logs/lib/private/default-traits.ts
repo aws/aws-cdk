@@ -53,7 +53,7 @@ class CfnLogGroupWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnLogGroup<A>(resource: IConstruct, factory: (r: CfnLogGroup) => A): A {
   if (!CfnLogGroup.isCfnLogGroup(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnLogGroup`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnLogGroup`, resource);
   }
 
   return factory(resource);
