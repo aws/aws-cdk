@@ -1,15 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
-import * as cognito from '../../../aws-cognito';
-import { Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
+import type * as cognito from '../../../aws-cognito';
+import type { Duration } from '../../../core';
+import { FeatureFlags, Lazy, Names, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
-import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
-import { Authorizer, IAuthorizer } from '../authorizer';
+import type { CfnAuthorizerProps } from '../apigateway.generated';
+import { CfnAuthorizer } from '../apigateway.generated';
+import type { IAuthorizer } from '../authorizer';
+import { Authorizer } from '../authorizer';
 import { AuthorizationType } from '../method';
-import { IRestApi } from '../restapi';
+import type { IRestApi } from '../restapi';
 
 /**
  * Properties for CognitoUserPoolsAuthorizer
@@ -110,7 +113,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
    */
   public _attachToApi(restApi: IRestApi): void {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new ValidationError('Cannot attach authorizer to two different rest APIs', restApi);
+      throw new ValidationError('CannotAttachAuthorizerTwoDifferent', 'Cannot attach authorizer to two different rest APIs', restApi);
     }
 
     this.restApiId = restApi.restApiId;
@@ -134,7 +137,7 @@ export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorize
     return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
-          throw new ValidationError(`Authorizer (${this.node.path}) must be attached to a RestApi`, this);
+          throw new ValidationError('Authorizer', `Authorizer (${this.node.path}) must be attached to a RestApi`, this);
         }
         return this.restApiId;
       },

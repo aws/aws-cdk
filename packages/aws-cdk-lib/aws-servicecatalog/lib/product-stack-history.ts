@@ -3,8 +3,8 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { DEFAULT_PRODUCT_STACK_SNAPSHOT_DIRECTORY } from './common';
-import { CloudFormationProductVersion } from './product';
-import { ProductStack } from './product-stack';
+import type { CloudFormationProductVersion } from './product';
+import type { ProductStack } from './product-stack';
 import { Names, ValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -84,7 +84,7 @@ export class ProductStackHistory extends Construct {
     const templateFileKey = `${Names.uniqueId(this)}.${this.props.productStack.artifactId}.${productVersionName}.product.template.json`;
     const templateFilePath = path.join(productStackSnapshotDirectory, templateFileKey);
     if (!fs.existsSync(templateFilePath)) {
-      throw new ValidationError(`Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`, this);
+      throw new ValidationError('TemplateNotFound', `Template ${templateFileKey} cannot be found in ${productStackSnapshotDirectory}`, this);
     }
     return {
       cloudFormationTemplate: CloudFormationTemplate.fromAsset(templateFilePath),
@@ -108,10 +108,9 @@ export class ProductStackHistory extends Construct {
     if (fs.existsSync(templateFilePath)) {
       const previousCfn = fs.readFileSync(templateFilePath).toString();
       if (previousCfn !== cfn && this.props.currentVersionLocked) {
-        throw new ValidationError(`Template has changed for ProductStack Version ${this.props.currentVersionName}.
+        throw new ValidationError('TemplateChangedForLockedVersion', `Template has changed for ProductStack Version ${this.props.currentVersionName}.
         ${this.props.currentVersionName} already exist in ${productStackSnapshotDirectory}.
-        Since locked has been set to ${this.props.currentVersionLocked},
-        Either update the currentVersionName to deploy a new version or deploy the existing ProductStack snapshot.
+        Since locked has been set to ${this.props.currentVersionLocked}, Either update the currentVersionName to deploy a new version or deploy the existing ProductStack snapshot.
         If ${this.props.currentVersionName} was unintentionally synthesized and not deployed,
         delete the corresponding version from ${productStackSnapshotDirectory} and redeploy.`, this);
       }

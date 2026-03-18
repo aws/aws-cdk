@@ -1,9 +1,10 @@
-import { StateMachine } from './state-machine';
+import type { StateMachine } from './state-machine';
 import { DistributedMap } from './states/distributed-map';
-import { State } from './states/state';
-import { QueryLanguage } from './types';
+import type { State } from './states/state';
+import type { QueryLanguage } from './types';
 import * as iam from '../../aws-iam';
-import { Arn, ArnFormat, Duration, Stack, UnscopedValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { Arn, ArnFormat, Stack, UnscopedValidationError } from '../../core';
 
 /**
  * A collection of connected states
@@ -96,7 +97,7 @@ export class StateGraph {
   public registerSuperGraph(graph: StateGraph) {
     if (this.superGraph === graph) { return; }
     if (this.superGraph) {
-      throw new UnscopedValidationError('Every StateGraph can only be registered into one other StateGraph');
+      throw new UnscopedValidationError('StateGraphAlreadyRegistered', 'Every StateGraph can only be registered into one other StateGraph');
     }
     this.superGraph = graph;
     this.pushContainedStatesUp(graph);
@@ -137,7 +138,7 @@ export class StateGraph {
     } else {
       const existingGraph = this.allContainedStates.get(stateId);
       if (existingGraph) {
-        throw new UnscopedValidationError(`State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.` );
+        throw new UnscopedValidationError('DuplicateStateId', `State with name '${stateId}' occurs in both ${graph} and ${existingGraph}. All states must have unique names.` );
       }
 
       this.allContainedStates.set(stateId, graph);

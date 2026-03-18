@@ -1,5 +1,5 @@
 import * as validation from './private/validation';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import { Lazy, Token, UnscopedValidationError } from '../../core';
 
 /**
@@ -14,6 +14,8 @@ export class Artifact {
    * @param files file paths that you want to export as the output artifact for the action.
    * This property can only be used in the artifact for `CommandsAction`.
    * The length of the files array must be between 1 and 10.
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   public static artifact(name: string, files?: string[]): Artifact {
     return new Artifact(name, files);
@@ -35,7 +37,7 @@ export class Artifact {
     validation.validateArtifactName(artifactName);
 
     if (artifactFiles !== undefined && (artifactFiles.length < 1 || artifactFiles.length > 10)) {
-      throw new UnscopedValidationError(`The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
+      throw new UnscopedValidationError('MustBeLengthArtifactfilesArray', `The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
     }
 
     this._artifactName = artifactName;
@@ -133,7 +135,7 @@ export class Artifact {
   /** @internal */
   protected _setName(name: string) {
     if (this._artifactName) {
-      throw new UnscopedValidationError(`Artifact already has name '${this._artifactName}', cannot override it`);
+      throw new UnscopedValidationError('ArtifactAlreadyName', `Artifact already has name '${this._artifactName}', cannot override it`);
     } else {
       this._artifactName = name;
     }
@@ -147,6 +149,7 @@ export class Artifact {
  * for a CloudFormation action.
  */
 export class ArtifactPath {
+  /** @jsii suppress JSII5019 For historic reasons */
   public static artifactPath(artifactName: string, fileName: string): ArtifactPath {
     return new ArtifactPath(Artifact.artifact(artifactName), fileName);
   }

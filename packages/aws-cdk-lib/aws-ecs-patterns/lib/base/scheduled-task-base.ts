@@ -1,9 +1,12 @@
 import { Construct } from 'constructs';
-import { Schedule } from '../../../aws-applicationautoscaling';
-import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '../../../aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret, TaskDefinition } from '../../../aws-ecs';
+import type { Schedule } from '../../../aws-applicationautoscaling';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../../aws-ec2';
+import { SubnetType } from '../../../aws-ec2';
+import type { ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret, TaskDefinition } from '../../../aws-ecs';
+import { AwsLogDriver, Cluster } from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
-import { EcsTask, Tag } from '../../../aws-events-targets';
+import type { Tag } from '../../../aws-events-targets';
+import { EcsTask } from '../../../aws-events-targets';
 import { Stack, ValidationError } from '../../../core';
 
 /**
@@ -189,7 +192,7 @@ export abstract class ScheduledTaskBase extends Construct {
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
-      throw new ValidationError('You must specify a desiredTaskCount greater than 0', this);
+      throw new ValidationError('SpecifyDesiredTaskCountGreater', 'You must specify a desiredTaskCount greater than 0', this);
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };

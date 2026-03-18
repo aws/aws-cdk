@@ -1,9 +1,11 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { TargetBaseProps, bindBaseTargetConfig } from './util';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig } from './util';
+import type { RuleTargetInputProperties, IRule } from '../../aws-events';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
+import { RuleTargetInput, EventField, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { ArnFormat, Stack, ValidationError } from '../../core';
 
@@ -107,24 +109,24 @@ export interface LogGroupProps extends TargetBaseProps {
  */
 export class CloudWatchLogGroup implements events.IRuleTarget {
   private target?: RuleTargetInputProperties;
-  constructor(private readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
+  constructor(private readonly logGroup: logs.ILogGroupRef, private readonly props: LogGroupProps = {}) {}
 
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
     const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(rule.node)}`;
 
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
-      throw new ValidationError('Only one of "event" or "logEvent" can be specified', rule);
+      throw new ValidationError('OnlyOneOfEventOrLogEventCanBeSpecified', 'Only one of "event" or "logEvent" can be specified', rule);
     }
 
     this.target = this.props.event?.bind(rule);
     if (this.target?.inputPath || this.target?.input) {
-      throw new ValidationError('CloudWatchLogGroup targets does not support input or inputPath', rule);
+      throw new ValidationError('CloudWatchLogGroupTargetsDoNotSupportInputOrInputPath', 'CloudWatchLogGroup targets does not support input or inputPath', rule);
     }
 
     rule.node.addValidation({ validate: () => this.validateInputTemplate() });
@@ -135,7 +137,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
         policyStatements: [new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-          resources: [this.logGroup.logGroupArn],
+          resources: [this.logGroup.logGroupRef.logGroupArn],
           principals: [new iam.ServicePrincipal('events.amazonaws.com')],
         })],
       });
@@ -147,7 +149,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
         service: 'logs',
         resource: 'log-group',
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        resourceName: this.logGroup.logGroupName,
+        resourceName: this.logGroup.logGroupRef.logGroupName,
       }),
       input: this.props.event ?? this.props.logEvent,
       targetResource: this.logGroup,

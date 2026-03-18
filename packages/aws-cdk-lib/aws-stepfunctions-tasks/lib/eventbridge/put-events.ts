@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as events from '../../../aws-events';
+import type { Construct } from 'constructs';
+import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -36,7 +36,7 @@ export interface EventBridgePutEventsEntry {
    *
    * @default - event is sent to account's default event bus
    */
-  readonly eventBus?: events.IEventBus;
+  readonly eventBus?: events.IEventBusRef;
 
   /**
    * The service or application that caused this event to be generated
@@ -111,7 +111,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.entries.map(entry => entry.detail))) {
-        throw new cdk.ValidationError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.', this);
+        throw new cdk.ValidationError('TaskTokenRequired', 'Task Token is required in `entries`. Use JsonPath.taskToken to set the token.', this);
       }
     }
 
@@ -133,7 +133,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
       .map(entry => {
         if (entry.eventBus) {
           // If an eventBus is provided, use the corresponding ARN
-          return entry.eventBus.eventBusArn;
+          return entry.eventBus.eventBusRef.eventBusArn;
         } else {
           // If neither an eventBus nor eventBusName is provided,
           // format the ARN for the default event bus in the account.
@@ -167,7 +167,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
       return {
         Detail: entry.detail?.value,
         DetailType: entry.detailType,
-        EventBusName: entry.eventBus?.eventBusArn,
+        EventBusName: entry.eventBus?.eventBusRef.eventBusArn,
         Source: entry.source,
       };
     });
@@ -175,10 +175,10 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
   private validateEntries(): void {
     if (this.props.entries.length <= 0) {
-      throw new cdk.ValidationError('Value for property `entries` must be a non-empty array.', this);
+      throw new cdk.ValidationError('EntriesMustBeNonEmptyArray', 'Value for property `entries` must be a non-empty array.', this);
     }
     if (this.props.entries.some(e => e.source.startsWith('aws.'))) {
-      throw new cdk.ValidationError('Event source cannot start with "aws."', this);
+      throw new cdk.ValidationError('EventSourceCannotStartWithAws', 'Event source cannot start with "aws."', this);
     }
   }
 }

@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { getDocTag } from './util';
 
 const CORE_MODULE = 'aws-cdk-lib';
@@ -71,6 +71,24 @@ export class CoreTypes {
   public static isResourceClass(classType: reflect.ClassType) {
     const baseResource = classType.system.findClass(CoreTypesFqn.Resource);
     return classType.extends(baseResource) || getDocTag(classType, 'resource');
+  }
+
+  /**
+   * @returns true if `interfaceType` looks like an L2 interface (`IBucket`)
+   */
+  public static isL2Interface(interfaceType: reflect.InterfaceType) {
+    // We determine this by it being a behavioral interface, and it inheriting from `IResource`.
+    const baseInterface = interfaceType.system.findInterface(CoreTypesFqn.ResourceInterface);
+    return !interfaceType.datatype && interfaceExtends(interfaceType, baseInterface);
+  }
+
+  /**
+   * @returns true if `interfaceType` looks like an L1 Ref interface (`IBucketRef)`
+   */
+  public static isL1RefInterface(interfaceType: reflect.InterfaceType) {
+    // We determine this by it being a behavioral interface, and it living inside the `aws-cdk-lib.interfaces` namespace
+    // with a name ending in `Ref`.
+    return !interfaceType.datatype && interfaceType.fqn.startsWith('aws-cdk-lib.interfaces.') && interfaceType.name.endsWith('Ref');
   }
 
   /**
@@ -214,4 +232,8 @@ export class CoreTypes {
       return;
     }
   }
+}
+
+function interfaceExtends(interfaceType: reflect.InterfaceType, baseInterface: reflect.InterfaceType) {
+  return interfaceType.getInterfaces(true).some(i => i.fqn === baseInterface.fqn);
 }

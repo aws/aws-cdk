@@ -1,15 +1,30 @@
 import { Construct } from 'constructs';
 import { CfnResolver } from './appsync.generated';
-import { CachingConfig } from './caching-config';
+import type { CachingConfig } from './caching-config';
 import { BASE_CACHING_KEYS } from './caching-key';
-import { Code } from './code';
-import { BaseDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
-import { MappingTemplate } from './mapping-template';
-import { FunctionRuntime } from './runtime';
+import type { Code } from './code';
+import type { BaseDataSource } from './data-source';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { MappingTemplate } from './mapping-template';
+import type { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
 import { extractFunctionIdFromFunctionRef } from './private/ref-utils';
-import { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+
+/**
+ * Enum for enhanced resolver metrics for specified resolvers
+ */
+export enum ResolverMetricsConfig {
+  /**
+   * Enables enhanced resolver metrics for specified resolvers
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disables enhanced resolver metrics for specified resolvers
+   */
+  DISABLED = 'DISABLED',
+}
 
 /**
  * Basic properties for an AppSync resolver
@@ -67,6 +82,14 @@ export interface BaseResolverProps {
    * @default - no code is used
    */
   readonly code?: Code;
+
+  /**
+   * Whether to enable enhanced metrics
+   * Value will be ignored, if `enhancedMetricsConfig.resolverLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_RESOLVER_METRICS`
+   *
+   * @default - no metrics configuration
+   */
+  readonly metricsConfig?: ResolverMetricsConfig;
 }
 
 /**
@@ -111,25 +134,25 @@ export class Resolver extends Construct {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('Code is required when specifying a runtime', scope);
+      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError('MappingTemplatesCannotAlongsideCode', 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (pipelineConfig && props.dataSource) {
-      throw new ValidationError(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
+      throw new ValidationError('PipelineResolverCannotDataSource', `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
     }
 
     if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
-      throw new ValidationError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
+      throw new ValidationError('CachingConfigSecondsReceived', `Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
     }
 
     if (props.cachingConfig?.cachingKeys) {
       if (props.cachingConfig.cachingKeys.find(cachingKey =>
         !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
-        throw new ValidationError(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
+        throw new ValidationError('CachingConfigKeysBeginContext', `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
       }
     }
 
@@ -148,6 +171,7 @@ export class Resolver extends Construct {
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
+      metricsConfig: props.metricsConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {

@@ -7,7 +7,8 @@ import {
   ConfluentSchemaRegistry,
 } from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, StackProps, Stack, SecretValue } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, SecretValue } from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
 

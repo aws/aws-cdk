@@ -1,10 +1,11 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { generateUniqueId } from './util';
 
 /**
@@ -86,7 +87,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     const parsedArn = Stack.of(scope).splitArn(geofenceCollectionArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError(`Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
+      throw new UnscopedValidationError('GeofenceCollectionArnMissingResourceName', `Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IGeofenceCollection {
@@ -126,16 +127,16 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('GeofenceCollectionDescriptionTooLong', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.geofenceCollectionName !== undefined && !Token.isUnresolved(props.geofenceCollectionName)) {
       if (props.geofenceCollectionName.length < 1 || props.geofenceCollectionName.length > 100) {
-        throw new ValidationError(`\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`, this);
+        throw new ValidationError('GeofenceCollectionNameInvalidLength', `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.geofenceCollectionName)) {
-        throw new ValidationError(`\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`, this);
+        throw new ValidationError('GeofenceCollectionNameInvalidCharacters', `\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`, this);
       }
     }
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {
@@ -152,6 +153,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
 
   /**
    * Grant the given principal identity permissions to perform the actions on this geofence collection.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -164,6 +166,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
 
   /**
    * Grant the given identity permissions to read this geofence collection
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-geofences
    */

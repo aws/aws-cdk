@@ -1,13 +1,17 @@
-import { Construct } from 'constructs';
-import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022ImageSsmParameterProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
-import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023ImageSsmParameterProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
-import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, IMachineImage, MachineImageConfig, OperatingSystemType } from './common';
+import type { Construct } from 'constructs';
+import type { AmazonLinux2022ImageSsmParameterProps } from './amazon-linux-2022';
+import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022Kernel } from './amazon-linux-2022';
+import type { AmazonLinux2023ImageSsmParameterProps } from './amazon-linux-2023';
+import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023Kernel } from './amazon-linux-2023';
+import type { AmazonLinux2ImageSsmParameterProps } from './amazon-linux2';
+import { AmazonLinux2ImageSsmParameter, AmazonLinux2Kernel } from './amazon-linux2';
+import type { IMachineImage, MachineImageConfig } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, OperatingSystemType } from './common';
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, CfnMapping, Aws, Stack, Token, UnscopedValidationError, ValidationError } from '../../../core';
-import * as cxapi from '../../../cx-api';
+import type * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
 
@@ -500,18 +504,18 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('StorageParameterDoesExist', 'Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
       if (props && props.virtualization) {
-        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+        throw new UnscopedValidationError('VirtualizationParameterDoesExist', 'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
     } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
       kernel = AmazonLinuxKernel.KERNEL6_1;
       if (props && props.storage) {
-        throw new UnscopedValidationError('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('StorageParameterDoesExist', 'Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
       if (props && props.virtualization) {
-        throw new UnscopedValidationError('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+        throw new UnscopedValidationError('VirtualizationParameterDoesExist', 'Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -622,7 +626,7 @@ export class GenericLinuxImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
+      throw new ValidationError('UnableToUnableFindMap', `Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -659,7 +663,7 @@ export class GenericWindowsImage implements IMachineImage {
     }
     const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
     if (!imageId) {
-      throw new ValidationError(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
+      throw new ValidationError('UnableToUnableFindMap', `Unable to find AMI in AMI map: no AMI specified for region '${region}'`, scope);
     }
     return {
       imageId,
@@ -712,7 +716,7 @@ export class LookupMachineImage implements IMachineImage {
     }).value as cxapi.AmiContextResponse;
 
     if (typeof value !== 'string') {
-      throw new ValidationError(`Response to AMI lookup invalid, got: ${value}`, scope);
+      throw new ValidationError('ResponseLookupInvalid', `Response to AMI lookup invalid, got: ${value}`, scope);
     }
 
     const osType = this.props.windows ? OperatingSystemType.WINDOWS : OperatingSystemType.LINUX;

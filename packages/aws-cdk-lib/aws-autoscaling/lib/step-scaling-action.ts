@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './autoscaling.generated';
-import { Annotations, Duration, Lazy, ValidationError } from '../../core';
-import { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import type { Duration } from '../../core';
+import { Annotations, Lazy, ValidationError } from '../../core';
+import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Properties for a scaling policy
@@ -97,7 +98,7 @@ export class StepScalingAction extends Construct {
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new ValidationError('At least one of lowerBound or upperBound is required', this);
+      throw new ValidationError('LeastOneLowerBoundUpper', 'At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,

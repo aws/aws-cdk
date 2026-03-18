@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
-import { Architecture } from './architecture';
-import { IFunction } from './function-base';
+import type { IConstruct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { IFunction } from './function-base';
 import { ValidationError } from '../../core/lib/errors';
 import { Stack } from '../../core/lib/stack';
 import { Token } from '../../core/lib/token';
@@ -70,6 +70,7 @@ function getLayerArn(scope: IConstruct, type: string, version: string, architect
     const arn = RegionInfo.get(region).adotLambdaLayerArn(type, version, architecture);
     if (arn === undefined) {
       throw new ValidationError(
+        'AdotLayerArnNotFound',
         `Could not find the ARN information for the ADOT Lambda Layer of type ${type} and version ${version} in ${region}`, scope,
       );
     }

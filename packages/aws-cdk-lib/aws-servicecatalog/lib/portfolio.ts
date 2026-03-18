@@ -1,24 +1,24 @@
-import { Construct, IConstruct } from 'constructs';
-import { MessageLanguage } from './common';
-import {
+import type { Construct, IConstruct } from 'constructs';
+import type { MessageLanguage } from './common';
+import type {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions,
   StackSetsConstraintOptions, TagUpdateConstraintOptions,
 } from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
-import { IProduct } from './product';
+import type { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
-import { TagOptions } from './tag-options';
+import type { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
-import { IBucket } from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type { IBucket } from '../../aws-s3';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IPortfolioRef, PortfolioReference } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
+import type { IPortfolioRef, PortfolioReference } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * Options for portfolio share.
@@ -332,7 +332,7 @@ export class Portfolio extends PortfolioBase {
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
-      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
+      throw new ValidationError('MissingPortfolioIdFromArn', 'Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
     }
 
     class Import extends PortfolioBase {

@@ -1,12 +1,15 @@
-import { Construct } from 'constructs';
-import {
-  CfnVPCEndpointService,
-  CfnVPCEndpointServicePermissions,
+import type { Construct } from 'constructs';
+import type {
   IVPCEndpointServiceRef,
   VPCEndpointServiceReference,
 } from './ec2.generated';
-import { ArnPrincipal } from '../../aws-iam';
-import { Aws, Fn, IResource, Resource, Stack, Token, ValidationError } from '../../core';
+import {
+  CfnVPCEndpointService,
+  CfnVPCEndpointServicePermissions,
+} from './ec2.generated';
+import type { ArnPrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Aws, Fn, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
@@ -139,7 +142,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     addConstructMetadata(this, props);
 
     if (props.vpcEndpointServiceLoadBalancers === undefined || props.vpcEndpointServiceLoadBalancers.length === 0) {
-      throw new ValidationError('VPC Endpoint Service must have at least one load balancer specified.', this);
+      throw new ValidationError('EndpointServiceLeastOneLoad', 'VPC Endpoint Service must have at least one load balancer specified.', this);
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
@@ -149,7 +152,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     this.allowedRegions = props.allowedRegions;
 
     if (props.allowedPrincipals && props.whitelistedPrincipals) {
-      throw new ValidationError('`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
+      throw new ValidationError('DeprecatedPleaseInstead', '`whitelistedPrincipals` is deprecated; please use `allowedPrincipals` instead', this);
     }
     this.allowedPrincipals = props.allowedPrincipals ?? props.whitelistedPrincipals ?? [];
     this.whitelistedPrincipals = this.allowedPrincipals;

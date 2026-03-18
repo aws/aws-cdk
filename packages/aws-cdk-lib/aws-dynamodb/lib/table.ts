@@ -1,16 +1,20 @@
 import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
-import { CfnTable, CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
+import type { CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
+import { CfnTable } from './dynamodb.generated';
 import { ReplicaProvider } from './replica-provider';
-import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
+import type { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
-import {
-  Operation, OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
-  Attribute, BillingMode, ProjectionType, ITable, SecondaryIndexProps, TableClass,
-  LocalSecondaryIndexProps, TableEncryption, StreamViewType, WarmThroughput, PointInTimeRecoverySpecification,
+import type {
+  OperationsMetricOptions, SystemErrorsForOperationsMetricOptions,
+  Attribute, ITable, SecondaryIndexProps, TableClass,
+  LocalSecondaryIndexProps, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
-  validateContributorInsights,
   KeySchema,
+} from './shared';
+import {
+  Operation, BillingMode, ProjectionType, TableEncryption, StreamViewType,
+  validateContributorInsights,
   parseKeySchema,
 } from './shared';
 import { StreamGrants } from './stream-grants';
@@ -18,18 +22,20 @@ import { TableGrants } from './table-grants';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
+import type { CfnCustomResource, CfnResource, Duration } from '../../core';
 import {
   ArnFormat, Resource,
-  Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
+  Aws, CfnCondition,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
   FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
@@ -155,7 +161,7 @@ export abstract class InputFormat {
     // Note that .length may not return the expected result for multi-codepoint characters like full-width characters or emojis,
     // but such characters are not expected to be used as delimiters in this context.
     if (options?.delimiter && (!this.validCsvDelimiters.includes(options.delimiter) || options.delimiter.length !== 1)) {
-      throw new UnscopedValidationError([
+      throw new UnscopedValidationError('InvalidCsvDelimiter', [
         'Delimiter must be a single character and one of the following:',
         `${this.readableValidCsvDelimiters.join(', ')},`,
         `got '${options.delimiter}'`,
@@ -732,13 +738,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Grant a predefined set of permissions on this Table.
    */
   public get grants(): TableGrants {
-    return new TableGrants({
-      table: this,
-      encryptedResource: this,
-      policyResource: this,
-      regions: this.regions,
-      hasIndex: this.hasIndex,
-    });
+    return TableGrants.fromTable(this, this.regions);
   }
 
   /**
@@ -748,7 +748,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    */
   public get streamGrants(): StreamGrants {
     if (!this.tableStreamArn) {
-      throw new ValidationError(`DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
+      throw new ValidationError('StreamsRequired', `DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
     }
     return new StreamGrants({
       table: this,
@@ -768,6 +768,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
@@ -781,6 +782,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
+   *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.stream()` instead.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    * @param actions The set of actions to allow (i.e. "dynamodb:DescribeStream", "dynamodb:GetRecords", ...)
@@ -796,6 +802,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.readData()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadData(grantee: iam.IGrantable): iam.Grant {
@@ -804,6 +815,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
   /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
+   *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.tableListStreams()` instead.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal (no-op if undefined)
    */
@@ -819,6 +835,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `streamGrants.streamRead()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantStreamRead(grantee: iam.IGrantable): iam.Grant {
@@ -831,6 +852,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.writeData()` instead.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -846,6 +872,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.readWriteData()` instead.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant access to
    */
   public grantReadWriteData(grantee: iam.IGrantable): iam.Grant {
@@ -857,6 +888,11 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.fullAccess()` instead.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
    */
@@ -909,7 +945,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
-      throw new ValidationError("'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
+      throw new ValidationError('OperationDimensionRequired', "'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
     }
 
     const dimensionsMap = {
@@ -930,7 +966,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (props?.dimensions) {
-      throw new ValidationError("'dimensions' is not supported for the 'UserErrors' metric", this);
+      throw new ValidationError('DimensionsNotSupported', "'dimensions' is not supported for the 'UserErrors' metric", this);
     }
 
     // overriding 'dimensions' here because this metric is an account metric.
@@ -967,7 +1003,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new ValidationError("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.", this);
+      throw new ValidationError('OperationDimensionRequired', "'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.", this);
     }
 
     const dimensionsMap = {
@@ -1025,7 +1061,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    */
   private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions): cloudwatch.IMetric {
     if (props?.dimensions?.Operation) {
-      throw new ValidationError("The Operation dimension is not supported. Use the 'operations' property.", this);
+      throw new ValidationError('OperationDimensionNotSupported', "The Operation dimension is not supported. Use the 'operations' property.", this);
     }
 
     const operations = props?.operations ?? Object.values(Operation);
@@ -1061,7 +1097,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
+      throw new ValidationError('InvalidOperationProperties', 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
     }
 
     for (const operation of operations) {
@@ -1079,7 +1115,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
 
       if (firstChar === firstChar.toUpperCase()) {
         // https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax
-        throw new ValidationError(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
+        throw new ValidationError('IllegalOperationMetricName', `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
       }
 
       metrics[operationMetricName] = metric;
@@ -1113,6 +1149,9 @@ export class Table extends TableBase {
   /**
    * Permits an IAM Principal to list all DynamoDB Streams.
    * @deprecated Use `#grantTableListStreams` for more granular permission
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal (no-op if undefined)
    */
   public static grantListStreams(grantee: iam.IGrantable): iam.Grant {
@@ -1183,18 +1222,18 @@ export class Table extends TableBase {
     const stack = Stack.of(scope);
     if (!attrs.tableName) {
       if (!attrs.tableArn) {
-        throw new ValidationError('One of tableName or tableArn is required!', scope);
+        throw new ValidationError('TableNameOrArnRequired', 'One of tableName or tableArn is required!', scope);
       }
 
       arn = attrs.tableArn;
       const maybeTableName = stack.splitArn(attrs.tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!maybeTableName) {
-        throw new ValidationError('ARN for DynamoDB table must be in the form: ...', scope);
+        throw new ValidationError('InvalidTableArn', 'ARN for DynamoDB table must be in the form: ...', scope);
       }
       name = maybeTableName;
     } else {
       if (attrs.tableArn) {
-        throw new ValidationError('Only one of tableArn or tableName can be provided', scope);
+        throw new ValidationError('TableArnOrNameConflict', 'Only one of tableArn or tableName can be provided', scope);
       }
       name = attrs.tableName;
       arn = stack.formatArn({
@@ -1215,21 +1254,6 @@ export class Table extends TableBase {
    * @default - No resource policy statements are added to the created table.
    */
   public resourcePolicy?: iam.PolicyDocument;
-
-  /**
-   * @attribute
-   */
-  public readonly tableArn: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableName: string;
-
-  /**
-   * @attribute
-   */
-  public readonly tableStreamArn: string | undefined;
 
   private readonly table: CfnTable;
 
@@ -1256,13 +1280,32 @@ export class Table extends TableBase {
 
   public readonly regions? = new Array<string>();
 
+  @memoizedGetter
+  public get tableArn(): string {
+    return this.getResourceArnAttribute(this.table.attrArn, {
+      service: 'dynamodb',
+      resource: 'table',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get tableName(): string {
+    return this.getResourceNameAttribute(this.table.ref);
+  }
+
+  @memoizedGetter
+  public get tableStreamArn(): string | undefined {
+    return this.table.streamSpecification ? this.table.attrStreamArn : undefined;
+  }
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });
 
     if (!props?.partitionKey) {
-      throw new ValidationError('partitionKey is required for Table', this);
+      throw new ValidationError('PartitionKeyRequired', 'partitionKey is required for Table', this);
     }
 
     const normalizedSchema = parseKeySchema(props, this);
@@ -1285,7 +1328,7 @@ export class Table extends TableBase {
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
       if (props.stream && props.stream !== StreamViewType.NEW_AND_OLD_IMAGES) {
-        throw new ValidationError('`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`', this);
+        throw new ValidationError('StreamViewTypeRequired', '`stream` must be set to `NEW_AND_OLD_IMAGES` when specifying `replicationRegions`', this);
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
@@ -1343,16 +1386,7 @@ export class Table extends TableBase {
 
     this.encryptionKey = encryptionKey;
 
-    this.tableArn = this.getResourceArnAttribute(this.table.attrArn, {
-      service: 'dynamodb',
-      resource: 'table',
-      resourceName: this.physicalName,
-    });
-    this.tableName = this.getResourceNameAttribute(this.table.ref);
-
     if (props.tableName) { this.node.addMetadata('aws:cdk:hasPhysicalName', this.tableName); }
-
-    this.tableStreamArn = streamSpecification ? this.table.attrStreamArn : undefined;
 
     this.scalingRole = this.makeScalingRole();
 
@@ -1470,10 +1504,10 @@ export class Table extends TableBase {
   @MethodMetadata()
   public autoScaleReadCapacity(props: EnableScalingProps): IScalableTableAttribute {
     if (this.tableScaling.scalableReadAttribute) {
-      throw new ValidationError('Read AutoScaling already enabled for this table', this);
+      throw new ValidationError('ReadAutoScalingEnabled', 'Read AutoScaling already enabled for this table', this);
     }
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
-      throw new ValidationError('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
+      throw new ValidationError('AutoScalingNotAvailablePayPerRequest', 'AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
     }
 
     return this.tableScaling.scalableReadAttribute = new ScalableTableAttribute(this, 'ReadScaling', {
@@ -1493,10 +1527,10 @@ export class Table extends TableBase {
   @MethodMetadata()
   public autoScaleWriteCapacity(props: EnableScalingProps): IScalableTableAttribute {
     if (this.tableScaling.scalableWriteAttribute) {
-      throw new ValidationError('Write AutoScaling already enabled for this table', this);
+      throw new ValidationError('WriteAutoScalingEnabled', 'Write AutoScaling already enabled for this table', this);
     }
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
-      throw new ValidationError('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
+      throw new ValidationError('AutoScalingNotAvailablePayPerRequest', 'AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
     }
 
     this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
@@ -1520,14 +1554,14 @@ export class Table extends TableBase {
   @MethodMetadata()
   public autoScaleGlobalSecondaryIndexReadCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
-      throw new ValidationError('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
+      throw new ValidationError('AutoScalingNotAvailablePayPerRequest', 'AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
     }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
-      throw new ValidationError(`No global secondary index with name ${indexName}`, this);
+      throw new ValidationError('GlobalSecondaryIndexNotFound', `No global secondary index with name ${indexName}`, this);
     }
     if (attributePair.scalableReadAttribute) {
-      throw new ValidationError('Read AutoScaling already enabled for this index', this);
+      throw new ValidationError('ReadAutoScalingEnabled', 'Read AutoScaling already enabled for this index', this);
     }
 
     return attributePair.scalableReadAttribute = new ScalableTableAttribute(this, `${indexName}ReadScaling`, {
@@ -1547,14 +1581,14 @@ export class Table extends TableBase {
   @MethodMetadata()
   public autoScaleGlobalSecondaryIndexWriteCapacity(indexName: string, props: EnableScalingProps): IScalableTableAttribute {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
-      throw new ValidationError('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
+      throw new ValidationError('AutoScalingNotAvailablePayPerRequest', 'AutoScaling is not available for tables with PAY_PER_REQUEST billing mode', this);
     }
     const attributePair = this.indexScaling.get(indexName);
     if (!attributePair) {
-      throw new ValidationError(`No global secondary index with name ${indexName}`, this);
+      throw new ValidationError('GlobalSecondaryIndexNotFound', `No global secondary index with name ${indexName}`, this);
     }
     if (attributePair.scalableWriteAttribute) {
-      throw new ValidationError('Write AutoScaling already enabled for this index', this);
+      throw new ValidationError('WriteAutoScalingEnabled', 'Write AutoScaling already enabled for this index', this);
     }
 
     return attributePair.scalableWriteAttribute = new ScalableTableAttribute(this, `${indexName}WriteScaling`, {
@@ -1576,11 +1610,11 @@ export class Table extends TableBase {
   public schema(indexName?: string): SchemaOptions {
     let schema = this.schemas.get(indexName ?? SPECIAL_TABLE_SCHEMA_NAME);
     if (!schema) {
-      throw new ValidationError(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
+      throw new ValidationError('SchemaNotFound', `Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
     }
 
     if (schema.partitionKeys.length > 1 || schema.sortKeys.length > 1) {
-      throw new ValidationError(`Index ${indexName} uses multi-attribute keys and cannot be returned by schema(), use schemaV2() instead.`, this);
+      throw new ValidationError('MultiAttributeKeysNotSupported', `Index ${indexName} uses multi-attribute keys and cannot be returned by schema(), use schemaV2() instead.`, this);
     }
 
     return {
@@ -1598,7 +1632,7 @@ export class Table extends TableBase {
   public schemaV2(indexName?: string): KeySchema {
     let schema = this.schemas.get(indexName ?? SPECIAL_TABLE_SCHEMA_NAME);
     if (!schema) {
-      throw new ValidationError(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
+      throw new ValidationError('SchemaNotFound', `Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`, this);
     }
 
     return schema;
@@ -1641,7 +1675,7 @@ export class Table extends TableBase {
   private validateProvisioning(props: { readCapacity?: number; writeCapacity?: number }): void {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
-        throw new ValidationError('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode', this);
+        throw new ValidationError('CannotProvisionCapacityPayPerRequest', 'you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode', this);
       }
     }
   }
@@ -1654,7 +1688,7 @@ export class Table extends TableBase {
   private validateIndexName(indexName: string) {
     if (this.schemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
-      throw new ValidationError(`a duplicate index name, ${indexName}, is not allowed`, this);
+      throw new ValidationError('DuplicateIndexName', `a duplicate index name, ${indexName}, is not allowed`, this);
     }
   }
 
@@ -1675,17 +1709,17 @@ export class Table extends TableBase {
 
   private validatePitr (props: TableProps): PointInTimeRecoverySpecification | undefined {
     if (props.pointInTimeRecoverySpecification !==undefined && props.pointInTimeRecovery !== undefined) {
-      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
+      throw new ValidationError('PitrConfigurationConflict', '`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
     const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
 
     if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
-      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
+      throw new ValidationError('RecoveryPeriodWithoutPitr', 'Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
-      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
+      throw new ValidationError('InvalidRecoveryPeriod', '`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
 
     return props.pointInTimeRecoverySpecification ??
@@ -1714,12 +1748,12 @@ export class Table extends TableBase {
   private buildIndexProjection(props: SecondaryIndexProps): CfnTable.ProjectionProperty {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-projectionobject.html
-      throw new ValidationError(`non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
+      throw new ValidationError('NonKeyAttributesRequired', `non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
       // this combination causes validation exception, status code 400, while trying to create CFN stack
-      throw new ValidationError(`non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
+      throw new ValidationError('NonKeyAttributesNotAllowed', `non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
     }
 
     if (props.nonKeyAttributes) {
@@ -1739,7 +1773,7 @@ export class Table extends TableBase {
   private addKey(attribute: Attribute, keyType: string) {
     const existingProp = this.findKey(keyType);
     if (existingProp) {
-      throw new ValidationError(`Unable to set ${attribute.name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`, this);
+      throw new ValidationError('KeyTypeConflict', `Unable to set ${attribute.name} as a ${keyType} key, because ${existingProp.attributeName} is a ${keyType} key`, this);
     }
     this.registerAttribute(attribute);
     this.keySchema.push({
@@ -1758,7 +1792,7 @@ export class Table extends TableBase {
     const { name, type } = attribute;
     const existingDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingDef && existingDef.attributeType !== type) {
-      throw new ValidationError(`Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`, this);
+      throw new ValidationError('AttributeTypeConflict', `Unable to specify ${name} as ${type} because it was already defined as ${existingDef.attributeType}`, this);
     }
     if (!existingDef) {
       this.attributeDefinitions.push({
@@ -1791,7 +1825,7 @@ export class Table extends TableBase {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
-      throw new ValidationError('`replicationRegions` cannot include the region where this stack is deployed.', this);
+      throw new ValidationError('ReplicationRegionConflict', '`replicationRegions` cannot include the region where this stack is deployed.', this);
     }
 
     const provider = ReplicaProvider.getOrCreate(this, { tableName: this.tableName, regions, timeout });
@@ -1949,11 +1983,11 @@ export class Table extends TableBase {
     let encryptionType = props.encryption;
 
     if (encryptionType != null && props.serverSideEncryption != null) {
-      throw new ValidationError('Only one of encryption and serverSideEncryption can be specified, but both were provided', this);
+      throw new ValidationError('EncryptionConfigurationConflict', 'Only one of encryption and serverSideEncryption can be specified, but both were provided', this);
     }
 
     if (props.serverSideEncryption && props.encryptionKey) {
-      throw new ValidationError('encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead', this);
+      throw new ValidationError('EncryptionKeyWithServerSideEncryption', 'encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead', this);
     }
 
     if (encryptionType === undefined) {
@@ -1965,11 +1999,11 @@ export class Table extends TableBase {
     }
 
     if (encryptionType !== TableEncryption.CUSTOMER_MANAGED && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`, this);
+      throw new ValidationError('EncryptionKeyRequiresCustomerManaged', `encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`, this);
     }
 
     if (encryptionType === TableEncryption.CUSTOMER_MANAGED && props.replicationRegions) {
-      throw new ValidationError('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)', this);
+      throw new ValidationError('CustomerManagedEncryptionNotSupportedGlobalTables', 'TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)', this);
     }
 
     switch (encryptionType) {
@@ -1996,7 +2030,7 @@ export class Table extends TableBase {
         return { sseSpecification: undefined };
 
       default:
-        throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+        throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryptionType}`, this);
     }
   }
 

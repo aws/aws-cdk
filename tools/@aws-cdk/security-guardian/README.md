@@ -25,38 +25,55 @@ A GitHub Action and CLI tool that helps detect broadly scoped IAM principals in 
 ## Security Checks
 
 ### Rule Organization
+
 Guard rules are organized in service-specific directories for granular control:
 
-```
+```text
 rules/
-├── codepipeline/
-│   └── cross-account-role-trust-scope.guard
 ├── documentdb/
-│   └── encryption-enabled.guard
+│   └── documentdb-encryption-enabled.guard
 ├── ec2/
-│   ├── ebs-encryption-enabled.guard
-│   └── no-open-security-groups.guard
+│   ├── ec2-ebs-encryption-enabled.guard
+│   └── ec2-no-open-security-groups.guard
 ├── guard-hooks/
-│   └── no-root-principals-except-kms-secrets.guard
+│   └── guardhooks-no-root-principals-except-kms-secrets.guard
 ├── iam/
-│   ├── no-overly-permissive-passrole.guard
-│   ├── no-wildcard-actions.guard
-│   ├── no-world-accessible-trust-policy.guard
-│   ├── policy-no-broad-principals.guard
-│   └── role-no-broad-principals.guard
+│   ├── iam-no-overly-permissive-passrole.guard
+│   ├── iam-no-wildcard-actions.guard
+│   ├── iam-no-wildcard-actions-inline.guard
+│   ├── iam-no-world-accessible-trust-policy.guard
+│   ├── iam-policy-no-broad-principals.guard
+│   ├── iam-role-no-broad-principals.guard
+│   └── iam-role-root-principal-needs-conditions.guard
+├── kinesis/
+│   ├── kinesis-encryption-enabled.guard
+│   └── kinesis-firehose-encryption-enabled.guard
+├── neptune/
+│   └── neptune-encryption-enabled.guard
+├── redshift/
+│   └── redshift-encryption-enabled.guard
 ├── s3/
-│   ├── encryption-enabled.guard
-│   ├── no-world-readable.guard
-│   └── secure-transport.guard
-└── [other services...]
+│   ├── s3-no-confused-deputy.guard
+│   ├── s3-no-world-readable.guard
+│   ├── s3-no-world-writable.guard
+│   └── s3-secure-transport.guard
+├── sns/
+│   ├── sns-no-world-accessible.guard
+│   └── sns-no-world-accessible-inline.guard
+└── sqs/
+    ├── sqs-encryption-enabled.guard
+    ├── sqs-no-world-accessible.guard
+    └── sqs-no-world-accessible-inline.guard
 ```
 
 ### Always Flagged (High Risk)
+
 - **Cross-account wildcards**: `"*"` or `"arn:aws:iam::*:root"`
-- **Custom policies with root access**: Non-default policies granting root
+- **Root principals without conditions**: `:root` principals must have restrictive conditions
 - **Broad principals in sensitive resources**: IAM roles, S3 buckets, etc.
 
 ### Smart Exemptions (Configurable)
+
 - **AWS KMS default policies**: Standard root access for IAM integration
 - **Individual rule control**: Enable/disable specific rules per service
 - **Metadata-based suppression**: Use CDK metadata to suppress specific rules
@@ -65,19 +82,19 @@ rules/
 
 ## Inputs (GitHub Action)
 
-| Name            | Description                               | Required | Default       |
-|-----------------|-------------------------------------------|----------|---------------|
-| `rule_set_path` | Local path to the cfn-guard rules file   | Yes      | N/A           |
-| `base_sha`      | Commit SHA to compare against             | No       | `origin/main` |
-| `head_sha`      | The commit SHA for the head branch or PR | No       | `HEAD`        |
-| `enhance_xml`   | Enable XML enhancement for individual failure annotations | No | `true` |
+| Name            | Description                                               | Required | Default       |
+| --------------- | --------------------------------------------------------- | -------- | ------------- |
+| `rule_set_path` | Local path to the cfn-guard rules file                    | Yes      | N/A           |
+| `base_sha`      | Commit SHA to compare against                             | No       | `origin/main` |
+| `head_sha`      | The commit SHA for the head branch or PR                  | No       | `HEAD`        |
+| `enhance_xml`   | Enable XML enhancement for individual failure annotations | No       | `true`        |
 
 ## Outputs (GitHub Action)
 
-| Name         | Description                               |
-|--------------|-------------------------------------------|
-| `junit_files`| Comma-separated list of JUnit XML files  |
-| `all_passed` | Whether all validations passed            |
+| Name          | Description                             |
+| ------------- | --------------------------------------- |
+| `junit_files` | Comma-separated list of JUnit XML files |
+| `all_passed`  | Whether all validations passed          |
 
 ---
 
@@ -107,11 +124,13 @@ rules/
 ## Local Development
 
 ### 1. Install Dependencies
+
 ```bash
 cd tools/@aws-cdk/security-guardian && yarn install
 ```
 
 ### 2. Run Locally
+
 The tool automatically detects changed templates and validates them.
 
 ```bash
@@ -119,6 +138,7 @@ yarn security-guardian
 ```
 
 > You can override defaults using:
+>
 > - `--base_sha=origin/main`  
 > - `--rule_set_path=./custom-rules`
 
@@ -132,6 +152,7 @@ The tool generates JUnit XML reports that can be consumed by GitHub Actions:
 - `test-results/cfn-guard-resolved.xml` - Results from templates with resolved intrinsics
 
 Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.0.1) to display rich test results in GitHub PRs with:
+
 - **Enhanced failure messages** - Automatically parses and formats concatenated CFN Guard failures
 - **Precise line numbers** - Exact file locations for each violation
 - **Resource identification** - Clear resource names and property paths
@@ -140,18 +161,21 @@ Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.
 ### Enhanced Failure Formatting
 
 The tool automatically enhances CFN Guard failure messages by:
+
 - Splitting concatenated failure messages into individual violations
 - Extracting exact line numbers and column positions
 - Identifying specific CloudFormation resources and properties
 - Formatting output for better readability in CI/CD reports
 
 **Before (Raw CFN Guard Output):**
-```
+
+```text
 IAM_NO_WILDCARD_ACTIONS_INLINE for Type: ResolvedCheck was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
 ```
 
 **After (Enhanced Format):**
-```
+
+```text
 Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: Resolved)
 ==================================================
 
@@ -271,11 +295,13 @@ let security_groups = Resources.*[
 - Commit the updated snapshot templates so Security Guardian can read them from git history
 
 **Available Rules to Suppress:**
+
 - `EC2_NO_OPEN_SECURITY_GROUPS`
 - `S3_ENCRYPTION_ENABLED`
 - `S3_NO_WORLD_READABLE`
 - `S3_SECURE_TRANSPORT`
-- `IAM_ROLE_NO_BROAD_PRINCIPALS` 
+- `IAM_ROLE_NO_BROAD_PRINCIPALS`
+- `IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS`
 - `IAM_NO_WILDCARD_ACTIONS`
 - `IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY`
 - `NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS`

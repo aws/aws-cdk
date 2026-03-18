@@ -1,5 +1,5 @@
 import { EncryptionConfiguration } from './encryption-configuration';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 
 const CUSTOMER_MANAGED_KMS_KEY = 'CUSTOMER_MANAGED_KMS_KEY';
@@ -37,7 +37,7 @@ export class CustomerManagedEncryptionConfiguration extends EncryptionConfigurat
 
   private validateKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds: cdk.Duration | undefined) {
     if (kmsDataKeyReusePeriodSeconds && this.isInvalidKmsDataKeyReusePeriodSeconds(kmsDataKeyReusePeriodSeconds)) {
-      throw new cdk.UnscopedValidationError('kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
+      throw new cdk.UnscopedValidationError('InvalidKmsDataKeyReusePeriod', 'kmsDataKeyReusePeriodSeconds must have a value between 60 and 900 seconds');
     }
   }
 }

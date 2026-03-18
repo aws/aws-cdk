@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDedicatedIpPool } from './ses.generated';
-import { IResource, Resource, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IDedicatedIpPoolRef, DedicatedIpPoolReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IDedicatedIpPoolRef, DedicatedIpPoolReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * Scaling mode to use for this IP pool.
@@ -100,7 +101,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     addConstructMetadata(this, props);
 
     if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
-      throw new ValidationError(`Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
+      throw new ValidationError('InvalidDedicatedIpPoolName', `Invalid dedicatedIpPoolName "${props.dedicatedIpPoolName}". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.`, this);
     }
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {

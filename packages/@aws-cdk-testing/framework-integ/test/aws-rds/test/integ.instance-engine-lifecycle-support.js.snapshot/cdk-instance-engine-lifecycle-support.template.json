@@ -13,7 +13,9 @@
       "Value": "cdk-instance-engine-lifecycle-support/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
@@ -45,7 +47,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
@@ -59,7 +63,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -70,7 +76,9 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
@@ -85,7 +93,9 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1EIPD7E02669": {
    "Type": "AWS::EC2::EIP",
@@ -97,7 +107,9 @@
       "Value": "cdk-instance-engine-lifecycle-support/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
@@ -121,7 +133,9 @@
    "DependsOn": [
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1RouteTableAssociation97140677"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -153,7 +167,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
@@ -167,7 +183,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -178,7 +196,9 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet2Subnet691E08A3"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
@@ -193,7 +213,9 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -225,7 +247,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
@@ -239,7 +263,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -250,7 +276,9 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
@@ -262,7 +290,9 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
@@ -294,7 +324,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
@@ -308,7 +340,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -319,7 +353,9 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
@@ -331,7 +367,9 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcIGWD7BA715C": {
    "Type": "AWS::EC2::InternetGateway",
@@ -342,7 +380,9 @@
       "Value": "cdk-instance-engine-lifecycle-support/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -353,7 +393,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceSubnetGroupF2CBA54F": {
    "Type": "AWS::RDS::DBSubnetGroup",
@@ -367,7 +409,9 @@
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceSecurityGroupB4E5FA83": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -383,7 +427,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceSecret478E0A47": {
    "Type": "AWS::SecretsManager::Secret",
@@ -419,7 +465,9 @@
      "Ref": "InstanceC1063A87"
     },
     "TargetType": "AWS::RDS::DBInstance"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceC1063A87": {
    "Type": "AWS::RDS::DBInstance",
@@ -432,7 +480,7 @@
     },
     "Engine": "mysql",
     "EngineLifecycleSupport": "open-source-rds-extended-support",
-    "EngineVersion": "8.4.5",
+    "EngineVersion": "8.4.8",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -499,7 +547,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57": {
    "Type": "AWS::IAM::Policy",
@@ -568,7 +618,9 @@
       "Ref": "SnapshoterOnEventHandlerServiceRole7F84B26D"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterOnEventHandlerDF82DF85": {
    "Type": "AWS::Lambda::Function",
@@ -577,7 +629,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d614c4499efc5eae7ea93772f683afcb483222fb794cfe7d7566f792956aec2d.zip"
+     "S3Key": "1a7a62929ed764f6e853100b2a2b1b2241410c0be4f9d5eef26e487dfafd2dea.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -591,7 +643,9 @@
    "DependsOn": [
     "SnapshoterOnEventHandlerServiceRoleDefaultPolicyAF0DFD57",
     "SnapshoterOnEventHandlerServiceRole7F84B26D"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterIsCompleteHandlerServiceRole40F5F1A8": {
    "Type": "AWS::IAM::Role",
@@ -622,7 +676,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222": {
    "Type": "AWS::IAM::Policy",
@@ -687,7 +743,9 @@
       "Ref": "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterIsCompleteHandler93DE2591": {
    "Type": "AWS::Lambda::Function",
@@ -696,7 +754,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d614c4499efc5eae7ea93772f683afcb483222fb794cfe7d7566f792956aec2d.zip"
+     "S3Key": "1a7a62929ed764f6e853100b2a2b1b2241410c0be4f9d5eef26e487dfafd2dea.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {
@@ -710,7 +768,9 @@
    "DependsOn": [
     "SnapshoterIsCompleteHandlerServiceRoleDefaultPolicyA43EB222",
     "SnapshoterIsCompleteHandlerServiceRole40F5F1A8"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76": {
    "Type": "AWS::IAM::Role",
@@ -741,7 +801,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686": {
    "Type": "AWS::IAM::Policy",
@@ -810,7 +872,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonEventF0C0D052": {
    "Type": "AWS::Lambda::Function",
@@ -819,7 +883,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -858,7 +922,9 @@
    "DependsOn": [
     "SnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicy21CE9686",
     "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole079D50682": {
    "Type": "AWS::IAM::Policy",
@@ -884,7 +950,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonEventinlinePolicyAddedToExecutionRole178584C7C": {
    "Type": "AWS::IAM::Policy",
@@ -910,7 +978,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonEventServiceRole29C21F76"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB": {
    "Type": "AWS::IAM::Role",
@@ -941,7 +1011,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478": {
    "Type": "AWS::IAM::Policy",
@@ -1003,7 +1075,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkisComplete803B4F1B": {
    "Type": "AWS::Lambda::Function",
@@ -1012,7 +1086,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1048,7 +1122,9 @@
    "DependsOn": [
     "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicyF410E478",
     "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole060DC0CFE": {
    "Type": "AWS::IAM::Policy",
@@ -1074,7 +1150,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkisCompleteinlinePolicyAddedToExecutionRole1AD853F80": {
    "Type": "AWS::IAM::Policy",
@@ -1100,7 +1178,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkisCompleteServiceRoleFAA9C6CB"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD": {
    "Type": "AWS::IAM::Role",
@@ -1131,7 +1211,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30": {
    "Type": "AWS::IAM::Policy",
@@ -1193,7 +1275,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonTimeout04342B00": {
    "Type": "AWS::Lambda::Function",
@@ -1202,7 +1286,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1238,7 +1322,9 @@
    "DependsOn": [
     "SnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy05DF1C30",
     "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole0D9321580": {
    "Type": "AWS::IAM::Policy",
@@ -1264,7 +1350,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole131B7131D": {
    "Type": "AWS::IAM::Policy",
@@ -1290,7 +1378,9 @@
       "Ref": "SnapshoterSnapshotProviderframeworkonTimeoutServiceRole0B00A1BD"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5": {
    "Type": "AWS::IAM::Role",
@@ -1307,7 +1397,9 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2": {
    "Type": "AWS::IAM::Policy",
@@ -1369,7 +1461,9 @@
       "Ref": "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -1406,7 +1500,9 @@
    "DependsOn": [
     "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2",
     "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "SnapshoterSnapshotAA1755BE": {
    "Type": "Custom::Snapshoter",
@@ -1437,7 +1533,9 @@
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "FromSnapshotSecurityGroup72F11E81": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1453,7 +1551,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "FromSnapshotEE0682C5": {
    "Type": "AWS::RDS::DBInstance",
@@ -1472,7 +1572,7 @@
     },
     "Engine": "mysql",
     "EngineLifecycleSupport": "open-source-rds-extended-support-disabled",
-    "EngineVersion": "8.4.5",
+    "EngineVersion": "8.4.8",
     "StorageType": "gp2",
     "VPCSecurityGroups": [
      {
@@ -1498,7 +1598,9 @@
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ReadReplicaSecurityGroupF624C7FA": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1514,7 +1616,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ReadReplicaDA01B356": {
    "Type": "AWS::RDS::DBInstance",

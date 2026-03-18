@@ -1,11 +1,13 @@
 import { Annotations } from 'aws-cdk-lib';
-import { CfnTransitGatewayAttachment, ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { ISubnet, IVpc } from 'aws-cdk-lib/aws-ec2';
+import { CfnTransitGatewayAttachment } from 'aws-cdk-lib/aws-ec2';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ITransitGateway } from './transit-gateway';
-import { ITransitGatewayAttachment, TransitGatewayAttachmentBase } from './transit-gateway-attachment';
-import { ITransitGatewayRouteTable } from './transit-gateway-route-table';
+import type { Construct } from 'constructs';
+import type { ITransitGateway } from './transit-gateway';
+import type { ITransitGatewayAttachment } from './transit-gateway-attachment';
+import { TransitGatewayAttachmentBase } from './transit-gateway-attachment';
+import type { ITransitGatewayRouteTable } from './transit-gateway-route-table';
 import { TransitGatewayRouteTableAssociation } from './transit-gateway-route-table-association';
 import { TransitGatewayRouteTablePropagation } from './transit-gateway-route-table-propagation';
 import { getFeatureStatus } from './util';

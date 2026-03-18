@@ -15,138 +15,38 @@
 
 <!--END STABILITY BANNER-->
 
-This package provides two main features:
-
-1. **Mixins** - Composable abstractions for adding functionality to constructs
-2. **EventBridge Event Patterns** - Type-safe event patterns for AWS resources
+> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib`.
+> All service Mixins are now available in `aws-cdk-lib`.
+> Please update your imports.
+>
+> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**.
 
 ---
 
-## CDK Mixins
-
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
+Mixins can be applied during or after construct construction.
+Mixins are an _addition_, _not_ a replacement for construct properties.
+By itself, they cannot change optionality of properties or change defaults.
 
-### Key Benefits
+## Usage and documentation
 
-* **Universal Compatibility**: Apply the same abstractions to L1 constructs, L2 constructs, or custom constructs
-* **Composable Design**: Mix and match features without being locked into specific implementations  
-* **Cross-Service Abstractions**: Use common patterns like encryption across different AWS services
-* **Escape Hatch Freedom**: Customize resources in a safe, typed way while keeping the abstractions you want
-
-### Basic Usage
-
-Mixins use `Mixins.of()` as the fundamental API for applying abstractions to constructs:
-
-```typescript
-// Base form: apply mixins to any construct
-const bucket = new s3.CfnBucket(scope, "MyBucket");
-Mixins.of(bucket)
-  .apply(new EncryptionAtRest())
-  .apply(new AutoDeleteObjects());
-```
-
-#### Fluent Syntax with `.with()`
-
-For convenience, you can use the `.with()` method for a more fluent syntax:
-
-```typescript
-import '@aws-cdk/mixins-preview/with';
-
-const bucket = new s3.CfnBucket(scope, "MyBucket")
-  .with(new EnableVersioning())
-  .with(new AutoDeleteObjects());
-```
-
-The `.with()` method is available after importing `@aws-cdk/mixins-preview/with`, which augments all constructs with this method. It provides the same functionality as `Mixins.of().apply()` but with a more chainable API.
-
-> **Note**: The `.with()` fluent syntax is only available in JavaScript and TypeScript. Other jsii languages (Python, Java, C#, and Go) should use the `Mixins.of(...).mustApply()` syntax instead. The import requirement is temporary during the preview phase. Once the API is stable, the `.with()` method will be available by default on all constructs and in all languages.
-
-### Creating Custom Mixins
-
-Mixins are simple classes that implement the `IMixin` interface (usually by extending the abstract `Mixin` class:
-
-```typescript
-// Simple mixin that enables versioning
-class CustomVersioningMixin extends Mixin implements IMixin {
-  supports(construct: any): boolean {
-    return construct instanceof s3.CfnBucket;
-  }
-
-  applyTo(bucket: any): any {
-    bucket.versioningConfiguration = {
-      status: "Enabled"
-    };
-    return bucket;
-  }
-}
-
-// Usage
-const bucket = new s3.CfnBucket(scope, "MyBucket");
-Mixins.of(bucket).apply(new CustomVersioningMixin());
-```
-
-### Construct Selection
-
-Mixins operate on construct trees and can be applied selectively:
-
-```typescript
-// Apply to all constructs in a scope
-Mixins.of(scope).apply(new EncryptionAtRest());
-
-// Apply to specific resource types
-Mixins.of(scope, ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME))
-  .apply(new EncryptionAtRest());
-
-// Apply to constructs matching a path pattern
-Mixins.of(scope, ConstructSelector.byPath("**/*-prod-*/**"))
-  .apply(new ProductionSecurityMixin());
-```
+See the [documentation for CDK Mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) in  `aws-cdk-lib`.
 
 ### Built-in Mixins
-
-#### Cross-Service Mixins
-
-**EncryptionAtRest**: Applies encryption to supported AWS resources
-
-```typescript
-// Works across different resource types
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new EncryptionAtRest());
-
-const logGroup = new logs.CfnLogGroup(scope, "LogGroup");
-Mixins.of(logGroup).apply(new EncryptionAtRest());
-```
-
-#### S3-Specific Mixins
-
-**AutoDeleteObjects**: Configures automatic object deletion for S3 buckets
-
-```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new AutoDeleteObjects());
-```
-
-**EnableVersioning**: Enables versioning on S3 buckets
-
-```typescript
-const bucket = new s3.CfnBucket(scope, "Bucket");
-Mixins.of(bucket).apply(new EnableVersioning());
-```
 
 ### Logs Delivery
 
 Configures vended logs delivery for supported resources to various destinations:
 
 ```typescript
-import '@aws-cdk/mixins-preview/with';
 import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
 // Create CloudFront distribution
-declare const bucket: s3.Bucket;
+declare const origin: s3.IBucket;
 const distribution = new cloudfront.Distribution(scope, 'Distribution', {
   defaultBehavior: {
-    origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
   },
 });
 
@@ -155,65 +55,93 @@ const logGroup = new logs.LogGroup(scope, 'DeliveryLogGroup');
 
 // Configure log delivery using the mixin
 distribution
-  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup));
-```
-
-### L1 Property Mixins
-
-For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
-
-```typescript
-import '@aws-cdk/mixins-preview/with';
-
-
-const bucket = new s3.Bucket(scope, "Bucket")
-  .with(new CfnBucketPropsMixin({
-    versioningConfiguration: { status: "Enabled" },
-    publicAccessBlockConfiguration: {
-      blockPublicAcls: true,
-      blockPublicPolicy: true
-    }
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toLogGroup(logGroup, {
+    outputFormat: cloudfrontMixins.CfnDistributionConnectionLogsOutputFormat.LogGroup.JSON,
+    recordFields: [
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CONNECTIONSTATUS,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.CLIENTIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.SERVERIP,
+      cloudfrontMixins.CfnDistributionConnectionLogsRecordFields.TLSPROTOCOL,
+    ],
   }));
 ```
 
-Property mixins support two merge strategies:
+Configures vended logs delivery for supported resources when a pre-created destination is provided:
 
 ```typescript
-declare const bucket: s3.CfnBucket;
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
-// MERGE (default): Deep merges properties with existing values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.MERGE }
-));
+// Create CloudFront distribution
+declare const origin: s3.IBucket;
+const distribution = new cloudfront.Distribution(scope, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
+  },
+});
 
-// OVERRIDE: Replaces existing property values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.OVERRIDE }
-));
+// Create destination bucket
+const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
+// Add permissions to bucket to facilitate log delivery
+const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
+  bucket: destBucket,
+  document: new iam.PolicyDocument(),
+});
+// Create S3 delivery destination for logs
+const destination = new logs.CfnDeliveryDestination(scope, 'Destination', {
+  destinationResourceArn: destBucket.bucketArn,
+  name: 'unique-destination-name',
+  deliveryDestinationType: 'S3',
+});
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
-Property mixins are available for all AWS services:
+Vended Logs Configuration for Cross Account delivery (only supported for S3 and Firehose destinations)
 
 ```typescript
-import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
-import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
-import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
-```
+import * as logDestinations from '@aws-cdk/mixins-preview/aws-logs';
+import * as cloudfrontMixins from '@aws-cdk/mixins-preview/aws-cloudfront/mixins';
 
-### Error Handling
+const destinationAccount = '123456789012';
+const sourceAccount = '234567890123';
+const region = 'us-east-1';
 
-Mixins provide comprehensive error handling:
+const app = new App();
 
-```typescript
-// Graceful handling of unsupported constructs
-Mixins.of(scope)
-  .apply(new EncryptionAtRest()); // Skips unsupported constructs
+const destStack = new Stack(app, 'destination-stack', {
+  env: {
+    account: destinationAccount,
+    region,
+  },
+});
 
-// Strict application that requires all constructs to match
-Mixins.of(scope)
-  .mustApply(new EncryptionAtRest()); // Throws if no constructs support the mixin
+// Create destination bucket
+const destBucket = new s3.Bucket(destStack, 'DeliveryBucket');
+new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
+  bucket: destBucket,
+  sourceAccountId: sourceAccount,
+});
+
+const sourceStack = new Stack(app, 'source-stack', {
+  env: {
+    account: sourceAccount,
+    region,
+  },
+});
+
+// Create CloudFront distribution
+declare const origin: s3.IBucket;
+const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
+  },
+});
+
+const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourceStack, 'Destination', `arn of Delivery Destination in destinationAccount`);
+
+distribution
+  .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
 ---
@@ -230,13 +158,13 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 // Works with L2 constructs
-const bucket = new s3.Bucket(scope, 'Bucket');
-const bucketEvents = BucketEvents.fromBucket(bucket);
+const myBucket = new s3.Bucket(scope, 'Bucket');
+const bucketEvents = BucketEvents.fromBucket(myBucket);
 declare const fn: lambda.Function;
 
 new events.Rule(scope, 'Rule', {
   eventPattern: bucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [new targets.LambdaFunction(fn)]
 });
@@ -248,7 +176,7 @@ const cfnBucketEvents = BucketEvents.fromBucket(cfnBucket);
 new events.CfnRule(scope, 'CfnRule', {
   state: 'ENABLED',
   eventPattern: cfnBucketEvents.objectCreatedPattern({
-    object: { key: ['uploads/*'] }
+    object: { key: events.Match.wildcard('uploads/*') },
   }),
   targets: [{ arn: fn.functionArn, id: 'L1' }]
 });
@@ -261,7 +189,6 @@ new events.CfnRule(scope, 'CfnRule', {
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
 
-declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 // Bucket name is automatically injected from the bucket reference
@@ -273,13 +200,13 @@ const pattern = bucketEvents.objectCreatedPattern();
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
 
-declare const bucket: s3.Bucket;
 const bucketEvents = BucketEvents.fromBucket(bucket);
 
 const pattern = bucketEvents.objectCreatedPattern({
   eventMetadata: {
-    region: ['us-east-1', 'us-west-2'],
+    region: events.Match.prefix('us-'),
     version: ['0']
   }
 });

@@ -1,15 +1,16 @@
-import { Construct } from 'constructs';
-import { IDatabaseProxy } from './proxy';
+import type { Construct } from 'constructs';
 import { CfnDBProxyEndpoint } from './rds.generated';
-import * as ec2 from '../../aws-ec2';
-import { IResource, Names, Resource, ValidationError } from '../../core';
+import type * as ec2 from '../../aws-ec2';
+import type { IResource } from '../../core';
+import { Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * A DB proxy endpoint.
  */
-export interface IDatabaseProxyEndpoint extends IResource {
+export interface IDatabaseProxyEndpoint extends IResource, aws_rds.IDBProxyEndpointRef {
   /**
    * DB Proxy Endpoint Name
    *
@@ -77,7 +78,7 @@ export interface DatabaseProxyEndpointProps extends DatabaseProxyEndpointOptions
   /**
    * The DB proxy associated with the DB proxy endpoint.
    */
-  readonly dbProxy: IDatabaseProxy;
+  readonly dbProxy: aws_rds.IDBProxyRef;
 }
 
 /**
@@ -122,6 +123,16 @@ abstract class DatabaseProxyEndpointBase extends Resource implements IDatabasePr
   public abstract readonly dbProxyEndpointName: string;
   public abstract readonly dbProxyEndpointArn: string;
   public abstract readonly endpoint: string;
+
+  /**
+   * A reference to this database proxy endpoint
+   */
+  public get dbProxyEndpointRef(): aws_rds.DBProxyEndpointReference {
+    return {
+      dbProxyEndpointName: this.dbProxyEndpointName,
+      dbProxyEndpointArn: this.dbProxyEndpointArn,
+    };
+  }
 }
 
 /**
@@ -182,16 +193,16 @@ export class DatabaseProxyEndpoint extends DatabaseProxyEndpointBase {
 
     const vpcSubnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
     if (vpcSubnetIds.length < 2) {
-      throw new ValidationError(`\`subnets\` requires at least 2 subnets, got ${vpcSubnetIds.length}`, this);
+      throw new ValidationError('InsufficientSubnets', `\`subnets\` requires at least 2 subnets, got ${vpcSubnetIds.length}`, this);
     }
 
     if (props.securityGroups && props.securityGroups.length == 0) {
-      throw new ValidationError('\`securityGroups\` must be undefined or a non-empty array.', this);
+      throw new ValidationError('MustBeUndefinedNonEmptyArray', '\`securityGroups\` must be undefined or a non-empty array.', this);
     }
 
     const resource = new CfnDBProxyEndpoint(this, 'Resource', {
       dbProxyEndpointName: physicalName,
-      dbProxyName: props.dbProxy.dbProxyName,
+      dbProxyName: props.dbProxy.dbProxyRef.dbProxyName,
       vpcSubnetIds,
       vpcSecurityGroupIds: props.securityGroups?.map(e => e.securityGroupId),
       targetRole: props.targetRole,

@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
+import type { BaseStreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Stack, Names, Annotations, UnscopedValidationError, ValidationError, Duration } from '../../core';
+import type { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration } from '../../core';
+import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
 /**
@@ -77,6 +79,19 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly schemaRegistryConfig?: ISchemaRegistry;
 
+  /**
+   * Configuration for logging verbosity from the event source mapping poller
+   *
+   * @default - No logging
+   */
+  readonly logLevel?: lambda.EventSourceMappingLogLevel;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
   /***
    * If the function returns an error, split the batch in two and retry.
    *
@@ -221,6 +236,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsconfigContainLeastMetric', 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -247,6 +268,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
         bisectBatchOnError: this.innerProps.bisectBatchOnError,
         retryAttempts: this.innerProps.retryAttempts,
         reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
@@ -291,7 +314,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSourceYetBound', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -301,7 +324,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError('KafkaEventSourceYetBound', 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -339,28 +362,34 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new UnscopedValidationError('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError('MustBeSecuritygroupProviding', 'securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new UnscopedValidationError('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError('MustBeVpcsubnetsProviding', 'vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new UnscopedValidationError('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError('MustBeSecretKafkaBrokers', 'secret must be set if Kafka brokers accessed over Internet');
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingPositionTimestampProvidedStarting', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError('StartingPositionTimestampStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError('MetricsconfigContainLeastMetric', 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
     }
 
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new ValidationError('Function is not a construct. Unexpected error.', target); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError('FunctionConstructUnexpectedError', 'Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
@@ -376,6 +405,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
         bisectBatchOnError: this.innerProps.bisectBatchOnError,
         retryAttempts: this.innerProps.retryAttempts,
         reportBatchItemFailures: this.innerProps.reportBatchItemFailures,

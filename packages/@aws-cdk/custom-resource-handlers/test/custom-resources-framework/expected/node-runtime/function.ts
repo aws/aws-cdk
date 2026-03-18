@@ -1,7 +1,6 @@
-/* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
-import * as lambda from "../../../aws-lambda";
 import { Construct } from "constructs";
+import * as lambda from "../../../aws-lambda";
 
 export class TestFunction extends lambda.Function {
   public constructor(scope: Construct, id: string, props?: lambda.FunctionOptions) {

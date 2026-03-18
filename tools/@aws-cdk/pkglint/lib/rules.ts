@@ -643,7 +643,7 @@ export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
  */
 export class ConstructsVersion extends ValidationRule {
   public static readonly VERSION = cdkMajorVersion() === 2
-    ? '^10.0.0'
+    ? '^10.5.0'
     : '^3.3.69';
 
   public readonly name = 'deps/constructs';
@@ -1032,6 +1032,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
+      '@aws-cdk/cloud-assembly-api',
       '@aws-cdk/region-info',
       // Private packages
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),
@@ -1166,7 +1167,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 18.0.0');
+      expectJSON(this.name, pkg, 'engines.node', '>= 20.0.0');
     } else {
       expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
     }
@@ -1630,6 +1631,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cli-plugin-contract',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
+    '@aws-cdk/cfn-property-mixins',
     '@aws-cdk/mixins-preview',
     '@aws-cdk/region-info',
     'aws-cdk-lib',
@@ -1743,6 +1745,59 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
           delete pkg.json.types;
         },
       });
+    }
+  }
+}
+
+/**
+ * If an aws-cdk-lib submodule has a lib/mixins/ directory,
+ * its lib/index.ts must contain `export * as mixins from './mixins';`
+ * and package.json#exports must have an entry for the mixins submodule.
+ */
+export class MixinsSubmoduleExport extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/mixins-export';
+
+  /**
+   * Submodules whose lib/mixins/ directory is the source of mixins, not a consumer.
+   * These should not be required to re-export mixins from their lib/index.ts.
+   */
+  private readonly excludedSubmodules = ['core'];
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.packageName !== 'aws-cdk-lib') return;
+
+    // Scan all service submodule directories
+    for (const entry of fs.readdirSync(pkg.packageRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      if (this.excludedSubmodules.includes(entry.name)) continue;
+
+      const mixinsDir = path.join(pkg.packageRoot, entry.name, 'lib', 'mixins');
+      if (!fs.existsSync(mixinsDir)) continue;
+
+      const libIndex = path.join(entry.name, 'lib', 'index.ts');
+      const exportLine = "export * as mixins from './mixins';";
+
+      fileShouldContain(this.name, pkg, libIndex, exportLine);
+
+      // Ensure package.json exports includes the mixins submodule
+      const exportKey = `./${entry.name}/mixins`;
+      const exportValue = `./${entry.name}/lib/mixins/index.js`;
+      if (pkg.json.exports?.[exportKey] !== exportValue) {
+        pkg.report({
+          ruleName: this.name,
+          message: `package.json "exports" must include "${exportKey}": "${exportValue}"`,
+          fix: () => {
+            if (!pkg.json.exports) {
+              pkg.json.exports = {};
+            }
+            pkg.json.exports[exportKey] = exportValue;
+            // Keep exports sorted
+            pkg.json.exports = Object.fromEntries(
+              Object.entries(pkg.json.exports).sort(([a], [b]) => a.localeCompare(b)),
+            );
+          },
+        });
+      }
     }
   }
 }

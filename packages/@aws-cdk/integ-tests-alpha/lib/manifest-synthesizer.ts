@@ -1,7 +1,8 @@
-import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
-import { ISynthesisSession } from 'aws-cdk-lib/core';
+import type { IntegManifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import type { ISynthesisSession } from 'aws-cdk-lib/core';
 import { IntegManifestWriter } from './manifest-writer';
-import { IntegTestCase } from './test-case';
+import type { IntegTestCase } from './test-case';
 
 const emptyManifest: IntegManifest = {
   version: '',

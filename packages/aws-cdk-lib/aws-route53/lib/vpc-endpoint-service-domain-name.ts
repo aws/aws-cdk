@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
-import { IVPCEndpointServiceRef } from '../../aws-ec2';
+import type { IVPCEndpointServiceRef } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import { IPublicHostedZone, TxtRecord } from '../lib';
+import type { IPublicHostedZone } from '../lib';
+import { TxtRecord } from '../lib';
 
 /**
  * Properties to configure a VPC Endpoint Service domain name
@@ -81,7 +82,7 @@ export class VpcEndpointServiceDomainName extends Construct {
     const serviceUniqueId = Names.nodeUniqueId(props.endpointService.node);
     if (serviceUniqueId in VpcEndpointServiceDomainName.endpointServicesMap) {
       const endpoint = VpcEndpointServiceDomainName.endpointServicesMap[serviceUniqueId];
-      throw new ValidationError(`Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`, this);
+      throw new ValidationError('CannotCreateVpcEndpointService', `Cannot create a VpcEndpointServiceDomainName for service ${serviceUniqueId}, another VpcEndpointServiceDomainName (${endpoint}) is already associated with it`, this);
     }
   }
 

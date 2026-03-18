@@ -1,17 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IVirtualServiceRef, VirtualServiceReference } from './appmesh.generated';
 import { CfnVirtualService } from './appmesh.generated';
-import { IMesh, Mesh } from './mesh';
+import type { IMesh } from './mesh';
+import { Mesh } from './mesh';
 import { renderMeshOwner } from './private/utils';
-import { IVirtualNode } from './virtual-node';
-import { IVirtualRouter } from './virtual-router';
+import type { IVirtualNode } from './virtual-node';
+import type { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents the interface which all VirtualService based classes MUST implement
  */
-export interface IVirtualService extends cdk.IResource {
+export interface IVirtualService extends cdk.IResource, IVirtualServiceRef {
   /**
    * The name of the VirtualService
    *
@@ -74,6 +77,9 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+      public get virtualServiceRef(): VirtualServiceReference {
+        return { virtualServiceArn: this.virtualServiceArn };
+      }
     }(scope, id);
   }
 
@@ -89,23 +95,38 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
         resource: `mesh/${attrs.mesh.meshName}/virtualService`,
         resourceName: this.virtualServiceName,
       });
+      public get virtualServiceRef(): VirtualServiceReference {
+        return { virtualServiceArn: this.virtualServiceArn };
+      }
     }(scope, id);
   }
 
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
-  public readonly virtualServiceName: string;
+  @memoizedGetter
+  public get virtualServiceName(): string {
+    return this.getResourceNameAttribute(this.resource.attrVirtualServiceName);
+  }
 
   /**
    * The Amazon Resource Name (ARN) for the virtual service
    */
-  public readonly virtualServiceArn: string;
+  @memoizedGetter
+  public get virtualServiceArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'appmesh',
+      resource: `mesh/${this.mesh.meshName}/virtualService`,
+      resourceName: this.physicalName,
+    });
+  }
 
   /**
    * The Mesh which the VirtualService belongs to
    */
   public readonly mesh: IMesh;
+
+  private readonly resource: CfnVirtualService;
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
@@ -117,7 +138,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     const providerConfig = props.virtualServiceProvider.bind(this);
     this.mesh = providerConfig.mesh;
 
-    const svc = new CfnVirtualService(this, 'Resource', {
+    this.resource = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       virtualServiceName: this.physicalName,
@@ -130,13 +151,10 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
           : undefined,
       },
     });
+  }
 
-    this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
-    this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
-      service: 'appmesh',
-      resource: `mesh/${this.mesh.meshName}/virtualService`,
-      resourceName: this.physicalName,
-    });
+  public get virtualServiceRef(): VirtualServiceReference {
+    return { virtualServiceArn: this.virtualServiceArn };
   }
 }
 
