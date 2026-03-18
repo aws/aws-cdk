@@ -161,7 +161,7 @@ const putMessageOnQueue = test.assertions.awsApiCall('SQS', 'sendMessage', {
 });
 
 putMessageOnQueue.next(test.assertions.awsApiCall('SageMaker', 'DescribePipeline', {
-  PipelineName: 'my-pipeline',
+  PipelineName: targetPipeline.pipelineName,
 })).expect(ExpectedResult.objectLike({
   PipelineStatus: 'Active',
 }));
