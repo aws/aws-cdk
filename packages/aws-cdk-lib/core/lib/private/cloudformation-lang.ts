@@ -2,7 +2,8 @@ import { CfnUtils } from './cfn-utils-provider';
 import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 import * as yaml_cfn from './yaml-cfn';
 import { Lazy } from '../lazy';
-import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
+import type { IFragmentConcatenator, IResolveContext } from '../resolvable';
+import { DefaultTokenResolver } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
@@ -184,7 +185,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new UnscopedValidationError("This shouldn't happen anymore");
+      throw new UnscopedValidationError('ShouldNotHappenAnymore', "This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
@@ -272,7 +273,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         return;
     }
 
-    throw new UnscopedValidationError(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
+    throw new UnscopedValidationError('UnexpectedTypeHint', `Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**

@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { memberFqn } from './util';
 import { Linter } from '../linter';
 

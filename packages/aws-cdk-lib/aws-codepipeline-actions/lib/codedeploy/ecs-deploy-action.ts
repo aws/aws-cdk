@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as codedeploy from '../../../aws-codedeploy';
+import type { Construct } from 'constructs';
+import type * as codedeploy from '../../../aws-codedeploy';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Lazy, UnscopedValidationError } from '../../../core';
@@ -117,7 +117,7 @@ export class CodeDeployEcsDeployAction extends Action {
 
     if (props.containerImageInputs) {
       if (props.containerImageInputs.length > 4) {
-        throw new UnscopedValidationError(`Action cannot have more than 4 container image inputs, got: ${props.containerImageInputs.length}`);
+        throw new UnscopedValidationError('ActionCannotMoreThan', `Action cannot have more than 4 container image inputs, got: ${props.containerImageInputs.length}`);
       }
 
       for (const imageInput of props.containerImageInputs) {
@@ -215,7 +215,7 @@ export class CodeDeployEcsDeployAction extends Action {
 
 function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.taskDefinitionTemplateFile && props.taskDefinitionTemplateInput) {
-    throw new UnscopedValidationError("Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new UnscopedValidationError('ExactlyOneTaskDefinitionTemplate', "Exactly one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' can be provided in the ECS CodeDeploy Action");
   }
   if (props.taskDefinitionTemplateFile) {
     return props.taskDefinitionTemplateFile.artifact;
@@ -223,12 +223,12 @@ function determineTaskDefinitionArtifact(props: CodeDeployEcsDeployActionProps):
   if (props.taskDefinitionTemplateInput) {
     return props.taskDefinitionTemplateInput;
   }
-  throw new UnscopedValidationError("Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new UnscopedValidationError('SpecifyingOneTaskDefinitionTemplate', "Specifying one of 'taskDefinitionTemplateInput' or 'taskDefinitionTemplateFile' is required for the ECS CodeDeploy Action");
 }
 
 function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepipeline.Artifact {
   if (props.appSpecTemplateFile && props.appSpecTemplateInput) {
-    throw new UnscopedValidationError("Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
+    throw new UnscopedValidationError('ExactlyOneAppSpecTemplate', "Exactly one of 'appSpecTemplateInput' or 'appSpecTemplateFile' can be provided in the ECS CodeDeploy Action");
   }
   if (props.appSpecTemplateFile) {
     return props.appSpecTemplateFile.artifact;
@@ -236,5 +236,5 @@ function determineAppSpecArtifact(props: CodeDeployEcsDeployActionProps): codepi
   if (props.appSpecTemplateInput) {
     return props.appSpecTemplateInput;
   }
-  throw new UnscopedValidationError("Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
+  throw new UnscopedValidationError('SpecifyingOneAppSpecTemplate', "Specifying one of 'appSpecTemplateInput' or 'appSpecTemplateFile' is required for the ECS CodeDeploy Action");
 }

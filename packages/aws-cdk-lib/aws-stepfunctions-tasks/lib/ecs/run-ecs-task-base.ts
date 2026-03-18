@@ -1,6 +1,6 @@
-import { ContainerOverride } from './run-ecs-task-base-types';
+import type { ContainerOverride } from './run-ecs-task-base-types';
 import * as ec2 from '../../../aws-ec2';
-import * as ecs from '../../../aws-ecs';
+import type * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -82,12 +82,12 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new cdk.UnscopedValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+      throw new cdk.UnscopedValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new cdk.UnscopedValidationError('Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+      throw new cdk.UnscopedValidationError('TaskTokenRequired', 'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -95,7 +95,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
-          throw new cdk.UnscopedValidationError(`Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new cdk.UnscopedValidationError('OverridesMentionContainerName', `Overrides mention container with name '${name}', but no such container in task definition`);
         }
       }
     }

@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { BuildSpec } from './build-spec';
+import type { Construct } from 'constructs';
+import type { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
 import { ImagePullPrincipalType } from './image-pull-principal-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import {
+import type {
   BuildEnvironment, BuildImageBindOptions, BuildImageConfig, IBindableBuildImage, IBuildImage,
   IProject,
 } from './project';
@@ -115,7 +115,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     const imageAccount = account ?? core.Lazy.string({
       produce: () => {
         if (this._imageAccount === undefined) {
-          throw new core.UnscopedValidationError('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
+          throw new core.UnscopedValidationError('LinuxGpuBuildImageNotUsedInProject', 'Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
         }
         return this._imageAccount;
       },

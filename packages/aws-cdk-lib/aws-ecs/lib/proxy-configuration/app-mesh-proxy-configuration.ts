@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ProxyConfiguration } from './proxy-configuration';
 import { UnscopedValidationError } from '../../../core';
-import { TaskDefinition } from '../base/task-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import type { TaskDefinition } from '../base/task-definition';
+import type { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * Interface for setting the properties of proxy configuration.
@@ -80,7 +80,7 @@ export class AppMeshProxyConfiguration extends ProxyConfiguration {
     super();
     if (props.properties) {
       if (!props.properties.ignoredUID && !props.properties.ignoredGID) {
-        throw new UnscopedValidationError('At least one of ignoredUID or ignoredGID should be specified.');
+        throw new UnscopedValidationError('IgnoredUidOrGidRequired', 'At least one of ignoredUID or ignoredGID should be specified.');
       }
     }
   }

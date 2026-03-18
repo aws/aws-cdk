@@ -1,4 +1,4 @@
-import { IMetric } from './metric-types';
+import type { IMetric } from './metric-types';
 import { UnscopedValidationError } from '../../core';
 
 /**
@@ -61,7 +61,7 @@ export abstract class ConcreteWidget implements IWidget {
     this.height = height;
 
     if (this.width > GRID_WIDTH) {
-      throw new UnscopedValidationError(`Widget is too wide, max ${GRID_WIDTH} units allowed`);
+      throw new UnscopedValidationError('WidgetTooWide', `Widget is too wide, max ${GRID_WIDTH} units allowed`);
     }
   }
 

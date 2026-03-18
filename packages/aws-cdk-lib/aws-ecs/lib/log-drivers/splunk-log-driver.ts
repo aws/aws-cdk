@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
-import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from './log-driver';
+import type { Construct } from 'constructs';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
 import { ensureInRange, renderCommonLogDriverOptions, renderLogDriverSecretOptions, stringifyOptions } from './utils';
-import { SecretValue, UnscopedValidationError } from '../../../core';
-import { ContainerDefinition, Secret } from '../container-definition';
+import type { SecretValue } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
+import type { ContainerDefinition, Secret } from '../container-definition';
 
 /**
  * Log Message Format
@@ -134,7 +136,7 @@ export class SplunkLogDriver extends LogDriver {
     super();
 
     if (!props.token && !props.secretToken) {
-      throw new UnscopedValidationError('Please provide either token or secretToken.');
+      throw new UnscopedValidationError('ProvideTokenSecretToken', 'Please provide either token or secretToken.');
     }
     if (props.gzipLevel) {
       ensureInRange(props.gzipLevel, -1, 9);

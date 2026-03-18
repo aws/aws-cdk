@@ -1,11 +1,13 @@
 
-import { Construct } from 'constructs';
-import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import type { Construct } from 'constructs';
+import type { BatchStrategy, ModelClientOptions, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { S3DataType } from './base-types';
 import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Size, Stack, Token, ValidationError } from '../../../core';
+import type { Size } from '../../../core';
+import { Stack, Token, ValidationError } from '../../../core';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 interface SageMakerCreateTransformJobOptions {
@@ -187,7 +189,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
    */
   public get role(): iam.IRole {
     if (this._role === undefined) {
-      throw new ValidationError('role not available yet--use the object in a Task first', this);
+      throw new ValidationError('RoleAvailableYetObjectTask', 'role not available yet--use the object in a Task first', this);
     }
     return this._role;
   }
@@ -211,11 +213,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
     const retries = options.invocationsMaxRetries;
     if (!Token.isUnresolved(retries) && retries? (retries < 0 || retries > 3): false) {
-      throw new ValidationError(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`, this);
+      throw new ValidationError('InvocationsMaxRetriesReceived', `invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`, this);
     }
     const timeout = options.invocationsTimeout?.toSeconds();
     if (!Token.isUnresolved(timeout) && timeout? (timeout < 1 || timeout > 3600): false) {
-      throw new ValidationError(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`, this);
+      throw new ValidationError('InvocationsTimeoutSecondsReceived', `invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`, this);
     }
     return {
       ModelClientConfig: {

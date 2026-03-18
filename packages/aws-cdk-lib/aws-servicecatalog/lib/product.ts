@@ -1,15 +1,16 @@
-import { Construct } from 'constructs';
-import { CloudFormationTemplate } from './cloudformation-template';
-import { MessageLanguage } from './common';
+import type { Construct } from 'constructs';
+import type { CloudFormationTemplate } from './cloudformation-template';
+import type { MessageLanguage } from './common';
 import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
-import { TagOptions } from './tag-options';
-import { IBucket } from '../../aws-s3';
-import { ArnFormat, IResource, Resource, Stack, ValidationError } from '../../core';
+import type { TagOptions } from './tag-options';
+import type { IBucket } from '../../aws-s3';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CloudFormationProductReference, ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
+import type { CloudFormationProductReference, ICloudFormationProductRef } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
 /**
  * A Service Catalog product, currently only supports type CloudFormationProduct
@@ -172,7 +173,7 @@ export abstract class Product extends ProductBase {
     const productId = arn.resourceName;
 
     if (!productId) {
-      throw new ValidationError('Missing required Portfolio ID from Portfolio ARN: ' + productArn, scope);
+      throw new ValidationError('MissingProductIdFromArn', 'Missing required Portfolio ID from Portfolio ARN: ' + productArn, scope);
     }
 
     return new class extends ProductBase {
@@ -258,7 +259,7 @@ export class CloudFormationProduct extends Product {
     InputValidator.validateUrl(this.node.path, 'support url', props.supportUrl);
     InputValidator.validateLength(this.node.path, 'support description', 0, 8191, props.supportDescription);
     if (props.productVersions.length == 0) {
-      throw new ValidationError(`Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`, this);
+      throw new ValidationError('InvalidProductVersionsEmpty', `Invalid product versions for resource ${this.node.path}, must contain at least 1 product version`, this);
     }
     props.productVersions.forEach(productVersion => {
       InputValidator.validateLength(this.node.path, 'provisioning artifact name', 0, 100, productVersion.productVersionName);

@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import * as events from '../../aws-events';
-import { IRole } from '../../aws-iam';
-import { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type * as events from '../../aws-events';
+import type { IRole } from '../../aws-iam';
+import type { IScheduleTarget, ISchedule, ScheduleTargetInput, ScheduleTargetConfig } from '../../aws-scheduler';
 import { UnscopedValidationError } from '../../core';
 
 /**
@@ -55,7 +56,7 @@ export class EventBridgePutEvents extends ScheduleTargetBase implements ISchedul
   ) {
     super(props, entry.eventBus.eventBusArn);
     if (this.props.input) {
-      throw new UnscopedValidationError('ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
+      throw new UnscopedValidationError('ScheduleTargetBasePropsInput', 'ScheduleTargetBaseProps.input is not supported for EventBridgePutEvents. Please use entry.detail instead.');
     }
   }
 

@@ -1,7 +1,7 @@
 import { UnscopedValidationError } from '../../../core';
-import { IDeploymentStrategyRef, IEnvironmentRef } from '../../../interfaces/generated/aws-appconfig-interfaces.generated';
-import { IDeploymentStrategy } from '../deployment-strategy';
-import { IEnvironment } from '../environment';
+import type { IDeploymentStrategyRef, IEnvironmentRef } from '../../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IDeploymentStrategy } from '../deployment-strategy';
+import type { IEnvironment } from '../environment';
 
 /**
  * Converts an IEnvironmentRef to IEnvironment, with runtime type checking
@@ -11,7 +11,7 @@ export function toIEnvironment(environment: IEnvironmentRef): IEnvironment {
   if ('addDeployment' in environment && 'applicationId' in environment && 'environmentId' in environment) {
     return environment as IEnvironment;
   }
-  throw new UnscopedValidationError(`'environment' instance should implement IEnvironment, but doesn't: ${environment.constructor.name}`);
+  throw new UnscopedValidationError('InvalidEnvironmentInterface', `'environment' instance should implement IEnvironment, but doesn't: ${environment.constructor.name}`);
 }
 
 /**
@@ -22,5 +22,5 @@ export function toIDeploymentStrategy(deploymentStrategy: IDeploymentStrategyRef
   if ('deploymentStrategyId' in deploymentStrategy && 'deploymentStrategyArn' in deploymentStrategy) {
     return deploymentStrategy as IDeploymentStrategy;
   }
-  throw new UnscopedValidationError(`'deploymentStrategy' instance should implement IDeploymentStrategy, but doesn't: ${deploymentStrategy.constructor.name}`);
+  throw new UnscopedValidationError('InvalidDeploymentStrategyInterface', `'deploymentStrategy' instance should implement IDeploymentStrategy, but doesn't: ${deploymentStrategy.constructor.name}`);
 }

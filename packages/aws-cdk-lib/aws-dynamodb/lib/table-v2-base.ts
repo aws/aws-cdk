@@ -1,11 +1,15 @@
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
-import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
-import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
+import { Operation } from './shared';
+import type { TableGrants } from './table-grants';
+import type { IMetric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
+import { MathExpression, Metric } from '../../aws-cloudwatch';
+import type { AddToResourcePolicyResult, GrantOnKeyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
-import { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
+import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
  * Represents an instance of a DynamoDB table.
@@ -17,6 +21,11 @@ export interface ITableV2 extends ITable {
    * @attribute
    */
   readonly tableId?: string;
+
+  /**
+   * Grants for this table
+   */
+  readonly grants: TableGrants;
 }
 
 /**
@@ -52,6 +61,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public abstract readonly tableId?: string;
 
   /**
+   * Grants for this table.
+   */
+  public abstract readonly grants: TableGrants;
+
+  /**
    * The KMS encryption key for the table.
    */
   public abstract readonly encryptionKey?: IKey;
@@ -81,6 +95,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
    */
@@ -101,12 +117,14 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: If `encryptionKey` is present, appropriate grants to the key needs to be added
    * separately using the `table.encryptionKey.grant*` methods.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal (no-op if undefined)
    * @param actions the set of actions to allow (i.e., 'dynamodb:DescribeStream', 'dynamodb:GetRecords', etc.)
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError(`No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -124,6 +142,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantStreamRead(grantee: IGrantable): Grant {
@@ -138,11 +158,13 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   /**
    * Permits an IAM principal to list streams attached to this table.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError(`No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -159,6 +181,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -179,6 +203,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantWriteData(grantee: IGrantable): Grant {
@@ -195,6 +221,8 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    *
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee the principal to grant access to
    */
@@ -214,11 +242,25 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * Note: Appropriate grants will also be added to the customer-managed KMS keys associated with this
    * table if one was configured.
    *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee the principal to grant access to
    */
   public grantFullAccess(grantee: IGrantable): Grant {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+  }
+
+  /**
+   * Grants permissions on the table's encryption key.
+   *
+   * @param grantee the principal to grant access to
+   * @param actions the KMS actions to grant
+   */
+  public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
+    return {
+      grant: this.encryptionKey?.grant(grantee, ...actions),
+    };
   }
 
   /**
@@ -276,7 +318,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricUserErrors(props?: MetricOptions): Metric {
     if (props?.dimensions) {
-      throw new ValidationError('`dimensions` is not supported for the `UserErrors` metric', this);
+      throw new ValidationError('SupportedMetric', '`dimensions` is not supported for the `UserErrors` metric', this);
     }
 
     return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
@@ -300,7 +342,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new ValidationError('`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric', this);
+      throw new ValidationError('MustBeDimensionPassedMetric', '`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric', this);
     }
 
     const dimensionsMap = {
@@ -370,7 +412,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public metricSystemErrors(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
-      throw new ValidationError("'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
+      throw new ValidationError('MustBeOperationDimensionPassed', "'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
     }
 
     const dimensionsMap = {
@@ -387,7 +429,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions) {
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('The Operation dimension is not supported. Use the `operations` property', this);
+      throw new ValidationError('OperationDimensionSupported', 'The Operation dimension is not supported. Use the `operations` property', this);
     }
 
     const operations = props?.operations ?? Object.values(Operation);
@@ -415,7 +457,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
+      throw new ValidationError('InvalidPropertiesOperationDimensionSupported', 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
     }
 
     for (const operation of operations) {
@@ -427,7 +469,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
       if (firstChar === firstChar.toUpperCase()) {
-        throw new ValidationError(`Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
+        throw new ValidationError('MapperGeneratedIllegalOperationMetric', `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
       }
 
       metrics[operationMetricName] = metric;
@@ -478,7 +520,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
     if (options.streamActions) {
       if (!this.tableStreamArn) {
-        throw new ValidationError(`No stream ARNs found on the table ${this.node.path}`, this);
+        throw new ValidationError('StreamNsFoundTable', `No stream ARNs found on the table ${this.node.path}`, this);
       }
 
       return Grant.addToPrincipal({
@@ -488,7 +530,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       });
     }
 
-    throw new ValidationError(`Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
+    throw new ValidationError('UnexpectedAction', `Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
   }
 
   private configureMetric(props: MetricProps) {

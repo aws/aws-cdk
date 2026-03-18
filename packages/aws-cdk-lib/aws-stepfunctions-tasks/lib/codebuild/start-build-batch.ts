@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codebuild from '../../../aws-codebuild';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
@@ -124,7 +124,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
         ];
         break;
       default:
-        throw new cdk.ValidationError(`Unsupported integration pattern: ${this.integrationPattern}`, this);
+        throw new cdk.ValidationError('UnsupportedIntegrationPattern', `Unsupported integration pattern: ${this.integrationPattern}`, this);
     }
 
     return policyStatements;

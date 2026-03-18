@@ -1,11 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnTracker, CfnTrackerConsumer } from 'aws-cdk-lib/aws-location';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IGeofenceCollection } from './geofence-collection';
+import type { Construct } from 'constructs';
+import type { IGeofenceCollection } from './geofence-collection';
 import { generateUniqueId } from './util';
 
 /**
@@ -145,7 +146,7 @@ export class Tracker extends Resource implements ITracker {
     const parsedArn = Stack.of(scope).splitArn(trackerArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError(`Tracker Arn ${trackerArn} does not have a resource name.`);
+      throw new UnscopedValidationError('TrackerArnMissingResourceName', `Tracker Arn ${trackerArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements ITracker {
@@ -185,16 +186,16 @@ export class Tracker extends Resource implements ITracker {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError(`\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('TrackerDescriptionTooLong', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.trackerName !== undefined && !Token.isUnresolved(props.trackerName)) {
       if (props.trackerName.length < 1 || props.trackerName.length > 100) {
-        throw new ValidationError(`\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`, this);
+        throw new ValidationError('TrackerNameInvalidLength', `\`trackerName\` must be between 1 and 100 characters, got: ${props.trackerName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.trackerName)) {
-        throw new ValidationError(`\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`, this);
+        throw new ValidationError('TrackerNameInvalidCharacters', `\`trackerName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.trackerName}.`, this);
       }
     }
 
@@ -202,7 +203,7 @@ export class Tracker extends Resource implements ITracker {
       && !props.kmsKey
       && props.kmsKeyEnableGeospatialQueries
     ) {
-      throw new ValidationError('`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key', this);
+      throw new ValidationError('TrackerKmsKeyRequiredForGeospatialQueries', '`kmsKeyEnableGeospatialQueries` can only be enabled that are configured to use an AWS KMS customer managed key', this);
     }
 
     const tracker = new CfnTracker(this, 'Resource', {
@@ -242,6 +243,7 @@ export class Tracker extends Resource implements ITracker {
 
   /**
    * Grant the given principal identity permissions to perform the actions on this tracker.
+   * [disable-awslint:no-grants]
    */
   @MethodMetadata()
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -254,6 +256,7 @@ export class Tracker extends Resource implements ITracker {
 
   /**
    * Grant the given identity permissions to update device positions for a tracker
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */
@@ -266,6 +269,7 @@ export class Tracker extends Resource implements ITracker {
 
   /**
    * Grant the given identity permissions to read device positions from a tracker
+   * [disable-awslint:no-grants]
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-read-only-trackers
    */

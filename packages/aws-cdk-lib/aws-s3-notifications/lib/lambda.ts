@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { CfnResource, Names, Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
@@ -16,7 +17,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     const permissionId = `AllowBucketNotificationsTo${Names.nodeUniqueId(this.fn.permissionsNode)}`;
 
     if (!(bucket instanceof Construct)) {
-      throw new ValidationError(`LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
+      throw new ValidationError('LambdaDestinationFunction', `LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
         bucket construct (Bucket ${bucket.bucketRef.bucketName})`, scope);
     }
 

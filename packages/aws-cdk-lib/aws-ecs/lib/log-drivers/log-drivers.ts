@@ -1,12 +1,21 @@
-import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-import { FireLensLogDriver, FireLensLogDriverProps } from './firelens-log-driver';
-import { FluentdLogDriver, FluentdLogDriverProps } from './fluentd-log-driver';
-import { GelfLogDriver, GelfLogDriverProps } from './gelf-log-driver';
-import { JournaldLogDriver, JournaldLogDriverProps } from './journald-log-driver';
-import { JsonFileLogDriver, JsonFileLogDriverProps } from './json-file-log-driver';
-import { LogDriver } from './log-driver';
-import { SplunkLogDriver, SplunkLogDriverProps } from './splunk-log-driver';
-import { SyslogLogDriver, SyslogLogDriverProps } from './syslog-log-driver';
+import type { AwsLogDriverProps } from './aws-log-driver';
+import { AwsLogDriver } from './aws-log-driver';
+import type { FireLensLogDriverProps } from './firelens-log-driver';
+import { FireLensLogDriver } from './firelens-log-driver';
+import type { FluentdLogDriverProps } from './fluentd-log-driver';
+import { FluentdLogDriver } from './fluentd-log-driver';
+import type { GelfLogDriverProps } from './gelf-log-driver';
+import { GelfLogDriver } from './gelf-log-driver';
+import type { JournaldLogDriverProps } from './journald-log-driver';
+import { JournaldLogDriver } from './journald-log-driver';
+import type { JsonFileLogDriverProps } from './json-file-log-driver';
+import { JsonFileLogDriver } from './json-file-log-driver';
+import type { LogDriver } from './log-driver';
+import { NoneLogDriver } from './none-log-driver';
+import type { SplunkLogDriverProps } from './splunk-log-driver';
+import { SplunkLogDriver } from './splunk-log-driver';
+import type { SyslogLogDriverProps } from './syslog-log-driver';
+import { SyslogLogDriver } from './syslog-log-driver';
 
 /**
  * The base class for log drivers.
@@ -59,6 +68,13 @@ export class LogDrivers {
    */
   public static syslog(props?: SyslogLogDriverProps): LogDriver {
     return new SyslogLogDriver(props);
+  }
+
+  /**
+   * Creates a log driver configuration that disables logging (Docker `none` driver).
+   */
+  public static none(): LogDriver {
+    return new NoneLogDriver();
   }
 
   /**

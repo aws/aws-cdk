@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CodeStarConnectionsSourceAction } from '..';
 import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
@@ -154,6 +154,7 @@ export class CodeBuildAction extends Action {
       const projectStack = cdk.Stack.of(this.props.project);
       if (pipelineStack.account !== projectStack.account) {
         throw new cdk.ValidationError(
+          'CrossAccountActionCannotHaveOutputs',
           'A cross-account CodeBuild action cannot have outputs. ' +
           'This is a known CodeBuild limitation. ' +
           'See https://github.com/aws/aws-cdk/issues/4169 for details',

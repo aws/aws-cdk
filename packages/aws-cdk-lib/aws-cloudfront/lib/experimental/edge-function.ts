@@ -1,11 +1,11 @@
-import { Construct, Node } from 'constructs';
-import * as cloudwatch from '../../../aws-cloudwatch';
-import * as ec2 from '../../../aws-ec2';
+import type { Construct, Node } from 'constructs';
+import type * as cloudwatch from '../../../aws-cloudwatch';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as ssm from '../../../aws-ssm';
+import type { CfnResource } from '../../../core';
 import {
-  CfnResource,
   CustomResource,
   Lazy,
   Resource,
@@ -125,10 +125,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
    * Not supported. Connections are only applicable to VPC-enabled functions.
    */
   public get connections(): ec2.Connections {
-    throw new ValidationError('Lambda@Edge does not support connections', this);
+    throw new ValidationError('LambdaEdgeDoesNotSupportConnections', 'Lambda@Edge does not support connections', this);
   }
   public get latestVersion(): lambda.IVersion {
-    throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+    throw new ValidationError('LatestFunctionVersionCannotBeUsedForLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
   }
 
   @MethodMetadata()
@@ -143,22 +143,42 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     return this.lambda.addToRolePolicy(statement);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvoke(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvoke(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeLatestVersion(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeVersion(identity: iam.IGrantable, version: lambda.IVersion): iam.Grant {
     return this.lambda.grantInvokeVersion(identity, version);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);
   }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
   public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
     return this.lambda.grantInvokeCompositePrincipal(compositePrincipal);
@@ -209,7 +229,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
-      throw new ValidationError('stacks which use EdgeFunctions must have an explicitly set region', this);
+      throw new ValidationError('StacksWithEdgeFunctionsMustHaveExplicitRegion', 'stacks which use EdgeFunctions must have an explicitly set region', this);
     }
     // SSM parameter names must only contain letters, numbers, ., _, -, or /.
     const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
@@ -275,7 +295,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private edgeStack(stackId?: string): Stack {
     const stage = Stage.of(this);
     if (!stage) {
-      throw new ValidationError('stacks which use EdgeFunctions must be part of a CDK app or stage', this);
+      throw new ValidationError('StacksWithEdgeFunctionsMustBePartOfCdkApp', 'stacks which use EdgeFunctions must be part of a CDK app or stage', this);
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;

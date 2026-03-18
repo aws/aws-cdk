@@ -1,13 +1,15 @@
 import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
-import { WebSocketRouteIntegration } from './integration';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketRouteAuthorizer } from './authorizer';
+import { WebSocketNoneAuthorizer } from './authorizer';
+import type { WebSocketRouteIntegration } from './integration';
+import type { RouteReference } from '.././index';
 import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IRoute } from '../common';
+import type { IRoute } from '../common';
 
 /**
  * Represents a Route for an WebSocket API.
@@ -96,7 +98,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     addConstructMetadata(this, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new ValidationError('You can only set a WebSocket authorizer to a $connect route.', scope);
+      throw new ValidationError('SetWebSocketAuthorizerConnect', 'You can only set a WebSocket authorizer to a $connect route.', scope);
     }
 
     this.webSocketApi = props.webSocketApi;
@@ -130,5 +132,12 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
         routeResponseKey: '$default',
       });
     }
+  }
+
+  public get routeRef(): RouteReference {
+    return {
+      apiId: this.webSocketApi.apiRef.apiId,
+      routeId: this.routeId,
+    };
   }
 }

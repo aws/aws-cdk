@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -159,7 +159,7 @@ class SESEmail extends UserPoolEmail {
     const region = Stack.of(scope).region;
 
     if (Token.isUnresolved(region) && !this.options.sesRegion) {
-      throw new ValidationError('Your stack region cannot be determined so "sesRegion" is required in SESOptions', scope);
+      throw new ValidationError('IsRequiredYourStackRegion', 'Your stack region cannot be determined so "sesRegion" is required in SESOptions', scope);
     }
 
     let from = encodeAndTest(this.options.fromEmail);
@@ -171,7 +171,7 @@ class SESEmail extends UserPoolEmail {
     if (this.options.sesVerifiedDomain) {
       const domainFromEmail = this.options.fromEmail.split('@').pop();
       if (domainFromEmail !== this.options.sesVerifiedDomain) {
-        throw new ValidationError('"fromEmail" contains a different domain than the "sesVerifiedDomain"', scope);
+        throw new ValidationError('FromemailContainsDifferentDomain', '"fromEmail" contains a different domain than the "sesVerifiedDomain"', scope);
       }
     }
 
@@ -194,7 +194,7 @@ function encodeAndTest(input: string | undefined): string | undefined {
   if (input) {
     const local = input.split('@')[0];
     if (!/[\p{ASCII}]+/u.test(local)) {
-      throw new UnscopedValidationError('the local part of the email address must use ASCII characters only');
+      throw new UnscopedValidationError('LocalPartEmailAddress', 'the local part of the email address must use ASCII characters only');
     }
     return punycodeEncode(input);
   } else {

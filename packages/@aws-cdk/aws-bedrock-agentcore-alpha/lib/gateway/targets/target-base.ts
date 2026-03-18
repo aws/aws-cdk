@@ -1,7 +1,9 @@
-import { Resource, IResource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { GatewayTargetReference, IGatewayTargetRef } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IGateway } from '../gateway-base';
-import { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
+import type { IGateway } from '../gateway-base';
+import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 
 /******************************************************************************
  *                                 ENUM
@@ -26,6 +28,8 @@ export enum McpTargetType {
   LAMBDA = 'LAMBDA',
   /** MCP server target type */
   MCP_SERVER = 'MCP_SERVER',
+  /** API Gateway target type */
+  API_GATEWAY = 'API_GATEWAY',
 }
 
 /******************************************************************************
@@ -38,7 +42,7 @@ export enum McpTargetType {
  * Represents a target that hosts tools for the gateway.
  * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
  */
-export interface IGatewayTarget extends IResource {
+export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
    * The ARN of the gateway target resource
    * @attribute
@@ -152,7 +156,19 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly targetProtocolType: GatewayTargetProtocolType;
 
   /**
+   * A reference to a GatewayTarget resource.
+   */
+  public get gatewayTargetRef(): GatewayTargetReference {
+    return {
+      gatewayIdentifier: this.gateway.gatewayRef.gatewayIdentifier,
+      targetId: this.targetId,
+    };
+  }
+
+  /**
    * Grants IAM actions to the IAM Principal
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant permissions to
    * @param actions The IAM actions to grant
@@ -167,6 +183,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Get` and `List` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant read permissions to
    */
@@ -184,6 +202,8 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
 
   /**
    * Grants `Create`, `Update`, and `Delete` actions on the Gateway Target
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant manage permissions to
    */

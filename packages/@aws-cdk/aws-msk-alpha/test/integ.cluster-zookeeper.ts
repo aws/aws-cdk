@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, RemovalPolicy, Stack, CfnOutput } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as msk from '../lib/index';
 
 /*

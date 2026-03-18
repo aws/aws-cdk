@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
+import type { Construct } from 'constructs';
+import type { IAlarm, IAlarmRule } from './alarm-base';
+import { AlarmBase } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Properties for creating a Composite Alarm
@@ -107,16 +109,28 @@ export class CompositeAlarm extends AlarmBase {
    *
    * @attribute
    */
-  public readonly alarmArn: string;
+  @memoizedGetter
+  get alarmArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
 
   /**
    * Name of this alarm.
    *
    * @attribute
    */
-  public readonly alarmName: string;
+  @memoizedGetter
+  get alarmName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   private readonly alarmRule: string;
+  private readonly resource: CfnCompositeAlarm;
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
@@ -126,14 +140,14 @@ export class CompositeAlarm extends AlarmBase {
     addConstructMetadata(this, props);
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
-      throw new ValidationError('Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
+      throw new ValidationError('AlarmRuleExpressionCannotGreater', 'Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
     }
 
     let extensionPeriod = props.actionsSuppressorExtensionPeriod;
     let waitPeriod = props.actionsSuppressorWaitPeriod;
     if (props.actionsSuppressor === undefined) {
       if (extensionPeriod !== undefined || waitPeriod !== undefined) {
-        throw new ValidationError('ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
+        throw new ValidationError('ActionsSuppressorExtensionWaitPeriods', 'ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
       }
     } else {
       extensionPeriod = extensionPeriod ?? Duration.minutes(1);
@@ -155,13 +169,7 @@ export class CompositeAlarm extends AlarmBase {
       actionsSuppressorWaitPeriod: waitPeriod?.toSeconds(),
     });
 
-    this.alarmName = this.getResourceNameAttribute(alarm.ref);
-    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
+    this.resource = alarm;
   }
 
   private generateUniqueId(): string {

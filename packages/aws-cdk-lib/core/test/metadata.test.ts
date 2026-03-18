@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations } from '../lib/annotations';
 import * as metadata from '../lib/metadata-resource';
 import { Token } from '../lib/token';

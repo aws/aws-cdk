@@ -1,10 +1,13 @@
-import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
-import * as ec2 from '../../../aws-ec2';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
+import type { Protocol } from './enums';
+import { TargetType } from './enums';
+import type { Attributes } from './util';
+import { renderAttributes } from './util';
+import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -440,18 +443,18 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       switch (key) {
         case 'target_group_health.dns_failover.minimum_healthy_targets.count':
           if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+            throw new ValidationError('MustBeIntegerGreaterThan', `${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
           if (!Number.isInteger(+value) || +value < 1) {
-            throw new ValidationError(`${key} must be an integer greater than 0. Received: ${value}`, this);
+            throw new ValidationError('MustBePositiveInteger', `${key} must be an integer greater than 0. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage':
           if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+            throw new ValidationError('MustBeIntegerOff', `${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
           }
           break;
         default:
@@ -467,12 +470,12 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new ValidationError(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
+      throw new ValidationError('AlreadyType', `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new ValidationError('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
+      throw new ValidationError('TargetGroupContainOneTarget', 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {

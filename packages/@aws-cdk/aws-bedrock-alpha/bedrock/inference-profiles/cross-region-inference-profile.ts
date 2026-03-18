@@ -1,17 +1,10 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
-import { IInferenceProfile, InferenceProfileType } from './inference-profile';
-
-/**
- * Error thrown when cross-region inference profile validation fails.
- */
-class CrossRegionInferenceProfileError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'CrossRegionInferenceProfileError';
-  }
-}
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileType } from './inference-profile';
 
 /**
  * Geographic regions supported for cross-region inference profiles.
@@ -186,16 +179,16 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
   private constructor(props: CrossRegionInferenceProfileProps) {
     // Validate required properties
     if (!props.geoRegion) {
-      throw new CrossRegionInferenceProfileError('geoRegion is required');
+      throw new UnscopedValidationError('GeoRegionRequired', 'geoRegion is required');
     }
 
     if (!props.model) {
-      throw new CrossRegionInferenceProfileError('model is required');
+      throw new UnscopedValidationError('ModelRequired', 'model is required');
     }
 
     // Validate that the model supports cross-region inference
     if (!props.model.supportsCrossRegion) {
-      throw new CrossRegionInferenceProfileError(`Model ${props.model.modelId} does not support cross-region inference`);
+      throw new UnscopedValidationError('ModelNotSupportedForCrossRegion', `Model ${props.model.modelId} does not support cross-region inference`);
     }
 
     this.type = InferenceProfileType.SYSTEM_DEFINED;
@@ -218,6 +211,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * For cross-region inference profiles, this method grants permissions to:
    * - Invoke the model in all regions where the inference profile can route requests
    * - Use the inference profile itself
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
@@ -239,6 +233,7 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    *
    * Note: This does not grant permissions to use the underlying model directly.
    * For comprehensive permissions, use grantInvoke() instead.
+   * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions

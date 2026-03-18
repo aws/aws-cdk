@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { DestinationType, IDestination } from './destination';
-import { IFunction } from './function-base';
+import type { Construct } from 'constructs';
+import type { IDestination } from './destination';
+import { DestinationType } from './destination';
+import type { IFunction } from './function-base';
 import { CfnEventInvokeConfig } from './lambda.generated';
-import { Duration, Resource } from '../../core';
+import type { Duration } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -83,11 +85,11 @@ export class EventInvokeConfig extends Resource {
     addConstructMetadata(this, props);
 
     if (props.maxEventAge && (props.maxEventAge.toSeconds() < 60 || props.maxEventAge.toSeconds() > 21600)) {
-      throw new ValidationError('`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
+      throw new ValidationError('RepresentBetween21600Seconds', '`maximumEventAge` must represent a `Duration` that is between 60 and 21600 seconds.', this);
     }
 
     if (props.retryAttempts && (props.retryAttempts < 0 || props.retryAttempts > 2)) {
-      throw new ValidationError('`retryAttempts` must be between 0 and 2.', this);
+      throw new ValidationError('MustBeBetween', '`retryAttempts` must be between 0 and 2.', this);
     }
 
     new CfnEventInvokeConfig(this, 'Resource', {

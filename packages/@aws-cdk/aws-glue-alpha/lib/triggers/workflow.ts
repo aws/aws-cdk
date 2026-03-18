@@ -1,21 +1,24 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import {
   ConditionLogicalOperator,
   PredicateLogical,
 } from '../constants';
-import {
+import type {
   Action,
-  TriggerSchedule,
   OnDemandTriggerOptions,
   WeeklyScheduleTriggerOptions,
   DailyScheduleTriggerOptions,
   CustomScheduledTriggerOptions,
   NotifyEventTriggerOptions,
   ConditionalTriggerOptions,
+} from './trigger-options';
+import {
+  TriggerSchedule,
 } from './trigger-options';
 
 /**
@@ -266,9 +269,9 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   private renderAction(action: Action): CfnTrigger.ActionProperty {
     // Validate that either job or crawler is provided, but not both
     if (!action.job && !action.crawler) {
-      throw new cdk.ValidationError('You must provide either a job or a crawler for the action.', this);
+      throw new cdk.ValidationError('ActionJobOrCrawlerRequired', 'You must provide either a job or a crawler for the action.', this);
     } else if (action.job && action.crawler) {
-      throw new cdk.ValidationError('You cannot provide both a job and a crawler for the action.', this);
+      throw new cdk.ValidationError('ActionJobAndCrawlerMutuallyExclusive', 'You cannot provide both a job and a crawler for the action.', this);
     }
 
     return {
@@ -284,19 +287,19 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
     const conditions = props.predicate.conditions?.map(condition => {
       // Validate that either job or crawler is provided, but not both
       if (!condition.job && !condition.crawlerName) {
-        throw new cdk.ValidationError('You must provide either a job or a crawler for the condition.', this);
+        throw new cdk.ValidationError('ConditionJobOrCrawlerRequired', 'You must provide either a job or a crawler for the condition.', this);
       } else if (condition.job && condition.crawlerName) {
-        throw new cdk.ValidationError('You cannot provide both a job and a crawler for the condition.', this);
+        throw new cdk.ValidationError('ConditionJobAndCrawlerMutuallyExclusive', 'You cannot provide both a job and a crawler for the condition.', this);
       }
 
       // Validate that if job is provided, job state is also provided
       if (condition.job && !condition.state) {
-        throw new cdk.ValidationError('If you provide a job for the condition, you must also provide a job state.', this);
+        throw new cdk.ValidationError('ConditionJobStateRequired', 'If you provide a job for the condition, you must also provide a job state.', this);
       }
 
       // Validate that if crawler is provided, crawler state is also provided
       if (condition.crawlerName && !condition.crawlState) {
-        throw new cdk.ValidationError('If you provide a crawler for the condition, you must also provide a crawler state.', this);
+        throw new cdk.ValidationError('ConditionCrawlerStateRequired', 'If you provide a crawler for the condition, you must also provide a crawler state.', this);
       }
 
       return {
@@ -406,8 +409,7 @@ export class Workflow extends WorkflowBase {
     return new Import(scope, id);
   }
 
-  public readonly workflowName: string;
-  public readonly workflowArn: string;
+  private resource: CfnWorkflow;
 
   constructor(scope: constructs.Construct, id: string, props?: WorkflowProps) {
     super(scope, id, {
@@ -416,14 +418,21 @@ export class Workflow extends WorkflowBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       description: props?.description,
       defaultRunProperties: props?.defaultRunProperties,
       maxConcurrentRuns: props?.maxConcurrentRuns,
     });
+  }
 
-    this.workflowName = this.getResourceNameAttribute(resource.ref);
-    this.workflowArn = this.buildWorkflowArn(this, this.workflowName);
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.buildWorkflowArn(this, this.workflowName);
   }
 }

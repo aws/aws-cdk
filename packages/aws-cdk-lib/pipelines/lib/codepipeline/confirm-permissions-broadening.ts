@@ -1,10 +1,11 @@
 import { Node } from 'constructs';
-import { CodePipeline } from './codepipeline';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
-import { IStage } from '../../../aws-codepipeline';
+import type { CodePipeline } from './codepipeline';
+import type { CodePipelineActionFactoryResult, ICodePipelineActionFactory, ProduceActionOptions } from './codepipeline-action-factory';
+import type { IStage } from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
-import * as sns from '../../../aws-sns';
-import { Stage, ValidationError } from '../../../core';
+import type * as sns from '../../../aws-sns';
+import type { Stage } from '../../../core';
+import { ValidationError } from '../../../core';
 import { Step } from '../blueprint';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 
@@ -76,7 +77,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     const existing = Node.of(pipeline).tryFindChild(id);
     if (existing) {
       if (!(existing instanceof ApplicationSecurityCheck)) {
-        throw new ValidationError(`Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`, pipeline);
+        throw new ValidationError('Expected', `Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`, pipeline);
       }
       return existing;
     }

@@ -1,10 +1,10 @@
 import * as fs from 'fs';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 
 /**
  * Represents a Glue Job's Code assets (an asset can be a scripts, a jar, a python file or any other file).
@@ -66,7 +66,7 @@ export class AssetCode extends Code {
     super();
 
     if (fs.lstatSync(this.path).isDirectory()) {
-      throw new cdk.UnscopedValidationError(`Code path ${this.path} is a directory. Only files are supported`);
+      throw new cdk.UnscopedValidationError('CodePathIsDirectory', `Code path ${this.path} is a directory. Only files are supported`);
     }
   }
 
@@ -78,7 +78,7 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new cdk.UnscopedValidationError(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+      throw new cdk.UnscopedValidationError('AssetAlreadyAssociatedWithStack', `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
         'Create a new Code instance for every stack.');
     }
     this.asset.grantRead(grantable);

@@ -1,4 +1,5 @@
-import { captureStackTrace, IResolvable, IResolveContext, Token, UnscopedValidationError } from '../../core';
+import type { IResolvable, IResolveContext } from '../../core';
+import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 
@@ -20,70 +21,70 @@ export class Match implements IResolvable {
    * Matches a null value in the JSON of the event
    */
   public static nullValue(): string[] {
-    return this.fromObjects([null]);
+    return [Token.asString(null)];
   }
 
   /**
    * Matches when the field is present in the JSON of the event
    */
   public static exists(): string[] {
-    return this.fromObjects([{ exists: true }]);
+    return [Token.asString({ exists: true })];
   }
 
   /**
    * Matches when the field is absent from the JSON of the event
    */
   public static doesNotExist(): string[] {
-    return this.fromObjects([{ exists: false }]);
+    return [Token.asString({ exists: false })];
   }
 
   /**
    * Matches a string, exactly, in the JSON of the event
    */
   public static exactString(value: string): string[] {
-    return this.fromObjects([value]);
+    return [Token.asString(value)];
   }
 
   /**
    * Matches a string, regardless of case, in the JSON of the event
    */
   public static equalsIgnoreCase(value: string): string[] {
-    return this.fromObjects([{ 'equals-ignore-case': value }]);
+    return [Token.asString({ 'equals-ignore-case': value })];
   }
 
   /**
    * Matches strings with the given prefix in the JSON of the event
    */
   public static prefix(value: string): string[] {
-    return this.fromObjects([{ prefix: value }]);
+    return [Token.asString({ prefix: value })];
   }
 
   /**
    * Matches strings with the given suffix in the JSON of the event
    */
   public static suffix(value: string): string[] {
-    return this.fromObjects([{ suffix: value }]);
+    return [Token.asString({ suffix: value })];
   }
 
   /**
    * Matches strings with the given prefix in the JSON of the event regardless of the casing
    */
   public static prefixEqualsIgnoreCase(value: string): string[] {
-    return this.fromObjects([{ prefix: { 'equals-ignore-case': value } }]);
+    return [Token.asString({ prefix: { 'equals-ignore-case': value } })];
   }
 
   /**
    * Matches strings with the given suffix in the JSON of the event regardless of the casing
    */
   public static suffixEqualsIgnoreCase(value: string): string[] {
-    return this.fromObjects([{ suffix: { 'equals-ignore-case': value } }]);
+    return [Token.asString({ suffix: { 'equals-ignore-case': value } })];
   }
 
   /**
    * Matches strings with the given wildcard pattern in the JSON of the event
    */
   public static wildcard(value: string): string[] {
-    return this.fromObjects([{ wildcard: value }]);
+    return [Token.asString({ wildcard: value })];
   }
 
   /**
@@ -94,10 +95,10 @@ export class Match implements IResolvable {
     const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
 
     if (!ipv4Regex.test(range) && !ipv6Regex.test(range)) {
-      throw new UnscopedValidationError(`Invalid IP address range: ${range}`);
+      throw new UnscopedValidationError('InvalidIpAddressRange', `Invalid IP address range: ${range}`);
     }
 
-    return this.fromObjects([{ cidr: range }]);
+    return [Token.asString({ cidr: range })];
   }
 
   /**
@@ -114,17 +115,17 @@ export class Match implements IResolvable {
    */
   public static anythingBut(...values: any[]): string[] {
     if (values.length === 0) {
-      throw new UnscopedValidationError('anythingBut matchers must be non-empty lists');
+      throw new UnscopedValidationError('AnythingButMatchersMustBeNonEmpty', 'anythingBut matchers must be non-empty lists');
     }
 
     const allNumbers = values.every(v => typeof (v) === 'number');
     const allStrings = values.every(v => typeof (v) === 'string');
 
     if (!(allNumbers || allStrings)) {
-      throw new UnscopedValidationError('anythingBut matchers must be lists that contain only strings or only numbers.');
+      throw new UnscopedValidationError('AnythingButMatchersMustBeHomogeneous', 'anythingBut matchers must be lists that contain only strings or only numbers.');
     }
 
-    return this.fromObjects([{ 'anything-but': values }]);
+    return [Token.asString({ 'anything-but': values })];
   }
 
   /**
@@ -200,7 +201,7 @@ export class Match implements IResolvable {
    */
   public static interval(lower: number, upper: number): string[] {
     if (lower > upper) {
-      throw new UnscopedValidationError(`Invalid interval: [${lower}, ${upper}]`);
+      throw new UnscopedValidationError('InvalidInterval', `Invalid interval: [${lower}, ${upper}]`);
     }
 
     return Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper));
@@ -211,7 +212,7 @@ export class Match implements IResolvable {
    */
   public static allOf(...matchers: any[]): string[] {
     if (matchers.length === 0) {
-      throw new UnscopedValidationError('A list of matchers must contain at least one element.');
+      throw new UnscopedValidationError('MatcherListMustContainAtLeastOneElement', 'A list of matchers must contain at least one element.');
     }
 
     return this.fromMergedObjects(matchers);
@@ -222,28 +223,32 @@ export class Match implements IResolvable {
    */
   public static anyOf(...matchers: any[]): string[] {
     if (matchers.length === 0) {
-      throw new UnscopedValidationError('A list of matchers must contain at least one element.');
+      throw new UnscopedValidationError('MatcherListMustContainAtLeastOneElement', 'A list of matchers must contain at least one element.');
     }
-    return this.fromObjects(matchers);
+
+    return matchers.flatMap(match => {
+      // If it's already an array (from other Match methods), process each element
+      if (Array.isArray(match)) {
+        return match.map((m: any) => Token.asString(m));
+      }
+      // If it's a raw value (string, number, etc.), wrap it as a single element
+      return [Token.asString(match)];
+    });
   }
 
   private static anythingButConjunction(filterKey: string, values: string[]): string[] {
     if (values.length === 0) {
-      throw new UnscopedValidationError('anythingBut matchers must be non-empty lists');
+      throw new UnscopedValidationError('AnythingButMatchersMustBeNonEmptyConjunction', 'anythingBut matchers must be non-empty lists');
     }
 
     // When there is a single value return it, otherwise return the array
     const filterValue = values.length === 1 ? values[0] : values;
 
-    return this.fromObjects([{ 'anything-but': { [filterKey]: filterValue } }]);
+    return [Token.asString({ 'anything-but': { [filterKey]: filterValue } })];
   }
 
   private static numeric(operator: ComparisonOperator, value: number): string[] {
-    return this.fromObjects([{ numeric: [operator, value] }]);
-  }
-
-  private static fromObjects(values: any[]): string[] {
-    return new Match(values, { mergeMatchers: false }).asList();
+    return [Token.asString({ numeric: [operator, value] })];
   }
 
   private static fromMergedObjects(values: any[]): string[] {
@@ -266,7 +271,7 @@ export class Match implements IResolvable {
     // This is the only supported case for merging at the moment.
     // We can generalize this logic if EventBridge starts supporting more cases in the future.
     if (!matchers.every(matcher => matcher?.numeric)) {
-      throw new UnscopedValidationError('Only numeric matchers can be merged into a single matcher.');
+      throw new UnscopedValidationError('OnlyNumericMatchersCanBeMerged', 'Only numeric matchers can be merged into a single matcher.');
     }
 
     return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];

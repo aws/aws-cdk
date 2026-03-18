@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
@@ -55,7 +55,7 @@ export class PolicyDocument implements cdk.IResolvable {
     const newPolicyDocument = new PolicyDocument();
     const statement = obj.Statement ?? [];
     if (statement && !Array.isArray(statement)) {
-      throw new cdk.UnscopedValidationError('Statement must be an array');
+      throw new cdk.UnscopedValidationError('StatementMustBeArray', 'Statement must be an array');
     }
     newPolicyDocument.addStatements(...obj.Statement.map((s: any) => PolicyStatement.fromJson(s)));
     return newPolicyDocument;

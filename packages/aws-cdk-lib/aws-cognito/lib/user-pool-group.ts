@@ -1,16 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IUserPool } from './user-pool';
-import { IRoleRef } from '../../aws-iam';
-import { IResource, Resource, Token } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import type { IRoleRef } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token } from '../../core';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.
  */
-export interface IUserPoolGroup extends IResource {
+export interface IUserPoolGroup extends IResource, IUserPoolGroupRef {
   /**
    * The user group name
    * @attribute
@@ -68,7 +69,7 @@ export interface UserPoolGroupProps extends UserPoolGroupOptions {
   /**
    * The user pool to which this group is associated.
    */
-  readonly userPool: IUserPool;
+  readonly userPool: IUserPoolRef;
 }
 
 /**
@@ -85,27 +86,46 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
   public static fromGroupName(scope: Construct, id: string, groupName: string): IUserPoolGroup {
     class Import extends Resource implements IUserPoolGroup {
       public readonly groupName = groupName;
+
+      public get userPoolGroupRef(): UserPoolGroupReference {
+        return {
+          groupName,
+          get userPoolId(): string {
+            throw new UnscopedValidationError('UserpoolidAvailableImportedUserpoolgroup', 'userPoolId is not available on imported UserPoolGroup.');
+          },
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly groupName: string;
+  private readonly _userPool: IUserPoolRef;
+
+  public get userPoolGroupRef(): UserPoolGroupReference {
+    return {
+      userPoolId: this._userPool.userPoolRef.userPoolId,
+      groupName: this.groupName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: UserPoolGroupProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._userPool = props.userPool;
+
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new ValidationError(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('DescriptionLengthInvalid', `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
       (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
-      throw new ValidationError(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
+      throw new ValidationError('PrecedenceOutOfRange', `\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
     }
 
     if (
@@ -113,11 +133,11 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new ValidationError('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
+      throw new ValidationError('MustBeBetweenCharactersInclude', '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: this._userPool.userPoolRef.userPoolId,
       description: props.description,
       groupName: props.groupName,
       precedence: props.precedence,

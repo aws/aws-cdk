@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Annotations, Capture, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -7,26 +7,37 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { App, ArnFormat, Aws, CfnDeletionPolicy, Duration, Fn, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '../../core';
+import {
+  App,
+  ArnFormat,
+  Aws,
+  CfnDeletionPolicy,
+  Duration,
+  Fn,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Tags,
+} from '../../core';
 import * as cr from '../../custom-resources';
 import * as cxapi from '../../cx-api';
+import type { Attribute, GlobalSecondaryIndexProps, LocalSecondaryIndexProps } from '../lib';
 import {
-  Attribute,
+  ApproximateCreationDateTimePrecision,
   AttributeType,
   BillingMode,
-  GlobalSecondaryIndexProps,
-  LocalSecondaryIndexProps,
+  CfnTable,
+  ContributorInsightsMode,
+  InputCompressionType,
+  InputFormat,
+  Operation,
   ProjectionType,
   StreamViewType,
   Table,
   TableClass,
   TableEncryption,
-  Operation,
-  CfnTable,
-  InputCompressionType,
-  InputFormat,
-  ApproximateCreationDateTimePrecision,
-  ContributorInsightsMode,
+  TableGrants,
 } from '../lib';
 import { ReplicaProvider } from '../lib/replica-provider';
 
@@ -2408,12 +2419,12 @@ describe('grants', () => {
               'dynamodb:action2',
             ],
             'Effect': 'Allow',
-            'Resource': {
+            'Resource': [{
               'Fn::GetAtt': [
                 'mytable0324D45C',
                 'Arn',
               ],
-            },
+            }],
           },
         ],
         'Version': '2012-10-17',
@@ -2682,13 +2693,14 @@ describe('grants', () => {
     table.grant(user, 'dynamodb:*');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'dynamodb:*',
             Effect: 'Allow',
-            Resource: {
+            Resource: [{
               'Fn::Join': [
                 '',
                 [
@@ -2707,7 +2719,7 @@ describe('grants', () => {
                   ':table/my-table',
                 ],
               ],
-            },
+            }],
           },
         ],
         Version: '2012-10-17',
@@ -2783,7 +2795,7 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': tableArn,
+            'Resource': [tableArn],
           },
           {
             'Action': [
@@ -2791,7 +2803,7 @@ describe('import', () => {
               'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
-            'Resource': tableArn,
+            'Resource': [tableArn],
           },
         ],
         'Version': '2012-10-17',
@@ -2833,7 +2845,7 @@ describe('import', () => {
               'dynamodb:DescribeTable',
             ],
             'Effect': 'Allow',
-            'Resource': {
+            'Resource': [{
               'Fn::Join': [
                 '',
                 [
@@ -2852,7 +2864,7 @@ describe('import', () => {
                   ':table/MyTable',
                 ],
               ],
-            },
+            }],
           },
           {
             'Action': [
@@ -2860,7 +2872,7 @@ describe('import', () => {
               'dynamodb:GetShardIterator',
             ],
             'Effect': 'Allow',
-            'Resource': {
+            'Resource': [{
               'Fn::Join': [
                 '',
                 [
@@ -2879,7 +2891,7 @@ describe('import', () => {
                   ':table/MyTable',
                 ],
               ],
-            },
+            }],
           },
         ],
         'Version': '2012-10-17',
@@ -3324,6 +3336,258 @@ describe('global', () => {
 
     // WHEN
     table.grantReadData(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'dynamodb:BatchGetItem',
+              'dynamodb:Query',
+              'dynamodb:GetItem',
+              'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
+              'dynamodb:DescribeTable',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableCD117FA1',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            Action: [
+              'dynamodb:GetRecords',
+              'dynamodb:GetShardIterator',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableCD117FA1',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableCD117FA1',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-west-2:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:eu-central-1:',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/',
+                    {
+                      Ref: 'TableCD117FA1',
+                    },
+                    '/index/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grantReadData - global secondary index added after granting', () => {
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    table.grantReadData(user);
+    table.addGlobalSecondaryIndex({
+      indexName: 'my-index',
+      partitionKey: {
+        name: 'key',
+        type: AttributeType.STRING,
+      },
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -4190,7 +4454,7 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
 
   for (const statement of capture.asArray()) {
     if (statement.Effect === 'Allow' &&
-        JSON.stringify(statement.Resource) === JSON.stringify(tableResource)) {
+        JSON.stringify(statement.Resource) === JSON.stringify([tableResource])) {
       if (Array.isArray(statement.Action)) {
         allActions.push(...statement.Action);
       } else {
@@ -5029,4 +5293,111 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
         { name: 'gsiSortKeyFive', type: AttributeType.BINARY }],
     });
   }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+describe('L1 table grants', () => {
+  test('grant read permission to service principal (L1)', () => {
+    const stack = new Stack();
+    const table = new CfnTable(stack, 'Table', {
+      keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+      attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    });
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    TableGrants.fromTable(table).readData(principal);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
+            Effect: 'Allow',
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: '*',
+          }]),
+        },
+      },
+    });
+  });
+});
+
+test('grant read permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant write permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).writeData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
+});
+
+test('grant readWrite permission to CfnTable with encryption adds KMS permissions', () => {
+  const stack = new Stack();
+  const encryptionKey = new kms.Key(stack, 'Key');
+  const table = new CfnTable(stack, 'Table', {
+    keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
+    attributeDefinitions: [{ attributeName: 'id', attributeType: 'S' }],
+    sseSpecification: {
+      sseEnabled: true,
+      sseType: 'KMS',
+      kmsMasterKeyId: encryptionKey.keyArn,
+    },
+  });
+  const user = new iam.User(stack, 'User');
+
+  TableGrants.fromTable(table).readWriteData(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+        Effect: 'Allow',
+        Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+      }]),
+    },
+  });
 });

@@ -1,6 +1,8 @@
-import { Resource } from '@aws-cdk/service-spec-types';
-import { Method, TypeScriptRenderer } from '@cdklabs/typewriter';
-import { AwsCdkLibBuilder, AwsCdkLibBuilderProps } from '../lib/cdk/aws-cdk-lib';
+import type { Resource } from '@aws-cdk/service-spec-types';
+import type { Method } from '@cdklabs/typewriter';
+import { TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { AwsCdkLibBuilderProps } from '../lib/cdk/aws-cdk-lib';
+import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
 export function moduleForResource(resource: Resource, props: AwsCdkLibBuilderProps) {
   const ast = new AwsCdkLibBuilder(props);

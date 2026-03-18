@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import * as lambda from '../../../aws-lambda';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
+import type { Construct } from 'constructs';
+import type * as lambda from '../../../aws-lambda';
+import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Use an AWS Lambda function to transform records.

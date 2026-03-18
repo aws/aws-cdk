@@ -1,4 +1,4 @@
-import * as route53 from '../../aws-route53';
+import type * as route53 from '../../aws-route53';
 import { ValidationError } from '../../core/lib/errors';
 
 /**
@@ -10,7 +10,7 @@ export class Route53RecordTarget implements route53.IAliasRecordTarget {
 
   public bind(record: route53.IRecordSet, zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     if (!zone) { // zone introduced as optional to avoid a breaking change
-      throw new ValidationError('Cannot bind to record without a zone', record);
+      throw new ValidationError('CannotBindRecordWithoutZone', 'Cannot bind to record without a zone', record);
     }
     return {
       dnsName: this.record.domainName,

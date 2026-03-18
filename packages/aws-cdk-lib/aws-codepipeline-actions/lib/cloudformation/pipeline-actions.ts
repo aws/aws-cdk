@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
 import * as cloudformation from '../../../aws-cloudformation';
 import * as codepipeline from '../../../aws-codepipeline';
@@ -349,7 +349,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     if (this._deploymentRole) {
       return this._deploymentRole;
     } else {
-      throw new cdk.UnscopedValidationError(`Cannot use the ${member} before the Action has been added to a Pipeline`);
+      throw new cdk.UnscopedValidationError('ActionNotAddedToPipeline', `Cannot use the ${member} before the Action has been added to a Pipeline`);
     }
   }
 }

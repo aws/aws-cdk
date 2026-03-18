@@ -1,9 +1,9 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { UnscopedValidationError } from './errors';
 import { TokenString } from './private/encoding';
 import { TokenMap } from './private/token-map';
-import { TokenizedStringFragments } from './string-fragments';
-import { ResolutionTypeHint } from './type-hints';
+import type { TokenizedStringFragments } from './string-fragments';
+import type { ResolutionTypeHint } from './type-hints';
 
 /**
  * Current resolution context for tokens
@@ -188,14 +188,14 @@ export class DefaultTokenResolver implements ITokenResolver {
   public resolveList(xs: string[], context: IResolveContext) {
     // Must be a singleton list token, because concatenation is not allowed.
     if (xs.length !== 1) {
-      throw new UnscopedValidationError(`Cannot add elements to list token, got: ${xs}`);
+      throw new UnscopedValidationError('CannotAddElementsListToken', `Cannot add elements to list token, got: ${xs}`);
     }
 
     const str = TokenString.forListToken(xs[0]);
     const tokenMap = TokenMap.instance();
     const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
     if (fragments.length !== 1) {
-      throw new UnscopedValidationError(`Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
+      throw new UnscopedValidationError('CannotConcatenateStringsTokenizedString', `Cannot concatenate strings in a tokenized string array, got: ${xs[0]}`);
     }
 
     return fragments.mapTokens({ mapToken: (x) => context.resolve(x) }).firstValue;

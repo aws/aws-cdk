@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IdentitySource } from './identity-source';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -7,9 +7,11 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID } from '../../../cx-api';
-import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
-import { Authorizer, IAuthorizer } from '../authorizer';
-import { IRestApi } from '../restapi';
+import type { CfnAuthorizerProps } from '../apigateway.generated';
+import { CfnAuthorizer } from '../apigateway.generated';
+import type { IAuthorizer } from '../authorizer';
+import { Authorizer } from '../authorizer';
+import type { IRestApi } from '../restapi';
 
 /**
  * Base properties for all lambda authorizers
@@ -82,7 +84,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     this.role = props.assumeRole;
 
     if (props.resultsCacheTtl && props.resultsCacheTtl?.toSeconds() > 3600) {
-      throw new ValidationError('Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)', scope);
+      throw new ValidationError('LambdaAuthorizerPropertyResultscachettl', 'Lambda authorizer property \'resultsCacheTtl\' must not be greater than 3600 seconds (1 hour)', scope);
     }
   }
 
@@ -92,7 +94,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   public _attachToApi(restApi: IRestApi) {
     if (this.restApiId && this.restApiId !== restApi.restApiId) {
-      throw new ValidationError('Cannot attach authorizer to two different rest APIs', this);
+      throw new ValidationError('CannotAttachAuthorizerTwoDifferent', 'Cannot attach authorizer to two different rest APIs', this);
     }
 
     this.restApiId = restApi.restApiId;
@@ -163,7 +165,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
     return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
-          throw new ValidationError(`Authorizer (${this.node.path}) must be attached to a RestApi`, this);
+          throw new ValidationError('Authorizer', `Authorizer (${this.node.path}) must be attached to a RestApi`, this);
         }
         return this.restApiId;
       },
@@ -285,7 +287,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
     addConstructMetadata(this, props);
 
     if ((props.resultsCacheTtl === undefined || props.resultsCacheTtl.toSeconds() !== 0) && props.identitySources.length === 0) {
-      throw new ValidationError('At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.', scope);
+      throw new ValidationError('LeastOneIdentitySourceRequired', 'At least one Identity Source is required for a REQUEST-based Lambda authorizer if caching is enabled.', scope);
     }
 
     const restApiId = this.lazyRestApiId();

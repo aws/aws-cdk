@@ -1,7 +1,7 @@
-import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
-import { Duration } from 'aws-cdk-lib';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
+import type { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { Duration } from 'aws-cdk-lib';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
 
 /**
  * Parameters for the SQS source.

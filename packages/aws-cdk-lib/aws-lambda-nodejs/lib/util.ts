@@ -1,4 +1,5 @@
-import { spawnSync, SpawnSyncOptions } from 'child_process';
+import type { SpawnSyncOptions } from 'child_process';
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
@@ -80,9 +81,9 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     if (proc.stdout || proc.stderr) {
-      throw new UnscopedValidationError(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new UnscopedValidationError('ProcessExitedWithNonZeroStatus', `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
-    throw new UnscopedValidationError(`${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
+    throw new UnscopedValidationError('CommandExitedWithNonZeroStatus', `${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
   }
 
   return proc;
@@ -140,7 +141,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
     const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
       ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
-      throw new UnscopedValidationError(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+      throw new UnscopedValidationError('CannotExtractModuleVersion', `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
     dependencies[mod] = version;
   }
@@ -189,7 +190,7 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
         compilerOptionsString += option + ' ' + value.join(',') + ' ';
       }
     } else {
-      throw new UnscopedValidationError(`Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+      throw new UnscopedValidationError('UnsupportedCompilerOption', `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
     }
   });
 

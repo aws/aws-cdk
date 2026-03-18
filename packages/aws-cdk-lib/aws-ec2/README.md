@@ -245,7 +245,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
 for (const gateway of provider.gatewayInstances) {
-  bucket.grantWrite(gateway);
+  bucket.grants.write(gateway);
   gateway.addSecurityGroup(securityGroup);
 }
 ```
@@ -2397,10 +2397,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.IDeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 
