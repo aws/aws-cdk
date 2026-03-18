@@ -10,6 +10,9 @@ import { Names, Token, Annotations, ValidationError } from '../../core';
  * Provisioned mode enables faster scaling and supports up to 20,000
  * maximum concurrent executions compared to the standard 1,250.
  *
+ * When provided with no properties (empty object), provisioned mode
+ * is enabled with Lambda API default values (minimumPollers: 2, maximumPollers: 200).
+ *
  * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-provisioned-mode
  */
 export interface SqsProvisionedPollerConfig {
