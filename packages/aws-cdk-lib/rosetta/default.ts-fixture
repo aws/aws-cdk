@@ -39,6 +39,7 @@ import {
   CustomResourceProviderRuntime,
   DefaultStackSynthesizer,
   Duration,
+  Bitrate,
   Fn,
   IAspect,
   ITaggable,

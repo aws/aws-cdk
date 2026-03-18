@@ -29,7 +29,7 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
     constructor(scope: Construct, id: string, props: object, ...args: any[]) {
       const uniqueId = constructor.PROPERTY_INJECTION_ID;
       if (uniqueId === undefined) {
-        throw new AssumptionError('Construct must have a static PROPERTY_INJECTION_ID property');
+        throw new AssumptionError('ConstructStaticPropertyInjectionIdProperty', 'Construct must have a static PROPERTY_INJECTION_ID property');
       }
 
       props = applyInjectors(uniqueId, props, {
