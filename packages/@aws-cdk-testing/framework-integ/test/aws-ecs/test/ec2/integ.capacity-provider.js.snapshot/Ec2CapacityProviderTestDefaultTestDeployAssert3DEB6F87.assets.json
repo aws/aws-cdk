@@ -2,9 +2,9 @@
   "version": "48.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "execcommandintegtestDefaultTestDeployAssert4F7706FE Template",
+      "displayName": "Ec2CapacityProviderTestDefaultTestDeployAssert3DEB6F87 Template",
       "source": {
-        "path": "execcommandintegtestDefaultTestDeployAssert4F7706FE.template.json",
+        "path": "Ec2CapacityProviderTestDefaultTestDeployAssert3DEB6F87.template.json",
         "packaging": "file"
       },
       "destinations": {
