@@ -403,7 +403,7 @@ export class NatGatewayProvider extends NatProvider {
       const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
       if (seconds < 1 || seconds > 4000) {
         throw new UnscopedValidationError(
-          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+          'InvalidMaxDrainDuration', `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
         );
       }
     }
@@ -467,24 +467,24 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
     if (this.props.allocationId && this.props.eip) {
       throw new UnscopedValidationError(
-        'Cannot specify both `allocationId` and `eip`. Use one or the other.',
+        'CannotSpecifyBothAllocationIdAndEip', 'Cannot specify both `allocationId` and `eip`. Use one or the other.',
       );
     }
 
     if (this.props.availabilityZoneAddresses) {
       if (this.props.availabilityZoneAddresses.length === 0) {
         throw new UnscopedValidationError(
-          '`availabilityZoneAddresses` cannot be an empty array.',
+          'EmptyAvailabilityZoneAddresses', '`availabilityZoneAddresses` cannot be an empty array.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => !az.availabilityZone && !az.availabilityZoneId)) {
         throw new UnscopedValidationError(
-          'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
+          'MissingAvailabilityZoneOrId', 'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => az.allocationIds.length === 0)) {
         throw new UnscopedValidationError(
-          '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
+          'EmptyAllocationIds', '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
         );
       }
     }
@@ -493,7 +493,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
       if (seconds < 1 || seconds > 4000) {
         throw new UnscopedValidationError(
-          `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+          'InvalidMaxDrainDuration', `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
         );
       }
     }
@@ -534,7 +534,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
   public configureSubnet(subnet: PrivateSubnet) {
     if (!this.natGateway) {
-      throw new UnscopedValidationError('Cannot configure subnet before configuring NAT gateway');
+      throw new UnscopedValidationError('CannotConfigureSubnetBeforeNat', 'Cannot configure subnet before configuring NAT gateway');
     }
     // All private subnets use the same regional NAT gateway ID
     subnet.addRoute('DefaultRoute', {
