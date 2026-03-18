@@ -37,29 +37,29 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
 
       if (throughput) {
         if (volumeType !== EbsDeviceVolumeType.GP3) {
-          throw new ValidationError(`'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`, construct);
+          throw new ValidationError('RequiresThroughputRequiresVolumetype', `'throughput' requires 'volumeType': ${EbsDeviceVolumeType.GP3}, got: ${volumeType}.`, construct);
         }
 
         if (!Number.isInteger(throughput)) {
-          throw new ValidationError(`'throughput' must be an integer, got: ${throughput}.`, construct);
+          throw new ValidationError('MustBeThroughputInteger', `'throughput' must be an integer, got: ${throughput}.`, construct);
         }
 
         if (throughput < 125 || throughput > 2000) {
-          throw new ValidationError(`'throughput' must be between 125 and 2000, got ${throughput}.`, construct);
+          throw new ValidationError('MustBeThroughputBetween2000', `'throughput' must be between 125 and 2000, got ${throughput}.`, construct);
         }
 
         const maximumThroughputRatio = 0.25;
         if (iops) {
           const iopsRatio = (throughput / iops);
           if (iopsRatio > maximumThroughputRatio) {
-            throw new ValidationError(`Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
+            throw new ValidationError('ThroughputMiBpsIopsRatio', `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
           }
         }
       }
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1 || volumeType === EbsDeviceVolumeType.IO2) {
-          throw new ValidationError('iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2', construct);
+          throw new ValidationError('IopsPropertyRequiredVolumeType', 'iops property is required with volumeType: EbsDeviceVolumeType.IO1 and EbsDeviceVolumeType.IO2', construct);
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1 && volumeType !== EbsDeviceVolumeType.IO2 && volumeType !== EbsDeviceVolumeType.GP3) {
         Annotations.of(construct).addWarningV2('@aws-cdk/aws-ec2:iopsIgnored', 'iops will be ignored without volumeType: IO1, IO2, or GP3');

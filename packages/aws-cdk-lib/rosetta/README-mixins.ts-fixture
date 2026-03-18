@@ -7,36 +7,26 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import '@aws-cdk/mixins-preview/with';
-import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/core';
+
+import { Mixins, Mixin, IConstructSelector, Shims, Aspects } from 'aws-cdk-lib/core';
 import { IMixin } from 'constructs';
+import { IAspect } from 'aws-cdk-lib/core';
+import { BucketAutoDeleteObjects, BucketBlockPublicAccess } from 'aws-cdk-lib/aws-s3/mixins';
 
 declare const scope: Construct;
 declare const stack: Stack;
 declare const selector: IConstructSelector;
 
-class MyMixin extends Mixin {
-  supports(_construct: any): boolean { return true; }
-  applyTo(_construct: any): void { }
-}
-
-class ProductionSecurityMixin extends Mixin {
-  supports(_construct: any): boolean { return true; }
-  applyTo(_construct: any): void { }
-}
-
-class EncryptionAtRest extends Mixin {
-  supports(_construct: any): boolean { return true; }
-  applyTo(_construct: any): void { }
-}
-
-class AutoDeleteObjects extends Mixin {
+class CustomProdSecurityConfig extends Mixin {
   supports(_construct: any): boolean { return true; }
   applyTo(_construct: any): void { }
 }
 
 class CustomBucket extends Construct {}
 
+class EnableBucketVersioning implements IAspect {
+  visit(node: IConstruct): void {}
+}
 
 declare const bucketAccessLogsMixin: IMixin;
 declare const bucket: s3.CfnBucket;

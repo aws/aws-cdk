@@ -86,6 +86,7 @@ export class AlbIntegration extends Integration {
     const vpc = this.albProps.vpcLink?.vpc ?? this.alb.vpc;
     if (!vpc) {
       throw new ValidationError(
+        'CannotDetermineVpc',
         'Cannot determine VPC from the imported Application Load Balancer. Specify the vpc property when importing the ALB, or provide a vpcLink to AlbIntegration.',
         method,
       );
