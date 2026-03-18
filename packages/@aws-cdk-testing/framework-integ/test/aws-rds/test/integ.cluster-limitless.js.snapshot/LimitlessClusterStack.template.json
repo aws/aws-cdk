@@ -13,7 +13,9 @@
       "Value": "LimitlessClusterStack/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
@@ -45,7 +47,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
@@ -59,7 +63,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -70,7 +76,9 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
@@ -85,7 +93,9 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1EIPD7E02669": {
    "Type": "AWS::EC2::EIP",
@@ -97,7 +107,9 @@
       "Value": "LimitlessClusterStack/Vpc/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
@@ -121,7 +133,9 @@
    "DependsOn": [
     "VpcPublicSubnet1DefaultRoute3DA9E72A",
     "VpcPublicSubnet1RouteTableAssociation97140677"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
@@ -153,7 +167,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
@@ -167,7 +183,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -178,7 +196,9 @@
     "SubnetId": {
      "Ref": "VpcPublicSubnet2Subnet691E08A3"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
@@ -193,7 +213,9 @@
    },
    "DependsOn": [
     "VpcVPCGWBF912B6E"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2EIP3C605A87": {
    "Type": "AWS::EC2::EIP",
@@ -205,7 +227,9 @@
       "Value": "LimitlessClusterStack/Vpc/PublicSubnet2"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
@@ -229,7 +253,9 @@
    "DependsOn": [
     "VpcPublicSubnet2DefaultRoute97F91067",
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
@@ -261,7 +287,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
@@ -275,7 +303,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -286,7 +316,9 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet1Subnet536B997A"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
@@ -298,7 +330,9 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
@@ -330,7 +364,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
@@ -344,7 +380,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -355,7 +393,9 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
@@ -367,7 +407,9 @@
     "RouteTableId": {
      "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcIGWD7BA715C": {
    "Type": "AWS::EC2::InternetGateway",
@@ -378,7 +420,9 @@
       "Value": "LimitlessClusterStack/Vpc"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -389,7 +433,9 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE": {
    "Type": "Custom::VpcRestrictDefaultSG",
@@ -480,7 +526,9 @@
       }
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
    "Type": "AWS::Lambda::Function",
@@ -489,7 +537,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -505,12 +553,14 @@
    },
    "DependsOn": [
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitlessSubnets4B1674FF": {
+  "DatabaseCluster1611limitlessSubnetsE45F41D5": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.4-limitless database",
+    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.11-limitless database",
     "SubnetIds": [
      {
       "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -519,9 +569,11 @@
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitlessSecurityGroupE3B3792F": {
+  "DatabaseCluster1611limitlessSecurityGroupA3056B4A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -535,9 +587,11 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitlessMonitoringRoleAD5ED7BA": {
+  "DatabaseCluster1611limitlessMonitoringRole9BA03B7A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -566,9 +620,11 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitlessSecret8EB4E753": {
+  "DatabaseCluster1611limitlessSecretCD89479D": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -592,39 +648,41 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitlessSecretAttachment5C6ACA6C": {
+  "DatabaseCluster1611limitlessSecretAttachment652DA295": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "DatabaseCluster164limitlessSecret8EB4E753"
+     "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
     },
     "TargetId": {
-     "Ref": "DatabaseCluster164limitless2DB21F68"
+     "Ref": "DatabaseCluster1611limitlessAB5788A6"
     },
     "TargetType": "AWS::RDS::DBCluster"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
-  "DatabaseCluster164limitless2DB21F68": {
+  "DatabaseCluster1611limitlessAB5788A6": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "ClusterScalabilityType": "limitless",
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-postgresql16",
     "DBSubnetGroupName": {
-     "Ref": "DatabaseCluster164limitlessSubnets4B1674FF"
+     "Ref": "DatabaseCluster1611limitlessSubnetsE45F41D5"
     },
     "EnableCloudwatchLogsExports": [
      "postgresql"
     ],
     "Engine": "aurora-postgresql",
-    "EngineVersion": "16.4-limitless",
+    "EngineVersion": "16.11-limitless",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster164limitlessSecret8EB4E753"
+        "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
        },
        ":SecretString:password::}}"
       ]
@@ -636,7 +694,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "DatabaseCluster164limitlessSecret8EB4E753"
+        "Ref": "DatabaseCluster1611limitlessSecretCD89479D"
        },
        ":SecretString:username::}}"
       ]
@@ -645,7 +703,7 @@
     "MonitoringInterval": 60,
     "MonitoringRoleArn": {
      "Fn::GetAtt": [
-      "DatabaseCluster164limitlessMonitoringRoleAD5ED7BA",
+      "DatabaseCluster1611limitlessMonitoringRole9BA03B7A",
       "Arn"
      ]
     },
@@ -656,165 +714,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "DatabaseCluster164limitlessSecurityGroupE3B3792F",
-       "GroupId"
-      ]
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "DatabaseCluster168limitlessSubnets30AC1262": {
-   "Type": "AWS::RDS::DBSubnetGroup",
-   "Properties": {
-    "DBSubnetGroupDescription": "Subnets for DatabaseCluster16.8-limitless database",
-    "SubnetIds": [
-     {
-      "Ref": "VpcPrivateSubnet1Subnet536B997A"
-     },
-     {
-      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-     }
-    ]
-   }
-  },
-  "DatabaseCluster168limitlessSecurityGroupF99FFC3A": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "RDS security group",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "DatabaseCluster168limitlessMonitoringRoleB9251B2E": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "monitoring.rds.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "DatabaseCluster168limitlessSecret13E5F591": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Generated by the CDK for stack: ",
-       {
-        "Ref": "AWS::StackName"
-       }
-      ]
-     ]
-    },
-    "GenerateSecretString": {
-     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
-     "GenerateStringKey": "password",
-     "PasswordLength": 30,
-     "SecretStringTemplate": "{\"username\":\"postgres\"}"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "DatabaseCluster168limitlessSecretAttachment62201C99": {
-   "Type": "AWS::SecretsManager::SecretTargetAttachment",
-   "Properties": {
-    "SecretId": {
-     "Ref": "DatabaseCluster168limitlessSecret13E5F591"
-    },
-    "TargetId": {
-     "Ref": "DatabaseCluster168limitless05206D79"
-    },
-    "TargetType": "AWS::RDS::DBCluster"
-   }
-  },
-  "DatabaseCluster168limitless05206D79": {
-   "Type": "AWS::RDS::DBCluster",
-   "Properties": {
-    "ClusterScalabilityType": "limitless",
-    "CopyTagsToSnapshot": true,
-    "DBClusterParameterGroupName": "default.aurora-postgresql16",
-    "DBSubnetGroupName": {
-     "Ref": "DatabaseCluster168limitlessSubnets30AC1262"
-    },
-    "EnableCloudwatchLogsExports": [
-     "postgresql"
-    ],
-    "Engine": "aurora-postgresql",
-    "EngineVersion": "16.8-limitless",
-    "MasterUserPassword": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "DatabaseCluster168limitlessSecret13E5F591"
-       },
-       ":SecretString:password::}}"
-      ]
-     ]
-    },
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "DatabaseCluster168limitlessSecret13E5F591"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
-    "MonitoringInterval": 60,
-    "MonitoringRoleArn": {
-     "Fn::GetAtt": [
-      "DatabaseCluster168limitlessMonitoringRoleB9251B2E",
-      "Arn"
-     ]
-    },
-    "PerformanceInsightsEnabled": true,
-    "PerformanceInsightsRetentionPeriod": 31,
-    "Port": 5432,
-    "StorageType": "aurora-iopt1",
-    "VpcSecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "DatabaseCluster168limitlessSecurityGroupF99FFC3A",
+       "DatabaseCluster1611limitlessSecurityGroupA3056B4A",
        "GroupId"
       ]
      }

@@ -1,14 +1,6 @@
 import { Token } from 'aws-cdk-lib';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 
-/**
- * Error thrown when validation fails
- */
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
 interface IntervalValidation {
   fieldName: string;
   minLength: number;
@@ -92,7 +84,7 @@ export type ValidationFn<T> = (param: T) => string[];
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
   const errors = validationFn(param);
   if (errors.length > 0) {
-    throw new ValidationError(errors.join('\n'));
+    throw new UnscopedValidationError('ValidationFailed', errors.join('\n'));
   }
   return param;
 }

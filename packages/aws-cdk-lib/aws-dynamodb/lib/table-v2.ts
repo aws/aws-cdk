@@ -654,7 +654,7 @@ export class TableV2 extends TableBaseV2 {
         const stack = Stack.of(scope);
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
         if (!resourceRegion) {
-          throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', this);
+          throw new ValidationError('InvalidTableArnFormat', 'Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', this);
         }
 
         this.region = resourceRegion;
@@ -694,7 +694,7 @@ export class TableV2 extends TableBaseV2 {
     const stack = Stack.of(scope);
     if (!attrs.tableArn) {
       if (!attrs.tableName) {
-        throw new ValidationError('At least one of `tableArn` or `tableName` must be provided', scope);
+        throw new ValidationError('TableArnOrNameRequired', 'At least one of `tableArn` or `tableName` must be provided', scope);
       }
 
       tableName = attrs.tableName;
@@ -705,13 +705,13 @@ export class TableV2 extends TableBaseV2 {
       });
     } else {
       if (attrs.tableName) {
-        throw new ValidationError('Only one of `tableArn` or `tableName` can be provided, but not both', scope);
+        throw new ValidationError('TableArnAndNameMutuallyExclusive', 'Only one of `tableArn` or `tableName` can be provided, but not both', scope);
       }
 
       tableArn = attrs.tableArn;
       const resourceName = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!resourceName) {
-        throw new ValidationError('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', scope);
+        throw new ValidationError('InvalidTableArnFormat', 'Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>', scope);
       }
       tableName = resourceName;
     }
@@ -827,7 +827,7 @@ export class TableV2 extends TableBaseV2 {
     if (props.multiRegionConsistency === MultiRegionConsistency.STRONG) {
       this.validateMrscConfiguration(props);
     } else if (props.witnessRegion) {
-      throw new ValidationError('Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
+      throw new ValidationError('WitnessRegionNotSupportedForMrec', 'Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
     }
 
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
@@ -960,11 +960,11 @@ export class TableV2 extends TableBaseV2 {
   @MethodMetadata()
   public replica(region: string): ITableV2 {
     if (Token.isUnresolved(this.stack.region)) {
-      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
+      throw new ValidationError('ReplicaTablesNotSupportedInRegionAgnosticStack', 'Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('Provided `region` cannot be a token', this);
+      throw new ValidationError('RegionCannotBeToken', 'Provided `region` cannot be a token', this);
     }
 
     if (region === this.stack.region) {
@@ -972,7 +972,7 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (!this.replicaTables.has(region)) {
-      throw new ValidationError(`No replica table exists in region ${region}`, this);
+      throw new ValidationError('ReplicaTableNotFound', `No replica table exists in region ${region}`, this);
     }
 
     const replicaTableArn = this.replicaTableArns.find(arn => arn.includes(region));
@@ -1146,7 +1146,7 @@ export class TableV2 extends TableBaseV2 {
 
     props.nonKeyAttributes?.forEach(attr => this.nonKeyAttributes.add(attr));
     if (this.nonKeyAttributes.size > MAX_NON_KEY_ATTRIBUTES) {
-      throw new ValidationError(`The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`, this);
+      throw new ValidationError('MaxNonKeyAttributesExceeded', `The maximum number of 'nonKeyAttributes' across all secondary indexes is ${MAX_NON_KEY_ATTRIBUTES}`, this);
     }
 
     return {
@@ -1198,7 +1198,7 @@ export class TableV2 extends TableBaseV2 {
 
     const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
-      throw new ValidationError(`Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
+      throw new ValidationError('AttributeTypeConflict', `Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
     }
 
     if (!existingAttributeDef) {
@@ -1212,29 +1212,29 @@ export class TableV2 extends TableBaseV2 {
 
   private validateIndexName(indexName: string) {
     if (this.globalSecondaryIndexes.has(indexName) || this.localSecondaryIndexes.has(indexName)) {
-      throw new ValidationError(`Duplicate secondary index name, ${indexName}, is not allowed`, this);
+      throw new ValidationError('DuplicateSecondaryIndexName', `Duplicate secondary index name, ${indexName}, is not allowed`, this);
     }
   }
 
   private validateIndexProjection(props: SecondaryIndexProps) {
     if (props.projectionType === ProjectionType.INCLUDE && !props.nonKeyAttributes) {
-      throw new ValidationError(`Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
+      throw new ValidationError('NonKeyAttributesRequiredForIncludeProjection', `Non-key attributes should be specified when using ${ProjectionType.INCLUDE} projection type`, this);
     }
 
     if (props.projectionType !== ProjectionType.INCLUDE && props.nonKeyAttributes) {
-      throw new ValidationError(`Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
+      throw new ValidationError('NonKeyAttributesNotAllowedForNonIncludeProjection', `Non-key attributes should not be specified when not using ${ProjectionType.INCLUDE} projection type`, this);
     }
   }
 
   private validateReplicaIndexOptions(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions }) {
     for (const indexName of Object.keys(options)) {
       if (!this.globalSecondaryIndexes.has(indexName)) {
-        throw new ValidationError(`Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`, this);
+        throw new ValidationError('ReplicaGsiNotDefinedOnPrimaryTable', `Cannot configure replica global secondary index, ${indexName}, because it is not defined on the primary table`, this);
       }
 
       const replicaGsiOptions = options[indexName];
       if (this.billingMode === BillingMode.PAY_PER_REQUEST && replicaGsiOptions.readCapacity) {
-        throw new ValidationError(`Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
+        throw new ValidationError('ReadCapacityNotAllowedForPayPerRequest', `Cannot configure 'readCapacity' for replica global secondary index, ${indexName}, because billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
       }
     }
   }
@@ -1242,23 +1242,23 @@ export class TableV2 extends TableBaseV2 {
   private validateReplica(props: ReplicaTableProps) {
     const stackRegion = this.stack.region;
     if (Token.isUnresolved(stackRegion)) {
-      throw new ValidationError('Replica tables are not supported in a region agnostic stack', this);
+      throw new ValidationError('ReplicaTablesNotSupportedInRegionAgnosticStack', 'Replica tables are not supported in a region agnostic stack', this);
     }
 
     if (Token.isUnresolved(props.region)) {
-      throw new ValidationError('Replica table region must not be a token', this);
+      throw new ValidationError('ReplicaTableRegionCannotBeToken', 'Replica table region must not be a token', this);
     }
 
     if (props.region === this.stack.region) {
-      throw new ValidationError(`You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`, this);
+      throw new ValidationError('ReplicaTableCannotBeInSameRegion', `You cannot add a replica table in the same region as the primary table - the primary table region is ${this.region}`, this);
     }
 
     if (this.replicaTables.has(props.region)) {
-      throw new ValidationError(`Duplicate replica table region, ${props.region}, is not allowed`, this);
+      throw new ValidationError('DuplicateReplicaTableRegion', `Duplicate replica table region, ${props.region}, is not allowed`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && props.readCapacity) {
-      throw new ValidationError(`You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
+      throw new ValidationError('ReadCapacityNotAllowedForPayPerRequestReplica', `You cannot provide 'readCapacity' on a replica table when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -1270,11 +1270,11 @@ export class TableV2 extends TableBaseV2 {
     parseKeySchema(props, this);
 
     if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
-      throw new ValidationError(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
+      throw new ValidationError('MaxGlobalSecondaryIndexesExceeded', `You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`, this);
     }
 
     if (this.billingMode === BillingMode.PAY_PER_REQUEST && (props.readCapacity || props.writeCapacity)) {
-      throw new ValidationError(`You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
+      throw new ValidationError('CapacityNotAllowedForPayPerRequestGsi', `You cannot configure 'readCapacity' or 'writeCapacity' on a global secondary index when the billing mode is ${BillingMode.PAY_PER_REQUEST}`, this);
     }
   }
 
@@ -1282,11 +1282,11 @@ export class TableV2 extends TableBaseV2 {
     this.validateIndexName(props.indexName);
 
     if (!this.hasSortKey) {
-      throw new ValidationError('The table must have a sort key in order to add a local secondary index', this);
+      throw new ValidationError('SortKeyRequiredForLocalSecondaryIndex', 'The table must have a sort key in order to add a local secondary index', this);
     }
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
-      throw new ValidationError(`You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
+      throw new ValidationError('MaxLocalSecondaryIndexesExceeded', `You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
     }
   }
 
@@ -1294,15 +1294,15 @@ export class TableV2 extends TableBaseV2 {
     const recoveryPeriodInDays = props.pointInTimeRecoverySpecification?.recoveryPeriodInDays;
 
     if (props.pointInTimeRecovery !== undefined && props.pointInTimeRecoverySpecification !== undefined) {
-      throw new ValidationError('`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
+      throw new ValidationError('PitrSpecificationConflict', '`pointInTimeRecoverySpecification` and `pointInTimeRecovery` are set. Use `pointInTimeRecoverySpecification` only.', this);
     }
 
     if (!props.pointInTimeRecoverySpecification?.pointInTimeRecoveryEnabled && recoveryPeriodInDays) {
-      throw new ValidationError('Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
+      throw new ValidationError('RecoveryPeriodNotAllowedWhenPitrDisabled', 'Cannot set `recoveryPeriodInDays` while `pointInTimeRecoveryEnabled` is set to false.', this);
     }
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
-      throw new ValidationError('`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
+      throw new ValidationError('RecoveryPeriodOutOfRange', '`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
     }
   }
 
@@ -1318,7 +1318,7 @@ export class TableV2 extends TableBaseV2 {
     const witnessRegion = props.witnessRegion;
 
     if (Token.isUnresolved(primaryRegion)) {
-      throw new ValidationError('MRSC global tables with STRONG consistency are not supported in a region agnostic stack', this);
+      throw new ValidationError('MrscNotSupportedInRegionAgnosticStack', 'MRSC global tables with STRONG consistency are not supported in a region agnostic stack', this);
     }
 
     const allRegions = [primaryRegion, ...replicaRegions];
@@ -1328,7 +1328,7 @@ export class TableV2 extends TableBaseV2 {
 
     for (const region of allRegions) {
       if (Token.isUnresolved(region)) {
-        throw new ValidationError('MRSC global tables with STRONG consistency do not support token-based regions', this);
+        throw new ValidationError('MrscNotSupportedWithTokenRegions', 'MRSC global tables with STRONG consistency do not support token-based regions', this);
       }
     }
 
@@ -1344,23 +1344,23 @@ export class TableV2 extends TableBaseV2 {
     }
 
     if (!regionSet || !regionSetName) {
-      throw new ValidationError(`Primary region '${primaryRegion}' is not supported for MRSC global tables with STRONG consistency. Supported regions: ${Object.values(regionSets).flat().join(', ')}`, this);
+      throw new ValidationError('PrimaryRegionNotSupportedForMrsc', `Primary region '${primaryRegion}' is not supported for MRSC global tables with STRONG consistency. Supported regions: ${Object.values(regionSets).flat().join(', ')}`, this);
     }
 
     for (const region of allRegions) {
       if (!regionSet.includes(region)) {
-        throw new ValidationError(`Region '${region}' is not in the same region set (${regionSetName}) as the primary region '${primaryRegion}'. All regions must be within the same region set for MRSC global tables with STRONG consistency. Supported ${regionSetName} regions: ${regionSet.join(', ')}`, this);
+        throw new ValidationError('RegionNotInSameRegionSetForMrsc', `Region '${region}' is not in the same region set (${regionSetName}) as the primary region '${primaryRegion}'. All regions must be within the same region set for MRSC global tables with STRONG consistency. Supported ${regionSetName} regions: ${regionSet.join(', ')}`, this);
       }
     }
 
     const totalReplicas = replicaRegions.length + 1;
     if (witnessRegion) {
       if (totalReplicas !== 2) {
-        throw new ValidationError(`MRSC global table with witness region must have exactly 2 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}], witness region '${witnessRegion}'`, this);
+        throw new ValidationError('MrscGlobalTableWithWitnessRequiresTwoReplicas', `MRSC global table with witness region must have exactly 2 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}], witness region '${witnessRegion}'`, this);
       }
     } else {
       if (totalReplicas !== 3) {
-        throw new ValidationError(`MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
+        throw new ValidationError('MrscGlobalTableWithoutWitnessRequiresThreeReplicas', `MRSC global table without witness region must have exactly 3 replicas (including primary), but found ${totalReplicas}. Current configuration: primary region '${primaryRegion}', replica regions [${replicaRegions.join(', ')}]`, this);
       }
     }
   }
@@ -1374,7 +1374,7 @@ export class TableV2 extends TableBaseV2 {
 }
 
 /**
- * A nulti-account replica of a DynamoDB table.
+ * A multi-account replica of a DynamoDB table.
  *
  * This construct represents a replica table in a different AWS account from the source table.
  * It inherits the schema (partition key, sort key, and indexes) from the source table.
@@ -1384,7 +1384,10 @@ export class TableV2 extends TableBaseV2 {
  *
  * @resource AWS::DynamoDB::GlobalTable
  */
+@propertyInjectable
 export class TableV2MultiAccountReplica extends TableBaseV2 {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-dynamodb.TableV2MultiAccountReplica';
   /**
    * @attribute
    */
@@ -1427,9 +1430,11 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
   public constructor(scope: Construct, id: string, props: TableV2MultiAccountReplicaProps = {}) {
     super(scope, id, { physicalName: props.tableName ?? PhysicalName.GENERATE_IF_NEEDED });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
 
     if (!props.replicaSourceTable) {
-      throw new ValidationError('replicaSourceTable is required for TableV2MultiAccountReplica', this);
+      throw new ValidationError('ReplicaSourceTableRequired', 'replicaSourceTable is required for TableV2MultiAccountReplica', this);
     }
 
     this.validateMultiAccountReplica(props);
@@ -1499,6 +1504,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   /**
    * Adds a statement to the resource policy associated with this table.
    */
+  @MethodMetadata()
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.resourcePolicy) {
       this.resourcePolicy = new PolicyDocument({ statements: [] });
@@ -1532,6 +1538,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     if (!Token.isUnresolved(sourceAccount) && !Token.isUnresolved(this.stack.account)) {
       if (sourceAccount === this.stack.account) {
         throw new ValidationError(
+          'MultiAccountReplicaMustBeDifferentAccount',
           'Multi-account replica must be in a different account than the source table. For same-account replication, use addReplica() instead.',
           this,
         );
@@ -1542,6 +1549,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     if (!Token.isUnresolved(sourceRegion) && !Token.isUnresolved(this.stack.region)) {
       if (sourceRegion === this.stack.region) {
         throw new ValidationError(
+          'MultiAccountReplicaMustBeDifferentRegion',
           'Multi-account replica must be in a different region than the source table.',
           this,
         );
