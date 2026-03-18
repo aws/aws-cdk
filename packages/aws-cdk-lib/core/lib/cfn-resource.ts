@@ -1,21 +1,25 @@
 import { Annotations } from './annotations';
-import { CfnCondition } from './cfn-condition';
+import type { CfnCondition } from './cfn-condition';
 // import required to be here, otherwise causes a cycle when running the generated JavaScript
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
-import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, Node } from 'constructs';
+import type { CfnCreationPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
+import { CfnDeletionPolicy } from './cfn-resource-policy';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
-import { Reference } from './reference';
-import { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
+import type { Reference } from './reference';
+import type { RemovalPolicyOptions } from './removal-policy';
+import { RemovalPolicy } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
-import { ResolutionTypeHint } from './type-hints';
+import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
-import { AssumptionError, ValidationError } from './errors';
-import { ResourceEnvironment } from './environment';
+import { ValidationError } from './errors';
+import { deepMerge } from './private/deep-merge';
+import type { ResourceEnvironment } from './environment';
 
 export interface CfnResourceProps {
   /**
@@ -78,7 +82,7 @@ export class CfnResource extends CfnRefElement {
    *
    * Is filled during prepare().
    */
-  private readonly dependsOn = new Set<CfnResource>();
+  private dependsOn: Set<CfnResource> | undefined;
 
   /**
    * Creates a resource construct.
@@ -88,7 +92,7 @@ export class CfnResource extends CfnRefElement {
     super(scope, id);
 
     if (!props.type) {
-      throw new ValidationError('The `type` property is required', this);
+      throw new ValidationError('IsRequiredPropertyRequired', 'The `type` property is required', this);
     }
 
     this.cfnResourceType = props.type;
@@ -164,7 +168,7 @@ export class CfnResource extends CfnRefElement {
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new ValidationError(`${this.cfnResourceType} does not support snapshot removal policy`, this);
+            throw new ValidationError('SnapshotRemovalNotSupported', `${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -175,7 +179,7 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new ValidationError(`Invalid removal policy: ${policy}`, this);
+        throw new ValidationError('InvalidRemovalPolicy', `Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
@@ -352,7 +356,7 @@ export class CfnResource extends CfnRefElement {
       this.removeDependency(target);
       this.addDependency(newTarget);
     } else {
-      throw new ValidationError(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
+      throw new ValidationError('DoesDepend', `"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
     }
   }
 
@@ -402,6 +406,9 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _addResourceDependency(target: CfnResource) {
+    if (!this.dependsOn) {
+      this.dependsOn = new Set();
+    }
     this.dependsOn.add(target);
   }
 
@@ -410,7 +417,7 @@ export class CfnResource extends CfnRefElement {
    * in the same stack.
    */
   public obtainResourceDependencies() {
-    return Array.from(this.dependsOn.values());
+    return Array.from(this.dependsOn?.values() ?? []);
   }
 
   /**
@@ -420,7 +427,7 @@ export class CfnResource extends CfnRefElement {
    * @internal
    */
   public _removeResourceDependency(target: CfnResource) {
-    this.dependsOn.delete(target);
+    this.dependsOn?.delete(target);
   }
 
   /**
@@ -482,7 +489,11 @@ export class CfnResource extends CfnRefElement {
 
     // returns the set of logical ID (tokens) this resource depends on
     // sorted by construct paths to ensure test determinism
-    function renderDependsOn(dependsOn: Set<CfnResource>) {
+    function renderDependsOn(dependsOn: Iterable<CfnResource> | undefined) {
+      if (!dependsOn) {
+        return [];
+      }
+
       return Array
         .from(dependsOn)
         .sort((x, y) => x.node.path.localeCompare(y.node.path))
@@ -621,131 +632,6 @@ export interface ICfnResourceOptions {
    * using construct.addMetadata(), but would not appear in the CloudFormation template automatically.
    */
   metadata?: { [key: string]: any };
-}
-
-/**
- * Object keys that deepMerge should not consider. Currently these include
- * CloudFormation intrinsics
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
- */
-
-const MERGE_EXCLUDE_KEYS: string[] = [
-  'Ref',
-  'Fn::Base64',
-  'Fn::Cidr',
-  'Fn::FindInMap',
-  'Fn::GetAtt',
-  'Fn::GetAZs',
-  'Fn::ImportValue',
-  'Fn::Join',
-  'Fn::Select',
-  'Fn::Split',
-  'Fn::Sub',
-  'Fn::Transform',
-  'Fn::And',
-  'Fn::Equals',
-  'Fn::If',
-  'Fn::Not',
-  'Fn::Or',
-];
-
-/**
- * Merges `source` into `target`, overriding any existing values.
- * `null`s will cause a value to be deleted.
- */
-function deepMerge(target: any, ...sources: any[]) {
-  for (const source of sources) {
-    if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new AssumptionError(`Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
-    }
-
-    for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
-        continue;
-      }
-
-      const value = source[key];
-      if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
-        // if the value at the target is not an object, override it with an
-        // object so we can continue the recursion
-        if (typeof(target[key]) !== 'object') {
-          target[key] = {};
-
-          /**
-           * If we have something that looks like:
-           *
-           *   target: { Type: 'MyResourceType', Properties: { prop1: { Ref: 'Param' } } }
-           *   sources: [ { Properties: { prop1: [ 'Fn::Join': ['-', 'hello', 'world'] ] } } ]
-           *
-           * Eventually we will get to the point where we have
-           *
-           *   target: { prop1: { Ref: 'Param' } }
-           *   sources: [ { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } } ]
-           *
-           * We need to recurse 1 more time, but if we do we will end up with
-           *   { prop1: { Ref: 'Param', 'Fn::Join': ['-', 'hello', 'world'] } }
-           * which is not what we want.
-           *
-           * Instead we check to see whether the `target` value (i.e. target.prop1)
-           * is an object that contains a key that we don't want to recurse on. If it does
-           * then we essentially drop it and end up with:
-           *
-           *   { prop1: { 'Fn::Join': ['-', 'hello', 'world'] } }
-           */
-        } else if (Object.keys(target[key]).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(target[key])[0])) {
-            target[key] = {};
-          }
-        }
-
-        /**
-         * There might also be the case where the source is an intrinsic
-         *
-         *    target: {
-         *      Type: 'MyResourceType',
-         *      Properties: {
-         *        prop1: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *      }
-         *    }
-         *    sources: [ {
-         *      Properties: {
-         *        prop1: { subprop: { 'Fn::If': ['SomeCondition', {...}, {...}] }}
-         *      }
-         *    } ]
-         *
-         * We end up in a place that is the reverse of the above check, the source
-         * becomes an intrinsic before the target
-         *
-         *   target: { subprop: { name: { 'Fn::GetAtt': 'abc' } } }
-         *   sources: [{
-         *     'Fn::If': [ 'MyCondition', {...}, {...} ]
-         *   }]
-         */
-        if (Object.keys(value).length === 1) {
-          if (MERGE_EXCLUDE_KEYS.includes(Object.keys(value)[0])) {
-            target[key] = {};
-          }
-        }
-
-        deepMerge(target[key], value);
-
-        // if the result of the merge is an empty object, it's because the
-        // eventual value we assigned is `undefined`, and there are no
-        // sibling concrete values alongside, so we can delete this tree.
-        const output = target[key];
-        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
-          delete target[key];
-        }
-      } else if (value === undefined) {
-        delete target[key];
-      } else {
-        target[key] = value;
-      }
-    }
-  }
-
-  return target;
 }
 
 /**

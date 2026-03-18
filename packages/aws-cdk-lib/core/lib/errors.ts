@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import { constructInfoFromConstruct } from './helpers-internal';
+import { constructInfoFromConstruct } from './private/runtime-info';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
@@ -193,8 +193,8 @@ export class ValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string, scope: IConstruct) {
-    super(msg, scope);
+  constructor(name: string, msg: string, scope: IConstruct) {
+    super(msg, scope, name);
     Object.setPrototypeOf(this, ValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
@@ -215,8 +215,8 @@ export class UnscopedValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, ValidationError.name);
+  constructor(name: string, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
@@ -234,8 +234,8 @@ export class AssumptionError extends ConstructError {
     return 'assumption';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, AssumptionError.name);
+  constructor(name: string, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, AssumptionError.prototype);
     Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
   }
@@ -252,8 +252,8 @@ export class ExecutionError extends ConstructError {
     return 'exec';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, ExecutionError.name);
+  constructor(name: string, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, ExecutionError.prototype);
     Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });
   }

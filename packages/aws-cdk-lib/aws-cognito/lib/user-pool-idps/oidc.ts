@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -118,7 +118,7 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     const scopes = props.scopes ?? ['openid'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'OIDC',
       providerDetails: {
@@ -137,17 +137,18 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 
   private getProviderName(name?: string): string {
     if (name) {
       if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-        throw new ValidationError(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
+        throw new ValidationError('ExpectedProviderNameCharactersReceived', `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
       }
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html#cfn-cognito-userpoolidentityprovider-providername
       // u is for unicode
       if (!name.match(/^[^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+$/u)) {
-        throw new ValidationError(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`, this);
+        throw new ValidationError('ExpectedProviderNameMatch', `Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`, this);
       }
       return name;
     }

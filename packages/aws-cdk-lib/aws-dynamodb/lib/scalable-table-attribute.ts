@@ -1,4 +1,4 @@
-import { UtilizationScalingProps } from './scalable-attribute-api';
+import type { UtilizationScalingProps } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
 
 /**

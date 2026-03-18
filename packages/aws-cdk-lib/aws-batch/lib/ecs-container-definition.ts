@@ -1,15 +1,17 @@
-import { Construct, IConstruct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
-import { LinuxParameters } from './linux-parameters';
-import * as ecs from '../../aws-ecs';
-import { IFileSystem } from '../../aws-efs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { CfnJobDefinition } from './batch.generated';
+import type { LinuxParameters } from './linux-parameters';
+import type * as ecs from '../../aws-ecs';
+import type { IFileSystem } from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import { LogGroup } from '../../aws-logs';
-import * as secretsmanager from '../../aws-secretsmanager';
-import * as ssm from '../../aws-ssm';
-import { Lazy, PhysicalName, Size, UnscopedValidationError, ValidationError } from '../../core';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type * as ssm from '../../aws-ssm';
+import type { Size } from '../../core';
+import { Lazy, PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
+import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
@@ -96,6 +98,7 @@ export abstract class Secret {
 
   /**
    * Grants reading the secret to a principal
+   * [disable-awslint:no-grants]
    */
   public abstract grantRead(grantee: iam.IGrantable): iam.Grant;
 }
@@ -731,7 +734,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               };
             }
 
-            throw new ValidationError('unsupported Volume encountered', this);
+            throw new ValidationError('UnsupportedVolumeEncountered', 'unsupported Volume encountered', this);
           });
         },
       }),
@@ -1159,15 +1162,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new ValidationError('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
+      throw new ValidationError('ReadonlyRootFilesystemPossibleWindows', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
+        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new ValidationError(`ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
+        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }
@@ -1219,7 +1222,7 @@ function createExecutionRole(scope: Construct, id: string, logging: boolean): ia
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new UnscopedValidationError(`'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+    throw new UnscopedValidationError('FilesystemInstanceShouldImplement', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
   }
   return fileSystem as IFileSystem;
 }

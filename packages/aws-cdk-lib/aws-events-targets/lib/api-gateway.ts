@@ -1,6 +1,7 @@
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as api from '../../aws-apigateway';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
 
@@ -89,7 +90,7 @@ export class ApiGateway implements events.IRuleTarget {
    */
   public get restApi(): api.RestApi {
     if (!api.RestApi.isRestApi(this._restApi)) {
-      throw new ValidationError('The iRestApi is not a RestApi construct, and cannot be retrieved this way.', this._restApi);
+      throw new ValidationError('RestApiIsNotRestApiConstruct', 'The iRestApi is not a RestApi construct, and cannot be retrieved this way.', this._restApi);
     }
     return this._restApi;
   }
@@ -107,14 +108,14 @@ export class ApiGateway implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig { // FIXABLE
     if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
+      throw new ValidationError('NumberOfWildcardsInPathDoesNotMatchPathParameterValuesApiGateway', 'The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const restApiArn = this._restApi.arnForExecuteApi(

@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UnscopedValidationError } from '../../core';
 
 /**
@@ -9,7 +9,7 @@ export class FieldIndexPolicy {
 
   constructor(props: FieldIndexPolicyProps) {
     if (props.fields.length > 20) {
-      throw new UnscopedValidationError('A maximum of 20 fields can be indexed per log group');
+      throw new UnscopedValidationError('MaximumFieldsIndexedGroup', 'A maximum of 20 fields can be indexed per log group');
     }
     this.fieldIndexPolicyProps = props;
   }

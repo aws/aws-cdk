@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
-import {
+import type {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
-  Compatibility,
   InferenceAccelerator,
   ITaskDefinition,
+} from '../base/task-definition';
+import {
+  Compatibility,
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
@@ -97,6 +99,6 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
    */
   @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
-    throw new ValidationError('Cannot use inference accelerators on tasks that run on External service', this);
+    throw new ValidationError('CannotInferenceAccelerators', 'Cannot use inference accelerators on tasks that run on External service', this);
   }
 }

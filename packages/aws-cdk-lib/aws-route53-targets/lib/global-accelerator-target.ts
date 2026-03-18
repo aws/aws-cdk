@@ -1,8 +1,8 @@
-import { IAliasRecordTargetProps } from './shared';
-import * as globalaccelerator from '../../aws-globalaccelerator';
-import * as route53 from '../../aws-route53';
+import type { IAliasRecordTargetProps } from './shared';
+import type * as globalaccelerator from '../../aws-globalaccelerator';
+import type * as route53 from '../../aws-route53';
 import { UnscopedValidationError } from '../../core';
-import { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
+import type { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * Use a Global Accelerator domain name as an alias record target.
@@ -43,7 +43,7 @@ export class GlobalAcceleratorTarget extends GlobalAcceleratorDomainTarget {
 
 function toIAccelerator(accelerator: IAcceleratorRef): globalaccelerator.IAccelerator {
   if (!('dnsName' in accelerator) || typeof (accelerator as any).dnsName !== 'string') {
-    throw new UnscopedValidationError(`'accelerator' instance should implement IAccelerator, but doesn't: ${accelerator.constructor.name}`);
+    throw new UnscopedValidationError('AcceleratorInstanceShouldImplement', `'accelerator' instance should implement IAccelerator, but doesn't: ${accelerator.constructor.name}`);
   }
   return accelerator as globalaccelerator.IAccelerator;
 }

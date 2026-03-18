@@ -1,13 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as ssm from 'aws-cdk-lib/aws-ssm';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 const DISTRIBUTION_CONFIGURATION_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.DistributionConfiguration');
 
@@ -358,6 +359,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant custom actions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    * @param actions The list of actions
@@ -373,6 +375,7 @@ abstract class DistributionConfigurationBase extends cdk.Resource implements IDi
 
   /**
    * Grant read permissions to the given grantee for the distribution configuration
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -478,16 +481,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     return x !== null && typeof x === 'object' && DISTRIBUTION_CONFIGURATION_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the distribution configuration
-   */
-  public readonly distributionConfigurationArn: string;
-
-  /**
-   * The name of the distribution configuration
-   */
-  public readonly distributionConfigurationName: string;
-
+  private readonly resource: CfnDistributionConfiguration;
   private readonly amiDistributionsByRegion: { [region: string]: AmiDistribution } = {};
   private readonly containerDistributionsByRegion: {
     [region: string]: ContainerDistribution;
@@ -516,15 +510,22 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     this.addAmiDistributions(...(props.amiDistributions ?? []));
     this.addContainerDistributions(...(props.containerDistributions ?? []));
 
-    const distributionConfiguration = new CfnDistributionConfiguration(this, 'Resource', {
+    this.resource = new CfnDistributionConfiguration(this, 'Resource', {
       name: this.physicalName,
       description: props.description,
       distributions: cdk.Lazy.any({ produce: () => this.renderDistributions() }),
       tags: props.tags,
     });
+  }
 
-    this.distributionConfigurationName = this.getResourceNameAttribute(distributionConfiguration.attrName);
-    this.distributionConfigurationArn = this.getResourceArnAttribute(distributionConfiguration.attrArn, {
+  @memoizedGetter
+  public get distributionConfigurationName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get distributionConfigurationArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'distribution-configuration',
       resourceName: this.physicalName,
@@ -542,6 +543,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
       if (this.amiDistributionsByRegion[region]) {
         throw new cdk.ValidationError(
+          'DuplicateAmiDistribution',
           `duplicate AMI distribution found for region "${region}"; only one AMI distribution per region is allowed`,
           this,
         );
@@ -562,6 +564,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
       if (this.containerDistributionsByRegion[region]) {
         throw new cdk.ValidationError(
+          'DuplicateContainerDistribution',
           `duplicate Container distribution found for region "${region}"; only one Container distribution per region is allowed`,
           this,
         );
@@ -577,19 +580,19 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameTooLong', 'The distributionConfigurationName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain spaces', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameNoSpaces', 'The distributionConfigurationName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain underscores', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameNoUnderscores', 'The distributionConfigurationName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('The distributionConfigurationName must be lowercase', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameMustBeLowercase', 'The distributionConfigurationName must be lowercase', this);
     }
   }
 
@@ -609,7 +612,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       !Object.keys(this.amiDistributionsByRegion).length &&
       !Object.keys(this.containerDistributionsByRegion).length
     ) {
-      throw new cdk.ValidationError('You must specify at least one AMI or container distribution', this);
+      throw new cdk.ValidationError('DistributionRequired', 'You must specify at least one AMI or container distribution', this);
     }
 
     const distributionByRegion: { [region: string]: CfnDistributionConfiguration.DistributionProperty } = {};
@@ -639,6 +642,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const { region: _, ...distributionWithoutRegion } = distribution;
       if (!Object.entries(distributionWithoutRegion).some(([__, value]) => value !== undefined)) {
         throw new cdk.ValidationError(
+          'DistributionPropertyRequired',
           `at least one distribution property must be set for region "${distribution.region}"`,
           this,
         );
@@ -713,6 +717,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
           fastLaunchConfiguration.maxParallelLaunches < MIN_PARALLEL_LAUNCHES
         ) {
           throw new cdk.ValidationError(
+            'MinParallelLaunches',
             `you must specify a maximum parallel launch count of at least ${MIN_PARALLEL_LAUNCHES}`,
             this,
           );
@@ -753,6 +758,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       (launchTemplateConfiguration): CfnDistributionConfiguration.LaunchTemplateConfigurationProperty => {
         if (!launchTemplateConfiguration.launchTemplate.launchTemplateId) {
           throw new cdk.ValidationError(
+            'LaunchTemplateIdRequired',
             'You must reference launch templates by ID in launch template configurations',
             this,
           );

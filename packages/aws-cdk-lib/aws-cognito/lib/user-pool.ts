@@ -1,21 +1,29 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
-import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
-import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
-import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
-import { UserPoolGroup, UserPoolGroupOptions } from './user-pool-group';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
-import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
-import { Grant, IGrantable, IRoleRef, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IKeyRef } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { isIUserPoolIdentityProvider } from './private/ref-utils';
+import type { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
+import type { UserPoolClientOptions } from './user-pool-client';
+import { UserPoolClient } from './user-pool-client';
+import type { UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolDomain } from './user-pool-domain';
+import type { UserPoolEmail, UserPoolEmailConfig } from './user-pool-email';
+import type { UserPoolGroupOptions } from './user-pool-group';
+import { UserPoolGroup } from './user-pool-group';
+import type { IUserPoolIdentityProvider } from './user-pool-idp';
+import type { UserPoolResourceServerOptions } from './user-pool-resource-server';
+import { UserPoolResourceServer } from './user-pool-resource-server';
+import type { IGrantable, IRoleRef } from '../../aws-iam';
+import { Grant, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import type { IKeyRef } from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Duration, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IUserPoolIdentityProviderRef, IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -945,7 +953,7 @@ export interface UserPoolProps {
 /**
  * Represents a Cognito UserPool
  */
-export interface IUserPool extends IResource {
+export interface IUserPool extends IResource, IUserPoolRef {
   /**
    * The physical ID of this user pool resource
    * @attribute
@@ -997,7 +1005,7 @@ export interface IUserPool extends IResource {
   /**
    * Register an identity provider with this user pool.
    */
-  registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
+  registerIdentityProvider(provider: IUserPoolIdentityProviderRef): void;
 
   /**
    * Adds an IAM policy statement associated with this user pool to an
@@ -1011,6 +1019,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolArn: string;
   public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
+
+  public get userPoolRef(): UserPoolReference {
+    return {
+      userPoolId: this.userPoolId,
+      userPoolArn: this.userPoolArn,
+    };
+  }
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
     return new UserPoolClient(this, id, {
@@ -1040,10 +1055,15 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     });
   }
 
-  public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
-    this.identityProviders.push(provider);
+  public registerIdentityProvider(provider: IUserPoolIdentityProviderRef) {
+    if (isIUserPoolIdentityProvider(provider)) {
+      this.identityProviders.push(provider as IUserPoolIdentityProvider);
+    }
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     return Grant.addToPrincipal({
       grantee,
@@ -1083,7 +1103,7 @@ export class UserPool extends UserPoolBase {
     const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!arnParts.resourceName) {
-      throw new ValidationError('invalid user pool ARN', scope);
+      throw new ValidationError('InvalidUserPool', 'invalid user pool ARN', scope);
     }
 
     const userPoolId = arnParts.resourceName;
@@ -1150,7 +1170,7 @@ export class UserPool extends UserPoolBase {
           case 'customSmsSender':
           case 'customEmailSender':
             if (!this.triggers.kmsKeyId) {
-              throw new ValidationError('you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
+              throw new ValidationError('SpecifyKeyCustomSmsSender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
             }
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
@@ -1197,12 +1217,12 @@ export class UserPool extends UserPoolBase {
 
     if (props.passkeyRelyingPartyId !== undefined && !Token.isUnresolved(props.passkeyRelyingPartyId)) {
       if (props.passkeyRelyingPartyId.length < 1 || props.passkeyRelyingPartyId.length > 63) {
-        throw new ValidationError(`passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got ${props.passkeyRelyingPartyId.length}`, this);
+        throw new ValidationError('PasskeyRelyingPartyIdLength', `passkeyRelyingPartyId length must be (inclusively) between 1 and 63, got ${props.passkeyRelyingPartyId.length}`, this);
       }
     }
 
     if (props.email && props.emailSettings) {
-      throw new ValidationError('you must either provide "email" or "emailSettings", but not both', this);
+      throw new ValidationError('EitherProvideEmailEmailsettings', 'you must either provide "email" or "emailSettings", but not both', this);
     }
     const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
       from: encodePuny(props.emailSettings?.from),
@@ -1222,7 +1242,7 @@ export class UserPool extends UserPoolBase {
       props.advancedSecurityMode &&
       (props.standardThreatProtectionMode || advancedSecurityAdditionalFlows)
     ) {
-      throw new ValidationError('you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
+      throw new ValidationError('CannotSetThreatProtectionAdvanced', 'you cannot set Threat Protection and Advanced Security Mode at the same time. Advanced Security Mode is deprecated and should be replaced with Threat Protection instead.', this);
     }
 
     let chosenSecurityMode = props.advancedSecurityMode ?? props.standardThreatProtectionMode;
@@ -1279,14 +1299,14 @@ export class UserPool extends UserPoolBase {
   @MethodMetadata()
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
     if (operation.operationName in this.triggers) {
-      throw new ValidationError(`A trigger for the operation ${operation.operationName} already exists.`, this);
+      throw new ValidationError('TriggerOperation', `A trigger for the operation ${operation.operationName} already exists.`, this);
     }
     if (
       operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG &&
       lambdaVersion !== undefined &&
       [LambdaVersion.V2_0, LambdaVersion.V3_0].includes(lambdaVersion)
     ) {
-      throw new ValidationError('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version.', this);
+      throw new ValidationError('OnlyOperationSupportsV20', 'Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 and V3_0 lambda version.', this);
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -1294,7 +1314,7 @@ export class UserPool extends UserPoolBase {
       case 'customEmailSender':
       case 'customSmsSender':
         if (!this.triggers.kmsKeyId) {
-          throw new ValidationError('you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
+          throw new ValidationError('SpecifyKeyCustomSmsSender', 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
         }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
@@ -1328,11 +1348,11 @@ export class UserPool extends UserPoolBase {
 
     if (message && !Token.isUnresolved(message)) {
       if (!message.includes(CODE_TEMPLATE)) {
-        throw new ValidationError(`MFA message must contain the template string '${CODE_TEMPLATE}'`, this);
+        throw new ValidationError('MessageContainTemplateString', `MFA message must contain the template string '${CODE_TEMPLATE}'`, this);
       }
 
       if (message.length > MAX_LENGTH) {
-        throw new ValidationError(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`, this);
+        throw new ValidationError('Message', `MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`, this);
       }
     }
 
@@ -1355,10 +1375,10 @@ export class UserPool extends UserPoolBase {
     if (emailStyle === VerificationEmailStyle.CODE) {
       const emailMessage = props.userVerification?.emailBody ?? `The verification code to your new account is ${CODE_TEMPLATE}`;
       if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(CODE_TEMPLATE) < 0) {
-        throw new ValidationError(`Verification email body must contain the template string '${CODE_TEMPLATE}'`, this);
+        throw new ValidationError('VerificationEmailBodyContain', `Verification email body must contain the template string '${CODE_TEMPLATE}'`, this);
       }
       if (!Token.isUnresolved(smsMessage) && smsMessage.indexOf(CODE_TEMPLATE) < 0) {
-        throw new ValidationError(`SMS message must contain the template string '${CODE_TEMPLATE}'`, this);
+        throw new ValidationError('MessageContainTemplateString', `SMS message must contain the template string '${CODE_TEMPLATE}'`, this);
       }
       return {
         defaultEmailOption: VerificationEmailStyle.CODE,
@@ -1370,7 +1390,7 @@ export class UserPool extends UserPoolBase {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
       if (!Token.isUnresolved(emailMessage) && !VERIFY_EMAIL_REGEX.test(emailMessage)) {
-        throw new ValidationError(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`, this);
+        throw new ValidationError('VerificationEmailBodyContain', `Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`, this);
       }
       return {
         defaultEmailOption: VerificationEmailStyle.LINK,
@@ -1389,7 +1409,7 @@ export class UserPool extends UserPoolBase {
     const signIn: SignInAliases = props.signInAliases ?? { username: true };
 
     if (signIn.preferredUsername && !signIn.username) {
-      throw new ValidationError('username signIn must be enabled if preferredUsername is enabled', this);
+      throw new ValidationError('UsernameSignEnabledPreferredUsername', 'username signIn must be enabled if preferredUsername is enabled', this);
     }
 
     if (signIn.username) {
@@ -1419,7 +1439,7 @@ export class UserPool extends UserPoolBase {
 
   private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
     if (props.enableSmsRole === false && props.smsRole) {
-      throw new ValidationError('enableSmsRole cannot be disabled when smsRole is specified', this);
+      throw new ValidationError('EnableSmsRoleCannotDisabled', 'enableSmsRole cannot be disabled when smsRole is specified', this);
     }
 
     if (props.smsRole) {
@@ -1496,19 +1516,19 @@ export class UserPool extends UserPoolBase {
   private configurePasswordPolicy(props: UserPoolProps): CfnUserPool.PasswordPolicyProperty | undefined {
     const tempPasswordValidity = props.passwordPolicy?.tempPasswordValidity;
     if (tempPasswordValidity !== undefined && tempPasswordValidity.toDays() > Duration.days(365).toDays()) {
-      throw new ValidationError(`tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`, this);
+      throw new ValidationError('TempPasswordValidityCannotGreater', `tempPasswordValidity cannot be greater than 365 days (received: ${tempPasswordValidity.toDays()})`, this);
     }
     const minLength = props.passwordPolicy ? props.passwordPolicy.minLength ?? 8 : undefined;
     if (minLength !== undefined && (minLength < 6 || minLength > 99)) {
-      throw new ValidationError(`minLength for password must be between 6 and 99 (received: ${minLength})`, this);
+      throw new ValidationError('MinLengthPasswordReceived', `minLength for password must be between 6 and 99 (received: ${minLength})`, this);
     }
     const passwordHistorySize = props.passwordPolicy?.passwordHistorySize;
     if (passwordHistorySize !== undefined) {
       if (props.featurePlan === FeaturePlan.LITE) {
-        throw new ValidationError('`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.', this);
+        throw new ValidationError('CanNot', '`passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.', this);
       }
       if (passwordHistorySize < 0 || passwordHistorySize > 24) {
-        throw new ValidationError(`\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`, this);
+        throw new ValidationError('PasswordHistorySizeOutOfRange', `\`passwordHistorySize\` must be between 0 and 24 (received: ${passwordHistorySize}).`, this);
       }
     }
     return undefinedIfNoKeys({
@@ -1527,7 +1547,7 @@ export class UserPool extends UserPoolBase {
     if (props.signInPolicy?.allowedFirstAuthFactors) {
       // As of writing, from testing, CFN deployment will fail if `PASSWORD` is not enabled.
       if (!props.signInPolicy.allowedFirstAuthFactors.password) {
-        throw new ValidationError('The password authentication cannot be disabled.', this);
+        throw new ValidationError('PasswordAuthenticationCannotDisabled', 'The password authentication cannot be disabled.', this);
       }
 
       allowedFirstAuthFactors = [];
@@ -1552,7 +1572,7 @@ export class UserPool extends UserPoolBase {
      */
     const isChoiceBasedAuthenticationEnabled = allowedFirstAuthFactors?.some((auth) => auth !== 'PASSWORD');
     if (isChoiceBasedAuthenticationEnabled && props.featurePlan === FeaturePlan.LITE) {
-      throw new ValidationError('To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+      throw new ValidationError('EnableChoiceBasedAuthentication', 'To enable choice-based authentication, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
 
     return undefinedIfNoKeys({ allowedFirstAuthFactors });
@@ -1638,7 +1658,7 @@ export class UserPool extends UserPoolBase {
       case AccountRecovery.PHONE_AND_EMAIL:
         return undefined;
       default:
-        throw new ValidationError(`Unsupported AccountRecovery type - ${accountRecovery}`, this);
+        throw new ValidationError('UnsupportedAccountRecoveryType', `Unsupported AccountRecovery type - ${accountRecovery}`, this);
     }
   }
 
@@ -1664,11 +1684,11 @@ export class UserPool extends UserPoolBase {
 
   private validateEmailMfa(props: UserPoolProps) {
     if (props.email === undefined || this.emailConfiguration?.emailSendingAccount !== 'DEVELOPER') {
-      throw new ValidationError('To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.', this);
+      throw new ValidationError('EnableEmailBased', 'To enable email-based MFA, set `email` property to the Amazon SES email-sending configuration.', this);
     }
 
     if (props.featurePlan === FeaturePlan.LITE) {
-      throw new ValidationError('To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
+      throw new ValidationError('EnableEmailBased', 'To enable email-based MFA, set `featurePlan` to `FeaturePlan.ESSENTIALS` or `FeaturePlan.PLUS`.', this);
     }
   }
 }

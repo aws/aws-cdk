@@ -1,4 +1,5 @@
-import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 

@@ -1,7 +1,10 @@
-import { Construct } from 'constructs';
-import { CfnRealtimeLogConfig, IRealtimeLogConfigRef, RealtimeLogConfigReference } from './cloudfront.generated';
-import { Endpoint } from '../';
-import { IResource, Lazy, Names, Resource, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IRealtimeLogConfigRef, RealtimeLogConfigReference } from './cloudfront.generated';
+import { CfnRealtimeLogConfig } from './cloudfront.generated';
+import type { Endpoint } from '../';
+import type { IResource } from '../../core';
+import { Lazy, Names, Resource, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -56,9 +59,24 @@ export interface RealtimeLogConfigProps {
 export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.RealtimeLogConfig';
-  public readonly realtimeLogConfigName: string;
-  public readonly realtimeLogConfigArn: string;
+
+  @memoizedGetter
+  public get realtimeLogConfigName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get realtimeLogConfigArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudfront',
+      region: '',
+      resource: 'realtime-log-config',
+      resourceName: this.physicalName,
+    });
+  }
+
   public readonly realtimeLogConfigRef: RealtimeLogConfigReference;
+  private readonly resource: CfnRealtimeLogConfig;
 
   constructor(scope: Construct, id: string, props: RealtimeLogConfigProps) {
     super(scope, id, {
@@ -68,7 +86,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
     addConstructMetadata(this, props);
 
     if ((props.samplingRate < 1 || props.samplingRate > 100)) {
-      throw new ValidationError(`Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`, scope);
+      throw new ValidationError('SamplingRateMustBeBetween1And100', `Sampling rate must be between 1 and 100 (inclusive), received ${props.samplingRate}`, scope);
     }
 
     const resource = new CfnRealtimeLogConfig(this, 'Resource', {
@@ -79,15 +97,7 @@ export class RealtimeLogConfig extends Resource implements IRealtimeLogConfig {
       name: this.physicalName,
       samplingRate: props.samplingRate,
     });
+    this.resource = resource;
     this.realtimeLogConfigRef = resource.realtimeLogConfigRef;
-
-    this.realtimeLogConfigArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'cloudfront',
-      region: '',
-      resource: 'realtime-log-config',
-      resourceName: this.physicalName,
-    });
-
-    this.realtimeLogConfigName = this.getResourceNameAttribute(resource.ref);
   }
 }

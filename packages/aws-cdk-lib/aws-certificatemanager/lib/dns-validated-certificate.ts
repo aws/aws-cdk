@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { CertificateProps, ICertificate } from './certificate';
+import type { Construct } from 'constructs';
+import type { CertificateProps, ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
 import * as iam from '../../aws-iam';
-import * as route53 from '../../aws-route53';
+import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -102,7 +102,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.domainName = props.domainName;
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new cdk.ValidationError('Domain name must be 64 characters or less', this);
+      throw new cdk.ValidationError('DomainNameTooLong', 'Domain name must be 64 characters or less', this);
     }
     this.normalizedZoneName = props.hostedZone.zoneName;
     // Remove trailing `.` from zone name

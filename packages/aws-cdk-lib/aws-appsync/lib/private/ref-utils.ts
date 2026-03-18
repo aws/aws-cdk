@@ -1,15 +1,15 @@
 import { Fn, UnscopedValidationError } from '../../../core';
-import { IGraphQLApiRef, IApiRef, IFunctionConfigurationRef } from '../../../interfaces/generated/aws-appsync-interfaces.generated';
-import { IApi } from '../api-base';
-import { IAppsyncFunction } from '../appsync-function';
-import { IGraphqlApi } from '../graphqlapi-base';
+import type { IGraphQLApiRef, IApiRef, IFunctionConfigurationRef } from '../../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IApi } from '../api-base';
+import type { IAppsyncFunction } from '../appsync-function';
+import type { IGraphqlApi } from '../graphqlapi-base';
 
 /**
  * Converts an IGraphQLApiRef to IGraphqlApi, validating that it implements the full interface
  */
 export function toIGraphqlApi(api: IGraphQLApiRef): IGraphqlApi {
   if (!isGraphQlApi(api)) {
-    throw new UnscopedValidationError(`'api' instance should implement IGraphqlApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
+    throw new UnscopedValidationError('ApiInstanceShouldImplement', `'api' instance should implement IGraphqlApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
   }
   return api;
 }
@@ -29,7 +29,7 @@ function isIApi(apiRef: IApiRef): apiRef is IApi {
  */
 export function toIApi(api: IApiRef): IApi {
   if (!isIApi(api)) {
-    throw new UnscopedValidationError(`'api' instance should implement IApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
+    throw new UnscopedValidationError('ApiInstanceShouldImplement', `'api' instance should implement IApi, but doesn't: ${api.constructor?.name ?? 'unknown'}`);
   }
   return api;
 }

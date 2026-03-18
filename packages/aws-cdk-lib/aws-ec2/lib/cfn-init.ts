@@ -1,11 +1,13 @@
 import * as crypto from 'crypto';
-import { Construct } from 'constructs';
-import { InitElement } from './cfn-init-elements';
+import type { Construct } from 'constructs';
+import type { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
-import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';
-import { UserData } from './user-data';
+import type { InitBindOptions, InitElementConfig } from './private/cfn-init-internal';
+import { InitElementType, InitPlatform } from './private/cfn-init-internal';
+import type { UserData } from './user-data';
 import * as iam from '../../aws-iam';
-import { Aws, CfnResource, UnscopedValidationError, ValidationError } from '../../core';
+import type { CfnResource } from '../../core';
+import { Aws, UnscopedValidationError, ValidationError } from '../../core';
 
 /**
  * A CloudFormation-init configuration
@@ -50,7 +52,7 @@ export class CloudFormationInit {
    */
   public addConfig(configName: string, config: InitConfig) {
     if (this._configs[configName]) {
-      throw new UnscopedValidationError(`CloudFormationInit already contains a config named '${configName}'`);
+      throw new UnscopedValidationError('CloudFormationInitAlreadyContains', `CloudFormationInit already contains a config named '${configName}'`);
     }
     this._configs[configName] = config;
   }
@@ -62,12 +64,12 @@ export class CloudFormationInit {
    */
   public addConfigSet(configSetName: string, configNames: string[] = []) {
     if (this._configSets[configSetName]) {
-      throw new UnscopedValidationError(`CloudFormationInit already contains a configSet named '${configSetName}'`);
+      throw new UnscopedValidationError('CloudFormationInitAlreadyContains', `CloudFormationInit already contains a configSet named '${configSetName}'`);
     }
 
     const unk = configNames.filter(c => !this._configs[c]);
     if (unk.length > 0) {
-      throw new UnscopedValidationError(`Unknown configs referenced in definition of '${configSetName}': ${unk}`);
+      throw new UnscopedValidationError('UnknownConfigsReferencedDefinition', `Unknown configs referenced in definition of '${configSetName}': ${unk}`);
     }
 
     this._configSets[configSetName] = [...configNames];
@@ -91,13 +93,13 @@ export class CloudFormationInit {
    */
   public attach(attachedResource: CfnResource, attachOptions: AttachInitOptions) {
     if (attachOptions.platform === OperatingSystemType.UNKNOWN) {
-      throw new ValidationError('Cannot attach CloudFormationInit to an unknown OS type', attachedResource);
+      throw new ValidationError('CannotAttachCloudFormationInit', 'Cannot attach CloudFormationInit to an unknown OS type', attachedResource);
     }
 
     const CFN_INIT_METADATA_KEY = 'AWS::CloudFormation::Init';
 
     if (attachedResource.getMetadata(CFN_INIT_METADATA_KEY) !== undefined) {
-      throw new ValidationError(`Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`, attachedResource);
+      throw new ValidationError('CannotBindCfnInitResource', `Cannot bind CfnInit: resource '${attachedResource.node.path}' already has '${CFN_INIT_METADATA_KEY}' attached`, attachedResource);
     }
 
     // Note: This will not reflect mutations made after attaching.
@@ -270,7 +272,7 @@ export class InitConfig {
         return InitPlatform.WINDOWS;
       }
       default: {
-        throw new UnscopedValidationError('Cannot attach CloudFormationInit to an unknown OS type');
+        throw new UnscopedValidationError('CannotAttachCloudFormationInit', 'Cannot attach CloudFormationInit to an unknown OS type');
       }
     }
   }
@@ -308,7 +310,7 @@ function deepMerge(target?: Record<string, any>, src?: Record<string, any>) {
 
     if (Array.isArray(value)) {
       if (target[key] && !Array.isArray(target[key])) {
-        throw new UnscopedValidationError(`Trying to merge array [${value}] into a non-array '${target[key]}'`);
+        throw new UnscopedValidationError('TryingMergeArrayInto', `Trying to merge array [${value}] into a non-array '${target[key]}'`);
       }
       if (key === 'command') { // don't deduplicate command arguments
         target[key] = new Array(

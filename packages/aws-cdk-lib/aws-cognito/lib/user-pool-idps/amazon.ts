@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
-import { CfnUserPoolIdentityProvider } from '../cognito.generated';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
  * Properties to initialize UserPoolAmazonIdentityProvider
@@ -45,7 +45,7 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
     const scopes = props.scopes ?? ['profile'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
-      userPoolId: props.userPool.userPoolId,
+      userPoolId: props.userPool.userPoolRef.userPoolId,
       providerName: 'LoginWithAmazon', // must be 'LoginWithAmazon' when the type is 'LoginWithAmazon'
       providerType: 'LoginWithAmazon',
       providerDetails: {
@@ -57,5 +57,6 @@ export class UserPoolIdentityProviderAmazon extends UserPoolIdentityProviderBase
     });
 
     this.providerName = super.getResourceNameAttribute(resource.ref);
+    props.userPool.registerIdentityProvider(this);
   }
 }

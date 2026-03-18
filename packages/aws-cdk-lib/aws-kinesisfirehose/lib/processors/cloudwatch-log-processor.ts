@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UnscopedValidationError } from '../../../core';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
+import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Options for CloudWatchLogProcessor.
@@ -24,7 +24,7 @@ export class CloudWatchLogProcessor implements IDataProcessor {
 
   constructor(options: CloudWatchLogProcessorOptions) {
     if (!options.dataMessageExtraction) {
-      throw new UnscopedValidationError('dataMessageExtraction must be true.');
+      throw new UnscopedValidationError('DataMessageExtractionMustBeTrue', 'dataMessageExtraction must be true.');
     }
   }
 

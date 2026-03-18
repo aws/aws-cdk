@@ -6,7 +6,8 @@ import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EventBridgePutEvents, EventBridgePutEventsEntry } from 'aws-cdk-lib/aws-scheduler-targets';
+import type { EventBridgePutEventsEntry } from 'aws-cdk-lib/aws-scheduler-targets';
+import { EventBridgePutEvents } from 'aws-cdk-lib/aws-scheduler-targets';
 
 /*
  * Stack verification steps:

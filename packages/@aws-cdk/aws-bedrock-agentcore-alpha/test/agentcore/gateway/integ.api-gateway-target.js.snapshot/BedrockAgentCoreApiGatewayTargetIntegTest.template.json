@@ -1,0 +1,921 @@
+{
+ "Resources": {
+  "TestGatewayServiceRole426CDA0F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/api-gateway-target-integ-test*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway api-gateway-target-integ-test"
+   }
+  },
+  "TestGatewayServiceRoleDefaultPolicyCFEDA895": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "execute-api:Invoke",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":execute-api:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":",
+          {
+           "Ref": "TestRestApiB7B4EFDA"
+          },
+          "/prod/*/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "Roles": [
+     {
+      "Ref": "TestGatewayServiceRole426CDA0F"
+     }
+    ]
+   }
+  },
+  "TestGatewayUserPool545AA49A": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameConfiguration": {
+     "CaseSensitive": false
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TestGatewayUserPoolResourceServer7A34B6B2": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "BedrockAgentCoreApiGatewayTargetIntegTest-TestGateway-86DC0FD9",
+    "Name": "BedrockAgentCoreApiGatewayTargetIntegTest-TestGateway-86DC0FD9",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDefaultClient3AC9C728": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "client_credentials"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "TestGatewayUserPoolResourceServer7A34B6B2"
+        },
+        "/write"
+       ]
+      ]
+     }
+    ],
+    "GenerateSecret": true,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGatewayUserPoolDomainB64B616E": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "bedrockagentcoreapigatewaytargetintegtest-testgateway-86dc0fd9",
+    "UserPoolId": {
+     "Ref": "TestGatewayUserPool545AA49A"
+    }
+   }
+  },
+  "TestGateway7394A071": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedClients": [
+       {
+        "Ref": "TestGatewayUserPoolDefaultClient3AC9C728"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "TestGatewayUserPool545AA49A"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizerType": "CUSTOM_JWT",
+    "Description": "Gateway for testing API Gateway target integration",
+    "Name": "api-gateway-target-integ-test",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "TestGatewayServiceRole426CDA0F",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "BackendFunctionServiceRoleCA938F8D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "BackendFunction63314140": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Backend API called:', JSON.stringify(event));\n\n      const path = event.path || event.resource;\n      const method = event.httpMethod;\n\n      // Handle different paths\n      if (path === '/pets' && method === 'GET') {\n        return {\n          statusCode: 200,\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({\n            pets: [\n              { id: '1', name: 'Fluffy', type: 'cat' },\n              { id: '2', name: 'Buddy', type: 'dog' }\n            ]\n          })\n        };\n      }\n\n      if (path.startsWith('/pets/') && method === 'GET') {\n        const petId = path.split('/')[2];\n        return {\n          statusCode: 200,\n          headers: { 'Content-Type': 'application/json' },\n          body: JSON.stringify({\n            id: petId,\n            name: 'Pet ' + petId,\n            type: 'unknown'\n          })\n        };\n      }\n\n      return {\n        statusCode: 404,\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ message: 'Not found' })\n      };\n    };\n  "
+    },
+    "Description": "Backend Lambda for API Gateway integration test",
+    "FunctionName": "integ-test-apigateway-backend",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BackendFunctionServiceRoleCA938F8D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "BackendFunctionServiceRoleCA938F8D"
+   ]
+  },
+  "BackendFunctionLogGroupA2C3BDCF": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "BackendFunction63314140"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TestRestApiB7B4EFDA": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "REST API for testing Gateway API Gateway target integration",
+    "Name": "integ-test-api-gateway-target"
+   }
+  },
+  "TestRestApiDeploymentE31B12656be0631da8d65a9595d57514d0cdd866": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "REST API for testing Gateway API Gateway target integration",
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    }
+   },
+   "DependsOn": [
+    "TestRestApipetspetIdGET35C5207E",
+    "TestRestApipetspetId7E336794",
+    "TestRestApipetsGETDF04032C",
+    "TestRestApipetsFDF5FF2B",
+    "TestRestApiPetResponseModel6088CBBF",
+    "TestRestApiResponseModel8CA1958B"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "TestRestApiDeploymentStageprod714523E6": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "TestRestApiDeploymentE31B12656be0631da8d65a9595d57514d0cdd866"
+    },
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    },
+    "StageName": "prod"
+   }
+  },
+  "TestRestApipetsFDF5FF2B": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "TestRestApiB7B4EFDA",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "pets",
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    }
+   }
+  },
+  "TestRestApipetsGETApiPermissionBedrockAgentCoreApiGatewayTargetIntegTestTestRestApi68EAA9D5GETpets9C6547DE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BackendFunction63314140",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "/",
+       {
+        "Ref": "TestRestApiDeploymentStageprod714523E6"
+       },
+       "/GET/pets"
+      ]
+     ]
+    }
+   }
+  },
+  "TestRestApipetsGETApiPermissionTestBedrockAgentCoreApiGatewayTargetIntegTestTestRestApi68EAA9D5GETpets4D7624E7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BackendFunction63314140",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "/test-invoke-stage/GET/pets"
+      ]
+     ]
+    }
+   }
+  },
+  "TestRestApipetsGETDF04032C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "AWS_IAM",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "BackendFunction63314140",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseModels": {
+       "application/json": {
+        "Ref": "TestRestApiResponseModel8CA1958B"
+       }
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "OperationName": "listPets",
+    "ResourceId": {
+     "Ref": "TestRestApipetsFDF5FF2B"
+    },
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    }
+   }
+  },
+  "TestRestApipetspetId7E336794": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "TestRestApipetsFDF5FF2B"
+    },
+    "PathPart": "{petId}",
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    }
+   }
+  },
+  "TestRestApipetspetIdGETApiPermissionBedrockAgentCoreApiGatewayTargetIntegTestTestRestApi68EAA9D5GETpetspetId46723F61": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BackendFunction63314140",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "/",
+       {
+        "Ref": "TestRestApiDeploymentStageprod714523E6"
+       },
+       "/GET/pets/*"
+      ]
+     ]
+    }
+   }
+  },
+  "TestRestApipetspetIdGETApiPermissionTestBedrockAgentCoreApiGatewayTargetIntegTestTestRestApi68EAA9D5GETpetspetId0C7B937C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BackendFunction63314140",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "/test-invoke-stage/GET/pets/*"
+      ]
+     ]
+    }
+   }
+  },
+  "TestRestApipetspetIdGET35C5207E": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "AWS_IAM",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "BackendFunction63314140",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseModels": {
+       "application/json": {
+        "Ref": "TestRestApiPetResponseModel6088CBBF"
+       }
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "OperationName": "getPetById",
+    "ResourceId": {
+     "Ref": "TestRestApipetspetId7E336794"
+    },
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    }
+   }
+  },
+  "TestRestApiResponseModel8CA1958B": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "PetsResponse",
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    },
+    "Schema": {
+     "type": "object",
+     "properties": {
+      "pets": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "id": {
+          "type": "string"
+         },
+         "name": {
+          "type": "string"
+         },
+         "type": {
+          "type": "string"
+         }
+        }
+       }
+      }
+     },
+     "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+   }
+  },
+  "TestRestApiPetResponseModel6088CBBF": {
+   "Type": "AWS::ApiGateway::Model",
+   "Properties": {
+    "ContentType": "application/json",
+    "Name": "PetResponse",
+    "RestApiId": {
+     "Ref": "TestRestApiB7B4EFDA"
+    },
+    "Schema": {
+     "type": "object",
+     "properties": {
+      "id": {
+       "type": "string"
+      },
+      "name": {
+       "type": "string"
+      },
+      "type": {
+       "type": "string"
+      }
+     },
+     "$schema": "http://json-schema.org/draft-04/schema#"
+    }
+   }
+  },
+  "ApiGatewayTarget9E745974": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "Description": "Target created with API Gateway REST API",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "api-gateway-via-static",
+    "TargetConfiguration": {
+     "Mcp": {
+      "ApiGateway": {
+       "ApiGatewayToolConfiguration": {
+        "ToolFilters": [
+         {
+          "FilterPath": "/pets",
+          "Methods": [
+           "GET"
+          ]
+         },
+         {
+          "FilterPath": "/pets/{petId}",
+          "Methods": [
+           "GET"
+          ]
+         }
+        ]
+       },
+       "RestApiId": {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "Stage": "prod"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "TestGatewayServiceRole426CDA0F"
+   ]
+  },
+  "ApiGatewayTargetConstructor8957A6B0": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "Description": "Target created via constructor with ApiGatewayTargetConfiguration",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "TestGateway7394A071",
+      "GatewayIdentifier"
+     ]
+    },
+    "MetadataConfiguration": {
+     "AllowedQueryParameters": [
+      "limit",
+      "offset"
+     ],
+     "AllowedRequestHeaders": [
+      "X-Request-ID"
+     ],
+     "AllowedResponseHeaders": [
+      "X-Custom-Header"
+     ]
+    },
+    "Name": "api-gateway-via-constructor",
+    "TargetConfiguration": {
+     "Mcp": {
+      "ApiGateway": {
+       "ApiGatewayToolConfiguration": {
+        "ToolFilters": [
+         {
+          "FilterPath": "/pets/*",
+          "Methods": [
+           "GET"
+          ]
+         }
+        ]
+       },
+       "RestApiId": {
+        "Ref": "TestRestApiB7B4EFDA"
+       },
+       "Stage": "prod"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "TestGatewayServiceRoleDefaultPolicyCFEDA895",
+    "TestGatewayServiceRole426CDA0F"
+   ]
+  }
+ },
+ "Outputs": {
+  "TestRestApiEndpoint8BFE3226": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "TestRestApiB7B4EFDA"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "TestRestApiDeploymentStageprod714523E6"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "GatewayId": {
+   "Description": "ID of the Gateway",
+   "Value": {
+    "Fn::GetAtt": [
+     "TestGateway7394A071",
+     "GatewayIdentifier"
+    ]
+   }
+  },
+  "RestApiId": {
+   "Description": "ID of the REST API",
+   "Value": {
+    "Ref": "TestRestApiB7B4EFDA"
+   }
+  },
+  "RestApiUrl": {
+   "Description": "URL of the REST API",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "TestRestApiB7B4EFDA"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "TestRestApiDeploymentStageprod714523E6"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ApiGatewayTargetId": {
+   "Description": "ID of the API Gateway target (static method)",
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiGatewayTarget9E745974",
+     "TargetId"
+    ]
+   }
+  },
+  "ApiGatewayTarget2Id": {
+   "Description": "ID of the API Gateway target (constructor)",
+   "Value": {
+    "Fn::GetAtt": [
+     "ApiGatewayTargetConstructor8957A6B0",
+     "TargetId"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

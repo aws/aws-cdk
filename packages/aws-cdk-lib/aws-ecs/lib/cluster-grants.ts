@@ -1,6 +1,7 @@
 /* eslint-disable eol-last */
-import * as ecs from './ecs.generated';
-import { Grant, IGrantable } from '../../aws-iam';
+import type * as ecs from './ecs.generated';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
 import { ArnFormat, Stack } from '../../core';
 
 /**

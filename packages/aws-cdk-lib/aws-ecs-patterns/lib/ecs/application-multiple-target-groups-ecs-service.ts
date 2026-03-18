@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
-import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
-import { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import type { Construct } from 'constructs';
+import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
+import type { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
 import * as cxapi from '../../../cx-api';
+import type { ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
-  ApplicationMultipleTargetGroupsServiceBaseProps,
 } from '../base/application-multiple-target-groups-service-base';
 
 /**
@@ -102,7 +103,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError('SpecifyOneTaskDefinitionTask', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -131,10 +132,10 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         }
       }
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('At least one essential container must be specified', this);
+      throw new ValidationError('LeastOneEssentialContainerSpecified', 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

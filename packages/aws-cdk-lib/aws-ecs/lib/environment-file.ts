@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { IBucket, Location } from '../../aws-s3';
-import { Asset, AssetOptions } from '../../aws-s3-assets';
+import type { Construct } from 'constructs';
+import type { IBucket, Location } from '../../aws-s3';
+import type { AssetOptions } from '../../aws-s3-assets';
+import { Asset } from '../../aws-s3-assets';
 import { ValidationError } from '../../core';
 
 /**
@@ -60,7 +61,7 @@ export class AssetEnvironmentFile extends EnvironmentFile {
     }
 
     if (!this.asset.isFile) {
-      throw new ValidationError(`Asset must be a single file (${this.path})`, scope);
+      throw new ValidationError('MustBeAssetSingleFile', `Asset must be a single file (${this.path})`, scope);
     }
 
     return {
@@ -83,7 +84,7 @@ export class S3EnvironmentFile extends EnvironmentFile {
     super();
 
     if (!bucket.bucketName) {
-      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
+      throw new ValidationError('BucketNameUndefinedProvidedBucket', 'bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketName;
