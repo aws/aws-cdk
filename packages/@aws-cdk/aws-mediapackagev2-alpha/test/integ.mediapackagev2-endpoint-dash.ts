@@ -35,8 +35,8 @@ new mediapackagev2.OriginEndpoint(stack, 'OriginEndpoint', {
       minUpdatePeriod: cdk.Duration.seconds(10),
       suggestedPresentationDelay: cdk.Duration.seconds(10),
       filterConfiguration: {
-        end: new Date('May 18, 2025 15:10:00'),
-        start: new Date('May 18, 2025 15:00:00'),
+        end: new Date('2025-05-18T15:10:00Z'),
+        start: new Date('2025-05-18T15:00:00Z'),
         timeDelay: cdk.Duration.seconds(1),
         manifestFilter: [mediapackagev2.ManifestFilter.numericRange(mediapackagev2.NumericFilterKey.AUDIO_SAMPLE_RATE, 0, 50000)],
       },
