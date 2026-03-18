@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c419363f0ec5d0d6674bb0933b49e8577cfd0e1add8b604f3f3e99a5626c32bd": {
+      "displayName": "VendedLogsMixinTest Template",
+      "source": {
+        "path": "VendedLogsMixinTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-59904fac": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c419363f0ec5d0d6674bb0933b49e8577cfd0e1add8b604f3f3e99a5626c32bd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
