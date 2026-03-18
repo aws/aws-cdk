@@ -836,6 +836,8 @@ export enum PresetSpeke20Audio {
 }
 
 /**
+ * The SPEKE Version 2.0 preset video associated with the encryption contract configuration of the origin endpoint.
+ *
  * A collection of video encryption presets.
  */
 export enum PresetSpeke20Video {
@@ -1715,7 +1717,7 @@ export interface LowLatencyHlsManifestConfiguration extends ManifestConfiguratio
    */
   readonly startTag?: StartTag;
   /**
-   * When enabled, MediaPackage URL-encodes the query string for API requests for HLS child manifests to comply with AWS Signature Version 4 (SigV4) signature signing protocol.
+   * When enabled, MediaPackage URL-encodes the query string for API requests for LL-HLS child manifests to comply with AWS Signature Version 4 (SigV4) signature signing protocol.
    * For more information, see AWS Signature Version 4 for API requests in AWS Identity and Access Management User Guide.
    *
    * @external https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_sigv.html
