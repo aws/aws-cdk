@@ -145,23 +145,23 @@ export class SqsEventSource implements lambda.IEventSource {
       }
     }
     if (this.props.provisionedPollerConfig && this.props.maxConcurrency !== undefined) {
-      throw new ValidationError('provisionedPollerConfig and maxConcurrency are mutually exclusive', queue);
+      throw new ValidationError('ProvisionedPollerConfigMaxConcurrencyMutuallyExclusive', 'provisionedPollerConfig and maxConcurrency are mutually exclusive', queue);
     }
     if (this.props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
       if (minimumPollers !== undefined) {
         if (minimumPollers < 2 || minimumPollers > 200) {
-          throw new ValidationError('Minimum provisioned pollers for SQS must be between 2 and 200 inclusive', queue);
+          throw new ValidationError('MinimumProvisionedPollersRange', 'Minimum provisioned pollers for SQS must be between 2 and 200 inclusive', queue);
         }
       }
       if (maximumPollers !== undefined) {
         if (maximumPollers < 2 || maximumPollers > 2000) {
-          throw new ValidationError('Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive', queue);
+          throw new ValidationError('MaximumProvisionedPollersRange', 'Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive', queue);
         }
       }
       if (minimumPollers !== undefined && maximumPollers !== undefined) {
         if (minimumPollers > maximumPollers) {
-          throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', queue);
+          throw new ValidationError('MinimumPollersLessThanMaximum', 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', queue);
         }
       }
     }
