@@ -8,8 +8,8 @@ class SqsProvisionedPollersTest extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const fn = new TestFunction(this, 'F');
-    const queue = new sqs.Queue(this, 'Q', {
+    const fn = new TestFunction(this, 'Func');
+    const queue = new sqs.Queue(this, 'Queue', {
       encryption: sqs.QueueEncryption.SQS_MANAGED,
     });
 
