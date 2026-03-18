@@ -1389,17 +1389,21 @@ export class Cluster extends ClusterBase {
       // internet access by definition, so the kubectl Lambda will not be able to
       // reach the EKS API, STS, or other AWS service endpoints required for
       // kubectl operations (including the CoreDNS compute type patch).
+      // Only check for CDK-created VPCs where we know isolated subnets have no egress.
+      // Imported VPCs may have VPC endpoints configured that we can't detect.
       // See https://github.com/aws/aws-cdk/issues/26613
-      const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
-      const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
-      if (hasIsolatedSubnets) {
-        throw new ValidationError(
-          'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
-          + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
-          + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, and ECR. '
-          + 'See https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
-          this,
-        );
+      if (this.vpc instanceof ec2.Vpc) {
+        const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
+        const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
+        if (hasIsolatedSubnets) {
+          throw new ValidationError(
+            'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
+            + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
+            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, and S3. '
+            + 'See https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
+            this,
+          );
+        }
       }
 
       kubectlSubnets = privateSubnets;
