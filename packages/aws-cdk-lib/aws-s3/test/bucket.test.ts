@@ -3,9 +3,11 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
+import { BucketGrants, CfnBucket } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */
@@ -795,6 +797,21 @@ describe('bucket', () => {
     });
   });
 
+  test.each([
+    [true, 'Enabled'],
+    [false, 'Disabled'],
+    [undefined, Match.absent()],
+  ])('bucket with ABAC status %s', (abacStatus, expected) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      abacStatus,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      AbacStatus: expected,
+    });
+  });
+
   test('bucket with object lock enabled but no retention', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'Bucket', {
@@ -1144,6 +1161,38 @@ describe('bucket', () => {
               },
             },
           },
+        },
+      });
+    });
+
+    test('L2 addToResourcePolicy and L1 ResourceWithPolicies.of share a single bucket policy', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+
+      // Add a statement via the L2 API
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [bucket.arnForObjects('*')],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      // Add a statement via the L1 default trait
+      const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
+      iam.ResourceWithPolicies.of(cfnBucket)?.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3:PutObject'],
+        resources: [bucket.arnForObjects('*')],
+        principals: [new iam.AnyPrincipal()],
+      }));
+
+      // Should result in a single bucket policy with both statements
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::S3::BucketPolicy', 1);
+      template.hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: 's3:GetObject' }),
+            Match.objectLike({ Action: 's3:PutObject' }),
+          ]),
         },
       });
     });
@@ -1723,6 +1772,191 @@ describe('bucket', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
+  });
+
+  test('can grant read permissions to a CfnBucket', () => {
+    const stack = new cdk.Stack();
+    const principal = new iam.ServicePrincipal('s3.amazonaws.com');
+
+    const key = new CfnKey(stack, 'EncryptionKey');
+    const cfnBucket = new CfnBucket(stack, 'CfnBucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          bucketKeyEnabled: true,
+          serverSideEncryptionByDefault: {
+            kmsMasterKeyId: key.attrKeyId,
+            sseAlgorithm: 'aws:kms',
+          },
+        }],
+      },
+    });
+
+    BucketGrants.fromBucket(cfnBucket).read(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'CfnBucket' },
+      PolicyDocument: {
+        Statement: [{
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
+          Effect: 'Allow',
+          Principal: { 'Service': 's3.amazonaws.com' },
+          Resource: [{
+            'Fn::GetAtt': ['CfnBucket', 'Arn'],
+          }, {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']],
+          }],
+        }],
+      },
+    });
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:DescribeKey',
+            ],
+            Effect: 'Allow',
+            Principal: {
+              Service: 's3.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnObjectKeys grants only on objects ARN', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    BucketGrants.fromBucket(bucket).actionsOnObjectKeys(user, '*', 's3:GetObject', 's3:PutObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject', 's3:PutObject'],
+            Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
+          },
+        ],
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnObjectKeys with custom key pattern restricts objects ARN', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    BucketGrants.fromBucket(bucket).actionsOnObjectKeys(user, 'my/prefix/*', 's3:GetObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/my/prefix/*']] },
+          },
+        ],
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnObjectKeys works with CfnBucket', () => {
+    const stack = new cdk.Stack();
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+    const cfnBucket = new CfnBucket(stack, 'CfnBucket');
+
+    BucketGrants.fromBucket(cfnBucket).actionsOnObjectKeys(principal, '*', 's3:GetObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'CfnBucket' },
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']] },
+        }],
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnBucketAndObjectKeys grants on both bucket and objects ARN', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    BucketGrants.fromBucket(bucket).actionsOnBucketAndObjectKeys(user, '*', 's3:GetObject', 's3:PutObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject', 's3:PutObject'],
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnBucketAndObjectKeys with custom key pattern', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    BucketGrants.fromBucket(bucket).actionsOnBucketAndObjectKeys(user, 'my/prefix/*', 's3:GetObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/my/prefix/*']] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('BucketGrants.actionsOnBucketAndObjectKeys works with CfnBucket', () => {
+    const stack = new cdk.Stack();
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+    const cfnBucket = new CfnBucket(stack, 'CfnBucket');
+
+    BucketGrants.fromBucket(cfnBucket).actionsOnBucketAndObjectKeys(principal, '*', 's3:GetObject');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'CfnBucket' },
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Principal: { Service: 'lambda.amazonaws.com' },
+          Resource: [
+            { 'Fn::GetAtt': ['CfnBucket', 'Arn'] },
+            { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['CfnBucket', 'Arn'] }, '/*']] },
+          ],
+        }],
+      },
     });
   });
 

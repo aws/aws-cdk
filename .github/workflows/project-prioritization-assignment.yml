@@ -8,10 +8,14 @@ on:
       - synchronize
       - ready_for_review
 
+permissions:
+  contents: read
+
 jobs:
   prioritize:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - uses: actions/checkout@v6
       - name: Add PR to Project & Set Priority

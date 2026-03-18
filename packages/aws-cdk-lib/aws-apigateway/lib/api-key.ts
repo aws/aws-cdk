@@ -111,6 +111,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -121,6 +124,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.write()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -131,6 +137,9 @@ abstract class ApiKeyBase extends Resource implements IApiKey {
 
   /**
    * Permits the IAM principal all read and write operations through this key
+   *
+   * The use of this method is discouraged. Please use `grants.readWrite()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee The principal to grant access to
@@ -213,14 +222,14 @@ export class ApiKey extends ApiKeyBase {
     }
 
     if (resources && stages) {
-      throw new ValidationError('Only one of "resources" or "stages" should be provided', this);
+      throw new ValidationError('ShouldBeOnlyResourcesStages', 'Only one of "resources" or "stages" should be provided', this);
     }
 
     return resources
       ? resources.map((resource: IRestApi) => {
         const restApi = resource;
         if (!restApi.deploymentStage) {
-          throw new ValidationError('Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
+          throw new ValidationError('CannotAddApiKeyRest', 'Cannot add an ApiKey to a RestApi that does not contain a "deploymentStage".\n'+
           'Either set the RestApi.deploymentStage or create an ApiKey from a Stage', this);
         }
         const restApiId = restApi.restApiId;
