@@ -149,16 +149,18 @@ export class SqsEventSource implements lambda.IEventSource {
     }
     if (this.props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
-      if (minimumPollers !== undefined && !Token.isUnresolved(minimumPollers)
-        && (minimumPollers < 2 || minimumPollers > 200)) {
-        throw new ValidationError('MinimumProvisionedPollersRange', 'Minimum provisioned pollers for SQS must be between 2 and 200 inclusive', queue);
+      const isResolvable = (value: number) => !Token.isUnresolved(value);
+      const isValidIntInRange = (value: number, min: number, max: number) =>
+        Number.isInteger(value) && value >= min && value <= max;
+
+      if (minimumPollers !== undefined && isResolvable(minimumPollers) && !isValidIntInRange(minimumPollers, 2, 200)) {
+        throw new ValidationError('MinimumProvisionedPollersRange', 'Minimum provisioned pollers for SQS must be an integer between 2 and 200 inclusive', queue);
       }
-      if (maximumPollers !== undefined && !Token.isUnresolved(maximumPollers)
-        && (maximumPollers < 2 || maximumPollers > 2000)) {
-        throw new ValidationError('MaximumProvisionedPollersRange', 'Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive', queue);
+      if (maximumPollers !== undefined && isResolvable(maximumPollers) && !isValidIntInRange(maximumPollers, 2, 2000)) {
+        throw new ValidationError('MaximumProvisionedPollersRange', 'Maximum provisioned pollers for SQS must be an integer between 2 and 2000 inclusive', queue);
       }
       if (minimumPollers !== undefined && maximumPollers !== undefined
-        && !Token.isUnresolved(minimumPollers) && !Token.isUnresolved(maximumPollers)
+        && isResolvable(minimumPollers) && isResolvable(maximumPollers)
         && minimumPollers > maximumPollers) {
         throw new ValidationError('MinimumPollersLessThanMaximum', 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', queue);
       }
