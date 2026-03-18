@@ -148,31 +148,18 @@ export enum UnreferencedFileRemovalStatus {
 }
 
 /**
- * Controls whether CloudWatch metrics are enabled or disabled for the table bucket.
+ * Controls whether CloudWatch request metrics are enabled or disabled for the table bucket.
  */
-export enum MetricsConfigurationStatus {
+export enum RequestMetricsStatus {
   /**
-   * Enable CloudWatch metrics for the table bucket.
+   * Enable CloudWatch request metrics for the table bucket.
    */
   ENABLED = 'Enabled',
 
   /**
-   * Disable CloudWatch metrics for the table bucket.
+   * Disable CloudWatch request metrics for the table bucket.
    */
   DISABLED = 'Disabled',
-}
-
-/**
- * CloudWatch metrics configuration for the table bucket.
- * When enabled, S3 Tables publishes CloudWatch metrics for the table bucket.
- */
-export interface MetricsConfiguration {
-  /**
-   * Whether CloudWatch metrics are enabled for the table bucket.
-   *
-   * @default MetricsConfigurationStatus.DISABLED
-   */
-  readonly status?: MetricsConfigurationStatus;
 }
 
 /**
@@ -379,13 +366,14 @@ export interface TableBucketProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * CloudWatch metrics configuration for the table bucket.
+   * CloudWatch request metrics configuration for the table bucket.
    *
-   * When enabled, S3 Tables publishes CloudWatch metrics for the table bucket.
+   * When enabled, S3 Tables publishes CloudWatch request metrics for the table bucket.
+   * Request metrics provide insight into Amazon S3 Tables requests.
    *
-   * @default - Metrics are disabled
+   * @default - Request metrics are disabled
    */
-  readonly metricsConfiguration?: MetricsConfiguration;
+  readonly requestMetricsStatus?: RequestMetricsStatus;
 }
 
 /**
@@ -638,7 +626,7 @@ export class TableBucket extends TableBucketBase {
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
       encryptionConfiguration: bucketEncryption,
-      metricsConfiguration: props.metricsConfiguration,
+      metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
     });
 
     this.resource.applyRemovalPolicy(props.removalPolicy);

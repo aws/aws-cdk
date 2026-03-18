@@ -265,12 +265,10 @@ describe('TableBucket', () => {
     });
   });
 
-  describe('created with metrics configuration enabled', () => {
+  describe('created with request metrics enabled', () => {
     const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
       tableBucketName: 'metrics-enabled-bucket',
-      metricsConfiguration: {
-        status: s3tables.MetricsConfigurationStatus.ENABLED,
-      },
+      requestMetricsStatus: s3tables.RequestMetricsStatus.ENABLED,
     };
 
     beforeEach(() => {
@@ -291,12 +289,10 @@ describe('TableBucket', () => {
     });
   });
 
-  describe('created with metrics configuration disabled', () => {
+  describe('created with request metrics disabled', () => {
     const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
       tableBucketName: 'metrics-disabled-bucket',
-      metricsConfiguration: {
-        status: s3tables.MetricsConfigurationStatus.DISABLED,
-      },
+      requestMetricsStatus: s3tables.RequestMetricsStatus.DISABLED,
     };
 
     beforeEach(() => {
@@ -313,7 +309,7 @@ describe('TableBucket', () => {
     });
   });
 
-  describe('created without metrics configuration', () => {
+  describe('created without request metrics configuration', () => {
     const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
       tableBucketName: 'no-metrics-bucket',
     };

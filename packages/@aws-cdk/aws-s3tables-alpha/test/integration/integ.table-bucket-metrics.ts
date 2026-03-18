@@ -4,7 +4,7 @@ import type { Construct } from 'constructs';
 import * as s3tables from '../../lib';
 
 /**
- * Test stack for table bucket with metrics configuration enabled
+ * Test stack for table bucket with request metrics enabled
  */
 class MetricsEnabledTestStack extends core.Stack {
   public readonly tableBucket: s3tables.TableBucket;
@@ -14,9 +14,7 @@ class MetricsEnabledTestStack extends core.Stack {
 
     this.tableBucket = new s3tables.TableBucket(this, 'MetricsEnabledBucket', {
       tableBucketName: 'metrics-enabled-test-bucket',
-      metricsConfiguration: {
-        status: s3tables.MetricsConfigurationStatus.ENABLED,
-      },
+      requestMetricsStatus: s3tables.RequestMetricsStatus.ENABLED,
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
   }

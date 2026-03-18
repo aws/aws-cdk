@@ -159,17 +159,17 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
-### Enabling CloudWatch Metrics
+### Enabling CloudWatch Request Metrics
 
-You can enable CloudWatch metrics for your table bucket to monitor storage and request metrics.
+You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
+
+For more information about S3 Tables CloudWatch metrics, see the [S3 Tables CloudWatch Metrics documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-cloudwatch-metrics.html).
 
 ```ts
-// Enable CloudWatch metrics for the table bucket
+// Enable CloudWatch request metrics for the table bucket
 const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', {
     tableBucketName: 'metrics-enabled-bucket',
-    metricsConfiguration: {
-        status: MetricsConfigurationStatus.ENABLED,
-    },
+    requestMetricsStatus: RequestMetricsStatus.ENABLED,
 });
 ```
 
