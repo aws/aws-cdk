@@ -1,255 +1,28 @@
 {
   "version": "52.0.0",
   "artifacts": {
-    "BarStack.assets": {
+    "aws-cdk-project-macos-base26.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BarStack.assets.json",
+        "file": "aws-cdk-project-macos-base26.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BarStack": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
-      "properties": {
-        "templateFile": "BarStack.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/22d63856e115a6f2876a4e38f3928632b35153b76a11972c7a6e88e820f89a66.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "BarStack.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "BarStack.assets"
-      ],
-      "metadata": {
-        "/BarStack/Function": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "functionName": "*",
-              "runtime": "*",
-              "code": "*",
-              "handler": "*",
-              "environment": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/BarStack/Function/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/BarStack/Function/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRole675BB04A"
-          }
-        ],
-        "/BarStack/Function/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/BarStack/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRoleDefaultPolicy2F49994A"
-          }
-        ],
-        "/BarStack/Function/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Function76856677"
-          }
-        ],
-        "/BarStack/GlobalTable": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "tableName": "*",
-              "removalPolicy": "destroy",
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "replicas": [
-                {
-                  "region": "*"
-                },
-                {
-                  "region": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addReplica": [
-                {
-                  "region": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addReplica": [
-                {
-                  "region": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:hasPhysicalName",
-            "data": {
-              "Ref": "GlobalTable89F068B2"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "replica": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/BarStack/GlobalTable/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GlobalTable89F068B2"
-          }
-        ],
-        "/BarStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/BarStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
-      "displayName": "BarStack"
-    },
-    "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5": {
+    "aws-cdk-project-macos-base26": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.template.json",
+        "templateFile": "aws-cdk-project-macos-base26.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0758c683d98a289939dd6e96b07523b1eb6b4311ffd50bd815038e679335d53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dac992bbc088308fd70f766aeac73c7c7adf7acd6a036e3a035f3c534a05366b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.assets"
+          "aws-cdk-project-macos-base26.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -258,67 +31,46 @@
         }
       },
       "dependencies": [
-        "awscdkglobaltablereplicaintegDefaultTestDeployAssertD4C775F5.assets"
+        "aws-cdk-project-macos-base26.assets"
       ],
-      "metadata": {
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
+      "additionalMetadataFile": "aws-cdk-project-macos-base26.metadata.json",
+      "displayName": "aws-cdk-project-macos-base26"
+    },
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b5f977a750ec07a9bb75fd359422bd58b8468d9bbbeca484739772f2fe9a5e2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
         ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9Invoke1F73B1A8"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke4465da4335c2e66e81914dde9d8ac6f9"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
       },
-      "displayName": "aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert"
+      "dependencies": [
+        "aws-cdk-project-macos-base26",
+        "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.assets"
+      ],
+      "additionalMetadataFile": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.metadata.json",
+      "displayName": "MacOsProjectIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -793,7 +545,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
