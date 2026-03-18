@@ -63,6 +63,7 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
   public get authorizerId(): string {
     if (!this.authorizer) {
       throw new UnscopedValidationError(
+        'AuthorizerNotAttached',
         'Cannot access authorizerId until authorizer is attached to a HttpRoute',
       );
     }
