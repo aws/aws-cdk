@@ -23,11 +23,10 @@ class EksClusterStack extends Stack {
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1, restrictDefaultSecurityGroup: false });
 
-    // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole,
-      defaultCapacity: 2,
+      defaultCapacity: 0,
       ...getClusterVersionConfig(this, version),
       tags: {
         foo: 'bar',
@@ -37,6 +36,11 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+    });
+
+    this.cluster.addNodegroupCapacity('DefaultCapacity', {
+      minSize: 2,
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
 
     this.assertHelmChartAsset();
@@ -83,7 +87,7 @@ class EksClusterStack extends Stack {
 
     // testing the disable mechanism of the installation of CRDs
     // https://gallery.ecr.aws/aws-controllers-k8s/rds-chart
-    this.cluster.addHelmChart('test-skip-crd-installation', {
+    const rdsChart = this.cluster.addHelmChart('test-skip-crd-installation', {
       chart: 'rds-chart',
       release: 'rds-chart-release',
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
@@ -95,7 +99,19 @@ class EksClusterStack extends Stack {
     });
 
     // testing installation with atomic flag set to true
-    // https://gallery.ecr.aws/aws-controllers-k8s/sns-chart
+    // https://gallery.ecr.aws/aws-controllers-k8s/ec2-chart
+    // this service account has to be created in `ack-system`
+    // we need to ensure that the namespace is created before the service account
+    const sa = this.cluster.addServiceAccount('ec2-controller-sa', {
+      namespace: 'ack-system',
+    });
+
+    // rdsChart should create the namespace `ack-system` if not available
+    // adding the dependency ensures that the namespace is created before the service account
+    sa.node.addDependency(rdsChart);
+
+    sa.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess'));
+
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'ec2-chart',
       release: 'ec2-chart-release',
@@ -105,7 +121,16 @@ class EksClusterStack extends Stack {
       createNamespace: true,
       skipCrds: true,
       atomic: true,
-      values: { aws: { region: this.region } },
+      values: {
+        aws: { region: this.region },
+        serviceAccount: {
+          name: sa.serviceAccountName,
+          create: false,
+          annotations: {
+            'eks.amazonaws.com/role-arn': sa.role.roleArn,
+          },
+        },
+      },
     });
 
     // https://github.com/orgs/grafana-operator/packages/container/package/helm-charts%2Fgrafana-operator

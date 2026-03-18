@@ -997,14 +997,11 @@
   "ClusterNodegroupDefaultCapacityDA0920A3": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
     "ForceUpdateEnabled": true,
-    "InstanceTypes": [
-     "m5.large"
-    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -1245,10 +1242,10 @@
      ]
     },
     "Release": "mportclustertestimportedclusterchartdashboard428d91dc",
-    "Chart": "kubernetes-dashboard",
-    "Version": "6.0.8",
+    "Chart": "metrics-server",
+    "Version": "3.12.2",
     "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
+    "Repository": "https://kubernetes-sigs.github.io/metrics-server/",
     "CreateNamespace": true
    },
    "UpdateReplacePolicy": "Delete",
