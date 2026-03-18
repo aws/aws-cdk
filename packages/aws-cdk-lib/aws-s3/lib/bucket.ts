@@ -2559,11 +2559,11 @@ export class Bucket extends BucketBase {
     if (props.blockedEncryptionTypes === undefined) {
       blockedEncryptionTypes = undefined;
     } else if (props.blockedEncryptionTypes.length === 0) {
-      throw new ValidationError('At least one blocked encryption type must be specified', this);
+      throw new ValidationError('EmptyBlockedEncryptionTypes', 'At least one blocked encryption type must be specified', this);
     } else {
       const typeNames = props.blockedEncryptionTypes.map(type => type.name);
       if (typeNames.includes(BlockedEncryptionType.NONE.name) && props.blockedEncryptionTypes.length > 1) {
-        throw new ValidationError('If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
+        throw new ValidationError('ConflictingBlockedEncryptionTypes', 'If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
       }
       blockedEncryptionTypes = {
         encryptionType: typeNames,
