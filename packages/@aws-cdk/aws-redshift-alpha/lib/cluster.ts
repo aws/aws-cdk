@@ -224,7 +224,7 @@ class CloudWatchClusterLogging extends ClusterLogging {
   constructor(private readonly options: CloudWatchLoggingOptions) {
     super();
     if (options.logExports && options.logExports.length !== new Set(options.logExports).size) {
-      throw new UnscopedValidationError('logExports must not contain duplicate values.');
+      throw new UnscopedValidationError('DuplicateLogExports', 'logExports must not contain duplicate values.');
     }
   }
 
@@ -763,7 +763,7 @@ export class Cluster extends ClusterBase {
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     if (props.logging && props.loggingProperties) {
-      throw new ValidationError('Cannot specify both "logging" and "loggingProperties". Use "logging" instead.', this);
+      throw new ValidationError('BothLoggingSpecified', 'Cannot specify both "logging" and "loggingProperties". Use "logging" instead.', this);
     }
 
     let loggingProperties;
