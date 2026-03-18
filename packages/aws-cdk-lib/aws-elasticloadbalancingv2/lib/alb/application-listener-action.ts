@@ -536,7 +536,7 @@ class AuthenticateJwtAction extends ListenerAction {
 
     // JWT authentication requires HTTPS listener
     if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
-      throw new UnscopedValidationError('JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
+      throw new UnscopedValidationError('JwtRequiresHttps', 'JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
     }
   }
 }
