@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "aws-cdk-mediapackagev2.assets": {
       "type": "cdk:asset-manifest",
@@ -369,7 +369,6 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -582,5 +581,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1111.0"
+  "minimumCliVersion": "2.1106.1"
 }
