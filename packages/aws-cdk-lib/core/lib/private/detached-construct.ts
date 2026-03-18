@@ -1,4 +1,5 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import type { ResourceEnvironment } from '../environment';
 import { UnscopedValidationError } from '../errors';
 
@@ -29,7 +30,7 @@ export abstract class DetachedConstruct extends Construct implements IConstruct 
     // to avoid TS2611 error (property vs accessor conflict with base class)
     Object.defineProperty(this, 'node', {
       enumerable: false,
-      get() { throw new UnscopedValidationError(errorMessage); },
+      get() { throw new UnscopedValidationError('DetachedConstructNodeAccess', errorMessage); },
     });
 
     // Despite extending Construct, DetachedConstruct doesn't work like one.
@@ -42,6 +43,6 @@ export abstract class DetachedConstruct extends Construct implements IConstruct 
   }
 
   public get env(): ResourceEnvironment {
-    throw new UnscopedValidationError(this.errorMessage);
+    throw new UnscopedValidationError('DetachedConstructEnvAccess', this.errorMessage);
   }
 }

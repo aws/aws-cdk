@@ -1,6 +1,6 @@
 import { StageDeployment } from './stage-deployment';
-import { StackSteps, Step } from './step';
-import * as cdk from '../../../core';
+import type { StackSteps, Step } from './step';
+import type * as cdk from '../../../core';
 
 /**
  * Construction properties for a `Wave`

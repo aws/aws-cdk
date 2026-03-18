@@ -1,10 +1,12 @@
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
-import { SecretValue, ValidationError } from 'aws-cdk-lib/core';
+import type { SecretValue } from 'aws-cdk-lib/core';
+import { ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { UserBase, UserBaseProps } from './user-base';
+import type { UserBaseProps } from './user-base';
+import { UserBase } from './user-base';
 
 const ELASTICACHE_PASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.PasswordUser');
 
@@ -92,7 +94,7 @@ export class PasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (props.passwords.length < 1 || props.passwords.length > 2) {
-      throw new ValidationError('Password authentication requires 1-2 passwords.', this);
+      throw new ValidationError('InvalidPasswordCount', 'Password authentication requires 1-2 passwords.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

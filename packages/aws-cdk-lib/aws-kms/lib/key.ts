@@ -1,25 +1,30 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Alias } from './alias';
-import { KeyLookupOptions } from './key-lookup';
-import { CfnKey, IKeyRef, KeyReference } from './kms.generated';
+import { KeyGrants } from './key-grants';
+import type { KeyLookupOptions } from './key-lookup';
+import type { IKeyRef, KeyReference } from './kms.generated';
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
+import type {
+  Duration,
+  IResource,
+  RemovalPolicy,
+  ResourceProps,
+} from '../../core';
 import {
   Arn,
   ArnFormat,
   ContextProvider,
-  Duration,
   FeatureFlags,
-  IResource,
   Lazy,
-  RemovalPolicy,
   Resource,
-  ResourceProps,
   Stack,
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -152,6 +157,14 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
+   * Collection of grant methods for a Key
+   */
+  @memoizedGetter
+  public get grants(): KeyGrants {
+    return KeyGrants.fromKey(this, this.trustAccountIdentities);
+  }
+
+  /**
    * Defines a new alias for the key.
    */
   public addAlias(aliasName: string): Alias {
@@ -175,7 +188,7 @@ abstract class KeyBase extends Resource implements IKey {
 
     if (!this.policy) {
       if (allowNoOp) { return { statementAdded: false }; }
-      throw new ValidationError(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
+      throw new ValidationError('UnableToAddStatementToResource', `Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
     }
 
     this.policy.addStatements(statement);
@@ -192,37 +205,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    // KMS verifies whether the principals included in its key policy actually exist.
-    // This is a problem if the stack the grantee is part of depends on the key stack
-    // (as it won't exist before the key policy is attempted to be created).
-    // In that case, make the account the resource policy principal
-    const granteeStackDependsOnKeyStack = this.granteeStackDependsOnKeyStack(grantee);
-    const principal = granteeStackDependsOnKeyStack
-      ? new iam.AccountPrincipal(granteeStackDependsOnKeyStack)
-      : grantee.grantPrincipal;
-
-    const crossAccountAccess = this.isGranteeFromAnotherAccount(grantee);
-    const crossRegionAccess = this.isGranteeFromAnotherRegion(grantee);
-    const crossEnvironment = crossAccountAccess || crossRegionAccess;
-    const grantOptions: iam.GrantWithResourceOptions = {
-      grantee,
-      actions,
-      resource: this,
-      resourceArns: [this.keyArn],
-      resourceSelfArns: crossEnvironment ? undefined : ['*'],
-    };
-    if (this.trustAccountIdentities && !crossEnvironment) {
-      return iam.Grant.addToPrincipalOrResource(grantOptions);
-    } else {
-      return iam.Grant.addToPrincipalAndResource({
-        ...grantOptions,
-        // if the key is used in a cross-environment matter,
-        // we can't access the Key ARN (they don't have physical names),
-        // so fall back to using '*'. ToDo we need to make this better... somehow
-        resourceArns: crossEnvironment ? ['*'] : [this.keyArn],
-        resourcePolicyPrincipal: principal,
-      });
-    }
+    return this.grants.actions(grantee, ...actions);
   }
 
   /**
@@ -231,7 +214,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+    return this.grants.decrypt(grantee);
   }
 
   /**
@@ -240,7 +223,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+    return this.grants.encrypt(grantee);
   }
 
   /**
@@ -249,7 +232,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS]);
+    return this.grants.encryptDecrypt(grantee);
   }
 
   /**
@@ -258,7 +241,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantSign(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+    return this.grants.sign(grantee);
   }
 
   /**
@@ -267,7 +250,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantVerify(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+    return this.grants.verify(grantee);
   }
 
   /**
@@ -276,7 +259,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...[...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS]);
+    return this.grants.signVerify(grantee);
   }
 
   /**
@@ -285,7 +268,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+    return this.grants.generateMac(grantee);
   }
 
   /**
@@ -294,63 +277,7 @@ abstract class KeyBase extends Resource implements IKey {
    * [disable-awslint:no-grants]
    */
   public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
-  }
-
-  /**
-   * Checks whether the grantee belongs to a stack that will be deployed
-   * after the stack containing this key.
-   *
-   * @param grantee the grantee to give permissions to
-   * @returns the account ID of the grantee stack if its stack does depend on this stack,
-   *   undefined otherwise
-   */
-  private granteeStackDependsOnKeyStack(grantee: iam.IGrantable): string | undefined {
-    const grantPrincipal = grantee.grantPrincipal;
-    // this logic should only apply to newly created
-    // (= not imported) resources
-    if (!iam.principalIsOwnedResource(grantPrincipal)) {
-      return undefined;
-    }
-    const keyStack = Stack.of(this);
-    const granteeStack = Stack.of(grantPrincipal);
-    if (keyStack === granteeStack) {
-      return undefined;
-    }
-
-    return granteeStack.dependencies.includes(keyStack)
-      ? granteeStack.account
-      : undefined;
-  }
-
-  private isGranteeFromAnotherRegion(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.region
-      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
-    }
-    return bucketStack.region !== identityStack.region;
-  }
-
-  private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
-    if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
-      return false;
-    }
-    const bucketStack = Stack.of(this);
-    const identityStack = Stack.of(grantee.grantPrincipal);
-
-    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE)) {
-      // if two compared stacks have the same region, this should return 'false' since it's from the
-      // same region; if two stacks have different region, then compare env.account
-      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
-    }
-    return bucketStack.account !== identityStack.account;
+    return this.grants.verifyMac(grantee);
   }
 }
 
@@ -472,6 +399,13 @@ export enum KeySpec {
    * Valid usage: SIGN_VERIFY
    */
   ML_DSA_87 = 'ML_DSA_87',
+
+  /**
+   * NIST-standard Edwards25519 (ed25519) elliptic curve key pair.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_EDWARDS25519 = 'ECC_NIST_EDWARDS25519',
 }
 
 /**
@@ -669,29 +603,19 @@ export class Key extends KeyBase {
    * @param keyArn the ARN of an existing KMS key.
    */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
-    class Import extends KeyBase {
-      public readonly keyArn = keyArn;
-      public readonly keyId: string;
-      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (!keyResourceName) {
+      throw new ValidationError('MustBeFormatArnPartitionKmsRegionAccountKeyKeyid', `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
+    }
+
+    return new ReferencedKey(scope, id, {
+      environmentFromArn: keyArn,
+      keyArn,
+      keyId: keyResourceName,
       // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
-      protected readonly trustAccountIdentities: boolean = true;
-
-      constructor(keyId: string, props: ResourceProps = {}) {
-        super(scope, id, props);
-
-        this.keyId = keyId;
-      }
-    }
-
-    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-    if (!keyResourceName) {
-      throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
-    }
-
-    return new Import(keyResourceName, {
-      environmentFromArn: keyArn,
+      trustAccountIdentities: true,
     });
   }
 
@@ -728,7 +652,7 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+      throw new ValidationError('PolicyDocumentParsingFailed', 'Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
         'This makes it impossible to create a mutable IKey from that Policy. ' +
         'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
@@ -787,7 +711,7 @@ export class Key extends KeyBase {
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
-      throw new ValidationError('All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
+      throw new ValidationError('Arguments', 'All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
@@ -880,25 +804,25 @@ export class Key extends KeyBase {
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
-      throw new ValidationError(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
+      throw new ValidationError('SpecValidUsage', `key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
     }
 
     if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on HMAC keys', this);
+      throw new ValidationError('RotationCannotBeEnabledOnHmac', 'key rotation cannot be enabled on HMAC keys', this);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on asymmetric keys', this);
+      throw new ValidationError('RotationCannotBeEnabledOnAsymmetric', 'key rotation cannot be enabled on asymmetric keys', this);
     }
 
     this.enableKeyRotation = props.enableKeyRotation;
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new ValidationError('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
+        throw new ValidationError('RotationPeriodCannotBeSpecifiedWhenRotationDisabled', '\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new ValidationError(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
+        throw new ValidationError('RotationPeriodValueMustBeBetween90And2650Days', `'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -911,7 +835,7 @@ export class Key extends KeyBase {
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new ValidationError('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
+        throw new ValidationError('TrustAccountIdentitiesCannotBeFalseWithDefaultKeyPolicies', '`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
       }
 
       this.trustAccountIdentities = true;
@@ -932,7 +856,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new ValidationError(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
+        throw new ValidationError('PendingWindowValueMustBeBetween7And30Days', `'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
       }
     }
 
@@ -1021,5 +945,44 @@ export class Key extends KeyBase {
       actions,
       principals: [new iam.AccountRootPrincipal()],
     }));
+  }
+}
+
+/**
+ * An instance of a referenced Key
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromKeyArn()` etc. used to declare an anonymous subclass of
+ * `KeyBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+@propertyInjectable
+class ReferencedKey extends KeyBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.ReferencedKey';
+  public keyArn: string;
+  public keyId: string;
+  protected policy?: iam.PolicyDocument | undefined;
+  protected trustAccountIdentities: boolean;
+
+  constructor(scope: Construct, id: string, props: {
+    environmentFromArn?: string;
+    keyArn: string;
+    keyId: string;
+    policy?: iam.PolicyDocument | undefined;
+    trustAccountIdentities: boolean;
+  }) {
+    super(scope, id, {
+      environmentFromArn: props.environmentFromArn,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.keyArn = props.keyArn;
+    this.keyId = props.keyId;
+    this.policy = props.policy;
+    this.trustAccountIdentities = props.trustAccountIdentities;
   }
 }

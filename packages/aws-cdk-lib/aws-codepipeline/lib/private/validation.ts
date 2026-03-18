@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cdk from '../../../core';
 import { UnscopedValidationError } from '../../../core';
 import { ActionCategory } from '../action';
-import { Artifact } from '../artifact';
-import { GitConfiguration, GitPullRequestFilter, GitPushFilter } from '../trigger';
+import type { Artifact } from '../artifact';
+import type { GitConfiguration, GitPullRequestFilter, GitPushFilter } from '../trigger';
 
 /**
  * Validation function that checks if the number of artifacts is within the given bounds
@@ -78,19 +78,19 @@ function validateAgainstRegex(scope: Construct | undefined, regex: RegExp, thing
   if (name !== undefined && !regex.test(name)) {
     const msg = `${thing} name must match regular expression: ${regex.toString()}, got '${name}'`;
     if (scope) {
-      throw new cdk.ValidationError(msg, scope);
+      throw new cdk.ValidationError('InvalidName', msg, scope);
     } else {
-      throw new cdk.UnscopedValidationError(msg);
+      throw new cdk.UnscopedValidationError('InvalidName', msg);
     }
   }
 }
 export function validateTriggers(gitConfiguration: GitConfiguration) {
   const { sourceAction, pushFilter, pullRequestFilter } = gitConfiguration;
   if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
-    throw new UnscopedValidationError(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
+    throw new UnscopedValidationError('ProviderActionPropertiesSourceAction', `provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
   }
   if (!pushFilter?.length && !pullRequestFilter?.length) {
-    throw new UnscopedValidationError(`must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+    throw new UnscopedValidationError('SpecifyGitPushFilterGit', `must specify either GitPushFilter or GitPullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
   }
   if (pushFilter !== undefined) {
     validateGitPushFilter(pushFilter, sourceAction.actionProperties.actionName);
@@ -102,7 +102,7 @@ export function validateTriggers(gitConfiguration: GitConfiguration) {
 
 function validateGitPushFilter(pushFilter: GitPushFilter[], actionName: string) {
   if (pushFilter.length > 3) {
-    throw new UnscopedValidationError(`length of GitPushFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
+    throw new UnscopedValidationError('MustBeLengthGitpushfilterSourceaction', `length of GitPushFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
   }
   pushFilter.forEach(filter => {
     validateGitFilterPropertiesLength(filter, actionName, 'GitPushFilter');
@@ -115,7 +115,7 @@ function validateGitPushFilter(pushFilter: GitPushFilter[], actionName: string) 
 
 function validateGitPullRequestFilter(pullRequestFilter: GitPullRequestFilter[], actionName: string) {
   if (pullRequestFilter.length > 3) {
-    throw new UnscopedValidationError(`length of GitPullRequestFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
+    throw new UnscopedValidationError('LengthGitPullRequestFilter', `length of GitPullRequestFilter for sourceAction with name '${actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
   }
   pullRequestFilter.forEach(filter =>{
     validateBranchesSpecified(filter, actionName);
@@ -133,6 +133,7 @@ function validateGitFilterPropertiesLength(filter: GitPushFilter | GitPullReques
 const validateBranchesSpecified = (filter: GitPullRequestFilter, actionName: string) => {
   if (!filter.branchesExcludes && !filter.branchesIncludes) {
     throw new UnscopedValidationError(
+      'MustSpecifyBranches',
       `must specify branches in GitPullRequestFilter for sourceAction with name '${actionName}'`,
     );
   }
@@ -146,6 +147,7 @@ const validateArrayLength = (
 ) => {
   if (array && array.length > MAX_FILTER_LENGTH) {
     throw new UnscopedValidationError(
+      'MaximumArrayLength',
       `maximum length of ${fieldName} in ${filterType} for sourceAction with name '${actionName}' is ${MAX_FILTER_LENGTH}, got ${array.length}`,
     );
   }
@@ -166,6 +168,7 @@ const hasTags = (filter: GitPushFilter ): boolean => {
 const validateFilePathsWithBranches = (filter: GitPushFilter | GitPullRequestFilter, actionName: string) => {
   if (!hasBranches(filter) && hasFilePaths(filter)) {
     throw new UnscopedValidationError(
+      'CannotSpecifyFilePathsWithoutBranches',
       `cannot specify filePaths without branches for sourceAction with name '${actionName}'`,
     );
   }
@@ -174,6 +177,7 @@ const validateFilePathsWithBranches = (filter: GitPushFilter | GitPullRequestFil
 const validateTagsOrBranchesExist = (filter: GitPushFilter, actionName: string) => {
   if (!hasTags(filter) && !hasBranches(filter)) {
     throw new UnscopedValidationError(
+      'MustSpecifyTagsOrBranches',
       `must specify either tags or branches in GitpushFilter for sourceAction with name '${actionName}'`,
     );
   }

@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnSlackChannelConfiguration, ISlackChannelConfigurationRef, SlackChannelConfigurationReference } from './chatbot.generated';
+import type { Construct } from 'constructs';
+import type { ISlackChannelConfigurationRef, SlackChannelConfigurationReference } from './chatbot.generated';
+import { CfnSlackChannelConfiguration } from './chatbot.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -231,7 +232,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
     const resourceName = cdk.Arn.extractResourceName(slackChannelConfigurationArn, 'chat-configuration');
 
     if (!cdk.Token.isUnresolved(slackChannelConfigurationArn) && !re.test(resourceName)) {
-      throw new cdk.ValidationError('The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
+      throw new cdk.ValidationError('InvalidSlackChannelArn', 'The ARN of a Slack integration must be in the form: arn:<partition>:chatbot:<region>:<account>:chat-configuration/slack-channel/<slackChannelName>', scope);
     }
 
     class Import extends SlackChannelConfigurationBase {

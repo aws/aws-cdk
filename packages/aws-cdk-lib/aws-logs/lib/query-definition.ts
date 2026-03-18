@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Properties for a QueryString
@@ -241,7 +241,7 @@ export class QueryDefinition extends Resource {
     addConstructMetadata(this, props);
 
     if (props.queryString.statsStatementsLength && props.queryString.statsStatementsLength > 2) {
-      throw new ValidationError(`CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
+      throw new ValidationError('CloudWatchLogsInsightsSupports', `CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
     }
 
     if (props.queryString.hasStatsAndStatsStatements) {

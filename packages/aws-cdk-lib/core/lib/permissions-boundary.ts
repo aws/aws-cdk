@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 export const PERMISSIONS_BOUNDARY_CONTEXT_KEY = '@aws-cdk/core:permissionsBoundary';
 /**

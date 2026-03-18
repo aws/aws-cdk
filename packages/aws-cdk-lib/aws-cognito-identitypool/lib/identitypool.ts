@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
-import { CfnIdentityPool, CfnIdentityPoolRoleAttachment, IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
-import { Role, FederatedPrincipal, IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
-import { Resource, IResource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IUserPoolAuthenticationProvider } from './identitypool-user-pool-authentication-provider';
+import type { IdentityPoolReference, IIdentityPoolRef, IUserPool, IUserPoolClient } from '../../aws-cognito';
+import { CfnIdentityPool, CfnIdentityPoolRoleAttachment } from '../../aws-cognito';
+import type { IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../aws-iam';
+import { Role, FederatedPrincipal } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Stack, ArnFormat, Lazy, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -388,15 +391,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const pool = Stack.of(scope).splitArn(identityPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
     const res = pool.resourceName || '';
     if (!res) {
-      throw new ValidationError('Invalid Identity Pool ARN', scope);
+      throw new ValidationError('InvalidIdentityPool', 'Invalid Identity Pool ARN', scope);
     }
     if (!Token.isUnresolved(res)) {
       const idParts = res.split(':');
       if (!(idParts.length === 2)) {
-        throw new ValidationError('Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>', scope);
+        throw new ValidationError('InvalidIdentityPoolIdIdentity', 'Invalid Identity Pool Id: Identity Pool Ids must follow the format <region>:<id>', scope);
       }
       if (!Token.isUnresolved(pool.region) && idParts[0] !== pool.region) {
-        throw new ValidationError('Invalid Identity Pool Id: Region in Identity Pool Id must match stack region', scope);
+        throw new ValidationError('InvalidIdentityPoolIdRegion', 'Invalid Identity Pool Id: Region in Identity Pool Id must match stack region', scope);
       }
     }
     class ImportedIdentityPool extends Resource implements IIdentityPool {
@@ -646,7 +649,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       } else {
         const providerUrl = prop.providerUrl.value;
         if (Token.isUnresolved(providerUrl)) {
-          throw new UnscopedValidationError('mappingKey must be provided when providerUrl.value is a token');
+          throw new UnscopedValidationError('MustBeMappingkeyProvidedProviderurl', 'mappingKey must be provided when providerUrl.value is a token');
         }
         mappingKey = providerUrl;
       }
@@ -658,7 +661,7 @@ class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAt
       };
       if (roleMapping.type === 'Rules') {
         if (!prop.rules) {
-          throw new UnscopedValidationError('IdentityPoolRoleMapping.rules is required when useToken is false');
+          throw new UnscopedValidationError('IdentityPoolRoleMappingRules', 'IdentityPoolRoleMapping.rules is required when useToken is false');
         }
         roleMapping.rulesConfiguration = {
           rules: prop.rules.map(rule => {

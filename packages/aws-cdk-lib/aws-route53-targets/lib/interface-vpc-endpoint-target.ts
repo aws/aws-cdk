@@ -1,5 +1,5 @@
-import * as ec2 from '../../aws-ec2';
-import * as route53 from '../../aws-route53';
+import type * as ec2 from '../../aws-ec2';
+import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 
 /**

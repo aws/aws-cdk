@@ -1,10 +1,12 @@
 import { createHash } from 'crypto';
-import { Construct } from 'constructs';
-import { CfnConfigRule, ConfigRuleReference, IConfigRuleRef } from './config.generated';
+import type { Construct } from 'constructs';
+import type { ConfigRuleReference, IConfigRuleRef } from './config.generated';
+import { CfnConfigRule } from './config.generated';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import { ArnFormat, IResource, Lazy, Resource, Stack, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -106,7 +108,7 @@ abstract class RuleBase extends Resource implements IRule {
   public get configRuleRef(): ConfigRuleReference {
     const self = this;
     return {
-      get configRuleArn(): string { throw new ValidationError('Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
+      get configRuleArn(): string { throw new ValidationError('CannotConfigRuleCreatedWithout', 'Cannot get the ARN of this ConfigRule; it has been created without knowledge of its id', self); },
       configRuleName: this.configRuleName,
     };
   }
@@ -453,7 +455,7 @@ export class CustomRule extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.configurationChanges && !props.periodic) {
-      throw new ValidationError('At least one of `configurationChanges` or `periodic` must be set to true.', this);
+      throw new ValidationError('MustBeLeastTrue', 'At least one of `configurationChanges` or `periodic` must be set to true.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];
@@ -577,10 +579,10 @@ export class CustomPolicy extends RuleNew {
     addConstructMetadata(this, props);
 
     if (!props.policyText || [...props.policyText].length === 0) {
-      throw new ValidationError('Policy Text cannot be empty.', this);
+      throw new ValidationError('PolicyTextCannotEmpty', 'Policy Text cannot be empty.', this);
     }
     if ([...props.policyText].length > 10000) {
-      throw new ValidationError('Policy Text is limited to 10,000 characters or less.', this);
+      throw new ValidationError('PolicyTextLimitedCharactersLess', 'Policy Text is limited to 10,000 characters or less.', this);
     }
 
     const sourceDetails: SourceDetail[] = [];

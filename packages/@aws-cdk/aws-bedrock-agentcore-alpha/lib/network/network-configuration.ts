@@ -1,8 +1,8 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
-import { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { CfnBrowserCustom, CfnCodeInterpreterCustom, CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 // Internal Libs
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * VPC configuration properties.

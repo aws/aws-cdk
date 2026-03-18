@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
-import { Grant, IGrantable } from '../../aws-iam';
-import { IPublicHostedZone } from '../../aws-route53';
+import type { IGrantable } from '../../aws-iam';
+import { Grant } from '../../aws-iam';
+import type { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
-import { ArnFormat, IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
+import type { IResource, SecretValue } from '../../core';
+import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
+import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * An email identity
@@ -425,7 +427,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new ValidationError(`Invalid email identity ARN: ${emailIdentityArn}`, scope);
+      throw new ValidationError('InvalidEmailIdentity', `Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;

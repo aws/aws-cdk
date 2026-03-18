@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, ResourceProps, Stack, Token, ValidationError } from '../../core';
+import type { Duration, IResolvable, IResource, RemovalPolicy, ResourceProps } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Fn, Resource, Stack, Token, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
+import type { IStreamRef, StreamReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -901,13 +903,25 @@ export class Stream extends StreamBase {
     });
   }
 
-  public readonly streamArn: string;
-  public readonly streamName: string;
-  public readonly encryptionKey?: kms.IKey;
-
   private readonly stream: CfnStream;
 
+  public readonly encryptionKey?: kms.IKey;
+
   protected readonly autoCreatePolicy = true;
+
+  @memoizedGetter
+  public get streamArn(): string {
+    return this.getResourceArnAttribute(this.stream.attrArn, {
+      service: 'kinesis',
+      resource: 'stream',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get streamName(): string {
+    return this.getResourceNameAttribute(this.stream.ref);
+  }
 
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
@@ -920,7 +934,7 @@ export class Stream extends StreamBase {
     const streamMode = props.streamMode;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
-      throw new ValidationError(`streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
+      throw new ValidationError('StreamModeSet', `streamMode must be set to ${StreamMode.PROVISIONED} (default) when specifying shardCount`, this);
     }
     if ((streamMode === StreamMode.PROVISIONED || streamMode === undefined) && shardCount === undefined) {
       shardCount = 1;
@@ -929,7 +943,7 @@ export class Stream extends StreamBase {
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
-        throw new ValidationError(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
+        throw new ValidationError('RetentionPeriodHoursReceived', `retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`, this);
       }
     }
 
@@ -937,12 +951,12 @@ export class Stream extends StreamBase {
 
     if (props.shardLevelMetrics) {
       if (props.shardLevelMetrics.includes(ShardLevelMetrics.ALL) && props.shardLevelMetrics.length > 1) {
-        throw new ValidationError('`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
+        throw new ValidationError('ShardLevelMetricsCannotInclude', '`shardLevelMetrics` cannot include `ShardLevelMetrics.ALL` together with individual metrics, use either `ShardLevelMetrics.ALL` alone or specify individual metrics.', this);
       }
       // Check for duplicate items in shardLevelMetrics
       const uniqueMetrics = new Set(props.shardLevelMetrics);
       if (uniqueMetrics.size !== props.shardLevelMetrics.length) {
-        throw new ValidationError('shardLevelMetrics cannot contain duplicate items.', this);
+        throw new ValidationError('ShardLevelMetricsCannotContain', 'shardLevelMetrics cannot contain duplicate items.', this);
       }
     }
 
@@ -959,13 +973,6 @@ export class Stream extends StreamBase {
         : undefined),
     });
     this.stream.applyRemovalPolicy(props.removalPolicy);
-
-    this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
-      service: 'kinesis',
-      resource: 'stream',
-      resourceName: this.physicalName,
-    });
-    this.streamName = this.getResourceNameAttribute(this.stream.ref);
 
     this.encryptionKey = encryptionKey;
   }
@@ -1006,7 +1013,7 @@ export class Stream extends StreamBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== StreamEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
+      throw new ValidationError('EncryptionkeySpecified', `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`, this);
     }
 
     if (encryptionType === StreamEncryption.UNENCRYPTED) {
@@ -1030,7 +1037,7 @@ export class Stream extends StreamBase {
       return { encryptionKey, streamEncryption };
     }
 
-    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 }
 

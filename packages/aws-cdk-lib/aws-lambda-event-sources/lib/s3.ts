@@ -1,5 +1,5 @@
-import * as lambda from '../../aws-lambda';
-import * as s3 from '../../aws-s3';
+import type * as lambda from '../../aws-lambda';
+import type * as s3 from '../../aws-s3';
 import * as notifs from '../../aws-s3-notifications';
 
 export interface S3EventSourceProps {

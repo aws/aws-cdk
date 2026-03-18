@@ -1,13 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Construct, IConstruct } from 'constructs';
-import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ConstructInfo } from './runtime-info';
+import { constructInfoFromConstruct } from './runtime-info';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Annotations } from '../annotations';
 import { Stack } from '../stack';
-import { ISynthesisSession } from '../stack-synthesizers';
-import { IInspectable, TreeInspector } from '../tree';
+import type { ISynthesisSession } from '../stack-synthesizers';
+import type { IInspectable } from '../tree';
+import { TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
 import { AssumptionError } from '../errors';
 
@@ -266,7 +269,7 @@ class FragmentedTreeWriter {
 
     if (parent === undefined) {
       if (this.forest.length > 0) {
-        throw new AssumptionError('Can only add exactly one node without a parent');
+        throw new AssumptionError('OnlyOneNodeWithoutParent', 'Can only add exactly one node without a parent');
       }
 
       this.addNewTree(node, this.mainTreePointer);
@@ -311,7 +314,7 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
-        throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
+        throw new AssumptionError('CouldNotFindParent', `Could not find parent of ${JSON.stringify(parent)}`);
       }
 
       const subtreeReference: SubTreeReference = {
@@ -362,7 +365,7 @@ class FragmentedTreeWriter {
     if (tree) {
       return tree;
     }
-    throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+    throw new AssumptionError('CouldNotFindTreeForNode', `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
   }
 }
 

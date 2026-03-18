@@ -2,15 +2,16 @@
  * Get access to construct internals that we need but got removed from the Stages PR.
  */
 import * as path from 'path';
-import { Construct, IConstruct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { App, Stage, ValidationError } from '../../../core';
-import * as cxapi from '../../../cx-api';
+import type * as cxapi from '../../../cx-api';
 
 export function appOf(construct: IConstruct): App {
   const root = Node.of(construct).root;
 
   if (!App.isApp(root)) {
-    throw new ValidationError(`Construct must be created under an App, but is not: ${Node.of(construct).path}`, construct);
+    throw new ValidationError('ConstructCreatedApp', `Construct must be created under an App, but is not: ${Node.of(construct).path}`, construct);
   }
 
   return root;

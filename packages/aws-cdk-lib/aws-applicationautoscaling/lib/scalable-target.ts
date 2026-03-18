@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
-import { Schedule } from './schedule';
-import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
-import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
+import type { Schedule } from './schedule';
+import type { BasicStepScalingPolicyProps } from './step-scaling-policy';
+import { StepScalingPolicy } from './step-scaling-policy';
+import type { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
+import { TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
-import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
+import type { IResource, TimeZone } from '../../core';
+import { Lazy, Resource, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IScalableTargetRef, ScalableTargetReference } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
+import type { IScalableTargetRef, ScalableTargetReference } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 export interface IScalableTarget extends IResource, IScalableTargetRef {
   /**
@@ -108,7 +111,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
 
       public get scalableTargetRef(): ScalableTargetReference {
-        throw new ValidationError('Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
+        throw new ValidationError('CannotAccessScalableTargetRef', 'Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
       }
     }
     return new Import(scope, id);
@@ -168,19 +171,19 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
     withResolved(props.maxCapacity, max => {
       if (max < 0) {
-        throw new ValidationError(`maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
+        throw new ValidationError('MaxCapacityCannotNegative', `maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, min => {
       if (min < 0) {
-        throw new ValidationError(`minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
+        throw new ValidationError('MinCapacityCannotNegative', `minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
       if (max < min) {
-        throw new ValidationError(`minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
+        throw new ValidationError('MinCapacity', `minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
       }
     });
 
@@ -218,7 +221,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   @MethodMetadata()
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new ValidationError(`You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
+      throw new ValidationError('SupplyLeastOneMinCapacity', `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

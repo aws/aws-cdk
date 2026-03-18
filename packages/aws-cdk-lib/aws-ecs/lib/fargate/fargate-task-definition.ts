@@ -1,18 +1,20 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Tokenization, Token, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
-import {
+import type {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
-  Compatibility,
   ITaskDefinition,
+} from '../base/task-definition';
+import {
+  Compatibility,
   NetworkMode,
   PidMode,
   TaskDefinition,
 } from '../base/task-definition';
-import { RuntimePlatform } from '../runtime-platform';
+import type { RuntimePlatform } from '../runtime-platform';
 
 /**
  * The properties for a task definition.
@@ -198,20 +200,20 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
 
     // eslint-disable-next-line max-len
     if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
-      throw new ValidationError('Ephemeral storage size must be between 21GiB and 200GiB', this);
+      throw new ValidationError('MustBeEphemeralStorageSize', 'Ephemeral storage size must be between 21GiB and 200GiB', this);
     }
 
     if (props.pidMode) {
       if (!props.runtimePlatform?.operatingSystemFamily) {
-        throw new ValidationError('Specifying \'pidMode\' requires that operating system family also be provided.', this);
+        throw new ValidationError('SpecifyingPidModeRequires', 'Specifying \'pidMode\' requires that operating system family also be provided.', this);
       }
       if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
-        throw new ValidationError('\'pidMode\' is not supported for Windows containers.', this);
+        throw new ValidationError('PidModeNotSupportedWindowsContainers', '\'pidMode\' is not supported for Windows containers.', this);
       }
       if (!Token.isUnresolved(props.pidMode)
           && props.runtimePlatform?.operatingSystemFamily?.isLinux()
           && props.pidMode !== PidMode.TASK) {
-        throw new ValidationError(`\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`, this);
+        throw new ValidationError('PidModeOnlyLinux', `\'pidMode\' can only be set to \'${PidMode.TASK}\' for Linux Fargate containers, got: \'${props.pidMode}\'.`, this);
       }
     }
 

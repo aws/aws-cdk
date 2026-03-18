@@ -1,12 +1,13 @@
 import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Lazy, Resource, IResolvable, Token, ValidationError } from 'aws-cdk-lib/core';
+import type * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { IResolvable } from 'aws-cdk-lib/core';
+import { Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IApp } from './app';
-import { IBranch } from './branch';
+import type { Construct } from 'constructs';
+import type { IApp } from './app';
+import type { IBranch } from './branch';
 
 /**
  * Options to add a domain to an application
@@ -138,10 +139,10 @@ export class Domain extends Resource {
 
     const domainName = props.domainName || id;
     if (!Token.isUnresolved(domainName) && domainName.length > 255) {
-      throw new ValidationError(`Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
+      throw new ValidationError('DomainNameTooLong', `Domain name must be 255 characters or less, got: ${domainName.length} characters.`, this);
     }
     if (!Token.isUnresolved(domainName) && !/^(((?!-)[A-Za-z0-9-]{0,62}[A-Za-z0-9])\.)+((?!-)[A-Za-z0-9-]{1,62}[A-Za-z0-9])(\.)?$/.test(domainName)) {
-      throw new ValidationError(`Domain name must be a valid hostname, got: ${domainName}.`, this);
+      throw new ValidationError('InvalidDomainName', `Domain name must be a valid hostname, got: ${domainName}.`, this);
     }
 
     const domain = new CfnDomain(this, 'Resource', {

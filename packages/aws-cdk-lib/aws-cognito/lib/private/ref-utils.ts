@@ -1,14 +1,14 @@
 import { UnscopedValidationError } from '../../../core';
-import { IUserPoolIdentityProviderRef, IUserPoolRef } from '../cognito.generated';
-import { IUserPool } from '../user-pool';
-import { IUserPoolIdentityProvider } from '../user-pool-idp';
+import type { IUserPoolIdentityProviderRef, IUserPoolRef } from '../cognito.generated';
+import type { IUserPool } from '../user-pool';
+import type { IUserPoolIdentityProvider } from '../user-pool-idp';
 
 /**
  * Converts an IUserPoolRef to IUserPool, validating that it implements the full interface
  */
 export function toIUserPool(ref: IUserPoolRef): IUserPool {
   if (!isIUserPool(ref)) {
-    throw new UnscopedValidationError(`'userPool' instance should implement IUserPool, but doesn't: ${ref.constructor.name}`);
+    throw new UnscopedValidationError('UserpoolInstanceShouldImplement', `'userPool' instance should implement IUserPool, but doesn't: ${ref.constructor.name}`);
   }
   return ref;
 }

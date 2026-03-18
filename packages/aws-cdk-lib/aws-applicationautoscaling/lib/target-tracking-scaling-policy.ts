@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
+import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
  * Base interface for target tracking props
@@ -124,11 +124,11 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new ValidationError('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
+      throw new ValidationError('ExactlyOneCustomMetricPredefined', 'Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new ValidationError('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
+      throw new ValidationError('DirectMetricsSupportedTargetTracking', 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
     }
 
     super(scope, id);
@@ -164,7 +164,7 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new ValidationError(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+    throw new ValidationError('CannotStatistic', `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
   return {

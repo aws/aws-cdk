@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { TaskDefinition } from './base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
+import type { Construct } from 'constructs';
+import type { TaskDefinition } from './base/task-definition';
+import type { ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
+import { ContainerDefinition } from './container-definition';
 import { ContainerImage } from './container-image';
-import { CfnTaskDefinition } from './ecs.generated';
-import { LogDriverConfig } from './log-drivers/log-driver';
+import type { CfnTaskDefinition } from './ecs.generated';
+import type { LogDriverConfig } from './log-drivers/log-driver';
 import * as iam from '../../aws-iam';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
@@ -230,7 +231,7 @@ export class FirelensLogRouter extends ContainerDefinition {
     const options = props.firelensConfig.options;
     if (options) {
       if ((options.configFileValue && options.configFileType === undefined) || (options.configFileValue === undefined && options.configFileType)) {
-        throw new cdk.ValidationError('configFileValue and configFileType must be set together to define a custom config source', this);
+        throw new cdk.ValidationError('ConfigFileMismatch', 'configFileValue and configFileType must be set together to define a custom config source', this);
       }
 
       const hasConfig = (options.configFileValue !== undefined);

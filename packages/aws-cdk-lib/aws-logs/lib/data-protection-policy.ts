@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { IBucketRef } from '../../aws-s3';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../aws-s3';
 import { Stack, UnscopedValidationError } from '../../core';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
@@ -11,7 +11,7 @@ export class DataProtectionPolicy {
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new UnscopedValidationError('DataIdentifier cannot be empty');
+      throw new UnscopedValidationError('DataidentifierCannotEmpty', 'DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }

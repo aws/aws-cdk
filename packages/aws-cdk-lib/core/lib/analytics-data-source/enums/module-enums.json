@@ -45,6 +45,17 @@
       "DUAL_STACK"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/common/types.ts": {
+    "CustomClaimValueType": [
+      "STRING",
+      "STRING_ARRAY"
+    ],
+    "CustomClaimOperator": [
+      "EQUALS",
+      "CONTAINS",
+      "CONTAINS_ANY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway-base.ts": {
     "GatewayExceptionLevel": [
       "DEBUG"
@@ -54,6 +65,12 @@
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
       "AWS_IAM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.ts": {
@@ -99,7 +116,19 @@
       "OPENAPI_SCHEMA",
       "SMITHY_MODEL",
       "LAMBDA",
-      "MCP_SERVER"
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-configuration.ts": {
+    "ApiGatewayHttpMethod": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
@@ -107,6 +136,7 @@
       "SUMMARIZATION",
       "SEMANTIC",
       "USER_PREFERENCE",
+      "EPISODIC",
       "CUSTOM"
     ]
   },
@@ -300,111 +330,6 @@
       "disable"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
-    "AccessScopeType": [
-      "namespace",
-      "cluster"
-    ],
-    "AccessEntryType": [
-      "STANDARD",
-      "FARGATE_LINUX",
-      "EC2_LINUX",
-      "EC2_WINDOWS"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
-    "AlbScheme": [
-      "internal",
-      "internet-facing"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts": {
-    "ClusterLoggingTypes": [
-      "api",
-      "audit",
-      "authenticator",
-      "controllerManager",
-      "scheduler"
-    ],
-    "IpFamily": [
-      "ipv4",
-      "ipv6"
-    ],
-    "NodeType": [
-      "Standard",
-      "GPU",
-      "INFERENTIA",
-      "TRAINIUM"
-    ],
-    "CpuArch": [
-      "arm64",
-      "x86_64"
-    ],
-    "CoreDnsComputeType": [
-      "ec2",
-      "fargate"
-    ],
-    "DefaultCapacityType": [
-      0,
-      1,
-      2
-    ],
-    "MachineImageType": [
-      0,
-      1
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/k8s-patch.ts": {
-    "PatchType": [
-      "json",
-      "merge",
-      "strategic"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts": {
-    "NodegroupAmiType": [
-      "AL2_x86_64",
-      "AL2_x86_64_GPU",
-      "AL2_ARM_64",
-      "BOTTLEROCKET_ARM_64",
-      "BOTTLEROCKET_x86_64",
-      "BOTTLEROCKET_ARM_64_NVIDIA",
-      "BOTTLEROCKET_x86_64_NVIDIA",
-      "BOTTLEROCKET_ARM_64_FIPS",
-      "BOTTLEROCKET_x86_64_FIPS",
-      "WINDOWS_CORE_2019_x86_64",
-      "WINDOWS_CORE_2022_x86_64",
-      "WINDOWS_FULL_2019_x86_64",
-      "WINDOWS_FULL_2022_x86_64",
-      "AL2023_x86_64_STANDARD",
-      "AL2023_x86_64_NEURON",
-      "AL2023_x86_64_NVIDIA",
-      "AL2023_ARM_64_NVIDIA",
-      "AL2023_ARM_64_STANDARD"
-    ],
-    "CapacityType": [
-      "SPOT",
-      "ON_DEMAND",
-      "CAPACITY_BLOCK"
-    ],
-    "TaintEffect": [
-      "NO_SCHEDULE",
-      "PREFER_NO_SCHEDULE",
-      "NO_EXECUTE"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/service-account.ts": {
-    "IdentityType": [
-      "IRSA",
-      "POD_IDENTITY"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/user-data.ts": {
-    "LifecycleLabel": [
-      "OnDemand",
-      "Ec2Spot"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
     "UserEngine": [
       "valkey",
@@ -418,7 +343,8 @@
       "valkey_8",
       "redis",
       "redis_7",
-      "memcached"
+      "memcached",
+      "memcached_1.6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
@@ -539,6 +465,23 @@
       "SUCCEEDED",
       "FAILED",
       "ERROR"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/partition-projection.ts": {
+    "PartitionProjectionType": [
+      "integer",
+      "date",
+      "enum",
+      "injected"
+    ],
+    "DateIntervalUnit": [
+      "YEARS",
+      "MONTHS",
+      "WEEKS",
+      "DAYS",
+      "HOURS",
+      "MINUTES",
+      "SECONDS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.ts": {
@@ -1239,12 +1182,6 @@
       "DryRun"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
-    "PropertyMergeStrategy": [
-      "override",
-      "merge"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
     "S3LogsDeliveryPermissionsVersion": [
       "V1",
@@ -1262,7 +1199,18 @@
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts": {
     "SecurityPolicy": [
       "TLS_1_0",
-      "TLS_1_2"
+      "TLS_1_2",
+      "SecurityPolicy_TLS13_1_3_2025_09",
+      "SecurityPolicy_TLS13_1_3_FIPS_2025_09",
+      "SecurityPolicy_TLS13_1_2_PQ_2025_09",
+      "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09",
+      "SecurityPolicy_TLS13_2025_EDGE",
+      "SecurityPolicy_TLS12_PFS_2025_EDGE",
+      "SecurityPolicy_TLS12_2018_EDGE"
+    ],
+    "EndpointAccessMode": [
+      "STRICT",
+      "BASIC"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
@@ -1698,6 +1646,12 @@
       "REQUEST_RESPONSE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source.ts": {
+    "DataSourceMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
     "Visibility": [
       "GLOBAL",
@@ -1723,7 +1677,25 @@
       "DEBUG",
       "ALL"
     ],
+    "DataSourceLevelMetricsBehavior": [
+      "FULL_REQUEST_DATA_SOURCE_METRICS",
+      "PER_DATA_SOURCE_METRICS"
+    ],
+    "OperationLevelMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "ResolverLevelMetricsBehavior": [
+      "FULL_REQUEST_RESOLVER_METRICS",
+      "PER_RESOLVER_METRICS"
+    ],
     "IntrospectionConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/resolver.ts": {
+    "ResolverMetricsConfig": [
       "ENABLED",
       "DISABLED"
     ]
@@ -1743,6 +1715,11 @@
     "Monitoring": [
       0,
       1
+    ],
+    "DeletionProtection": [
+      "none",
+      "prevent-force-deletion",
+      "prevent-all-deletion"
     ],
     "OnDemandAllocationStrategy": [
       "prioritized",
@@ -2792,6 +2769,9 @@
       "ACCESSED_AND_THROTTLED_KEYS",
       "THROTTLED_KEYS"
     ],
+    "GlobalTableSettingsReplicationMode": [
+      "ENABLED"
+    ],
     "ProjectionType": [
       "KEYS_ONLY",
       "INCLUDE",
@@ -2857,7 +2837,8 @@
     "AcceleratorType": [
       "gpu",
       "fpga",
-      "inference"
+      "inference",
+      "media"
     ],
     "AcceleratorManufacturer": [
       "amazon-web-services",
@@ -2878,7 +2859,14 @@
       "h100",
       "inferentia",
       "k520",
-      "t4g"
+      "t4g",
+      "l40s",
+      "l4",
+      "gaudi-hl-205",
+      "inferentia2",
+      "trainium",
+      "trainium2",
+      "u30"
     ],
     "BareMetal": [
       "included",
@@ -4115,7 +4103,9 @@
     ],
     "DeploymentStrategy": [
       "ROLLING",
-      "BLUE_GREEN"
+      "BLUE_GREEN",
+      "LINEAR",
+      "CANARY"
     ],
     "PropagatedTagSource": [
       "SERVICE",
@@ -4189,6 +4179,10 @@
     "PropagateManagedInstancesTags": [
       "CAPACITY_PROVIDER",
       "NONE"
+    ],
+    "CapacityOptionType": [
+      "ON_DEMAND",
+      "SPOT"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/container-definition.ts": {
@@ -4408,6 +4402,114 @@
       "elasticfilesystem:ClientRootAccess"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.ts": {
+    "AccessScopeType": [
+      "namespace",
+      "cluster"
+    ],
+    "AccessEntryType": [
+      "STANDARD",
+      "FARGATE_LINUX",
+      "EC2_LINUX",
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.ts": {
+    "AlbScheme": [
+      "internal",
+      "internet-facing"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "ClusterLoggingTypes": [
+      "api",
+      "audit",
+      "authenticator",
+      "controllerManager",
+      "scheduler"
+    ],
+    "IpFamily": [
+      "ipv4",
+      "ipv6"
+    ],
+    "NodeType": [
+      "Standard",
+      "GPU",
+      "INFERENTIA",
+      "TRAINIUM"
+    ],
+    "CpuArch": [
+      "arm64",
+      "x86_64"
+    ],
+    "CoreDnsComputeType": [
+      "ec2",
+      "fargate"
+    ],
+    "DefaultCapacityType": [
+      0,
+      1,
+      2
+    ],
+    "MachineImageType": [
+      0,
+      1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-patch.ts": {
+    "PatchType": [
+      "json",
+      "merge",
+      "strategic"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.ts": {
+    "NodegroupAmiType": [
+      "AL2_x86_64",
+      "AL2_x86_64_GPU",
+      "AL2_ARM_64",
+      "BOTTLEROCKET_ARM_64",
+      "BOTTLEROCKET_x86_64",
+      "BOTTLEROCKET_ARM_64_NVIDIA",
+      "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
+      "WINDOWS_CORE_2019_x86_64",
+      "WINDOWS_CORE_2022_x86_64",
+      "WINDOWS_FULL_2019_x86_64",
+      "WINDOWS_FULL_2022_x86_64",
+      "AL2023_x86_64_STANDARD",
+      "AL2023_x86_64_NEURON",
+      "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
+      "AL2023_ARM_64_STANDARD"
+    ],
+    "CapacityType": [
+      "SPOT",
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
+    ],
+    "TaintEffect": [
+      "NO_SCHEDULE",
+      "PREFER_NO_SCHEDULE",
+      "NO_EXECUTE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.ts": {
+    "IdentityType": [
+      "IRSA",
+      "POD_IDENTITY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/user-data.ts": {
+    "LifecycleLabel": [
+      "OnDemand",
+      "Ec2Spot"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessScopeType": [
       "namespace",
@@ -4417,7 +4519,10 @@
       "STANDARD",
       "FARGATE_LINUX",
       "EC2_LINUX",
-      "EC2_WINDOWS"
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.ts": {
@@ -4818,6 +4923,12 @@
       2
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
+    "SubRecordType": [
+      "JSON",
+      "DELIMITED"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {
     "ParquetWriterVersion": [
       "V1",
@@ -4845,7 +4956,8 @@
       "SM2",
       "ML_DSA_44",
       "ML_DSA_65",
-      "ML_DSA_87"
+      "ML_DSA_87",
+      "ECC_NIST_EDWARDS25519"
     ],
     "KeyUsage": [
       "ENCRYPT_DECRYPT",
@@ -4924,8 +5036,15 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.ts": {
+    "EventSourceMappingLogLevel": [
+      "INFO",
+      "DEBUG",
+      "WARN"
+    ],
     "MetricType": [
-      "EventCount"
+      "EventCount",
+      "ErrorCount",
+      "KafkaMetrics"
     ],
     "StartingPosition": [
       "TRIM_HORIZON",
@@ -5179,7 +5298,8 @@
     ],
     "NetworkType": [
       "IPV4",
-      "DUAL"
+      "DUAL",
+      "IPV6"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/props.ts": {
@@ -6090,11 +6210,12 @@
       1
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts": {
+  "aws-cdk/packages/aws-cdk-lib/core/lib/metadata-type.ts": {
     "MetadataType": [
       "aws:cdk:analytics:construct",
       "aws:cdk:analytics:method",
-      "aws:cdk:analytics:featureflag"
+      "aws:cdk:analytics:featureflag",
+      "aws:cdk:analytics:mixin"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-reference.ts": {
@@ -6137,25 +6258,21 @@
       "failure"
     ]
   },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/load-balancer.ts": {
-    "LoadBalancerIpAddressType": [
-      "ipv4",
-      "dualstack",
-      "dualstack-without-public-ipv4"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/context/vpc.ts": {
-    "VpcSubnetGroupType": [
-      "Public",
-      "Private",
-      "Isolated"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/metadata.ts": {
+  "aws-cdk/packages/aws-cdk-lib/cx-api/lib/legacy-moved.ts": {
     "SynthesisMessageLevel": [
       "info",
       "warning",
       "error"
+    ],
+    "VpcSubnetGroupType": [
+      "Public",
+      "Private",
+      "Isolated"
+    ],
+    "LoadBalancerIpAddressType": [
+      "ipv4",
+      "dualstack",
+      "dualstack-without-public-ipv4"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/cx-api/lib/private/flag-modeling.ts": {

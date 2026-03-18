@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import { apexDomain } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as route53 from '../../aws-route53';
-import { IResource, Token, Tags, ValidationError } from '../../core';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as route53 from '../../aws-route53';
+import type { IResource } from '../../core';
+import { Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * Name tag constant
@@ -325,7 +326,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new ValidationError('Domain name must be 64 characters or less', this);
+      throw new ValidationError('DomainNameCharactersLess', 'Domain name must be 64 characters or less', this);
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
@@ -389,13 +390,13 @@ function renderDomainValidation(scope: Construct, validation: CertificateValidat
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new ValidationError('When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
+          throw new ValidationError('UsingTokensDomainNames', 'When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
         }
         domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
       }
       break;
     default:
-      throw new ValidationError(`Unknown validation method ${validation.method}`, scope);
+      throw new ValidationError('UnknownValidationMethod', `Unknown validation method ${validation.method}`, scope);
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;

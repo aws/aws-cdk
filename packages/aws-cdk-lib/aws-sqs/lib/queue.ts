@@ -1,11 +1,14 @@
-import { Construct } from 'constructs';
-import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
+import type { Construct } from 'constructs';
+import type { IQueue, QueueAttributes } from './queue-base';
+import { QueueBase, QueueEncryption } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateQueueProps, validateRedriveAllowPolicy } from './validate-queue-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import type { Duration } from '../../core';
+import { RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -333,10 +336,10 @@ export class Queue extends QueueBase {
         } else {
           if (typeof attrs.fifo !== 'undefined') {
             if (attrs.fifo && !queueName.endsWith('.fifo')) {
-              throw new ValidationError("FIFO queue names must end in '.fifo'", this);
+              throw new ValidationError('FifoQueueNames', "FIFO queue names must end in '.fifo'", this);
             }
             if (!attrs.fifo && queueName.endsWith('.fifo')) {
-              throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
+              throw new ValidationError('NonFifoQueueName', "Non-FIFO queue name may not end in '.fifo'", this);
             }
           }
           return queueName.endsWith('.fifo') ? true : false;
@@ -352,12 +355,21 @@ export class Queue extends QueueBase {
   /**
    * The ARN of this queue
    */
-  public readonly queueArn: string;
+  @memoizedGetter
+  public get queueArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      service: 'sqs',
+      resource: this.physicalName,
+    });
+  }
 
   /**
    * The name of this queue
    */
-  public readonly queueName: string;
+  @memoizedGetter
+  public get queueName(): string {
+    return this.getResourceNameAttribute(this._resource.attrQueueName);
+  }
 
   /**
    * The URL of this queue
@@ -385,6 +397,8 @@ export class Queue extends QueueBase {
   public readonly deadLetterQueue?: DeadLetterQueue;
 
   protected readonly autoCreatePolicy = true;
+
+  private readonly _resource: CfnQueue;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
     super(scope, id, {
@@ -434,11 +448,7 @@ export class Queue extends QueueBase {
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
-      service: 'sqs',
-      resource: this.physicalName,
-    });
-    this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
+    this._resource = queue;
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;
@@ -452,7 +462,7 @@ export class Queue extends QueueBase {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
-        throw new ValidationError("'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
+        throw new ValidationError('EncryptionMasterKeySupportedEncryption', "'encryptionMasterKey' is not supported if encryption type 'SQS_MANAGED' is used", this);
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
@@ -513,7 +523,7 @@ export class Queue extends QueueBase {
         };
       }
 
-      throw new ValidationError(`Unexpected 'encryptionType': ${encryption}`, this);
+      throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryption}`, this);
     }
 
     // Enforce encryption of data in transit
@@ -537,23 +547,23 @@ export class Queue extends QueueBase {
     // If we have a name, see that it agrees with the FIFO setting
     if (typeof queueName === 'string') {
       if (fifoQueue && !queueName.endsWith('.fifo')) {
-        throw new ValidationError("FIFO queue names must end in '.fifo'", this);
+        throw new ValidationError('FifoQueueNames', "FIFO queue names must end in '.fifo'", this);
       }
       if (!fifoQueue && queueName.endsWith('.fifo')) {
-        throw new ValidationError("Non-FIFO queue name may not end in '.fifo'", this);
+        throw new ValidationError('NonFifoQueueName', "Non-FIFO queue name may not end in '.fifo'", this);
       }
     }
 
     if (props.contentBasedDeduplication && !fifoQueue) {
-      throw new ValidationError('Content-based deduplication can only be defined for FIFO queues', this);
+      throw new ValidationError('ContentBasedDeduplicationDefinedQueues', 'Content-based deduplication can only be defined for FIFO queues', this);
     }
 
     if (props.deduplicationScope && !fifoQueue) {
-      throw new ValidationError('Deduplication scope can only be defined for FIFO queues', this);
+      throw new ValidationError('DeduplicationScopeDefinedQueues', 'Deduplication scope can only be defined for FIFO queues', this);
     }
 
     if (props.fifoThroughputLimit && !fifoQueue) {
-      throw new ValidationError('FIFO throughput limit can only be defined for FIFO queues', this);
+      throw new ValidationError('ThroughputLimitDefinedQueues', 'FIFO throughput limit can only be defined for FIFO queues', this);
     }
 
     return {

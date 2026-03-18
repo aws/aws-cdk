@@ -255,6 +255,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -456,6 +463,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -572,6 +586,13 @@
     "scopes": [
       {
         "namespace": "AWS::DevOpsGuru"
+      }
+    ]
+  },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
       }
     ]
   },
@@ -1247,6 +1268,13 @@
     "scopes": [
       {
         "namespace": "AWS::MWAA"
+      }
+    ]
+  },
+  "aws-mwaaserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAAServerless"
       }
     ]
   },

@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as ecs from '../../../aws-ecs';
+import type * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
-import { Duration, UnscopedValidationError } from '../../../core';
+import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -70,7 +71,7 @@ export class EcsDeployAction extends Action {
 
     const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
     if (deploymentTimeout !== undefined && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
-      throw new UnscopedValidationError(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
+      throw new UnscopedValidationError('MustBeDeploymentTimeoutBetween', `Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
     }
 
     this.props = props;
@@ -122,7 +123,7 @@ export class EcsDeployAction extends Action {
 
 function determineInputArtifact(props: EcsDeployActionProps): codepipeline.Artifact {
   if (props.imageFile && props.input) {
-    throw new UnscopedValidationError("Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action");
+    throw new UnscopedValidationError('ExactlyInputImagefileProvided', "Exactly one of 'input' or 'imageFile' can be provided in the ECS deploy Action");
   }
   if (props.imageFile) {
     return props.imageFile.artifact;
@@ -130,5 +131,5 @@ function determineInputArtifact(props: EcsDeployActionProps): codepipeline.Artif
   if (props.input) {
     return props.input;
   }
-  throw new UnscopedValidationError("Specifying one of 'input' or 'imageFile' is required for the ECS deploy Action");
+  throw new UnscopedValidationError('IsRequiredSpecifyingInputImagefile', "Specifying one of 'input' or 'imageFile' is required for the ECS deploy Action");
 }

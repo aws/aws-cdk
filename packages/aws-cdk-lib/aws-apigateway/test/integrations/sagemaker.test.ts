@@ -1,6 +1,6 @@
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
-import * as sagemaker from '../../../aws-sagemaker';
+import type * as sagemaker from '../../../aws-sagemaker';
 import * as cdk from '../../../core';
 import * as apigateway from '../../lib';
 

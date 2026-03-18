@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
+import type { IFunction } from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, Duration, ValidationError } from '../../../core';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';
@@ -143,11 +143,11 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     if (props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      throw new ValidationError('The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion', this);
+      throw new ValidationError('RunJobIntegrationPatternSupported', 'The RUN_JOB integration pattern is not supported for CallAwsServiceCrossRegion', this);
     }
 
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
-      throw new ValidationError(`action must be camelCase, got: ${props.action}`, this);
+      throw new ValidationError('MustBeActionCamelCase', `action must be camelCase, got: ${props.action}`, this);
     }
 
     // props.service expects a service name in the AWS SDK for JavaScript v3 format.

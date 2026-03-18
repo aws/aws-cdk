@@ -2,12 +2,12 @@ import { assertBound } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { BOOTSTRAP_QUALIFIER_CONTEXT, DefaultStackSynthesizer } from './default-synthesizer';
 import { StackSynthesizer } from './stack-synthesizer';
-import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import type { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { UnscopedValidationError } from '../errors';
 import { StringSpecializer } from '../helpers-internal/string-specializer';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 
 /**
@@ -109,7 +109,7 @@ export class CliCredentialsStackSynthesizer extends StackSynthesizer implements 
     function validateNoToken<A extends keyof CliCredentialsStackSynthesizerProps>(key: A) {
       const prop = props[key];
       if (typeof prop === 'string' && Token.isUnresolved(prop)) {
-        throw new UnscopedValidationError(`CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+        throw new UnscopedValidationError('CliCredentialsTokenInProperty', `CliCredentialsStackSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
           '${Qualifier}',
           cxapi.EnvironmentPlaceholders.CURRENT_REGION,
           cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,

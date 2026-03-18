@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { IInstanceEngine } from './instance-engine';
-import { CfnOptionGroup, IOptionGroupRef, OptionGroupReference } from './rds.generated';
+import type { Construct } from 'constructs';
+import type { IInstanceEngine } from './instance-engine';
+import type { IOptionGroupRef, OptionGroupReference } from './rds.generated';
+import { CfnOptionGroup } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
-import { IResource, Lazy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -145,7 +147,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
-      throw new ValidationError("OptionGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError('OptiongroupCannotUsedEngine', "OptionGroup cannot be used with an engine that doesn't specify a version", this);
     }
 
     props.configurations.forEach(config => this.addConfiguration(config));
@@ -167,7 +169,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     if (configuration.port) {
       if (!configuration.vpc) {
-        throw new ValidationError('`port` and `vpc` must be specified together.', this);
+        throw new ValidationError('MustBeSpecifiedTogether', '`port` and `vpc` must be specified together.', this);
       }
 
       const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0

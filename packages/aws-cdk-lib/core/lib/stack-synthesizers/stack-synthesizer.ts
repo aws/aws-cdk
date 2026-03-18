@@ -1,16 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { addStackArtifactToAssembly, contentHash } from './_shared';
-import { IStackSynthesizer, ISynthesisSession } from './types';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type { IStackSynthesizer, ISynthesisSession } from './types';
+import type * as cxschema from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, FileAssetPackaging } from '../assets';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { FileAssetPackaging } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
 import { UnscopedValidationError, ValidationError } from '../errors';
 import { resolvedOr } from '../helpers-internal/string-specializer';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 
 /**
  * Base class for implementing an IStackSynthesizer
@@ -44,7 +45,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   public bind(stack: Stack): void {
     if (this._boundStack !== undefined) {
-      throw new ValidationError('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack', stack);
+      throw new ValidationError('StackSynthesizerOneStackCreate', 'A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack', stack);
     }
 
     this._boundStack = stack;
@@ -154,7 +155,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    */
   protected get boundStack(): Stack {
     if (!this._boundStack) {
-      throw new UnscopedValidationError('The StackSynthesizer must be bound to a Stack first before boundStack() can be called');
+      throw new UnscopedValidationError('StackSynthesizerBoundStackFirst', 'The StackSynthesizer must be bound to a Stack first before boundStack() can be called');
     }
     return this._boundStack;
   }
@@ -302,7 +303,7 @@ function stackTemplateFileAsset(stack: Stack, session: ISynthesisSession): FileA
   const templatePath = path.join(session.assembly.outdir, stack.templateFile);
 
   if (!fs.existsSync(templatePath)) {
-    throw new ValidationError(`Stack template ${stack.stackName} not written yet: ${templatePath}`, stack);
+    throw new ValidationError('StackTemplate', `Stack template ${stack.stackName} not written yet: ${templatePath}`, stack);
   }
 
   const template = fs.readFileSync(templatePath, { encoding: 'utf-8' });

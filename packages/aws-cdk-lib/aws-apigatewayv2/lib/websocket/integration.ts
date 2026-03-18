@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi, IWebSocketApiRef } from './api';
-import { IWebSocketRoute } from './route';
-import { CfnIntegration, IntegrationReference } from '.././index';
-import { IRole } from '../../../aws-iam';
-import { Duration, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi, IWebSocketApiRef } from './api';
+import type { IWebSocketRoute } from './route';
+import type { IntegrationReference } from '.././index';
+import { CfnIntegration } from '.././index';
+import type { IRole } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IIntegration } from '../common';
+import type { IIntegration } from '../common';
 
 /**
  * Represents an Integration for an WebSocket API.
@@ -180,7 +182,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     addConstructMetadata(this, props);
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
+      throw new ValidationError('IntegrationTimeoutMillisecondsSeconds', 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -205,7 +207,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
     if (!!ret.apiEndpoint && !!ret.apiRef) {
       return ret;
     }
-    throw new ValidationError(`Input API ${ret.constructor.name} does not implement IWebSocketApi`, this);
+    throw new ValidationError('Input', `Input API ${ret.constructor.name} does not implement IWebSocketApi`, this);
   }
 
   public get integrationRef(): IntegrationReference {
@@ -251,7 +253,7 @@ export abstract class WebSocketRouteIntegration {
    */
   public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
-      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
+      throw new ValidationError('SingleIntegrationCannotAssociatedMultiple', 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {

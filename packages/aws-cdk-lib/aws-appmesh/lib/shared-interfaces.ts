@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import type { Construct } from 'constructs';
+import type { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { renderTlsClientPolicy } from './private/utils';
-import { TlsClientPolicy } from './tls-client-policy';
-import { IVirtualService } from './virtual-service';
+import type { TlsClientPolicy } from './tls-client-policy';
+import type { IVirtualService } from './virtual-service';
 import * as cdk from '../../core';
 
 /**
@@ -199,7 +199,7 @@ export abstract class LoggingFormat {
    */
   public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
     if (Object.keys(jsonLoggingFormat).length == 0) {
-      throw new cdk.UnscopedValidationError('Json key pairs cannot be empty.');
+      throw new cdk.UnscopedValidationError('JsonKeyPairsEmpty', 'Json key pairs cannot be empty.');
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);

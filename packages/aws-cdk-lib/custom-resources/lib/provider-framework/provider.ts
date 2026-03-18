@@ -2,13 +2,14 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
-import { LogOptions, WaiterStateMachine } from './waiter-state-machine';
-import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
-import * as ec2 from '../../../aws-ec2';
+import type { LogOptions } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
+import type { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
+import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as kms from '../../../aws-kms';
+import type * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
-import * as logs from '../../../aws-logs';
+import type * as logs from '../../../aws-logs';
 import { Duration, ValidationError } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
@@ -235,17 +236,17 @@ export class Provider extends Construct implements ICustomResourceProvider {
         || props.waiterStateMachineLogOptions
         || props.disableWaiterStateMachineLogging !== undefined
       ) {
-        throw new ValidationError('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
+        throw new ValidationError('InvalidConfigurationWithoutIsCompleteHandler', '"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
           + 'can only be configured if "isCompleteHandler" is specified. '
           + 'Otherwise, they have no meaning', this);
       }
     }
 
     if (props.role && (props.frameworkOnEventRole || props.frameworkCompleteAndTimeoutRole)) {
-      throw new ValidationError('Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
+      throw new ValidationError('ConflictingRoleConfiguration', 'Cannot specify both "role" and any of "frameworkOnEventRole" or "frameworkCompleteAndTimeoutRole".', this);
     }
     if (!props.isCompleteHandler && props.frameworkCompleteAndTimeoutRole) {
-      throw new ValidationError('Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
+      throw new ValidationError('FrameworkCompleteAndTimeoutRoleWithoutIsCompleteHandler', 'Cannot specify "frameworkCompleteAndTimeoutRole" when "isCompleteHandler" is not specified.', this);
     }
 
     this.onEventHandler = props.onEventHandler;

@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
-import { IVariable } from './variable';
-import { IWidget } from './widget';
-import { Lazy, Resource, Stack, Token, Annotations, Duration, ValidationError } from '../../core';
+import type { IVariable } from './variable';
+import type { IWidget } from './widget';
+import type { Duration } from '../../core';
+import { Lazy, Resource, Stack, Token, Annotations, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -108,7 +110,10 @@ export class Dashboard extends Resource {
    *
    * @attribute
    */
-  public readonly dashboardName: string;
+  @memoizedGetter
+  get dashboardName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   /**
    * ARN of this dashboard
@@ -120,6 +125,7 @@ export class Dashboard extends Resource {
   private readonly rows: IWidget[] = [];
 
   private readonly variables: IVariable[] = [];
+  private readonly resource: CfnDashboard;
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
     super(scope, id, {
@@ -131,7 +137,7 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new ValidationError([
+        throw new ValidationError('InvalidDashboardName', [
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '), this);
@@ -139,11 +145,11 @@ export class Dashboard extends Resource {
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new ValidationError('both properties defaultInterval and start cannot be set at once', this);
+      throw new ValidationError('BothPropertiesDefaultIntervalStart', 'both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new ValidationError('If you specify a value for end, you must also specify a value for start.', this);
+      throw new ValidationError('SpecifyValue', 'If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
@@ -163,7 +169,7 @@ export class Dashboard extends Resource {
       }),
     });
 
-    this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
+    this.resource = dashboard;
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);

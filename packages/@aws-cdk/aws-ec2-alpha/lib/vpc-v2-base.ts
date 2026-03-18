@@ -1,45 +1,50 @@
 import { Annotations, Aws, Resource, ValidationError } from 'aws-cdk-lib';
-import {
-  CfnVPCGatewayAttachment,
-  CfnVPNGatewayRoutePropagation,
-  ClientVpnEndpoint,
+import type {
   ClientVpnEndpointOptions,
   EnableVpnGatewayOptions,
-  FlowLog,
   FlowLogOptions,
-  FlowLogResourceType,
-  GatewayVpcEndpoint,
   GatewayVpcEndpointOptions,
-  InterfaceVpcEndpoint,
   InterfaceVpcEndpointOptions,
   ISubnet,
   IVpc,
   SelectedSubnets,
-  SubnetFilter,
   SubnetSelection,
+  VpnConnectionOptions,
+} from 'aws-cdk-lib/aws-ec2';
+import {
+  CfnVPCGatewayAttachment,
+  CfnVPNGatewayRoutePropagation,
+  ClientVpnEndpoint,
+  FlowLog,
+  FlowLogResourceType,
+  GatewayVpcEndpoint,
+  InterfaceVpcEndpoint,
+  SubnetFilter,
   SubnetType,
   VpnConnection,
-  VpnConnectionOptions,
   VpnConnectionType,
   VpnGateway,
 } from 'aws-cdk-lib/aws-ec2';
-import { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+import type { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
-import { Dependable, DependencyGroup, IConstruct, IDependable } from 'constructs';
+import type { IConstruct, IDependable } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
+import type {
+  NatGatewayOptions,
+  VPCPeeringConnectionOptions,
+} from './route';
 import {
   EgressOnlyInternetGateway,
   InternetGateway,
   NatConnectivityType,
   NatGateway,
-  NatGatewayOptions,
   Route,
   VPCPeeringConnection,
-  VPCPeeringConnectionOptions,
   VPNGatewayV2,
 } from './route';
-import { ISubnetV2 } from './subnet-v2';
+import type { ISubnetV2 } from './subnet-v2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
-import { IVPCCidrBlock } from './vpc-v2';
+import type { IVPCCidrBlock } from './vpc-v2';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC
@@ -599,7 +604,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    */
   public addNatGateway(options: NatGatewayOptions): NatGateway {
     if (options.connectivityType === NatConnectivityType.PUBLIC && !this._internetGatewayId) {
-      throw new ValidationError('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
+      throw new ValidationError('PublicNatGatewayRequiresInternetGateway', 'Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
     }
     return new NatGateway(this, `NATGateway-${options.subnet.node.id}`, {
       vpc: this,

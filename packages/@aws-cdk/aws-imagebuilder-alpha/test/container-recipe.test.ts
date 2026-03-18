@@ -6,6 +6,7 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import type { IRecipeBase } from '../lib';
 import {
   AmazonManagedComponent,
   BaseContainerImage,
@@ -14,7 +15,6 @@ import {
   ContainerInstanceImage,
   ContainerRecipe,
   DockerfileData,
-  IRecipeBase,
   OSVersion,
   Platform,
   Repository,

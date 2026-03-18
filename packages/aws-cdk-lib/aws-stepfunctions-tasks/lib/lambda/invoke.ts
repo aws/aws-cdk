@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
@@ -131,12 +131,12 @@ export class LambdaInvoke extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.payload)) {
-      throw new ValidationError('Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.', this);
+      throw new ValidationError('IsRequiredTaskTokenRequired', 'Task Token is required in `payload` for callback. Use JsonPath.taskToken to set the token.', this);
     }
 
     if (props.payloadResponseOnly &&
       (props.integrationPattern || props.invocationType || props.clientContext || props.qualifier)) {
-      throw new ValidationError(
+      throw new ValidationError('PayloadResponseOnlyRestriction',
         "The 'payloadResponseOnly' property cannot be used if 'integrationPattern', 'invocationType', 'clientContext', or 'qualifier' are specified.", this,
       );
     }

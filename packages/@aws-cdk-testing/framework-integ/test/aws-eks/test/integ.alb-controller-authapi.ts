@@ -1,6 +1,7 @@
 // ALB controller with EKS cluster that supports API mode only
+import type { StackProps } from 'aws-cdk-lib';
 import {
-  App, Stack, StackProps,
+  App, Stack,
   aws_ec2 as ec2,
 } from 'aws-cdk-lib';
 import * as eks from 'aws-cdk-lib/aws-eks';

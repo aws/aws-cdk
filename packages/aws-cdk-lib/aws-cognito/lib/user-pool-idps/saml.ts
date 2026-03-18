@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -175,7 +175,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   private validateName(name?: string) {
     if (name && !Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-      throw new ValidationError(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
+      throw new ValidationError('ExpectedProviderNameCharactersReceived', `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
     }
   }
 }

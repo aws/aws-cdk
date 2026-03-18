@@ -1,8 +1,8 @@
 import { bindBaseTargetConfig, singletonEventRole } from './util';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as secretsmanager from '../../aws-secretsmanager';
-import * as sqs from '../../aws-sqs';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type * as sqs from '../../aws-sqs';
 import { ValidationError } from '../../core';
 
 /**
@@ -97,7 +97,7 @@ export class RedshiftQuery implements events.IRuleTarget {
   bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
     if (this.props.sql.length < 1) {
-      throw new ValidationError('At least one SQL statement must be specified.', rule);
+      throw new ValidationError('AtLeastOneSqlStatementMustBeSpecified', 'At least one SQL statement must be specified.', rule);
     }
     if (this.props.sql.length === 1) {
       role.addToPrincipalPolicy(this.putEventStatement());

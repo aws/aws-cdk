@@ -1,17 +1,19 @@
 import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
-import {
-  Resource,
+import type {
   IResource,
   RemovalPolicy,
+} from 'aws-cdk-lib/core';
+import {
+  Resource,
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { INamespace } from './namespace';
+import type { Construct } from 'constructs';
+import type { INamespace } from './namespace';
 import * as perms from './permissions';
 
 /**
@@ -465,6 +467,7 @@ export class Table extends TableBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        'InvalidTableName',
         `Invalid S3 table name (value: ${tableName})${EOL}${errors.join(EOL)}`,
       );
     }

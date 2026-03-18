@@ -1,11 +1,11 @@
-import { IApi } from './api';
+import type { IApi } from './api';
 import { ApiMapping } from './api-mapping';
-import { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
-import { AccessLogFormat } from '../../../aws-apigateway/lib';
+import type { DomainMappingOptions, IAccessLogSettings, IStage } from './stage';
+import type { AccessLogFormat } from '../../../aws-apigateway/lib';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import { Resource, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
-import { CfnStage, IApiRef, StageReference } from '../apigatewayv2.generated';
+import type { CfnStage, IApiRef, StageReference } from '../apigatewayv2.generated';
 
 /**
  * Base class representing an API
@@ -59,7 +59,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     if (this._apiMapping) {
-      throw new UnscopedValidationError('Only one ApiMapping allowed per Stage');
+      throw new UnscopedValidationError('OnlyApimappingAllowedStage', 'Only one ApiMapping allowed per Stage');
     }
     this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
@@ -83,7 +83,7 @@ export abstract class StageBase extends Resource implements IStage {
       !Token.isUnresolved(format.toString()) &&
       !/\$context\.(?:requestId|extendedRequestId)\b/.test(format.toString())
     ) {
-      throw new ValidationError('Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+      throw new ValidationError('AccessIncludeEither', 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
     }
 
     return {

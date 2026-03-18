@@ -1,14 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnComponent } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as yaml from 'yaml';
-import { OSVersion, Platform } from './os-version';
+import type { OSVersion, Platform } from './os-version';
 
 const COMPONENT_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Component');
 
@@ -955,13 +956,14 @@ export class Component extends ComponentBase {
   public static fromComponentAttributes(scope: Construct, id: string, attrs: ComponentAttributes): IComponent {
     if (attrs.componentArn && (attrs.componentName || attrs.componentVersion)) {
       throw new cdk.ValidationError(
+        'ConflictingComponentAttributes',
         'a componentName or componentVersion cannot be provided when a componentArn is provided',
         scope,
       );
     }
 
     if (!attrs.componentArn && !attrs.componentName) {
-      throw new cdk.ValidationError('either componentArn or componentName is required', scope);
+      throw new cdk.ValidationError('MissingComponentIdentifier', 'either componentArn or componentName is required', scope);
     }
 
     const componentArn =
@@ -1003,16 +1005,6 @@ export class Component extends ComponentBase {
   }
 
   /**
-   * The ARN of the component
-   */
-  public readonly componentArn: string;
-
-  /**
-   * The name of the component
-   */
-  public readonly componentName: string;
-
-  /**
    * The version of the component
    */
   public readonly componentVersion: string;
@@ -1022,14 +1014,8 @@ export class Component extends ComponentBase {
    */
   public readonly encrypted: boolean;
 
-  /**
-   * The type of the component
-   *
-   * @attribute
-   */
-  public readonly componentType: string;
-
   protected readonly kmsKey?: kms.IKey;
+  private resource: CfnComponent;
 
   public constructor(scope: Construct, id: string, props: ComponentProps) {
     super(scope, id, {
@@ -1054,6 +1040,7 @@ export class Component extends ComponentBase {
     props.supportedOsVersions?.forEach((osVersion) => {
       if (osVersion.platform !== props.platform) {
         throw new cdk.ValidationError(
+          'IncompatibleOsVersion',
           `os version ${osVersion.osVersion} is not compatible with platform ${props.platform}`,
           this,
         );
@@ -1063,7 +1050,7 @@ export class Component extends ComponentBase {
     const componentVersion = props.componentVersion ?? '1.0.0';
     const supportedOsVersions = props.supportedOsVersions?.filter((osVersion) => osVersion.osVersion !== undefined);
 
-    const component = new CfnComponent(this, 'Resource', {
+    this.resource = new CfnComponent(this, 'Resource', {
       name: this.physicalName,
       version: componentVersion,
       changeDescription: props.changeDescription,
@@ -1077,16 +1064,33 @@ export class Component extends ComponentBase {
       ...props.data.render(),
     });
 
-    this.componentName = this.getResourceNameAttribute(component.attrName);
-    this.componentArn = this.getResourceArnAttribute(component.attrArn, {
-      service: 'imagebuilder',
-      resource: 'component',
-      resourceName: `${this.physicalName}/${componentVersion}`,
-    });
     this.componentVersion = componentVersion;
     this.encrypted = true; // Components are always encrypted
-    this.componentType = component.attrType;
     this.kmsKey = props.kmsKey;
+  }
+
+  @memoizedGetter
+  public get componentName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get componentArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'imagebuilder',
+      resource: 'component',
+      resourceName: `${this.physicalName}/${this.componentVersion}`,
+    });
+  }
+
+  /**
+   * The type of the component
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get componentType(): string {
+    return this.resource.attrType;
   }
 
   private validateComponentName() {
@@ -1096,21 +1100,22 @@ export class Component extends ComponentBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        'ComponentNameTooLong',
         `the componentName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameContainsSpaces', `the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError(`the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameContainsUnderscores', `the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the componentName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameNotLowercase', `the componentName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

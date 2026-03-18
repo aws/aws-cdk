@@ -1,13 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImageRecipe } from 'aws-cdk-lib/aws-imagebuilder';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { BaseImage } from './base-image';
-import { IContainerRecipe } from './container-recipe';
-import { ComponentConfiguration, IRecipeBase } from './recipe-base';
+import type { Construct } from 'constructs';
+import type { BaseImage } from './base-image';
+import type { IContainerRecipe } from './container-recipe';
+import type { ComponentConfiguration, IRecipeBase } from './recipe-base';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
 
@@ -260,6 +261,7 @@ export class ImageRecipe extends ImageRecipeBase {
   public static fromImageRecipeAttributes(scope: Construct, id: string, attrs: ImageRecipeAttributes): IImageRecipe {
     if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
       throw new cdk.ValidationError(
+        'ImageRecipeAttributesRequired',
         'either imageRecipeArn or imageRecipeName must be provided to import an image recipe',
         scope,
       );
@@ -303,22 +305,8 @@ export class ImageRecipe extends ImageRecipeBase {
     return x !== null && typeof x === 'object' && IMAGE_RECIPE_SYMBOL in x;
   }
 
-  /**
-   * The ARN of the image recipe
-   */
-  public readonly imageRecipeArn: string;
-
-  /**
-   * The name of the image recipe
-   */
-  public readonly imageRecipeName: string;
-
-  /**
-   * The version of the image recipe
-   */
-  public readonly imageRecipeVersion: string;
-
   private readonly blockDevices: ec2.BlockDevice[] = [];
+  private resource: CfnImageRecipe;
 
   public constructor(scope: Construct, id: string, props: ImageRecipeProps) {
     super(scope, id, {
@@ -357,7 +345,7 @@ export class ImageRecipe extends ImageRecipeBase {
     );
 
     const imageRecipeVersion = props.imageRecipeVersion ?? DEFAULT_RECIPE_VERSION;
-    const imageRecipe = new CfnImageRecipe(this, 'Resource', {
+    this.resource = new CfnImageRecipe(this, 'Resource', {
       name: this.physicalName,
       version: imageRecipeVersion,
       description: props.description,
@@ -369,14 +357,25 @@ export class ImageRecipe extends ImageRecipeBase {
       tags: props.tags,
       ...(components?.length && { components }),
     });
+  }
 
-    this.imageRecipeName = this.getResourceNameAttribute(imageRecipe.attrName);
-    this.imageRecipeArn = this.getResourceArnAttribute(imageRecipe.attrArn, {
+  @memoizedGetter
+  public get imageRecipeName(): string {
+    return this.getResourceNameAttribute(this.resource.attrName);
+  }
+
+  @memoizedGetter
+  public get imageRecipeArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'imagebuilder',
       resource: 'image-recipe',
-      resourceName: `${this.physicalName}/${imageRecipeVersion}`,
+      resourceName: `${this.physicalName}/${this.resource.version}`,
     });
-    this.imageRecipeVersion = imageRecipe.getAtt('Version').toString();
+  }
+
+  @memoizedGetter
+  public get imageRecipeVersion(): string {
+    return this.resource.getAtt('Version').toString();
   }
 
   /**
@@ -452,24 +451,26 @@ export class ImageRecipe extends ImageRecipeBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        'ImageRecipeNameTooLong',
         `the imageRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ImageRecipeNameNoSpaces', `the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
       throw new cdk.ValidationError(
+        'ImageRecipeNameNoUnderscores',
         `the imageRecipeName cannot contain underscores, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ImageRecipeNameMustBeLowercase', `the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

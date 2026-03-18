@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cloudfront from '../../aws-cloudfront';
 import { AccessLevel } from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
-import { IBucket } from '../../aws-s3';
+import type { IKey } from '../../aws-kms';
+import type { IBucket } from '../../aws-s3';
 import { Annotations, Aws, Names, Stack, UnscopedValidationError } from '../../core';
-import { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
+import type { IOriginAccessControlRef } from '../../interfaces/generated/aws-cloudfront-interfaces.generated';
 
 interface BucketPolicyAction {
   readonly action: string;
@@ -264,7 +264,7 @@ class S3BucketOriginWithOAI extends S3BucketOrigin {
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
     if (!this.originAccessIdentity) {
-      throw new UnscopedValidationError('Origin access identity cannot be undefined');
+      throw new UnscopedValidationError('OriginAccessIdentityCannotBeUndefined', 'Origin access identity cannot be undefined');
     }
     return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.cloudFrontOriginAccessIdentityRef.cloudFrontOriginAccessIdentityId}` };
   }

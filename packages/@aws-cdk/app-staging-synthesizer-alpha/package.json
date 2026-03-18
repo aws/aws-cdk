@@ -76,7 +76,7 @@
   "license": "Apache-2.0",
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -90,15 +90,15 @@
   },
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.193.4",
+    "@aws-cdk/integ-runner": "^2.196.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "constructs": "^10.0.0",
+    "constructs": "^10.5.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "publishConfig": {
     "tag": "latest"

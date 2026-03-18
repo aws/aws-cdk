@@ -1,7 +1,8 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam/index';
 import { Stack } from '../../core';
-import { IStreamConsumer, Stream, StreamConsumer } from '../lib';
+import type { IStreamConsumer } from '../lib';
+import { Stream, StreamConsumer } from '../lib';
 
 describe('Kinesis stream consumer', () => {
   let stack: Stack;

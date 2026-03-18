@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IQueue } from './queue-base';
+import type { Construct } from 'constructs';
+import type { IQueue } from './queue-base';
 import { CfnQueuePolicy } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
@@ -59,6 +59,6 @@ export class QueuePolicy extends Resource {
    * @attribute
    */
   public get queuePolicyId(): string {
-    throw new ValidationError('QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
+    throw new ValidationError('QueuePolicyQueuePolicyId', 'QueuePolicy.queuePolicyId has been removed from CloudFormation', this);
   }
 }

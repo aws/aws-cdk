@@ -1,7 +1,8 @@
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, Statistic } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Statistic } from '../../aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup, SubnetType } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -9,7 +10,8 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
+import type { DomainProps, NodeOptions } from '../lib';
+import { Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -2081,6 +2083,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'i8g.4xlarge.search',
     'r7gd.xlarge.search',
     'r8gd.medium.search',
+    'oi2.large.search',
   ])('error when %s instance type is specified with EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
@@ -2091,7 +2094,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         volumeSize: 100,
         volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       },
-    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD and R8GD instance types do not support EBS storage volumes./);
+    })).toThrow(/I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD and OI2 instance types do not support EBS storage volumes./);
   });
 
   test.each([
@@ -2103,6 +2106,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     'i8g.4xlarge.search',
     'r7gd.xlarge.search',
     'r8gd.medium.search',
+    'oi2.large.search',
   ])('should not throw when %s instance type is specified without EBS enabled', (dataNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain2', {
       version: engineVersion,
@@ -2142,7 +2146,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   test.each([
     'm5.large.search',
     'r5.large.search',
-  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, IM4GN or R7GD are specified without EBS enabled', (masterNodeInstanceType) => {
+  ])('error when any instance type other than R3, I3, R6GD, I4I, I4G, I8G, IM4GN, R7GD, R8GD or OI2 are specified without EBS enabled', (masterNodeInstanceType) => {
     expect(() => new Domain(stack, 'Domain1', {
       version: engineVersion,
       ebs: {
@@ -2151,7 +2155,7 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
       capacity: {
         masterNodeInstanceType,
       },
-    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD or R8GD./);
+    })).toThrow(/EBS volumes are required when using instance types other than R3, I3, R6GD, I4G, I4I, I8G, IM4GN, R7GD, R8GD or OI2./);
   });
 
   test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
@@ -2297,6 +2301,96 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         masterNodes: 0,
       },
     })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
+  });
+});
+
+describe('S3 Vectors Engine', () => {
+  test.each([true, false])('configure to %s', (enabled) => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: enabled,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: {
+        S3VectorsEngine: {
+          Enabled: enabled,
+        },
+      },
+    });
+  });
+
+  test('default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: Match.absent(),
+    });
+  });
+
+  test('throws error for Elasticsearch versions', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.ELASTICSEARCH_7_10,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Elasticsearch versions are not supported.');
+  });
+
+  test('throws error for OpenSearch versions below 2.19', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_17,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version 2.17.');
+  });
+
+  test('throws error for non-OpenSearch Optimized instance types', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 't3.small.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*). Got t3.small.search.');
+  });
+
+  test('throws error when encryption at rest is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: false,
+      },
+    })).toThrow('S3 Vectors Engine requires encryption at rest to be enabled.');
   });
 });
 
@@ -2577,6 +2671,29 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
       SoftwareUpdateOptions: {
         AutoSoftwareUpdateEnabled: true,
       },
+    });
+  });
+
+  test('with autoSoftwareUpdateEnabled set to false', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: false,
+      },
+    });
+  });
+
+  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: Match.absent(),
     });
   });
 

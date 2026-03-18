@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
-import { IAsset } from '../../assets';
+import type { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
 
@@ -90,7 +90,7 @@ export class TarballImageAsset extends Construct implements IAsset {
     super(scope, id);
 
     if (!fs.existsSync(props.tarballFile)) {
-      throw new ValidationError(`Cannot find file at ${props.tarballFile}`, this);
+      throw new ValidationError('CannotFindFile', `Cannot find file at ${props.tarballFile}`, this);
     }
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });

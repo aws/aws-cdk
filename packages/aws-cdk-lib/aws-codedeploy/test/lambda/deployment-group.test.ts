@@ -3,7 +3,7 @@ import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
-import { Stack } from '../../../core';
+import type { Stack } from '../../../core';
 import * as codedeploy from '../../lib';
 
 function mockFunction(stack: cdk.Stack, id: string) {

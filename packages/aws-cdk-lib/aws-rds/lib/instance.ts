@@ -1,32 +1,38 @@
-import { Construct } from 'constructs';
-import { CaCertificate } from './ca-certificate';
+import type { Construct } from 'constructs';
+import type { CaCertificate } from './ca-certificate';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { IInstanceEngine } from './instance-engine';
-import { IOptionGroup } from './option-group';
-import { IParameterGroup, ParameterGroup } from './parameter-group';
+import type { IInstanceEngine } from './instance-engine';
+import type { IOptionGroup } from './option-group';
+import type { IParameterGroup } from './parameter-group';
+import { ParameterGroup } from './parameter-group';
 import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
-import { Credentials, EngineLifecycleSupport, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
-import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
-import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
+import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { PerformanceInsightRetention } from './props';
+import type { DatabaseProxyOptions } from './proxy';
+import { DatabaseProxy, ProxyTarget } from './proxy';
+import type { CfnDBInstanceProps } from './rds.generated';
+import { CfnDBInstance } from './rds.generated';
 import { SubnetGroup } from './subnet-group';
 import { validateDatabaseInstanceProps } from './validate-database-insights';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
-import * as s3 from '../../aws-s3';
+import type * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ArnComponents, ArnFormat, ContextProvider, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import type { ArnComponents, Duration, IResource } from '../../core';
+import { ArnFormat, ContextProvider, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * A database instance
@@ -248,15 +254,15 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (this.enableIamAuthentication === false) {
-      throw new ValidationError('Cannot grant connect when IAM authentication is disabled', this);
+      throw new ValidationError('CannotGrantConnectAuthenticationDisabled', 'Cannot grant connect when IAM authentication is disabled', this);
     }
 
     if (!this.instanceResourceId) {
-      throw new ValidationError('For imported Database Instances, instanceResourceId is required to grantConnect()', this);
+      throw new ValidationError('ImportedDatabaseInstancesInstanceResource', 'For imported Database Instances, instanceResourceId is required to grantConnect()', this);
     }
 
     if (!dbUser) {
-      throw new ValidationError('For imported Database Instances, the dbUser is required to grantConnect()', this);
+      throw new ValidationError('ImportedDatabaseInstancesDbUser', 'For imported Database Instances, the dbUser is required to grantConnect()', this);
     }
 
     this.enableIamAuthentication = true;
@@ -449,6 +455,11 @@ export enum NetworkType {
    * Dual-stack network type.
    */
   DUAL = 'DUAL',
+
+  /**
+   * IPv6 only network type.
+   */
+  IPV6 = 'IPV6',
 }
 
 /**
@@ -914,12 +925,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.vpc = props.vpc;
     if (props.vpcSubnets && props.vpcPlacement) {
-      throw new ValidationError('Only one of `vpcSubnets` or `vpcPlacement` can be specified', this);
+      throw new ValidationError('OnlySpecified', 'Only one of `vpcSubnets` or `vpcPlacement` can be specified', this);
     }
     this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
-      throw new ValidationError('Requesting a specific availability zone is not valid for Multi-AZ instances', this);
+      throw new ValidationError('RequestingSpecificAvailabilityZoneValid', 'Requesting a specific availability zone is not valid for Multi-AZ instances', this);
     }
 
     const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
@@ -950,12 +961,12 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const storageType = props.storageType ?? StorageType.GP2;
     const iops = defaultIops(storageType, props.iops);
     if (props.storageThroughput && storageType !== StorageType.GP3) {
-      throw new ValidationError(`The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
+      throw new ValidationError('StorageThroughputSpecifiedStorageType', `The storage throughput can only be specified with GP3 storage type. Got ${storageType}.`, this);
     }
     if (storageType === StorageType.GP3 && props.storageThroughput && iops
         && !Token.isUnresolved(props.storageThroughput) && !Token.isUnresolved(iops)
         && props.storageThroughput/iops > 0.25) {
-      throw new ValidationError(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
+      throw new ValidationError('MaximumRatioStorageThroughput', `The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`, this);
     }
 
     this.cloudwatchLogGroups = {};
@@ -1140,7 +1151,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineType = props.engine.engineType;
 
     if (props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
-      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+      throw new ValidationError('EngineLifecycleSupportSpecifiedMy', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // only Oracle and SQL Server require the import and export Roles to be the same
@@ -1156,13 +1167,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     const engineFeatures = engineConfig.features;
     if (s3ImportRole) {
       if (!engineFeatures?.s3Import) {
-        throw new ValidationError(`Engine '${engineDescription(props.engine)}' does not support S3 import`, this);
+        throw new ValidationError('EngineDoesSupportImport', `Engine '${engineDescription(props.engine)}' does not support S3 import`, this);
       }
       instanceAssociatedRoles.push({ roleArn: s3ImportRole.roleArn, featureName: engineFeatures?.s3Import });
     }
     if (s3ExportRole) {
       if (!engineFeatures?.s3Export) {
-        throw new ValidationError(`Engine '${engineDescription(props.engine)}' does not support S3 export`, this);
+        throw new ValidationError('EngineDoesSupportExport', `Engine '${engineDescription(props.engine)}' does not support S3 export`, this);
       }
       // only add the export feature if it's different from the import feature
       if (engineFeatures.s3Import !== engineFeatures?.s3Export) {
@@ -1173,7 +1184,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
     if (props.parameterGroup && props.parameters) {
-      throw new ValidationError('You cannot specify both parameterGroup and parameters', this);
+      throw new ValidationError('CannotSpecifyParameterGroupParameters', 'You cannot specify both parameterGroup and parameters', this);
     }
 
     const dbParameterGroupName = props.parameters
@@ -1206,13 +1217,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add single user rotation for an instance without secret.', this);
+      throw new ValidationError('CannotAddSingleUserRotation', 'Cannot add single user rotation for an instance without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('A single user rotation was already added to this instance.', this);
+      throw new ValidationError('SingleUserRotationAlreadyAdded', 'A single user rotation was already added to this instance.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1229,7 +1240,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add multi user rotation for an instance without secret.', this);
+      throw new ValidationError('CannotAddMultiUserRotation', 'Cannot add multi user rotation for an instance without secret.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -1254,7 +1265,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (!this.secret) {
-        throw new ValidationError('A secret or dbUser is required to grantConnect()', this);
+        throw new ValidationError('SecretDbUserRequiredGrant', 'A secret or dbUser is required to grantConnect()', this);
       }
 
       dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
@@ -1320,12 +1331,18 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstance';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1347,7 +1364,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1423,12 +1440,18 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceFromSnapshot';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+
+  private readonly _resource: CfnDBInstance;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1436,17 +1459,17 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     addConstructMetadata(this, props);
 
     if (!props.snapshotIdentifier && !props.clusterSnapshotIdentifier) {
-      throw new ValidationError('You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`', this);
+      throw new ValidationError('Specify', 'You must specify `snapshotIdentifier` or `clusterSnapshotIdentifier`', this);
     }
     if (props.snapshotIdentifier && props.clusterSnapshotIdentifier) {
-      throw new ValidationError('You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`', this);
+      throw new ValidationError('CannotSpecifyBoth', 'You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`', this);
     }
 
     let credentials = props.credentials;
     let secret = credentials?.secret;
     if (!secret && credentials?.generatePassword) {
       if (!credentials.username) {
-        throw new ValidationError('`credentials` `username` must be specified when `generatePassword` is set to true', this);
+        throw new ValidationError('MustBeSpecifiedTrue', '`credentials` `username` must be specified when `generatePassword` is set to true', this);
       }
 
       secret = new DatabaseSecret(this, 'Secret', {
@@ -1465,7 +1488,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
-    this.instanceIdentifier = instance.ref;
+    this._resource = instance;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
@@ -1535,7 +1558,11 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.DatabaseInstanceReadReplica';
 
-  public readonly instanceIdentifier: string;
+  @memoizedGetter
+  public get instanceIdentifier(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
+
   public readonly dbInstanceEndpointAddress: string;
   public readonly dbInstanceEndpointPort: string;
 
@@ -1550,6 +1577,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
 
+  private readonly _resource: CfnDBInstance;
+
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
@@ -1558,12 +1587,12 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
         && props.backupRetention) {
-      throw new ValidationError(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
+      throw new ValidationError('CannotSetBackupRetentionEngine', `Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`, this);
     }
 
     const engineType = props.sourceDatabaseInstance.engine?.engineType;
     if (engineType && props.engineLifecycleSupport && !['mysql', 'postgres'].includes(engineType)) {
-      throw new ValidationError(`'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
+      throw new ValidationError('EngineLifecycleSupportSpecifiedMy', `'engineLifecycleSupport' can only be specified for RDS for MySQL and RDS for PostgreSQL, got: '${engineType}'`, this);
     }
 
     // The read replica instance always uses the same engine as the source instance
@@ -1581,8 +1610,8 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       allocatedStorage: props.allocatedStorage?.toString(),
     });
 
+    this._resource = instance;
     this.instanceType = props.instanceType;
-    this.instanceIdentifier = instance.ref;
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 

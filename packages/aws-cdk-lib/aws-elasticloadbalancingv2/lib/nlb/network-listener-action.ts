@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
-import { INetworkListenerRef } from './network-listener';
-import { INetworkTargetGroup } from './network-target-group';
-import { Duration } from '../../../core';
+import type { Construct } from 'constructs';
+import type { INetworkListenerRef } from './network-listener';
+import type { INetworkTargetGroup } from './network-target-group';
+import type { Duration } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
-import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
-import { IListenerAction } from '../shared/listener-action';
+import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import type { IListenerAction } from '../shared/listener-action';
 
 /**
  * What to do when a client makes a request to a listener
@@ -24,7 +24,7 @@ export class NetworkListenerAction implements IListenerAction {
    */
   public static forward(targetGroups: INetworkTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('Need at least one targetGroup in a NetworkListenerAction.forward()');
+      throw new UnscopedValidationError('NeedLeastOneTargetGroup', 'Need at least one targetGroup in a NetworkListenerAction.forward()');
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
@@ -51,7 +51,7 @@ export class NetworkListenerAction implements IListenerAction {
    */
   public static weightedForward(targetGroups: NetworkWeightedTargetGroup[], options: NetworkForwardOptions = {}): NetworkListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
+      throw new UnscopedValidationError('NeedLeastOneTargetGroup', 'Need at least one targetGroup in a NetworkListenerAction.weightedForward()');
     }
 
     return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {

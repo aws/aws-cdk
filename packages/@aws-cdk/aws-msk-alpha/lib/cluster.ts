@@ -1,20 +1,21 @@
-import * as acmpca from 'aws-cdk-lib/aws-acmpca';
+import type * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
 import { CfnCluster } from 'aws-cdk-lib/aws-msk';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
 import { FeatureFlags } from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
-import { KafkaVersion } from './';
+import type { KafkaVersion } from './';
 
 /**
  * Represents a MSK Cluster
@@ -47,7 +48,7 @@ export abstract class ClusterBase extends core.Resource implements ICluster {
   /** Manages connections for the cluster */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new core.ValidationError('An imported Cluster cannot manage its security groups', this);
+      throw new core.ValidationError('ImportedClusterSecurityGroups', 'An imported Cluster cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -482,10 +483,9 @@ export class Cluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public readonly clusterArn: string;
-  public readonly clusterName: string;
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
+  private resource: CfnCluster;
   private _clusterDescription?: cr.AwsCustomResource;
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
@@ -506,24 +506,24 @@ export class Cluster extends ClusterBase {
     });
 
     if (subnetSelection.subnets.length < 2) {
-      throw new core.ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`, this);
+      throw new core.ValidationError('InsufficientSubnets', `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`, this);
     }
 
     if (props.encryptionInTransit?.clientBroker === ClientBrokerEncryption.PLAINTEXT && props.clientAuthentication) {
-      throw new core.ValidationError('To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.', this);
+      throw new core.ValidationError('ClientAuthRequiresTls', 'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.', this);
     } else if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.TLS_PLAINTEXT &&
       (props.clientAuthentication?.saslProps?.scram ||
         props.clientAuthentication?.saslProps?.iam)
     ) {
-      throw new core.ValidationError('To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.', this);
+      throw new core.ValidationError('SaslAuthRequiresTlsOnly', 'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.', this);
     }
 
     const volumeSize = props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
-      throw new core.ValidationError('EBS volume size should be in the range 1-16384', this);
+      throw new core.ValidationError('InvalidEbsVolumeSize', 'EBS volume size should be in the range 1-16384', this);
     }
 
     const isExpress = props.brokerType === BrokerType.EXPRESS;
@@ -535,23 +535,23 @@ export class Cluster extends ClusterBase {
       const kafkaVersionString = props.kafkaVersion.version;
       const isCompatibleVersion = supportedVersions.some(version => kafkaVersionString.includes(version));
       if (!isCompatibleVersion) {
-        throw new core.ValidationError(`Express brokers are only supported with Apache Kafka ${supportedVersions.join(', ')}, got ${kafkaVersionString}`, this);
+        throw new core.ValidationError('ExpressBrokerIncompatibleVersion', `Express brokers are only supported with Apache Kafka ${supportedVersions.join(', ')}, got ${kafkaVersionString}`, this);
       }
 
       if (!props.instanceType) {
-        throw new core.ValidationError('`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.', this);
+        throw new core.ValidationError('ExpressBrokerRequiresInstanceType', '`instanceType` must also be specified when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.ebsStorageInfo) {
-        throw new core.ValidationError('`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+        throw new core.ValidationError('ExpressBrokerNoEbsStorage', '`ebsStorageInfo` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.storageMode) {
-        throw new core.ValidationError('`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+        throw new core.ValidationError('ExpressBrokerNoStorageMode', '`storageMode` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (props.logging) {
-        throw new core.ValidationError('`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
+        throw new core.ValidationError('ExpressBrokerNoLogging', '`logging` is not supported when `brokerType` is `BrokerType.EXPRESS`.', this);
       }
       if (subnetSelection.subnets.length < 3) {
-        throw new core.ValidationError(`Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
+        throw new core.ValidationError('ExpressClusterInsufficientSubnets', `Express cluster requires at least 3 subnets, got ${subnetSelection.subnets.length}`, this);
       }
     }
 
@@ -563,12 +563,12 @@ export class Cluster extends ClusterBase {
 
     if (props.storageMode && props.storageMode === StorageMode.TIERED) {
       if (!props.kafkaVersion.isTieredStorageCompatible()) {
-        throw new core.ValidationError(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`, this);
+        throw new core.ValidationError('TieredStorageIncompatibleVersion', `To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`, this);
       }
       if (instanceType === this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
       )) {
-        throw new core.ValidationError('Tiered storage doesn\'t support broker type t3.small', this);
+        throw new core.ValidationError('TieredStorageIncompatibleInstanceType', 'Tiered storage doesn\'t support broker type t3.small', this);
       }
     }
 
@@ -749,14 +749,23 @@ export class Cluster extends ClusterBase {
       clientAuthentication,
     });
 
-    this.clusterName = this.getResourceNameAttribute(
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
-    );
-    this.clusterArn = resource.ref;
+    this.resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.RETAIN,
     });
+  }
+
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(
+      core.Fn.select(1, core.Fn.split('/', this.resource.ref)),
+    );
+  }
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.resource.ref;
   }
 
   private mskInstanceType(instanceType: ec2.InstanceType, express?:boolean): string {
@@ -940,7 +949,7 @@ export class Cluster extends ClusterBase {
         installLatestAwsSdk: false,
       });
     } else {
-      throw new core.ValidationError('Cannot create users if an authentication KMS key has not been created/provided.', this);
+      throw new core.ValidationError('MissingAuthenticationKmsKey', 'Cannot create users if an authentication KMS key has not been created/provided.', this);
     }
   }
 }

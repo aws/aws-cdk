@@ -1678,6 +1678,8 @@ new ecs.Ec2Service(this, 'EC2Service', {
 
 Managed Instances Capacity Providers allow you to use AWS-managed EC2 instances for your ECS tasks while providing more control over instance selection than standard Fargate. AWS handles the instance lifecycle, patching, and maintenance while you can specify detailed instance requirements. You can  define detailed instance requirements to control which types of instances are used for your workloads.
 
+Capacity Option Type provides the purchasing option for the EC2 instances used in the capacity provider. Determines whether to use On-Demand or Spot instances. Valid values are `ON_DEMAND` and `SPOT`. Defaults to `ON_DEMAND` when not specified. Changing this value will trigger replacement of the capacity provider. For more information, see [Amazon EC2 billing and purchasing options](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html) in the Amazon EC2 User Guide.
+
 See [ECS documentation for Managed Instances Capacity Provider](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/managed-instances-capacity-providers-concept.html) for more documentation.
 
 #### IAM Roles Setup
@@ -1695,6 +1697,7 @@ const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
 });
 
 const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  capacityOptionType: ecs.CapacityOptionType.SPOT,
   subnets: vpc.privateSubnets,
   securityGroups: [securityGroup],
   instanceRequirements: {
@@ -2449,4 +2452,43 @@ new ecs.ExternalService(this, 'ExternalService', {
   taskDefinition,
   daemon: true,
 });
+```
+
+### Force New Deployment
+
+You can force a new deployment of a service without changing the task definition or desired count.
+This is useful when you want ECS to pull the latest container image with the same tag or to trigger a redeployment.
+
+When called without a nonce, a timestamp is generated automatically. This means every `cdk synth`
+produces a different template and every `cdk deploy` triggers a new deployment, regardless of
+whether any code has changed. To control when deployments happen, provide a stable nonce that only
+changes when you intentionally want to redeploy (e.g., an image digest or a version string).
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+// Force a new deployment with an auto-generated nonce (deploys on every `cdk deploy`)
+service.forceNewDeployment();
+
+// Or provide your own nonce to control when deployments are triggered
+service.forceNewDeployment('my-custom-nonce-v2');
+```
+
+## Mixins
+
+ECS provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### ClusterSettings
+
+Applies one or more cluster settings to an ECS cluster. If a setting with the same name already exists, its value is replaced:
+
+```ts
+new ecs.CfnCluster(this, 'Cluster')
+  .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
 ```
