@@ -234,6 +234,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity permissions to start an execution of this state
    * machine.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.startExecution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStartExecution(identity: iam.IGrantable): iam.Grant {
@@ -244,6 +247,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * Grant the given identity permissions to start a synchronous execution of
    * this state machine.
    *
+   *
+   * The use of this method is discouraged. Please use `grants.startSyncExecution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
@@ -253,6 +259,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   /**
    * Grant the given identity permissions to read results from state
    * machine.
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantRead(identity: iam.IGrantable): iam.Grant {
@@ -261,6 +270,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity task response permissions on a state machine
+   *
+   * The use of this method is discouraged. Please use `grants.taskResponse()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantTaskResponse(identity: iam.IGrantable): iam.Grant {
@@ -269,6 +281,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permissions on all executions of the state machine
+   *
+   * The use of this method is discouraged. Please use `grants.execution()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantExecution(identity: iam.IGrantable, ...actions: string[]) {
@@ -277,6 +292,9 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
 
   /**
    * Grant the given identity permission to redrive the execution of the state machine
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.redriveExecution()` instead.
    *
    * [disable-awslint:no-grants]
    */
@@ -441,10 +459,10 @@ export class StateMachine extends StateMachineBase {
     addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
-      throw new ValidationError('Cannot specify definition and definitionBody at the same time', this);
+      throw new ValidationError('ConflictingDefinitionProperties', 'Cannot specify definition and definitionBody at the same time', this);
     }
     if (!props.definition && !props.definitionBody) {
-      throw new ValidationError('You need to specify either definition or definitionBody', this);
+      throw new ValidationError('MissingDefinition', 'You need to specify either definition or definitionBody', this);
     }
 
     if (props.stateMachineName !== undefined) {
@@ -555,18 +573,18 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new ValidationError(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
+        throw new ValidationError('InvalidStateMachineNameLength', `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new ValidationError(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
+        throw new ValidationError('InvalidStateMachineNamePattern', `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
       }
     }
   }
 
   private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
-      throw new ValidationError('Logs destination is required when level is not OFF.', this);
+      throw new ValidationError('LogsDestinationRequired', 'Logs destination is required when level is not OFF.', this);
     }
   }
 

@@ -174,7 +174,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (version === '$LATEST') {
-          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+          throw new ValidationError('FunctionVersionCannotLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -207,7 +207,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (attrs.version === '$LATEST') {
-          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+          throw new ValidationError('FunctionVersionCannotLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -221,6 +221,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return new Import(scope, id);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly version: string;
   public readonly lambda: IFunction;
   public readonly functionArn: string;
@@ -239,7 +240,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.architecture = props.lambda.architecture;
 
     if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
-      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError('ProvisionedConcurrencySupportedFunctionsTenant', 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
     }
 
     const version = new CfnVersion(this, 'Resource', {
@@ -315,7 +316,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public get edgeArn(): string {
     // Validate first that this version can be used for Lambda@Edge
     if (this.version === '$LATEST') {
-      throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+      throw new ValidationError('FunctionVersionCannotLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
     }
 
     // Check compatibility at synthesis. It could be that the version was associated
@@ -343,7 +344,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
+      throw new ValidationError('ProvisionedConcurrentExecutionsValueGreater', 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
@@ -361,13 +362,13 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
 
     if (minDefined && minExecutionEnvironments < 0) {
-      throw new ValidationError('minExecutionEnvironments must be a non-negative integer.', this);
+      throw new ValidationError('MinExecutionEnvironmentsNonNegative', 'minExecutionEnvironments must be a non-negative integer.', this);
     }
     if (maxDefined && maxExecutionEnvironments < 0) {
-      throw new ValidationError('maxExecutionEnvironments must be a non-negative integer.', this);
+      throw new ValidationError('MaxExecutionEnvironmentsNonNegative', 'maxExecutionEnvironments must be a non-negative integer.', this);
     }
     if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
-      throw new ValidationError('minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
+      throw new ValidationError('MinExecutionEnvironmentsLessEqual', 'minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
     }
 
     return {
