@@ -459,7 +459,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    */
   public urlForPath(path: string = '/'): string {
     if (!this.deploymentStage) {
-      throw new ValidationError('Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"', this);
+      throw new ValidationError('CannotDetermineDeploymentStageDeployment', 'Cannot determine deployment stage for API from "deploymentStage". Use "deploy" or explicitly set "deploymentStage"', this);
     }
 
     return this.deploymentStage.urlForPath(path);
@@ -490,7 +490,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   public arnForExecuteApi(method: string = '*', path: string = '/*', stage: string = '*') {
     if (!Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new ValidationError(`"path" must begin with a "/": '${path}'`, this);
+      throw new ValidationError('MustBePathBegin', `"path" must begin with a "/": '${path}'`, this);
     }
 
     if (method.toUpperCase() === 'ANY') {
@@ -684,7 +684,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
     cloudWatchRole = cloudWatchRole ?? cloudWatchRoleDefault;
     if (!cloudWatchRole) {
       if (cloudWatchRoleRemovalPolicy) {
-        throw new ValidationError('\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.', this);
+        throw new ValidationError('CloudWatchRoleEnabledCloud', '\'cloudWatchRole\' must be enabled for \'cloudWatchRoleRemovalPolicy\' to be applied.', this);
       }
       return;
     }
@@ -743,7 +743,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
       new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
     } else {
       if (props.deployOptions) {
-        throw new ValidationError('Cannot set \'deployOptions\' if \'deploy\' is disabled', this);
+        throw new ValidationError('CannotSetDeployOptionsDeploy', 'Cannot set \'deployOptions\' if \'deploy\' is disabled', this);
       }
     }
   }
@@ -753,14 +753,14 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    */
   protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
     if (props.endpointTypes && props.endpointConfiguration) {
-      throw new ValidationError('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
+      throw new ValidationError('OneRestApiPropsEndpoint', 'Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed', this);
     }
     if (props.endpointConfiguration) {
       const endpointConfiguration = props.endpointConfiguration;
       const isPrivateApi = endpointConfiguration.types.includes(EndpointType.PRIVATE);
       const isIpv4Only = endpointConfiguration.ipAddressType === IpAddressType.IPV4;
       if (isPrivateApi && isIpv4Only) {
-        throw new ValidationError('Private APIs can only have a dualstack IP address type.', this);
+        throw new ValidationError('PrivateDualstackAddressType', 'Private APIs can only have a dualstack IP address type.', this);
       }
       return {
         ipAddressType: props.endpointConfiguration.ipAddressType,
@@ -930,11 +930,11 @@ export class RestApi extends RestApiBase {
       }
 
       public get root(): IResource {
-        throw new ValidationError('root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
+        throw new ValidationError('RootConfiguredImportedUsing', 'root is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
       }
 
       public get restApiRootResourceId(): string {
-        throw new ValidationError('restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
+        throw new ValidationError('RestApiRootResourceId', 'restApiRootResourceId is not configured when imported using `fromRestApiId()`. Use `fromRestApiAttributes()` API instead.', scope);
       }
     }
 
@@ -981,7 +981,7 @@ export class RestApi extends RestApiBase {
     addConstructMetadata(this, props);
 
     if (props.minCompressionSize !== undefined && props.minimumCompressionSize !== undefined) {
-      throw new ValidationError('both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
+      throw new ValidationError('PropertiesMinCompressionSizeMinimum', 'both properties minCompressionSize and minimumCompressionSize cannot be set at once.', scope);
     }
 
     if (props.securityPolicy?.startsWith('SecurityPolicy_') && !props.endpointAccessMode ) {
@@ -1261,7 +1261,7 @@ class RootResource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this._restApi) {
-      throw new ValidationError('RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead', this);
+      throw new ValidationError('RestapiAvailableResourceConnected', 'RestApi is not available on Resource not connected to an instance of RestApi. Use `api` instead', this);
     }
     return this._restApi;
   }
