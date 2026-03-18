@@ -187,18 +187,18 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
       if (minimumPollers != undefined && !Token.isUnresolved(minimumPollers)) {
         if (minimumPollers < 1 || minimumPollers > 200) {
-          throw new UnscopedValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive');
+          throw new UnscopedValidationError('MustBeMinimumProvisionedPollers', 'Minimum provisioned pollers must be between 1 and 200 inclusive');
         }
       }
       if (maximumPollers != undefined && !Token.isUnresolved(maximumPollers)) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
-          throw new UnscopedValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+          throw new UnscopedValidationError('MustBeMaximumProvisionedPollers', 'Maximum provisioned pollers must be between 1 and 2000 inclusive');
         }
       }
       if (minimumPollers != undefined && maximumPollers != undefined
         && !Token.isUnresolved(minimumPollers) && !Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
-          throw new UnscopedValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+          throw new UnscopedValidationError('MustBeMinimumProvisionedPollers', 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
         }
       }
     }
@@ -209,7 +209,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
     // check if this event source support S3 as OnFailure, Kinesis, Kafka, DynamoDB has supported S3 OFD
     if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OnFailureDestination) {
-      throw new UnscopedValidationError('S3 onFailure Destination is not supported for this event source');
+      throw new UnscopedValidationError('OnfailureDestinationSupportedEvent', 'S3 onFailure Destination is not supported for this event source');
     }
     return {
       ...options,

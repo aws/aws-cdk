@@ -505,72 +505,72 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
-      throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);
+      throw new ValidationError('EventSourceArnKafkaBootstrap', 'Either eventSourceArn or kafkaBootstrapServers must be set', this);
     }
 
     if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
-      throw new ValidationError('eventSourceArn and kafkaBootstrapServers are mutually exclusive', this);
+      throw new ValidationError('EventSourceArnKafkaBootstrap', 'eventSourceArn and kafkaBootstrapServers are mutually exclusive', this);
     }
 
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
       if (minimumPollers != undefined && !cdk.Token.isUnresolved(minimumPollers)) {
         if (minimumPollers < 1 || minimumPollers > 200) {
-          throw new ValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive', this);
+          throw new ValidationError('MinimumProvisionedPollersInclusive', 'Minimum provisioned pollers must be between 1 and 200 inclusive', this);
         }
       }
       if (maximumPollers != undefined && !cdk.Token.isUnresolved(maximumPollers)) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
-          throw new ValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
+          throw new ValidationError('MaximumProvisionedPollersInclusive', 'Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
         }
       }
       if (minimumPollers != undefined && maximumPollers != undefined
         && !cdk.Token.isUnresolved(minimumPollers) && !cdk.Token.isUnresolved(maximumPollers)) {
         if (minimumPollers > maximumPollers) {
-          throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
+          throw new ValidationError('MinimumProvisionedPollersLessEqual', 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
         }
       }
     }
 
     if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
-      throw new ValidationError('kafkaBootStrapServers must not be empty if set', this);
+      throw new ValidationError('KafkaBootStrapServersEmpty', 'kafkaBootStrapServers must not be empty if set', this);
     }
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
-      throw new ValidationError(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`, this);
+      throw new ValidationError('MaxBatchingWindowCannotSeconds', `maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`, this);
     }
 
     if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
-      throw new ValidationError('maxConcurrency must be between 2 and 1000 concurrent instances', this);
+      throw new ValidationError('MaxConcurrencyConcurrentInstances', 'maxConcurrency must be between 2 and 1000 concurrent instances', this);
     }
 
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
-      throw new ValidationError('maxRecordAge must be between 60 seconds and 7 days inclusive', this);
+      throw new ValidationError('MaxRecordAgeSecondsDays', 'maxRecordAge must be between 60 seconds and 7 days inclusive', this);
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
       // Allow -1 for infinite retries, otherwise validate the 0-10000 range
       if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
-        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
+        throw new ValidationError('RetryAttemptsInfiniteInclusive', `retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 
     props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
       if (factor < 1 || factor > 10) {
-        throw new ValidationError(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`, this);
+        throw new ValidationError('ParallelizationFactorInclusive', `parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`, this);
       }
     });
 
     if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
-      throw new ValidationError(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
+      throw new ValidationError('TumblingWindowCannotSeconds', `tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
     }
 
     if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new ValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
+      throw new ValidationError('StartingPositionTimestampProvidedStarting', 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new ValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP', this);
+      throw new ValidationError('StartingPositionTimestampStartingPosition', 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.kafkaConsumerGroupId) {
@@ -578,7 +578,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (props.filterEncryption !== undefined && props.filters == undefined) {
-      throw new ValidationError('filter criteria must be provided to enable setting filter criteria encryption', this);
+      throw new ValidationError('FilterCriteriaProvidedEnableSetting', 'filter criteria must be provided to enable setting filter criteria encryption', this);
     }
 
     /**
@@ -667,13 +667,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (kafkaConsumerGroupId.length > 200 || kafkaConsumerGroupId.length < 1) {
-      throw new ValidationError('kafkaConsumerGroupId must be a valid string between 1 and 200 characters', this);
+      throw new ValidationError('KafkaConsumerGroupIdValid', 'kafkaConsumerGroupId must be a valid string between 1 and 200 characters', this);
     }
 
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new ValidationError('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
+      throw new ValidationError('KafkaConsumerGroupIdContains', 'kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
     }
   }
 }
