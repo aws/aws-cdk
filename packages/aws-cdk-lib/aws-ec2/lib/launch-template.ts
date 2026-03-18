@@ -636,13 +636,13 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
+      Annotations.of(this)._addTrackableError('InvalidSpotBlockDuration', 'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
     if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
       // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
-      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
+      Annotations.of(this)._addTrackableError('InvalidHttpPutResponseHopLimit', 'HttpPutResponseHopLimit must between 1 and 64');
     }
 
     if (props.instanceProfile && props.role) {
@@ -884,7 +884,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
     if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
-      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
+      Annotations.of(this)._addTrackableError('HttpTokensRequired', 'httpTokens must be required when requireImdsv2 is true');
     }
     if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
       props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {

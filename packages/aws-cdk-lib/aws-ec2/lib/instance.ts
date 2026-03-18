@@ -630,13 +630,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        Annotations.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this)._addTrackableError('AmbiguousSubnetForAz', `Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        Annotations.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this)._addTrackableError('NoMatchingSubnets', `Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
