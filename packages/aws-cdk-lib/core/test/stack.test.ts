@@ -2142,8 +2142,8 @@ describe('stack', () => {
       },
     ];
 
-    expect(asm.getStackArtifact(stack1.artifactId).manifest.metadata).toEqual({ '/stack1': expected });
-    expect(asm.getStackArtifact(stack2.artifactId).manifest.metadata).toEqual({ '/stack1/stack2': expected });
+    expect(asm.getStackArtifact(stack1.artifactId).metadata).toEqual({ '/stack1': expected });
+    expect(asm.getStackArtifact(stack2.artifactId).metadata).toEqual({ '/stack1/stack2': expected });
   });
 
   test('stack tags are reflected in the stack artifact properties', () => {
@@ -2189,7 +2189,7 @@ describe('stack', () => {
       const asm = app.synth();
 
       const stackArtifact = asm.getStackArtifact(stack.artifactId);
-      expect(stackArtifact.manifest.metadata).toEqual({
+      expect(stackArtifact.metadata).toEqual({
         '/stack1': [
           {
             type: 'aws:cdk:stack-tags',
@@ -2260,7 +2260,7 @@ describe('stack', () => {
 
     const asm = app.synth();
     const stackArtifact = asm.stacks[0];
-    expect(stackArtifact.manifest.metadata?.['/stack1']).toEqual([
+    expect(stackArtifact.metadata?.['/stack1']).toEqual([
       {
         type: 'aws:cdk:warning',
         data: expect.stringContaining('Ignoring stack tags that contain deploy-time values'),

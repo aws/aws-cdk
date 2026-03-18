@@ -439,6 +439,27 @@ Size.mebibytes(2).toKibibytes()                                             // y
 Size.kibibytes(2050).toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })  // yields 2
 ```
 
+## Bitrate
+
+To make specification of bitrate values unambiguous, a class called
+`Bitrate` is available.
+
+An instance of `Bitrate` is initialized through one of its static factory methods:
+
+```ts
+Bitrate.bps(5000)   // 5,000 bits per second
+Bitrate.kbps(500)   // 500 kilobits per second
+Bitrate.mbps(10)    // 10 megabits per second
+Bitrate.gbps(1)     // 1 gigabit per second
+```
+
+Instances of `Bitrate` created with one of the units can be converted into others:
+
+```ts
+Bitrate.mbps(10).toBps()    // yields 10000000
+Bitrate.mbps(10).toKbps()  // yields 10000
+```
+
 ## Secrets
 
 To help avoid accidental storage of secrets as plain text, we use the `SecretValue` type to
@@ -725,7 +746,7 @@ currently only supports Node.js-based user handlers, represents permissions as r
 JSON blobs instead of `iam.PolicyStatement` objects, and it does not have
 support for asynchronous waiting (handler cannot exceed the 15min lambda
 timeout). The `CustomResourceProviderRuntime` supports runtime `nodejs12.x`,
-`nodejs14.x`, `nodejs16.x`, `nodejs18.x`.
+`nodejs14.x`, `nodejs16.x`, `nodejs18.x`, `nodejs20.x`, and `nodejs22.x`.
 
 [`@aws-cdk/core.CustomResourceProvider`]: https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_core.CustomResourceProvider.html
 
@@ -739,7 +760,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -834,7 +855,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_22_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -864,7 +885,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 
 const roleArn = provider.roleArn;
@@ -877,7 +898,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_22_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
@@ -1775,17 +1796,17 @@ They are applied during or after construct construction using the `.with()` meth
 ```ts fixture=README-mixins
 // Apply mixins fluently with .with()
 new s3.CfnBucket(scope, "MyL1Bucket")
-  .with(new EncryptionAtRest())
-  .with(new AutoDeleteObjects());
+  .with(new BucketBlockPublicAccess())
+  .with(new BucketAutoDeleteObjects());
 
 // Apply multiple mixins to the same construct
 new s3.CfnBucket(scope, "MyL1Bucket")
-  .with(new EncryptionAtRest(), new AutoDeleteObjects());
+  .with(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
 
 // Mixins work with all types of constructs:
 // L1, L2 and even custom constructs
-new s3.Bucket(stack, 'MyL2Bucket').with(new EncryptionAtRest());
-new CustomBucket(stack, 'MyCustomBucket').with(new EncryptionAtRest());
+new s3.Bucket(stack, 'MyL2Bucket').with(new BucketBlockPublicAccess());
+new CustomBucket(stack, 'MyCustomBucket').with(new BucketBlockPublicAccess());
 ```
 
 There is an alternative form available that allows additional, advanced configuration of Mixin application: `Mixins.of()`.
@@ -1796,22 +1817,22 @@ import { ConstructSelector } from "aws-cdk-lib/core";
 // Basic: Apply mixins to any construct, calls can be chained
 const myBucket = new s3.CfnBucket(scope, "MyBucket");
 Mixins.of(myBucket)
-  .apply(new EncryptionAtRest())
-  .apply(new AutoDeleteObjects());
+  .apply(new BucketBlockPublicAccess())
+  .apply(new BucketAutoDeleteObjects());
 
 // Basic: Or multiple Mixins passed to apply
 Mixins.of(myBucket)
-  .apply(new EncryptionAtRest(), new AutoDeleteObjects());
+  .apply(new BucketBlockPublicAccess(), new BucketAutoDeleteObjects());
 
 // Advanced: Apply to constructs matching a selector, e.g. match by ID
 Mixins.of(
   scope,
   ConstructSelector.byId("prod/**") 
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 
 // Advanced: Require a mixin to be applied to every node in the construct tree
 Mixins.of(stack)
-  .apply(new ProductionSecurityMixin())
+  .apply(new CustomProdSecurityConfig())
   .requireAll();
 ```
 
@@ -1832,7 +1853,7 @@ By default, Mixins are applied to all supported constructs in the tree:
 
 ```ts fixture=README-mixins
 // Apply to all constructs in a scope
-Mixins.of(scope).apply(new EncryptionAtRest());
+Mixins.of(scope).apply(new BucketBlockPublicAccess());
 ```
 
 Optionally, you may select specific constructs:
@@ -1844,31 +1865,31 @@ import { ConstructSelector } from "aws-cdk-lib/core";
 Mixins.of(
   bucket,
   ConstructSelector.cfnResource() // provided CfnResource or a CfnResource default child
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Apply to all resources of a specific type
 Mixins.of(
   scope,
   ConstructSelector.resourcesOfType(s3.CfnBucket.CFN_RESOURCE_TYPE_NAME)
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Alternative: select by CloudFormation resource type name
 Mixins.of(
   scope,
   ConstructSelector.resourcesOfType("AWS::S3::Bucket")
-).apply(new EncryptionAtRest());
+).apply(new BucketBlockPublicAccess());
 
 // Apply to constructs matching a pattern
 Mixins.of(
   scope,
   ConstructSelector.byId("prod/**") 
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 
 // The default is to apply to all constructs in the scope
 Mixins.of(
   scope,
   ConstructSelector.all() // pass through to IConstruct.findAll()
-).apply(new ProductionSecurityMixin());
+).apply(new CustomProdSecurityConfig());
 ```
 
 #### Mixins that must be used
@@ -1891,10 +1912,10 @@ Mixins.of(scope, selector)
   .requireAll()
   // Or assert Mixin was applied to at least one construct in the selection
   // .requireAny()
-  .apply(new EncryptionAtRest());
+  .apply(new BucketBlockPublicAccess());
 
 // Get an application report for manual assertions
-const report = Mixins.of(scope).apply(new EncryptionAtRest()).report;
+const report = Mixins.of(scope).apply(new BucketBlockPublicAccess()).report;
 ```
 
 ### Creating Custom Mixins
@@ -2135,6 +2156,23 @@ for (const aspectApplication of aspectApplications) {
   aspectApplication.priority = 700;
 }
 ```
+
+### Converting between Aspects and Mixins
+
+Since Mixins and Aspects are both implementations of the visitor pattern, they can be converted from each other using the `Shims` class:
+
+```ts fixture=README-mixins
+// Applies an Aspect immediately as a Mixin
+const versioningMixin = Shims.asMixin(new EnableBucketVersioning());
+Mixins.of(scope).apply(versioningMixin);
+
+// Delays application of a Mixin to the synthesis phase
+const publicAccessAspect = Shims.asAspect(new BucketBlockPublicAccess());
+Aspects.of(scope).add(publicAccessAspect);
+```
+
+When shimming a Mixin to an Aspect, the Mixin will automatically only be applied to supported constructs (via `supports()`).
+Going from an Aspect to a Mixin, the Aspect will be applied to every node.
 
 ## Blueprint Property Injection
 
