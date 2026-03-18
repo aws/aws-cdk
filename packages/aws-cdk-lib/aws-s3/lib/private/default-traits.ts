@@ -74,7 +74,7 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
   if (!CfnBucket.isCfnBucket(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnBucket`, resource);
   }
 
   return factory(resource);

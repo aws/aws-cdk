@@ -793,7 +793,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError(lengthErrors.join('\n'), this);
+      throw new ValidationError('GatewayNameLengthInvalid', lengthErrors.join('\n'), this);
     }
 
     const patternErrors = validateFieldPattern(
@@ -804,7 +804,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'), this);
+      throw new ValidationError('GatewayNamePatternInvalid', patternErrors.join('\n'), this);
     }
   }
 
@@ -828,7 +828,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'), this);
+      throw new ValidationError('GatewayDescriptionInvalid', errors.join('\n'), this);
     }
   }
 
@@ -942,6 +942,7 @@ export class Gateway extends GatewayBase {
     if (interceptionPoint === InterceptionPoint.REQUEST) {
       if (this.requestInterceptorConfig) {
         throw new ValidationError(
+          'RequestInterceptorAlreadyExists',
           'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
           this,
         );
@@ -950,6 +951,7 @@ export class Gateway extends GatewayBase {
     } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
       if (this.responseInterceptorConfig) {
         throw new ValidationError(
+          'ResponseInterceptorAlreadyExists',
           'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
           this,
         );
@@ -968,6 +970,7 @@ export class Gateway extends GatewayBase {
 
     if (requestCount > 1) {
       throw new ValidationError(
+        'TooManyRequestInterceptors',
         `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
         this,
       );
@@ -975,6 +978,7 @@ export class Gateway extends GatewayBase {
 
     if (responseCount > 1) {
       throw new ValidationError(
+        'TooManyResponseInterceptors',
         `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
         this,
       );

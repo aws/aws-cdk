@@ -248,7 +248,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public get backupVault(): IBackupVault {
     if (!this._backupVault) {
       // This cannot happen but is here to make TypeScript happy
-      throw new ValidationError('No backup vault!', this);
+      throw new ValidationError('BackupVault', 'No backup vault!', this);
     }
 
     return toIBackupVault(this._backupVault);
