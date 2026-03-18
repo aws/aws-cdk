@@ -847,7 +847,7 @@ export abstract class BaseService extends Resource
     }
 
     if (props.circuitBreaker && !this.isEcsDeploymentController) {
-      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+      Annotations.of(this)._addTrackableError('CircuitBreakerRequiresEcsController', 'Deployment circuit breaker requires the ECS deployment controller.');
     }
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
