@@ -81,7 +81,7 @@ class EncryptedCfnQueue implements IEncryptedResource {
 
 function ifCfnQueue<A>(resource: IConstruct, factory: (r: CfnQueue) => A): A {
   if (!CfnQueue.isCfnQueue(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnQueue`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnQueue`, resource);
   }
 
   return factory(resource);

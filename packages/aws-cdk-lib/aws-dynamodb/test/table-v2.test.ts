@@ -3236,6 +3236,56 @@ test('Resource policy test', () => {
   });
 });
 
+test('Resource policy is scoped to primary region only when resourcePolicyPerReplica feature flag is enabled', () => {
+  // GIVEN
+  const app = new App({
+    postCliContext: {
+      '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
+    },
+  });
+  const stack = new Stack(app, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:*'],
+        principals: [new iam.AccountRootPrincipal()],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    resourcePolicy: doc,
+    replicas: [{
+      region: 'eu-west-2',
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: Match.arrayWith([
+      Match.objectLike({
+        Region: 'eu-west-2',
+        ResourcePolicy: Match.absent(),
+      }),
+      Match.objectLike({
+        Region: 'eu-west-1',
+        ResourcePolicy: Match.objectLike({
+          PolicyDocument: Match.objectLike({
+            Statement: Match.arrayWith([
+              Match.objectLike({ Action: 'dynamodb:*' }),
+            ]),
+          }),
+        }),
+      }),
+    ]),
+  });
+});
+
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
@@ -3743,7 +3793,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
           PolicyDocument: {
             Statement: [
               {
-                Sid: 'AllowMultiAccountReplicaAssociation-222222222222',
+                Sid: 'AllowMultiAccountReplicaAssociation222222222222',
                 Effect: 'Allow',
                 Action: 'dynamodb:AssociateTableReplica',
                 Resource: '*',
@@ -3754,7 +3804,7 @@ test('grantMultiAccountReplicationTo adds required resource policy statements', 
                 },
               },
               {
-                Sid: 'AllowReplicationServiceReadWrite-222222222222',
+                Sid: 'AllowReplicationServiceReadWrite222222222222',
                 Effect: 'Allow',
                 Action: [
                   'dynamodb:ReadDataForReplication',
