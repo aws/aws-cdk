@@ -5,6 +5,10 @@
       "stacks": [
         "aws-cdk-global-table-ondemand"
       ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
       "assertionStack": "aws-cdk-global-table-ondemand-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkglobaltableondemandintegDefaultTestDeployAssert303D85DB"
     }
