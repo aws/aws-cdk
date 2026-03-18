@@ -65,6 +65,15 @@ export class Token {
   }
 
   /**
+   * The negation of `Token.isUnresolved()`. In TypeScript, narrows the type
+   * to exclude `IResolvable`.
+   * @param obj The object to test.
+   */
+  public static isResolved<A>(obj: A): obj is Exclude<A, IResolvable> {
+    return !Token.isUnresolved(obj);
+  }
+
+  /**
    * Return a reversible string representation of this token
    *
    * If the Token is initialized with a literal, the stringified value of the
@@ -145,7 +154,7 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new UnscopedValidationError(`Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
+      throw new UnscopedValidationError('TokenzationReverseCompleteStringArgument', `Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
     }
     return fragments.firstToken;
   }

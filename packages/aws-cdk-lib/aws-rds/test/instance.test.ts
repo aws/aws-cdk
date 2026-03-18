@@ -1523,7 +1523,6 @@ describe('instance', () => {
     replicaInstance.grantConnect(role, 'my-user');
 
     // THEN
-    app.synth();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{

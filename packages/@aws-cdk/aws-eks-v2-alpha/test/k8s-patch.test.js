@@ -1,0 +1,110 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const lambda_layer_kubectl_v31_1 = require("@aws-cdk/lambda-layer-kubectl-v31");
+const assertions_1 = require("aws-cdk-lib/assertions");
+const core_1 = require("aws-cdk-lib/core");
+const eks = require("../lib");
+const k8s_patch_1 = require("../lib/k8s-patch");
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_31;
+describe('k8s patch', () => {
+    test('applies a patch to k8s', () => {
+        // GIVEN
+        const stack = new core_1.Stack();
+        const cluster = new eks.Cluster(stack, 'MyCluster', {
+            version: CLUSTER_VERSION,
+            kubectlProviderOptions: {
+                kubectlLayer: new lambda_layer_kubectl_v31_1.KubectlV31Layer(stack, 'kubectlLayer'),
+            },
+        });
+        // WHEN
+        const patch = new k8s_patch_1.KubernetesPatch(stack, 'MyPatch', {
+            cluster,
+            applyPatch: { patch: { to: 'apply' } },
+            restorePatch: { restore: { patch: 123 } },
+            resourceName: 'myResourceName',
+        });
+        // THEN
+        assertions_1.Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+            ServiceToken: {
+                'Fn::GetAtt': [
+                    'MyClusterKubectlProviderframeworkonEvent7B04B277',
+                    'Arn',
+                ],
+            },
+            ResourceName: 'myResourceName',
+            ResourceNamespace: 'default',
+            ApplyPatchJson: '{"patch":{"to":"apply"}}',
+            RestorePatchJson: '{"restore":{"patch":123}}',
+            ClusterName: {
+                Ref: 'MyCluster4C1BA579',
+            },
+        });
+        // also make sure a dependency on the barrier is added to the patch construct.
+        expect(patch.node.dependencies.map(d => core_1.Names.nodeUniqueId(d.node))).toEqual(['MyClusterKubectlReadyBarrier7547948A']);
+    });
+    test('defaults to "strategic" patch type if no patchType is specified', () => {
+        // GIVEN
+        const stack = new core_1.Stack();
+        const cluster = new eks.Cluster(stack, 'MyCluster', {
+            version: CLUSTER_VERSION,
+            kubectlProviderOptions: {
+                kubectlLayer: new lambda_layer_kubectl_v31_1.KubectlV31Layer(stack, 'kubectlLayer'),
+            },
+        });
+        // WHEN
+        new k8s_patch_1.KubernetesPatch(stack, 'MyPatch', {
+            cluster,
+            applyPatch: { patch: { to: 'apply' } },
+            restorePatch: { restore: { patch: 123 } },
+            resourceName: 'myResourceName',
+        });
+        assertions_1.Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+            PatchType: 'strategic',
+        });
+    });
+    test('uses specified to patch type if specified', () => {
+        // GIVEN
+        const stack = new core_1.Stack();
+        const cluster = new eks.Cluster(stack, 'MyCluster', {
+            version: CLUSTER_VERSION,
+            kubectlProviderOptions: {
+                kubectlLayer: new lambda_layer_kubectl_v31_1.KubectlV31Layer(stack, 'kubectlLayer'),
+            },
+        });
+        // WHEN
+        new k8s_patch_1.KubernetesPatch(stack, 'jsonPatch', {
+            cluster,
+            applyPatch: { patch: { to: 'apply' } },
+            restorePatch: { restore: { patch: 123 } },
+            resourceName: 'jsonPatchResource',
+            patchType: k8s_patch_1.PatchType.JSON,
+        });
+        new k8s_patch_1.KubernetesPatch(stack, 'mergePatch', {
+            cluster,
+            applyPatch: { patch: { to: 'apply' } },
+            restorePatch: { restore: { patch: 123 } },
+            resourceName: 'mergePatchResource',
+            patchType: k8s_patch_1.PatchType.MERGE,
+        });
+        new k8s_patch_1.KubernetesPatch(stack, 'strategicPatch', {
+            cluster,
+            applyPatch: { patch: { to: 'apply' } },
+            restorePatch: { restore: { patch: 123 } },
+            resourceName: 'strategicPatchResource',
+            patchType: k8s_patch_1.PatchType.STRATEGIC,
+        });
+        assertions_1.Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+            ResourceName: 'jsonPatchResource',
+            PatchType: 'json',
+        });
+        assertions_1.Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+            ResourceName: 'mergePatchResource',
+            PatchType: 'merge',
+        });
+        assertions_1.Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-KubernetesPatch', {
+            ResourceName: 'strategicPatchResource',
+            PatchType: 'strategic',
+        });
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiazhzLXBhdGNoLnRlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJrOHMtcGF0Y2gudGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLGdGQUFvRTtBQUNwRSx1REFBa0Q7QUFDbEQsMkNBQWdEO0FBQ2hELDhCQUE4QjtBQUM5QixnREFBOEQ7QUFFOUQsTUFBTSxlQUFlLEdBQUcsR0FBRyxDQUFDLGlCQUFpQixDQUFDLEtBQUssQ0FBQztBQUVwRCxRQUFRLENBQUMsV0FBVyxFQUFFLEdBQUcsRUFBRTtJQUN6QixJQUFJLENBQUMsd0JBQXdCLEVBQUUsR0FBRyxFQUFFO1FBQ2xDLFFBQVE7UUFDUixNQUFNLEtBQUssR0FBRyxJQUFJLFlBQUssRUFBRSxDQUFDO1FBQzFCLE1BQU0sT0FBTyxHQUFHLElBQUksR0FBRyxDQUFDLE9BQU8sQ0FBQyxLQUFLLEVBQUUsV0FBVyxFQUFFO1lBQ2xELE9BQU8sRUFBRSxlQUFlO1lBQ3hCLHNCQUFzQixFQUFFO2dCQUN0QixZQUFZLEVBQUUsSUFBSSwwQ0FBZSxDQUFDLEtBQUssRUFBRSxjQUFjLENBQUM7YUFDekQ7U0FDRixDQUFDLENBQUM7UUFFSCxPQUFPO1FBQ1AsTUFBTSxLQUFLLEdBQUcsSUFBSSwyQkFBZSxDQUFDLEtBQUssRUFBRSxTQUFTLEVBQUU7WUFDbEQsT0FBTztZQUNQLFVBQVUsRUFBRSxFQUFFLEtBQUssRUFBRSxFQUFFLEVBQUUsRUFBRSxPQUFPLEVBQUUsRUFBRTtZQUN0QyxZQUFZLEVBQUUsRUFBRSxPQUFPLEVBQUUsRUFBRSxLQUFLLEVBQUUsR0FBRyxFQUFFLEVBQUU7WUFDekMsWUFBWSxFQUFFLGdCQUFnQjtTQUMvQixDQUFDLENBQUM7UUFFSCxPQUFPO1FBQ1AscUJBQVEsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUMscUJBQXFCLENBQUMsb0NBQW9DLEVBQUU7WUFDcEYsWUFBWSxFQUFFO2dCQUNaLFlBQVksRUFBRTtvQkFDWixrREFBa0Q7b0JBQ2xELEtB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Q1AsVUFBVSxFQUFFLEVBQUUsS0FBSyxFQUFFLEVBQUUsRUFBRSxFQUFFLE9BQU8sRUFBRSxFQUFFO1lBQ3RDLFlBQVksRUFBRSxFQUFFLE9BQU8sRUFBRSxFQUFFLEtBQUssRUFBRSxHQUFHLEVBQUUsRUFBRTtZQUN6QyxZQUFZLEVBQUUsd0JBQXdCO1lBQ3RDLFNBQVMsRUFBRSxxQkFBUyxDQUFDLFNBQVM7U0FDL0IsQ0FBQyxDQUFDO1FBRUgscUJBQVEsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUMscUJBQXFCLENBQUMsb0NBQW9DLEVBQUU7WUFDcEYsWUFBWSxFQUFFLG1CQUFtQjtZQUNqQyxTQUFTLEVBQUUsTUFBTTtTQUNsQixDQUFDLENBQUM7UUFDSCxxQkFBUSxDQUFDLFNBQVMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxxQkFBcUIsQ0FBQyxvQ0FBb0MsRUFBRTtZQUNwRixZQUFZLEVBQUUsb0JBQW9CO1lBQ2xDLFNBQVMsRUFBRSxPQUFPO1NBQ25CLENBQUMsQ0FBQztRQUNILHFCQUFRLENBQUMsU0FBUyxDQUFDLEtBQUssQ0FBQyxDQUFDLHFCQUFxQixDQUFDLG9DQUFvQyxFQUFFO1lBQ3BGLFlBQVksRUFBRSx3QkFBd0I7WUFDdEMsU0FBUyxFQUFFLFdBQVc7U0FDdkIsQ0FBQyxDQUFDO0lBQ0wsQ0FBQyxDQUFDLENBQUM7QUFDTCxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEt1YmVjdGxWMzFMYXllciB9IGZyb20gJ0Bhd3MtY2RrL2xhbWJkYS1sYXllci1rdWJlY3RsLXYzMSc7XG5pbXBvcnQgeyBUZW1wbGF0ZSB9IGZyb20gJ2F3cy1jZGstbGliL2Fzc2VydGlvbnMnO1xuaW1wb3J0IHsgTmFtZXMsIFN0YWNrIH0gZnJvbSAnYXdzLWNkay1saWIvY29yZSc7XG5pbXBvcnQgKiBhcyBla3MgZnJvbSAnLi4vbGliJztcbmltcG9ydCB7IEt1YmVybmV0ZXNQYXRjaCwgUGF0Y2hUeXBlIH0gZnJvbSAnLi4vbGliL2s4cy1wYXRjaCc7XG5cbmNvbnN0IENMVVNURVJfVkVSU0lPTiA9IGVrcy5LdWJlcm5ldGVzVmVyc2lvbi5WMV8zMTtcblxuZGVzY3JpYmUoJ2s4cyBwYXRjaCcsICgpID0+IHtcbiAgdGVzdCgnYXBwbGllcyBhIHBhdGNoIHRvIGs4cycsICgpID0+IHtcbiAgICAvLyBHSVZFTlxuICAgIGNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKCk7XG4gICAgY29uc3QgY2x1c3RlciA9IG5ldyBla3MuQ2x1c3RlcihzdGFjaywgJ015Q2x1c3RlcicsIHtcbiAgICAgIHZlcnNpb246IENMVVNURVJfVkVSU0lPTixcbiAgICAgIGt1YmVjdGxQcm92aWRlck9wdGlvbnM6IHtcbiAgICAgICAga3ViZWN0bExheWVyOiBuZXcgS3ViZWN0bFYzMUxheWVyKHN0YWNrLCAna3ViZWN0bExheWVyJyksXG4gICAgICB9LFxuICAgIH0pO1xuXG4gICAgLy8gV0hFTlxuICAgIGNvbnN0IHBhdGNoID0gbmV3IEt1YmVybmV0ZXNQYXRjaChzdGFjaywgJ015UGF0Y2gnLCB7XG4gICAgICBjbHVzdGVyLFxuICAgICAgYXBwbHlQYXRjaDogeyBwYXRjaDogeyB0bzogJ2FwcGx5JyB9IH0sXG4gICAgICByZXN0b3JlUGF0Y2g6IHsgcmVzdG9yZTogeyBwYXRjaDogMTIzIH0gfSxcbiAgICAgIHJlc291cmNlTmFtZTogJ215UmVzb3VyY2VOYW1lJyxcbiAgICB9KTtcblxuICAgIC8vIFRIRU5cbiAgICBUZW1wbGF0ZS5mcm9tU3RhY2soc3RhY2spLmhhc1Jlc291cmNlUHJvcGVydGllcygnQ3VzdG9tOjpBV1NDREstRUtTLUt1YmVybmV0ZXNQYXRjaCcsIHtcbiAgICAgIFNlcnZpY2VUb2tlbjoge1xuICAgICAgICAnRm46OkdldEF0dCc6IFtcbiAgICAgICAgICAnTXlDbHVzdGVyS3ViZWN0bFByb3ZpZGVyZnJhbWV3b3Jrb25FdmVudDdCMDRCMjc3JyxcbiAgICAgICAgICAnQXJuJyxcbiAgICAgICAgXSxcbiAgICAgIH0sXG4gICAgICBSZXNvdXJjZU5hbWU6ICdteVJlc291cmNlTmFtZScsXG4gICAgICBSZXNvdXJjZU5hbWVzcGFjZTogJ2RlZmF1bHQnLFxuICAgICAgQXBwbHlQYXRjaEpzb246ICd7XCJwYXRjaFwiOntcInRvXCI6XCJhcHBseVwifX0nLFxuICAgICAgUmVzdG9yZVBhdGNoSnNvbjogJ3tcInJlc3RvcmVcIjp7XCJwYXRjaFwiOjEyM319JyxcbiAgICAgIENsdXN0ZXJOYW1lOiB7XG4gICAgICAgIFJlZjogJ015Q2x1c3RlcjRDMUJBNTc5JyxcbiAgICAgIH0sXG4gICAgfSk7XG5cbiAgICAvLyBhbHNvIG1ha2Ugc3VyZSBhIGRlcGVuZGVuY3kgb24gdGhlIGJhcnJpZXIgaXMgYWRkZWQgdG8gdGhlIHBhdGNoIGNvbnN0cnVjdC5cbiAgICBleHBlY3QocGF0Y2gubm9kZS5kZXBlbmRlbmNpZXMubWFwKGQgPT4gTmFtZXMubm9kZVVuaXF1ZUlkKGQubm9kZSkpKS50b0VxdWFsKFsnTXlDbHVzdGVyS3ViZWN0bFJlYWR5QmFycmllcjc1NDc5NDhBJ10pO1xuICB9KTtcblxuICB0ZXN0KCdkZWZhdWx0cyB0byBcInN0cmF0ZWdpY1wiIHBhdGNoIHR5cGUgaWYgbm8gcGF0Y2hUeXBlIGlzIHNwZWNpZmllZCcsICgpID0+IHtcbiAgICAvLyBHSVZFTlxuICAgIGNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKCk7XG4gICAgY29uc3QgY2x1c3RlciA9IG5ldyBla3MuQ2x1c3RlcihzdGFjaywgJ015Q2x1c3RlcicsIHtcbiAgICAgIHZlcnNpb246IENMVVNURVJfVkVSU0lPTixcbiAgICAgIGt1YmVjdGxQcm92aWRlck9wdGlvbnM6IHtcbiAgICAgICAga3ViZWN0bExheWVyOiBuZXcgS3ViZWN0bFYzMUxheWVyKHN0YWNrLCAna3ViZWN0bExheWVyJyksXG4gICAgICB9LFxuICAgIH0pO1xuXG4gICAgLy8gV0hFTlxuICAgIG5ldyBLdWJlcm5ldGVzUGF0Y2goc3RhY2ssICdNeVBhdGNoJywge1xuICAgICAgY2x1c3RlcixcbiAgICAgIGFwcGx5UGF0Y2g6IHsgcGF0Y2g6IHsgdG86ICdhcHBseScgfSB9LFxuICAgICAgcmVzdG9yZVBhdGNoOiB7IHJlc3RvcmU6IHsgcGF0Y2g6IDEyMyB9IH0sXG4gICAgICByZXNvdXJjZU5hbWU6ICdteVJlc291cmNlTmFtZScsXG4gICAgfSk7XG4gICAgVGVtcGxhdGUuZnJvbVN0YWNrKHN0YWNrKS5oYXNSZXNvdXJjZVByb3BlcnRpZXMoJ0N1c3RvbTo6QVdTQ0RLLUVLUy1LdWJlcm5ldGVzUGF0Y2gnLCB7XG4gICAgICBQYXRjaFR5cGU6ICdzdHJhdGVnaWMnLFxuICAgIH0pO1xuICB9KTtcblxuICB0ZXN0KCd1c2VzIHNwZWNpZmllZCB0byBwYXRjaCB0eXBlIGlmIHNwZWNpZmllZCcsICgpID0+IHtcbiAgICAvLyBHSVZFTlxuICAgIGNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKCk7XG4gICAgY29uc3QgY2x1c3RlciA9IG5ldyBla3MuQ2x1c3RlcihzdGFjaywgJ015Q2x1c3RlcicsIHtcbiAgICAgIHZlcnNpb246IENMVVNURVJfVkVSU0lPTixcbiAgICAgIGt1YmVjdGxQcm92aWRlck9wdGlvbnM6IHtcbiAgICAgICAga3ViZWN0bExheWVyOiBuZXcgS3ViZWN0bFYzMUxheWVyKHN0YWNrLCAna3ViZWN0bExheWVyJyksXG4gICAgICB9LFxuICAgIH0pO1xuXG4gICAgLy8gV0hFTlxuICAgIG5ldyBLdWJlcm5ldGVzUGF0Y2goc3RhY2ssICdqc29uUGF0Y2gnLCB7XG4gICAgICBjbHVzdGVyLFxuICAgICAgYXBwbHlQYXRjaDogeyBwYXRjaDogeyB0bzogJ2FwcGx5JyB9IH0sXG4gICAgICByZXN0b3JlUGF0Y2g6IHsgcmVzdG9yZTogeyBwYXRjaDogMTIzIH0gfSxcbiAgICAgIHJlc291cmNlTmFtZTogJ2pzb25QYXRjaFJlc291cmNlJyxcbiAgICAgIHBhdGNoVHlwZTogUGF0Y2hUeXBlLkpTT04sXG4gICAgfSk7XG4gICAgbmV3IEt1YmVybmV0ZXNQYXRjaChzdGFjaywgJ21lcmdlUGF0Y2gnLCB7XG4gICAgICBjbHVzdGVyLFxuICAgICAgYXBwbHlQYXRjaDogeyBwYXRjaDogeyB0bzogJ2FwcGx5JyB9IH0sXG4gICAgICByZXN0b3JlUGF0Y2g6IHsgcmVzdG9yZTogeyBwYXRjaDogMTIzIH0gfSxcbiAgICAgIHJlc291cmNlTmFtZTogJ21lcmdlUGF0Y2hSZXNvdXJjZScsXG4gICAgICBwYXRjaFR5cGU6IFBhdGNoVHlwZS5NRVJHRSxcbiAgICB9KTtcbiAgICBuZXcgS3ViZXJuZXRlc1BhdGNoKHN0YWNrLCAnc3RyYXRlZ2ljUGF0Y2gnLCB7XG4gICAgICBjbHVzdGVyLFxuICAgICAgYXBwbHlQYXRjaDogeyBwYXRjaDogeyB0bzogJ2FwcGx5JyB9IH0sXG4gICAgICByZXN0b3JlUGF0Y2g6IHsgcmVzdG9yZTogeyBwYXRjaDogMTIzIH0gfSxcbiAgICAgIHJlc291cmNlTmFtZTogJ3N0cmF0ZWdpY1BhdGNoUmVzb3VyY2UnLFxuICAgICAgcGF0Y2hUeXBlOiBQYXRjaFR5cGUuU1RSQVRFR0lDLFxuICAgIH0pO1xuXG4gICAgVGVtcGxhdGUuZnJvbVN0YWNrKHN0YWNrKS5oYXNSZXNvdXJjZVByb3BlcnRpZXMoJ0N1c3RvbTo6QVdTQ0RLLUVLUy1LdWJlcm5ldGVzUGF0Y2gnLCB7XG4gICAgICBSZXNvdXJjZU5hbWU6ICdqc29uUGF0Y2hSZXNvdXJjZScsXG4gICAgICBQYXRjaFR5cGU6ICdqc29uJyxcbiAgICB9KTtcbiAgICBUZW1wbGF0ZS5mcm9tU3RhY2soc3RhY2spLmhhc1Jlc291cmNlUHJvcGVydGllcygnQ3VzdG9tOjpBV1NDREstRUtTLUt1YmVybmV0ZXNQYXRjaCcsIHtcbiAgICAgIFJlc291cmNlTmFtZTogJ21lcmdlUGF0Y2hSZXNvdXJjZScsXG4gICAgICBQYXRjaFR5cGU6ICdtZXJnZScsXG4gICAgfSk7XG4gICAgVGVtcGxhdGUuZnJvbVN0YWNrKHN0YWNrKS5oYXNSZXNvdXJjZVByb3BlcnRpZXMoJ0N1c3RvbTo6QVdTQ0RLLUVLUy1LdWJlcm5ldGVzUGF0Y2gnLCB7XG4gICAgICBSZXNvdXJjZU5hbWU6ICdzdHJhdGVnaWNQYXRjaFJlc291cmNlJyxcbiAgICAgIFBhdGNoVHlwZTogJ3N0cmF0ZWdpYycsXG4gICAgfSk7XG4gIH0pO1xufSk7XG4iXX0=
