@@ -160,7 +160,7 @@ export class TrustStore extends Resource implements ITrustStore {
     }
 
     if (name.length < 1 || name.length > 64) {
-      throw new ValidationError(`'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
+      throw new ValidationError('TrustStoreNameLength', `'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
     }
   }
 
@@ -170,7 +170,7 @@ export class TrustStore extends Resource implements ITrustStore {
     }
 
     if (key.length === 0) {
-      throw new ValidationError("'caCertificatesBundleS3Location.key' cannot be an empty string", this);
+      throw new ValidationError('CaCertificatesBundleS3KeyEmpty', "'caCertificatesBundleS3Location.key' cannot be an empty string", this);
     }
   }
 

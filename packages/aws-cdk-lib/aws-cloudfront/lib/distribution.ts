@@ -928,6 +928,7 @@ export class Distribution extends Resource implements IDistribution {
     const invalidHttpVersions = [HttpVersion.HTTP3, HttpVersion.HTTP2_AND_3];
     if (invalidHttpVersions.includes(this.httpVersion)) {
       throw new ValidationError(
+        'HttpVersionNotSupportedWithMtls',
         `'httpVersion' must be ${HttpVersion.HTTP1_1} or ${HttpVersion.HTTP2} when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${this.httpVersion}`,
         this,
       );
@@ -938,12 +939,14 @@ export class Distribution extends Resource implements IDistribution {
     const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy;
     if (defaultPolicy === undefined) {
       throw new ValidationError(
+        'ViewerProtocolPolicyRequiredForMtls',
         `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
         this,
       );
     }
     if (!validPolicies.includes(defaultPolicy)) {
       throw new ValidationError(
+        'ViewerProtocolPolicyIncompatibleWithMtls',
         `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${defaultPolicy}' in default behavior`,
         this,
       );
@@ -954,12 +957,14 @@ export class Distribution extends Resource implements IDistribution {
         const policy = behavior.viewerProtocolPolicy;
         if (policy === undefined) {
           throw new ValidationError(
+            'ViewerProtocolPolicyRequiredForMtls',
             `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified for behavior at path '${pathPattern}'. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
             this,
           );
         }
         if (!validPolicies.includes(policy)) {
           throw new ValidationError(
+            'ViewerProtocolPolicyIncompatibleWithMtls',
             `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in behavior for path '${pathPattern}'`,
             this,
           );
