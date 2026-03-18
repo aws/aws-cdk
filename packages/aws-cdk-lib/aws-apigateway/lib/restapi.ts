@@ -7,8 +7,8 @@ import type { IRestApiRef, RestApiReference } from './apigateway.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import type { CorsOptions } from './cors';
 import { Deployment } from './deployment';
-import type { DomainNameOptions } from './domain-name';
-import { DomainName, SecurityPolicy } from './domain-name';
+import type { DomainNameOptions, EndpointAccessMode, SecurityPolicy } from './domain-name';
+import { DomainName } from './domain-name';
 import type { GatewayResponseOptions } from './gateway-response';
 import { GatewayResponse } from './gateway-response';
 import type { Integration } from './integration';
@@ -1165,24 +1165,6 @@ export enum ApiKeySourceType {
    * To read the API key from the `UsageIdentifierKey` from a custom authorizer.
    */
   AUTHORIZER = 'AUTHORIZER',
-}
-
-/**
- * The Endpoint Access Mode needs to be set when using the enhanced security policies with SecurityPolicy_
- * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode
- */
-export enum EndpointAccessMode {
-
-  /**
-   * Recommended initial setting when introducing enhanced security policies.
-   */
-  BASIC = 'BASIC',
-  /**
-   * Performed checks:
-   * 1. The request must originate from the same API Gateway endpoint type as your resource. This could be from a Regional, an edge-optimized, or a private endpoint.
-   * 2.If you use a Regional or private endpoint, API Gateway uses SNI host matching. If you use an edge-optimized endpoint, API Gateway conforms to CloudFront's domain fronting protection. For more information, see Domain fronting.
-   */
-  STRICT = 'STRICT',
 }
 
 export enum EndpointType {
