@@ -80,7 +80,10 @@ export class Platform {
   /**
    * @param platform The platform to use for docker build
    */
-  private constructor(public readonly platform: string) { }
+  private constructor(
+    /** @jsii suppress JSII5019 For historic reasons */
+    public readonly platform: string,
+  ) { }
 }
 
 /**
@@ -467,14 +470,14 @@ export class DockerImageAsset extends Construct implements IAsset {
     // resolve full path
     const dir = path.resolve(props.directory);
     if (!fs.existsSync(dir)) {
-      throw new ValidationError(`Cannot find image directory at ${dir}`, this);
+      throw new ValidationError('CannotFindImageDirectory', `Cannot find image directory at ${dir}`, this);
     }
 
     // validate the docker file exists
     this.dockerfilePath = props.file || 'Dockerfile';
     const file = path.join(dir, this.dockerfilePath);
     if (!fs.existsSync(file)) {
-      throw new ValidationError(`Cannot find file at ${file}`, this);
+      throw new ValidationError('CannotFindFile', `Cannot find file at ${file}`, this);
     }
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
@@ -615,7 +618,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 function validateProps(props: DockerImageAssetProps) {
   for (const [key, value] of Object.entries(props)) {
     if (Token.isUnresolved(value)) {
-      throw new UnscopedValidationError(`Cannot use Token as value of '${key}': this value is used before deployment starts`);
+      throw new UnscopedValidationError('CannotTokenValue', `Cannot use Token as value of '${key}': this value is used before deployment starts`);
     }
   }
 
@@ -626,7 +629,7 @@ function validateProps(props: DockerImageAssetProps) {
 function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildProps || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new UnscopedValidationError(`Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
+      throw new UnscopedValidationError('CannotTokensKeysValues', `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
     }
   }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "aws-cdk-rds-cluster-volume-iops-metric.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f39d672f487451987d4e48a1e0330973e78cd8fce3699bc8fd4c123ec466b6fd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9be532e5fbaa463acb4b160f3377d7ed6e578f21b0dc9e690422bf5cb9e686e0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -309,7 +309,7 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -325,37 +325,31 @@
                 "supportedLogTypes": "*",
                 "combineImportAndExportRoles": true
               },
-              "credentials": "*",
-              "vpcSubnets": {
-                "subnetType": "Public"
-              },
               "vpc": "*",
               "writer": "*",
-              "readers": "*",
-              "removalPolicy": "destroy"
+              "serverlessV2MinCapacity": "*",
+              "serverlessV2MaxCapacity": "*"
             }
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Subnets": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "description": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Public"
-              },
+              "vpcSubnets": "*",
               "removalPolicy": "*"
             }
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Subnets/Default": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseSubnets56F17B9A"
+            "data": "ClusterSubnetsDCFA5CB7"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/SecurityGroup": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -364,43 +358,73 @@
             }
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/SecurityGroup/Resource": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseSecurityGroup5C91FDCB"
+            "data": "ClusterSecurityGroup0921994B"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Resource": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Secret": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "encryptionKey": "*",
+              "secretName": "*",
+              "replicaRegions": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "username": "*",
+              "secretName": "*",
+              "encryptionKey": "*",
+              "excludeCharacters": "*",
+              "replaceOnPasswordCriteriaChanges": "*",
+              "replicaRegions": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseB269D8BB"
+            "data": "ClusterSecret6368BD0F"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Instance1": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Secret/Attachment": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "secret": "*",
+              "target": "*"
+            }
+          }
+        ],
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretAttachment769E6258"
+          }
+        ],
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/writer": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Instance1/Resource": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/Cluster/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance14A23AADF"
+            "data": "Clusterwriter2D9E9F4C"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Instance2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/Database/Instance2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance20B30A4F7"
-          }
-        ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/VolumeReadIOPsAlarm": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/ReadIOPSAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -408,25 +432,18 @@
                 "warnings": "*",
                 "warningsV2": "*"
               },
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
               "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
+              "evaluationPeriods": "*"
             }
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/VolumeReadIOPsAlarm/Resource": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/ReadIOPSAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VolumeReadIOPsAlarm73C15B39"
+            "data": "ReadIOPSAlarmD1D52864"
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/VolumeWriteIOPsAlarm": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/WriteIOPSAlarm": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -434,22 +451,15 @@
                 "warnings": "*",
                 "warningsV2": "*"
               },
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
               "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
+              "evaluationPeriods": "*"
             }
           }
         ],
-        "/aws-cdk-rds-cluster-volume-iops-metric/VolumeWriteIOPsAlarm/Resource": [
+        "/aws-cdk-rds-cluster-volume-iops-metric/WriteIOPSAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VolumeWriteIOPsAlarm56F29887"
+            "data": "WriteIOPSAlarmADBE1E65"
           }
         ],
         "/aws-cdk-rds-cluster-volume-iops-metric/BootstrapVersion": [
@@ -467,19 +477,19 @@
       },
       "displayName": "aws-cdk-rds-cluster-volume-iops-metric"
     },
-    "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B.assets": {
+    "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B.assets.json",
+        "file": "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B": {
+    "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B.template.json",
+        "templateFile": "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -488,7 +498,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B.assets"
+          "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -497,23 +507,23 @@
         }
       },
       "dependencies": [
-        "rdsclustervolumeiopsmetricintegtestDefaultTestDeployAssertED6DF21B.assets"
+        "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.assets"
       ],
       "metadata": {
-        "/rds-cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/rds-cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "rds-cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert"
+      "displayName": "cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -812,6 +822,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -989,6 +1003,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1000,16 +1015,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1106.1"
 }

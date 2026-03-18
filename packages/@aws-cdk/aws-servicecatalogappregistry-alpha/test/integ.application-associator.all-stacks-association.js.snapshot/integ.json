@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "ApplicationAssociatorTest/DefaultTest": {
+      "stacks": [
+        "integ-appregistry-all-stacks"
+      ],
+      "assertionStack": "ApplicationAssociatorTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

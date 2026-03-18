@@ -183,7 +183,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
 
     if (isAlwaysSigning && isAuthTypeIsNone) {
-      throw new cdk.ValidationError('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
+      throw new cdk.ValidationError('FunctionUrlAuthTypeMustBeAwsIam', 'The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
     }
   }
 }
