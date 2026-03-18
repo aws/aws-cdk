@@ -1,12 +1,25 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "testCases": {
     "Windows2022FleetIntegTest/DefaultTest": {
       "stacks": [
         "aws-cdk-project-windows-2022-fleet"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "Windows2022FleetIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "Windows2022FleetIntegTestDefaultTestDeployAssert28F28C3E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }
