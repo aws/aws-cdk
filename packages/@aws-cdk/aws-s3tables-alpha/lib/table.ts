@@ -286,40 +286,81 @@ export class IcebergTransform {
   /**
    * Use the column value as the transform value without transformation.
    */
-  public static readonly IDENTITY = 'identity';
+  public static readonly IDENTITY = new IcebergTransform('identity');
 
   /**
    * Transform a timestamp/date field to year.
    */
-  public static readonly YEAR = 'year';
+  public static readonly YEAR = new IcebergTransform('year');
 
   /**
    * Transform a timestamp/date field to month.
    */
-  public static readonly MONTH = 'month';
+  public static readonly MONTH = new IcebergTransform('month');
 
   /**
    * Transform a timestamp/date field to day.
    */
-  public static readonly DAY = 'day';
+  public static readonly DAY = new IcebergTransform('day');
 
   /**
    * Transform a timestamp field to hour.
    */
-  public static readonly HOUR = 'hour';
+  public static readonly HOUR = new IcebergTransform('hour');
 
   /**
    * Transform values into a fixed number of buckets.
+   *
+   * @param n The number of buckets (must be a positive integer)
    */
-  public static bucket(n: number): string {
-    return `bucket[${n}]`;
+  public static bucket(n: number): IcebergTransform {
+    if (n <= 0 || !Number.isInteger(n)) {
+      throw new UnscopedValidationError(
+        'InvalidBucketCount',
+        'Bucket count must be a positive integer.',
+      );
+    }
+    return new IcebergTransform(`bucket[${n}]`);
   }
 
   /**
    * Truncate values to a fixed width.
+   *
+   * @param width The truncation width (must be a positive integer)
    */
-  public static truncate(width: number): string {
-    return `truncate[${width}]`;
+  public static truncate(width: number): IcebergTransform {
+    if (width <= 0 || !Number.isInteger(width)) {
+      throw new UnscopedValidationError(
+        'InvalidTruncateWidth',
+        'Truncate width must be a positive integer.',
+      );
+    }
+    return new IcebergTransform(`truncate[${width}]`);
+  }
+
+  /**
+   * Create a custom transform from a string value.
+   *
+   * @param value The transform string value
+   */
+  public static of(value: string): IcebergTransform {
+    return new IcebergTransform(value);
+  }
+
+  /**
+   * The string value of the transform.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the string representation of the transform.
+   */
+  public toString(): string {
+    return this.value;
   }
 }
 
@@ -366,10 +407,10 @@ export interface IcebergPartitionField {
   /**
    * The partition transform function.
    *
-   * Use `IcebergTransform` helpers for common transforms. The underlying type remains string
-   * to support parameterized Iceberg transforms such as `bucket[16]` and `truncate[8]`.
+   * Use `IcebergTransform` static properties for common transforms (e.g., `IcebergTransform.IDENTITY`)
+   * or methods for parameterized transforms (e.g., `IcebergTransform.bucket(16)`).
    */
-  readonly transform: string;
+  readonly transform: IcebergTransform;
   /**
    * The name of the partition field.
    */
@@ -415,10 +456,10 @@ export interface IcebergSortField {
   /**
    * The sort transform function.
    *
-   * Use `IcebergTransform` helpers for common transforms. The underlying type remains string
-   * to support parameterized Iceberg transforms such as `bucket[16]` and `truncate[8]`.
+   * Use `IcebergTransform` static properties for common transforms (e.g., `IcebergTransform.IDENTITY`)
+   * or methods for parameterized transforms (e.g., `IcebergTransform.bucket(16)`).
    */
-  readonly transform: string;
+  readonly transform: IcebergTransform;
 
   /**
    * The sort direction.
@@ -722,6 +763,7 @@ export class Table extends TableBase {
 
     if (props.withoutMetadata && props.icebergMetadata) {
       throw new UnscopedValidationError(
+        'MutuallyExclusiveProps',
         "TableProps: 'withoutMetadata' and 'icebergMetadata' are mutually exclusive. Specify only one.",
       );
     }
@@ -790,7 +832,7 @@ export class Table extends TableBase {
       ...(spec.specId !== undefined && { specId: spec.specId }),
       fields: spec.fields.map(field => ({
         sourceId: field.sourceId,
-        transform: field.transform,
+        transform: field.transform.value,
         name: field.name,
         ...(field.fieldId !== undefined && { fieldId: field.fieldId }),
       })),
@@ -805,7 +847,7 @@ export class Table extends TableBase {
       ...(sortOrder.orderId !== undefined && { orderId: sortOrder.orderId }),
       fields: sortOrder.fields.map(field => ({
         sourceId: field.sourceId,
-        transform: field.transform,
+        transform: field.transform.value,
         direction: field.direction,
         nullOrder: field.nullOrder,
       })),
@@ -816,6 +858,15 @@ export class Table extends TableBase {
    * Builds the CloudFormation table properties map from key-value entries.
    */
   private buildTableProperties(tableProperties: TablePropertyEntry[]): Record<string, string> {
+    const keys = tableProperties.map(entry => entry.key);
+    const duplicateKeys = keys.filter((key, index) => keys.indexOf(key) !== index);
+    if (duplicateKeys.length > 0) {
+      throw new UnscopedValidationError(
+        'DuplicateTablePropertyKey',
+        `Duplicate table property keys are not allowed: ${[...new Set(duplicateKeys)].join(', ')}`,
+      );
+    }
+
     return tableProperties.reduce(
       (acc, entry) => ({
         ...acc,

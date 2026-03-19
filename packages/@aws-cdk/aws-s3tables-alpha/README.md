@@ -52,36 +52,15 @@ const sampleNamespace = new Namespace(scope, 'ExampleNamespace', {
 ### Define an S3 Table
 
 ```ts
-// build table with only required fields
-const minimalTable = new Table(scope, 'MinimalTable', {
-    tableName: 'minimal_table',
+// Build a table
+const sampleTable = new Table(scope, 'ExampleTable', {
+    tableName: 'example_table',
     namespace: namespace,
     openTableFormat: OpenTableFormat.ICEBERG,
     withoutMetadata: true,
 });
-```
 
-```ts
-// Build a table with minimal Iceberg metadata
-const minimalIcebergTable = new Table(scope, 'MinimalIcebergMetadataTable', {
-    tableName: 'minimal_iceberg_table',
-    namespace: namespace,
-    openTableFormat: OpenTableFormat.ICEBERG,
-    icebergMetadata: {
-        icebergSchema: {
-            schemaFieldList: [
-                {
-                    name: 'event_date',
-                    type: 'date',
-                },
-            ],
-        },
-    },
-});
-```
-
-```ts
-// Build a table with Iceberg schema and maintenance settings
+// Build a table with an Iceberg Schema
 const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
     tableName: 'example_table_with_schema',
     namespace: namespace,
@@ -117,23 +96,21 @@ Learn more about table buckets maintenance operations and default behavior from 
 
 ### Advanced Iceberg Table Configuration
 
-You can configure partition specifications, sort orders, and table properties for optimized query performance:
+You can configure partition specifications, sort orders, and table properties for optimized query performance.
+
+The simplest way to add partitioning to your table:
 
 ```ts
-// Build a table with partition spec, sort order, and table properties
-const advancedTable = new Table(scope, 'AdvancedTable', {
-    tableName: 'advanced_table',
+// Build a table with partition spec (minimal configuration)
+const partitionedTable = new Table(scope, 'PartitionedTable', {
+    tableName: 'partitioned_table',
     namespace: namespace,
     openTableFormat: OpenTableFormat.ICEBERG,
     icebergMetadata: {
         icebergSchema: {
             schemaFieldList: [
-                {
-                    id: 1,
-                    name: 'event_date',
-                    type: 'date',
-                    required: true,
-                },
+                { name: 'event_date', type: 'date', required: true },
+                { name: 'event_name', type: 'string' },
             ],
         },
         icebergPartitionSpec: {
@@ -145,7 +122,38 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
                 },
             ],
         },
+    },
+});
+```
+
+For full control, you can also configure sort orders and table properties:
+
+```ts
+// Build a table with partition spec, sort order, and table properties
+const advancedTable = new Table(scope, 'AdvancedTable', {
+    tableName: 'advanced_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                { id: 1, name: 'event_date', type: 'date', required: true },
+                { id: 2, name: 'user_id', type: 'string', required: true },
+            ],
+        },
+        icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
+                    fieldId: 1000,
+                },
+            ],
+        },
         icebergSortOrder: {
+            orderId: 1,
             fields: [
                 {
                     sourceId: 1,
@@ -155,6 +163,9 @@ const advancedTable = new Table(scope, 'AdvancedTable', {
                 },
             ],
         },
+        tableProperties: [
+            { key: 'write.format.default', value: 'parquet' },
+        ],
     },
 });
 ```

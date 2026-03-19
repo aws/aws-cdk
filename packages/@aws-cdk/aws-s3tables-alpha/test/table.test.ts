@@ -111,7 +111,7 @@ describe('Table', () => {
           fields: [
             {
               sourceId: 2,
-              transform: 'identity',
+              transform: s3tables.IcebergTransform.IDENTITY,
               direction: s3tables.SortDirection.ASC,
               nullOrder: s3tables.NullOrder.NULLS_FIRST,
             },
@@ -250,7 +250,12 @@ describe('Table', () => {
           icebergSortOrder: {
             orderId: 1,
             fields: [
-              { sourceId: 1, transform: 'identity', direction: s3tables.SortDirection.ASC, nullOrder: s3tables.NullOrder.NULLS_FIRST },
+              {
+                sourceId: 1,
+                transform: s3tables.IcebergTransform.IDENTITY,
+                direction: s3tables.SortDirection.ASC,
+                nullOrder: s3tables.NullOrder.NULLS_FIRST,
+              },
             ],
           },
           tableProperties: [
@@ -509,6 +514,82 @@ describe('Table', () => {
           openTableFormat: s3tables.OpenTableFormat.ICEBERG,
         });
       }).toThrow('Table name must start with a lowercase letter or number');
+    });
+  });
+
+  describe('IcebergTransform validation', () => {
+    test('bucket rejects zero', () => {
+      expect(() => s3tables.IcebergTransform.bucket(0)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket rejects negative numbers', () => {
+      expect(() => s3tables.IcebergTransform.bucket(-5)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket rejects non-integers', () => {
+      expect(() => s3tables.IcebergTransform.bucket(3.5)).toThrow('Bucket count must be a positive integer.');
+    });
+
+    test('bucket accepts positive integers', () => {
+      const transform = s3tables.IcebergTransform.bucket(16);
+      expect(transform.value).toBe('bucket[16]');
+    });
+
+    test('truncate rejects zero', () => {
+      expect(() => s3tables.IcebergTransform.truncate(0)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate rejects negative numbers', () => {
+      expect(() => s3tables.IcebergTransform.truncate(-10)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate rejects non-integers', () => {
+      expect(() => s3tables.IcebergTransform.truncate(2.5)).toThrow('Truncate width must be a positive integer.');
+    });
+
+    test('truncate accepts positive integers', () => {
+      const transform = s3tables.IcebergTransform.truncate(8);
+      expect(transform.value).toBe('truncate[8]');
+    });
+  });
+
+  describe('tableProperties validation', () => {
+    test('rejects duplicate keys in tableProperties', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: 'test_table',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+          icebergMetadata: {
+            icebergSchema: {
+              schemaFieldList: [{ name: 'id', type: 'int' }],
+            },
+            tableProperties: [
+              { key: 'write.format.default', value: 'parquet' },
+              { key: 'write.format.default', value: 'avro' },
+            ],
+          },
+        });
+      }).toThrow('Duplicate table property keys are not allowed: write.format.default');
+    });
+
+    test('accepts unique keys in tableProperties', () => {
+      expect(() => {
+        new s3tables.Table(stack, 'TestTable', {
+          tableName: 'test_table',
+          namespace,
+          openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+          icebergMetadata: {
+            icebergSchema: {
+              schemaFieldList: [{ name: 'id', type: 'int' }],
+            },
+            tableProperties: [
+              { key: 'write.format.default', value: 'parquet' },
+              { key: 'write.parquet.compression-codec', value: 'zstd' },
+            ],
+          },
+        });
+      }).not.toThrow();
     });
   });
 });
