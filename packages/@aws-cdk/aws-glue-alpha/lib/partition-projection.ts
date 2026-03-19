@@ -235,6 +235,7 @@ export class PartitionProjectionConfiguration {
     if (!Token.isUnresolved(props.min) && !Token.isUnresolved(props.max)) {
       if (!Number.isInteger(props.min) || !Number.isInteger(props.max)) {
         throw new UnscopedValidationError(
+          'IntegerRangeNotIntegers',
           `INTEGER partition projection range must contain integers, but got [${props.min}, ${props.max}]`,
         );
       }
@@ -242,6 +243,7 @@ export class PartitionProjectionConfiguration {
       // Validate min <= max
       if (props.min > props.max) {
         throw new UnscopedValidationError(
+          'IntegerRangeMinGreaterThanMax',
           `INTEGER partition projection range must be [min, max] where min <= max, but got [${props.min}, ${props.max}]`,
         );
       }
@@ -254,6 +256,7 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.interval) || props.interval <= 0)
     ) {
       throw new UnscopedValidationError(
+        'IntegerIntervalInvalid',
         `INTEGER partition projection interval must be a positive integer, but got ${props.interval}`,
       );
     }
@@ -265,6 +268,7 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.digits) || props.digits < 1)
     ) {
       throw new UnscopedValidationError(
+        'IntegerDigitsInvalid',
         `INTEGER partition projection digits must be an integer >= 1, but got ${props.digits}`,
       );
     }
@@ -288,6 +292,7 @@ export class PartitionProjectionConfiguration {
       (props.min.trim() === '' || props.max.trim() === '')
     ) {
       throw new UnscopedValidationError(
+        'DateRangeEmpty',
         'DATE partition projection range must not contain empty strings',
       );
     }
@@ -297,6 +302,7 @@ export class PartitionProjectionConfiguration {
       // Validate format is not empty
       if (props.format.trim() === '') {
         throw new UnscopedValidationError(
+          'DateFormatEmpty',
           'DATE partition projection format must be a non-empty string',
         );
       }
@@ -325,6 +331,7 @@ export class PartitionProjectionConfiguration {
 
       if (inQuote) {
         throw new UnscopedValidationError(
+          'DateFormatUnclosedQuote',
           `DATE partition projection format has an unclosed single quote: '${format}'`,
         );
       }
@@ -332,6 +339,7 @@ export class PartitionProjectionConfiguration {
       if (invalidChars.length > 0) {
         const unique = [...new Set(invalidChars)];
         throw new UnscopedValidationError(
+          'DateFormatInvalidCharacters',
           `DATE partition projection format contains invalid pattern characters: ${unique.join(', ')}. Must use Java DateTimeFormatter valid pattern letters.`,
         );
       }
@@ -344,6 +352,7 @@ export class PartitionProjectionConfiguration {
       (!Number.isInteger(props.interval) || props.interval <= 0)
     ) {
       throw new UnscopedValidationError(
+        'DateIntervalInvalid',
         `DATE partition projection interval must be a positive integer, but got ${props.interval}`,
       );
     }
@@ -364,6 +373,7 @@ export class PartitionProjectionConfiguration {
     // Validate values is not empty
     if (props.values.length === 0) {
       throw new UnscopedValidationError(
+        'EnumValuesEmpty',
         'ENUM partition projection values must be a non-empty array',
       );
     }
@@ -373,11 +383,13 @@ export class PartitionProjectionConfiguration {
       if (!Token.isUnresolved(value)) {
         if (value.trim() === '') {
           throw new UnscopedValidationError(
+            'EnumValueEmpty',
             'ENUM partition projection values must not contain empty strings',
           );
         }
         if (value.includes(',')) {
           throw new UnscopedValidationError(
+            'EnumValueContainsComma',
             `ENUM partition projection values must not contain commas because the values are serialized as a comma-separated list, got: '${value}'`,
           );
         }
@@ -505,6 +517,7 @@ export class PartitionProjectionConfiguration {
         // TypeScript exhaustiveness check
         const exhaustiveCheck: never = this.type;
         throw new UnscopedValidationError(
+          'UnknownProjectionType',
           `Unknown partition projection type for "${columnName}": ${exhaustiveCheck}`,
         );
       }

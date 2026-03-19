@@ -103,7 +103,7 @@ export class AssetApiSchema extends ApiSchema {
    */
   public _render(): CfnAgent.APISchemaProperty {
     if (!this.asset) {
-      throw new UnscopedValidationError('ApiSchema must be bound to a scope before rendering. Call bind() first.');
+      throw new UnscopedValidationError('SchemaNotBound', 'ApiSchema must be bound to a scope before rendering. Call bind() first.');
     }
 
     return {

@@ -109,11 +109,11 @@ export interface DynamicPartitioningProps {
 export class S3Bucket implements IDestination {
   constructor(private readonly bucket: s3.IBucket, private readonly props: S3BucketProps = {}) {
     if (this.props.s3Backup?.mode === BackupMode.FAILED) {
-      throw new cdk.UnscopedValidationError('S3 destinations do not support BackupMode.FAILED');
+      throw new cdk.UnscopedValidationError('S3BackupModeFailedNotSupported', 'S3 destinations do not support BackupMode.FAILED');
     }
 
     if (this.props.dataFormatConversion && this.props.compression) {
-      throw new cdk.UnscopedValidationError('When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
+      throw new cdk.UnscopedValidationError('DataFormatConversionCompressionConflict', 'When data record format conversion is enabled, compression cannot be set on the S3 Destination. Compression may only be set in the OutputFormat. By default, this compression is SNAPPY');
     }
 
     validateOutputPrefix(this.props.dataOutputPrefix, this.props.errorOutputPrefix);
@@ -122,7 +122,7 @@ export class S3Bucket implements IDestination {
       !this.props.dynamicPartitioning?.enabled &&
       (this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || this.props.dataOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`))
     ) {
-      throw new cdk.UnscopedValidationError(`When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
+      throw new cdk.UnscopedValidationError('DynamicPartitioningNamespaceWithoutEnabled', `When dynamic partitioning is not enabled, the dataOutputPrefix cannot contain neither ${PARTITION_KEY_LAMBDA} nor ${PARTITION_KEY_QUERY}.`);
     }
   }
 
@@ -144,10 +144,10 @@ export class S3Bucket implements IDestination {
     const fileExtension = this.props.fileExtension;
     if (fileExtension && !cdk.Token.isUnresolved(fileExtension)) {
       if (!fileExtension.startsWith('.')) {
-        throw new cdk.ValidationError("fileExtension must start with '.'", scope);
+        throw new cdk.ValidationError('FileExtensionMustStartWithPeriod', "fileExtension must start with '.'", scope);
       }
       if (/[^0-9a-z!\-_.*'()]/.test(fileExtension)) {
-        throw new cdk.ValidationError("fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
+        throw new cdk.ValidationError('FileExtensionInvalidCharacters', "fileExtension can contain allowed characters: 0-9a-z!-_.*'()", scope);
       }
     }
 
@@ -204,24 +204,24 @@ function validateOutputPrefix(prefix?: string, errorOutputPrefix?: string) {
   if (errorOutputPrefix) validateOutputPrefixExpression(errorOutputPrefix, 'errorOutputPrefix');
   // ErrorOutputPrefix can be null only if Prefix contains no expressions.
   if (prefix?.includes('!{') && !errorOutputPrefix) {
-    throw new cdk.UnscopedValidationError('Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
+    throw new cdk.UnscopedValidationError('ErrorOutputPrefixRequiredWithExpressions', 'Specify the errorOutputPrefix in order to use expressions in the dataOutputPrefix.');
   }
   // If you specify an expression for ErrorOutputPrefix, you must include at least one instance of !{firehose:error-output-type}.
   if (errorOutputPrefix?.includes('!{') && !errorOutputPrefix.includes(ERROR_OUTPUT_TYPE)) {
-    throw new cdk.UnscopedValidationError(`The errorOutputPrefix expression must include at least one instance of ${ERROR_OUTPUT_TYPE}.`);
+    throw new cdk.UnscopedValidationError('ErrorOutputPrefixMustIncludeErrorOutputType', `The errorOutputPrefix expression must include at least one instance of ${ERROR_OUTPUT_TYPE}.`);
   }
   // Prefix can't contain !{firehose:error-output-type}.
   if (prefix?.includes(ERROR_OUTPUT_TYPE)) {
-    throw new cdk.UnscopedValidationError(`The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
+    throw new cdk.UnscopedValidationError('DataOutputPrefixCannotContainErrorOutputType', `The dataOutputPrefix cannot contain ${ERROR_OUTPUT_TYPE}.`);
   }
   // You cannot use partitionKeyFromLambda and partitionKeyFromQuery namespaces when creating ErrorOutputPrefix expressions.
   if (errorOutputPrefix?.includes(`!{${PARTITION_KEY_LAMBDA}:`) || errorOutputPrefix?.includes(`!{${PARTITION_KEY_QUERY}:`)) {
-    throw new cdk.UnscopedValidationError(`You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
+    throw new cdk.UnscopedValidationError('ErrorOutputPrefixCannotUsePartitionKeyNamespaces', `You cannot use ${PARTITION_KEY_LAMBDA} and ${PARTITION_KEY_QUERY} namespaces in errorOutputPreix.`);
   }
 }
 
 function validateOutputPrefixExpression(prefix: string, prop: string) {
   if (/!\{(?!(?:firehose|timestamp|partitionKeyFrom(?:Lambda|Query)):[^{}]+\})/.test(prefix)) {
-    throw new cdk.UnscopedValidationError(`The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
+    throw new cdk.UnscopedValidationError('InvalidExpressionFormat', `The expression must be of the form !{namespace:value} and include a valid namespace at ${prop}.`);
   }
 }

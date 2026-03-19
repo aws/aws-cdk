@@ -40,6 +40,17 @@ const stack= new FleetStack(
 
 const test = new integ.IntegTest(app, 'OverflowBehaviorFleetInteg', {
   testCases: [stack],
+  // AWS::CodeBuild::Fleet is not available in all regions
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // CodeBuild fleet instances have a 1-hour minimum runtime before deletion completes.
+      // The CFN resource handler's stabilization timeout is shorter than this,
+      // so DELETE always fails with "Exceeded attempts to wait" (HandlerErrorCode: NotStabilized).
+      // The fleet is still cleaned up by CodeBuild after the 1-hour window.
+      expectError: true,
+    },
+  },
 });
 
 const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
@@ -56,6 +67,6 @@ test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   'builds.0.buildStatus',
   integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
 ).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
+  totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });

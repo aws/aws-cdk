@@ -1,30 +1,30 @@
 {
   "version": "48.0.0",
   "files": {
-    "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "CustomInstanceTypeComputeFleetIntegStack3/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
-        "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-4416417b": {
+        "current_account-current_region-65a3ca72": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "12cbe3bb79ee65f082c59de32c4c4f7bdbc25a94943db391fa89657c8f563a9a": {
+    "337bfbd14a46843c554f3954d9206a21bbaff7c4dea9d331fed0939f38dc73ba": {
       "displayName": "CustomInstanceTypeComputeFleetIntegStack3 Template",
       "source": {
         "path": "CustomInstanceTypeComputeFleetIntegStack3.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-110313ad": {
+        "current_account-current_region-73df4201": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "12cbe3bb79ee65f082c59de32c4c4f7bdbc25a94943db391fa89657c8f563a9a.json",
+          "objectKey": "337bfbd14a46843c554f3954d9206a21bbaff7c4dea9d331fed0939f38dc73ba.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

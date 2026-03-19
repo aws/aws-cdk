@@ -467,6 +467,7 @@ export class Table extends TableBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        'InvalidTableName',
         `Invalid S3 table name (value: ${tableName})${EOL}${errors.join(EOL)}`,
       );
     }

@@ -95,7 +95,7 @@ export class S3ObjectsItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new UnscopedValidationError('`bucket` is undefined');
+      throw new UnscopedValidationError('BucketUndefined', '`bucket` is undefined');
     }
     return this._bucket;
   }
@@ -211,7 +211,7 @@ abstract class S3FileItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new UnscopedValidationError('`bucket` is undefined');
+      throw new UnscopedValidationError('BucketUndefined', '`bucket` is undefined');
     }
     return this._bucket;
   }

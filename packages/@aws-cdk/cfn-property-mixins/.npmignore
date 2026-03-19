@@ -31,3 +31,4 @@ junit.xml
 **/*.snapshot
 
 test/
+scripts/

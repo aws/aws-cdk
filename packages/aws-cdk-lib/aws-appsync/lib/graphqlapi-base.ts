@@ -76,7 +76,7 @@ export class IamResource {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new UnscopedValidationError('At least 1 custom ARN must be provided.');
+      throw new UnscopedValidationError('MustBeLeastCustomProvided', 'At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }

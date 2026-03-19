@@ -4,7 +4,6 @@ import * as path from 'node:path';
 import type { GeneratorResult, ModuleMap, ModuleMapEntry, SubmoduleContribution } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
-import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateEvents } from './spec2eventbridge';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 
@@ -20,7 +19,6 @@ async function main() {
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
   const results: GeneratorResult[] = [
-    await generateCfnPropsMixins({ outputPath }),
     await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
   ];

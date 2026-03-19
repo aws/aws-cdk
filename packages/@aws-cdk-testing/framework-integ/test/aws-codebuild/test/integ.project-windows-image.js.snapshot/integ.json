@@ -8,9 +8,16 @@
         "WinCore2019-3",
         "WinCore2022-3"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
       "assertionStack": "integ-project-windows-images/DefaultTest/DeployAssert",
       "assertionStackName": "integprojectwindowsimagesDefaultTestDeployAssert5D19E22D"
     }
   },
-  "minimumCliVersion": "2.1023.0"
+  "minimumCliVersion": "2.1033.0"
 }

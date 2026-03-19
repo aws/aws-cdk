@@ -5,8 +5,7 @@
    "Properties": {
     "BaseCapacity": 1,
     "ComputeType": "BUILD_GENERAL1_SMALL",
-    "EnvironmentType": "LINUX_CONTAINER",
-    "Name": "MyFleet"
+    "EnvironmentType": "LINUX_CONTAINER"
    }
   },
   "MyProjectRole9BBE5233": {

@@ -1,0 +1,238 @@
+{
+  "/VendedLogsTest/EventBus": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus"
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "encryption": "S3_MANAGED"
+      }
+    }
+  ],
+  "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/VendedLogsTest/DeliveryLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "encryption": "S3_MANAGED"
+      }
+    }
+  ],
+  "/VendedLogsTest/FirehoseRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/VendedLogsTest/DeliveryStream": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStream"
+    }
+  ],
+  "/VendedLogsTest/CDKSourceERROR_LOGSVendedLogsTest": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKSourceERRORLOGSVendedLogsTest"
+    }
+  ],
+  "/VendedLogsTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/VendedLogsTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketA9AE6474"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/VendedLogsTest/DeliveryLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroup2A53FD53"
+    }
+  ],
+  "/VendedLogsTest/DeliveryLogGroup/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucket407758F1"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsTest/FirehoseRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseRoleAA67C190"
+    }
+  ],
+  "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Desterrorlogs94C9111F"
+    }
+  ],
+  "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery5E0B21AA"
+    }
+  ],
+  "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Desterrorlogs787D0EAC"
+    }
+  ],
+  "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Delivery0C51C7A6"
+    }
+  ],
+  "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDesterrorlogs18D360A3"
+    }
+  ],
+  "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDeliveryF5EFF358"
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketPolicyB86375F3"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketAutoDeleteObjectsCustomResource70EC3C75"
+    }
+  ],
+  "/VendedLogsTest/DeliveryLogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupPolicyResourcePolicy1BCF8DEE"
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucketPolicy005BD2F0"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
+    }
+  ]
+}

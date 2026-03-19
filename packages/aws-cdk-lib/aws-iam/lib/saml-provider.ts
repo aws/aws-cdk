@@ -98,7 +98,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
     addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w+=,.@-]{1,128}$/.test(props.name)) {
-      throw new ValidationError('Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.', this);
+      throw new ValidationError('InvalidSamlProviderName', 'Invalid SAML provider name. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 128 characters.', this);
     }
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {

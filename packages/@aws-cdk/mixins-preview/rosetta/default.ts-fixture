@@ -8,13 +8,10 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Mixins, Mixin, IConstructSelector } from 'aws-cdk-lib/core';
+import { Mixins, Mixin, IConstructSelector, PropertyMergeStrategy, IMergeStrategy } from 'aws-cdk-lib/core';
 import { IMixin } from 'constructs';
-import { PropertyMergeStrategy, IMergeStrategy } from '@aws-cdk/mixins-preview/mixins';
-import { CfnBucketPropsMixin } from '@aws-cdk/mixins-preview/aws-s3/mixins';
 
 // for testing purposes, ensure these imports work
-import { mixins as alexa_mixins } from '@aws-cdk/mixins-preview/alexa-ask';
 import { aws_logs } from '@aws-cdk/mixins-preview';
 
 declare const scope: Construct;

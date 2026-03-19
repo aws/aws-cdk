@@ -196,9 +196,9 @@ describe('validation-helpers tests', () => {
 
   describe('UnscopedValidationError', () => {
     test('Should be an instance of Error', () => {
-      const error = new UnscopedValidationError('Test error');
+      const error = new UnscopedValidationError('TestError', 'Test error');
       expect(error).toBeInstanceOf(Error);
-      expect(error.name).toBe('ValidationError');
+      expect(error.name).toBe('TestError');
       expect(error.message).toBe('Test error');
     });
   });

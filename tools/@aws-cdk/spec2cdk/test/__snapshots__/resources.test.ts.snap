@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -64,7 +64,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -222,7 +222,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -380,7 +380,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -530,7 +530,7 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnSomethingPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnSomething(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -694,7 +694,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -858,7 +858,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1025,7 +1025,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1179,7 +1179,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1339,7 +1339,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1530,7 +1530,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1706,7 +1706,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {

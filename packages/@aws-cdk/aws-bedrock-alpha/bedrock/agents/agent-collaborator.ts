@@ -110,7 +110,7 @@ export class AgentCollaborator {
 
   private validateProps(props: AgentCollaboratorProps) {
     if (props.agentAlias.aliasId === 'TSTALIASID') {
-      throw new UnscopedValidationError('Agent cannot collaborate with TSTALIASID alias of another agent');
+      throw new UnscopedValidationError('TestAliasNotAllowed', 'Agent cannot collaborate with TSTALIASID alias of another agent');
     }
   }
 

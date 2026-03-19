@@ -1,16 +1,30 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "e5780a9fd1d1655f570512e48499fefee86dd7a239d657f66f0fa9346119822a": {
+    "6325dc3d6e08548608d0f7fd0297ed8e548b3be4b01d3869f394795ec6380bcd": {
+      "displayName": "SnapshotFn/Code",
+      "source": {
+        "path": "asset.6325dc3d6e08548608d0f7fd0297ed8e548b3be4b01d3869f394795ec6380bcd",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-f0288e96": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6325dc3d6e08548608d0f7fd0297ed8e548b3be4b01d3869f394795ec6380bcd.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "56a9952d38c3c04e4b23b16e4da755c5700f1859490dd89fb0437915798e9e12": {
       "displayName": "integ-aws-ecs-ebs-volume-initialization-rate Template",
       "source": {
         "path": "integ-aws-ecs-ebs-volume-initialization-rate.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-fc00ba48": {
+        "current_account-current_region-4abafc6a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e5780a9fd1d1655f570512e48499fefee86dd7a239d657f66f0fa9346119822a.json",
+          "objectKey": "56a9952d38c3c04e4b23b16e4da755c5700f1859490dd89fb0437915798e9e12.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

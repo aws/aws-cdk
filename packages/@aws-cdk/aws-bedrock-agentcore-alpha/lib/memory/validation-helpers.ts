@@ -108,9 +108,9 @@ export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope
   const errors = validationFn(param, scope);
   if (errors.length > 0) {
     if (scope) {
-      throw new ValidationError(errors.join('\n'), scope);
+      throw new ValidationError('ValidationFailed', errors.join('\n'), scope);
     } else {
-      throw new UnscopedValidationError(errors.join('\n'));
+      throw new UnscopedValidationError('ValidationFailed', errors.join('\n'));
     }
   }
   return param;

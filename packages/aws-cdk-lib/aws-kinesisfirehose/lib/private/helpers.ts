@@ -89,12 +89,12 @@ export function createBufferingHints(
   const intervalInSeconds = interval?.toSeconds() ?? 300;
   if (!cdk.Token.isUnresolved(intervalInSeconds)) {
     if (intervalInSeconds > 900) {
-      throw new cdk.ValidationError(`Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
+      throw new cdk.ValidationError('BufferingIntervalTooLarge', `Buffering interval must be less than 900 seconds, got ${intervalInSeconds} seconds.`, scope);
     }
     if (dynamicPartitioningEnabled && intervalInSeconds < 60) {
       // From testing, CFN deployment will fail if `BufferingHints.IntervalInSeconds` is less than 60.
       // The message is: "BufferingHints.IntervalInSeconds must be at least 60 seconds when Dynamic Partitioning is enabled."
-      throw new cdk.ValidationError(`When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got ${intervalInSeconds} seconds.`, scope);
+      throw new cdk.ValidationError('DynamicPartitioningBufferingIntervalTooSmall', `When dynamic partitioning is enabled, buffering interval must be at least 60 seconds, got ${intervalInSeconds} seconds.`, scope);
     }
   }
 
@@ -102,15 +102,15 @@ export function createBufferingHints(
   const sizeInMBs = size?.toMebibytes() ?? defaultSizeInMBs;
   if (!cdk.Token.isUnresolved(sizeInMBs)) {
     if (sizeInMBs > 128) {
-      throw new cdk.ValidationError(`Buffering size must be at most 128 MiBs, got ${sizeInMBs} MiBs.`, scope);
+      throw new cdk.ValidationError('BufferingSizeTooLarge', `Buffering size must be at most 128 MiBs, got ${sizeInMBs} MiBs.`, scope);
     }
     if ((dataFormatConversionEnabled || dynamicPartitioningEnabled) && sizeInMBs < 64) {
       // From testing, CFN deployment will fail if `BufferingHints.SizeInMBs` is less than 64.
       // The message is: "BufferingHints.SizeInMBs must be at least 64 when Dynamic Partitioning is enabled."
-      throw new cdk.ValidationError(`When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got ${sizeInMBs} MiBs.`, scope);
+      throw new cdk.ValidationError('DataFormatConversionBufferingSizeTooSmall', `When data format conversion or dynamic partitioning is enabled, buffering size must be at least 64 MiBs, got ${sizeInMBs} MiBs.`, scope);
     }
     if (sizeInMBs < 1) {
-      throw new cdk.ValidationError(`Buffering size must be at least 1 MiB, got ${sizeInMBs} MiBs.`, scope);
+      throw new cdk.ValidationError('BufferingSizeTooSmall', `Buffering size must be at least 1 MiB, got ${sizeInMBs} MiBs.`, scope);
     }
   }
 
@@ -133,37 +133,37 @@ export function createProcessingConfig(
   options: DataProcessorBindOptions,
 ): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   if (props.processor && props.processors) {
-    throw new cdk.ValidationError("You can specify either 'processors' or 'processor', not both.", scope);
+    throw new cdk.ValidationError('ProcessorAndProcessorsConflict', "You can specify either 'processors' or 'processor', not both.", scope);
   }
   const processorsFromProps = props.processor ? [props.processor] : props.processors;
   const processors = (processorsFromProps ?? []).map((dp) => renderDataProcessor(dp, scope, options));
   const processorTypes = new Set(processors.map((p) => p.type));
 
   if (processorTypes.has('CloudWatchLogProcessing') && !processorTypes.has('Decompression')) {
-    throw new cdk.ValidationError('CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
+    throw new cdk.ValidationError('CloudWatchLogProcessorRequiresDecompression', 'CloudWatchLogProcessor can only be enabled with DecompressionProcessor', scope);
   }
   if (options.dynamicPartitioningEnabled) {
     const withLambda = processorTypes.has('Lambda');
     const withInline = processorTypes.has('MetadataExtraction');
     // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
     if (!options.prefix) {
-      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify dataOutputPrefix.', scope);
+      throw new cdk.ValidationError('DynamicPartitioningRequiresDataOutputPrefix', 'When dynamic partitioning is enabled, you must specify dataOutputPrefix.', scope);
     }
     // CFN validation message: "Processing Configuration is not enabled when DataPartitioning is enabled"
     if (!withLambda && !withInline) {
-      throw new cdk.ValidationError('When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor or MetadataExtractionProcessor, or both.', scope);
+      throw new cdk.ValidationError('DynamicPartitioningRequiresProcessors', 'When dynamic partitioning is enabled, you must specify ether LambdaFunctionProcessor or MetadataExtractionProcessor, or both.', scope);
     }
     // CFN validation message: "S3 Prefix should contain Dynamic Partitioning namespaces when Dynamic Partitioning is enabled"
     if (withLambda && !withInline && !options.prefix.includes(`!{${PARTITION_KEY_LAMBDA}:`)) {
-      throw new cdk.ValidationError(`When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{${PARTITION_KEY_LAMBDA}:keyID}.`, scope);
+      throw new cdk.ValidationError('DynamicPartitioningLambdaRequiresPartitionKey', `When dynamic partitioning is enabled and the only LambdaFunctionProcessor is specified, you must specify at least one instance of !{${PARTITION_KEY_LAMBDA}:keyID}.`, scope);
     }
     // CFN validation message: "Lambda should be present when S3 Prefix contains keys from partitionKeyFromLambda namespace"
     if (!withLambda && options.prefix.includes(`!{${PARTITION_KEY_LAMBDA}:`)) {
-      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTITION_KEY_LAMBDA}:keyID} when LambdaFunctionProcessor is not specified.`, scope);
+      throw new cdk.ValidationError('LambdaPartitionKeyRequiresProcessor', `The dataOutputPrefix cannot contain !{${PARTITION_KEY_LAMBDA}:keyID} when LambdaFunctionProcessor is not specified.`, scope);
     }
     // CFN validation message: "MetadataExtraction processor should be present when S3 Prefix has partitionKeyFromQuery namespace"
     if (!withInline && options.prefix.includes(`!{${PARTITION_KEY_QUERY}:`)) {
-      throw new cdk.ValidationError(`The dataOutputPrefix cannot contain !{${PARTITION_KEY_QUERY}:keyID} when MetadataExtractionProcessor is not specified.`, scope);
+      throw new cdk.ValidationError('QueryPartitionKeyRequiresProcessor', `The dataOutputPrefix cannot contain !{${PARTITION_KEY_QUERY}:keyID} when MetadataExtractionProcessor is not specified.`, scope);
     }
   }
 
@@ -243,7 +243,7 @@ export function createDynamicPartitioningConfiguration(
 
   const durationInSeconds = props.retryDuration?.toSeconds();
   if (durationInSeconds != null && !cdk.Token.isUnresolved(durationInSeconds) && durationInSeconds > 7200) {
-    throw new cdk.ValidationError(`Retry duration must be less than 7200 seconds, got ${durationInSeconds} seconds.`, scope);
+    throw new cdk.ValidationError('RetryDurationTooLarge', `Retry duration must be less than 7200 seconds, got ${durationInSeconds} seconds.`, scope);
   }
 
   return {

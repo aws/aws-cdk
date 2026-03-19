@@ -261,6 +261,7 @@ export class ImageRecipe extends ImageRecipeBase {
   public static fromImageRecipeAttributes(scope: Construct, id: string, attrs: ImageRecipeAttributes): IImageRecipe {
     if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
       throw new cdk.ValidationError(
+        'ImageRecipeAttributesRequired',
         'either imageRecipeArn or imageRecipeName must be provided to import an image recipe',
         scope,
       );
@@ -450,24 +451,26 @@ export class ImageRecipe extends ImageRecipeBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        'ImageRecipeNameTooLong',
         `the imageRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ImageRecipeNameNoSpaces', `the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
       throw new cdk.ValidationError(
+        'ImageRecipeNameNoUnderscores',
         `the imageRecipeName cannot contain underscores, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ImageRecipeNameMustBeLowercase', `the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

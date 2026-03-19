@@ -40,7 +40,7 @@ class TablePolicyFactory implements IResourcePolicyFactory {
    */
   public forResource(resource: CfnResource): IResourceWithPolicyV2 {
     if (!CfnTable.isCfnTable(resource)) {
-      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+      throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
 
     return new CfnTableWithPolicy(resource);
@@ -91,7 +91,7 @@ class CfnTableWithPolicy implements IResourceWithPolicyV2 {
 class EncryptedTableFactory implements IEncryptedResourceFactory {
   public forResource(resource: CfnResource): IEncryptedResource {
     if (!CfnTable.isCfnTable(resource)) {
-      throw new ValidationError(`Construct ${resource.node.path} is not of type CfnTable`, resource);
+      throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnTable`, resource);
     }
     return new EncryptedCfnTable(resource);
   }

@@ -179,16 +179,16 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
   private constructor(props: CrossRegionInferenceProfileProps) {
     // Validate required properties
     if (!props.geoRegion) {
-      throw new UnscopedValidationError('geoRegion is required');
+      throw new UnscopedValidationError('GeoRegionRequired', 'geoRegion is required');
     }
 
     if (!props.model) {
-      throw new UnscopedValidationError('model is required');
+      throw new UnscopedValidationError('ModelRequired', 'model is required');
     }
 
     // Validate that the model supports cross-region inference
     if (!props.model.supportsCrossRegion) {
-      throw new UnscopedValidationError(`Model ${props.model.modelId} does not support cross-region inference`);
+      throw new UnscopedValidationError('ModelNotSupportedForCrossRegion', `Model ${props.model.modelId} does not support cross-region inference`);
     }
 
     this.type = InferenceProfileType.SYSTEM_DEFINED;

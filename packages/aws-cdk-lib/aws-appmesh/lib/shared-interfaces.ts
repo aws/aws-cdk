@@ -199,7 +199,7 @@ export abstract class LoggingFormat {
    */
   public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
     if (Object.keys(jsonLoggingFormat).length == 0) {
-      throw new cdk.UnscopedValidationError('Json key pairs cannot be empty.');
+      throw new cdk.UnscopedValidationError('JsonKeyPairsEmpty', 'Json key pairs cannot be empty.');
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);

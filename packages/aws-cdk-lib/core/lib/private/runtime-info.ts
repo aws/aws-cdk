@@ -39,7 +39,7 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
     };
   } else if (jsiiRuntimeInfo) {
     // There is something defined, but doesn't match our expectations. Fail fast and hard.
-    throw new AssumptionError(`malformed jsii runtime info for construct: '${construct.node.path}'`);
+    throw new AssumptionError('MalformedJsiiRuntimeInfo', `malformed jsii runtime info for construct: '${construct.node.path}'`);
   }
   return undefined;
 }

@@ -193,11 +193,11 @@ export class DatabaseProxyEndpoint extends DatabaseProxyEndpointBase {
 
     const vpcSubnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
     if (vpcSubnetIds.length < 2) {
-      throw new ValidationError(`\`subnets\` requires at least 2 subnets, got ${vpcSubnetIds.length}`, this);
+      throw new ValidationError('InsufficientSubnets', `\`subnets\` requires at least 2 subnets, got ${vpcSubnetIds.length}`, this);
     }
 
     if (props.securityGroups && props.securityGroups.length == 0) {
-      throw new ValidationError('\`securityGroups\` must be undefined or a non-empty array.', this);
+      throw new ValidationError('MustBeUndefinedNonEmptyArray', '\`securityGroups\` must be undefined or a non-empty array.', this);
     }
 
     const resource = new CfnDBProxyEndpoint(this, 'Resource', {

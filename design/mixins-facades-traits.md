@@ -23,7 +23,7 @@ graph TD
         M["<b>Mixins</b><br/>Inward-looking features<br/><i>BucketVersioning, AutoDeleteObjects</i>"]
         CFN(["<b>CFN Resource<br/>Construct</b>"])
         T["<b>Traits</b><br/>Outward advertisement of contracts<br/><i>Encryptable, HasResourcePolicy</i>"]
-        F["<b>Facades</b><br/>Simplified interfaces for integrations<br/><i>Grants, Metrics, Reflections</i>"]
+        F["<b>Facades</b><br/>Simplified interfaces for external consumers<br/><i>Grants, Metrics, Reflections</i>"]
 
         M --- CFN
         CFN --- T
@@ -63,14 +63,24 @@ the right Trait, and build custom L2s by composing these building blocks.
 
 ### Mixins
 
-Mixins are **inward-looking features** that modify a resource's own
-configuration. They are composable abstractions applied to constructs via the
-`.with()` method from the `constructs` library.
+Mixins are **inward-looking features** that extend a resource's own behavior.
+They are composable abstractions applied to constructs via the `.with()` method
+from the `constructs` library.
 
-Mixins operate on a single primary resource. While a mixin can create auxiliary
-resources (like custom resource handlers) or accept other constructs as props,
-it is not designed for integrations between two equally important resources
-(e.g. connecting an SNS Topic to an SQS Queue). For those, use a Facade.
+A Mixin is a feature *of* the target resource. The defining question is: "is
+this feature about the target resource?" If yes, it is a Mixin — regardless of
+whether it sets properties on the L1, creates auxiliary resources, or both.
+
+Mixins operate on a single primary resource. A Mixin may set properties on the
+L1 resource directly (e.g. enabling versioning), create auxiliary resources that
+serve the primary resource (e.g. a custom resource handler for auto-deletion, or
+a delivery source for vended logs), or accept other constructs as props (e.g. a
+destination log group or S3 bucket). What matters is that the feature is *about*
+the target resource — the auxiliary resources and props exist to support it.
+
+Mixins are not designed for integrations between two equally important resources
+where neither is subordinate to the other (e.g. granting a role access to a
+bucket). For those, use a Facade.
 
 Mixins target L1 (`Cfn*`) resources. When applied to an L2 construct via
 `.with()`, the mixin framework automatically delegates to the L1 default child.
@@ -90,14 +100,19 @@ Mixins target L1 (`Cfn*`) resources. When applied to an L2 construct via
 
 **When to use:**
 
-- A feature modifies the resource's own configuration.
+- The feature is *about* the target resource — it extends the resource's own
+  behavior or lifecycle.
+- The feature sets properties on the L1 resource (e.g. enabling versioning).
+- The feature creates auxiliary resources that serve the primary resource (e.g.
+  custom resource handlers, delivery sources, policy resources).
 - The feature should work with both L1 and L2 constructs.
-- The feature involves creating auxiliary resources (custom resources, policies).
 - Users should be able to compose features independently of L2 props.
 
 **When not to use:**
 
-- The feature integrates the resource with something external (use a Facade).
+- The feature serves an external consumer, not the target resource (use a
+  Facade). For example, granting a role access to a bucket is about the
+  role's needs, not the bucket's behavior.
 - The feature advertises a capability to other constructs (use a Trait).
 - You need to change the optionality of properties or change defaults (Mixins
   cannot do this).
@@ -108,8 +123,15 @@ For detailed implementation guidelines, see
 ### Facades
 
 Facades are **resource-specific simplified interfaces that provide
-integrations** for a resource with other things. They are standalone classes
-with a static factory method that accepts a resource reference interface.
+integrations** for a resource with external consumers. They are standalone
+classes with a static factory method that accepts a resource reference interface.
+
+The defining characteristic of a Facade is directionality: a Facade serves an
+*external consumer*, not the target resource. For example, `BucketGrants`
+exists to serve the grantee (a role that needs access), not the bucket. The
+bucket doesn't care about the grant — the grant exists because the consumer
+needs it. Compare this to a Mixin like `BucketAutoDeleteObjects`, which is a
+feature *of* the bucket regardless of any external consumer.
 
 Facades are always specific to a particular resource type — that is why it is
 `BucketGrants` and not just `Grants`. While Facades for different resources look
@@ -130,16 +152,15 @@ provide their own Facades for any resource without modifying `aws-cdk-lib`.
 - Accept the resource reference interface (`IBucketRef`), enabling use with
   both L1 and L2 constructs.
 - Exposed as properties on the construct interface (e.g. `readonly grants`).
-- Do not modify the resource's own configuration.
 
 **Examples:** `BucketGrants`, `TopicGrants`, `BucketMetrics`, `BucketReflection`
 
 **When to use:**
 
-- The feature provides an integration between a specific resource and something
-  external (IAM permissions, CloudWatch metrics, event patterns).
+- The feature serves an external consumer, not the target resource (e.g. IAM
+  permissions serve the grantee, CloudWatch metrics serve the operator).
 - The feature should work with both L1 and L2 constructs.
-- The feature does not modify the resource itself.
+- The feature is not *about* the target resource's own behavior.
 
 ### Traits
 

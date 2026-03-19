@@ -221,7 +221,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError('VpcNotConfigured', 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

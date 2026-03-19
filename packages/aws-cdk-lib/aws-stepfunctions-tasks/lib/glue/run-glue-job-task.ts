@@ -81,7 +81,7 @@ export class RunGlueJobTask implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new UnscopedValidationError(`Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
+      throw new UnscopedValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call Glue.`);
     }
   }
 
