@@ -59,7 +59,7 @@ describe('ValidationError', () => {
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ..._callCircusTest in jest-circus, node internals, jestAdapter in jest-circus, runTest in jest-runner...
+    ...jest-circus, node internals, jest-circus, jest-runner...
 Relates to construct:
     <.> (...)
      └─ SomeStack (...)
@@ -79,7 +79,7 @@ Relates to construct:
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ..._callCircusTest in jest-circus, node internals, jestAdapter in jest-circus, runTest in jest-runner..."
+    ...jest-circus, node internals, jest-circus, jest-runner..."
 `);
     }
   });

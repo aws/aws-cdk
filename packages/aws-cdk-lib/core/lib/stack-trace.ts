@@ -138,7 +138,7 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
   const moduleRe = /(\/|\\)node_modules(\/|\\)([^/\\]+)/;
 
   const lines = [];
-  let skipped = new Array<string>();
+  let skipped = new Array<{ functionName?: string; fileName: string }>();
 
   let i = 0;
   while (i < stack.length) {
@@ -150,31 +150,36 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
         i++;
       }
       // The last stack frame has the function that user code call into.
-      skip(`${stack[i - 1].functionName} in ${pat[3]}`);
+      skip({ functionName: stack[i - 1].functionName, fileName: pat[3] });
     } else if (frame.fileName.includes('node:')) {
-      skip('node internals');
+      skip({ fileName: 'node internals' });
       while (i < stack.length && stack[i].fileName.includes('node:')) {
         i++;
       }
     } else {
-      reportSkipped();
+      reportSkipped(true);
       const prefix = indent ? '    at ' : '';
       lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
     }
   }
-  reportSkipped();
+  reportSkipped(false);
   return lines;
 
-  function skip(what: string) {
-    if (!skipped.includes(what)) {
+  function skip(what: typeof skipped[number]) {
+    if (!skipped.find(x => x.fileName === what.fileName && x.functionName === what.functionName)) {
       skipped.push(what);
     }
   }
 
-  function reportSkipped() {
+  function reportSkipped(includeFunction: boolean) {
     if (skipped.length > 0) {
+      const rendered = skipped.map((s, j) =>
+        // Only render the function name of the last frame before user code
+        j === skipped.length - 1 && s.functionName && includeFunction ?
+          `${s.functionName} in ${s.fileName}` : s.fileName);
+
       const prefix = indent ? '    ' : '';
-      lines.push(`${prefix}...${skipped.join(', ')}...`);
+      lines.push(`${prefix}...${rendered.join(', ')}...`);
     }
     skipped = [];
   }
