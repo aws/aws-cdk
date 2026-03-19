@@ -27,16 +27,97 @@ export function captureStackTrace(
     return ['stack traces disabled'];
   }
 
-  const object: { stack?: string } = {};
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
-    Error.captureStackTrace(object, below);
+    return renderCallStackJustMyCode(captureCallStack(below), false);
   } finally {
     Error.stackTraceLimit = previousLimit;
   }
-  if (!object.stack) {
-    return [];
+}
+
+/**
+ * Capture a call stack using `Error.captureStackTrace`
+ *
+ * Modern Nodes have a `util.getCallSites()` API but it's heavily unstable and
+ * doesn't have all the information of the legacy API yet.
+ */
+export function captureCallStack(upTo: Function | undefined): NodeJS.CallSite[] {
+  Error.prepareStackTrace = (_, trace) => trace;
+  try {
+    const obj: { stack: NodeJS.CallSite[] } = {} as any;
+    Error.captureStackTrace(obj, upTo);
+    if (obj.stack.length === 0) {
+      // Protect against a common mistake: if upTo is not in the call stack, `captureStackTrace` will return an empty array.
+      // If that happens, do it again without an `upTo` function.
+      Error.captureStackTrace(obj);
+    }
+    return obj.stack;
+  } finally {
+    Error.prepareStackTrace = undefined as any;
   }
-  return object.stack.split('\n').slice(1).map(s => s.replace(/^\s*at\s+/, ''));
+}
+
+/**
+ * Renders an array of CallSites nicely, focusing on the user application code
+ *
+ * We detect "Not My Code" using the following heuristics:
+ *
+ * - If there is '/node_modules/' in the file path, we assume the call stack is a library and we skip it.
+ * - If there is 'node:' in the file path, we assume it is NodeJS internals and we skip it.
+ */
+export function renderCallStackJustMyCode(stack: NodeJS.CallSite[], indent = true): string[] {
+  const moduleRe = /(\/|\\)node_modules(\/|\\)([^/\\]+)/;
+
+  const lines = [];
+  let skipped = new Array<string>();
+
+  let i = 0;
+  while (i < stack.length) {
+    const frame = stack[i++];
+
+    // FIXME: Show the last function we called into when going into library code
+
+    const pat = fileName(frame).match(moduleRe);
+    if (pat) {
+      while (i < stack.length && fileName(stack[i]).includes(pat[0])) {
+        i++;
+      }
+      // The last stack frame has the function that user code call into.
+      skip(`${renderFunctionCall(frame)} in ${pat[3]}`);
+    } else if (fileName(frame).includes('node:')) {
+      skip('node internals');
+      while (i < stack.length && fileName(stack[i]).includes('node:')) {
+        i++;
+      }
+    } else {
+      reportSkipped();
+      const prefix = indent ? '    at ' : '';
+      lines.push(`${prefix}${renderFunctionCall(frame)} (${fileName(frame)}:${frame.getLineNumber()})`);
+    }
+  }
+  reportSkipped();
+  return lines;
+
+  function renderFunctionCall(frame: NodeJS.CallSite): string {
+    return `${frame.isConstructor() ? 'new ' : ''}${frame.getFunctionName() || '<anonymous>'}`;
+  }
+
+  function fileName(frame: NodeJS.CallSite): string {
+    return frame.getScriptNameOrSourceURL() ?? '?';
+  }
+
+  function skip(what: string) {
+    if (!skipped.includes(what)) {
+      skipped.push(what);
+    }
+  }
+
+  function reportSkipped() {
+    if (skipped.length > 0) {
+      const prefix = indent ? '    ' : '';
+      lines.push(`${prefix}...${skipped.join(', ')}...`);
+    }
+    skipped = [];
+  }
 }
