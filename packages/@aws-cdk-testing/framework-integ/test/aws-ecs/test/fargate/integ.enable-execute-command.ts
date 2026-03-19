@@ -39,7 +39,7 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   healthCheck: {
-    command: ['CMD-SHELL', 'curl localhost:8000'],
+    command: ['CMD-SHELL', 'curl localhost:80'],
     interval: Duration.seconds(60),
     timeout: Duration.seconds(40),
   },

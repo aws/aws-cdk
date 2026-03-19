@@ -3,7 +3,7 @@ import { Linter } from '../linter';
 
 const IMIXIN_FQN = 'constructs.IMixin';
 const MIXIN_FQN = 'aws-cdk-lib.Mixin';
-const EXCLUDED_PACKAGES = ['@aws-cdk/mixins-preview'];
+const EXCLUDED_PACKAGES = ['@aws-cdk/cfn-property-mixins', '@aws-cdk/mixins-preview'];
 
 interface MixinLinterContext {
   readonly classType: reflect.ClassType;

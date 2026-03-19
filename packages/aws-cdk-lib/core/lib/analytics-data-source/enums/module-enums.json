@@ -1182,12 +1182,6 @@
       "DryRun"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
-    "PropertyMergeStrategy": [
-      "override",
-      "merge"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
     "S3LogsDeliveryPermissionsVersion": [
       "V1",
@@ -1205,7 +1199,18 @@
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts": {
     "SecurityPolicy": [
       "TLS_1_0",
-      "TLS_1_2"
+      "TLS_1_2",
+      "SecurityPolicy_TLS13_1_3_2025_09",
+      "SecurityPolicy_TLS13_1_3_FIPS_2025_09",
+      "SecurityPolicy_TLS13_1_2_PQ_2025_09",
+      "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09",
+      "SecurityPolicy_TLS13_2025_EDGE",
+      "SecurityPolicy_TLS12_PFS_2025_EDGE",
+      "SecurityPolicy_TLS12_2018_EDGE"
+    ],
+    "EndpointAccessMode": [
+      "STRICT",
+      "BASIC"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
@@ -1641,6 +1646,12 @@
       "REQUEST_RESPONSE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source.ts": {
+    "DataSourceMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
     "Visibility": [
       "GLOBAL",
@@ -1666,7 +1677,25 @@
       "DEBUG",
       "ALL"
     ],
+    "DataSourceLevelMetricsBehavior": [
+      "FULL_REQUEST_DATA_SOURCE_METRICS",
+      "PER_DATA_SOURCE_METRICS"
+    ],
+    "OperationLevelMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "ResolverLevelMetricsBehavior": [
+      "FULL_REQUEST_RESOLVER_METRICS",
+      "PER_RESOLVER_METRICS"
+    ],
     "IntrospectionConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/resolver.ts": {
+    "ResolverMetricsConfig": [
       "ENABLED",
       "DISABLED"
     ]
