@@ -111,7 +111,7 @@ class CustomSynthesizer extends StackSynthesizer {
 
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     void(asset);
-    throw new UnscopedValidationError('Docker images are not supported here');
+    throw new UnscopedValidationError('DockerImagesSupportedHere', 'Docker images are not supported here');
   }
 
   synthesize(session: ISynthesisSession): void {

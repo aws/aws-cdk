@@ -122,6 +122,7 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
       events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_ALARM);
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new ValidationError(
+        'DeploymentInAlarmRequiresCloudWatchAlarms',
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
         'at least one CloudWatch alarm with the Deployment Group', scope);
     }

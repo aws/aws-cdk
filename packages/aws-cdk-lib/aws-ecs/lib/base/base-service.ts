@@ -678,7 +678,7 @@ export abstract class BaseService extends Resource
     } else {
       const resourceNameParts = resourceName.split('/');
       if (resourceNameParts.length !== 2) {
-        throw new ValidationError(`resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`, scope);
+        throw new ValidationError('ResourceNameServiceArn', `resource name ${resourceName} from service ARN: ${serviceArn} is not using the ARN cluster format`, scope);
       }
       clusterName = resourceNameParts[0];
       serviceName = resourceNameParts[1];
@@ -827,7 +827,7 @@ export abstract class BaseService extends Resource
     });
 
     if (props.propagateTags && props.propagateTaskTagsFrom) {
-      throw new ValidationError('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
+      throw new ValidationError('OnlySpecifyEitherPropagateTags', 'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
     this.taskDefinition = taskDefinition;
@@ -897,11 +897,11 @@ export abstract class BaseService extends Resource
     }
 
     if (props.circuitBreaker && !this.isEcsDeploymentController) {
-      Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+      Annotations.of(this)._addTrackableError('CircuitBreakerRequiresEcsController', 'Deployment circuit breaker requires the ECS deployment controller.');
     }
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
-      throw new ValidationError('Deployment alarms requires the ECS deployment controller.', this);
+      throw new ValidationError('RequiresDeploymentAlarmsRequires', 'Deployment alarms requires the ECS deployment controller.', this);
     }
 
     if (props.forceNewDeployment !== undefined) {
@@ -927,7 +927,7 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision
       && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new ValidationError('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision', this);
+      throw new ValidationError('CodeDeployDeploymentControllerOnlyUsed', 'CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision', this);
     }
 
     if (props.minHealthyPercent === undefined) {
@@ -977,7 +977,7 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentAlarms) {
       if (props.deploymentAlarms.alarmNames.length === 0) {
-        throw new ValidationError('at least one alarm name is required when specifying deploymentAlarms, received empty array', this);
+        throw new ValidationError('IsRequiredLeastAlarmName', 'at least one alarm name is required when specifying deploymentAlarms, received empty array', this);
       }
       this.deploymentAlarms = {
         alarmNames: props.deploymentAlarms.alarmNames,
@@ -1000,7 +1000,7 @@ export abstract class BaseService extends Resource
       if (this.isEcsDeploymentController) {
         props.lifecycleHooks.forEach(target => this.addLifecycleHook(target));
       } else {
-        throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+        throw new ValidationError('RequiresDeploymentLifecycleHooks', 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
       }
     }
 
@@ -1027,13 +1027,13 @@ export abstract class BaseService extends Resource
     // support this CloudFormation property. The AWS documentation does not explicitly
     // state this restriction; a documentation update has been requested.
     if (!this.isEcsDeploymentController) {
-      throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+      throw new ValidationError('EcsControllerRequired', 'forceNewDeployment requires the ECS deployment controller.', this);
     }
 
     const resolvedNonce = nonce ?? new Date().toISOString();
 
     if (!Token.isUnresolved(resolvedNonce) && (resolvedNonce.length < 1 || resolvedNonce.length > 255)) {
-      throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+      throw new ValidationError('ForceDeploymentErrorInvalidLength', `forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
     }
 
     this.resource.forceNewDeployment = {
@@ -1048,7 +1048,7 @@ export abstract class BaseService extends Resource
    */
   public addLifecycleHook(target: IDeploymentLifecycleHookTarget) {
     if (!this.isEcsDeploymentController) {
-      throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+      throw new ValidationError('RequiresDeploymentLifecycleHooks', 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
     this.lifecycleHooks.push(target);
   }
@@ -1073,7 +1073,7 @@ export abstract class BaseService extends Resource
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
     if (this.volumes.length > 1) {
-      throw new ValidationError(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`, this);
+      throw new ValidationError('OnlyVolumeSpecifiedVolumeConfigurations', `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`, this);
     }
     return this.volumes.map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
@@ -1125,7 +1125,7 @@ export abstract class BaseService extends Resource
    */
   public enableDeploymentAlarms(alarmNames: string[], options?: DeploymentAlarmOptions) {
     if (alarmNames.length === 0) {
-      throw new ValidationError('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
+      throw new ValidationError('IsRequiredLeastAlarmName', 'at least one alarm name is required when calling enableDeploymentAlarms(), received empty array', this);
     }
 
     alarmNames.forEach(alarmName => {
@@ -1141,7 +1141,7 @@ export abstract class BaseService extends Resource
         (AlarmBehavior.ROLLBACK_ON_ALARM === options.behavior && !this.deploymentAlarms.rollback) ||
         (AlarmBehavior.FAIL_ON_ALARM === options.behavior && this.deploymentAlarms.rollback)
       ) {
-        throw new ValidationError(`all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`, this);
+        throw new ValidationError('DeploymentAlarmsServiceSame', `all deployment alarms on an ECS service must have the same AlarmBehavior. Attempted to enable deployment alarms with ${options.behavior}, but alarms were previously enabled with ${this.deploymentAlarms.rollback ? AlarmBehavior.ROLLBACK_ON_ALARM : AlarmBehavior.FAIL_ON_ALARM}`, this);
       }
     }
 
@@ -1163,7 +1163,7 @@ export abstract class BaseService extends Resource
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
     if (this._serviceConnectConfig) {
-      throw new ValidationError('Service connect configuration cannot be specified more than once.', this);
+      throw new ValidationError('ServiceConnectConfigurationCannot', 'Service connect configuration cannot be specified more than once.', this);
     }
 
     this.validateServiceConnectConfiguration(config);
@@ -1193,7 +1193,7 @@ export abstract class BaseService extends Resource
     const services = cfg.services?.map(svc => {
       const containerPort = this.taskDefinition.findPortMappingByName(svc.portMappingName)?.containerPort;
       if (!containerPort) {
-        throw new ValidationError(`Port mapping with name ${svc.portMappingName} does not exist.`, this);
+        throw new ValidationError('PortMappingNameDoes', `Port mapping with name ${svc.portMappingName} does not exist.`, this);
       }
       const alias = {
         port: svc.port || containerPort,
@@ -1238,12 +1238,12 @@ export abstract class BaseService extends Resource
    */
   private validateServiceConnectConfiguration(config?: ServiceConnectProps) {
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('Task definition must have at least one container to enable service connect.', this);
+      throw new ValidationError('TaskDefinitionLeastContainer', 'Task definition must have at least one container to enable service connect.', this);
     }
 
     // Check the implicit enable case; when config isn't specified or namespace isn't specified, we need to check that there is a namespace on the cluster.
     if ((!config || !config.namespace) && !this.cluster.defaultCloudMapNamespace) {
-      throw new ValidationError('Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace', this);
+      throw new ValidationError('MustBeNamespaceDefinedEither', 'Namespace must be defined either in serviceConnectConfig or cluster.defaultCloudMapNamespace', this);
     }
 
     // When config isn't specified, return.
@@ -1258,13 +1258,13 @@ export abstract class BaseService extends Resource
     config.services.forEach(serviceConnectService => {
       // port must exist on the task definition
       if (!this.taskDefinition.findPortMappingByName(serviceConnectService.portMappingName)) {
-        throw new ValidationError(`Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`, this);
+        throw new ValidationError('PortMappingDoesExist', `Port Mapping '${serviceConnectService.portMappingName}' does not exist on the task definition.`, this);
       }
 
       // Check that no two service connect services use the same discovery name.
       const discoveryName = serviceConnectService.discoveryName || serviceConnectService.portMappingName;
       if (portNames.get(serviceConnectService.portMappingName)?.includes(discoveryName)) {
-        throw new ValidationError(`Cannot create multiple services with the discoveryName '${discoveryName}'.`, this);
+        throw new ValidationError('CannotCreateMultiple', `Cannot create multiple services with the discoveryName '${discoveryName}'.`, this);
       }
 
       let currentDiscoveries = portNames.get(serviceConnectService.portMappingName);
@@ -1277,19 +1277,19 @@ export abstract class BaseService extends Resource
 
       // IngressPortOverride should be within the valid port range if it exists.
       if (serviceConnectService.ingressPortOverride && !this.isValidPort(serviceConnectService.ingressPortOverride)) {
-        throw new ValidationError(`ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`, this);
+        throw new ValidationError('IngressPortOverrideValid', `ingressPortOverride ${serviceConnectService.ingressPortOverride} is not valid.`, this);
       }
 
       // clientAlias.port should be within the valid port range
       if (serviceConnectService.port &&
         !this.isValidPort(serviceConnectService.port)) {
-        throw new ValidationError(`Client Alias port ${serviceConnectService.port} is not valid.`, this);
+        throw new ValidationError('ClientAliasPortValid', `Client Alias port ${serviceConnectService.port} is not valid.`, this);
       }
 
       // tls.awsPcaAuthorityArn should be an ARN
       const awsPcaAuthorityArn = serviceConnectService.tls?.awsPcaAuthorityArn;
       if (awsPcaAuthorityArn && !Token.isUnresolved(awsPcaAuthorityArn) && !awsPcaAuthorityArn.startsWith('arn:')) {
-        throw new ValidationError(`awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
+        throw new ValidationError('AwsPcaAuthorityArnStartArnLeast', `awsPcaAuthorityArn must start with "arn:" and have at least 6 components; received ${awsPcaAuthorityArn}`, this);
       }
     });
   }
@@ -1299,25 +1299,25 @@ export abstract class BaseService extends Resource
    */
   private validateCanaryConfiguration(config: TrafficShiftConfig) {
     if (this.deploymentStrategy !== DeploymentStrategy.CANARY) {
-      throw new ValidationError('Canary configuration requires deploymentStrategy to be set to CANARY', this);
+      throw new ValidationError('RequiresCanaryConfigurationRequires', 'Canary configuration requires deploymentStrategy to be set to CANARY', this);
     }
 
     if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
       if (!Number.isFinite(config.stepPercent) || config.stepPercent < 0.1 || config.stepPercent > 100.0) {
-        throw new ValidationError(`Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
+        throw new ValidationError('MustBeCanaryDeploymentStepPercent', `Canary deployment stepPercent must be between 0.1 and 100.0, received ${config.stepPercent}`, this);
       }
       if (!Number.isInteger(config.stepPercent * 10)) {
-        throw new ValidationError(`Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+        throw new ValidationError('MustBeCanaryDeploymentStepPercent', `Canary deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
       }
     }
 
     if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
       const minutes = config.stepBakeTime.toMinutes({ integral: false });
       if (!Number.isInteger(minutes)) {
-        throw new ValidationError(`Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+        throw new ValidationError('MustBeCanaryDeploymentStepBakeTime', `Canary deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
       }
       if (minutes < 0 || minutes > 1440) {
-        throw new ValidationError(`Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+        throw new ValidationError('MustBeCanaryDeploymentStepBakeTime', `Canary deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
       }
     }
   }
@@ -1327,25 +1327,25 @@ export abstract class BaseService extends Resource
    */
   private validateLinearConfiguration(config: TrafficShiftConfig) {
     if (this.deploymentStrategy !== DeploymentStrategy.LINEAR) {
-      throw new ValidationError('Linear configuration requires deploymentStrategy to be set to LINEAR', this);
+      throw new ValidationError('RequiresLinearConfigurationRequires', 'Linear configuration requires deploymentStrategy to be set to LINEAR', this);
     }
 
     if (config.stepPercent !== undefined && !Token.isUnresolved(config.stepPercent)) {
       if (!Number.isFinite(config.stepPercent) || config.stepPercent < 3.0 || config.stepPercent > 100.0) {
-        throw new ValidationError(`Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
+        throw new ValidationError('MustBeLinearDeploymentStepPercent', `Linear deployment stepPercent must be between 3.0 and 100.0, received ${config.stepPercent}`, this);
       }
       if (!Number.isInteger(config.stepPercent * 10)) {
-        throw new ValidationError(`Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
+        throw new ValidationError('MustBeLinearDeploymentStepPercent', `Linear deployment stepPercent must be a multiple of 0.1, received ${config.stepPercent}`, this);
       }
     }
 
     if (config.stepBakeTime !== undefined && !config.stepBakeTime.isUnresolved()) {
       const minutes = config.stepBakeTime.toMinutes({ integral: false });
       if (!Number.isInteger(minutes)) {
-        throw new ValidationError(`Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
+        throw new ValidationError('MustBeLinearDeploymentStepBakeTime', `Linear deployment stepBakeTime must be a whole number of minutes, received ${minutes} minutes`, this);
       }
       if (minutes < 0 || minutes > 1440) {
-        throw new ValidationError(`Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
+        throw new ValidationError('MustBeLinearDeploymentStepBakeTime', `Linear deployment stepBakeTime must be between 0 and 1440 minutes, received ${minutes} minutes`, this);
       }
     }
   }
@@ -1517,7 +1517,7 @@ export abstract class BaseService extends Resource
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     if (options.alternateTarget && !this.isEcsDeploymentController) {
-      throw new ValidationError('Deployment lifecycle hooks requires the ECS deployment controller.', this);
+      throw new ValidationError('RequiresDeploymentLifecycleHooks', 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
 
     const self = this;
@@ -1584,7 +1584,7 @@ export abstract class BaseService extends Resource
    */
   public autoScaleTaskCount(props: appscaling.EnableScalingProps) {
     if (this.scalableTaskCount) {
-      throw new ValidationError('AutoScaling of task count already enabled for this service', this);
+      throw new ValidationError('AutoScalingTaskCountAlready', 'AutoScaling of task count already enabled for this service', this);
     }
 
     return this.scalableTaskCount = new ScalableTaskCount(this, 'TaskCount', {
@@ -1604,17 +1604,17 @@ export abstract class BaseService extends Resource
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
     const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
-      throw new ValidationError('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.', this);
+      throw new ValidationError('CannotEnableService', 'Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.', this);
     }
 
     if (sdNamespace.type === cloudmap.NamespaceType.HTTP) {
-      throw new ValidationError('Cannot enable DNS service discovery for HTTP Cloudmap Namespace.', this);
+      throw new ValidationError('CannotEnableService', 'Cannot enable DNS service discovery for HTTP Cloudmap Namespace.', this);
     }
 
     // Determine DNS type based on network mode
     const networkMode = this.taskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
-      throw new ValidationError('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
+      throw new ValidationError('CannotServiceDiscovery', 'Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
     // Bridge or host network mode requires SRV records
@@ -1625,7 +1625,7 @@ export abstract class BaseService extends Resource
         dnsRecordType = cloudmap.DnsRecordType.SRV;
       }
       if (dnsRecordType !== cloudmap.DnsRecordType.SRV) {
-        throw new ValidationError('SRV records must be used when network mode is Bridge or Host.', this);
+        throw new ValidationError('MustBeRecordsUsedNetwork', 'SRV records must be used when network mode is Bridge or Host.', this);
       }
     }
 
@@ -1775,10 +1775,10 @@ export abstract class BaseService extends Resource
    */
   private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
     if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
-      throw new ValidationError('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.', this);
+      throw new ValidationError('CannotClassicLoad', 'Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.', this);
     }
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new ValidationError('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
+      throw new ValidationError('CannotClassicLoad', 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
     this.loadBalancers.push({
@@ -1797,7 +1797,7 @@ export abstract class BaseService extends Resource
     containerPort: number,
     alternateTarget?: IAlternateTarget): elbv2.LoadBalancerTargetProps {
     if (this.taskDefinition.networkMode === NetworkMode.NONE) {
-      throw new ValidationError('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
+      throw new ValidationError('CannotLoadBalancer', 'Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.', this);
     }
 
     const advancedConfiguration = alternateTarget?.bind(this);
@@ -1840,7 +1840,7 @@ export abstract class BaseService extends Resource
    */
   private addServiceRegistry(registry: ServiceRegistry) {
     if (this.serviceRegistries.length >= 1) {
-      throw new ValidationError('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
+      throw new ValidationError('CannotAssociateGiven', 'Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
     }
 
     const sr = this.renderServiceRegistry(registry);
@@ -1881,10 +1881,10 @@ export abstract class BaseService extends Resource
   private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
     if (!idleTimeout && !perRequestTimeout) return undefined;
     if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new ValidationError(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`, this);
+      throw new ValidationError('MustBeIdleTimeoutLeastSecond', `idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`, this);
     }
     if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-      throw new ValidationError(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`, this);
+      throw new ValidationError('MustBePerRequestTimeoutLeastSecond', `perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`, this);
     }
     return {
       idleTimeoutSeconds: idleTimeout?.toSeconds(),
@@ -2107,14 +2107,14 @@ function determineContainerNameAndPort(scope: IConstruct, options: DetermineCont
   if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
     // Ensure the user-provided container is from the right task definition.
     if (options.container && options.container.taskDefinition != options.taskDefinition) {
-      throw new ValidationError('Cannot add discovery for a container from another task definition', scope);
+      throw new ValidationError('CannotDiscoveryContainer', 'Cannot add discovery for a container from another task definition', scope);
     }
 
     const container = options.container ?? options.taskDefinition.defaultContainer!;
 
     // Ensure that any port given by the user is mapped.
     if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
-      throw new ValidationError('Cannot add discovery for a container port that has not been mapped', scope);
+      throw new ValidationError('CannotDiscoveryContainer', 'Cannot add discovery for a container port that has not been mapped', scope);
     }
 
     return {
