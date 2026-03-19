@@ -1,0 +1,26 @@
+{
+  "/CrossRegionRefConsumerInteg/SomeParameterMirrored": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CrossRegionRefConsumerInteg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CrossRegionRefConsumerInteg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CrossRegionRefConsumerInteg/SomeParameterMirrored/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SomeParameterMirroredE2D8F3B8"
+    }
+  ]
+}

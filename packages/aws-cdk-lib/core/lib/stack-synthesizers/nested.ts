@@ -23,6 +23,10 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     return this.parentDeployment.lookupRole;
   }
 
+  public get cloudFormationExecutionRole(): string | undefined {
+    return this.parentDeployment.cloudFormationExecutionRole;
+  }
+
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     // Forward to parent deployment. By the magic of cross-stack references any parameter
     // returned and used will magically be forwarded to the nested stack.

@@ -9,6 +9,7 @@ import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
+import { ArnFormat } from '../arn';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
@@ -24,6 +25,7 @@ import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
 import { Annotations } from '../annotations';
+import { CfnResource } from '../cfn-resource';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -67,15 +69,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    const roleArn = producer.synthesizer.lookupRole;
-    if (roleArn == null) {
+    if (consumer.synthesizer.cloudFormationExecutionRole == null) {
       // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
       throw new UnscopedValidationError(
-        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". Could not find a lookup role. ` +
-        `Use a different stack synthesizer, such as DefaultStackSynthesizer, that has a lookup role with at least DescribeStacks permission on account ${producerAccount}.`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'Could not find a CloudFormation execution role for the consumer stack. Use a different stack synthesizer, such as DefaultStackSynthesizer.',
       );
     }
-    return createGetStackOutput(reference, roleArn);
+    return createGetStackOutput(reference, {
+      consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
+      producerAccount,
+      producerRegion,
+    });
   }
 
   // Stacks are in the same account, but different regions
@@ -272,11 +277,19 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
   return exported;
 }
 
-function createGetStackOutput(reference: Reference, roleArn?: string): Intrinsic {
+interface GetStackOutputOptions {
+  consumerRoleArn?: string;
+  producerRegion?: string;
+  producerAccount?: string;
+}
+
+function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
-  const resolved = exportingStack.resolve(reference);
-  const id = 'Output' + JSON.stringify(resolved);
+  const resolved = JSON.stringify(exportingStack.resolve(reference));
+  const outputId = 'Output' + resolved;
+  const roleId = 'Role' + resolved;
+  const policyId = 'Policy' + resolved;
 
   function createScope(stack: Stack) {
     const scopeName = 'Publish';
@@ -290,11 +303,68 @@ function createGetStackOutput(reference: Reference, roleArn?: string): Intrinsic
 
   const scope = createScope(exportingStack);
 
-  let output = scope.node.tryFindChild(id) as CfnOutput;
+  let output = scope.node.tryFindChild(outputId) as CfnOutput;
   if (output == null) {
-    output = new CfnOutput(scope, id, {
+    output = new CfnOutput(scope, outputId, {
       value: Token.asString(reference),
     });
+  }
+
+  let roleArn: string | undefined = undefined;
+  if (options.consumerRoleArn) {
+    let role = scope.node.tryFindChild(roleId) as CfnResource;
+    if (role == null) {
+      role = new CfnResource(scope, roleId, {
+        type: 'AWS::IAM::Role',
+        properties: {
+          AssumeRolePolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: options.consumerRoleArn,
+                },
+                Action: [
+                  'sts:AssumeRole',
+                ],
+              },
+            ],
+          },
+        },
+      });
+      role.addPropertyOverride('RoleName', role.logicalId);
+    }
+
+    roleArn = exportingStack.formatArn({
+      service: 'iam',
+      resource: 'role',
+      resourceName: role.logicalId,
+      account: options.producerAccount,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      region: '',
+    });
+
+    let policy = scope.node.tryFindChild(policyId) as Construct;
+    if (policy == null) {
+      new CfnResource(scope, policyId, {
+        type: 'AWS::IAM::Policy',
+        properties: {
+          PolicyName: role.logicalId + 'Policy',
+          Roles: [Fn.ref(role.logicalId)],
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Action: 'cloudformation:DescribeStacks',
+                Resource: '*',
+              },
+            ],
+          },
+        },
+      });
+    }
   }
 
   return Tokenization.reverseCompleteString(
