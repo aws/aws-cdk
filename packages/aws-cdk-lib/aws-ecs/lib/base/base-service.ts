@@ -906,14 +906,14 @@ export abstract class BaseService extends Resource
 
     if (props.forceNewDeployment !== undefined) {
       if (!this.isEcsDeploymentController) {
-        throw new ValidationError('forceNewDeployment requires the ECS deployment controller.', this);
+        throw new ValidationError('ForceNewDeploymentRequiresEcsController', 'forceNewDeployment requires the ECS deployment controller.', this);
       }
 
       const enabled = props.forceNewDeployment.enabled ?? true;
       const nonce = props.forceNewDeployment.nonce;
 
       if (nonce !== undefined && !Token.isUnresolved(nonce) && (nonce.length < 1 || nonce.length > 255)) {
-        throw new ValidationError(`forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
+        throw new ValidationError('ForceNewDeploymentNonceInvalidLength', `forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
       }
 
       this.resource.forceNewDeployment = {
