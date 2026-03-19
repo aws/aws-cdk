@@ -5549,6 +5549,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'certificate': '*',
       'endpointType': 'EndpointType',
       'securityPolicy': 'SecurityPolicy',
+      'endpointAccessMode': 'EndpointAccessMode',
       'mtls': {
         'bucket': {
           'bucketArn': '*',
@@ -5819,6 +5820,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'certificate': '*',
           'endpointType': 'EndpointType',
           'securityPolicy': 'SecurityPolicy',
+          'endpointAccessMode': 'EndpointAccessMode',
           'mtls': {
             'bucket': {
               'bucketArn': '*',
@@ -5945,6 +5947,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -6704,6 +6707,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -6846,6 +6850,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7162,6 +7167,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7968,6 +7974,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'resolverCountLimit': '*',
       'environmentVariables': '*',
       'ownerContact': '*',
+      'enhancedMetricsConfig': {
+        'dataSourceLevelMetricsBehavior': 'DataSourceLevelMetricsBehavior',
+        'operationLevelMetricsConfig': 'OperationLevelMetricsConfig',
+        'resolverLevelMetricsBehavior': 'ResolverLevelMetricsBehavior'
+      },
       'addSchemaDependency': [
         '*'
       ],
@@ -17225,6 +17236,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         }
       ]
+    },
+    'ReferencedKey': {
+      'environmentFromArn': '*',
+      'keyArn': '*',
+      'keyId': '*',
+      'policy': '*',
+      'trustAccountIdentities': 'boolean'
     }
   },
   'aws-cdk-lib.aws-lambda': {
@@ -19125,6 +19143,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipAddressType': 'IpAddressType',
       'suppressLogsResourcePolicy': 'boolean',
       'coldStorageEnabled': 'boolean',
+      's3VectorsEngineEnabled': 'boolean',
       'addAccessPolicies': [
         '*'
       ]
@@ -22478,6 +22497,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'optionalFields': '*'
         }
       ]
+    },
+    'ReferencedBucket': {
+      'account': '*',
+      'region': '*',
+      'bucketArn': '*',
+      'bucketName': '*',
+      'bucketDomainName': '*',
+      'bucketWebsiteUrl': '*',
+      'bucketWebsiteDomainName': '*',
+      'bucketRegionalDomainName': '*',
+      'bucketDualStackDomainName': '*',
+      'encryptionKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'isWebsite': 'boolean',
+      'policy': '*',
+      'replicationRoleArn': '*',
+      'autoCreatePolicy': 'boolean',
+      'disallowPublicAccess': 'boolean',
+      'notificationsHandlerRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      }
     }
   },
   'aws-cdk-lib.aws-scheduler': {
