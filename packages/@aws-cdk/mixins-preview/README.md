@@ -148,9 +148,13 @@ distribution
 
 ## EventBridge Event Patterns
 
-CDK Mixins automatically generates typed EventBridge event patterns for AWS resources. These patterns work with both L1 and L2 constructs, providing a consistent interface for creating EventBridge rules.
+CDK Mixins automatically generates typed EventBridge event patterns for AWS resources. These patterns come in two flavors: **resource-specific** and **standalone**.
 
-### Event Patterns Basic Usage
+### Resource-Specific Event Patterns
+
+Resource-specific patterns are created by attaching a resource reference (e.g. an S3 bucket). The resource identifier is automatically injected into the event pattern, so calling a pattern method with no arguments still filters events to that specific resource. For example, an S3 `objectCreatedPattern()` will automatically include the bucket name in the pattern, meaning it only matches events from that particular bucket.
+
+#### Event Patterns Basic Usage
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
@@ -182,9 +186,7 @@ new events.CfnRule(scope, 'CfnRule', {
 });
 ```
 
-### Event Pattern Features
-
-**Automatic Resource Injection**: Resource identifiers are automatically included in patterns
+#### Event Pattern Features
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
@@ -212,6 +214,62 @@ const pattern = bucketEvents.objectCreatedPattern({
 });
 ```
 
+### Standalone Event Patterns
+
+Standalone patterns are not tied to any specific resource. They match events across all resources of that type. For example, a standalone `awsAPICallViaCloudTrailPattern()` will match CloudTrail API calls for all S3 buckets in the account, not just a specific one.
+
+#### Event Patterns Basic Usage
+
+```typescript
+import { AWSAPICallViaCloudTrail, ObjectCreated, ObjectDeleted } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+declare const fn: lambda.Function;
+
+// Works with L2 Rule
+new events.Rule(scope, 'Rule', {
+  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+    tlsDetails: { tlsVersion: ['TLSv1.3'] },
+    eventMetadata: { region: ['us-east-1'] },
+  }),
+  targets: [new targets.LambdaFunction(fn)]
+});
+
+// Also works with L1 CfnRule
+new events.CfnRule(scope, 'CfnRule', {
+  state: 'ENABLED',
+  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+    tlsDetails: { tlsVersion: ['TLSv1.3'] },
+    eventMetadata: { region: ['us-east-1'] },
+  }),
+  targets: [{ arn: fn.functionArn, id: 'L1' }]
+});
+```
+
+#### Event Pattern Features
+
+```typescript
+import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
+
+// Matches CloudTrail API calls across ALL S3 buckets
+const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern();
+```
+
+**Event Metadata Support**: Control EventBridge pattern metadata
+
+```typescript
+import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
+
+const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+  eventMetadata: {
+    region: events.Match.prefix('us-'),
+    version: ['0']
+  }
+});
+```
+
 ### Available Events
 
 Event patterns are generated for EventBridge events available in the AWS Event Schema Registry. Common examples:
@@ -226,5 +284,9 @@ Event patterns are generated for EventBridge events available in the AWS Event S
 Import events from service-specific modules:
 
 ```typescript
+// Resource-specific (filters to a specific bucket)
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+
+// Standalone (matches across all buckets)
+import { AWSAPICallViaCloudTrail, ObjectCreated, ObjectDeleted } from '@aws-cdk/mixins-preview/aws-s3/events';
 ```
