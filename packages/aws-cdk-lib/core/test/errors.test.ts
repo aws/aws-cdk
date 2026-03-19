@@ -1,3 +1,5 @@
+import { inspect } from 'util';
+import { Bucket } from '../../aws-s3';
 import { App, Stack } from '../lib';
 import { Errors, UnscopedValidationError, ValidationError } from '../lib/errors';
 
@@ -29,7 +31,7 @@ describe('ValidationError', () => {
     });
     expect(error.message).toBe('this is an error');
     expect(error.stack).toContain('ValidationError: this is an error');
-    expect(error.stack).toContain('at path [MyStack] in');
+    expect(error.stack).toContain('└─ MyStack');
   });
 
   test('UnscopedValidationError is ValidationError and ConstructError', () => {
@@ -40,4 +42,57 @@ describe('ValidationError', () => {
     expect(error.name).toBe('ValidationError');
     expect(error.stack).toContain('ValidationError: this is an error');
   });
+
+  test('presentation of a ValidationError', () => {
+    try {
+      const app = new App();
+      const stack = new Stack(app, 'SomeStack');
+
+      const targetBucket = new Bucket(stack, 'TargetBucket');
+
+      throw new ValidationError('ErrorCode', 'There is an error here', targetBucket);
+    } catch (e: any) {
+      // NodeJS will render an uncaught error using inspect()
+      const errorString = inspect(e);
+      expect(anonymizeBetweenParens(errorString)).toMatchInlineSnapshot(`
+"ErrorCode: There is an error here
+    at <anonymous> (...)
+    ...Promise.then.completed in jest-circus...
+    at new Promise (...)
+    ...jest-circus, node internals, jest-circus, jest-runner...
+Relates to construct:
+    <.> (...)
+     └─ SomeStack (...)
+         └─ TargetBucket (...)"
+`);
+    }
+  });
+
+  test('presentation of an UnscopedValidationError', () => {
+    try {
+      throw new UnscopedValidationError('ErrorCode', 'There is an error here');
+    } catch (e: any) {
+      // NodeJS will render an uncaught error using inspect()
+      const errorString = inspect(e);
+      expect(anonymizeBetweenParens(errorString)).toMatchInlineSnapshot(`
+"ErrorCode: There is an error here
+    at <anonymous> (...)
+    ...Promise.then.completed in jest-circus...
+    at new Promise (...)
+    ...jest-circus, node internals, jest-circus, jest-runner..."
+`);
+    }
+  });
 });
+
+/**
+ * Anonymize info between parentheses.
+ *
+ * - Construct IDs are only injected by jsii, so a js-test test won't have these.
+ * - File paths are only valid on 1 particular disk.
+ */
+function anonymizeBetweenParens(x: string): string {
+  return x.split('\n')
+    .map(s => s.replace(/\([^)]*\)/, '(...)'))
+    .join('\n');
+}
