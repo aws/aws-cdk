@@ -1,6 +1,6 @@
 import { UnscopedValidationError } from '../../core';
 import { BuiltInAttributes } from './ec2/ec2-service';
-import { CfnService } from './ecs.generated';
+import type { CfnService } from './ecs.generated';
 
 /**
  * Instance resource used for bin packing
@@ -42,7 +42,7 @@ export class PlacementStrategy {
    */
   public static spreadAcross(...fields: string[]) {
     if (fields.length === 0) {
-      throw new UnscopedValidationError('spreadAcross: give at least one field to spread by');
+      throw new UnscopedValidationError('SpreadAcrossGiveAtLeastOneField', 'spreadAcross: give at least one field to spread by');
     }
     return new PlacementStrategy(fields.map(field => ({ type: 'spread', field })));
   }

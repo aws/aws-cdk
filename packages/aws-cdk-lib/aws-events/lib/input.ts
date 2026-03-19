@@ -1,9 +1,12 @@
+import type {
+  IResolvable,
+  IResolveContext,
+} from '../../core';
 import {
-  captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  captureStackTrace, DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
   UnscopedValidationError,
 } from '../../core';
-import { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The input to send to the event target
@@ -170,7 +173,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError('DuplicateInputPathKey', `Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 

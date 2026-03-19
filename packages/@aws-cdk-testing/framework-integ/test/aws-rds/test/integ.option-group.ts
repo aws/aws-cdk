@@ -1,5 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
 import {
   DatabaseInstanceEngine,
   OptionGroup,
@@ -7,7 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-class OptionGroupTestStack extends cdk.Stack {
+class OptionGroupTestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
@@ -37,4 +38,3 @@ const stack = new OptionGroupTestStack(app, 'aws-rds-option-group');
 new IntegTest(app, 'OptionGroupTest', {
   testCases: [stack],
 });
-app.synth();

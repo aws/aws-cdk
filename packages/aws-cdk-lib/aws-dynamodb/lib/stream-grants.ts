@@ -1,7 +1,7 @@
-import { ITableRef } from './dynamodb.generated';
+import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 
 /**
  * Construction properties for StreamGrants

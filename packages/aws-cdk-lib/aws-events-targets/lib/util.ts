@@ -1,9 +1,11 @@
-import { Construct, IConstruct, Node } from 'constructs';
+import type { IConstruct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as sqs from '../../aws-sqs';
-import { Annotations, Names, Token, TokenComparison, Duration, PhysicalName, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type * as sqs from '../../aws-sqs';
+import type { Duration } from '../../core';
+import { Annotations, Names, Token, TokenComparison, PhysicalName, ValidationError } from '../../core';
 
 /**
  * The generic properties for an RuleTarget
@@ -111,7 +113,7 @@ export function addLambdaPermission(rule: events.IRuleRef, handler: lambda.IFunc
  */
 export function addToDeadLetterQueueResourcePolicy(rule: events.IRuleRef, queue: sqs.IQueue) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
-    throw new ValidationError(`Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
+    throw new ValidationError('CannotAssignDeadLetterQueueInDifferentRegion', `Cannot assign Dead Letter Queue in region ${queue.env.region} to the rule ${Names.nodeUniqueId(rule.node)} in region ${rule.env.region}. Both the queue and the rule must be in the same region.`, rule);
   }
 
   // Skip Resource Policy creation if the Queue is not in the same account.

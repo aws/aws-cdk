@@ -1,14 +1,15 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Arn, ArnFormat, IResource, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 // Internal Libs
-import { IPromptVariant } from './prompt-variant';
+import type { IPromptVariant } from './prompt-variant';
 import { PromptVersion } from './prompt-version';
 import * as validation from '../agents/validation-helpers';
 
@@ -385,7 +386,7 @@ export class Prompt extends PromptBase implements IPrompt {
    */
   private validatePromptDefault(props: PromptProps) {
     if (props.defaultVariant && !props.variants?.includes(props.defaultVariant)) {
-      throw new ValidationError('The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
+      throw new ValidationError('DefaultVariantMissing', 'The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
     }
   }
 

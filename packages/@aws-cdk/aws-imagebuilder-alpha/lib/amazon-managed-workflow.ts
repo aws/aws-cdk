@@ -1,7 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LATEST_VERSION } from './private/constants';
-import { IWorkflow, Workflow, WorkflowType } from './workflow';
+import type { IWorkflow } from './workflow';
+import { Workflow, WorkflowType } from './workflow';
 
 /**
  * Properties for an EC2 Image Builder Amazon-managed workflow
@@ -113,7 +114,7 @@ export class AmazonManagedWorkflow {
     attrs: AmazonManagedWorkflowAttributes,
   ): IWorkflow {
     if (cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be a token', scope);
+      throw new cdk.ValidationError('WorkflowTypeCannotBeToken', 'workflowType cannot be a token', scope);
     }
 
     return Workflow.fromWorkflowArn(

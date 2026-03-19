@@ -1,12 +1,13 @@
-import { Construct } from 'constructs';
-import { CfnRoute } from './appmesh.generated';
-import { HeaderMatch } from './header-match';
-import { HttpRouteMethod } from './http-route-method';
+import type { Construct } from 'constructs';
+import type { CfnRoute } from './appmesh.generated';
+import type { HeaderMatch } from './header-match';
+import type { HttpRouteMethod } from './http-route-method';
 import { HttpRoutePathMatch } from './http-route-path-match';
 import { validateGrpcRouteMatch, validateGrpcMatchArrayLength, validateHttpMatchArrayLength } from './private/utils';
-import { QueryParameterMatch } from './query-parameter-match';
-import { GrpcTimeout, HttpTimeout, Protocol, TcpTimeout } from './shared-interfaces';
-import { IVirtualNode } from './virtual-node';
+import type { QueryParameterMatch } from './query-parameter-match';
+import type { GrpcTimeout, HttpTimeout, TcpTimeout } from './shared-interfaces';
+import { Protocol } from './shared-interfaces';
+import type { IVirtualNode } from './virtual-node';
 import * as cdk from '../../core';
 
 /**
@@ -449,7 +450,7 @@ class HttpRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new cdk.UnscopedValidationError('You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
+        throw new cdk.UnscopedValidationError('RetryEventsRequired', 'You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
@@ -557,7 +558,7 @@ class GrpcRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (grpcRetryEvents.length + httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new cdk.UnscopedValidationError('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
+        throw new cdk.UnscopedValidationError('GrpcRetryEventsRequired', 'You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
@@ -579,7 +580,7 @@ class GrpcRouteSpec extends RouteSpec {
     validateGrpcMatchArrayLength(scope, metadata);
 
     if (methodName && !serviceName) {
-      throw new cdk.ValidationError('If you specify a method name, you must also specify a service name', scope);
+      throw new cdk.ValidationError('ServiceNameRequired', 'If you specify a method name, you must also specify a service name', scope);
     }
 
     return {

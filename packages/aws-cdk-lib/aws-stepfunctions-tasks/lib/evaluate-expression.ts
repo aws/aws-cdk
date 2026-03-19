@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
@@ -141,7 +141,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
   const uuid = guidsMap[runtimeKey];
 
   if (!uuid) {
-    throw new UnscopedValidationError(`The runtime ${runtime?.name} is currently not supported.`);
+    throw new UnscopedValidationError('RuntimeCurrentlySupported', `The runtime ${runtime?.name} is currently not supported.`);
   }
 
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {

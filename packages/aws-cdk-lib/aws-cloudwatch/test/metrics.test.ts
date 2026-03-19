@@ -3,7 +3,8 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { Alarm, Metric, Stats } from '../lib';
-import { PairStatistic, parseStatistic, SingleStatistic } from '../lib/private/statistic';
+import type { PairStatistic, SingleStatistic } from '../lib/private/statistic';
+import { parseStatistic } from '../lib/private/statistic';
 
 describe('Metrics', () => {
   test('metric grant', () => {

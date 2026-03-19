@@ -5,22 +5,25 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Arn, ArnFormat, Duration, IResource, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 // Internal Libs
 import { AgentActionGroup } from './action-group';
-import { AgentAlias, IAgentAlias } from './agent-alias';
-import { AgentCollaboration } from './agent-collaboration';
-import { AgentCollaborator } from './agent-collaborator';
+import type { IAgentAlias } from './agent-alias';
+import { AgentAlias } from './agent-alias';
+import type { AgentCollaboration } from './agent-collaboration';
+import type { AgentCollaborator } from './agent-collaborator';
 import { AssetApiSchema, S3ApiSchema } from './api-schema';
-import { Memory } from './memory';
-import { CustomOrchestrationExecutor, OrchestrationType } from './orchestration-executor';
-import { PromptOverrideConfiguration } from './prompt-override';
+import type { Memory } from './memory';
+import type { CustomOrchestrationExecutor } from './orchestration-executor';
+import { OrchestrationType } from './orchestration-executor';
+import type { PromptOverrideConfiguration } from './prompt-override';
 import * as validation from './validation-helpers';
-import { IBedrockInvokable } from '.././models';
-import { IGuardrail } from '../guardrails/guardrails';
+import type { IBedrockInvokable } from '.././models';
+import type { IGuardrail } from '../guardrails/guardrails';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -447,14 +450,14 @@ export class Agent extends AgentBase implements IAgent {
     if (props.instruction !== undefined &&
         !Token.isUnresolved(props.instruction) &&
         props.instruction.length < MIN_INSTRUCTION_LENGTH) {
-      throw new ValidationError(`instruction must be at least ${MIN_INSTRUCTION_LENGTH} characters`, this);
+      throw new ValidationError('InstructionTooShort', `instruction must be at least ${MIN_INSTRUCTION_LENGTH} characters`, this);
     }
 
     // Validate idleSessionTTL
     if (props.idleSessionTTL !== undefined &&
         !Token.isUnresolved(props.idleSessionTTL) &&
         (props.idleSessionTTL.toMinutes() < 1 || props.idleSessionTTL.toMinutes() > 60)) {
-      throw new ValidationError('idleSessionTTL must be between 1 and 60 minutes', this);
+      throw new ValidationError('IdleSessionTtlOutOfRange', 'idleSessionTTL must be between 1 and 60 minutes', this);
     }
 
     // ------------------------------------------------------
@@ -621,32 +624,32 @@ export class Agent extends AgentBase implements IAgent {
     if (actionGroup.apiSchema instanceof AssetApiSchema) {
       const rendered = actionGroup.apiSchema._render();
       if (!('s3' in rendered) || !rendered.s3) {
-        throw new ValidationError('S3 configuration is missing in AssetApiSchema', this);
+        throw new ValidationError('S3ConfigMissing', 'S3 configuration is missing in AssetApiSchema', this);
       }
       const s3Config = rendered.s3;
       if (!('s3BucketName' in s3Config) || !('s3ObjectKey' in s3Config)) {
-        throw new ValidationError('S3 bucket name and object key are required in AssetApiSchema', this);
+        throw new ValidationError('S3BucketOrKeyMissing', 'S3 bucket name and object key are required in AssetApiSchema', this);
       }
       const bucketName = s3Config.s3BucketName;
       const objectKey = s3Config.s3ObjectKey;
       if (!bucketName || bucketName.trim() === '') {
-        throw new ValidationError('S3 bucket name cannot be empty in AssetApiSchema', this);
+        throw new ValidationError('S3BucketNameEmpty', 'S3 bucket name cannot be empty in AssetApiSchema', this);
       }
       if (!objectKey || objectKey.trim() === '') {
-        throw new ValidationError('S3 object key cannot be empty in AssetApiSchema', this);
+        throw new ValidationError('S3ObjectKeyEmpty', 'S3 object key cannot be empty in AssetApiSchema', this);
       }
       const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, bucketName);
       bucket.grantRead(this.role, objectKey);
     } else if (actionGroup.apiSchema instanceof S3ApiSchema) {
       const s3File = actionGroup.apiSchema.s3File;
       if (!s3File) {
-        throw new ValidationError('S3 file configuration is missing in S3ApiSchema', this);
+        throw new ValidationError('S3FileMissing', 'S3 file configuration is missing in S3ApiSchema', this);
       }
       if (!s3File.bucketName || s3File.bucketName.trim() === '') {
-        throw new ValidationError('S3 bucket name cannot be empty in S3ApiSchema', this);
+        throw new ValidationError('S3BucketNameEmpty', 'S3 bucket name cannot be empty in S3ApiSchema', this);
       }
       if (!s3File.objectKey || s3File.objectKey.trim() === '') {
-        throw new ValidationError('S3 object key cannot be empty in S3ApiSchema', this);
+        throw new ValidationError('S3ObjectKeyEmpty', 'S3 object key cannot be empty in S3ApiSchema', this);
       }
       const bucket = s3.Bucket.fromBucketName(this, `${actionGroup.name}SchemaBucket`, s3File.bucketName);
       bucket.grantRead(this.role, s3File.objectKey);
@@ -827,7 +830,7 @@ export class Agent extends AgentBase implements IAgent {
 
     const hash = objectToHash(destroyCreate);
     if (maxLength < (prefix + hash + separator).length) {
-      throw new ValidationError('The prefix is longer than the maximum length.', this);
+      throw new ValidationError('PrefixTooLong', 'The prefix is longer than the maximum length.', this);
     }
 
     const uniqueName = Names.uniqueResourceName(
@@ -836,7 +839,7 @@ export class Agent extends AgentBase implements IAgent {
     );
     const name = `${prefix}${hash}${separator}${uniqueName}`;
     if (name.length > maxLength) {
-      throw new ValidationError(`The generated name is longer than the maximum length of ${maxLength}`, this);
+      throw new ValidationError('GeneratedNameTooLong', `The generated name is longer than the maximum length of ${maxLength}`, this);
     }
     return lower ? name.toLowerCase() : name;
   }

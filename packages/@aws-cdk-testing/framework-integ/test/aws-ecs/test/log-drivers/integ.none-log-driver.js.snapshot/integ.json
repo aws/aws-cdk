@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-ecs-none-log-driver-test/DefaultTest": {
+      "stacks": [
+        "cdk-ecs-none-log-driver"
+      ],
+      "assertionStack": "cdk-ecs-none-log-driver-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkecsnonelogdrivertestDefaultTestDeployAssert803705D2"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

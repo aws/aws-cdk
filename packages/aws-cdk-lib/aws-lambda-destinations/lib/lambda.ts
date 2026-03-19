@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { EventBridgeDestination } from './event-bridge';
 import * as events from '../../aws-events';
 import * as targets from '../../aws-events-targets';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { ValidationError } from '../../core';
 
 /**
@@ -50,7 +50,7 @@ export class LambdaDestination implements lambda.IDestination {
     // Otherwise add rule to extract the response payload and use EventBridge
     // as destination
     if (!options) { // `options` added to bind() as optionnal to avoid breaking change
-      throw new ValidationError('Options must be defined when using `responseOnly`.', scope);
+      throw new ValidationError('MustBeOptionsDefinedUsing', 'Options must be defined when using `responseOnly`.', scope);
     }
 
     // Match invocation result of the source function (`fn`) and use it

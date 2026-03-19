@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
-import { IDatabaseCluster } from './cluster-ref';
-import { IEngine } from './engine';
-import { IDatabaseInstance } from './instance';
+import type { Construct } from 'constructs';
+import type { IDatabaseCluster } from './cluster-ref';
+import type { IEngine } from './engine';
+import type { IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
-import { DatabaseProxyEndpoint, DatabaseProxyEndpointOptions, IDatabaseProxyEndpoint } from './proxy-endpoint';
+import type { DatabaseProxyEndpointOptions, IDatabaseProxyEndpoint } from './proxy-endpoint';
+import { DatabaseProxyEndpoint } from './proxy-endpoint';
 import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -13,7 +14,7 @@ import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
-import { aws_rds } from '../../interfaces';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Client password authentication type used by a proxy to log in as a specific database user.
@@ -123,13 +124,13 @@ export class ProxyTarget {
 
     if (!engine) {
       const errorResource = this.dbCluster ?? this.dbInstance;
-      throw new ValidationError(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
+      throw new ValidationError('CouldNotDetermineEngineForProxyTarget', `Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
         'Please provide it explicitly when importing the resource', proxy);
     }
 
     const engineFamily = engine.engineFamily;
     if (!engineFamily) {
-      throw new ValidationError('RDS proxies require an engine family to be specified on the database cluster or instance. ' +
+      throw new ValidationError('RdsProxiesRequireEngineFamily', 'RDS proxies require an engine family to be specified on the database cluster or instance. ' +
         `No family specified for engine '${engineDescription(engine)}'`, proxy);
     }
 
@@ -419,7 +420,7 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
 
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
-      throw new ValidationError('For imported Database Proxies, the dbUser is required in grantConnect()', this);
+      throw new ValidationError('ImportedDatabaseProxiesRequireDbUser', 'For imported Database Proxies, the dbUser is required in grantConnect()', this);
     }
     const scopeStack = cdk.Stack.of(this);
     const proxyGeneratedId = scopeStack.splitArn(this.dbProxyArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName;
@@ -531,7 +532,7 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     const requiresSecrets = !props.defaultAuthScheme || props.defaultAuthScheme === DefaultAuthScheme.NONE;
     if (requiresSecrets && !props.secrets?.length) {
-      throw new ValidationError('One or more secrets are required when defaultAuthScheme is not specified or is NONE.', this);
+      throw new ValidationError('SecretsRequiredForDefaultAuthScheme', 'One or more secrets are required when defaultAuthScheme is not specified or is NONE.', this);
     }
     this.secrets = props.secrets;
 
@@ -574,7 +575,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     }
 
     if (!!dbInstanceIdentifiers && !!dbClusterIdentifiers) {
-      throw new ValidationError('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers', this);
+      throw new ValidationError('CannotSpecifyBothDbInstanceAndClusterIdentifiers', 'Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers', this);
     }
 
     const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
@@ -641,10 +642,10 @@ export class DatabaseProxy extends DatabaseProxyBase
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
       if (!this.secrets?.length) {
-        throw new ValidationError('When using IAM authentication without secrets, you must specify a dbUser parameter in grantConnect().', this);
+        throw new ValidationError('IamAuthenticationWithoutSecretsRequiresDbUser', 'When using IAM authentication without secrets, you must specify a dbUser parameter in grantConnect().', this);
       }
       if (this.secrets.length > 1) {
-        throw new ValidationError('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()', this);
+        throw new ValidationError('ProxyWithMultipleSecretsRequiresDbUser', 'When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()', this);
       }
       // 'username' is the field RDS uses here,
       // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
@@ -656,16 +657,16 @@ export class DatabaseProxy extends DatabaseProxyBase
   private validateClientPasswordAuthType(engineFamily: string, clientPasswordAuthType?: ClientPasswordAuthType) {
     if (!clientPasswordAuthType || cdk.Token.isUnresolved(clientPasswordAuthType)) return;
     if (clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && engineFamily !== 'MYSQL') {
-      throw new ValidationError(`${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`, this);
+      throw new ValidationError('MysqlNativePasswordRequiresMysqlEngine', `${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`, this);
     }
     if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && engineFamily !== 'POSTGRESQL') {
-      throw new ValidationError(`${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`, this);
+      throw new ValidationError('PostgresScramSha256RequiresPostgresqlEngine', `${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`, this);
     }
     if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && engineFamily !== 'POSTGRESQL') {
-      throw new ValidationError(`${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`, this);
+      throw new ValidationError('PostgresMd5RequiresPostgresqlEngine', `${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`, this);
     }
     if (clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && engineFamily !== 'SQLSERVER') {
-      throw new ValidationError(`${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`, this);
+      throw new ValidationError('SqlServerAuthenticationRequiresSqlServerEngine', `${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`, this);
     }
   }
 }

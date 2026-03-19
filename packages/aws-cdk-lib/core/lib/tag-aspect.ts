@@ -1,11 +1,13 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { Annotations } from './annotations';
-import { IAspect, Aspects, AspectOptions } from './aspect';
+import type { IAspect, AspectOptions } from './aspect';
+import { Aspects } from './aspect';
 import { UnscopedValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import * as cxapi from '../../cx-api';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
-import { ITaggable, ITaggableV2, TagManager } from './tag-manager';
+import type { ITaggable, ITaggableV2 } from './tag-manager';
+import { TagManager } from './tag-manager';
 
 /**
  * Properties for a tag
@@ -121,7 +123,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new UnscopedValidationError(`Tag '${key}' must have a value`);
+      throw new UnscopedValidationError('Value', `Tag '${key}' must have a value`);
     }
     this.value = value;
   }

@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig, singletonEventRole } from './util';
-import * as events from '../../aws-events';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import { ValidationError } from '../../core';
 
 /**
@@ -60,7 +61,7 @@ export class SnsTopic implements events.IRuleTarget {
     } else {
       // role can't be passed when authorizeUsingRole is false
       if (this.props.role) {
-        throw new ValidationError('Cannot provide a role when authorizeUsingRole is false', rule);
+        throw new ValidationError('CannotProvideRoleWhenAuthorizeUsingRoleIsFalse', 'Cannot provide a role when authorizeUsingRole is false', rule);
       }
       // deduplicated automatically
       this.topic.grantPublish(new iam.ServicePrincipal('events.amazonaws.com'));

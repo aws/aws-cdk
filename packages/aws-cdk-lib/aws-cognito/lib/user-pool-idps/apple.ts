@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { UserPoolIdentityProviderProps } from './base';
+import type { Construct } from 'constructs';
+import type { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
-import { SecretValue } from '../../../core';
+import type { SecretValue } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -64,7 +64,7 @@ export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase 
     // Exactly one of the properties must be configured
     if ((!props.privateKey && !props.privateKeyValue) ||
       (props.privateKey && props.privateKeyValue)) {
-      throw new ValidationError('Exactly one of "privateKey" or "privateKeyValue" must be configured.', this);
+      throw new ValidationError('MustBeExactlyPrivatekeyPrivatekeyvalue', 'Exactly one of "privateKey" or "privateKeyValue" must be configured.', this);
     }
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {

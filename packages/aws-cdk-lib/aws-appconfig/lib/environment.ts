@@ -1,16 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
-import { IApplication } from './application';
-import { IConfiguration } from './configuration';
-import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import type { IApplication } from './application';
+import type { IConfiguration } from './configuration';
+import type { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible } from './extension';
+import { ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
-import { DeletionProtectionCheck } from './util';
+import type { DeletionProtectionCheck } from './util';
 import * as iam from '../../aws-iam';
-import { Resource, IResource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Resource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
-import { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
+import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -65,7 +67,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
 
   public addDeployment(configuration: IConfiguration): void {
     if (this.name === undefined) {
-      throw new ValidationError('Environment name must be known to add a Deployment', this);
+      throw new ValidationError('EnvironmentNameRequired', 'Environment name must be known to add a Deployment', this);
     }
 
     const queueSize = this.deploymentQueue.push(
@@ -223,12 +225,12 @@ export class Environment extends EnvironmentBase {
   public static fromEnvironmentArn(scope: Construct, id: string, environmentArn: string): IEnvironment {
     const parsedArn = Stack.of(scope).splitArn(environmentArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new ValidationError(`Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`, scope);
+      throw new ValidationError('InvalidEnvironmentArnFormat', `Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 3 || !resourceName[0] || !resourceName[2]) {
-      throw new ValidationError('Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}', scope);
+      throw new ValidationError('MissingEnvironmentArnParameters', 'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}', scope);
     }
 
     const applicationId = resourceName[0];
@@ -433,7 +435,7 @@ export abstract class Monitor {
    */
   public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
     if (monitorsProperty.alarmArn === undefined) {
-      throw new UnscopedValidationError('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
+      throw new UnscopedValidationError('AlarmArnRequired', 'You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
     return {
       alarmArn: monitorsProperty.alarmArn,

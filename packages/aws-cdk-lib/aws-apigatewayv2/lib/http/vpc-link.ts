@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import { IResource, Lazy, Names, Resource } from '../../../core';
+import type { IResource } from '../../../core';
+import { Lazy, Names, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { CfnVpcLink, IVpcLinkRef, VpcLinkReference } from '../index';
+import type { IVpcLinkRef, VpcLinkReference } from '../index';
+import { CfnVpcLink } from '../index';
 
 /**
  * Represents an API Gateway VpcLink

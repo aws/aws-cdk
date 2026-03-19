@@ -1,19 +1,24 @@
-import { Construct } from 'constructs';
-import { CfnVpcOrigin, IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
-import { OriginProtocolPolicy, OriginSslPolicy } from '../';
-import { IInstance } from '../../aws-ec2';
-import { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
-import {
-  ArnFormat,
+import type { Construct } from 'constructs';
+import type { IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
+import { CfnVpcOrigin } from './cloudfront.generated';
+import type { OriginProtocolPolicy } from '../';
+import { OriginSslPolicy } from '../';
+import type { IInstance } from '../../aws-ec2';
+import type { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
+import type {
   IResource,
   ITaggableV2,
+  TagManager,
+} from '../../core';
+import {
+  ArnFormat,
   Names,
   Resource,
   Stack,
-  TagManager,
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -175,12 +180,12 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    */
   public static fromVpcOriginAttributes(scope: Construct, id: string, attrs: VpcOriginAttributes): IVpcOrigin {
     if (!attrs.vpcOriginArn && !attrs.vpcOriginId) {
-      throw new ValidationError('Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
+      throw new ValidationError('EitherVpcOriginIdOrVpcOriginArnRequired', 'Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
     }
     const vpcOriginId = attrs.vpcOriginId
       ?? Stack.of(scope).splitArn(attrs.vpcOriginArn!, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!vpcOriginId) {
-      throw new ValidationError(`No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
+      throw new ValidationError('NoVpcOriginIdFoundInArn', `No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
     }
 
     const vpcOriginArn = attrs.vpcOriginArn ?? Stack.of(scope).formatArn({
@@ -207,7 +212,15 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    * The VPC origin ARN.
    * @attribute
    */
-  readonly vpcOriginArn: string;
+  @memoizedGetter
+  get vpcOriginArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'cloudfront',
+      region: '',
+      resource: 'vpcorigin',
+      resourceName: this.resource.attrId,
+    });
+  }
   /**
    * The VPC origin ID.
    * @attribute
@@ -221,6 +234,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
   readonly vpcOriginRef: VpcOriginReference;
 
   readonly cdkTagManager: TagManager;
+  private readonly resource: CfnVpcOrigin;
 
   constructor(scope: Construct, id: string, props: VpcOriginProps) {
     super(scope, id);
@@ -241,13 +255,8 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
       },
     });
 
+    this.resource = resource;
     this.vpcOriginRef = resource.vpcOriginRef;
-    this.vpcOriginArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: 'cloudfront',
-      region: '',
-      resource: 'vpcorigin',
-      resourceName: resource.attrId,
-    });
     this.vpcOriginId = resource.attrId;
     this.domainName = props.endpoint.domainName;
     this.cdkTagManager = resource.cdkTagManager;
@@ -255,7 +264,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
 
   private validatePortNumber(port: number | undefined, attrName: string) {
     if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
-      throw new ValidationError(`'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
+      throw new ValidationError('InvalidPortValue', `'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
     }
   }
 }

@@ -1,10 +1,11 @@
-import { IDependable } from 'constructs';
-import { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
-import { PolicyDocument } from './policy-document';
-import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import type { IDependable } from 'constructs';
+import type { IOIDCProviderRef, ISAMLProviderRef } from './iam.generated';
+import type { PolicyDocument } from './policy-document';
+import type { Condition, Conditions } from './policy-statement';
+import { PolicyStatement } from './policy-statement';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { LITERAL_STRING_KEY, mergePrincipal } from './private/util';
-import { ISamlProvider } from './saml-provider';
+import type { ISamlProvider } from './saml-provider';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
 import { RegionInfo } from '../../region-info';
@@ -270,7 +271,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -358,7 +359,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
       // if either the existing condition or the new one contain unresolved
       // tokens, fail the merge. this is as far as we go at this point.
       if (cdk.Token.isUnresolved(condition) || cdk.Token.isUnresolved(existing)) {
-        throw new UnscopedValidationError(`multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
+        throw new UnscopedValidationError('MultipleConditionsCannotMerged', `multiple "${operator}" conditions cannot be merged if one of them contains an unresolved token`);
       }
 
       validateConditionObject(existing);
@@ -384,7 +385,7 @@ export class SessionTagsPrincipal extends PrincipalAdapter {
   public addToAssumeRolePolicy(doc: PolicyDocument) {
     // Lazy import to avoid circular import dependencies during startup
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/consistent-type-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
     defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
@@ -483,7 +484,7 @@ export class AccountPrincipal extends ArnPrincipal {
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
     if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
-      throw new UnscopedValidationError('accountId should be of type string');
+      throw new UnscopedValidationError('ShouldBeAccountidShouldType', 'accountId should be of type string');
     }
     this.principalAccount = accountId;
   }
@@ -621,7 +622,7 @@ export class OrganizationPrincipal extends PrincipalBase {
     // We can only validate if it's a literal string (not a token)
     if (!cdk.Token.isUnresolved(organizationId)) {
       if (!organizationId.match(/^o-[a-z0-9]{10,32}$/)) {
-        throw new UnscopedValidationError(`Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
+        throw new UnscopedValidationError('ExpectedOrganizationMatchRegex', `Expected Organization ID must match regex pattern ^o-[a-z0-9]{10,32}$, received ${organizationId}`);
       }
     }
   }
@@ -878,7 +879,7 @@ export class CompositePrincipal extends PrincipalBase {
   constructor(...principals: IPrincipal[]) {
     super();
     if (principals.length === 0) {
-      throw new UnscopedValidationError('CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
+      throw new UnscopedValidationError('CompositePrincipalsConstructedLeastPrincipal', 'CompositePrincipals must be constructed with at least 1 Principal but none were passed.');
     }
     this.assumeRoleAction = principals[0].assumeRoleAction;
     this.addPrincipals(...principals);
@@ -908,7 +909,7 @@ export class CompositePrincipal extends PrincipalBase {
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new UnscopedValidationError(
-          'Components of a CompositePrincipal must not have conditions. ' +
+          'CompositePrincipalComponentsCannotHaveConditions', 'Components of a CompositePrincipal must not have conditions. ' +
           `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
     }
@@ -1026,6 +1027,6 @@ class ServicePrincipalToken implements cdk.IResolvable {
  */
 export function validateConditionObject(x: unknown): asserts x is Record<string, unknown> {
   if (!x || typeof x !== 'object' || Array.isArray(x)) {
-    throw new UnscopedValidationError('A Condition should be represented as a map of operator to value');
+    throw new UnscopedValidationError('ShouldBeConditionShouldRepresented', 'A Condition should be represented as a map of operator to value');
   }
 }

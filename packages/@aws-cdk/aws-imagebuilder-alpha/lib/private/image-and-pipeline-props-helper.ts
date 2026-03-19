@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
-import { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
-import { Construct } from 'constructs';
-import { ImageProps } from '../image';
-import { ImagePipelineProps } from '../image-pipeline';
+import type { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
+import type { Construct } from 'constructs';
+import type { ImageProps } from '../image';
+import type { ImagePipelineProps } from '../image-pipeline';
 
 /**
  * Generates the image tests configuration property into the `ImageTestsConfiguration` type in the CloudFormation L1
@@ -38,11 +38,11 @@ export const buildImageScanningConfiguration = <
   props: PropsT,
 ): OutputT | undefined => {
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrRepository !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrRepository is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError('EcrRepositoryOnlySupportedForContainerRecipe', 'imageScanningEcrRepository is only supported for container recipe builds', scope);
   }
 
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrTags !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrTags is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError('EcrTagsOnlySupportedForContainerRecipe', 'imageScanningEcrTags is only supported for container recipe builds', scope);
   }
 
   const ecrConfiguration: CfnImagePipeline.EcrConfigurationProperty = {

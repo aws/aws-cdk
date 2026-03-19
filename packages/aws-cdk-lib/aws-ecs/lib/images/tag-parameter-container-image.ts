@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import * as ecr from '../../../aws-ecr';
+import type { Construct } from 'constructs';
+import type * as ecr from '../../../aws-ecr';
 import * as cdk from '../../../core';
-import { ContainerDefinition } from '../container-definition';
-import { ContainerImage, ContainerImageConfig } from '../container-image';
+import type { ContainerDefinition } from '../container-definition';
+import type { ContainerImageConfig } from '../container-image';
+import { ContainerImage } from '../container-image';
 
 /**
  * A special type of `ContainerImage` that uses an ECR repository for the image,
@@ -41,7 +42,7 @@ export class TagParameterContainerImage extends ContainerImage {
         if (this.imageTagParameter) {
           return this.imageTagParameter.logicalId;
         } else {
-          throw new cdk.UnscopedValidationError('TagParameterContainerImage must be used in a container definition when using tagParameterName');
+          throw new cdk.UnscopedValidationError('TagParameterNotBound', 'TagParameterContainerImage must be used in a container definition when using tagParameterName');
         }
       },
     });
@@ -57,7 +58,7 @@ export class TagParameterContainerImage extends ContainerImage {
         if (this.imageTagParameter) {
           return this.imageTagParameter.valueAsString;
         } else {
-          throw new cdk.UnscopedValidationError('TagParameterContainerImage must be used in a container definition when using tagParameterValue');
+          throw new cdk.UnscopedValidationError('TagParameterNotBound', 'TagParameterContainerImage must be used in a container definition when using tagParameterValue');
         }
       },
     });

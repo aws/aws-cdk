@@ -1,15 +1,17 @@
-import { Construct, IDependable } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import { IpAddressType } from './enums';
-import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
+import type { Attributes } from './util';
+import { ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
-import * as s3 from '../../../aws-s3';
+import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import type { IResource } from '../../../core';
+import { CfnResource, ContextProvider, Lazy, Resource, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import * as cxapi from '../../../cx-api';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
 
@@ -30,12 +32,12 @@ export class SourceNatIpv6Prefix {
    */
   public static fromIpv6Prefix(prefix: string): SourceNatIpv6Prefix {
     if (!prefix.includes('/')) {
-      throw new UnscopedValidationError(`IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
+      throw new UnscopedValidationError('Ipv6PrefixIncludeNetmask', `IPv6 prefix must include netmask (e.g. 2001:db8::/80), got ${prefix}`);
     }
 
     const [_ipv6, netmask] = prefix.split('/');
     if (netmask !== '80') {
-      throw new UnscopedValidationError(`IPv6 prefix must have a /80 netmask, got ${netmask}`);
+      throw new UnscopedValidationError('Ipv6PrefixNetmask', `IPv6 prefix must have a /80 netmask, got ${netmask}`);
     }
 
     return new SourceNatIpv6Prefix(prefix);
@@ -218,7 +220,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected static _queryContextProvider(scope: Construct, options: LoadBalancerQueryContextProviderOptions) {
     if (Token.isUnresolved(options.userOptions.loadBalancerArn)
       || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)) {
-      throw new ValidationError('All arguments to look up a load balancer must be concrete (no Tokens)', scope);
+      throw new ValidationError('ArgumentsLookUpLoadBalancer', 'All arguments to look up a load balancer must be concrete (no Tokens)', scope);
     }
 
     let cxschemaTags: cxschema.Tag[] | undefined;
@@ -326,7 +328,7 @@ export abstract class BaseLoadBalancer extends Resource {
     const internetFacing = ifUndefined(baseProps.internetFacing, false);
 
     if (baseProps.vpcSubnets && additionalProps.subnetMappings) {
-      throw new ValidationError('You can specify either `vpcSubnets` or `subnetMappings`, not both.', this);
+      throw new ValidationError('SpecifyEither', 'You can specify either `vpcSubnets` or `subnetMappings`, not both.', this);
     }
 
     let subnetIds: string[] | undefined;
@@ -335,7 +337,7 @@ export abstract class BaseLoadBalancer extends Resource {
 
     if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
         additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
-      throw new ValidationError(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
+      throw new ValidationError('IpaddresstypeDualStackWithoutPublicIpv4OnlyUsed', `'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got ${additionalProps.type}`, this);
     }
 
     this.vpc = baseProps.vpc;
@@ -393,7 +395,7 @@ export abstract class BaseLoadBalancer extends Resource {
       if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
         this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
       } else {
-        throw new ValidationError(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`, this);
+        throw new ValidationError('DenyIgwTrafficSetLoad', `'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`, this);
       }
     }
 
@@ -476,7 +478,7 @@ export abstract class BaseLoadBalancer extends Resource {
   protected resourcePolicyPrincipal(): iam.IPrincipal {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('Region is required to enable ELBv2 access logging', this);
+      throw new ValidationError('RegionRequiredEnableBvAccess', 'Region is required to enable ELBv2 access logging', this);
     }
 
     const account = RegionInfo.get(region).elbv2Account;

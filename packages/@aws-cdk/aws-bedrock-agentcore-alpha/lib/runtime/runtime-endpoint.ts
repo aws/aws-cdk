@@ -1,10 +1,12 @@
-import { Token, Lazy } from 'aws-cdk-lib';
+import { Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { RuntimeEndpointBase, IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import type { Construct } from 'constructs';
+import type { IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
+import { RuntimeEndpointBase } from './runtime-endpoint-base';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -19,8 +21,9 @@ export interface RuntimeEndpointProps {
    * Valid characters are a-z, A-Z, 0-9, _ (underscore)
    * Must start with a letter and can be up to 48 characters long
    * Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+   * @default - auto generate
    */
-  readonly endpointName: string;
+  readonly endpointName?: string;
 
   /**
    * The ID of the agent runtime to associate with this endpoint
@@ -170,13 +173,20 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
   private readonly endpointResource: bedrockagentcore.CfnRuntimeEndpoint;
 
   constructor(scope: Construct, id: string, props: RuntimeEndpointProps) {
-    super(scope, id);
+    super(scope, id, {
+      // Maximum name length of 48 characters
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtimeendpoint.html#cfn-bedrockagentcore-runtimeendpoint-name
+      physicalName: props.endpointName ??
+        Lazy.string({
+          produce: () => Names.uniqueResourceName(this, { maxLength: 48 }),
+        }),
+    });
 
     // CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
     // Set and validate properties immediately
-    this.endpointName = props.endpointName;
+    this.endpointName = this.physicalName;
     this.validateEndpointName();
 
     this.agentRuntimeId = props.agentRuntimeId;
@@ -274,7 +284,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new UnscopedValidationError('InvalidEndpointName', allErrors.join('\n'));
     }
   }
 
@@ -297,7 +307,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError(errors.join('\n'));
+        throw new UnscopedValidationError('InvalidEndpointDescription', errors.join('\n'));
       }
     }
   }
@@ -322,7 +332,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new UnscopedValidationError('InvalidAgentRuntimeId', patternErrors.join('\n'));
     }
   }
 
@@ -345,7 +355,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new UnscopedValidationError('InvalidAgentRuntimeVersion', patternErrors.join('\n'));
     }
   }
 
@@ -379,11 +389,11 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine key errors and throw if any
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
-        throw new ValidationError(keyErrors.join('\n'));
+        throw new UnscopedValidationError('InvalidEndpointTagKey', keyErrors.join('\n'));
       }
 
       if (value === undefined || value === null) {
-        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`);
+        throw new UnscopedValidationError('NullEndpointTagValue', `Tag value for key "${key}" cannot be null or undefined`);
       }
 
       // Validate tag value length
@@ -405,7 +415,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine value errors and throw if any
       const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
       if (valueErrors.length > 0) {
-        throw new ValidationError(valueErrors.join('\n'));
+        throw new UnscopedValidationError('InvalidEndpointTagValue', valueErrors.join('\n'));
       }
     }
   }

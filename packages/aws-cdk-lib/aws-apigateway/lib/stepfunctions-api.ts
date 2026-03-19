@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { RestApi, RestApiProps } from '.';
-import { RequestContext } from './integrations';
+import type { Construct } from 'constructs';
+import type { RestApiProps } from '.';
+import { RestApi } from '.';
+import type { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
-import * as iam from '../../aws-iam';
+import type * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -120,11 +121,11 @@ export class StepFunctionsRestApi extends RestApi {
 
   constructor(scope: Construct, id: string, props: StepFunctionsRestApiProps) {
     if (props.defaultIntegration) {
-      throw new ValidationError('Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
+      throw new ValidationError('CannotSpecifyDefaultIntegrationSince', 'Cannot specify "defaultIntegration" since Step Functions integration is automatically defined', scope);
     }
 
     if ((props.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineType !== sfn.StateMachineType.EXPRESS) {
-      throw new ValidationError('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', scope);
+      throw new ValidationError('MustBeStateMachineType', 'State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType', scope);
     }
 
     const stepfunctionsIntegration = StepFunctionsIntegration.startExecution(props.stateMachine, {

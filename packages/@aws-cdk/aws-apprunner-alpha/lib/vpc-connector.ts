@@ -4,7 +4,7 @@ import { Connections } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Properties of the AppRunner VPC Connector
@@ -147,12 +147,14 @@ export class VpcConnector extends cdk.Resource implements IVpcConnector {
     if (props.vpcConnectorName !== undefined && !cdk.Token.isUnresolved(props.vpcConnectorName)) {
       if (props.vpcConnectorName.length < 4 || props.vpcConnectorName.length > 40) {
         throw new cdk.ValidationError(
+          'VpcConnectorNameLength',
           `\`vpcConnectorName\` must be between 4 and 40 characters, got: ${props.vpcConnectorName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcConnectorName)) {
         throw new cdk.ValidationError(
+          'VpcConnectorNameFormat',
           `\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcConnectorName}.`, this,
         );
       }

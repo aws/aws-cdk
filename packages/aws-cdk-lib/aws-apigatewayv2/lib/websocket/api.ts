@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
-import { WebSocketRoute, WebSocketRouteOptions } from './route';
+import type { Construct } from 'constructs';
+import type { WebSocketRouteOptions } from './route';
+import { WebSocketRoute } from './route';
 import { CfnApi } from '.././index';
-import { Grant, IGrantable } from '../../../aws-iam';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApiReference, IApiRef } from '../apigatewayv2.generated';
-import { IApi, IpAddressType } from '../common/api';
+import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
+import type { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';
 
 /**
@@ -154,7 +156,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('apiEndpoint is not configured on the imported WebSocketApi.', scope);
+          throw new ValidationError('ApiEndpointConfiguredImportedWeb', 'apiEndpoint is not configured on the imported WebSocketApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -242,7 +244,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   @MethodMetadata()
   public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
     if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
-      throw new UnscopedValidationError(`Path must start with '/': ${path}`);
+      throw new UnscopedValidationError('PathStart', `Path must start with '/': ${path}`);
     }
 
     if (method && method.toUpperCase() === 'ANY') {

@@ -1,19 +1,21 @@
-import { Construct } from 'constructs';
-import { ILambdaApplication, LambdaApplication } from './application';
-import { ILambdaDeploymentConfig, LambdaDeploymentConfig } from './deployment-config';
+import type { Construct } from 'constructs';
+import type { ILambdaApplication } from './application';
+import { LambdaApplication } from './application';
+import type { ILambdaDeploymentConfig } from './deployment-config';
+import { LambdaDeploymentConfig } from './deployment-config';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IDeploymentConfigRef, IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IDeploymentConfigRef, IDeploymentGroupRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
 import { toIBaseDeploymentConfig } from '../private/ref-utils';
 import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
-import { AutoRollbackConfig } from '../rollback-config';
+import type { AutoRollbackConfig } from '../rollback-config';
 
 /**
  * Interface for a Lambda deployment groups.
@@ -241,7 +243,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
-      throw new cdk.ValidationError('A pre-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError('PreHookFunctionAlreadyDefined', 'A pre-hook function is already defined for this deployment group', this);
     }
     this.preHook = preHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.preHook);
@@ -256,7 +258,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
-      throw new cdk.ValidationError('A post-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError('PostHookFunctionAlreadyDefined', 'A post-hook function is already defined for this deployment group', this);
     }
     this.postHook = postHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.postHook);

@@ -203,6 +203,10 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
   capacity of all the instances in the cluster.
 - `ACUUtilization`: Value of the `ServerlessDatabaseCapacity`/ max ACU of the
   cluster.
+- `VolumeReadIOPs`: Cluster-level metric that represents the average number of disk read I/O operations per second.
+- `VolumeWriteIOPs`: Cluster-level metric that represents the average number of disk write I/O operations per second.
+- `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
+- `WriteIOPS`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -221,11 +225,45 @@ cluster.metricServerlessDatabaseCapacity({
     threshold: 1.5,
     evaluationPeriods: 3,
 });
+
 cluster.metricACUUtilization({
   period: Duration.minutes(10),
 }).createAlarm(this, 'alarm', {
   evaluationPeriods: 3,
   threshold: 90,
+});
+
+cluster.metricVolumeReadIOPs({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'VolumeReadIOPsAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+cluster.metricVolumeWriteIOPs({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'VolumeWriteIOPsAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+const instance = new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_17_6 }),
+  vpc
+});
+
+instance.metricReadIOPS({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'ReadIOPSAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
+});
+
+instance.metricWriteIOPS({
+  period: Duration.minutes(10),
+}).createAlarm(this, 'WriteIOPSAlarm', {
+  threshold: 1000,
+  evaluationPeriods: 3,
 });
 ```
 
@@ -620,9 +658,7 @@ Automatic backups of read replica instances are only supported for MySQL and Mar
 automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
 if also enabled on the source instance.
 
-Creating a "production" Oracle database instance with option and parameter groups:
-
-[example of setting up a production oracle instance](test/integ.instance.lit.ts)
+For more information on configuring Oracle database instances, see [option groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithOptionGroups.html) and [parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/parameter-groups-overview.html).
 
 Use the `storageType` property to specify the [type of storage](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html)
 to use for the instance:
@@ -876,7 +912,7 @@ instance.addRotationSingleUser({
 });
 ```
 
-[example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
+For more information on setting up master password rotation for a cluster, see [Set up automatic rotation for Amazon RDS secrets](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_turn-on-for-db.html).
 
 The multi user rotation scheme is also available:
 
@@ -1329,6 +1365,44 @@ new rds.DatabaseInstance(this, 'Database', {
 ```
 
 You cannot specify a parameter map and a parameter group at the same time.
+
+### Creating Standalone Parameter Groups
+
+In some scenarios, you may want to create a parameter group that exists independently
+of a database instance or cluster.
+
+By default, `ParameterGroup` uses a lazy creation pattern and only generates the
+CloudFormation resource when bound to an instance or cluster. To create a standalone 
+parameter group, use the static factory methods `forInstance()` or `forCluster()`:
+
+**For instance parameter group (AWS::RDS::DBParameterGroup):**
+
+```ts
+const parameterGroup = rds.ParameterGroup.forInstance(this, 'InstanceParameterGroup', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_35,
+  }),
+  description: 'Parameter group for MySQL',
+  parameters: {
+    max_connections: '150',
+    slow_query_log: '1',
+  },
+});
+```
+
+**For cluster parameter group (AWS::RDS::DBClusterParameterGroup):**
+
+```ts
+const clusterParameterGroup = rds.ParameterGroup.forCluster(this, 'ClusterParameterGroup', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_04_0,
+  }),
+  description: 'Parameter group for Aurora MySQL',
+  parameters: {
+    aurora_parallel_query: '1',
+  },
+});
+```
 
 ## Serverless v1
 

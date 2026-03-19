@@ -1,12 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnWorkflow } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as yaml from 'yaml';
 
 const WORKFLOW_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Workflow');
@@ -637,17 +638,18 @@ export class Workflow extends WorkflowBase {
       (attrs.workflowName !== undefined || attrs.workflowType !== undefined || attrs.workflowVersion !== undefined)
     ) {
       throw new cdk.ValidationError(
+        'ConflictingWorkflowAttributes',
         'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
         scope,
       );
     }
 
     if (attrs.workflowArn === undefined && (attrs.workflowName === undefined || attrs.workflowType === undefined)) {
-      throw new cdk.ValidationError('either workflowArn, or workflowName and workflowType is required', scope);
+      throw new cdk.ValidationError('EitherWorkflowArnOrNameAndTypeRequired', 'either workflowArn, or workflowName and workflowType is required', scope);
     }
 
     if (attrs.workflowType && cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be an unresolved token', scope);
+      throw new cdk.ValidationError('WorkflowTypeCannotBeUnresolved', 'workflowType cannot be an unresolved token', scope);
     }
 
     const workflowArn = (() => {
@@ -674,6 +676,7 @@ export class Workflow extends WorkflowBase {
 
       if (cdk.Token.isUnresolved(workflowNameTypeVersion)) {
         throw new cdk.ValidationError(
+          'WorkflowArnCannotBeUnresolved',
           'the workflowName, workflowType, and workflowVersion in the workflowArn cannot be an unresolved token',
           scope,
         );
@@ -681,6 +684,7 @@ export class Workflow extends WorkflowBase {
 
       if (workflowNameTypeVersion.split('/').length < 3) {
         throw new cdk.ValidationError(
+          'InvalidWorkflowArnFormat',
           'the workflow ARN must end with <workflow-type>/<workflow-name>/<workflow-version>',
           scope,
         );
@@ -713,16 +717,6 @@ export class Workflow extends WorkflowBase {
   }
 
   /**
-   * The ARN of the workflow
-   */
-  public readonly workflowArn: string;
-
-  /**
-   * The name of the workflow
-   */
-  public readonly workflowName: string;
-
-  /**
    * The type of the workflow
    */
   public readonly workflowType: string;
@@ -731,6 +725,8 @@ export class Workflow extends WorkflowBase {
    * The version of the workflow
    */
   public readonly workflowVersion: string;
+
+  private resource: CfnWorkflow;
 
   public constructor(scope: Construct, id: string, props: WorkflowProps) {
     super(scope, id, {
@@ -753,7 +749,7 @@ export class Workflow extends WorkflowBase {
     this.validateWorkflowName();
 
     const workflowVersion = props.workflowVersion ?? '1.0.0';
-    const workflow = new CfnWorkflow(this, 'Resource', {
+    this.resource = new CfnWorkflow(this, 'Resource', {
       name: this.physicalName,
       version: workflowVersion,
       type: props.workflowType,
@@ -764,10 +760,18 @@ export class Workflow extends WorkflowBase {
       ...props.data.render(),
     });
 
-    this.workflowName = this.getResourceNameAttribute(workflow.getAtt('Name').toString());
-    this.workflowArn = workflow.attrArn;
     this.workflowVersion = workflowVersion;
     this.workflowType = props.workflowType;
+  }
+
+  @memoizedGetter
+  public get workflowName(): string {
+    return this.getResourceNameAttribute(this.resource.getAtt('Name').toString());
+  }
+
+  @memoizedGetter
+  public get workflowArn(): string {
+    return this.resource.attrArn;
   }
 
   private validateWorkflowName() {
@@ -776,19 +780,19 @@ export class Workflow extends WorkflowBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('the workflowName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('WorkflowNameTooLong', 'the workflowName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('the workflowName cannot contain spaces', this);
+      throw new cdk.ValidationError('WorkflowNameContainsSpaces', 'the workflowName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('the workflowName cannot contain underscores', this);
+      throw new cdk.ValidationError('WorkflowNameContainsUnderscores', 'the workflowName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('the workflowName must be lowercase', this);
+      throw new cdk.ValidationError('WorkflowNameNotLowercase', 'the workflowName must be lowercase', this);
     }
   }
 }

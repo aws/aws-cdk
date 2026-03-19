@@ -1,6 +1,7 @@
 import * as events from '../../aws-events';
-import { Duration, TimeZone, Token, UnscopedValidationError } from '../../core';
-import { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
+import type { TimeZone } from '../../core';
+import { Duration, Token, UnscopedValidationError } from '../../core';
+import type { IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * Properties for a BackupPlanRule
@@ -213,22 +214,22 @@ export class BackupPlanRule {
   constructor(props: BackupPlanRuleProps) {
     if (props.deleteAfter && props.moveToColdStorageAfter &&
       props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
-      throw new UnscopedValidationError('`deleteAfter` must be greater than `moveToColdStorageAfter`');
+      throw new UnscopedValidationError('DeleteAfterMustBeGreater', '`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
-      throw new UnscopedValidationError('`scheduleExpression` must be of type `cron`');
+      throw new UnscopedValidationError('ScheduleExpressionMustBeCron', '`scheduleExpression` must be of type `cron`');
     }
 
     const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
-      throw new UnscopedValidationError('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+      throw new UnscopedValidationError('MoveToColdStorageNotAllowedWithContinuousBackup', '`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
     }
 
     if (props.enableContinuousBackup && props.deleteAfter &&
       (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
-      throw new UnscopedValidationError(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+      throw new UnscopedValidationError('DeleteAfterRangeInvalidForContinuousBackup', `'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
     if (props.copyActions && props.copyActions.length > 0) {
@@ -236,7 +237,7 @@ export class BackupPlanRule {
         if (copyAction.deleteAfter && !Token.isUnresolved(copyAction.deleteAfter) &&
           copyAction.moveToColdStorageAfter && !Token.isUnresolved(copyAction.moveToColdStorageAfter) &&
           copyAction.deleteAfter.toDays() < copyAction.moveToColdStorageAfter.toDays() + 90) {
-          throw new UnscopedValidationError([
+          throw new UnscopedValidationError('CopyActionDeleteAfterTooEarly', [
             '\'deleteAfter\' must at least 90 days later than corresponding \'moveToColdStorageAfter\'',
             `received 'deleteAfter: ${copyAction.deleteAfter.toDays()}' and 'moveToColdStorageAfter: ${copyAction.moveToColdStorageAfter.toDays()}'`,
           ].join('\n'));

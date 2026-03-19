@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { AttributeSite, ResourceReflection } from './resource';
 import { Linter } from '../linter';
 

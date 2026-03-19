@@ -1,8 +1,9 @@
-import { BaseLogDriverProps } from './base-log-driver';
-import { Duration, SecretValue, Token, UnscopedValidationError } from '../../../core';
-import { TaskDefinition } from '../base/task-definition';
-import { Secret } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { Duration } from '../../../core';
+import { SecretValue, Token, UnscopedValidationError } from '../../../core';
+import type { TaskDefinition } from '../base/task-definition';
+import type { Secret } from '../container-definition';
+import type { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * Remove undefined values from a dictionary
@@ -21,7 +22,7 @@ export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): 
  */
 export function ensurePositiveInteger(val: number) {
   if (!Token.isUnresolved(val) && Number.isInteger(val) && val < 0) {
-    throw new UnscopedValidationError(`\`${val}\` must be a positive integer.`);
+    throw new UnscopedValidationError('ValueMustBePositiveInteger', `\`${val}\` must be a positive integer.`);
   }
 }
 
@@ -30,7 +31,7 @@ export function ensurePositiveInteger(val: number) {
  */
 export function ensureInRange(val: number, start: number, end: number) {
   if (!Token.isUnresolved(val) && !(val >= start && val <= end)) {
-    throw new UnscopedValidationError(`\`${val}\` must be within range ${start}:${end}`);
+    throw new UnscopedValidationError('ValueMustBeWithinRange', `\`${val}\` must be within range ${start}:${end}`);
   }
 }
 

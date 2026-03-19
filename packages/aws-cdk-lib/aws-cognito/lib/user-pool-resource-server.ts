@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolResourceServer } from './cognito.generated';
-import { IResource, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolRef, IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { IUserPoolRef, IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a Cognito user pool resource server
@@ -103,7 +104,7 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
         return {
           identifier: userPoolResourceServerId,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
+            throw new UnscopedValidationError('UserPoolIdAvailableUser', 'userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
           },
         };
       }

@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnLoadBalancer } from './elasticloadbalancing.generated';
+import type { IConnectable, Instance, ISecurityGroup, IVpc, SelectedSubnets, SubnetSelection } from '../../aws-ec2';
 import {
-  Connections, IConnectable, Instance, ISecurityGroup, IVpc, Peer, Port,
-  SecurityGroup, SelectedSubnets, SubnetSelection, SubnetType,
+  Connections, Peer, Port,
+  SecurityGroup, SubnetType,
 } from '../../aws-ec2';
-import { Duration, Lazy, Resource, IResource } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { aws_elasticloadbalancing } from '../../interfaces';
+import type { aws_elasticloadbalancing } from '../../interfaces';
 
 /**
  * Represents a load balancer
@@ -308,7 +310,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
   @MethodMetadata()
   public addListener(listener: LoadBalancerListener): ListenerPort {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
-      throw new ValidationError('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
+      throw new ValidationError('SslCertificateIdDeprecatedSsl', '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
     }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(this, listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
@@ -481,7 +483,7 @@ export class ListenerPort implements IConnectable {
 function wellKnownProtocol(scope: Construct, port: number): LoadBalancingProtocol {
   const proto = tryWellKnownProtocol(port);
   if (!proto) {
-    throw new ValidationError(`Please supply protocol to go with port ${port}`, scope);
+    throw new ValidationError('SupplyProtocolGoPort', `Please supply protocol to go with port ${port}`, scope);
   }
   return proto;
 }

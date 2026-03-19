@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnUserPoolGroup } from './cognito.generated';
-import { IRoleRef } from '../../aws-iam';
-import { IResource, Resource, Token } from '../../core';
+import type { IRoleRef } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
+import type { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
  * Represents a user pool group.
@@ -90,7 +91,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
         return {
           groupName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('userPoolId is not available on imported UserPoolGroup.');
+            throw new UnscopedValidationError('UserpoolidAvailableImportedUserpoolgroup', 'userPoolId is not available on imported UserPoolGroup.');
           },
         };
       }
@@ -118,13 +119,13 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new ValidationError(`\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError('DescriptionLengthInvalid', `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
       (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
-      throw new ValidationError(`\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
+      throw new ValidationError('PrecedenceOutOfRange', `\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
     }
 
     if (
@@ -132,7 +133,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new ValidationError('\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
+      throw new ValidationError('MustBeBetweenCharactersInclude', '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {

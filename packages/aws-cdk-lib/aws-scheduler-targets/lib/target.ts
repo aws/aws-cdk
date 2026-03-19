@@ -1,7 +1,7 @@
 import * as iam from '../../aws-iam';
-import { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '../../aws-scheduler';
-import { CfnSchedule } from '../../aws-scheduler/lib/scheduler.generated';
-import * as sqs from '../../aws-sqs';
+import type { ISchedule, ScheduleTargetConfig, ScheduleTargetInput } from '../../aws-scheduler';
+import type { CfnSchedule } from '../../aws-scheduler/lib/scheduler.generated';
+import type * as sqs from '../../aws-sqs';
 import { Duration, PhysicalName, Stack, Token, UnscopedValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 
@@ -157,10 +157,10 @@ export abstract class ScheduleTargetBase {
     if (maximumEventAge) {
       maxAge = maximumEventAge.toSeconds({ integral: true });
       if (maxAge > maxMaxAge) {
-        throw new UnscopedValidationError('Maximum event age is 1 day');
+        throw new UnscopedValidationError('MaximumEvent', 'Maximum event age is 1 day');
       }
       if (maxAge < minMaxAge) {
-        throw new UnscopedValidationError('Minimum event age is 1 minute');
+        throw new UnscopedValidationError('MinimumEventMinute', 'Minimum event age is 1 minute');
       }
     }
     let maxAttempts = 185;

@@ -1,9 +1,12 @@
-import { Construct } from 'constructs';
-import { IKey } from './key';
-import { AliasReference, CfnAlias, IAliasRef, KeyReference } from './kms.generated';
+import type { Construct } from 'constructs';
+import type { IKey } from './key';
+import type { AliasReference, IAliasRef, KeyReference } from './kms.generated';
+import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
@@ -246,8 +249,8 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new ValidationError('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
-      public addAlias(_alias: string): Alias { throw new ValidationError('Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
+      public get aliasTargetKey(): IKey { throw new ValidationError('CannotAccessAliasTargetKey', 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
+      public addAlias(_alias: string): Alias { throw new ValidationError('CannotAddAliasToImported', 'Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
       }
@@ -321,8 +324,18 @@ export class Alias extends AliasBase {
     return new Import(scope, id);
   }
 
-  public readonly aliasName: string;
+  private readonly resource: CfnAlias;
+
   public readonly aliasTargetKey: IKey;
+
+  @memoizedGetter
+  public get aliasName(): string {
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      return this.getResourceNameAttribute(this.resource.ref);
+    } else {
+      return this.getResourceNameAttribute(this.resource.aliasName);
+    }
+  }
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
@@ -333,15 +346,15 @@ export class Alias extends AliasBase {
       }
 
       if (aliasName === REQUIRED_ALIAS_PREFIX) {
-        throw new ValidationError(`Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
+        throw new ValidationError('AliasIncludeValueAfter', `Alias must include a value after "${REQUIRED_ALIAS_PREFIX}": ${aliasName}`, scope);
       }
 
       if (aliasName.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        throw new ValidationError('AliasCannotStart', `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!aliasName.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        throw new ValidationError('AliasNameCharacters', 'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     } else if (Tokenization.reverseString(aliasName).firstValue && Tokenization.reverseString(aliasName).firstToken === undefined) {
       const valueInToken = Tokenization.reverseString(aliasName).firstValue;
@@ -351,11 +364,11 @@ export class Alias extends AliasBase {
       }
 
       if (valueInToken.toLocaleLowerCase().startsWith(DISALLOWED_PREFIX)) {
-        throw new ValidationError(`Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
+        throw new ValidationError('AliasCannotStart', `Alias cannot start with ${DISALLOWED_PREFIX}: ${aliasName}`, scope);
       }
 
       if (!valueInToken.match(/^[a-zA-Z0-9:/_-]{1,256}$/)) {
-        throw new ValidationError('Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
+        throw new ValidationError('AliasNameCharacters', 'Alias name must be between 1 and 256 characters in a-zA-Z0-9:/_-', scope);
       }
     }
 
@@ -367,19 +380,13 @@ export class Alias extends AliasBase {
 
     this.aliasTargetKey = props.targetKey;
 
-    const resource = new CfnAlias(this, 'Resource', {
+    this.resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
-      this.aliasName = this.getResourceNameAttribute(resource.ref);
-    } else {
-      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
-    }
-
     if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
+      this.resource.applyRemovalPolicy(props.removalPolicy);
     }
   }
 

@@ -1,19 +1,19 @@
 import { UnscopedValidationError } from '../../../core';
-import { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { IBaseDeploymentConfig } from '../base-deployment-config';
-import { IEcsApplication } from '../ecs/application';
-import { IEcsDeploymentConfig } from '../ecs/deployment-config';
-import { ILambdaApplication } from '../lambda/application';
-import { ILambdaDeploymentConfig } from '../lambda/deployment-config';
-import { IServerApplication } from '../server/application';
-import { IServerDeploymentConfig } from '../server/deployment-config';
+import type { IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { IBaseDeploymentConfig } from '../base-deployment-config';
+import type { IEcsApplication } from '../ecs/application';
+import type { IEcsDeploymentConfig } from '../ecs/deployment-config';
+import type { ILambdaApplication } from '../lambda/application';
+import type { ILambdaDeploymentConfig } from '../lambda/deployment-config';
+import type { IServerApplication } from '../server/application';
+import type { IServerDeploymentConfig } from '../server/deployment-config';
 
 /**
  * Convert an IApplicationRef to IServerApplication, validating it has the required properties
  */
 export function toIServerApplication(app: IApplicationRef): IServerApplication {
   if (!('applicationArn' in app) || !('applicationName' in app)) {
-    throw new UnscopedValidationError(`'application' instance should implement IServerApplication, but doesn't: ${app.constructor.name}`);
+    throw new UnscopedValidationError('ApplicationInstanceShouldImplement', `'application' instance should implement IServerApplication, but doesn't: ${app.constructor.name}`);
   }
   return app as IServerApplication;
 }
@@ -23,7 +23,7 @@ export function toIServerApplication(app: IApplicationRef): IServerApplication {
  */
 export function toIEcsApplication(app: IApplicationRef): IEcsApplication {
   if (!('applicationArn' in app) || !('applicationName' in app)) {
-    throw new UnscopedValidationError(`'application' instance should implement IEcsApplication, but doesn't: ${app.constructor.name}`);
+    throw new UnscopedValidationError('ApplicationInstanceShouldImplement', `'application' instance should implement IEcsApplication, but doesn't: ${app.constructor.name}`);
   }
   return app as IEcsApplication;
 }
@@ -33,7 +33,7 @@ export function toIEcsApplication(app: IApplicationRef): IEcsApplication {
  */
 export function toILambdaApplication(app: IApplicationRef): ILambdaApplication {
   if (!('applicationArn' in app) || !('applicationName' in app)) {
-    throw new UnscopedValidationError(`'application' instance should implement ILambdaApplication, but doesn't: ${app.constructor.name}`);
+    throw new UnscopedValidationError('ApplicationInstanceShouldImplement', `'application' instance should implement ILambdaApplication, but doesn't: ${app.constructor.name}`);
   }
   return app as ILambdaApplication;
 }
@@ -43,7 +43,7 @@ export function toILambdaApplication(app: IApplicationRef): ILambdaApplication {
  */
 export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServerDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError(`'deploymentConfig' instance should implement IServerDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementServer', `'deploymentConfig' instance should implement IServerDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as IServerDeploymentConfig;
 }
@@ -53,7 +53,7 @@ export function toIServerDeploymentConfig(config: IDeploymentConfigRef): IServer
  */
 export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError(`'deploymentConfig' instance should implement IEcsDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementEcs', `'deploymentConfig' instance should implement IEcsDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as IEcsDeploymentConfig;
 }
@@ -63,7 +63,7 @@ export function toIEcsDeploymentConfig(config: IDeploymentConfigRef): IEcsDeploy
  */
 export function toIBaseDeploymentConfig(config: IDeploymentConfigRef): IBaseDeploymentConfig {
   if (!('deploymentConfigArn' in config) || !('deploymentConfigName' in config)) {
-    throw new UnscopedValidationError(`'deploymentConfig' instance should implement ILambdaDeploymentConfig, but doesn't: ${config.constructor.name}`);
+    throw new UnscopedValidationError('DeploymentConfigInstanceImplementLambda', `'deploymentConfig' instance should implement ILambdaDeploymentConfig, but doesn't: ${config.constructor.name}`);
   }
   return config as ILambdaDeploymentConfig;
 }

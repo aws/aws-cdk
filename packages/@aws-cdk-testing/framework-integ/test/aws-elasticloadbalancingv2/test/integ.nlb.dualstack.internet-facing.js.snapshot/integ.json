@@ -1,12 +1,13 @@
 {
-  "version": "33.0.0",
+  "version": "48.0.0",
   "testCases": {
     "NlbDualstackInternetFacingInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-nlb-dualstack-internet-facing"
       ],
       "assertionStack": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "NlbDualstackInternetFacingIntegIntegDefaultTestDeployAssert50902A32"
+      "assertionStackName": "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

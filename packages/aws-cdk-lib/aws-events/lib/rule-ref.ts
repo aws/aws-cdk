@@ -1,5 +1,5 @@
-import { IResource } from '../../core';
-import { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { IResource } from '../../core';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * Represents an EventBridge Rule

@@ -1,6 +1,7 @@
-import { IConstruct } from 'constructs';
-import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
-import * as events from '../../aws-events';
+import type { IConstruct } from 'constructs';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { Names, Token, ValidationError } from '../../core';
 
@@ -115,7 +116,7 @@ export class BatchJob implements events.IRuleTarget {
 
   private validateJobName(rule: IConstruct, name?: string) {
     if (!Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 128)) {
-      throw new ValidationError(`Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
+      throw new ValidationError('InvalidJobNameValue', `Invalid jobName value ${name}, must have length between 1 and 128, got: ${name.length}`, rule);
     }
   }
 }

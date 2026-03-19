@@ -1,7 +1,7 @@
-import { ApiGatewayProps } from './api-gateway';
+import type { ApiGatewayProps } from './api-gateway';
 import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole } from './util';
 import * as apigwv2 from '../../aws-apigatewayv2';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import { ValidationError } from '../../core';
 
@@ -39,7 +39,7 @@ export class ApiGatewayV2 implements events.IRuleTarget {
 
     const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
     if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
-      throw new ValidationError('The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
+      throw new ValidationError('NumberOfWildcardsInPathDoesNotMatchPathParameterValues', 'The number of wildcards in the path does not match the number of path pathParameterValues.', rule);
     }
 
     const httpApiArn = this._httpApi.arnForExecuteApi(

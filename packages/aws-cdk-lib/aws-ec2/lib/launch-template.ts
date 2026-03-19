@@ -1,21 +1,25 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
-import { CfnLaunchTemplate, ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
-import { InstanceType } from './instance-types';
-import { IKeyPair } from './key-pair';
-import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { ILaunchTemplateRef, IPlacementGroupRef, LaunchTemplateReference } from './ec2.generated';
+import { CfnLaunchTemplate } from './ec2.generated';
+import type { InstanceType } from './instance-types';
+import type { IKeyPair } from './key-pair';
+import type { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
-import { ISecurityGroup } from './security-group';
-import { UserData } from './user-data';
-import { BlockDevice } from './volume';
+import type { ISecurityGroup } from './security-group';
+import type { UserData } from './user-data';
+import type { BlockDevice } from './volume';
 import * as iam from '../../aws-iam';
-import {
-  Annotations,
+import type {
   Duration,
   Expiration,
+  IResource,
+} from '../../core';
+import {
+  Annotations,
   FeatureFlags,
   Fn,
-  IResource,
   Lazy,
   Resource,
   TagManager,
@@ -520,7 +524,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new ValidationError('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
+      throw new ValidationError('LaunchTemplateLaunchTemplateAttributes', 'LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
     }
 
     class Import extends Resource implements ILaunchTemplate {
@@ -530,7 +534,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
       public get launchTemplateRef(): LaunchTemplateReference {
         if (!this.launchTemplateId) {
-          throw new ValidationError('You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
+          throw new ValidationError('SetLaunchTemplateIdLaunch', 'You must set launchTemplateId in LaunchTemplate.fromLaunchTemplateAttributes() in order to use the LaunchTemplate in this API', this);
         }
 
         return {
@@ -544,7 +548,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   // ============================================
   //   Members for ILaunchTemplate interface
 
-  public readonly versionNumber: string;
   public readonly launchTemplateId?: string;
   public readonly launchTemplateName?: string;
 
@@ -620,6 +623,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   protected readonly tags: TagManager;
 
+  private resource?: CfnLaunchTemplate;
+
   // =============================================
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
@@ -631,21 +636,21 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
+      Annotations.of(this)._addTrackableError('InvalidSpotBlockDuration', 'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
     if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
       // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
-      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
+      Annotations.of(this)._addTrackableError('InvalidHttpPutResponseHopLimit', 'HttpPutResponseHopLimit must between 1 and 64');
     }
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('You cannot provide both an instanceProfile and a role', this);
+      throw new ValidationError('CannotProvideInstanceProfileRole', 'You cannot provide both an instanceProfile and a role', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // use provided instance profile or create one if a role was provided
@@ -682,7 +687,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     }
 
     if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
-      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+      throw new ValidationError('IncompatibleKeyPairType', `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
@@ -776,7 +781,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       : undefined;
 
     if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
-      throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
+      throw new ValidationError('VersionDescriptionLessEqualCharacters', `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
     }
 
     const resource = new CfnLaunchTemplate(this, 'Resource', {
@@ -848,18 +853,25 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       tagSpecifications: ltTagsToken,
     });
 
+    this.resource = resource;
+
+    this.resource = resource;
+
     if (this.role) {
-      resource.node.addDependency(this.role);
+      this.resource.node.addDependency(this.role);
     } else if (props.instanceProfile?.role) {
-      resource.node.addDependency(props.instanceProfile.role);
+      this.resource.node.addDependency(props.instanceProfile.role);
     }
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
-    this.defaultVersionNumber = resource.attrDefaultVersionNumber;
-    this.latestVersionNumber = resource.attrLatestVersionNumber;
-    this.launchTemplateId = resource.ref;
-    this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+    this.defaultVersionNumber = this.resource.attrDefaultVersionNumber;
+    this.latestVersionNumber = this.resource.attrLatestVersionNumber;
+    this.launchTemplateId = this.resource.ref;
+  }
+
+  public get versionNumber(): string {
+    return Token.asString(this.resource!.getAtt('LatestVersionNumber'));
   }
 
   public get launchTemplateRef(): LaunchTemplateReference {
@@ -872,7 +884,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
     if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
-      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
+      Annotations.of(this)._addTrackableError('HttpTokensRequired', 'httpTokens must be required when requireImdsv2 is true');
     }
     if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
       props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
@@ -902,7 +914,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
+      throw new ValidationError('LaunchTemplateAddedSecurityGroup', 'LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -914,7 +926,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
+      throw new ValidationError('LaunchTemplateConnectableSecurityGroup', 'LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
     }
     return this._connections;
   }
@@ -926,7 +938,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new ValidationError('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
+      throw new ValidationError('LaunchTemplateGrantableRoleProvided', 'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
     }
     return this._grantPrincipal;
   }

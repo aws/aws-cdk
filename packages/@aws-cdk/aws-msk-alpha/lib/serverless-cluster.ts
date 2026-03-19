@@ -1,10 +1,12 @@
 import { Fn, Lazy, Names, ValidationError } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnServerlessCluster } from 'aws-cdk-lib/aws-msk';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import * as constructs from 'constructs';
-import { ClusterBase, ICluster } from '.';
+import type * as constructs from 'constructs';
+import type { ICluster } from '.';
+import { ClusterBase } from '.';
 
 /**
  *  Properties for a MSK Serverless Cluster
@@ -76,8 +78,7 @@ export class ServerlessCluster extends ClusterBase {
     return new Import(scope, id);
   }
 
-  public readonly clusterArn: string;
-  public readonly clusterName: string;
+  private resource: CfnServerlessCluster;
 
   private _securityGroups: ec2.ISecurityGroup[] = [];
 
@@ -92,7 +93,7 @@ export class ServerlessCluster extends ClusterBase {
     addConstructMetadata(this, props);
 
     if (props.vpcConfigs.length < 1 || props.vpcConfigs.length > 5) {
-      throw new ValidationError(`\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
+      throw new ValidationError('InvalidVpcConfigCount', `\`vpcConfigs\` must contain between 1 and 5 configurations, got ${props.vpcConfigs.length} configurations.`, this);
     }
 
     const vpcConfigs = props.vpcConfigs.map((vpcConfig, index) => this._renderVpcConfig(vpcConfig, index));
@@ -107,7 +108,7 @@ export class ServerlessCluster extends ClusterBase {
      *
      * @see https://docs.aws.amazon.com/msk/latest/developerguide/serverless.html
      */
-    const resource = new CfnServerlessCluster(this, 'Resource', {
+    this.resource = new CfnServerlessCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clientAuthentication: {
         sasl: {
@@ -118,11 +119,18 @@ export class ServerlessCluster extends ClusterBase {
       },
       vpcConfigs,
     });
+  }
 
-    this.clusterName = this.getResourceNameAttribute(
-      Fn.select(1, Fn.split('/', resource.ref)),
+  @memoizedGetter
+  public get clusterName(): string {
+    return this.getResourceNameAttribute(
+      Fn.select(1, Fn.split('/', this.resource.ref)),
     );
-    this.clusterArn = resource.ref;
+  }
+
+  @memoizedGetter
+  public get clusterArn(): string {
+    return this.resource.ref;
   }
 
   /**
@@ -132,14 +140,14 @@ export class ServerlessCluster extends ClusterBase {
     const subnetSelection = vpcConfig.vpc.selectSubnets(vpcConfig.vpcSubnets);
 
     if (subnetSelection.subnets.length < 2) {
-      throw new ValidationError(`Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
+      throw new ValidationError('ServerlessClusterInsufficientSubnets', `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length} subnet.`, this);
     }
 
     let securityGroups: ec2.ISecurityGroup[] = [];
 
     if (vpcConfig.securityGroups) {
       if (vpcConfig.securityGroups.length < 1 || vpcConfig.securityGroups.length > 5) {
-        throw new ValidationError(`\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
+        throw new ValidationError('InvalidSecurityGroupCount', `\`securityGroups\` must contain between 1 and 5 elements, got ${vpcConfig.securityGroups.length} elements.`, this);
       }
       securityGroups = vpcConfig.securityGroups;
     } else {

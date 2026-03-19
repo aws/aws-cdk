@@ -1,10 +1,12 @@
 import { mergeBuildSpecs } from './private/buildspecs';
 import { makeCodePipelineOutput } from './private/outputs';
 import * as codebuild from '../../../aws-codebuild';
-import * as ec2 from '../../../aws-ec2';
-import * as iam from '../../../aws-iam';
-import { Duration, UnscopedValidationError } from '../../../core';
-import { ShellStep, ShellStepProps } from '../blueprint';
+import type * as ec2 from '../../../aws-ec2';
+import type * as iam from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
+import type { ShellStepProps } from '../blueprint';
+import { ShellStep } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep
@@ -261,7 +263,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public get project(): codebuild.IProject {
     if (!this._project) {
-      throw new UnscopedValidationError('Call pipeline.buildPipeline() before reading this property');
+      throw new UnscopedValidationError('CallPipeline', 'Call pipeline.buildPipeline() before reading this property');
     }
     return this._project;
   }
@@ -317,7 +319,7 @@ export class CodeBuildStep extends ShellStep {
    */
   public exportedVariable(variableName: string): string {
     if (this.exportedVarsRendered && !this.exportedVariables.has(variableName)) {
-      throw new UnscopedValidationError('exportVariable(): Pipeline has already been produced, cannot call this function anymore');
+      throw new UnscopedValidationError('ExportvariablePipelineAlreadyProduced', 'exportVariable(): Pipeline has already been produced, cannot call this function anymore');
     }
 
     this.exportedVariables.add(variableName);

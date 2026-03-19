@@ -1,14 +1,17 @@
-import { Construct } from 'constructs';
-import { IHttpApi, IHttpApiRef, toIHttpApi } from './api';
-import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration, IntegrationReference } from '.././index';
-import { IRoleRef } from '../../../aws-iam';
-import { Aws, Duration, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IHttpApi, IHttpApiRef } from './api';
+import { toIHttpApi } from './api';
+import type { HttpMethod, IHttpRoute } from './route';
+import type { IntegrationReference } from '.././index';
+import { CfnIntegration } from '.././index';
+import type { IRoleRef } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Aws, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IIntegration } from '../common';
-import { ParameterMapping } from '../parameter-mapping';
+import type { IIntegration } from '../common';
+import type { ParameterMapping } from '../parameter-mapping';
 
 /**
  * Represents an Integration for an HTTP API.
@@ -262,11 +265,11 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     addConstructMetadata(this, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
-      throw new ValidationError('Either `integrationSubtype` or `integrationUri` must be specified.', scope);
+      throw new ValidationError('MustBeEitherSpecified', 'Either `integrationSubtype` or `integrationUri` must be specified.', scope);
     }
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new ValidationError('Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
+      throw new ValidationError('IntegrationTimeoutMillisecondsSeconds', 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -340,7 +343,7 @@ export abstract class HttpRouteIntegration {
    */
   public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
-      throw new ValidationError('A single integration cannot be associated with multiple APIs.', options.scope);
+      throw new ValidationError('SingleIntegrationCannotAssociatedMultiple', 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {

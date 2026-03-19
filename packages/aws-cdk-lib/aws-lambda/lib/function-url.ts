@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
-import { IAlias } from './alias';
-import { IFunction } from './function-base';
-import { IVersion } from './lambda-version';
+import type { Construct } from 'constructs';
+import type { IAlias } from './alias';
+import type { IFunction } from './function-base';
+import type { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
+import type { Duration, IResource } from '../../core';
+import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
+import type { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
 /**
  * The auth types for a function url
@@ -232,11 +233,11 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     addConstructMetadata(this, props);
 
     if (this.instanceOfVersion(props.function)) {
-      throw new ValidationError('FunctionUrl cannot be used with a Version', this);
+      throw new ValidationError('FunctionUrlCannotVersion', 'FunctionUrl cannot be used with a Version', this);
     }
 
     if (props.function.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('FunctionUrl is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError('FunctionUrlSupportedFunctionsTenant', 'FunctionUrl is not supported for functions with tenant isolation mode', this);
     }
 
     // If the target function is an alias, then it must be configured using the underlying function
@@ -303,7 +304,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
     if (cors.maxAge && !cors.maxAge.isUnresolved() && cors.maxAge.toSeconds() > 86400) {
-      throw new ValidationError(`FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`, this);
+      throw new ValidationError('FunctionUrlMaxAgeLess', `FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`, this);
     }
 
     return {

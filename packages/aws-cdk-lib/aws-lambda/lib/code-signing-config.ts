@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnCodeSigningConfig, CodeSigningConfigReference, ICodeSigningConfigRef } from './lambda.generated';
-import { ISigningProfile } from '../../aws-signer';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { CodeSigningConfigReference, ICodeSigningConfigRef } from './lambda.generated';
+import { CfnCodeSigningConfig } from './lambda.generated';
+import type { ISigningProfile } from '../../aws-signer';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -90,7 +92,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   public static fromCodeSigningConfigArn(scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
     const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!codeSigningProfileId) {
-      throw new ValidationError(`Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`, scope);
+      throw new ValidationError('MustBeCodeSigningConfig', `Code signing config ARN must be in the format 'arn:<partition>:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`, scope);
     }
     const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {
