@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import type { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
 import type { IBucketNotificationDestination } from './destination';
@@ -2114,7 +2114,6 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new ValidationError('BucketNameRequired', 'Bucket name is required', scope);
     }
-    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -2129,7 +2128,7 @@ export class Bucket extends BucketBase {
 
     const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
-    return new ReferencedBucket(scope, id, {
+    const ret = new ReferencedBucket(scope, id, {
       account: attrs.account,
       region: attrs.region,
       bucketName: bucketName!,
@@ -2145,6 +2144,8 @@ export class Bucket extends BucketBase {
       disallowPublicAccess: false,
       notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
+    Bucket.validateBucketNameScoped(ret, bucketName, true);
+    return ret;
   }
 
   /**
@@ -2213,11 +2214,22 @@ export class Bucket extends BucketBase {
    * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
   public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
+    const errors = Bucket._validateBucketName(physicalName, allowLegacyBucketNaming);
+    if (errors.length > 0) {
+      // Since this is public and can be called statically, we have no object instance, so we throw an unscoped error.
+      throw new UnscopedValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${physicalName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
+  /**
+   * Return any errors against the bucket name
+   */
+  private static _validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): string[] {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation
-      return;
+      return [];
     }
 
     const errors: string[] = [];
@@ -2262,8 +2274,16 @@ export class Bucket extends BucketBase {
       errors.push('Bucket name must not resemble an IP address');
     }
 
+    return errors;
+  }
+
+  /**
+   * Like 'validateBucketName', but has an instance to throw a scoped ValidationError against
+   */
+  private static validateBucketNameScoped(scope: IConstruct, physicalName: string, allowLegacyBucketNaming: boolean = false): void {
+    const errors = Bucket._validateBucketName(physicalName, allowLegacyBucketNaming);
     if (errors.length > 0) {
-      throw new UnscopedValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+      throw new ValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${physicalName})${EOL}${errors.join(EOL)}`, scope);
     }
   }
 
@@ -2316,7 +2336,7 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
-    Bucket.validateBucketName(this.physicalName);
+    Bucket.validateBucketNameScoped(this, this.physicalName);
 
     let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
     if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
