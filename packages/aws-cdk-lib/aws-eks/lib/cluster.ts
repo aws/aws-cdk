@@ -1880,6 +1880,7 @@ export class Cluster extends ClusterBase {
         const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
         if (hasIsolatedSubnets) {
           throw new ValidationError(
+            'IsolatedKubectlSubnet',
             'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
             + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
             + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
