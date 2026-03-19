@@ -284,7 +284,7 @@ class TestFixture {
   }
 
   public get listener(): elbv2.ApplicationListener {
-    if (this._listener === undefined) { throw new UnscopedValidationError('Did not create a listener'); }
+    if (this._listener === undefined) { throw new UnscopedValidationError('CreateListener', 'Did not create a listener'); }
     return this._listener;
   }
 }

@@ -133,6 +133,7 @@ export class Namespace extends Resource implements INamespace {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        'InvalidNamespaceName',
         `Invalid S3 Tables namespace name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
       );
     }

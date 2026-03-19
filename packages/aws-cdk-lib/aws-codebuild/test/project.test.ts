@@ -972,6 +972,7 @@ describe('Environment', () => {
   test.each([
     ['Base 14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['Base 15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['Base 26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('has build image for %s', (_, buildImage, expected) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1043,6 +1044,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('can set macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1114,6 +1116,7 @@ describe('Environment', () => {
   test.each([
     ['BASE_14', codebuild.MacBuildImage.BASE_14, 'aws/codebuild/macos-arm-base:14'],
     ['BASE_15', codebuild.MacBuildImage.BASE_15, 'aws/codebuild/macos-arm-base:15'],
+    ['BASE_26', codebuild.MacBuildImage.BASE_26, 'aws/codebuild/macos-arm-base:26'],
   ])('can set imported macOS fleet with %s', (_, buildImage, expectedImage) => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -66,13 +66,13 @@ export class BasePathMapping extends Resource {
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {
       if (props.basePath.startsWith('/') || props.basePath.endsWith('/')) {
-        throw new ValidationError(`A base path cannot start or end with /", received: ${props.basePath}`, scope);
+        throw new ValidationError('BasePathCannotStart', `A base path cannot start or end with /", received: ${props.basePath}`, scope);
       }
       if (props.basePath.match(/\/{2,}/)) {
-        throw new ValidationError(`A base path cannot have more than one consecutive /", received: ${props.basePath}`, scope);
+        throw new ValidationError('BasePathCannotMore', `A base path cannot have more than one consecutive /", received: ${props.basePath}`, scope);
       }
       if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-/]+$/)) {
-        throw new ValidationError(`A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`, scope);
+        throw new ValidationError('BasePathOnlyContain', `A base path may only contain letters, numbers, and one of "$-_.+!*'()/", received: ${props.basePath}`, scope);
       }
     }
 

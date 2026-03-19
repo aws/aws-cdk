@@ -126,6 +126,7 @@ export class AssetApiSchema extends ApiSchema {
   public _render(): any {
     if (!this.asset) {
       throw new UnscopedValidationError(
+        'ApiSchemaNotBound',
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }

@@ -543,6 +543,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const region = amiDistribution.region ?? cdk.Stack.of(this).region;
       if (this.amiDistributionsByRegion[region]) {
         throw new cdk.ValidationError(
+          'DuplicateAmiDistribution',
           `duplicate AMI distribution found for region "${region}"; only one AMI distribution per region is allowed`,
           this,
         );
@@ -563,6 +564,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const region = containerDistribution.region ?? cdk.Stack.of(this).region;
       if (this.containerDistributionsByRegion[region]) {
         throw new cdk.ValidationError(
+          'DuplicateContainerDistribution',
           `duplicate Container distribution found for region "${region}"; only one Container distribution per region is allowed`,
           this,
         );
@@ -578,19 +580,19 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameTooLong', 'The distributionConfigurationName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain spaces', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameNoSpaces', 'The distributionConfigurationName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('The distributionConfigurationName cannot contain underscores', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameNoUnderscores', 'The distributionConfigurationName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('The distributionConfigurationName must be lowercase', this);
+      throw new cdk.ValidationError('DistributionConfigurationNameMustBeLowercase', 'The distributionConfigurationName must be lowercase', this);
     }
   }
 
@@ -610,7 +612,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       !Object.keys(this.amiDistributionsByRegion).length &&
       !Object.keys(this.containerDistributionsByRegion).length
     ) {
-      throw new cdk.ValidationError('You must specify at least one AMI or container distribution', this);
+      throw new cdk.ValidationError('DistributionRequired', 'You must specify at least one AMI or container distribution', this);
     }
 
     const distributionByRegion: { [region: string]: CfnDistributionConfiguration.DistributionProperty } = {};
@@ -640,6 +642,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       const { region: _, ...distributionWithoutRegion } = distribution;
       if (!Object.entries(distributionWithoutRegion).some(([__, value]) => value !== undefined)) {
         throw new cdk.ValidationError(
+          'DistributionPropertyRequired',
           `at least one distribution property must be set for region "${distribution.region}"`,
           this,
         );
@@ -714,6 +717,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
           fastLaunchConfiguration.maxParallelLaunches < MIN_PARALLEL_LAUNCHES
         ) {
           throw new cdk.ValidationError(
+            'MinParallelLaunches',
             `you must specify a maximum parallel launch count of at least ${MIN_PARALLEL_LAUNCHES}`,
             this,
           );
@@ -754,6 +758,7 @@ export class DistributionConfiguration extends DistributionConfigurationBase {
       (launchTemplateConfiguration): CfnDistributionConfiguration.LaunchTemplateConfigurationProperty => {
         if (!launchTemplateConfiguration.launchTemplate.launchTemplateId) {
           throw new cdk.ValidationError(
+            'LaunchTemplateIdRequired',
             'You must reference launch templates by ID in launch template configurations',
             this,
           );

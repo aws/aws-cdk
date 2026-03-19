@@ -263,7 +263,7 @@ export class Stack extends Construct implements ITaggable {
 
       const _scope = Node.of(c).scope;
       if (Stage.isStage(c) || !_scope) {
-        throw new ValidationError(`${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
+        throw new ValidationError('ShouldBeCreatedInStackScope', `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
       }
 
       return _lookup(_scope);
@@ -479,27 +479,27 @@ export class Stack extends Construct implements ITaggable {
       // Max length 1024 bytes
       // Typically 2 bytes per character, may be more for more exotic characters
       if (props.description.length > 512) {
-        throw new ValidationError(`Stack description must be <= 1024 bytes. Received description: '${props.description}'`, this);
+        throw new ValidationError('StackDescriptionTooLong', `Stack description must be <= 1024 bytes. Received description: '${props.description}'`, this);
       }
       this.templateOptions.description = props.description;
     }
 
     this._stackName = props.stackName ?? this.generateStackName();
     if (this._stackName.length > 128) {
-      throw new ValidationError(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`, this);
+      throw new ValidationError('StackNameTooLong', `Stack name must be <= 128 characters. Stack name: '${this._stackName}'`, this);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     for (const notificationArn of props.notificationArns ?? []) {
       if (Token.isUnresolved(notificationArn)) {
-        throw new ValidationError(`Stack '${id}' includes one or more tokens in its notification ARNs: ${props.notificationArns}`, this);
+        throw new ValidationError('StackNotificationArnsContainTokens', `Stack '${id}' includes one or more tokens in its notification ARNs: ${props.notificationArns}`, this);
       }
     }
 
     this._notificationArns = props.notificationArns;
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
-      throw new ValidationError(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`, this);
+      throw new ValidationError('StackNameInvalidFormat', `Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`, this);
     }
 
     // the preferred behavior is to generate a unique id for this stack and use
@@ -588,7 +588,7 @@ export class Stack extends Construct implements ITaggable {
       || arn.includes('${AWS::AccountId}')
       || arn.includes('${AWS::Region}')
       || arn.includes('${AWS::Partition}'))) {
-      throw new ValidationError(`The permissions boundary ${arn} includes a pseudo parameter, ` +
+      throw new ValidationError('PermissionsBoundaryContainsPseudoParameter', `The permissions boundary ${arn} includes a pseudo parameter, ` +
       'which is not supported for environment agnostic stacks', this);
     }
     return arn;
@@ -648,7 +648,7 @@ export class Stack extends Construct implements ITaggable {
    */
   public reportMissingContext(report: cxapi.MissingContext) {
     if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
-      throw new ValidationError(`Unknown context provider requested in: ${JSON.stringify(report)}`, this);
+      throw new ValidationError('UnknownContextProvider', `Unknown context provider requested in: ${JSON.stringify(report)}`, this);
     }
     this.reportMissingContextKey(report as cxschema.MissingContext);
   }
@@ -888,7 +888,7 @@ export class Stack extends Construct implements ITaggable {
     }).value;
 
     if (!Array.isArray(value)) {
-      throw new ValidationError(`Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`, this);
+      throw new ValidationError('ProviderExpectedList', `Provider ${cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER} expects a list`, this);
     }
 
     return value;
@@ -976,7 +976,7 @@ export class Stack extends Construct implements ITaggable {
   public _addAssemblyDependency(target: Stack, reason: StackDependencyReason = {}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
-      throw new ValidationError('Cannot add assembly-level dependencies for nested stacks', this);
+      throw new ValidationError('CannotAddAssemblyLevelDependencies', 'Cannot add assembly-level dependencies for nested stacks', this);
     }
     // Fill in reason details if not provided
     if (!reason.source) {
@@ -995,7 +995,7 @@ export class Stack extends Construct implements ITaggable {
         return cycleReason.description;
       }).join(', ');
 
-      throw new ValidationError(`'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
+      throw new ValidationError('DependencyCycle', `'${target.node.path}' depends on '${this.node.path}' (${cycleDescription}). Adding this dependency (${reason.description}) would create a cyclic reference.`, this);
     }
 
     let dep = this._stackDependencies[Names.uniqueId(target)];
@@ -1031,7 +1031,7 @@ export class Stack extends Construct implements ITaggable {
    */
   public _obtainAssemblyDependencies(reasonFilter: StackDependencyReason): Element[] {
     if (!reasonFilter.source) {
-      throw new ValidationError('reasonFilter.source must be defined!', this);
+      throw new ValidationError('ReasonFilterSourceRequired', 'reasonFilter.source must be defined!', this);
     }
     // Assume reasonFilter has only source defined
     let dependencies: Set<Element> = new Set();
@@ -1039,7 +1039,7 @@ export class Stack extends Construct implements ITaggable {
       dep.reasons.forEach((reason) => {
         if (reasonFilter.source == reason.source) {
           if (!reason.target) {
-            throw new ValidationError(`Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`, this);
+            throw new ValidationError('InvalidDependencyTarget', `Encountered an invalid dependency target from source '${reasonFilter.source!.node.path}'`, this);
           }
           dependencies.add(reason.target);
         }
@@ -1060,7 +1060,7 @@ export class Stack extends Construct implements ITaggable {
   public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
-      throw new ValidationError('There cannot be assembly-level dependencies for nested stacks', this);
+      throw new ValidationError('CannotRemoveAssemblyLevelDependencies', 'There cannot be assembly-level dependencies for nested stacks', this);
     }
     // No need to check for a dependency cycle when removing one
 
@@ -1086,7 +1086,7 @@ export class Stack extends Construct implements ITaggable {
       }
     });
     if (matchedReasons.size > 1) {
-      throw new ValidationError(`There cannot be more than one reason for dependency removal, found: ${matchedReasons}`, this);
+      throw new ValidationError('TooManyDependencyReasons', `There cannot be more than one reason for dependency removal, found: ${matchedReasons}`, this);
     }
     if (matchedReasons.size == 0) {
       // Reason is already not there - return now
@@ -1134,7 +1134,7 @@ export class Stack extends Construct implements ITaggable {
 
       if (numberOfResources > this.maxResources) {
         const counts = Object.entries(count(Object.values(resources).map((r: any) => `${r?.Type}`))).map(([type, c]) => `${type} (${c})`).join(', ');
-        throw new ValidationError(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`, this);
+        throw new ValidationError('TooManyResourcesInStack', `Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}: ${counts}`, this);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
@@ -1193,14 +1193,14 @@ export class Stack extends Construct implements ITaggable {
     if (!Token.isUnresolved(this.region)) {
       const ret = Fact.find(this.region, factName) ?? defaultValue;
       if (ret === undefined) {
-        throw new ValidationError(`region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`, this);
+        throw new ValidationError('RegionFactNotFound', `region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`, this);
       }
       return ret;
     }
 
     const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
     if (partitions !== undefined && partitions !== 'undefined' && !Array.isArray(partitions)) {
-      throw new ValidationError(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(partitions)}`, this);
+      throw new ValidationError('TargetPartitionsContextValueInvalid', `Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(partitions)}`, this);
     }
 
     const lookupMap =
@@ -1279,7 +1279,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = Fn.importValue(exportName);
 
     if (Array.isArray(importValue)) {
-      throw new ValidationError('Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead', this);
+      throw new ValidationError('ExportedListValueFromExportValue', 'Attempted to export a list value from `exportValue()`: use `exportStringListValue()` instead', this);
     }
 
     return importValue;
@@ -1335,7 +1335,7 @@ export class Stack extends Construct implements ITaggable {
     const importValue = Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(exportName));
 
     if (!Array.isArray(importValue)) {
-      throw new ValidationError('Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead', this);
+      throw new ValidationError('ExportedStringValueFromExportStringListValue', 'Attempted to export a string value from `exportStringListValue()`: use `exportValue()` instead', this);
     }
 
     return importValue;
@@ -1398,7 +1398,7 @@ export class Stack extends Construct implements ITaggable {
    */
   protected _validateId(name: string) {
     if (name && !VALID_STACK_NAME_REGEX.test(name)) {
-      throw new ValidationError(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`, this);
+      throw new ValidationError('InvalidStackNameFormat', `Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${name}'`, this);
     }
   }
 
@@ -1473,11 +1473,11 @@ export class Stack extends Construct implements ITaggable {
     const containingAssembly = Stage.of(this);
 
     if (env.account && typeof(env.account) !== 'string') {
-      throw new ValidationError(`Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`, this);
+      throw new ValidationError('AccountIdMustBeString', `Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`, this);
     }
 
     if (env.region && typeof(env.region) !== 'string') {
-      throw new ValidationError(`Region of stack environment must be a 'string' but received '${typeof(env.region)}'`, this);
+      throw new ValidationError('RegionMustBeString', `Region of stack environment must be a 'string' but received '${typeof(env.region)}'`, this);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
@@ -1572,7 +1572,7 @@ export class Stack extends Construct implements ITaggable {
     // In unit tests our Stack (which is the only component) may not have an
     // id, so in that case just pretend it's "Stack".
     if (ids.length === 1 && !ids[0]) {
-      throw new ValidationError('unexpected: stack id must always be defined', this);
+      throw new ValidationError('StackIdMustBeDefined', 'unexpected: stack id must always be defined', this);
     }
 
     return makeStackName(ids, prefix);
@@ -1581,7 +1581,7 @@ export class Stack extends Construct implements ITaggable {
   private resolveExportedValue(exportedValue: any): ResolvedExport {
     const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
-      throw new ValidationError('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')', this);
+      throw new ValidationError('ExportValueRequiresNameOrResourceAttribute', 'exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')', this);
     }
 
     // "teleport" the value here, in case it comes from a nested stack. This will also
@@ -1600,7 +1600,7 @@ export class Stack extends Construct implements ITaggable {
     const exportName = generateExportName(exportsScope, id);
 
     if (Token.isUnresolved(exportName)) {
-      throw new ValidationError(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`, this);
+      throw new ValidationError('UnresolvedTokenInExportName', `unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`, this);
     }
 
     return {
@@ -1672,7 +1672,7 @@ function mergeSection(section: string, val1: any, val2: any): any {
       return `${val1}\n${val2}`;
     case 'AWSTemplateFormatVersion':
       if (val1 != null && val2 != null && val1 !== val2) {
-        throw new AssumptionError(`Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
+        throw new AssumptionError('ConflictingCloudformationTemplateVersions', `Conflicting CloudFormation template versions provided: '${val1}' and '${val2}`);
       }
       return val1 ?? val2;
     case 'Transform':
@@ -1695,16 +1695,16 @@ function mergeSets(val1: any, val2: any): any {
 
 function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): any {
   if (typeof dest !== 'object') {
-    throw new AssumptionError(`Expecting ${JSON.stringify(dest)} to be an object`);
+    throw new AssumptionError('ExpectingObject', `Expecting ${JSON.stringify(dest)} to be an object`);
   }
   if (typeof src !== 'object') {
-    throw new AssumptionError(`Expecting ${JSON.stringify(src)} to be an object`);
+    throw new AssumptionError('ExpectingObject', `Expecting ${JSON.stringify(src)} to be an object`);
   }
 
   // add all entities from source section to destination section
   for (const id of Object.keys(src)) {
     if (id in dest) {
-      throw new AssumptionError(`section '${section}' already contains '${id}'`);
+      throw new AssumptionError('SectionAlreadyContains', `section '${section}' already contains '${id}'`);
     }
     dest[id] = src[id];
   }

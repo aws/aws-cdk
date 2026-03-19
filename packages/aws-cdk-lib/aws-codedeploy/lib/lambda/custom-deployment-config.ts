@@ -185,11 +185,13 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
   private validateParameters(props: CustomLambdaDeploymentConfigProps): void {
     if ( !(1 <= props.percentage && props.percentage <= 99) ) {
       throw new ValidationError(
+        'InvalidDeploymentConfigPercentage',
         `Invalid deployment config percentage "${props.percentage.toString()}". \
         Step percentage must be an integer between 1 and 99.`, this);
     }
     if (props.interval.toMinutes() > 2880) {
       throw new ValidationError(
+        'InvalidDeploymentConfigInterval',
         `Invalid deployment config interval "${props.interval.toString()}". \
         Traffic shifting intervals must be positive integers up to 2880 (2 days).`, this);
     }

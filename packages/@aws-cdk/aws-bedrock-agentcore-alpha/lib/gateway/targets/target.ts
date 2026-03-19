@@ -678,7 +678,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'), this);
+      throw new ValidationError('GatewayTargetNameInvalid', allErrors.join('\n'), this);
     }
   }
 
@@ -701,7 +701,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'), this);
+      throw new ValidationError('GatewayTargetDescriptionInvalid', errors.join('\n'), this);
     }
   }
 }

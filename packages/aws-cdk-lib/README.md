@@ -439,6 +439,27 @@ Size.mebibytes(2).toKibibytes()                                             // y
 Size.kibibytes(2050).toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })  // yields 2
 ```
 
+## Bitrate
+
+To make specification of bitrate values unambiguous, a class called
+`Bitrate` is available.
+
+An instance of `Bitrate` is initialized through one of its static factory methods:
+
+```ts
+Bitrate.bps(5000)   // 5,000 bits per second
+Bitrate.kbps(500)   // 500 kilobits per second
+Bitrate.mbps(10)    // 10 megabits per second
+Bitrate.gbps(1)     // 1 gigabit per second
+```
+
+Instances of `Bitrate` created with one of the units can be converted into others:
+
+```ts
+Bitrate.mbps(10).toBps()    // yields 10000000
+Bitrate.mbps(10).toKbps()  // yields 10000
+```
+
 ## Secrets
 
 To help avoid accidental storage of secrets as plain text, we use the `SecretValue` type to
@@ -2135,6 +2156,23 @@ for (const aspectApplication of aspectApplications) {
   aspectApplication.priority = 700;
 }
 ```
+
+### Converting between Aspects and Mixins
+
+Since Mixins and Aspects are both implementations of the visitor pattern, they can be converted from each other using the `Shims` class:
+
+```ts fixture=README-mixins
+// Applies an Aspect immediately as a Mixin
+const versioningMixin = Shims.asMixin(new EnableBucketVersioning());
+Mixins.of(scope).apply(versioningMixin);
+
+// Delays application of a Mixin to the synthesis phase
+const publicAccessAspect = Shims.asAspect(new BucketBlockPublicAccess());
+Aspects.of(scope).add(publicAccessAspect);
+```
+
+When shimming a Mixin to an Aspect, the Mixin will automatically only be applied to supported constructs (via `supports()`).
+Going from an Aspect to a Mixin, the Aspect will be applied to every node.
 
 ## Blueprint Property Injection
 

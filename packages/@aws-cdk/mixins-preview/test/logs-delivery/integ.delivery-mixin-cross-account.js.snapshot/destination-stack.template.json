@@ -43,8 +43,7 @@
        "Principal": {
         "Service": "delivery.logs.amazonaws.com"
        },
-       "Resource": "*",
-       "Sid": "AWS CDK: Allow Logs Delivery to use the key"
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -136,7 +135,18 @@
          "aws:SourceAccount": "234567890123"
         },
         "ArnLike": {
-         "aws:SourceArn": "arn:aws:logs:us-east-1:234567890123:delivery-source:*"
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":logs:us-east-1:234567890123:delivery-source:*"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",

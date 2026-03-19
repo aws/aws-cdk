@@ -92,7 +92,7 @@ export class CfnResource extends CfnRefElement {
     super(scope, id);
 
     if (!props.type) {
-      throw new ValidationError('The `type` property is required', this);
+      throw new ValidationError('IsRequiredPropertyRequired', 'The `type` property is required', this);
     }
 
     this.cfnResourceType = props.type;
@@ -168,7 +168,7 @@ export class CfnResource extends CfnRefElement {
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new ValidationError(`${this.cfnResourceType} does not support snapshot removal policy`, this);
+            throw new ValidationError('SnapshotRemovalNotSupported', `${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -179,7 +179,7 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new ValidationError(`Invalid removal policy: ${policy}`, this);
+        throw new ValidationError('InvalidRemovalPolicy', `Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
@@ -356,7 +356,7 @@ export class CfnResource extends CfnRefElement {
       this.removeDependency(target);
       this.addDependency(newTarget);
     } else {
-      throw new ValidationError(`"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
+      throw new ValidationError('DoesDepend', `"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
     }
   }
 

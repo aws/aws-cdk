@@ -956,13 +956,14 @@ export class Component extends ComponentBase {
   public static fromComponentAttributes(scope: Construct, id: string, attrs: ComponentAttributes): IComponent {
     if (attrs.componentArn && (attrs.componentName || attrs.componentVersion)) {
       throw new cdk.ValidationError(
+        'ConflictingComponentAttributes',
         'a componentName or componentVersion cannot be provided when a componentArn is provided',
         scope,
       );
     }
 
     if (!attrs.componentArn && !attrs.componentName) {
-      throw new cdk.ValidationError('either componentArn or componentName is required', scope);
+      throw new cdk.ValidationError('MissingComponentIdentifier', 'either componentArn or componentName is required', scope);
     }
 
     const componentArn =
@@ -1039,6 +1040,7 @@ export class Component extends ComponentBase {
     props.supportedOsVersions?.forEach((osVersion) => {
       if (osVersion.platform !== props.platform) {
         throw new cdk.ValidationError(
+          'IncompatibleOsVersion',
           `os version ${osVersion.osVersion} is not compatible with platform ${props.platform}`,
           this,
         );
@@ -1098,21 +1100,22 @@ export class Component extends ComponentBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        'ComponentNameTooLong',
         `the componentName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameContainsSpaces', `the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError(`the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameContainsUnderscores', `the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the componentName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ComponentNameNotLowercase', `the componentName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

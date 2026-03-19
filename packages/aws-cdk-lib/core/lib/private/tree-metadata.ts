@@ -269,7 +269,7 @@ class FragmentedTreeWriter {
 
     if (parent === undefined) {
       if (this.forest.length > 0) {
-        throw new AssumptionError('Can only add exactly one node without a parent');
+        throw new AssumptionError('OnlyOneNodeWithoutParent', 'Can only add exactly one node without a parent');
       }
 
       this.addNewTree(node, this.mainTreePointer);
@@ -314,7 +314,7 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
-        throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
+        throw new AssumptionError('CouldNotFindParent', `Could not find parent of ${JSON.stringify(parent)}`);
       }
 
       const subtreeReference: SubTreeReference = {
@@ -365,7 +365,7 @@ class FragmentedTreeWriter {
     if (tree) {
       return tree;
     }
-    throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+    throw new AssumptionError('CouldNotFindTreeForNode', `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
   }
 }
 

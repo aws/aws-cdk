@@ -638,17 +638,18 @@ export class Workflow extends WorkflowBase {
       (attrs.workflowName !== undefined || attrs.workflowType !== undefined || attrs.workflowVersion !== undefined)
     ) {
       throw new cdk.ValidationError(
+        'ConflictingWorkflowAttributes',
         'a workflowName, workflowType, or workflowVersion cannot be provided when a workflowArn is provided',
         scope,
       );
     }
 
     if (attrs.workflowArn === undefined && (attrs.workflowName === undefined || attrs.workflowType === undefined)) {
-      throw new cdk.ValidationError('either workflowArn, or workflowName and workflowType is required', scope);
+      throw new cdk.ValidationError('EitherWorkflowArnOrNameAndTypeRequired', 'either workflowArn, or workflowName and workflowType is required', scope);
     }
 
     if (attrs.workflowType && cdk.Token.isUnresolved(attrs.workflowType)) {
-      throw new cdk.ValidationError('workflowType cannot be an unresolved token', scope);
+      throw new cdk.ValidationError('WorkflowTypeCannotBeUnresolved', 'workflowType cannot be an unresolved token', scope);
     }
 
     const workflowArn = (() => {
@@ -675,6 +676,7 @@ export class Workflow extends WorkflowBase {
 
       if (cdk.Token.isUnresolved(workflowNameTypeVersion)) {
         throw new cdk.ValidationError(
+          'WorkflowArnCannotBeUnresolved',
           'the workflowName, workflowType, and workflowVersion in the workflowArn cannot be an unresolved token',
           scope,
         );
@@ -682,6 +684,7 @@ export class Workflow extends WorkflowBase {
 
       if (workflowNameTypeVersion.split('/').length < 3) {
         throw new cdk.ValidationError(
+          'InvalidWorkflowArnFormat',
           'the workflow ARN must end with <workflow-type>/<workflow-name>/<workflow-version>',
           scope,
         );
@@ -777,19 +780,19 @@ export class Workflow extends WorkflowBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('the workflowName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError('WorkflowNameTooLong', 'the workflowName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('the workflowName cannot contain spaces', this);
+      throw new cdk.ValidationError('WorkflowNameContainsSpaces', 'the workflowName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('the workflowName cannot contain underscores', this);
+      throw new cdk.ValidationError('WorkflowNameContainsUnderscores', 'the workflowName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('the workflowName must be lowercase', this);
+      throw new cdk.ValidationError('WorkflowNameNotLowercase', 'the workflowName must be lowercase', this);
     }
   }
 }

@@ -223,6 +223,7 @@ export class AssetToolSchema extends ToolSchema {
   public _render(): any {
     if (!this.asset) {
       throw new UnscopedValidationError(
+        'ToolSchemaNotBound',
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }
@@ -237,6 +238,7 @@ export class AssetToolSchema extends ToolSchema {
   public grantPermissionsToRole(role: IRole): void {
     if (!this.asset) {
       throw new UnscopedValidationError(
+        'ToolSchemaNotBound',
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }

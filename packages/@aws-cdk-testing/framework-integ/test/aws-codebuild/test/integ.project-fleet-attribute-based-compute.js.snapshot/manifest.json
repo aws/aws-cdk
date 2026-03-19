@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "AttributeBasedComputeFleetIntegStack0.assets": {
       "type": "cdk:asset-manifest",
@@ -43,7 +43,10 @@
               "computeConfiguration": {
                 "machineType": "GENERAL"
               },
-              "environmentType": "LINUX_CONTAINER"
+              "environmentType": "LINUX_CONTAINER",
+              "vpc": "*",
+              "securityGroups": "*",
+              "subnetSelection": "*"
             }
           }
         ],
@@ -114,12 +117,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/AttributeBasedComputeFleetIntegStack0/MyProject/Role/Resource": [
@@ -243,7 +240,10 @@
                 "vCpu": "*",
                 "disk": "*"
               },
-              "environmentType": "LINUX_CONTAINER"
+              "environmentType": "LINUX_CONTAINER",
+              "vpc": "*",
+              "securityGroups": "*",
+              "subnetSelection": "*"
             }
           }
         ],
@@ -314,12 +314,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/Resource": [
@@ -592,7 +586,10 @@
               "computeConfiguration": {
                 "machineType": "GENERAL"
               },
-              "environmentType": "LINUX_CONTAINER"
+              "environmentType": "LINUX_CONTAINER",
+              "vpc": "*",
+              "securityGroups": "*",
+              "subnetSelection": "*"
             }
           }
         ],
@@ -652,12 +649,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/AttributeBasedComputeFleetIntegStack2/MyFleet/Role/Resource": [
@@ -779,12 +770,6 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/AttributeBasedComputeFleetIntegStack2/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -879,7 +864,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/110ab7281d29895fecf89650979ddb683fc7f4cbf1f0004282fc11479e790f92.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0ae30e678d16f525ebd68ecdb07301ccde2aab1f91009b13292751b04cf6e7d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1114,7 +1099,15 @@
               "computeConfiguration": {
                 "machineType": "GENERAL"
               },
-              "environmentType": "LINUX_CONTAINER"
+              "environmentType": "LINUX_CONTAINER",
+              "vpc": "*",
+              "securityGroups": [
+                "*",
+                "*"
+              ],
+              "subnetSelection": {
+                "subnetType": "Private"
+              }
             }
           }
         ],
@@ -1160,12 +1153,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/AttributeBasedComputeFleetIntegStack3/MyFleet/Role/Resource": [
@@ -1287,12 +1274,6 @@
             }
           }
         ],
-        "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
         "/AttributeBasedComputeFleetIntegStack3/MyProject/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1393,7 +1374,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89d189f7e5b26be70745f9f9ebf6ece0a5b95d134ce6f2828d3848327c5cbd41.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9825c6d675f5873554c92084ca584f0cf2c275360a191be0a4aa58306bc664ab.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1782,6 +1763,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -1800,6 +1782,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -1911,7 +1894,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -2065,6 +2048,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -2096,16 +2083,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -2250,10 +2227,31 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1101.0"
 }

@@ -313,7 +313,7 @@ export class BundlingDockerImage {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
-      throw new ExecutionError('Failed to extract container ID from Docker create output');
+      throw new ExecutionError('FailedToFailedExtractContainer', 'Failed to extract container ID from Docker create output');
     }
 
     const containerId = match[1];
@@ -323,7 +323,7 @@ export class BundlingDockerImage {
       dockerExec(['cp', containerPath, destPath]);
       return destPath;
     } catch (err) {
-      throw new ExecutionError(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new ExecutionError('FailedToFailedCopyFiles', `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
@@ -344,7 +344,7 @@ export class DockerImage extends BundlingDockerImage {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new UnscopedValidationError(`"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError('MustBeFileRelativeDocker', `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options

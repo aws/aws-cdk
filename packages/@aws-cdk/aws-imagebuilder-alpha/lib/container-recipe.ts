@@ -433,6 +433,7 @@ export class ContainerRecipe extends ContainerRecipeBase {
   ): IContainerRecipe {
     if (!attrs.containerRecipeArn && !attrs.containerRecipeName) {
       throw new cdk.ValidationError(
+        'ContainerRecipeAttributesRequired',
         'either either containerRecipeArn or containerRecipeName must be provided to import a container recipe',
         scope,
       );
@@ -636,24 +637,26 @@ export class ContainerRecipe extends ContainerRecipeBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        'ContainerRecipeNameTooLong',
         `the containerRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the containerRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ContainerRecipeNameNoSpaces', `the containerRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
       throw new cdk.ValidationError(
+        'ContainerRecipeNameNoUnderscores',
         `the containerRecipeName cannot contain underscores, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the containerRecipeName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError('ContainerRecipeNameMustBeLowercase', `the containerRecipeName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

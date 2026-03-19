@@ -466,7 +466,7 @@ describe('tree metadata', () => {
   test('failing nodes', () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
-        throw new AssumptionError('Forcing an inspect error');
+        throw new AssumptionError('ForcedInspectError', 'Forcing an inspect error');
       }
     }
 
