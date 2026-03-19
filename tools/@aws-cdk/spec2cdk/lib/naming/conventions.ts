@@ -209,8 +209,8 @@ export function eventPatternMethodName(eventName: string) {
   if (prefix) {
     return `${prefix.toLowerCase()}${eventName.slice(prefix.length)}Pattern`;
   }
-  if (eventName[1].toUpperCase() == eventName[1]) {
-    console.log({ eventName });
+  if (eventName[1].toUpperCase() === eventName[1]) {
+    throw new Error(`Unrecognized uppercase prefix in event name '${eventName}'. Add the service prefix to the prefixes array.`);
   }
   return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
 }
