@@ -1,4 +1,12 @@
-# CDK Mixins (Preview)
+# CDK Mixins
+
+
+> **Note**: The core Mixins mechanism  is now GA  and available in `constructs` and `aws-cdk-lib` (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`).
+> All service Mixins are now available in `aws-cdk-lib`.
+> Please update your imports.
+>
+> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**, which are still experimental.
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -14,14 +22,6 @@
 ---
 
 <!--END STABILITY BANNER-->
-
-> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib`.
-> All service Mixins are now available in `aws-cdk-lib`.
-> Please update your imports.
->
-> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**.
-
----
 
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
