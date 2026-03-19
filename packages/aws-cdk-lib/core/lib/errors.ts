@@ -1,5 +1,6 @@
 import type { IConstruct } from 'constructs';
 import { constructInfoFromConstruct } from './private/runtime-info';
+import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
@@ -120,61 +121,31 @@ abstract class ConstructError extends Error {
 
   constructor(msg: string, scope?: IConstruct, name?: string) {
     super(msg);
+
+    const ctr = this.constructor;
+
     Object.setPrototypeOf(this, ConstructError.prototype);
     Object.defineProperty(this, CONSTRUCT_ERROR_SYMBOL, { value: true });
 
-    this.name = name ?? new.target.name;
+    this.name = name ?? ctr.name;
     this.#time = new Date().toISOString();
     this.#constructPath = scope?.node.path;
 
     if (scope) {
-      Error.captureStackTrace(this, scope.constructor);
       try {
-        this.#constructInfo = scope ? constructInfoFromConstruct(scope) : undefined;
+        this.#constructInfo = constructInfoFromConstruct(scope);
       } catch (_) {
         // we don't want to fail if construct info is not available
       }
     }
 
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
+    // The "stack" field in Node.js includes the error description. If it doesn't, Node will fall back to an
+    // ugly way of rendering the error.
+    this.stack = `${this.name}: ${msg}\n${renderCallStackJustMyCode(captureCallStack(ctr)).join('\n')}`;
 
-    if (this.constructInfo) {
-      stack.push(`in ${this.constructInfo?.fqn} at [${this.constructPath}]`);
-    } else {
-      stack.push(`in [${this.constructPath}]`);
+    if (scope) {
+      this.stack += `\nRelates to construct:\n${renderConstructRootPath(scope)}`;
     }
-
-    if (this.stack) {
-      stack.push(this.stack);
-    }
-
-    this.stack = this.constructStack(this.stack);
-  }
-
-  /**
-   * Helper message to clean-up the stack and amend with construct information.
-   */
-  private constructStack(prev?: string) {
-    const indent = ' '.repeat(4);
-
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
-
-    if (this.constructInfo) {
-      stack.push(`${indent}at path [${this.constructPath}] in ${this.constructInfo?.fqn}`);
-    } else {
-      stack.push(`${indent}at path [${this.constructPath}]`);
-    }
-
-    if (prev) {
-      stack.push('');
-      stack.push(...prev.split('\n').slice(1));
-    }
-
-    return stack.join('\n');
   }
 }
 
@@ -257,4 +228,35 @@ export class ExecutionError extends ConstructError {
     Object.setPrototypeOf(this, ExecutionError.prototype);
     Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });
   }
+}
+
+export function renderConstructRootPath(construct: IConstruct) {
+  const rootPath = [];
+
+  let cur: IConstruct | undefined = construct;
+  while (cur !== undefined) {
+    rootPath.push(cur);
+    cur = cur.node.scope;
+  }
+  rootPath.reverse();
+
+  const ret = new Array<string>();
+  for (let i = 0; i < rootPath.length; i++) {
+    const constructId = rootPath[i].node.id || '<.>';
+
+    let suffix = '';
+    try {
+      const constructInfo = constructInfoFromConstruct(rootPath[i]);
+      suffix = ` (${constructInfo?.fqn})`;
+    } catch (_) {
+      // we don't want to fail if construct info is not available
+    }
+
+    const branch = ' └─ ';
+    const indent = i > 0 ? ' '.repeat(branch.length * (i - 1)) + branch : '';
+
+    ret.push(`    ${indent}${constructId}${suffix}`);
+  }
+
+  return ret.join('\n');
 }
