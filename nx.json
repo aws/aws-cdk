@@ -76,5 +76,8 @@
     "production": [
       "default"
     ]
+  },
+  "tui": {
+    "enabled": false
   }
 }

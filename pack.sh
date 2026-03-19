@@ -6,6 +6,7 @@ set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
 root=$PWD
+scriptsdir=$root/scripts
 
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
 version=$(node -p "require('./scripts/resolve-version').version")
@@ -27,20 +28,16 @@ fi
 # Non-jsii packages will be run individually.
 echo "Collecting package list..." >&2
 scripts/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
-
-# Return lerna scopes from a package list
-function lerna_scopes() {
-  while [[ "${1:-}" != "" ]]; do
-    echo "--scope $1 "
-    shift
-  done
-}
+jsii_package_names="$($scriptsdir/nx-query.mts --names 'jsii()')"
 
 scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 
 # Execute any pre-package steps for the jsii modules here:
-echo "Running aws-cdk-lib pre-package"
-npx lerna run --scope aws-cdk-lib package -- --pre-only
+echo "Running pre-package for jsii packages"
+
+# Because we don't actually run 'package' for every individual jsii package, but instead do a single
+# jsii-pacmak run on all packages, do any pre-package commands right now.
+npx nx run-many -t package -p $jsii_package_names -- --pre-only
 
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
@@ -49,13 +46,13 @@ $PACMAK \
   $(cat $TMPDIR/jsii.txt)
 
 # Execute any post-package steps for the jsii modules here:
-echo "Running aws-cdk-lib post-package"
-npx lerna run --scope aws-cdk-lib package -- --post-only
+echo "Running post-package for jsii packages"
+npx nx run-many -t package -p $jsii_package_names -- --post-only
 
 # Non-jsii packaging, which means running 'package' in every individual
 # module
 echo "Packaging non-jsii modules" >&2
-npx lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
+npx nx run-many -t package -p $($scriptsdir/nx-query.mts --names '~jsii()') -- --post-only
 
 # Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do

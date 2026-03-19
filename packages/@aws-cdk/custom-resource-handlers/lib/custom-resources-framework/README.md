@@ -80,4 +80,4 @@ The code generated handler framework components are consumable from `aws-cdk-lib
 Creating a new handler framework component involves three steps:
 1. Add the source code to `@aws-cdk/custom-resource-handlers/lib/<aws-cdk-lib-module>`
 2. Update the [config](./config.ts) file by specifying all required `ComponentProps`.
-3. At this point you can directly build `@aws-cdk/custom-resource-handlers` with `yarn build` to view the generated component in `@aws-cdk/custom-resource-handlers/dist`. Alternatively, you can build `aws-cdk-lib` with `npx lerna run build --scope=aws-cdk-lib --skip-nx-cache` to make the generated component available for use within `aws-cdk-lib`
+3. At this point you can directly build `@aws-cdk/custom-resource-handlers` with `yarn build` to view the generated component in `@aws-cdk/custom-resource-handlers/dist`. Alternatively, you can build `aws-cdk-lib` with `npx nx run aws-cdk-lib:build --skip-nx-cache` to make the generated component available for use within `aws-cdk-lib`

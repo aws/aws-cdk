@@ -18,7 +18,7 @@ export -f is_private
 # go to repo root
 cd ${scriptdir}/..
 
-files="./package.json $(npx lerna ls -p -a | xargs -n1 -I@ echo @/package.json)"
+files="./package.json $($scriptdir/nx-query.mts :: | xargs -n1 -I@ echo @/package.json)"
 ${scriptdir}/align-version.js ${files}
 
 # validation

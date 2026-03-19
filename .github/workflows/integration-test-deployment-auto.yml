@@ -140,7 +140,9 @@ jobs:
         run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
 
       - name: Build Integration Test packages
-        run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
+        run: |
+          npx nx run @aws-cdk-testing/framework-integ:build
+          npx nx run-many -p '@aws-cdk/*' -t build
 
       - name: Run integration tests
         run: yarn run atmosphere-integ-test

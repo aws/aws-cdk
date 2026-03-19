@@ -200,8 +200,9 @@ Before you create a pull request:
 * Commit changes and push to remote branch
 
 Build the entire aws-cdk repo (this may take some time):
+
 ```console
-$ npx lerna run build --skip-nx-cache
+$ npx nx run-many -t build --skip-nx-cache
 ```
 
 ### Testing
@@ -275,7 +276,7 @@ Windows, as a development environment, has known performance and compatibility i
 ### Repo Layout
 
 The AWS CDK is a [NPM](https://www.npmjs.com/about) project written in [typescript](https://www.typescriptlang.org/).
-More specifically, it is a [monorepo managed using lerna](https://github.com/lerna/lerna#about).
+More specifically, it is a [monorepo managed using nx](https://github.com/nrwl/nx).
 If you're unfamiliar with any of these technologies, it is useful to learn about them and will make understanding the
 AWS CDK codebase easier but strictly not necessary for simple contributions.
 
@@ -294,10 +295,10 @@ Most contributions only require working on a single package, usually `aws-cdk-li
 time, you can execute the following to build it and its dependencies.
 
 ```console
-$ npx lerna run build --scope=aws-cdk-lib
+$ npx nx run aws-cdk-lib:build
 ```
 
-Note: `lerna` uses a local cache by default. If your build fails, you can fix
+Note: `nx` uses a local cache by default. If your build fails, you can fix
 the issue and run the command again and it will not rerun any previously
 successful steps.
 
@@ -317,18 +318,18 @@ some of the build state in memory and incrementally rebuild as you make changes.
 However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
-cd <root of the CDK repo>
-npx lerna run build
+$ cd <root of the CDK repo>
+$ yarn build
 ```
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
 
-If you want to run a build without using the local cache, provide the
-`--skip-nx-cache` flag.
+If you want to run a build without using the local cache, remove the cache:
 
 ```console
-$ npx lerna run build --skip-nx-cache
+$ rm -rf .nx
+$ yarn build
 ```
 
 ### Pack
@@ -410,7 +411,7 @@ Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
 
 ```shell
 $ yarn install
-$ NODE_OPTIONS=--max-old-space-size=8192 npx lerna run build --scope=aws-cdk-lib --scope=@aws-cdk-testing/framework-integ
+$ NODE_OPTIONS=--max-old-space-size=8192 npx nx run @aws-cdk-testing/framework-integ:build
 ```
 
 You may [configure your Dev Env](https://docs.aws.amazon.com/codecatalyst/latest/userguide/devenvironment-devfile.html) with the `devfile.yaml` to further customize your Dev Env for CDK development.
@@ -480,7 +481,7 @@ When designing new features, consider whether the functionality is best implemen
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
 
-Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
+Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information.
 
 ### Step 3: Work your Magic
 
@@ -520,7 +521,7 @@ Integration tests perform a few functions in the CDK code base -
 You need to build the `framework-integ` before running the `yarn integ`
 
 ```console
-$ npx lerna run build --scope=@aws-cdk-testing/framework-integ
+$ npx nx run @aws-cdk-testing/framework-integ:build
 ```
 
 **When are integration tests required?**
@@ -690,7 +691,7 @@ CDK integration tests.
   > and cannot be enabled for organization owned accounts).
   > The reason for this is that our automation needs to synchronize your branch with our `main` after it has been approved, and
   > we cannot do that if we cannot push to your branch.
-  
+
   > [!NOTE]
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
@@ -735,9 +736,9 @@ CDK integration tests.
   * **module-name:** Yet another breaking change
 
   ---
-  
+
   *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
-  
+
   ---
   ```
 
@@ -774,7 +775,7 @@ To make this easier we have a `pr/needs-review` label that we can add to each
 PR. If you do not see this label on your PR then it means that something needs
 to be fixed before it can be reviewed.
 
-> [!NOTE]  
+> [!NOTE]
 > The `aws-cdk` repository is frequently updated, so PR branches may quickly become out-of-date, showing "This branch is out-of-date with the base branch." This is not an issue as long as there are no conflicts with the newly merged commits. Once the PR is approved, our automation will update it with the latest `main` branch and handle the merge. No action is needed on your part.
 
 
@@ -829,7 +830,7 @@ out in the description so that we can discuss the best way to manage that depend
 We leverage [Codecov](https://about.codecov.io/) to track code coverage of the project.
 If your PR doesn't meet the coverage requirements, you'll see failing status checks, which will prevent the PR from merging.
 
-There are two requirements we define, each are enforced both on the overall 
+There are two requirements we define, each are enforced both on the overall
 project as well as individual packages.
 
 1. Coverage percentage must not decrease.
@@ -1033,7 +1034,7 @@ addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accepts an additional required `options` parameter. Since adding a required 
+if it accepts an additional required `options` parameter. Since adding a required
 parameter to a method is a breaking change, we will add `addSecondaryResourceBeta2()`
 and deprecate `addSecondaryResourceBeta1`:
 
@@ -1063,7 +1064,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 ### Rosetta
 
 The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
-(such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages 
+(such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
 You can run rosetta on the aws-cdk-lib module (or any other module) by running:
@@ -1223,7 +1224,7 @@ To evaluate (and attempt to fix) all package linting issues in the repo, run the
 repository (after bootstrapping):
 
 ```console
-$ lerna run pkglint
+$ npx nx run-many -t pkglint
 ```
 
 You can also do that per package:
@@ -1250,14 +1251,14 @@ Here are a few useful commands:
  * `yarn awslint` in every module will run __awslint__ for that module.
  * `yarn awslint list` prints all rules (details and rationale in the guidelines doc).
  * `scripts/foreach.sh yarn awslint` will start linting the entire repo, progressively. Rerun `scripts/foreach.sh` after fixing to continue.
- * `lerna run awslint --no-bail --stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
- * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
+ * `npx nx run-many -t awslint --outputStyle=stream 2> awslint.txt` will run __awslint__ in all modules and collect all results into awslint.txt
+ * `npx nx run-many -t awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
 ### JetBrains support (WebStorm/IntelliJ)
 
-This project uses lerna and utilizes symlinks inside nested `node_modules` directories. You may encounter an issue during
+This project uses nx and utilizes symlinks inside nested `node_modules` directories. You may encounter an issue during
 indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
 available memory and crashes. To fix this, you can run ```node ./scripts/jetbrains-remove-node-modules.js``` to exclude
 these directories.
@@ -1305,7 +1306,7 @@ more breaking api changes can be made.
 When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and its dependencies.
 
 ```
-$ npx lerna run build --scope=@aws-cdk/some-package-alpha
+$ npx nx run @aws-cdk/some-package-alpha:build
 ```
 
 At this point, you can run build and test the alpha package.
@@ -1436,10 +1437,10 @@ $ scripts/clean-stale-files.sh
 
 #### I added a dependency but it's not being picked up by the build
 
-You need to tell Lerna to update all dependencies:
+You need to reinstall all dependencies by running `yarn`:
 
 ```shell
-$ node_modules/.bin/lerna bootstrap
+$ yarn
 ```
 
 #### I added a dependency but it's not being picked up by a `watch` background compilation run.
@@ -1471,7 +1472,7 @@ This does not do code generation and it does not do JSII checks and JSII assembl
 package-by-package ordered build, it compiles all `.ts` files in the repository all at once. This takes about the same
 time as it does to compile the biggest package all by itself, and on my machine is the difference between a 15
 CPU-minute build and a 20 CPU-second build. If you use this method of recompiling and you want to run the test, you
-have to disable the built-in rebuild functionality of `lerna run test`:
+have to disable the built-in rebuild functionality of `yarn test`:
 
 ```shell
 $ CDK_TEST_BUILD=false lr test
