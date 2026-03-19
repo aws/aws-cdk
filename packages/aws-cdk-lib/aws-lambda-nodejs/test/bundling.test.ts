@@ -698,13 +698,29 @@ test('Local bundling', () => {
   const tryBundle = bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
   expect(tryBundle).toBe(true);
 
+  // Verify esbuild is called directly via spawn (not through bash -c)
   expect(spawnSyncMock).toHaveBeenCalledWith(
-    'bash',
-    expect.arrayContaining(['-c', expect.stringContaining(entry)]),
+    'yarn',
+    expect.arrayContaining([
+      'run', 'esbuild',
+      '--bundle', entry,
+      `--target=${STANDARD_TARGET}`,
+      '--platform=node',
+      '--outfile=/outdir/index.js',
+      `--external:${STANDARD_EXTERNAL}`,
+      '--log-level=error',
+    ]),
     expect.objectContaining({
       env: expect.objectContaining({ KEY: 'value' }),
       cwd: '/project',
     }),
+  );
+
+  // Verify bash is NOT used for the esbuild step
+  expect(spawnSyncMock).not.toHaveBeenCalledWith(
+    'bash',
+    expect.anything(),
+    expect.anything(),
   );
 
   // Docker image is not built
@@ -1169,6 +1185,299 @@ test('Node 16 runtimes warn about sdk v2 upgrades', () => {
   Annotations.fromStack(stack).hasWarning('*',
     'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
   );
+});
+
+// --- Local bundling spawn tests ---
+
+const spawnSyncMockReturnValue = {
+  status: 0,
+  stderr: Buffer.from('stderr'),
+  stdout: Buffer.from('stdout'),
+  pid: 123,
+  output: ['stdout', 'stderr'],
+  signal: null,
+};
+
+test('Local bundling with esbuild options via spawn', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    minify: true,
+    sourceMap: true,
+    sourcesContent: false,
+    target: 'es2020',
+    loader: { '.png': 'dataurl' },
+    logLevel: LogLevel.SILENT,
+    keepNames: true,
+    tsconfig,
+    metafile: true,
+    banner: '/* comments */',
+    footer: '/* comments */',
+    charset: Charset.UTF8,
+    mainFields: ['module', 'main'],
+    define: {
+      'process.env.KEY': JSON.stringify('VALUE'),
+      'process.env.BOOL': 'true',
+    },
+    format: OutputFormat.ESM,
+    inject: ['./my-shim.js'],
+    esbuildArgs: {
+      '--log-limit': '0',
+      '--resolve-extensions': '.ts,.js',
+      '--splitting': true,
+      '--keep-names': '',
+      '--out-extension': '.js=.mjs',
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  expect(esbuildCall).toBeDefined();
+  const args = esbuildCall![1] as string[];
+
+  // Each option is a direct array element — no shell quoting
+  expect(args).toContain('--bundle');
+  expect(args).toContain('--target=es2020');
+  expect(args).toContain('--platform=node');
+  expect(args).toContain('--format=esm');
+  expect(args).toContain('--minify');
+  expect(args).toContain('--sourcemap');
+  expect(args).toContain('--sources-content=false');
+  expect(args).toContain(`--external:${STANDARD_EXTERNAL}`);
+  expect(args).toContain('--loader:.png=dataurl');
+  expect(args).toContain('--define:process.env.KEY="\\"VALUE\\""');
+  expect(args).toContain('--define:process.env.BOOL="true"');
+  expect(args).toContain('--log-level=silent');
+  expect(args).toContain('--keep-names');
+  expect(args).toContain('--banner:js="/* comments */"');
+  expect(args).toContain('--footer:js="/* comments */"');
+  expect(args).toContain('--main-fields=module,main');
+  expect(args).toContain('--inject:./my-shim.js');
+  expect(args).toContain('--outfile=/outdir/index.mjs');
+  // esbuildArgs — no shell quoting around values
+  expect(args).toContain('--log-limit=0');
+  expect(args).toContain('--resolve-extensions=.ts,.js');
+  expect(args).toContain('--splitting');
+  expect(args).toContain('--out-extension:.js=.mjs');
+  // tsconfig and metafile use real paths, not Docker paths
+  expect(args).toEqual(expect.arrayContaining([
+    expect.stringMatching(/^--tsconfig=/),
+    expect.stringMatching(/^--metafile=\/outdir\/index\.meta\.json$/),
+  ]));
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling with nodeModules uses fs and spawn', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+  const copyFileSyncMock = jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // Verify fs operations for dependency setup
+  expect(writeFileSyncMock).toHaveBeenCalledWith(
+    '/outdir/package.json',
+    expect.stringContaining('"delay"'),
+  );
+  expect(copyFileSyncMock).toHaveBeenCalledWith(
+    packageLock,
+    '/outdir/package-lock.json',
+  );
+
+  // Verify install command is spawned directly (not through shell)
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'npm',
+    ['ci'],
+    expect.objectContaining({ cwd: '/outdir' }),
+  );
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
+  copyFileSyncMock.mockRestore();
+});
+
+test('Local bundling with commandHooks executes hooks via shell', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    commandHooks: {
+      beforeBundling(inputDir: string, _outputDir: string): string[] {
+        return [`echo hello > ${inputDir}/a.txt`];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+      beforeInstall() {
+        return [];
+      },
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // Hooks are executed via bash -c
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'bash',
+    ['-c', expect.stringContaining('echo hello')],
+    expect.anything(),
+  );
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'bash',
+    ['-c', expect.stringContaining('cp')],
+    expect.anything(),
+  );
+
+  // Esbuild is still called directly (not via bash)
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  expect(esbuildCall).toBeDefined();
+  expect(esbuildCall![0]).not.toBe('bash');
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling with preCompilation spawns tsc directly', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    preCompilation: true,
+    architecture: Architecture.X86_64,
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // tsc is spawned directly (not via bash -c)
+  const tscCall = spawnSyncMock.mock.calls.find(c => {
+    const args = c[1] as string[];
+    return args?.some(a => a.endsWith('.ts'));
+  });
+  expect(tscCall).toBeDefined();
+  expect(tscCall![0]).not.toBe('bash');
+  // Verify compiler options are passed as separate args
+  const tscArgs = tscCall![1] as string[];
+  expect(tscArgs).toEqual(expect.arrayContaining([
+    expect.stringMatching(/--outDir/),
+    expect.stringMatching(/--rootDir/),
+  ]));
+
+  // esbuild receives the .js file (post-compilation)
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  expect(esbuildCall).toBeDefined();
+  const esbuildArgs = esbuildCall![1] as string[];
+  expect(esbuildArgs).toEqual(expect.arrayContaining([
+    expect.stringMatching(/\.js$/),
+  ]));
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling with shell metacharacters in externalModules does not cause injection', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['foo & echo PWNED'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // The malicious string is passed as a single literal arg to esbuild
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  expect(esbuildCall).toBeDefined();
+  const args = esbuildCall![1] as string[];
+  expect(args).toContain('--external:foo & echo PWNED');
+
+  // bash is never invoked (no shell to interpret metacharacters)
+  expect(spawnSyncMock).not.toHaveBeenCalledWith(
+    'bash',
+    expect.anything(),
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+  const copyFileSyncMock = jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+  const rmSyncMock = jest.spyOn(fs, 'rmSync').mockReturnValue();
+
+  // Use a real project root with a package.json that contains 'delay'
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const pnpmProjectRoot = path.dirname(packageLock);
+  const pnpmLock = path.join(pnpmProjectRoot, 'pnpm-lock.yaml');
+
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: pnpmProjectRoot,
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+  });
+
+  // Mock existsSync to return true only for cleanup paths
+  const originalExistsSync = fs.existsSync;
+  const existsSyncMock = jest.spyOn(fs, 'existsSync').mockImplementation((p) => {
+    if (typeof p === 'string' && (p.includes('.modules.yaml') || p.includes('.cache'))) {
+      return true;
+    }
+    return originalExistsSync(p);
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // pnpm-workspace.yaml is written
+  expect(writeFileSyncMock).toHaveBeenCalledWith('/outdir/pnpm-workspace.yaml', '');
+  // .modules.yaml is cleaned up
+  expect(rmSyncMock).toHaveBeenCalledWith(
+    '/outdir/node_modules/.modules.yaml',
+    expect.objectContaining({ force: true }),
+  );
+  // Install via direct spawn
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'pnpm',
+    expect.arrayContaining(['install']),
+    expect.objectContaining({ cwd: '/outdir' }),
+  );
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
+  copyFileSyncMock.mockRestore();
+  existsSyncMock.mockRestore();
+  rmSyncMock.mockRestore();
 });
 
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
