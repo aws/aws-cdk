@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "VendedLogsTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ffea1b98b22f8bb42c18cdf4c92bbf350868f1dd88cbbe0bb6a83a0b85172945.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bf3c758b1744be1a7dd8f524d068ff796c7108cc44ca1931c1f75e38202436f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,226 +33,7 @@
       "dependencies": [
         "VendedLogsTest.assets"
       ],
-      "metadata": {
-        "/VendedLogsTest/EventBus": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventBus"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
-            }
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketA9AE6474"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketPolicyB86375F3"
-          },
-          {
-            "type": "aws:cdk:analytics:mixin",
-            "data": {
-              "mixin": "@aws-cdk/mixins-preview.aws_s3.mixins.BucketPolicyStatementsMixin"
-            }
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsTest/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryBucketAutoDeleteObjectsCustomResource70EC3C75"
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/VendedLogsTest/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/VendedLogsTest/DeliveryLogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/VendedLogsTest/DeliveryLogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryLogGroup2A53FD53"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true,
-              "encryption": "S3_MANAGED"
-            }
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucket407758F1"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketPolicy005BD2F0"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/VendedLogsTest/FirehoseBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
-          }
-        ],
-        "/VendedLogsTest/FirehoseRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "inlinePolicies": "*"
-            }
-          }
-        ],
-        "/VendedLogsTest/FirehoseRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirehoseRoleAA67C190"
-          }
-        ],
-        "/VendedLogsTest/DeliveryStream": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeliveryStream"
-          }
-        ],
-        "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Desterror-logs": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Desterrorlogs94C9111F"
-          }
-        ],
-        "/VendedLogsTest/CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkS3ErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryBucket45E74247Delivery5E0B21AA"
-          }
-        ],
-        "/VendedLogsTest/CDKSourceERROR_LOGSVendedLogsTest": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CDKSourceERRORLOGSVendedLogsTest"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Desterror-logs": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Desterrorlogs787D0EAC"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryLogGroup50916FD9Delivery0C51C7A6"
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupLogsDeliveryPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/VendedLogsTest/CdkLogGroupLogsDeliveryPolicy/ResourcePolicy": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkLogGroupLogsDeliveryPolicyResourcePolicy4483E857"
-          }
-        ],
-        "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Desterror-logs": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDesterrorlogs18D360A3"
-          }
-        ],
-        "/VendedLogsTest/CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60D/Delivery": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CdkFirehoseErrorLogsDeliveryVendedLogsTestVendedLogsTestDeliveryStream5258C60DDeliveryF5EFF358"
-          }
-        ],
-        "/VendedLogsTest/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/VendedLogsTest/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "VendedLogsTest.metadata.json",
       "displayName": "VendedLogsTest"
     },
     "DeliveryTestDefaultTestDeployAssert48416031.assets": {
@@ -287,20 +68,7 @@
       "dependencies": [
         "DeliveryTestDefaultTestDeployAssert48416031.assets"
       ],
-      "metadata": {
-        "/DeliveryTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/DeliveryTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "DeliveryTestDefaultTestDeployAssert48416031.metadata.json",
       "displayName": "DeliveryTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -798,12 +566,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }
