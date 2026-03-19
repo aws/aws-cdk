@@ -31,7 +31,7 @@ describe('ValidationError', () => {
     });
     expect(error.message).toBe('this is an error');
     expect(error.stack).toContain('ValidationError: this is an error');
-    expect(error.stack).toContain('at path [MyStack] in');
+    expect(error.stack).toContain('└─ MyStack');
   });
 
   test('UnscopedValidationError is ValidationError and ConstructError', () => {
@@ -59,7 +59,7 @@ describe('ValidationError', () => {
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ...callAsyncCircusFn in jest-circus, node internals, _runTest in jest-circus, runTestInternal in jest-runner...
+    ..._callCircusTest in jest-circus, node internals, jestAdapter in jest-circus, runTest in jest-runner...
 Relates to construct:
     <.> (...)
      └─ SomeStack (...)
@@ -79,7 +79,7 @@ Relates to construct:
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ...callAsyncCircusFn in jest-circus, node internals, _runTest in jest-circus, runTestInternal in jest-runner..."
+    ..._callCircusTest in jest-circus, node internals, jestAdapter in jest-circus, runTest in jest-runner..."
 `);
     }
   });
