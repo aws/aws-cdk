@@ -1753,6 +1753,17 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Encryption types that should be blocked for this bucket. Use `NONE` to allow all
+   * encryption types.
+   *
+   * At least one `BlockedEncryptionType` must be given. If `NONE` is given, it must be
+   * the only `BlockedEncryptionType` in the list.
+   *
+   * @default - Amazon S3 determines which encryption types to block.
+   */
+  readonly blockedEncryptionTypes?: BlockedEncryptionType[];
+
+  /**
    * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
    *
@@ -2544,8 +2555,34 @@ export class Bucket extends BucketBase {
       throw new ValidationError('BucketKeyEnabledSpecifiedEncryption', `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
 
+    let blockedEncryptionTypes: CfnBucket.BlockedEncryptionTypesProperty | undefined;
+    if (props.blockedEncryptionTypes === undefined) {
+      blockedEncryptionTypes = undefined;
+    } else if (props.blockedEncryptionTypes.length === 0) {
+      throw new ValidationError('EmptyBlockedEncryptionTypes', 'At least one blocked encryption type must be specified', this);
+    } else {
+      const typeNames = props.blockedEncryptionTypes.map(type => type.name);
+      if (typeNames.includes(BlockedEncryptionType.NONE.name) && props.blockedEncryptionTypes.length > 1) {
+        throw new ValidationError('ConflictingBlockedEncryptionTypes', 'If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
+      }
+      blockedEncryptionTypes = {
+        encryptionType: typeNames,
+      };
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
-      return { bucketEncryption: undefined, encryptionKey: undefined };
+      if (blockedEncryptionTypes === undefined) {
+        return { bucketEncryption: undefined, encryptionKey: undefined };
+      } else {
+        return {
+          bucketEncryption: {
+            serverSideEncryptionConfiguration: [{
+              blockedEncryptionTypes,
+            }],
+          },
+          encryptionKey: undefined,
+        };
+      }
     }
 
     if (encryptionType === BucketEncryption.KMS) {
@@ -2562,6 +2599,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2574,6 +2612,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2587,6 +2626,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2606,6 +2646,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms:dsse',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2618,6 +2659,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -3163,6 +3205,29 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   DSSE = 'DSSE',
+}
+
+/**
+ * Encryption types that can be blocked on an S3 bucket.
+ */
+export class BlockedEncryptionType {
+  /** Special value - all encryption types are allowed */
+  public static readonly NONE = new BlockedEncryptionType('NONE');
+  /** Server-Side Encryption with customer-provided keys (SSE-C) is blocked */
+  public static readonly SSE_C = new BlockedEncryptionType('SSE-C');
+
+  /**
+   * Use this constructor only if S3 releases a new BlockedEncryptionType
+   * that is unknown to CDK. Otherwise, use this class's static constants.
+   */
+  public static custom(name: string) {
+    return new BlockedEncryptionType(name);
+  }
+
+  /**
+   * @param name The name for this blocked encryption type used in the API
+   */
+  private constructor(public readonly name: string) {}
 }
 
 /**
