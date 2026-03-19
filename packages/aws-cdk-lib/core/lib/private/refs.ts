@@ -71,7 +71,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   if (producerAccount !== consumerAccount) {
     if (consumer.synthesizer.cloudFormationExecutionRole == null) {
       // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
-      throw new UnscopedValidationError(
+      throw new UnscopedValidationError('NoCfnExecutionRoleForCrossAccountRefs',
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Could not find a CloudFormation execution role for the consumer stack. Use a different stack synthesizer, such as DefaultStackSynthesizer.',
       );
