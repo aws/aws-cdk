@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "50.0.0",
   "testCases": {
     "IntegTestDSSEBucket/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "IntegTestDSSEBucket/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }
