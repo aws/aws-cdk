@@ -1,10 +1,14 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Template } from '../../assertions';
+import { AssertionError } from '../../assertions/lib/private/error';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import { ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
+import { Stage } from '../../core';
 import * as sns from '../lib';
 import { TopicGrants } from '../lib';
 
@@ -1082,4 +1086,67 @@ describe('Topic', () => {
       ).toThrow('`fifoThroughputScope` can only be set for FIFO SNS topics.');
     });
   });
+
+  /*
+  This is a representative test suite for source tracing.
+  What we are asserting here about CfnTopic applies to all L1 constructs.
+   */
+  describe('Source tracing', () => {
+    test('Metadata contains propertyName and stack trace with CDK_DEBUG=1', () => {
+      try {
+        process.env.CDK_DEBUG = '1';
+        const stack = new cdk.Stack();
+
+        const topic = new sns.CfnTopic(stack, 'MyTopic', {
+          topicName: 'topicName',
+        });
+
+        topic.displayName = 'something';
+        const lineWherePropertyWasSet = getLineNumber() - 1; // the one before this one
+
+        const asm = synth(stack);
+        const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
+        const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyName');
+
+        expect(propertyNameEntry).toBeDefined();
+        expect(propertyNameEntry.data).toEqual('DisplayName');
+        expect(propertyNameEntry.trace.some(
+          (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
+        ).toBe(true);
+      } finally {
+        delete process.env.CDK_DEBUG;
+      }
+    });
+
+    test('Metadata does not contain propertyName by default', () => {
+      const stack = new cdk.Stack();
+
+      const topic = new sns.CfnTopic(stack, 'MyTopic', {
+        topicName: 'topicName',
+      });
+
+      topic.displayName = 'something';
+
+      const asm = synth(stack);
+      const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
+      const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyName');
+
+      expect(propertyNameEntry).toBeUndefined();
+    });
+  });
 });
+
+function synth(stack: cdk.Stack) {
+  const stage = Stage.of(stack);
+  if (!Stage.isStage(stage)) {
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
+  }
+
+  return stage.synth();
+}
+
+function getLineNumber(): number {
+  const err = new Error();
+  const line = err.stack?.split('\n')[2]?.match(/:(\d+):\d+\)?$/)?.[1];
+  return Number(line);
+}
