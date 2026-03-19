@@ -773,3 +773,20 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-batch:defaultEcsAL2023`
+
+When enabled, EC2 Batch compute environments that do not specify an `imageType` will default
+to `ECS_AL2023` instead of the deprecated `ECS_AL2` (Amazon Linux 2, reaching EOL June 2026).
+
+When disabled, the default `imageType` remains `ECS_AL2` for backward compatibility.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-batch:defaultEcsAL2023": true
+  }
+}
+```

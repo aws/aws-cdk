@@ -7,10 +7,11 @@ import type * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type { IRole } from '../../aws-iam';
 import type { Duration, ITaggable } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -254,7 +255,8 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * Leave this `undefined` to allow Batch to choose the latest AMIs it supports for each instance that it launches.
    *
    * @default
-   * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances
+   * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultEcsAL2023' feature flag is set, ECS_AL2023 will be used instead of ECS_AL2.
    */
   readonly images?: EcsMachineImage[];
 
@@ -383,7 +385,8 @@ export interface EcsMachineImage extends MachineImage {
   /**
    * Tells Batch which instance type to launch this image on
    *
-   * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances
+   * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances.
+   * If the '@aws-cdk/aws-batch:defaultEcsAL2023' feature flag is set, 'ECS_AL2023' will be used instead of 'ECS_AL2'.
    */
   readonly imageType?: EcsMachineImageType;
 }
@@ -528,12 +531,15 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * Configure which AMIs this Compute Environment can launch.
    * If you specify this property with only `image` specified, then the
-   * `imageType` will default to `ECS_AL2`. *If your image needs GPU resources,
+   * `imageType` will default to `ECS_AL2` (or `ECS_AL2023` if the
+   * `@aws-cdk/aws-batch:defaultEcsAL2023` feature flag is set).
+   * *If your image needs GPU resources,
    * specify `ECS_AL2_NVIDIA`; otherwise, the instances will not be able to properly
    * join the ComputeEnvironment*.
    *
    * @default
-   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
+   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultEcsAL2023' feature flag is set, ECS_AL2023 will be used instead of ECS_AL2.
    */
   readonly images?: EcsMachineImage[];
 
@@ -764,7 +770,11 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
+            imageType: image.imageType ?? (
+              FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_ECS_AL2023)
+                ? EcsMachineImageType.ECS_AL2023
+                : EcsMachineImageType.ECS_AL2
+            ),
           };
         }),
         placementGroup: props.placementGroup?.placementGroupRef.groupName,

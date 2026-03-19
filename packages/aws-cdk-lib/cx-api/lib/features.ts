@@ -151,6 +151,7 @@ export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManage
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const BATCH_DEFAULT_ECS_AL2023 = '@aws-cdk/aws-batch:defaultEcsAL2023';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1769,14 +1770,28 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'Automatically use the default L1 traits for L1 constructs`',
     detailsMd: `
-      When enabled, the construct library will apply default L1 traits for types that 
-      have no traits defined yet. Traits regulate behaviors such as how to create 
+      When enabled, the construct library will apply default L1 traits for types that
+      have no traits defined yet. Traits regulate behaviors such as how to create
       resource policies, or how to find an encryption key for a given L1 construct.
       `,
     introducedIn: { v2: '2.239.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_DEFAULT_ECS_AL2023]: {
+    type: FlagType.BugFix,
+    summary: 'Use ECS_AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated ECS_AL2',
+    detailsMd: `
+      When enabled, EC2 Batch compute environments that do not specify an \`imageType\` will default
+      to \`ECS_AL2023\` instead of the deprecated \`ECS_AL2\` (Amazon Linux 2, reaching EOL June 2026).
+
+      When disabled, the default \`imageType\` remains \`ECS_AL2\` for backward compatibility.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
