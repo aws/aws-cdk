@@ -1399,8 +1399,8 @@ export class Cluster extends ClusterBase {
           throw new ValidationError(
             'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
             + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
-            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, and S3. '
-            + 'See https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
+            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
+            + 'and other AWS services detailed here https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
             this,
           );
         }
