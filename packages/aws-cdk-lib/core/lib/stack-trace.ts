@@ -144,8 +144,6 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
   while (i < stack.length) {
     const frame = stack[i++];
 
-    // FIXME: Show the last function we called into when going into library code
-
     const pat = frame.fileName.match(moduleRe);
     if (pat) {
       while (i < stack.length && stack[i].fileName.includes(pat[0])) {
