@@ -39,23 +39,91 @@ export function captureStackTrace(
 /**
  * Capture a call stack using `Error.captureStackTrace`
  *
- * Modern Nodes have a `util.getCallSites()` API but it's heavily unstable and
- * doesn't have all the information of the legacy API yet.
+ * Modern Nodes have a `util.getCallSites()` API but:
+ *
+ * - it's heavily unstable; and
+ * - source map support works by hijacking `Error.prepareStackTrace`.
+ *
+ * It's easier for us to render a regular stacktrace as a string, have source map support
+ * do the right thing, and then pick it apart, than to try and reconstruct it.
  */
-export function captureCallStack(upTo: Function | undefined): NodeJS.CallSite[] {
-  Error.prepareStackTrace = (_, trace) => trace;
-  try {
-    const obj: { stack: NodeJS.CallSite[] } = {} as any;
-    Error.captureStackTrace(obj, upTo);
-    if (obj.stack.length === 0) {
-      // Protect against a common mistake: if upTo is not in the call stack, `captureStackTrace` will return an empty array.
-      // If that happens, do it again without an `upTo` function.
-      Error.captureStackTrace(obj);
-    }
-    return obj.stack;
-  } finally {
-    Error.prepareStackTrace = undefined as any;
+export function captureCallStack(upTo: Function | undefined): CallSite[] {
+  const obj: { stack: string } = {} as any;
+  Error.captureStackTrace(obj, upTo);
+  let trace = parseErrorStack(obj.stack);
+  if (trace.length === 0) {
+    // Protect against a common mistake: if upTo is not in the call stack, `captureStackTrace` will return an empty array.
+    // If that happens, do it again without an `upTo` function.
+    Error.captureStackTrace(obj);
+    trace = parseErrorStack(obj.stack);
   }
+  return trace;
+}
+
+/**
+ * Parse the `error.stack` string into constituent components
+ *
+ * The string looks like this:
+ *
+ * ```
+ * Error: Some Error message
+ * Potentially spread over multiple lines
+ *     at <function> (<file>:<line>:<col>)
+ *     at <function> (<file>:<line>:<col>)
+ *     at <class>.<function> (<file>:<line>:<col>)
+ *     at Object.<anonymous> (<file>:<line>:<col>)
+ *     at <function> [as somethingElse] (<file>:<line>:<col>)
+ *     at new <constructor> (<file>:<line>:<col>)
+ *     at <file>:<line>:<col>
+ * ```
+ *
+ * `<file>` can be `node:internal/modules/whatever`.
+ */
+export function parseErrorStack(stack: string): CallSite[] {
+  const lines = stack.split('\n');
+
+  const framePrefix = '    at ';
+
+  return lines
+    .filter(line => line.startsWith(framePrefix))
+    .map(line => {
+      line = line.slice(framePrefix.length);
+
+      let fileName;
+      let functionName;
+      let sourceLocation;
+
+      // line = <function> (<source>) | <source>
+      const paren = line.indexOf('(');
+      if (paren) {
+        functionName = line.slice(0, paren - 1);
+        line = line.slice(paren + 1, -1);
+      } else {
+        functionName = '<entry>';
+      }
+
+      // Make this easier to read
+      if (functionName === 'Object.<anonymous>') {
+        functionName = '<anonymous>';
+      }
+      let asI = functionName.indexOf(' [as ');
+      if (asI > -1) {
+        functionName = functionName.slice(0, asI);
+      }
+
+      // line = <file>:<line>:<col>, but file can contain : as well.
+      // Grab at most 2 groups of only digits from the end of the string for source location
+      const m = line.match(/(:[0-9]+){0,2}$/);
+
+      fileName = m ? line.slice(0, -m[0].length) : line;
+      sourceLocation = m ? m[0].slice(1) : '';
+
+      return {
+        fileName,
+        functionName,
+        sourceLocation,
+      };
+    });
 }
 
 /**
@@ -66,7 +134,7 @@ export function captureCallStack(upTo: Function | undefined): NodeJS.CallSite[] 
  * - If there is '/node_modules/' in the file path, we assume the call stack is a library and we skip it.
  * - If there is 'node:' in the file path, we assume it is NodeJS internals and we skip it.
  */
-export function renderCallStackJustMyCode(stack: NodeJS.CallSite[], indent = true): string[] {
+export function renderCallStackJustMyCode(stack: CallSite[], indent = true): string[] {
   const moduleRe = /(\/|\\)node_modules(\/|\\)([^/\\]+)/;
 
   const lines = [];
@@ -78,34 +146,26 @@ export function renderCallStackJustMyCode(stack: NodeJS.CallSite[], indent = tru
 
     // FIXME: Show the last function we called into when going into library code
 
-    const pat = fileName(frame).match(moduleRe);
+    const pat = frame.fileName.match(moduleRe);
     if (pat) {
-      while (i < stack.length && fileName(stack[i]).includes(pat[0])) {
+      while (i < stack.length && stack[i].fileName.includes(pat[0])) {
         i++;
       }
       // The last stack frame has the function that user code call into.
-      skip(`${renderFunctionCall(stack[i - 1])} in ${pat[3]}`);
-    } else if (fileName(frame).includes('node:')) {
+      skip(`${stack[i - 1].functionName} in ${pat[3]}`);
+    } else if (frame.fileName.includes('node:')) {
       skip('node internals');
-      while (i < stack.length && fileName(stack[i]).includes('node:')) {
+      while (i < stack.length && stack[i].fileName.includes('node:')) {
         i++;
       }
     } else {
       reportSkipped();
       const prefix = indent ? '    at ' : '';
-      lines.push(`${prefix}${renderFunctionCall(frame)} (${fileName(frame)}:${frame.getLineNumber()})`);
+      lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
     }
   }
   reportSkipped();
   return lines;
-
-  function renderFunctionCall(frame: NodeJS.CallSite): string {
-    return `${frame.isConstructor() ? 'new ' : ''}${frame.getFunctionName() || '<anonymous>'}`;
-  }
-
-  function fileName(frame: NodeJS.CallSite): string {
-    return frame.getScriptNameOrSourceURL() ?? '?';
-  }
 
   function skip(what: string) {
     if (!skipped.includes(what)) {
@@ -120,4 +180,10 @@ export function renderCallStackJustMyCode(stack: NodeJS.CallSite[], indent = tru
     }
     skipped = [];
   }
+}
+
+interface CallSite {
+  functionName: string;
+  fileName: string;
+  sourceLocation: string;
 }
