@@ -3,18 +3,34 @@
   "tree": {
     "id": "App",
     "path": "",
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    },
     "children": {
       "aws-cdk-s3-bucket-encryption": {
         "id": "aws-cdk-s3-bucket-encryption",
         "path": "aws-cdk-s3-bucket-encryption",
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        },
         "children": {
           "MyDSSEBucket": {
             "id": "MyDSSEBucket",
             "path": "aws-cdk-s3-bucket-encryption/MyDSSEBucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            },
             "children": {
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-s3-bucket-encryption/MyDSSEBucket/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                },
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -28,25 +44,25 @@
                       ]
                     }
                   }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
                 }
               }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
             }
           },
           "MySSES3Bucket": {
             "id": "MySSES3Bucket",
             "path": "aws-cdk-s3-bucket-encryption/MySSES3Bucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            },
             "children": {
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-s3-bucket-encryption/MySSES3Bucket/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                },
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -61,29 +77,33 @@
                       ]
                     }
                   }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
                 }
               }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
             }
           },
           "MyKMSBucket": {
             "id": "MyKMSBucket",
             "path": "aws-cdk-s3-bucket-encryption/MyKMSBucket",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            },
             "children": {
               "Key": {
                 "id": "Key",
                 "path": "aws-cdk-s3-bucket-encryption/MyKMSBucket/Key",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.Key",
+                  "version": "0.0.0"
+                },
                 "children": {
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-s3-bucket-encryption/MyKMSBucket/Key/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                      "version": "0.0.0"
+                    },
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
@@ -118,21 +138,17 @@
                           "Version": "2012-10-17"
                         }
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                      "version": "0.0.0"
                     }
                   }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.Key",
-                  "version": "0.0.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-cdk-s3-bucket-encryption/MyKMSBucket/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                },
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -147,21 +163,52 @@
                                 "Arn"
                               ]
                             }
+                          },
+                          "blockedEncryptionTypes": {
+                            "encryptionType": [
+                              "NONE"
+                            ]
                           }
                         }
                       ]
                     }
                   }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
                 }
               }
-            },
+            }
+          },
+          "MySSECBlockedBucket": {
+            "id": "MySSECBlockedBucket",
+            "path": "aws-cdk-s3-bucket-encryption/MySSECBlockedBucket",
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
               "version": "0.0.0"
+            },
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-bucket-encryption/MySSECBlockedBucket/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                },
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "blockedEncryptionTypes": {
+                            "encryptionType": [
+                              "SSE-C"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
             }
           },
           "BootstrapVersion": {
@@ -180,31 +227,39 @@
               "version": "0.0.0"
             }
           }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
         }
       },
       "IntegTestDSSEBucket": {
         "id": "IntegTestDSSEBucket",
         "path": "IntegTestDSSEBucket",
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        },
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
             "path": "IntegTestDSSEBucket/DefaultTest",
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            },
             "children": {
               "Default": {
                 "id": "Default",
                 "path": "IntegTestDSSEBucket/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.4.2"
+                  "version": "10.4.5"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "IntegTestDSSEBucket/DefaultTest/DeployAssert",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                },
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
@@ -222,22 +277,10 @@
                       "version": "0.0.0"
                     }
                   }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
                 }
               }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
             }
           }
-        },
-        "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -245,13 +288,9 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.4.2"
+          "version": "10.4.5"
         }
       }
-    },
-    "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
     }
   }
 }
