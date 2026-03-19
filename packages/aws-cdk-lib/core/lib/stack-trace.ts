@@ -84,7 +84,7 @@ export function renderCallStackJustMyCode(stack: NodeJS.CallSite[], indent = tru
         i++;
       }
       // The last stack frame has the function that user code call into.
-      skip(`${renderFunctionCall(frame)} in ${pat[3]}`);
+      skip(`${renderFunctionCall(stack[i - 1])} in ${pat[3]}`);
     } else if (fileName(frame).includes('node:')) {
       skip('node internals');
       while (i < stack.length && fileName(stack[i]).includes('node:')) {
