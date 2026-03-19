@@ -1092,7 +1092,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
     })).statementAdded);
     if (accessControlTransition) {
       if (!account) {
-        throw new ValidationError('account must be specified to override ownership access control transition', this);
+        throw new ValidationError('AccountSpecifiedOverrideOwnershipAccess', 'account must be specified to override ownership access control transition', this);
       }
       results.push(this.addToResourcePolicy(new iam.PolicyStatement({
         actions: ['s3:ObjectOwnerOverrideToBucketOwner'],
@@ -1753,6 +1753,17 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Encryption types that should be blocked for this bucket. Use `NONE` to allow all
+   * encryption types.
+   *
+   * At least one `BlockedEncryptionType` must be given. If `NONE` is given, it must be
+   * the only `BlockedEncryptionType` in the list.
+   *
+   * @default - Amazon S3 determines which encryption types to block.
+   */
+  readonly blockedEncryptionTypes?: BlockedEncryptionType[];
+
+  /**
    * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
    *
@@ -2016,7 +2027,7 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html
    *
-   * @default No Intelligent Tiiering Configurations.
+   * @default No Intelligent Tiering Configurations.
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
 
@@ -2112,7 +2123,7 @@ export class Bucket extends BucketBase {
 
     const bucketName = parseBucketName(scope, attrs);
     if (!bucketName) {
-      throw new ValidationError('Bucket name is required', scope);
+      throw new ValidationError('BucketNameRequired', 'Bucket name is required', scope);
     }
     Bucket.validateBucketName(bucketName, true);
 
@@ -2263,7 +2274,7 @@ export class Bucket extends BucketBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+      throw new UnscopedValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -2371,7 +2382,7 @@ export class Bucket extends BucketBase {
       this.enforceSSLStatement();
       this.minimumTLSVersionStatement(props.minimumTLSVersion);
     } else if (props.minimumTLSVersion) {
-      throw new ValidationError('\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied', this);
+      throw new ValidationError('EnforceEnabledMinimumVersionApplied', '\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied', this);
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
@@ -2405,7 +2416,7 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       if (props.blockPublicAccess === undefined) {
-        throw new ValidationError('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.', this);
+        throw new ValidationError('CannotPublicReadAccessProperty', 'Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAccess\' property.', this);
       }
 
       this.grantPublicAccess();
@@ -2413,7 +2424,7 @@ export class Bucket extends BucketBase {
 
     if (props.autoDeleteObjects) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
+        throw new ValidationError('CannotAutoDeleteObjectsProperty', 'Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.', this);
       }
 
       this.enableAutoDeleteObjects();
@@ -2536,16 +2547,42 @@ export class Bucket extends BucketBase {
 
     // if encryption key is set, encryption must be set to KMS or DSSE.
     if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
+      throw new ValidationError('EncryptionkeySpecified', `encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
     }
 
     // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
     if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
-      throw new ValidationError(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
+      throw new ValidationError('BucketKeyEnabledSpecifiedEncryption', `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
+    }
+
+    let blockedEncryptionTypes: CfnBucket.BlockedEncryptionTypesProperty | undefined;
+    if (props.blockedEncryptionTypes === undefined) {
+      blockedEncryptionTypes = undefined;
+    } else if (props.blockedEncryptionTypes.length === 0) {
+      throw new ValidationError('EmptyBlockedEncryptionTypes', 'At least one blocked encryption type must be specified', this);
+    } else {
+      const typeNames = props.blockedEncryptionTypes.map(type => type.name);
+      if (typeNames.includes(BlockedEncryptionType.NONE.name) && props.blockedEncryptionTypes.length > 1) {
+        throw new ValidationError('ConflictingBlockedEncryptionTypes', 'If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
+      }
+      blockedEncryptionTypes = {
+        encryptionType: typeNames,
+      };
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
-      return { bucketEncryption: undefined, encryptionKey: undefined };
+      if (blockedEncryptionTypes === undefined) {
+        return { bucketEncryption: undefined, encryptionKey: undefined };
+      } else {
+        return {
+          bucketEncryption: {
+            serverSideEncryptionConfiguration: [{
+              blockedEncryptionTypes,
+            }],
+          },
+          encryptionKey: undefined,
+        };
+      }
     }
 
     if (encryptionType === BucketEncryption.KMS) {
@@ -2562,6 +2599,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2574,6 +2612,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2587,6 +2626,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2606,6 +2646,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms:dsse',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2618,13 +2659,14 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+            blockedEncryptionTypes,
           },
         ],
       };
       return { bucketEncryption };
     }
 
-    throw new ValidationError(`Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 
   /**
@@ -2648,7 +2690,7 @@ export class Bucket extends BucketBase {
       if ((rule.expiredObjectDeleteMarker)
       && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
-        throw new ValidationError('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.', self);
+        throw new ValidationError('ExpiredObjectDeleteMarkerCannot', 'ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.', self);
       }
 
       if (
@@ -2661,7 +2703,7 @@ export class Bucket extends BucketBase {
         rule.noncurrentVersionTransitions === undefined &&
         rule.transitions === undefined
       ) {
-        throw new ValidationError('All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
+        throw new ValidationError('RulesLeastFollowingProperties', 'All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
       }
 
       // Validate transitions: exactly one of transitionDate or transitionAfter must be specified
@@ -2671,11 +2713,11 @@ export class Bucket extends BucketBase {
           const hasTransitionAfter = transition.transitionAfter !== undefined;
 
           if (!hasTransitionDate && !hasTransitionAfter) {
-            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+            throw new ValidationError('ExactlyOneTransitionDateTransition', 'Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
           }
 
           if (hasTransitionDate && hasTransitionAfter) {
-            throw new ValidationError('Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
+            throw new ValidationError('ExactlyOneTransitionDateTransition', 'Exactly one of transitionDate or transitionAfter must be specified in lifecycle rule transition', self);
           }
         }
       }
@@ -2723,7 +2765,7 @@ export class Bucket extends BucketBase {
       props.encryption &&
       [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
     ) {
-      throw new ValidationError('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets', this);
+      throw new ValidationError('KmsManagedKeyNotSupportedForAccessLogs', 'Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets', this);
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
@@ -2800,7 +2842,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new ValidationError(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
+      throw new ValidationError('MustBeObjectownershipAccesscontrol', `objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
     }
 
     return {
@@ -2846,7 +2888,7 @@ export class Bucket extends BucketBase {
       return undefined;
     }
     if (objectLockEnabled === false && objectLockDefaultRetention) {
-      throw new ValidationError('Object Lock must be enabled to configure default retention settings', this);
+      throw new ValidationError('ObjectLockEnabledConfigureDefault', 'Object Lock must be enabled to configure default retention settings', this);
     }
 
     return {
@@ -2866,16 +2908,16 @@ export class Bucket extends BucketBase {
     }
 
     if (props.websiteErrorDocument && !props.websiteIndexDocument) {
-      throw new ValidationError('"websiteIndexDocument" is required if "websiteErrorDocument" is set', this);
+      throw new ValidationError('WebsiteIndexDocumentRequiredWebsite', '"websiteIndexDocument" is required if "websiteErrorDocument" is set', this);
     }
 
     if (props.websiteRedirect && (props.websiteErrorDocument || props.websiteIndexDocument || props.websiteRoutingRules)) {
-      throw new ValidationError('"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used', this);
+      throw new ValidationError('WebsiteIndexDocumentWebsiteError', '"websiteIndexDocument", "websiteErrorDocument" and, "websiteRoutingRules" cannot be set if "websiteRedirect" is used', this);
     }
 
     const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
       if (rule.condition && rule.condition.httpErrorCodeReturnedEquals == null && rule.condition.keyPrefixEquals == null) {
-        throw new ValidationError('The condition property cannot be an empty object', this);
+        throw new ValidationError('ConditionPropertyCannotEmptyObject', 'The condition property cannot be an empty object', this);
       }
 
       return {
@@ -2901,24 +2943,24 @@ export class Bucket extends BucketBase {
   private renderReplicationConfiguration(props: BucketProps): CfnBucket.ReplicationConfigurationProperty | undefined {
     const replicationRulesIsEmpty = !props.replicationRules || props.replicationRules.length === 0;
     if (replicationRulesIsEmpty && props.replicationRole) {
-      throw new ValidationError('cannot specify replicationRole when replicationRules is empty', this);
+      throw new ValidationError('CannotSpecifyReplicationRoleReplication', 'cannot specify replicationRole when replicationRules is empty', this);
     }
     if (replicationRulesIsEmpty) {
       return undefined;
     }
 
     if (!props.versioned) {
-      throw new ValidationError('Replication rules require versioning to be enabled on the bucket', this);
+      throw new ValidationError('ReplicationRulesRequireVersioningEnabled', 'Replication rules require versioning to be enabled on the bucket', this);
     }
     if (props.replicationRules.length > 1 && props.replicationRules.some(rule => rule.priority === undefined)) {
-      throw new ValidationError('\'priority\' must be specified for all replication rules when there are multiple rules', this);
+      throw new ValidationError('MustBePrioritySpecifiedReplication', '\'priority\' must be specified for all replication rules when there are multiple rules', this);
     }
     props.replicationRules.forEach(rule => {
       if (rule.replicationTimeControl && !rule.metrics) {
-        throw new ValidationError('\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.', this);
+        throw new ValidationError('ReplicationTimeControlMetricsEnabled', '\'replicationTimeControlMetrics\' must be enabled when \'replicationTimeControl\' is enabled.', this);
       }
       if (rule.deleteMarkerReplication && rule.filter?.tags) {
-        throw new ValidationError('tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.', this);
+        throw new ValidationError('TagFilterCannotSpecifiedDelete', 'tag filter cannot be specified when \'deleteMarkerReplication\' is enabled.', this);
       }
     });
 
@@ -2973,7 +3015,7 @@ export class Bucket extends BucketBase {
         if (isCrossAccount) {
           Annotations.of(this).addInfo('For Cross-account S3 replication, ensure to set up permissions on destination bucket using method addReplicationPolicy() ');
         } else if (rule.accessControlTransition) {
-          throw new ValidationError('accessControlTranslation is only supported for cross-account replication', this);
+          throw new ValidationError('AccessControlTranslationSupportedCross', 'accessControlTranslation is only supported for cross-account replication', this);
         }
 
         return {
@@ -3048,7 +3090,7 @@ export class Bucket extends BucketBase {
         conditions: conditions,
       }));
     } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
-      throw new ValidationError("Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed", this);
+      throw new ValidationError('CannotEnableLogDeliveryBucket', "Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed", this);
     } else {
       this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
     }
@@ -3064,7 +3106,7 @@ export class Bucket extends BucketBase {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
       if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
-        throw new ValidationError(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`, this);
+        throw new ValidationError('InventoryIdExceedCharactersContain', `inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`, this);
       }
       const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
@@ -3163,6 +3205,29 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   DSSE = 'DSSE',
+}
+
+/**
+ * Encryption types that can be blocked on an S3 bucket.
+ */
+export class BlockedEncryptionType {
+  /** Special value - all encryption types are allowed */
+  public static readonly NONE = new BlockedEncryptionType('NONE');
+  /** Server-Side Encryption with customer-provided keys (SSE-C) is blocked */
+  public static readonly SSE_C = new BlockedEncryptionType('SSE-C');
+
+  /**
+   * Use this constructor only if S3 releases a new BlockedEncryptionType
+   * that is unknown to CDK. Otherwise, use this class's static constants.
+   */
+  public static custom(name: string) {
+    return new BlockedEncryptionType(name);
+  }
+
+  /**
+   * @param name The name for this blocked encryption type used in the API
+   */
+  private constructor(public readonly name: string) {}
 }
 
 /**
@@ -3640,10 +3705,10 @@ export class ObjectLockRetention {
   private constructor(mode: ObjectLockMode, duration: Duration) {
     // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
     if (duration.toDays() > 365 * 100) {
-      throw new UnscopedValidationError('Object Lock retention duration must be less than 100 years');
+      throw new UnscopedValidationError('MustBeObjectLockRetention', 'Object Lock retention duration must be less than 100 years');
     }
     if (duration.toDays() < 1) {
-      throw new UnscopedValidationError('Object Lock retention duration must be at least 1 day');
+      throw new UnscopedValidationError('MustBeObjectLockRetention', 'Object Lock retention duration must be at least 1 day');
     }
 
     this.mode = mode;
