@@ -8,7 +8,7 @@
   "no-multiple-space-atx": true,
   "blanks-around-headings": true,
   "heading-start-left": true,
-  "no-duplicate-heading": true,
+  "no-duplicate-heading": { "siblings_only": true },
   "single-title": true,
   "no-trailing-punctuation": true,
   "no-multiple-space-blockquote": true,

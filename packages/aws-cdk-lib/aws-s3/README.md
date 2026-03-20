@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to

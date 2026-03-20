@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.244.0](https://github.com/aws/aws-cdk/compare/v2.243.0...v2.244.0) (2026-03-19)
+
+
+### Features
+
+* **codebuild:** add support for macOS 26 runners ([#37240](https://github.com/aws/aws-cdk/issues/37240)) ([1b7b292](https://github.com/aws/aws-cdk/commit/1b7b2929fccd786c0bd38ea735b90aef9e470106)), closes [#37241](https://github.com/aws/aws-cdk/issues/37241) [#35836](https://github.com/aws/aws-cdk/issues/35836)
+* update L1 CloudFormation resource definitions ([#37260](https://github.com/aws/aws-cdk/issues/37260)) ([40a5142](https://github.com/aws/aws-cdk/commit/40a5142771b1ea450a2f7c684e102548a626ddba))
+* **rds:** add standalone resource creation for ParameterGroup ([#37165](https://github.com/aws/aws-cdk/issues/37165)) ([5441a51](https://github.com/aws/aws-cdk/commit/5441a515b6aab9e091c7a09f96663c723b122bcf)), closes [#9741](https://github.com/aws/aws-cdk/issues/9741)
+* **ecs:** add forceNewDeployment feature for ecs service ([#35726](https://github.com/aws/aws-cdk/issues/35726)) ([d16dc7e](https://github.com/aws/aws-cdk/commit/d16dc7e433c4986f3473b2992ba36bee9fb64f1e)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
+* **mixins:** helpers to convert between Aspects and Mixins ([#37235](https://github.com/aws/aws-cdk/issues/37235)) ([4537f69](https://github.com/aws/aws-cdk/commit/4537f694f7b8da5fa038b994031998c85bfbe3c8))
+* **spec2cdk:** add `actions()` method to Grants classes ([#36987](https://github.com/aws/aws-cdk/issues/36987)) ([bbeaf5d](https://github.com/aws/aws-cdk/commit/bbeaf5df5aef3f926586b4fe94fbcb6f903da8ce))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** error annotations now have error codes ([#37270](https://github.com/aws/aws-cdk/issues/37270)) ([0b9629e](https://github.com/aws/aws-cdk/commit/0b9629e421a2edc41d749af13ba058eba14342fa))
+* **eks:** clear OCI repo/version after local pull for Helm v4 compatibility ([#37142](https://github.com/aws/aws-cdk/issues/37142)) ([e6a8804](https://github.com/aws/aws-cdk/commit/e6a88047b5776a69156ef5116930e5788ee550b7)), closes [/github.com/helm/helm/blob/v3.19.0/pkg/action/install.go#L753-L769](https://github.com/aws//github.com/helm/helm/blob/v3.19.0/pkg/action/install.go/issues/L753-L769) [/github.com/helm/helm/blob/main/pkg/action/install.go#L893-L909](https://github.com/aws//github.com/helm/helm/blob/main/pkg/action/install.go/issues/L893-L909)
+* all errors now have error codes ([#36934](https://github.com/aws/aws-cdk/issues/36934)) ([408c12f](https://github.com/aws/aws-cdk/commit/408c12f0b00fede5c3a8b1d43024e961087adcfa))
+
 ## [2.243.0](https://github.com/aws/aws-cdk/compare/v2.242.0...v2.243.0) (2026-03-11)
 
 

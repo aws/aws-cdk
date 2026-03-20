@@ -395,16 +395,16 @@
     }
    }
   },
-  "kubectlLayer44321E08": {
+  "KubectlLayer600207B5": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e995b7fa13f3d9f946ff291512015444c90346ee68f0067f80037541a4b54d62.zip"
+     "S3Key": "5ab5551b933f2170cd0fcc2e293efb7e33a64d04c22cc03343242c843e4e4034.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.33.0; /opt/helm/helm 3.18.0",
+    "Description": "/opt/kubectl/kubectl 1.35.0; /opt/helm/helm 4.1.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -611,7 +611,7 @@
       "Enabled": true
      }
     },
-    "Version": "1.33"
+    "Version": "1.35"
    },
    "DependsOn": [
     "VpcIGWD7BA715C",
@@ -809,7 +809,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "379a97e43c3d01fdb08125fcff9c80a976a33da6287e25571deb51e72b5eeda9.zip"
+     "S3Key": "d1f0dc4bbd7f19a0c9d47ff23ed15d3972cdb7bd292c1c20c0f442d0021d9eb8.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -823,7 +823,7 @@
       "Ref": "ClusterKubectlProviderAwsCliLayer24064B0B"
      },
      {
-      "Ref": "kubectlLayer44321E08"
+      "Ref": "KubectlLayer600207B5"
      }
     ],
     "MemorySize": 1024,
@@ -1454,6 +1454,31 @@
     "Version": "v5.0.0-rc1",
     "Namespace": "ack-system",
     "Repository": "oci://ghcr.io/grafana-operator/helm-charts/grafana-operator",
+    "CreateNamespace": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClustercharttestnonocichartF502B46B": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "ClusterKubectlProviderframeworkonEvent68E0CF80",
+      "Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "Release": "headlamp",
+    "Chart": "headlamp",
+    "Version": "0.39.0",
+    "Namespace": "default",
+    "Repository": "https://kubernetes-sigs.github.io/headlamp/",
     "CreateNamespace": true
    },
    "DependsOn": [

@@ -435,9 +435,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
+     "S3Key": "5ab5551b933f2170cd0fcc2e293efb7e33a64d04c22cc03343242c843e4e4034.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
+    "Description": "/opt/kubectl/kubectl 1.35.0; /opt/helm/helm 4.1.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -797,7 +797,7 @@
      ]
     },
     "Config": {
-     "version": "1.32",
+     "version": "1.35",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -997,14 +997,11 @@
   "ClusterNodegroupDefaultCapacityDA0920A3": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
     "ForceUpdateEnabled": true,
-    "InstanceTypes": [
-     "m5.large"
-    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -1045,7 +1042,7 @@
      ]
     },
     "RejectUnauthorized": false,
-    "CodeHash": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4"
+    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1069,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5e951837c50b70ebcdbfcd8f89fc2827da22ff5badd5a0d9c3b94de06158ae97.json"
+       "/2b7344bbbe59728a493d5f3ae6c5eaaa1bb0be7122a8d969afb6611a8b796b7c.json"
       ]
      ]
     }
@@ -1119,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/771e3cd48d0b2e2be256b28c2b425516dbdaf2d7560259f14c2759f676feb794.json"
+       "/1e8514a1752335cf3c9e9e408635ab746d2fedd262162c8ea9e24c38309ad9dd.json"
       ]
      ]
     }
@@ -1185,7 +1182,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2ef56be7a7906182ed8d1a8479be348cf836b925a9956cafededbd08199ba5c4.zip"
+     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1245,10 +1242,10 @@
      ]
     },
     "Release": "mportclustertestimportedclusterchartdashboard428d91dc",
-    "Chart": "kubernetes-dashboard",
-    "Version": "6.0.8",
+    "Chart": "metrics-server",
+    "Version": "3.12.2",
     "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
+    "Repository": "https://kubernetes-sigs.github.io/metrics-server/",
     "CreateNamespace": true
    },
    "UpdateReplacePolicy": "Delete",
@@ -1656,7 +1653,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca.zip"
+     "S3Key": "fe5389ebbb8870ff584c1c39f7a2d0be1aaf1cd5965c37fd4b4ce98eebd89a0d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

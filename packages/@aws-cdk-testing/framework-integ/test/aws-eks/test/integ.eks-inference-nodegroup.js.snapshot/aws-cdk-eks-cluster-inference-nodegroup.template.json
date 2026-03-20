@@ -402,9 +402,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6094cb0ff874f89ab5ab24fb6b9417df0fdeb6966645f90c88ec1d7e28130112.zip"
+     "S3Key": "5ab5551b933f2170cd0fcc2e293efb7e33a64d04c22cc03343242c843e4e4034.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.32.3; /opt/helm/helm 3.17.2",
+    "Description": "/opt/kubectl/kubectl 1.35.0; /opt/helm/helm 4.1.0",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -723,7 +723,7 @@
      ]
     },
     "Config": {
-     "version": "1.32",
+     "version": "1.35",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -947,14 +947,11 @@
   "ClusterNodegroupDefaultCapacityDA0920A3": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
     "ForceUpdateEnabled": true,
-    "InstanceTypes": [
-     "m5.large"
-    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
@@ -1061,7 +1058,7 @@
   "ClusterNodegroupInferenceInstances3C846611": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64_GPU",
+    "AmiType": "AL2023_x86_64_NEURON",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
@@ -1148,7 +1145,7 @@
   "ClusterNodegroupInference2InstancesEE502FE8": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64_GPU",
+    "AmiType": "AL2023_x86_64_NEURON",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
@@ -1196,7 +1193,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/fbeb997969093b6f2dc178b8e154052d4b26f3eb757f9bdbeebd70d2a347fd6e.json"
+       "/6b8d1f3d62b304b2e3861e74a19e33248c568d193fdd1205eb7014655b8a9c2c.json"
       ]
      ]
     }
@@ -1246,7 +1243,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/467731e2b2cb3f3f86cf78c784151485002856437ad9a0c77b4592e2dbaa3737.json"
+       "/a5acf1e0ab5c7f1cb2b33eb41474f0d59933ccae4ef140c6520db00fee8c597c.json"
       ]
      ]
     }

@@ -1349,6 +1349,79 @@ describe('cluster', () => {
       });
     });
 
+    test('throws when kubectl subnets include isolated subnets', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 0,
+        subnetConfiguration: [
+          { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+        ],
+      });
+
+      // THEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          kubectlProviderOptions: {
+            kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+          },
+          prune: false,
+        });
+      }).toThrow(/Isolated subnets cannot be used for kubectl private subnets/);
+    });
+
+    test('does not throw when kubectl subnets are PRIVATE_WITH_EGRESS', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: ec2.SubnetType.PUBLIC, cidrMask: 24 },
+          { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, cidrMask: 24 },
+        ],
+      });
+
+      // THEN - should not throw
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
+      });
+    });
+
+    test('does not throw for imported VPC with isolated subnets (may have VPC endpoints)', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+        vpcId: 'vpc-123',
+        availabilityZones: ['us-east-1a', 'us-east-1b'],
+        isolatedSubnetIds: ['subnet-1', 'subnet-2'],
+      });
+
+      // THEN - should not throw because imported VPCs may have VPC endpoints
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnets: vpc.isolatedSubnets }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
+      });
+    });
+
     test('if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
