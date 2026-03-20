@@ -151,7 +151,6 @@ export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManage
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
-export const NATIVE_CROSS_ACCOUNT_REGION_REFERENCES = '@aws-cdk/core:nativeCrossAccountRegionReferences';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1778,23 +1777,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
-  },
-
-  [NATIVE_CROSS_ACCOUNT_REGION_REFERENCES]: {
-    type: FlagType.ApiDefault,
-    summary: 'Generates cross-region references with Fn::GetStackOutput',
-    detailsMd: `
-      When enabled, and crossRegionReferences=true, the reference between resources is
-      declared in the template using the intrinsic function Fn::GetStackOutput, instead
-      of creating custom resources that read and write SSM parameters. When 
-      crossRegionReferences=false, this flag has no effect.
-      `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-    compatibilityWithOldBehaviorMd: `
-      Disable the feature flat so that cross-region references are generated using 
-      Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter
-      `,
   },
 };
 

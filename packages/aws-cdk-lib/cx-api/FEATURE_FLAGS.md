@@ -111,7 +111,6 @@ Flags come in three types:
 | [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
 | [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
-| [@aws-cdk/core:nativeCrossAccountRegionReferences](#aws-cdkcorenativecrossaccountregionreferences) | Generates cross-region references with Fn::GetStackOutput | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -204,8 +203,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
-    "@aws-cdk/aws-route53-patterns:useDistribution": true,
-    "@aws-cdk/core:nativeCrossAccountRegionReferences": true
+    "@aws-cdk/aws-route53-patterns:useDistribution": true
   }
 }
 ```
@@ -2357,29 +2355,6 @@ resource policies, or how to find an encryption key for a given L1 construct.
 | 2.239.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Register traits explicitly for each resource type
-
-
-### @aws-cdk/core:nativeCrossAccountRegionReferences
-
-*Generates cross-region references with Fn::GetStackOutput*
-
-Flag type: New default behavior
-
-When enabled, and crossRegionReferences=true, the reference between resources is
-declared in the template using the intrinsic function Fn::GetStackOutput, instead
-of creating custom resources that read and write SSM parameters. When 
-crossRegionReferences=false, this flag has no effect.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** 
-      Disable the feature flat so that cross-region references are generated using 
-      Custom::CrossRegionExportReader and Custom::CrossRegionExportWriter
-      
 
 
 <!-- END details -->

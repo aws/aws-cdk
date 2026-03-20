@@ -7,16 +7,13 @@ import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
-import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
 import { ArnFormat } from '../arn';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable } from '../resolvable';
@@ -24,7 +21,6 @@ import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
-import { Annotations } from '../annotations';
 import { CfnResource } from '../cfn-resource';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
@@ -69,13 +65,21 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
+    // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
     if (consumer.synthesizer.cloudFormationExecutionRole == null) {
-      // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
       throw new UnscopedValidationError('NoCfnExecutionRoleForCrossAccountRefs',
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Could not find a CloudFormation execution role for the consumer stack. Use a different stack synthesizer, such as DefaultStackSynthesizer.',
       );
     }
+
+    // and the environment is known
+    if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
+      throw new UnscopedValidationError('CrossRegionReferencesRequireExplicitRegion',
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
+        'Cross stack/region references are only supported for stacks with an explicit region defined. ');
+    }
+
     return createGetStackOutput(reference, {
       consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
       producerAccount,
@@ -142,18 +146,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-    if (FeatureFlags.of(consumer).isEnabled(cxapi.NATIVE_CROSS_ACCOUNT_REGION_REFERENCES) ?? false) {
-      return createGetStackOutput(reference);
-    }
-
-    [producer, consumer].forEach(stack => {
-      Annotations.of(stack).addWarningV2(
-        '@aws-cdk/core:Stack.deprecatedCrossRegionImportValue',
-        'The use of custom resources ExportWriter and ExportReader for cross-region references is deprecated. ' +
-        'Prefer native cross-region references by enabling the \'@aws-cdk/core:nativeCrossAccountRegionReferences\' feature flag.',
-      );
-    });
-    return createCrossRegionImportValue(reference, consumer);
+    return createGetStackOutput(reference);
   }
 
   // export the value through a cloudformation "export name" and use an
@@ -246,37 +239,6 @@ function createImportValue(reference: Reference): Intrinsic {
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
 }
 
-/**
- * Imports a value from another stack in a different region by creating an "Output" with an "ExportName"
- * in the producing stack, and a "ExportsReader" custom resource in the consumer stack
- *
- * Returns a reference to the ExportsReader attribute which contains the exported value
- */
-function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
-  const referenceStack = Stack.of(reference.target);
-  const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
-
-  // generate an export name
-  const exportable = getExportable(exportingStack, reference);
-  const id = JSON.stringify(exportingStack.resolve(exportable));
-  const exportName = generateExportName(importStack, reference, id);
-  if (Token.isUnresolved(exportName)) {
-    throw new UnscopedValidationError('UnresolvedTokenInExportName', `unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
-  }
-
-  // get or create the export writer
-  const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
-  const exportWriter = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
-    region: importStack.region,
-  });
-
-  const exported = exportWriter.exportValue(exportName, reference, importStack);
-  if (importStack.nestedStackParent) {
-    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
-  }
-  return exported;
-}
-
 interface GetStackOutputOptions {
   consumerRoleArn?: string;
   producerRegion?: string;
@@ -333,7 +295,9 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
           },
         },
       });
-      role.addPropertyOverride('RoleName', role.logicalId);
+      role.addPropertyOverride('RoleName', Names.uniqueResourceName(role, {
+        maxLength: 64,
+      }));
     }
 
     roleArn = exportingStack.formatArn({
@@ -345,12 +309,11 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
       region: '',
     });
 
-    let policy = scope.node.tryFindChild(policyId) as Construct;
+    let policy = scope.node.tryFindChild(policyId) as CfnResource;
     if (policy == null) {
-      new CfnResource(scope, policyId, {
+      policy = new CfnResource(scope, policyId, {
         type: 'AWS::IAM::Policy',
         properties: {
-          PolicyName: role.logicalId + 'Policy',
           Roles: [Fn.ref(role.logicalId)],
           PolicyDocument: {
             Version: '2012-10-17',
@@ -365,31 +328,14 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
         },
       });
     }
+    policy.addPropertyOverride('PolicyName', Names.uniqueResourceName(policy, {
+      maxLength: 128,
+    }));
   }
 
   return Tokenization.reverseCompleteString(
     Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
   ) as Intrinsic;
-}
-
-/**
- * Generate a unique physical name for the export
- */
-function generateExportName(importStack: Stack, reference: Reference, id: string): string {
-  const referenceStack = Stack.of(reference.target);
-
-  const components = [
-    referenceStack.stackName ?? '',
-    referenceStack.region,
-    id,
-  ];
-  const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
-  const localPart = makeUniqueId(components);
-  // max name length for a system manager parameter is 1011 characters
-  // including the arn, i.e.
-  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
-  const maxLength = 900;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {
