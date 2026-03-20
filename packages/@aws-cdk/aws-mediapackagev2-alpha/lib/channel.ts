@@ -273,7 +273,7 @@ export interface ChannelOptions {
    * Input configuration for the channel.
    * Use InputConfiguration.hls() or InputConfiguration.cmaf() to create the configuration.
    *
-   * @default InputConfiguration.hls()
+   * @default InputConfiguration.cmaf()
    */
   readonly input?: InputConfiguration;
 
@@ -590,8 +590,8 @@ export class Channel extends ChannelBase implements IChannel {
       throw new ValidationError('ChannelDescriptionLength', 'Channel description must not exceed 1024 characters.', this);
     }
 
-    // Default to HLS if no input configuration provided
-    const inputConfig = props.input ?? InputConfiguration.hls();
+    // Default to CMAF if no input configuration provided
+    const inputConfig = props.input ?? InputConfiguration.cmaf();
 
     const channel = new CfnChannel(this, 'Resource', {
       channelName: this.physicalName,

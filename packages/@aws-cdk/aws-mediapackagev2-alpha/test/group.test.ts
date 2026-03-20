@@ -74,7 +74,7 @@ test('addChannel can be called with no options', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::Channel', {
     ChannelGroupName: 'test-group',
-    InputType: 'HLS', // Default input type
+    InputType: 'CMAF', // Default input type
   });
 });
 
