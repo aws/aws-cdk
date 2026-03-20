@@ -217,6 +217,49 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
+  /**
+   * Builds the raw esbuild CLI arguments as an array of strings.
+   * No shell quoting — callers apply their own formatting.
+   */
+  private buildEsbuildArgs(
+    scope: IConstruct,
+    inputDir: string,
+    outputDir: string,
+    pathJoin: (...parts: string[]) => string,
+    formatPath: (p: string) => string,
+  ): string[] {
+    if (this.props.sourceMap === false && this.props.sourceMapMode) {
+      throw new ValidationError('SourceMapModeCannotSource', 'sourceMapMode cannot be used when sourceMap is false', scope);
+    }
+
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourcesContent = this.props.sourcesContent ?? true;
+    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
+
+    return [
+      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
+      '--platform=node',
+      ...this.props.format ? [`--format=${this.props.format}`] : [],
+      `--outfile=${formatPath(pathJoin(outputDir, outFile))}`,
+      ...this.props.minify ? ['--minify'] : [],
+      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
+      ...this.externals.map(external => `--external:${external}`),
+      ...Object.entries(this.props.loader ?? {}).map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...Object.entries(this.props.define ?? {}).map(([key, value]) => `--define:${key}=${value}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${formatPath(pathJoin(inputDir, this.relativeTsconfigPath))}`] : [],
+      ...this.props.metafile ? [`--metafile=${formatPath(pathJoin(outputDir, 'index.meta.json'))}`] : [],
+      ...this.props.banner ? [`--banner:js=${this.props.banner}`] : [],
+      ...this.props.footer ? [`--footer:js=${this.props.footer}`] : [],
+      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+    ];
+  }
+
   private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
     let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
@@ -232,40 +275,21 @@ export class Bundling implements cdk.BundlingOptions {
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    const loaders = Object.entries(this.props.loader ?? {});
-    const defines = Object.entries(this.props.define ?? {});
+    const quotePath = (p: string) => `"${p}"`;
+    const rawArgs = this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, pathJoin, quotePath);
 
-    if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('SourceMapModeCannotSource', 'sourceMapMode cannot be used when sourceMap is false', scope);
-    }
+    // Shell-escape user-controlled args, quote paths
+    const safeArgs = rawArgs.map(arg => {
+      if (isUserControlledArg(arg)) {
+        return shellEscape(arg);
+      }
+      return arg;
+    });
 
-    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
-    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
-    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
-    const sourcesContent = this.props.sourcesContent ?? true;
-
-    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${relativeEntryPath}"`,
-      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-      '--platform=node',
-      ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
-      ...this.props.minify ? ['--minify'] : [],
-      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-      ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
-      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-      ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
+      ...safeArgs,
       ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
 
@@ -402,43 +426,12 @@ export class Bundling implements cdk.BundlingOptions {
     // Esbuild
     const esbuildRunner = esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : ['esbuild'];
 
-    if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('SourceMapModeCannotSource', 'sourceMapMode cannot be used when sourceMap is false', scope);
-    }
-
-    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
-    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
-    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
-    const sourcesContent = this.props.sourcesContent ?? true;
-
-    const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const loaders = Object.entries(this.props.loader ?? {});
-    const defines = Object.entries(this.props.define ?? {});
-
     const esbuildArgs: string[] = [
-      '--bundle', relativeEntryPath,
-      `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
-      '--platform=node',
-      ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile=${path.join(outputDir, outFile)}`,
-      ...this.props.minify ? ['--minify'] : [],
-      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
-      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
-      ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${value}`),
-      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
-      ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${path.join(this.projectRoot, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${path.join(outputDir, 'index.meta.json')}`] : [],
-      ...this.props.banner ? [`--banner:js=${this.props.banner}`] : [],
-      ...this.props.footer ? [`--footer:js=${this.props.footer}`] : [],
-      ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.buildEsbuildArgs(scope, this.projectRoot, outputDir, path.join, (p: string) => p),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
 
-    steps.push({ type: 'spawn', command: [...esbuildRunner, ...esbuildArgs] });
+    steps.push({ type: 'spawn', command: [...esbuildRunner, '--bundle', relativeEntryPath, ...esbuildArgs] });
 
     // Node modules installation
     if (this.props.nodeModules) {
@@ -571,6 +564,28 @@ class OsCommand {
 }
 
 /**
+ * Escapes a string for safe inclusion in a single-quoted shell argument.
+ * In bash single quotes, all characters are literal except ' itself.
+ * To include a single quote, we end the quoting, add an escaped quote, and restart.
+ */
+function shellEscape(value: string): string {
+  return "'" + value.replace(/'/g, "'\\''") + "'";
+}
+
+/**
+ * Returns true if the arg contains user-controlled content that needs shell escaping.
+ * Safe args (enums, booleans, controlled paths) don't need escaping.
+ */
+const USER_CONTROLLED_PREFIXES = [
+  '--target=', '--external:', '--loader:', '--define:',
+  '--banner:', '--footer:', '--main-fields=', '--inject:',
+];
+
+function isUserControlledArg(arg: string): boolean {
+  return USER_CONTROLLED_PREFIXES.some(p => arg.startsWith(p));
+}
+
+/**
  * Chain commands
  */
 function chain(commands: string[]): string {
@@ -612,9 +627,9 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
     if (value === true || value === '') {
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
-      args.push(`${key}:"${value}"`);
+      args.push(shellEscape(`${key}:${value}`));
     } else if (value) {
-      args.push(`${key}="${value}"`);
+      args.push(shellEscape(`${key}=${value}`));
     }
   }
 
