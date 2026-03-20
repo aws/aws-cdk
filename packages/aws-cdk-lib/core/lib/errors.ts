@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
 import { constructInfoFromConstruct } from './private/runtime-info';
 import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
@@ -141,11 +142,13 @@ abstract class ConstructError extends Error {
 
     // The "stack" field in Node.js includes the error description. If it doesn't, Node will fall back to an
     // ugly way of rendering the error.
-    this.stack = `${this.name}: ${msg}\n${renderCallStackJustMyCode(captureCallStack(ctr)).join('\n')}`;
+    this.stack = `«${this.name}» ${msg}\n${renderCallStackJustMyCode(captureCallStack(ctr)).join('\n')}`;
 
     if (scope) {
       this.stack += `\nRelates to construct:\n${renderConstructRootPath(scope)}`;
     }
+
+    maybeWriteErrorCode(this.name);
   }
 }
 
@@ -259,4 +262,40 @@ export function renderConstructRootPath(construct: IConstruct) {
   }
 
   return ret.join('\n');
+}
+
+const THROWN_ERRORS = new Set<string>();
+
+/**
+ * If the appropriate environment variable is set, write this error code to a list of error codes in the given file.
+ *
+ * The reason we do this is so that the CLI can scan `stderr` for one of the
+ * error codes between markers, and be confident that when it finds something
+ * that it's not user content but an actual error we threw.
+ *
+ * - Why not just scan `stderr`? Because customers could put customer content
+ *   between those markers, and we would capture user content as an error code (we
+ *   explicitly don't want to do that!)
+ *
+ * - Why not take the error code immediately? Because the error could have been
+ *   caught; but we only want to capture the error that terminated the program.
+ *
+ * So we're doing a double whammy of writing potential error codes to a file, then
+ * make sure that we find that error code in `stderr`.
+ */
+function maybeWriteErrorCode(errorCode: string) {
+  const file = process.env.CDK_ERROR_FILE;
+  if (!file) {
+    return;
+  }
+
+  // Only if this error is new
+  const oldSize = THROWN_ERRORS.size;
+  THROWN_ERRORS.add(errorCode);
+  if (THROWN_ERRORS.size === oldSize) {
+    return;
+  }
+
+  // Update the indicated file
+  fs.writeFileSync(file, Array.from(THROWN_ERRORS).sort().join('\n'), 'utf-8');
 }
