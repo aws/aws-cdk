@@ -3,8 +3,6 @@ import { toCloudFormation } from './util';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
-/* eslint-disable @stylistic/quote-props */
-
 describe('cross environment', () => {
   describe('CrossEnvironmentToken', () => {
     test('can reference an ARN with a fixed physical name directly in a different account', () => {
@@ -219,9 +217,9 @@ describe('cross environment', () => {
     expect(template1?.Outputs).toMatchObject({
       PublishOutputRefMyResource6073B41FD9DD038E: {
         Value: {
-          Ref: 'MyResource6073B41F'
-        }
-      }
+          Ref: 'MyResource6073B41F',
+        },
+      },
     });
     expect(template2?.Outputs).toEqual({
       Output: {
@@ -229,10 +227,10 @@ describe('cross environment', () => {
           'Fn::GetStackOutput': {
             StackName: 'Stack1',
             Region: 'bermuda-triangle-1337',
-            OutputName: 'PublishOutputRefMyResource6073B41FD9DD038E'
-          }
-        }
-      }
+            OutputName: 'PublishOutputRefMyResource6073B41FD9DD038E',
+          },
+        },
+      },
     });
   });
 

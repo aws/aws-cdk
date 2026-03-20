@@ -4,7 +4,7 @@ import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import type { CfnStack } from '../lib';
-import { App, CfnResource, NestedStack, Resource, Stack, } from '../lib';
+import { App, CfnResource, NestedStack, Resource, Stack } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal';
 
 describe('nested-stack', () => {
@@ -133,8 +133,8 @@ describe('nested-stack', () => {
               'Fn::GetStackOutput': {
                 StackName: 'Stack1',
                 Region: 'bermuda-triangle-1337',
-                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF'
-              }
+                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF',
+              },
             },
           },
           Type: 'My::Resource',
@@ -147,10 +147,10 @@ describe('nested-stack', () => {
         Value: {
           'Fn::GetAtt': [
             'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-            'Outputs.Stack1Nested1Resource178AEB067Ref'
-          ]
-        }
-      }
+            'Outputs.Stack1Nested1Resource178AEB067Ref',
+          ],
+        },
+      },
     });
 
     const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));

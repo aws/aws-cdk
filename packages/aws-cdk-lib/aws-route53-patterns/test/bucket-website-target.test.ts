@@ -188,8 +188,8 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
             'Fn::GetStackOutput': {
               StackName: 'certificate-redirect-stack-c8e2763df63c0f7e0c9afe0394e299bb731e281e8e',
               Region: 'us-east-1',
-              OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C'
-            }
+              OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C',
+            },
           },
         },
       },
@@ -349,8 +349,8 @@ test('Uses Distribution when @aws-cdk/aws-route53-patterns:useDistribution=true'
           'Fn::GetStackOutput': {
             StackName: 'certificate-redirect-stack-c8e2763df63c0f7e0c9afe0394e299bb731e281e8e',
             Region: 'us-east-1',
-            OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C'
-          }
+            OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C',
+          },
         },
       },
     },
@@ -423,8 +423,8 @@ test('Uses CloudFrontWebDistribution when @aws-cdk/aws-route53-patterns:useDistr
           'Fn::GetStackOutput': {
             StackName: 'certificate-redirect-stack-c8e2763df63c0f7e0c9afe0394e299bb731e281e8e',
             Region: 'us-east-1',
-            OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C'
-          }
+            OutputName: 'PublishOutputRefRedirectCertificatec8693e36481e135aa76e35c2db892ec6a33a94c7461E1B6E15B760E42C',
+          },
         },
       },
     },
