@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.198"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@^0.1.161":
-  version "0.1.161"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.161.tgz#dd73fe20f21d5e780f41c5db84274b7f95866b94"
-  integrity sha512-le9UnSpEbuKfIqUk0a4MXd7kx2GqXmC+pdaLIt3sMFxPB9CBKgnOZwHRaBpFCqj2r13bf5j3NBONy3RkD9t3Sg==
+"@aws-cdk/aws-service-spec@^0.1.163":
+  version "0.1.163"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.163.tgz#c6786c9a6b21c4f1a815ff952acb63c9046f0748"
+  integrity sha512-5hQi+cpg992vc1TDXp9IcAM7dD2JUrxIrSFo0x5ZydHeNTa8Jx6L1dnsEaOB2Sao7UPG9NOFjvJB2S6T2r0HWQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.227"
+    "@aws-cdk/service-spec-types" "^0.0.229"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.1.1":
@@ -160,10 +160,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.227":
-  version "0.0.227"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.227.tgz#5914614446600c28eeb24f0d1ff84cd54408cde3"
-  integrity sha512-xQHO0xzItQN5mFxox1iX/0NxDkHMgCval2imn5uJeYh5BA6jwm5XkIVrtS4YaL0B3Eb3U3Q+tG8jK9fD/orGxg==
+"@aws-cdk/service-spec-types@^0.0.229":
+  version "0.0.229"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.229.tgz#6110bb161877d4307317e2eb68406304ed90db45"
+  integrity sha512-GnZVzddpKqFbPu/ws+hq3V6OkKG5wV2ViXkb3qeJZ1bE6Lnncf2n21prp5Du5dZxyKmg6RePpWdCmmSjVCWv9Q==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -6989,9 +6989,9 @@ axios@^0.27.2:
     form-data "^4.0.0"
 
 axios@^1.13.5, axios@^1.8.3:
-  version "1.13.5"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.13.5.tgz#5e464688fa127e11a660a2c49441c009f6567a43"
-  integrity sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==
+  version "1.13.6"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.13.6.tgz#c3f92da917dc209a15dd29936d20d5089b6b6c98"
+  integrity sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==
   dependencies:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"

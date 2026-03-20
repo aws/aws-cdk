@@ -1422,7 +1422,7 @@ export class TableV2 extends TableBaseV2 {
 }
 
 /**
- * A nulti-account replica of a DynamoDB table.
+ * A multi-account replica of a DynamoDB table.
  *
  * This construct represents a replica table in a different AWS account from the source table.
  * It inherits the schema (partition key, sort key, and indexes) from the source table.

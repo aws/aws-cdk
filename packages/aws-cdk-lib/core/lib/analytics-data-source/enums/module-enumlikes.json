@@ -1026,7 +1026,8 @@
     ],
     "MacBuildImage": [
       "BASE_14",
-      "BASE_15"
+      "BASE_15",
+      "BASE_26"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -3683,6 +3684,14 @@
       "SYNTHETICS_PYTHON_SELENIUM_5_1",
       "SYNTHETICS_PYTHON_SELENIUM_6_0",
       "SYNTHETICS_PYTHON_SELENIUM_7_0"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/core/lib/bitrate.ts": {
+    "BitrateUnit": [
+      "Bps",
+      "Kbps",
+      "Mbps",
+      "Gbps"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {
