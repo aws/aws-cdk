@@ -1092,7 +1092,7 @@ describe('Topic', () => {
   What we are asserting here about CfnTopic applies to all L1 constructs.
    */
   describe('Source tracing', () => {
-    test('Metadata contains propertyName and stack trace with CDK_DEBUG=1', () => {
+    test('Metadata contains propertyAssignment and stack trace with CDK_DEBUG=1', () => {
       try {
         process.env.CDK_DEBUG = '1';
         const stack = new cdk.Stack();
@@ -1106,11 +1106,11 @@ describe('Topic', () => {
 
         const asm = synth(stack);
         const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
-        const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
+        const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
-        expect(propertyNameEntry).toBeDefined();
-        expect(propertyNameEntry.data).toEqual('DisplayName');
-        expect(propertyNameEntry.trace.some(
+        expect(propertyAssignmentEntry).toBeDefined();
+        expect(propertyAssignmentEntry.data).toEqual('DisplayName');
+        expect(propertyAssignmentEntry.trace.some(
           (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
         ).toBe(true);
       } finally {
@@ -1118,7 +1118,7 @@ describe('Topic', () => {
       }
     });
 
-    test('Metadata does not contain propertyName by default', () => {
+    test('Metadata does not contain propertyAssignment by default', () => {
       const stack = new cdk.Stack();
 
       const topic = new sns.CfnTopic(stack, 'MyTopic', {
@@ -1129,9 +1129,9 @@ describe('Topic', () => {
 
       const asm = synth(stack);
       const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
-      const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
+      const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
-      expect(propertyNameEntry).toBeUndefined();
+      expect(propertyAssignmentEntry).toBeUndefined();
     });
   });
 });
