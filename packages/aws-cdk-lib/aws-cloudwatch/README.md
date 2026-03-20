@@ -505,6 +505,106 @@ When creating an anomaly detection alarm, you must use one of the following comp
 
 For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
+## Alarm Mute Rules
+
+[Alarm Mute Rules](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html)
+allow you to temporarily suppress alarm notifications on a schedule. This is useful for planned
+maintenance windows, deployments, or other expected disruptions where you don't want alarms to fire.
+
+### Creating a recurring mute rule
+
+Use `MuteSchedule.cron()` to create a recurring mute schedule:
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+
+// Mute alarms every day at 2:00 AM UTC for 1 hour
+const muteRule = new cloudwatch.AlarmMuteRule(this, 'MaintenanceWindowMute', {
+  schedule: cloudwatch.MuteSchedule.cron({ hour: '2', minute: '0' }),
+  duration: Duration.hours(1),
+  alarms: [alarm],
+});
+```
+
+### Creating a one-time mute rule
+
+Use `MuteSchedule.at()` to create a one-time mute at a specific date and time:
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+
+// One-time mute on January 15, 2025 at 3:30 AM for 90 minutes
+new cloudwatch.AlarmMuteRule(this, 'DeploymentMute', {
+  schedule: cloudwatch.MuteSchedule.at({ year: 2025, month: 1, day: 15, hour: 3, minute: 30 }),
+  duration: Duration.minutes(90),
+  alarms: [alarm],
+});
+```
+
+### Adding alarms after construction
+
+You can add alarms to a mute rule after construction using `addAlarm()`:
+
+```ts
+declare const alarm1: cloudwatch.Alarm;
+declare const alarm2: cloudwatch.Alarm;
+
+const muteRule = new cloudwatch.AlarmMuteRule(this, 'MuteRule', {
+  schedule: cloudwatch.MuteSchedule.cron({ hour: '2', minute: '0' }),
+  duration: Duration.hours(1),
+});
+
+muteRule.addAlarm(alarm1);
+muteRule.addAlarm(alarm2);
+```
+
+### Specifying a timezone
+
+By default, the schedule is interpreted in UTC. You can specify a different timezone:
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+
+new cloudwatch.AlarmMuteRule(this, 'MuteRule', {
+  schedule: cloudwatch.MuteSchedule.cron({ hour: '2', minute: '0' }),
+  duration: Duration.hours(1),
+  timezone: 'Asia/Tokyo',
+  alarms: [alarm],
+});
+```
+
+### Setting start and expire dates
+
+You can limit the active period of a mute rule using `startDate` and `expireDate`:
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+
+new cloudwatch.AlarmMuteRule(this, 'MuteRule', {
+  schedule: cloudwatch.MuteSchedule.cron({ hour: '2', minute: '0' }),
+  duration: Duration.hours(1),
+  startDate: { year: 2025, month: 1, day: 1, hour: 0, minute: 0 },
+  expireDate: { year: 2025, month: 12, day: 31, hour: 23, minute: 59 },
+  alarms: [alarm],
+});
+```
+
+### Importing an existing mute rule
+
+You can import an existing alarm mute rule by ARN or name:
+
+```ts
+const importedByArn = cloudwatch.AlarmMuteRule.fromAlarmMuteRuleArn(
+  this, 'ImportedByArn',
+  'arn:aws:cloudwatch:us-east-1:123456789012:alarm-mute-rule:MyRule',
+);
+
+const importedByName = cloudwatch.AlarmMuteRule.fromAlarmMuteRuleName(
+  this, 'ImportedByName',
+  'MyRule',
+);
+```
+
 ## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
