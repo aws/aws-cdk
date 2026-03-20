@@ -1,0 +1,104 @@
+{
+  "/integ-pipeline-producer-stack/ReplicationKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-pipeline-producer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-pipeline-producer-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-pipeline-producer-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationKeyFCE40BF4"
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationBucket70D68737"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-pipeline-producer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/integ-pipeline-producer-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/integ-pipeline-producer-stack/Publish/Output{\"Ref\":\"ReplicationBucket70D68737\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefReplicationBucket70D68737579FBA2A"
+    }
+  ],
+  "/integ-pipeline-producer-stack/Publish/Output{\"Fn::GetAtt\":[\"ReplicationKeyFCE40BF4\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttReplicationKeyFCE40BF4ArnDF9A5550"
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationBucketPolicyADD8A584"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/integ-pipeline-producer-stack/ReplicationBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationBucketAutoDeleteObjectsCustomResourceF7D32567"
+    }
+  ]
+}

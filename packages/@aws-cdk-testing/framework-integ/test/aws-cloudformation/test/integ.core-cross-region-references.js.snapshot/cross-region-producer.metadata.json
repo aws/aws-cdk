@@ -1,0 +1,62 @@
+{
+  "/cross-region-producer/IntegQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-producer/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cross-region-producer/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cross-region-producer/IntegNested/NestedIntegQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-producer/IntegNested/crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName"
+    }
+  ],
+  "/cross-region-producer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+    }
+  ],
+  "/cross-region-producer/IntegQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegQueue3A18718A"
+    }
+  ],
+  "/cross-region-producer/Publish/Output{\"Fn::GetAtt\":[\"IntegQueue3A18718A\",\"QueueName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttIntegQueue3A18718AQueueName0292941B"
+    }
+  ],
+  "/cross-region-producer/Publish/Output{\"Fn::GetAtt\":[\"IntegNestedNestedStackIntegNestedNestedStackResource168C5881\",\"Outputs.crossregionproducerIntegNestedNestedIntegQueueD686DB69QueueName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameCEDBD880"
+    }
+  ],
+  "/cross-region-producer/IntegNested/NestedIntegQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NestedIntegQueue0DFF7C28"
+    }
+  ]
+}

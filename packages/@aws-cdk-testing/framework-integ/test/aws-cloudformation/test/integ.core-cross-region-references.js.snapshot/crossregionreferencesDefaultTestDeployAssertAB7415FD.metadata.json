@@ -1,0 +1,112 @@
+{
+  "/cross-region-references/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForFE8EC68F"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForIsCompleteProviderInvoke65C209A2"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForTimeoutProviderInvoke2965DD2A"
+    }
+  ]
+}

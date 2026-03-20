@@ -1,0 +1,68 @@
+{
+  "/cross-region-consumer/IntegParameter0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-consumer/IntegParameter1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-consumer/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cross-region-consumer/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cross-region-consumer/IntegNested/IntegNestedParameter0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-consumer/IntegNested/IntegNestedParameter1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-consumer/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+    }
+  ],
+  "/cross-region-consumer/IntegParameter0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegParameter02A1817A4"
+    }
+  ],
+  "/cross-region-consumer/IntegParameter1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegParameter1EDBEF1C6"
+    }
+  ],
+  "/cross-region-consumer/IntegNested/IntegNestedParameter0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedParameter04B9B8A01"
+    }
+  ],
+  "/cross-region-consumer/IntegNested/IntegNestedParameter1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedParameter1DE6274D4"
+    }
+  ]
+}
