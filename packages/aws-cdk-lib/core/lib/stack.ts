@@ -186,10 +186,6 @@ export interface StackProps {
    *
    * This feature is currently experimental
    *
-   * @deprecated This feature is no longer used, and this flag has no effect.
-   * Cross-region and cross-account references are always generated, using
-   * the Fn::GetStackOutput intrinsic function.
-   *
    * @default false
    */
   readonly crossRegionReferences?: boolean;
@@ -465,7 +461,7 @@ export class Stack extends Construct implements ITaggable {
     this._missingContext = new Array<cxschema.MissingContext>();
     this._stackDependencies = { };
     this.templateOptions = { };
-    this._crossRegionReferences = true;
+    this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });

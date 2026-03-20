@@ -87,14 +87,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     });
   }
 
-  // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
-    throw new UnscopedValidationError('CrossRegionReferencesNotEnabled',
-      `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
-      'Set crossRegionReferences=true to enable cross region references');
-  }
-
   // ----------------------------------------------------------------------
   // consumer is nested in the producer (directly or indirectly)
   // ----------------------------------------------------------------------
@@ -137,7 +129,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
 
   // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
+  if (producerRegion !== consumerRegion) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new UnscopedValidationError('CrossRegionReferencesRequireExplicitRegion',
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
