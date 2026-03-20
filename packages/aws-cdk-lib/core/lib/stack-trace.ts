@@ -1,3 +1,4 @@
+import type { Node } from 'constructs';
 import { debugModeEnabled } from './debug';
 
 /**
@@ -189,4 +190,26 @@ interface CallSite {
   functionName: string;
   fileName: string;
   sourceLocation: string;
+}
+
+/**
+ * Records a metadata entry on a construct node to trace a property assignment.
+ *
+ * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
+ * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
+ * including a stack trace pointing back to the caller. This is useful for
+ * diagnosing where a particular property value was set during synthesis.
+ *
+ * This is a no-op when debug mode is not enabled.
+ *
+ * @param node the construct node to attach the metadata to.
+ * @param propertyName the name of the property being assigned.
+ */
+export function traceProperty(node: Node, propertyName: string) {
+  if (debugModeEnabled()) {
+    node.addMetadata('aws:cdk:propertyAssignment', propertyName, {
+      stackTrace: true,
+      traceFromFunction: traceProperty,
+    });
+  }
 }

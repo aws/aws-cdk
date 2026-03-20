@@ -1106,7 +1106,7 @@ describe('Topic', () => {
 
         const asm = synth(stack);
         const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
-        const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyName');
+        const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
         expect(propertyNameEntry).toBeDefined();
         expect(propertyNameEntry.data).toEqual('DisplayName');
@@ -1129,7 +1129,7 @@ describe('Topic', () => {
 
       const asm = synth(stack);
       const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
-      const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyName');
+      const propertyNameEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
       expect(propertyNameEntry).toBeUndefined();
     });
