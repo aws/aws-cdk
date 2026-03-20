@@ -300,41 +300,10 @@ in the producing stack and an
 in the consuming stack to transfer that information from one stack to the
 other.
 
-## Accessing resources in a different stack and region
-
-> **This feature is currently experimental**
-
-You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack *and* region. With this feature flag
-enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
-an ACM certificate in `us-east-1`.
-
-```ts
-const stack1 = new Stack(app, 'Stack1', {
-  env: {
-    region: 'us-east-1',
-  },
-  crossRegionReferences: true,
-});
-const cert = new acm.Certificate(stack1, 'Cert', {
-  domainName: '*.example.com',
-  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
-});
-
-const stack2 = new Stack(app, 'Stack2', {
-  env: {
-    region: 'us-east-2',
-  },
-  crossRegionReferences: true,
-});
-new cloudfront.Distribution(stack2, 'Distribution', {
-  defaultBehavior: {
-    origin: new origins.HttpOrigin('example.com'),
-  },
-  domainNames: ['dev.example.com'],
-  certificate: cert,
-});
-```
+If the resources are in different regions or different accounts, it will
+synthesize templates AWS CloudFormation Outputs in the producer stack
+(without an `Export` attribute), and a `Fn::GetStackOutput` in the consuming
+stack.
 
 ### Removing automatic cross-stack references
 
