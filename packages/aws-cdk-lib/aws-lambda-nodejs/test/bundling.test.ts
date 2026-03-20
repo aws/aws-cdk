@@ -1251,12 +1251,12 @@ test('Local bundling with esbuild options via spawn', () => {
   expect(args).toContain('--sources-content=false');
   expect(args).toContain(`--external:${STANDARD_EXTERNAL}`);
   expect(args).toContain('--loader:.png=dataurl');
-  expect(args).toContain('--define:process.env.KEY="\\"VALUE\\""');
-  expect(args).toContain('--define:process.env.BOOL="true"');
+  expect(args).toContain('--define:process.env.KEY="VALUE"');
+  expect(args).toContain('--define:process.env.BOOL=true');
   expect(args).toContain('--log-level=silent');
   expect(args).toContain('--keep-names');
-  expect(args).toContain('--banner:js="/* comments */"');
-  expect(args).toContain('--footer:js="/* comments */"');
+  expect(args).toContain('--banner:js=/* comments */');
+  expect(args).toContain('--footer:js=/* comments */');
   expect(args).toContain('--main-fields=module,main');
   expect(args).toContain('--inject:./my-shim.js');
   expect(args).toContain('--outfile=/outdir/index.mjs');

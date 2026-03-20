@@ -343,7 +343,7 @@ export class Bundling implements cdk.BundlingOptions {
             case 'shell':
               for (const cmd of step.commands) {
                 exec(
-                  osPlatform === 'win32' ? 'cmd' : 'bash',
+                  osPlatform === 'win32' ? (process.env.COMSPEC ?? 'cmd') : 'bash',
                   [osPlatform === 'win32' ? '/c' : '-c', cmd],
                   { ...execOptions, windowsVerbatimArguments: osPlatform === 'win32' },
                 );
@@ -352,7 +352,7 @@ export class Bundling implements cdk.BundlingOptions {
             case 'spawn':
               exec(step.command[0], step.command.slice(1), {
                 ...execOptions,
-                ...(step.cwd ? { cwd: step.cwd } : {}),
+                cwd: step.cwd ?? cwd,
               });
               break;
             case 'fs':
@@ -426,13 +426,13 @@ export class Bundling implements cdk.BundlingOptions {
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...defines.map(([key, value]) => `--define:${key}=${value}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${path.join(this.projectRoot, this.relativeTsconfigPath)}`] : [],
       ...this.props.metafile ? [`--metafile=${path.join(outputDir, 'index.meta.json')}`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.props.banner ? [`--banner:js=${this.props.banner}`] : [],
+      ...this.props.footer ? [`--footer:js=${this.props.footer}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
       ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
