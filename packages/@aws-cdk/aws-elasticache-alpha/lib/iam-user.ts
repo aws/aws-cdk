@@ -94,6 +94,10 @@ export class IamUser extends UserBase {
     this.userName = props.userId; // Automatically mirror userId as userName
     this.accessString = props.accessControl.accessString;
 
+    if (this.userName !== this.userId) {
+      throw new ValidationError('IamUserNameMustEqualUserId', 'For IAM authentication, userName must be equal to userId.', this);
+    }
+
     this.resource = new CfnUser(this, 'Resource', {
       engine: this.engine,
       userId: this.userId,
