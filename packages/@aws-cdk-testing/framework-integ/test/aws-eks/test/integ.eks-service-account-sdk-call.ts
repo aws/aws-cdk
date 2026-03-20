@@ -33,7 +33,13 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefau
 
 const cluster = new eks.Cluster(stack, 'Cluster', {
   vpc,
+  defaultCapacity: 0,
   ...getClusterVersionConfig(stack),
+});
+
+cluster.addNodegroupCapacity('DefaultCapacity', {
+  minSize: 2,
+  amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
 });
 
 const chart = new cdk8s.Chart(new cdk8s.App(), 'sdk-call-image');
