@@ -355,7 +355,7 @@ export class Bundling implements cdk.BundlingOptions {
                 cwd: step.cwd ?? cwd,
               });
               break;
-            case 'fs':
+            case 'callback':
               step.operation();
               break;
           }
@@ -459,7 +459,7 @@ export class Bundling implements cdk.BundlingOptions {
       const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
       steps.push({
-        type: 'fs',
+        type: 'callback',
         operation: () => {
           if (isPnpm) {
             fs.writeFileSync(path.join(outputDir, 'pnpm-workspace.yaml'), '');
@@ -473,7 +473,7 @@ export class Bundling implements cdk.BundlingOptions {
 
       if (isPnpm || isBun) {
         steps.push({
-          type: 'fs',
+          type: 'callback',
           operation: () => {
             if (isPnpm) {
               const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
@@ -508,7 +508,7 @@ export class Bundling implements cdk.BundlingOptions {
 type BundlingStep =
   | { type: 'shell'; commands: string[] }
   | { type: 'spawn'; command: string[]; cwd?: string }
-  | { type: 'fs'; operation: () => void };
+  | { type: 'callback'; operation: () => void };
 
 interface BundlingCommandOptions {
   readonly inputDir: string;
