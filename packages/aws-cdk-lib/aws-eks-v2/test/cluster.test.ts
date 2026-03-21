@@ -5,7 +5,7 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import { testFixture, testFixtureNoVpc } from './util';
-import { Annotations, Match, Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as asg from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -13,8 +13,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as eks from '../lib';
-import { HelmChart } from '../lib';
-import { KubectlProvider } from '../lib/kubectl-provider';
+import { HelmChart, KubectlProvider } from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
@@ -3190,41 +3189,27 @@ describe('cluster', () => {
       });
     });
 
-    test('prefers securityGroups when both are specified and issues warning', () => {
+    test('throws when both securityGroup and securityGroups are specified', () => {
       // GIVEN
       const { stack, vpc } = testFixture();
       const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
       const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
       const singleSg = new ec2.SecurityGroup(stack, 'SingleSG', { vpc });
 
-      // WHEN
-      new eks.Cluster(stack, 'Cluster', {
-        ...commonProps,
-        vpc,
-        endpointAccess: eks.EndpointAccess.PRIVATE,
-        kubectlProviderOptions: {
-          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
-          privateSubnets: vpc.privateSubnets,
-          securityGroup: singleSg, // Should be ignored
-          securityGroups: [sg1, sg2], // Should be used
-        },
-      });
-
       // THEN
-      // Verify securityGroups are used
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::Lambda::Function', {
-        VpcConfig: {
-          SecurityGroupIds: [
-            { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
-            { 'Fn::GetAtt': ['SG20CE3219C', 'GroupId'] },
-          ],
-        },
-      });
-
-      // Verify warning is issued
-      Annotations.fromStack(stack).hasWarning('*',
-        Match.stringLikeRegexp('.*securityGroup.*securityGroups.*'));
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          ...commonProps,
+          vpc,
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          kubectlProviderOptions: {
+            kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+            privateSubnets: vpc.privateSubnets,
+            securityGroup: singleSg,
+            securityGroups: [sg1, sg2],
+          },
+        });
+      }).toThrow(/Cannot specify both "securityGroup" and "securityGroups"/);
     });
 
     test('uses cluster security group when neither is specified (default behavior)', () => {

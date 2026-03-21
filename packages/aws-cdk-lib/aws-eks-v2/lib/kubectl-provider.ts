@@ -7,7 +7,7 @@ import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import type { RemovalPolicy, Size } from '../../core';
-import { Duration, CfnCondition, Fn, Aws, RemovalPolicies, Annotations } from '../../core';
+import { Duration, CfnCondition, Fn, Aws, RemovalPolicies, ValidationError } from '../../core';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -45,21 +45,14 @@ export interface KubectlProviderOptions {
   /**
    * A security group to use for `kubectl` execution.
    *
-   * If you specify both `securityGroup` and `securityGroups`, a warning will be issued
-   * and `securityGroups` will be used.
-   *
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
+   * @deprecated Use `securityGroups` instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
    * Security groups to use for `kubectl` execution.
-   *
-   * If you specify both `securityGroup` and `securityGroups`, a warning will be issued
-   * and `securityGroups` will be used.
-   *
-   * [disable-awslint:prefer-ref-interface]
    *
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
@@ -196,19 +189,17 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
     const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
     let securityGroups: ec2.ISecurityGroup[] | undefined;
 
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new ValidationError(
+        'SecurityGroupConflict',
+        'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+        this,
+      );
+    }
+
     if (props.privateSubnets) {
-      // Determine security groups with priority order:
-      // 1. securityGroups (array) - highest priority
-      // 2. securityGroup (single) - fallback
-      // 3. clusterSecurityGroup - default (backwards compatibility)
       if (props.securityGroups && props.securityGroups.length > 0) {
         securityGroups = props.securityGroups;
-
-        // Issue warning if both properties are specified
-        if (props.securityGroup) {
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks-v2:securityGroupConflict',
-            'Both securityGroup and securityGroups are specified. Using securityGroups.');
-        }
       } else if (props.securityGroup) {
         // Convert single security group to array
         securityGroups = [props.securityGroup];
