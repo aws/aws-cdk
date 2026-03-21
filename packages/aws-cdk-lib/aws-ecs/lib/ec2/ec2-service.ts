@@ -25,7 +25,6 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    * Note that some features require an owned TaskDefinition.
    *
    * [disable-awslint:ref-via-interface]
-   * [disable-awslint:prefer-ref-interface]
    */
   readonly taskDefinition: ITaskDefinition;
 
@@ -184,33 +183,33 @@ export class Ec2Service extends BaseService implements IEc2Service {
    */
   constructor(scope: Construct, id: string, props: Ec2ServiceProps) {
     if (props.daemon && props.desiredCount !== undefined) {
-      throw new ValidationError('Daemon mode launches one task on every instance. Don\'t supply desiredCount.', scope);
+      throw new ValidationError('DaemonModeLaunchesTask', 'Daemon mode launches one task on every instance. Don\'t supply desiredCount.', scope);
     }
 
     if (props.daemon && props.maxHealthyPercent !== undefined && props.maxHealthyPercent !== 100) {
-      throw new ValidationError('Maximum percent must be 100 for daemon mode.', scope);
+      throw new ValidationError('MustBeMaximumPercentDaemon', 'Maximum percent must be 100 for daemon mode.', scope);
     }
 
     if (props.minHealthyPercent !== undefined && props.maxHealthyPercent !== undefined && props.minHealthyPercent >= props.maxHealthyPercent) {
-      throw new ValidationError('Minimum healthy percent must be less than maximum healthy percent.', scope);
+      throw new ValidationError('MustBeMinimumHealthyPercent', 'Minimum healthy percent must be less than maximum healthy percent.', scope);
     }
 
     if (TaskDefinition.isTaskDefinition(props.taskDefinition)) {
       if (!props.taskDefinition.isEc2Compatible) {
-        throw new ValidationError('Supplied TaskDefinition is not configured for compatibility with EC2', scope);
+        throw new ValidationError('SuppliedTaskDefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with EC2', scope);
       }
     }
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new ValidationError('Only one of SecurityGroup or SecurityGroups can be populated.', scope);
+      throw new ValidationError('OneSecurityGroupSecurityGroups', 'Only one of SecurityGroup or SecurityGroups can be populated.', scope);
     }
 
     if (props.availabilityZoneRebalancing === AvailabilityZoneRebalancing.ENABLED) {
       if (props.daemon) {
-        throw new ValidationError('AvailabilityZoneRebalancing.ENABLED cannot be used with daemon mode', scope);
+        throw new ValidationError('AvailabilityZoneRebalancing', 'AvailabilityZoneRebalancing.ENABLED cannot be used with daemon mode', scope);
       }
       if (!Token.isUnresolved(props.maxHealthyPercent) && props.maxHealthyPercent === 100) {
-        throw new ValidationError('AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100', scope);
+        throw new ValidationError('AvailabilityZoneRebalancing', 'AvailabilityZoneRebalancing.ENABLED requires maxHealthyPercent > 100', scope);
       }
     }
 
@@ -311,13 +310,13 @@ export class Ec2Service extends BaseService implements IEc2Service {
   @MethodMetadata()
   public addPlacementStrategies(...newStrategies: PlacementStrategy[]) {
     if (newStrategies.length > 0 && this.daemon) {
-      throw new ValidationError("Can't configure placement strategies when daemon=true", this);
+      throw new ValidationError('CantConfigurePlacementStrategies', "Can't configure placement strategies when daemon=true", this);
     }
 
     if (newStrategies.length > 0 && !this.strategies && this.availabilityZoneRebalancingEnabled) {
       const [placement] = newStrategies[0].toJson();
       if (placement.type !== 'spread' || placement.field !== BuiltInAttributes.AVAILABILITY_ZONE) {
-        throw new ValidationError(`AvailabilityZoneBalancing.ENABLED requires that the first placement strategy, if any, be 'spread across "${BuiltInAttributes.AVAILABILITY_ZONE}"'`, this);
+        throw new ValidationError('AvailabilityZoneBalancing', `AvailabilityZoneBalancing.ENABLED requires that the first placement strategy, if any, be 'spread across "${BuiltInAttributes.AVAILABILITY_ZONE}"'`, this);
       }
     }
 
@@ -341,7 +340,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       if (this.availabilityZoneRebalancingEnabled) {
         for (const item of items) {
           if (item.type === 'memberOf' && item.expression?.includes(BuiltInAttributes.AVAILABILITY_ZONE)) {
-            throw new ValidationError(`AvailabilityZoneBalancing.ENABLED disallows usage of "${BuiltInAttributes.AVAILABILITY_ZONE}"`, this);
+            throw new ValidationError('AvailabilityZoneBalancing', `AvailabilityZoneBalancing.ENABLED disallows usage of "${BuiltInAttributes.AVAILABILITY_ZONE}"`, this);
           }
         }
       }
@@ -370,7 +369,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
     if (this.availabilityZoneRebalancingEnabled) {
-      throw new ValidationError('AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
+      throw new ValidationError('AvailabilityZoneRebalancing', 'AvailabilityZoneRebalancing.ENABLED disallows using the service as a target of a Classic Load Balancer', this);
     }
     super.attachToClassicLB(loadBalancer);
   }
@@ -384,7 +383,7 @@ function validateNoNetworkingProps(scope: Construct, props: Ec2ServiceProps) {
     || props.securityGroup !== undefined
     || props.securityGroups !== undefined
     || props.assignPublicIp) {
-    throw new ValidationError('vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode', scope);
+    throw new ValidationError('VpcSubnets', 'vpcSubnets, securityGroup(s) and assignPublicIp can only be used in AwsVpc networking mode', scope);
   }
 }
 
