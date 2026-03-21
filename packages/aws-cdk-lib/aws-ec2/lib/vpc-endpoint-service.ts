@@ -246,7 +246,7 @@ export interface VpcEndpointServiceProps {
 
   /**
    * The Regions from which service consumers can access the service.
-   * @default - No Region restrictions
+   * @default - the region hosting the service only
    */
   readonly allowedRegions?: string[];
 }
