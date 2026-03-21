@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "integappregistryallstacksresourcesStack842FB294.assets": {
       "type": "cdk:asset-manifest",
@@ -34,32 +34,7 @@
         "AppRegistryAllStacksAppStack",
         "integappregistryallstacksresourcesStack842FB294.assets"
       ],
-      "metadata": {
-        "/integ-appregistry-all-stacks/resourcesStack": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]"
-          }
-        ],
-        "/integ-appregistry-all-stacks/resourcesStack/AppRegistryAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AppRegistryAssociation"
-          }
-        ],
-        "/integ-appregistry-all-stacks/resourcesStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-appregistry-all-stacks/resourcesStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integappregistryallstacksresourcesStack842FB294.metadata.json",
       "displayName": "integ-appregistry-all-stacks/resourcesStack"
     },
     "integ-appregistry-all-stacks.assets": {
@@ -95,38 +70,7 @@
         "AppRegistryAllStacksAppStack",
         "integ-appregistry-all-stacks.assets"
       ],
-      "metadata": {
-        "/integ-appregistry-all-stacks": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]"
-          }
-        ],
-        "/integ-appregistry-all-stacks/AppRegistryAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AppRegistryAssociation"
-          }
-        ],
-        "/integ-appregistry-all-stacks/Exports/Output{\"Ref\":\"AWS::StackId\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefAWSStackIdB2DD5BAA"
-          }
-        ],
-        "/integ-appregistry-all-stacks/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-appregistry-all-stacks/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-appregistry-all-stacks.metadata.json",
       "displayName": "integ-appregistry-all-stacks"
     },
     "AppRegistryAllStacksAppStack.assets": {
@@ -161,50 +105,7 @@
       "dependencies": [
         "AppRegistryAllStacksAppStack.assets"
       ],
-      "metadata": {
-        "/AppRegistryAllStacksAppStack": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/DefaultCdkApplication": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/DefaultCdkApplication/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCdkApplication4573D5A3"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/DefaultCdkApplication/ApplicationManagerUrl": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCdkApplicationApplicationManagerUrl27C138EF"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/AppRegistryAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AppRegistryAssociation"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/AppRegistryAllStacksAppStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "AppRegistryAllStacksAppStack.metadata.json",
       "displayName": "AppRegistryAllStacksAppStack"
     },
     "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.assets": {
@@ -224,7 +125,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da3fea820adbce913357d50829c0e0d9a57cd313cc383a90efb1b69edc9c19b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6b52bae5053a0282a82cef61d28947741d9d1518e436f6c9b12cd1c7794fb9c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -241,56 +142,7 @@
         "integ-appregistry-all-stacks",
         "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.assets"
       ],
-      "metadata": {
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/AwsApiCallServiceCatalogAppRegistrydisassociateResource6ea3b5d8f3237e753be6d2ba26596ba7/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/AwsApiCallServiceCatalogAppRegistrydisassociateResource6ea3b5d8f3237e753be6d2ba26596ba7/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallServiceCatalogAppRegistrydisassociateResource6ea3b5d8f3237e753be6d2ba26596ba7"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/AppRegistryAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AppRegistryAssociation"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ApplicationAssociatorTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9.metadata.json",
       "displayName": "ApplicationAssociatorTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -788,12 +640,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }

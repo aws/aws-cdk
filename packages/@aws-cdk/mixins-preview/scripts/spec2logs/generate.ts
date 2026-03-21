@@ -12,6 +12,7 @@ export async function generateAll(options: GenerateOptions): Promise<GeneratorRe
   const services = await db.all('service');
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: MIXINS_PREVIEW_BASE_NAMES,
+    respectOverrides: false,
   });
   const moduleRequests: GenerateModuleMap = {};
 
