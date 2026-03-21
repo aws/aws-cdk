@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.244.0](https://github.com/aws/aws-cdk/compare/v2.243.0...v2.244.0) (2026-03-19)
+
+
+### Features
+
+* **codebuild:** add support for macOS 26 runners ([#37240](https://github.com/aws/aws-cdk/issues/37240)) ([1b7b292](https://github.com/aws/aws-cdk/commit/1b7b2929fccd786c0bd38ea735b90aef9e470106)), closes [#37241](https://github.com/aws/aws-cdk/issues/37241) [#35836](https://github.com/aws/aws-cdk/issues/35836)
+* update L1 CloudFormation resource definitions ([#37260](https://github.com/aws/aws-cdk/issues/37260)) ([40a5142](https://github.com/aws/aws-cdk/commit/40a5142771b1ea450a2f7c684e102548a626ddba))
+* **rds:** add standalone resource creation for ParameterGroup ([#37165](https://github.com/aws/aws-cdk/issues/37165)) ([5441a51](https://github.com/aws/aws-cdk/commit/5441a515b6aab9e091c7a09f96663c723b122bcf)), closes [#9741](https://github.com/aws/aws-cdk/issues/9741)
+* **ecs:** add forceNewDeployment feature for ecs service ([#35726](https://github.com/aws/aws-cdk/issues/35726)) ([d16dc7e](https://github.com/aws/aws-cdk/commit/d16dc7e433c4986f3473b2992ba36bee9fb64f1e)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
+* **mixins:** helpers to convert between Aspects and Mixins ([#37235](https://github.com/aws/aws-cdk/issues/37235)) ([4537f69](https://github.com/aws/aws-cdk/commit/4537f694f7b8da5fa038b994031998c85bfbe3c8))
+* **spec2cdk:** add `actions()` method to Grants classes ([#36987](https://github.com/aws/aws-cdk/issues/36987)) ([bbeaf5d](https://github.com/aws/aws-cdk/commit/bbeaf5df5aef3f926586b4fe94fbcb6f903da8ce))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** error annotations now have error codes ([#37270](https://github.com/aws/aws-cdk/issues/37270)) ([0b9629e](https://github.com/aws/aws-cdk/commit/0b9629e421a2edc41d749af13ba058eba14342fa))
+* **eks:** clear OCI repo/version after local pull for Helm v4 compatibility ([#37142](https://github.com/aws/aws-cdk/issues/37142)) ([e6a8804](https://github.com/aws/aws-cdk/commit/e6a88047b5776a69156ef5116930e5788ee550b7)), closes [/github.com/helm/helm/blob/v3.19.0/pkg/action/install.go#L753-L769](https://github.com/aws//github.com/helm/helm/blob/v3.19.0/pkg/action/install.go/issues/L753-L769) [/github.com/helm/helm/blob/main/pkg/action/install.go#L893-L909](https://github.com/aws//github.com/helm/helm/blob/main/pkg/action/install.go/issues/L893-L909)
+* all errors now have error codes ([#36934](https://github.com/aws/aws-cdk/issues/36934)) ([408c12f](https://github.com/aws/aws-cdk/commit/408c12f0b00fede5c3a8b1d43024e961087adcfa))
+
+## [2.243.0](https://github.com/aws/aws-cdk/compare/v2.242.0...v2.243.0) (2026-03-11)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37201](https://github.com/aws/aws-cdk/issues/37201)) ([85daaf5](https://github.com/aws/aws-cdk/commit/85daaf5b58ca6c4184f215e48a4e953e228fd42e))
+* **cfn-property-mixins:** graduate to stable @aws-cdk/cfn-property-mixins package ([#37215](https://github.com/aws/aws-cdk/issues/37215)) ([f071e67](https://github.com/aws/aws-cdk/commit/f071e67878cf27aefd07c8820b2de8bdf5431d56))
+
+
+### Bug Fixes
+
+* **dynamodb:** resource policies don't have the index ARNs when indexes are added after granting permissions ([#37213](https://github.com/aws/aws-cdk/issues/37213)) ([eb37071](https://github.com/aws/aws-cdk/commit/eb37071ac4ce0c2aaef850315d6b2d7e0149fcdc))
+
+## [2.242.0](https://github.com/aws/aws-cdk/compare/v2.241.0...v2.242.0) (2026-03-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+  - **aws-ssm**: AWS::SSM::MaintenanceWindow: Id attribute removed.
+
+### Features
+
+* **core:** support `PropertyMergeStrategy` to merge arbitrary CFN property objects ([#37206](https://github.com/aws/aws-cdk/issues/37206)) ([793ad97](https://github.com/aws/aws-cdk/commit/793ad97da99064741e54018a3d1dcb5800eb922e))
+* **ecr:** add RepositoryAutoDeleteImages mixin ([#37176](https://github.com/aws/aws-cdk/issues/37176)) ([3189116](https://github.com/aws/aws-cdk/commit/318911634d2ca20d2e631f40f2260053072dfb37))
+* `s3` and `ecs` service mixins are now available in `aws-cdk-lib` ([#37151](https://github.com/aws/aws-cdk/issues/37151)) ([52c99da](https://github.com/aws/aws-cdk/commit/52c99da86ccb17d4c6dcce8dfd1cf4849a83312c))
+* update L1 CloudFormation resource definitions ([#37173](https://github.com/aws/aws-cdk/issues/37173)) ([1dfaf5f](https://github.com/aws/aws-cdk/commit/1dfaf5f0b80a5b4083b42e679c90c9a51ca7d458)), closes [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5) [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5)
+* **apigateway:** add TLS 1.3 security policies for domain names ([#36303](https://github.com/aws/aws-cdk/issues/36303)) ([9d0300b](https://github.com/aws/aws-cdk/commit/9d0300b44e3a2f7e964f2e3126e3b86725200874)), closes [#36280](https://github.com/aws/aws-cdk/issues/36280)
+* **appsync:** add EnhancedMetricsConfigProperty for GraphQL api ([#35328](https://github.com/aws/aws-cdk/issues/35328)) ([ebfaf89](https://github.com/aws/aws-cdk/commit/ebfaf89e6a9018d19eb29dcb42f2a1ec93e81d57)), closes [#29933](https://github.com/aws/aws-cdk/issues/29933)
+* **opensearchservice:** s3 vectors engine ([#36382](https://github.com/aws/aws-cdk/issues/36382)) ([c0b1d4e](https://github.com/aws/aws-cdk/commit/c0b1d4ea8de000106720978d4bf585b26ababb20))
+* **s3:** graduate BucketAutoDeleteObjects mixin into aws-cdk-lib ([#37161](https://github.com/aws/aws-cdk/issues/37161)) ([e5ddd79](https://github.com/aws/aws-cdk/commit/e5ddd799a29f0df5efaeb1e1a5644a8d85a9a60f))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** `Asset` uses a lot of memory ([#37186](https://github.com/aws/aws-cdk/issues/37186)) ([70cae75](https://github.com/aws/aws-cdk/commit/70cae754867dbed305375f67cebbf864567de68f))
+* large amounts of metadata can break 512MB string limit ([#34480](https://github.com/aws/aws-cdk/issues/34480)) ([20c3154](https://github.com/aws/aws-cdk/commit/20c315457c234ea7fd882bb737621adbbbbf5228))
+* **opensearchservice:** `enableAutoSoftwareUpdate: false` is not reflected in the CloudFormation template ([#37152](https://github.com/aws/aws-cdk/issues/37152)) ([dec8e6f](https://github.com/aws/aws-cdk/commit/dec8e6fffc309743d5b79e15af4d1a0659d0d17e)), closes [#36382](https://github.com/aws/aws-cdk/issues/36382)
+* **s3:** discover existing bucket policies in default trait factory ([#37166](https://github.com/aws/aws-cdk/issues/37166)) ([f090816](https://github.com/aws/aws-cdk/commit/f09081640e6d9c6a75e146b8438e8b73a13c4974))
+
 ## [2.241.0](https://github.com/aws/aws-cdk/compare/v2.240.0...v2.241.0) (2026-03-02)
 
 
