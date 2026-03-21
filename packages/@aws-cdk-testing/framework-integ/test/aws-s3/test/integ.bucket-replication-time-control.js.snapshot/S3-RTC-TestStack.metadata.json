@@ -1,0 +1,289 @@
+{
+  "/S3-RTC-TestStack/DstBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "replicationRules": [
+          {
+            "priority": "*",
+            "destination": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "replicationRules": [
+          {
+            "priority": "*",
+            "destination": "*",
+            "replicationTimeControl": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3-RTC-TestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3-RTC-TestStack/DstBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DstBucket3E241BF2"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1/ReplicationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket1FB05F2D8"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2/ReplicationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket278BFBAF8"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1/ReplicationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket1ReplicationRoleD6E982E6"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1/ReplicationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2/ReplicationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket2ReplicationRole68101260"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2/ReplicationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-1/ReplicationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket1ReplicationRoleDefaultPolicy61FC49E2"
+    }
+  ],
+  "/S3-RTC-TestStack/S3SourceBucket-2/ReplicationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3SourceBucket2ReplicationRoleDefaultPolicy414F29F2"
+    }
+  ]
+}
