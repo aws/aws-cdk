@@ -822,18 +822,21 @@ describe('log group', () => {
     });
   });
 
-  test('set data protection policy with DateOfBirth identifier', () => {
+  test.each([
+    DataIdentifier.EMAILADDRESS,
+    DataIdentifier.DATEOFBIRTH,
+  ])('set %s data protection policy with custom name and description and no audit destinations', (id) => {
     // GIVEN
     const stack = new Stack();
 
     const dataProtectionPolicy = new DataProtectionPolicy({
-      name: 'test-dateofbirth-policy',
-      description: 'test policy for DateOfBirth identifier',
-      identifiers: [DataIdentifier.DATEOFBIRTH],
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [id],
     });
 
     // WHEN
-    const logGroupName = 'test-dateofbirth-log-group';
+    const logGroupName = 'test-log-group';
     new LogGroup(stack, 'LogGroup', {
       logGroupName: logGroupName,
       dataProtectionPolicy: dataProtectionPolicy,
@@ -843,8 +846,8 @@ describe('log group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: logGroupName,
       DataProtectionPolicy: {
-        Name: 'test-dateofbirth-policy',
-        Description: 'test policy for DateOfBirth identifier',
+        Name: 'test-policy-name',
+        Description: 'test description',
         Version: '2021-06-01',
         Statement: [
           {
@@ -856,7 +859,7 @@ describe('log group', () => {
                   [
                     'arn:',
                     { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/DateOfBirth',
+                    `:dataprotection::aws:data-identifier/${id.name}`,
                   ],
                 ],
               },
@@ -876,7 +879,7 @@ describe('log group', () => {
                   [
                     'arn:',
                     { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/DateOfBirth',
+                    `:dataprotection::aws:data-identifier/${id.name}`,
                   ],
                 ],
               },
