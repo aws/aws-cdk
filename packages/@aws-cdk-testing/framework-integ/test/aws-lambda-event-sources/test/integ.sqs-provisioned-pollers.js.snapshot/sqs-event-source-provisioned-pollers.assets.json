@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "d005df7741a48c8391ff32b8fc7eb8999f51cc0ab884badce4ffbb98e26a841b": {
+    "5686cbebcf6654c70565541b05ae2a16aa415027d403beee2fbf0763e0d16f14": {
       "displayName": "sqs-event-source-provisioned-pollers Template",
       "source": {
         "path": "sqs-event-source-provisioned-pollers.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-63b20d64": {
+        "current_account-current_region-36e78a4f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d005df7741a48c8391ff32b8fc7eb8999f51cc0ab884badce4ffbb98e26a841b.json",
+          "objectKey": "5686cbebcf6654c70565541b05ae2a16aa415027d403beee2fbf0763e0d16f14.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

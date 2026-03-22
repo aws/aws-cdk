@@ -23,15 +23,9 @@ class SqsProvisionedPollersTest extends cdk.Stack {
   }
 }
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-  },
-});
+const app = new cdk.App();
 const stack = new SqsProvisionedPollersTest(app, 'sqs-event-source-provisioned-pollers');
 
 new IntegTest(app, 'sqs-provisioned-pollers-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

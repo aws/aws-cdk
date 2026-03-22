@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "sqs-event-source-provisioned-pollers.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d005df7741a48c8391ff32b8fc7eb8999f51cc0ab884badce4ffbb98e26a841b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5686cbebcf6654c70565541b05ae2a16aa415027d403beee2fbf0763e0d16f14.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,104 +33,7 @@
       "dependencies": [
         "sqs-event-source-provisioned-pollers.assets"
       ],
-      "metadata": {
-        "/sqs-event-source-provisioned-pollers/F": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FServiceRole3AC82EE1"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FServiceRoleDefaultPolicy17A19BFA"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FC4345940"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/SqsEventSource:sqseventsourceprovisionedpollersQDA68ED19": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/F/SqsEventSource:sqseventsourceprovisionedpollersQDA68ED19/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FSqsEventSourcesqseventsourceprovisionedpollersQDA68ED19BD505E0C"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/Q": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/Q/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Q63C6E3AB"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/sqs-event-source-provisioned-pollers/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "sqs-event-source-provisioned-pollers.metadata.json",
       "displayName": "sqs-event-source-provisioned-pollers"
     },
     "sqsprovisionedpollersintegtestDefaultTestDeployAssertC3003526.assets": {
@@ -165,20 +68,7 @@
       "dependencies": [
         "sqsprovisionedpollersintegtestDefaultTestDeployAssertC3003526.assets"
       ],
-      "metadata": {
-        "/sqs-provisioned-pollers-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/sqs-provisioned-pollers-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "sqsprovisionedpollersintegtestDefaultTestDeployAssertC3003526.metadata.json",
       "displayName": "sqs-provisioned-pollers-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -654,7 +544,7 @@
             "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
           },
           "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
@@ -676,8 +566,13 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
           },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
@@ -690,5 +585,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }
