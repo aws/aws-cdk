@@ -397,6 +397,33 @@ test('deletes all objects on delete event even when bucket policy cannot be read
   });
 });
 
+test('does not empty bucket when getBucketTagging returns AccessDenied', async () => {
+  // GIVEN
+  mockS3Client.getBucketTagging.mockImplementation(async () => {
+    const { S3ServiceException } = jest.requireActual('@aws-sdk/client-s3');
+    return Promise.reject(new S3ServiceException({
+      name: 'AccessDenied',
+      $fault: 'client',
+      $metadata: {},
+    }));
+  });
+
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+  await invokeHandler(event);
+
+  // THEN
+  expect(mockS3Client.putBucketPolicy).not.toHaveBeenCalled();
+  expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+});
+
 test('does not empty bucket if it is not tagged', async () => {
   // GIVEN
   givenNotTaggedForDeletion();

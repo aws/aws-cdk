@@ -3820,6 +3820,29 @@ describe('bucket', () => {
       },
     });
 
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:GetBucketTagging',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'MyBucketF68F3FF0',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092',
+        },
+      ],
+    });
+
     Template.fromStack(stack).hasResource('Custom::S3AutoDeleteObjects', {
       'Properties': {
         'ServiceToken': {
