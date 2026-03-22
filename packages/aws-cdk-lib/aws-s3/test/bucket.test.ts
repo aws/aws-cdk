@@ -141,6 +141,95 @@ describe('bucket', () => {
     });
   });
 
+  test('empty blockedEncryptionTypes not allowed', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.DSSE,
+      blockedEncryptionTypes: [],
+    })).toThrow(/At least one blocked encryption type must be specified/);
+  });
+
+  test('other blockedEncryptionTypes are not allowed with NONE', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.KMS_MANAGED,
+      blockedEncryptionTypes: [
+        s3.BlockedEncryptionType.NONE,
+        s3.BlockedEncryptionType.SSE_C,
+      ],
+    })).toThrow(/If NONE is specified as the blocked encryption type, no other encryption types may be specified/);
+  });
+
+  test('bucket with no encryption by default and blockedEncryptionTypes', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.UNENCRYPTED,
+      blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            BlockedEncryptionTypes: {
+              EncryptionType: ['SSE-C'],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('bucket with default encryption and blockedEncryptionTypes', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            BlockedEncryptionTypes: {
+              EncryptionType: ['NONE'],
+            },
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('bucket with custom blockedEncryptionTypes', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      blockedEncryptionTypes: [
+        s3.BlockedEncryptionType.custom('unknown'),
+        s3.BlockedEncryptionType.custom('unsupported'),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            BlockedEncryptionTypes: {
+              EncryptionType: ['unknown', 'unsupported'],
+            },
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
+          },
+        ],
+      },
+    });
+  });
+
   test('valid bucket names', () => {
     const stack = new cdk.Stack();
 
