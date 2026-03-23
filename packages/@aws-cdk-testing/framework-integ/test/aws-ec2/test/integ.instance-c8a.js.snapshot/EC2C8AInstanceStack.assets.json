@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "270d6d7714b976a44e2b420c8714f7aaefb3083fde2cc864fd895b7e8db462d4": {
+      "displayName": "EC2C8AInstanceStack Template",
+      "source": {
+        "path": "EC2C8AInstanceStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bf30177e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "270d6d7714b976a44e2b420c8714f7aaefb3083fde2cc864fd895b7e8db462d4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

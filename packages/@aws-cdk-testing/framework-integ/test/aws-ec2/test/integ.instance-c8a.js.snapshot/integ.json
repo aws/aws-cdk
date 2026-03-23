@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "EC2C8AInstanceInteg/DefaultTest": {
+      "stacks": [
+        "EC2C8AInstanceStack"
+      ],
+      "assertionStack": "EC2C8AInstanceInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EC2C8AInstanceIntegDefaultTestDeployAssertFEDAAD4A"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

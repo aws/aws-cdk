@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "b710f36ce9974b59034a4f1eb943ee349402f8a0ccaeb1a33c36f7e3be592a62": {
+      "displayName": "EC2C8AInstanceIntegDefaultTestDeployAssertFEDAAD4A Template",
+      "source": {
+        "path": "EC2C8AInstanceIntegDefaultTestDeployAssertFEDAAD4A.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4578c56c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b710f36ce9974b59034a4f1eb943ee349402f8a0ccaeb1a33c36f7e3be592a62.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
