@@ -29,7 +29,7 @@ export interface IConnectable {
 }
 
 /**
- * Properties to intialize a new Connections object
+ * Properties to initialize a new Connections object
  */
 export interface ConnectionsProps {
   /**
