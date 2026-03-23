@@ -6,7 +6,7 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -269,8 +269,8 @@ export class Bundling implements cdk.BundlingOptions {
       if (!tsconfig) {
         throw new ValidationError('CannotFindTsconfigJsonPre', 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
-      const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscCommand = preparePosixShellCommand([options.tscRunner!, relativeEntryPath, ...compilerOptions.split(/\s+/).filter(Boolean)]);
+      const compilerOptionsArray = getTsconfigCompilerOptionsArray(tsconfig);
+      tscCommand = preparePosixShellCommand([options.tscRunner!, relativeEntryPath, ...compilerOptionsArray]);
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
@@ -371,7 +371,11 @@ export class Bundling implements cdk.BundlingOptions {
               });
               break;
             case 'callback':
-              step.operation();
+              try {
+                step.operation();
+              } catch (err) {
+                throw new ValidationError('LocalBundlingFileOperationFailed', `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
+              }
               break;
           }
         }
@@ -418,7 +422,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildRunner = esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : ['esbuild'];
 
     const esbuildArgs: string[] = [
-      ...this.buildEsbuildArgs(scope, this.projectRoot, outputDir, path.join),
+      ...this.buildEsbuildArgs(scope, this.projectRoot, outputDir, (...args: string[]) => path.join(...args)),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
 

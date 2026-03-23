@@ -253,7 +253,7 @@ test('esbuild bundling with esbuild options', () => {
   });
 
   // Correctly bundles with esbuild
-  const defineInstructions = "'--define:process.env.KEY=\"VALUE\"' '--define:process.env.BOOL=true' '--define:process.env.NUMBER=7777' '--define:process.env.STRING=\"this is a \\\"test\\\"\"'";
+  const defineInstructions = '\'--define:process.env.KEY="VALUE"\' \'--define:process.env.BOOL=true\' \'--define:process.env.NUMBER=7777\' \'--define:process.env.STRING="this is a \\"test\\""\'';
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
@@ -261,14 +261,14 @@ test('esbuild bundling with esbuild options', () => {
         'bash',
         '-c',
         [
-          `'esbuild' '--bundle' '/asset-input/lib/handler.ts'`,
-          `'--target=es2020' '--platform=node' '--format=esm' '--outfile=/asset-output/index.mjs'`,
+          '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\'',
+          '\'--target=es2020\' \'--platform=node\' \'--format=esm\' \'--outfile=/asset-output/index.mjs\'',
           `'--minify' '--sourcemap' '--sources-content=false' '--external:${STANDARD_EXTERNAL}' '--loader:.png=dataurl'`,
           defineInstructions,
-          `'--log-level=silent' '--keep-names' '--tsconfig=/asset-input/lib/custom-tsconfig.ts'`,
-          `'--metafile=/asset-output/index.meta.json' '--banner:js=/* comments */' '--footer:js=/* comments */'`,
-          `'--main-fields=module,main' '--inject:./my-shim.js' '--inject:./path with space/second-shim.js'`,
-          `'--log-limit=0' '--resolve-extensions=.ts,.js' '--splitting' '--keep-names' '--out-extension:.js=.mjs'`,
+          '\'--log-level=silent\' \'--keep-names\' \'--tsconfig=/asset-input/lib/custom-tsconfig.ts\'',
+          '\'--metafile=/asset-output/index.meta.json\' \'--banner:js=/* comments */\' \'--footer:js=/* comments */\'',
+          '\'--main-fields=module,main\' \'--inject:./my-shim.js\' \'--inject:./path with space/second-shim.js\'',
+          '\'--log-limit=0\' \'--resolve-extensions=.ts,.js\' \'--splitting\' \'--keep-names\' \'--out-extension:.js=.mjs\'',
         ].join(' '),
       ],
     }),
@@ -394,7 +394,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `'esbuild' '--bundle' '/asset-input/lib/handler.ts' '--target=node22' '--platform=node' '--outfile=/asset-output/index.js'`,
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -421,7 +421,7 @@ test('esbuild bundling with feature flag enabled using Node 16', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `'esbuild' '--bundle' '/asset-input/lib/handler.ts' '--target=node16' '--platform=node' '--outfile=/asset-output/index.js' '--external:aws-sdk'`,
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node16\' \'--platform=node\' \'--outfile=/asset-output/index.js\' \'--external:aws-sdk\'',
       ],
     }),
   });
@@ -869,8 +869,8 @@ test('esbuild bundling with pre compilations', () => {
     architecture: Architecture.X86_64,
   });
 
-  const compilerOptions = util.getTsconfigCompilerOptions(findParentTsConfigPath(__dirname));
-  const quotedCompilerOptions = compilerOptions.split(/\s+/).filter(Boolean).map((a: string) => `'${a}'`).join(' ');
+  const compilerOptionsArray = util.getTsconfigCompilerOptionsArray(findParentTsConfigPath(__dirname));
+  const quotedCompilerOptions = compilerOptionsArray.map((a: string) => `'${a}'`).join(' ');
 
   // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
@@ -1087,7 +1087,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `'esbuild' '--bundle' '/asset-input/lib/handler.ts' '--target=node22' '--platform=node' '--outfile=/asset-output/index.js'`,
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -1186,6 +1186,76 @@ test('Node 16 runtimes warn about sdk v2 upgrades', () => {
   Annotations.fromStack(stack).hasWarning('*',
     'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
   );
+});
+
+// --- Regression tests for PR review findings ---
+
+test('Docker bundling with preCompilation uses getTsconfigCompilerOptionsArray for proper escaping', () => {
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+
+  Bundling.bundle(stack, {
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    preCompilation: true,
+    forceDockerBundling: true,
+    architecture: Architecture.X86_64,
+  });
+
+  // The Docker tsc command should use getTsconfigCompilerOptionsArray (not naive string splitting)
+  // to properly handle compiler option values that may contain spaces.
+  // Verify the Docker command matches what getTsconfigCompilerOptionsArray produces.
+  const compilerOptionsArray = util.getTsconfigCompilerOptionsArray(findParentTsConfigPath(__dirname));
+  const quotedCompilerOptions = compilerOptionsArray.map((a: string) => `'${a}'`).join(' ');
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} &&`,
+          `'esbuild' '--bundle' '/asset-input/test/bundling.test.js' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:${STANDARD_EXTERNAL}'`,
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
+test('Local bundling callback failure includes contextual error message', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockImplementation(() => {
+    throw new Error('EACCES: permission denied');
+  });
+  const copyFileSyncMock = jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+  });
+
+  // The callback step should wrap fs errors with context
+  expect(() => {
+    bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+  }).toThrow(/Local bundling file operation failed.*EACCES/);
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
+  copyFileSyncMock.mockRestore();
 });
 
 // --- Local bundling spawn tests ---
