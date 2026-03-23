@@ -70,12 +70,18 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` action on this topic. If the topic is encrypted
+   * with a customer-managed KMS key, it also grants `kms:Decrypt` and
+   * `kms:GenerateDataKey*` on the key.
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` action on this topic.
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
@@ -224,7 +230,11 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` action on this topic. If the topic is encrypted
+   * with a customer-managed KMS key, it also grants `kms:Decrypt` and
+   * `kms:GenerateDataKey*` on the key.
    *
    * The use of this method is discouraged. Please use `grants.publish()` instead.
    *
@@ -235,7 +245,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` action on this topic.
    *
    * The use of this method is discouraged. Please use `grants.subscribe()` instead.
    *
