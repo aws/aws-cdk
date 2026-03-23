@@ -478,7 +478,8 @@ export abstract class BaseLoadBalancer extends Resource {
   protected resourcePolicyPrincipal(): iam.IPrincipal {
     const region = Stack.of(this).region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('RegionRequiredEnableBvAccess', 'Region is required to enable ELBv2 access logging', this);
+      // For environment-agnostic stacks, use the service principal which works in all regions
+      return new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com');
     }
 
     const account = RegionInfo.get(region).elbv2Account;
