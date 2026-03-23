@@ -721,6 +721,32 @@ describe('tests', () => {
         DeletionPolicy: 'Retain',
       });
     });
+
+    test('logAccessLogs works on environment-agnostic stacks', () => {
+      // GIVEN - stack without explicit region
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const bucket = new s3.Bucket(stack, 'AccessLogBucket');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN - should not throw
+      lb.logAccessLogs(bucket);
+
+      // THEN - uses service principal instead of account-based principal
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3:PutObject',
+              Principal: {
+                Service: 'logdelivery.elasticloadbalancing.amazonaws.com',
+              },
+            }),
+          ]),
+        },
+      });
+    });
   });
 
   describe('logConnectionLogs', () => {

@@ -274,6 +274,8 @@ lb.logAccessLogs(bucket);
 
 ```
 
+Access logging also works on environment-agnostic stacks (stacks without an explicit region). In this case, a service principal is used instead of a region-specific account.
+
 ### Setting up Connection Log Bucket on Application Load Balancer
 
 Like access log bucket, the only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
