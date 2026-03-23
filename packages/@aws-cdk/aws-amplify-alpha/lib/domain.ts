@@ -199,10 +199,13 @@ export class Domain extends Resource {
   }
 
   private renderSubDomainSettings() {
-    return this.subDomains.map(s => ({
-      branchName: s.branch.branchName,
-      prefix: s.prefix ?? s.branch.branchName,
-    }));
+    return this.subDomains.map(s => {
+      const prefix = s.prefix ?? s.branch.branchName;
+      return {
+        branchName: s.branch.branchName,
+        ...(prefix ? { prefix } : {}),
+      };
+    });
   }
 }
 
