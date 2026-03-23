@@ -1,5 +1,5 @@
 import type { EventPattern } from './event-pattern';
-import { UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 
 /**
  * Merge the `src` event pattern into the `dest` event pattern by adding all
@@ -70,6 +70,12 @@ export function renderEventPattern(eventPattern: EventPattern): any {
     if (key === 'detailType') {
       key = 'detail-type';
     }
+
+    // Validate that array fields are not empty (EventBridge rejects empty arrays)
+    if (Array.isArray(value) && value.length === 0 && !Token.isUnresolved(value)) {
+      throw new UnscopedValidationError('EventPatternEmptyArray', `Invalid event pattern field '${key}': empty arrays are not allowed. EventBridge does not accept empty arrays in event patterns.`);
+    }
+
     out[key] = value;
   }
 

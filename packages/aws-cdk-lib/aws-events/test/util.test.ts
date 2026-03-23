@@ -1,6 +1,25 @@
-import { mergeEventPattern } from '../lib/util';
+import { mergeEventPattern, renderEventPattern } from '../lib/util';
 
 describe('util', () => {
+  describe('renderEventPattern', () => {
+    test('throws on empty array fields', () => {
+      expect(() => renderEventPattern({ source: [] })).toThrow(/empty arrays are not allowed/);
+      expect(() => renderEventPattern({ detailType: [] })).toThrow(/empty arrays are not allowed/);
+      expect(() => renderEventPattern({ account: [] })).toThrow(/empty arrays are not allowed/);
+    });
+
+    test('allows non-empty array fields', () => {
+      expect(renderEventPattern({ source: ['my.source'], detailType: ['MyEvent'] })).toEqual({
+        'source': ['my.source'],
+        'detail-type': ['MyEvent'],
+      });
+    });
+
+    test('returns undefined for empty pattern', () => {
+      expect(renderEventPattern({})).toBeUndefined();
+    });
+  });
+
   describe('mergeEventPattern', () => {
     test('happy case', () => {
       expect(mergeEventPattern({
