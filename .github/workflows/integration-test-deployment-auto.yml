@@ -13,9 +13,8 @@ on:
     types:
       - completed
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
-  cancel-in-progress: true
+permissions:
+  actions: read # Required to download artifacts from the trigger workflow run
 
 jobs:
   pr-info:
@@ -26,9 +25,12 @@ jobs:
       head_sha: ${{ steps.pr_output.outputs.head_sha }}
       base_sha: ${{ steps.pr_output.outputs.base_sha }}
       reviewer: ${{ steps.pr_output.outputs.reviewer }}
+      has_context: ${{ steps.download.outcome == 'success' }}
     steps:
       - name: Download trigger context
+        id: download
         uses: actions/download-artifact@v8
+        continue-on-error: true
         with:
           name: integ-test-trigger-context
           path: trigger-context/
@@ -36,6 +38,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Parse trigger context
+        if: steps.download.outcome == 'success'
         id: pr_output
         run: |
           echo "pr_number=$(cat trigger-context/pr_number)" >> "$GITHUB_OUTPUT"
@@ -45,6 +48,7 @@ jobs:
 
   validate-approver:
     needs: pr-info
+    if: needs.pr-info.outputs.has_context == 'true'
     runs-on: ubuntu-latest
     outputs:
       is_member: ${{ steps.check_team.outputs.is_member }}
@@ -67,19 +71,42 @@ jobs:
     needs: [pr-info, validate-approver]
     if: needs.validate-approver.outputs.is_member == 'true'
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
-    timeout-minutes: 7200
+    timeout-minutes: 7200 # 5 days — integration tests run across many accounts and can take extended time
     # Shadow mode: workflow reports success even if tests fail
     continue-on-error: true
     name: 'Deploy integration test snapshots (Auto)'
+    # Cancel previous deployment for the same PR (uses artifact-sourced PR number, works for fork PRs)
+    concurrency:
+      group: integ-test-auto-${{ needs.pr-info.outputs.pr_number }}
+      cancel-in-progress: true
 
     permissions:
       id-token: write # Required for OIDC authentication with AWS Atmosphere
       contents: read
+      checks: write # Required to report status back to PR via Checks API
 
     env:
       PR_BUILD: true
 
     steps:
+      - name: Create check run
+        id: create_check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.pr-info.outputs.head_sha }}
+        run: |
+          CHECK_ID=$(gh api -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -f name="Integration Tests (Auto)" \
+            -f head_sha="${HEAD_SHA}" \
+            -f status="in_progress" \
+            -f 'output[title]=Integration tests running' \
+            -f 'output[summary]=Running integration tests for snapshot changes...' \
+            -f "details_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --jq '.id' \
+            /repos/${{ github.repository }}/check-runs)
+          echo "check_id=$CHECK_ID" >> "$GITHUB_OUTPUT"
+
       - name: Checkout HEAD
         uses: actions/checkout@v6
         with:
@@ -131,6 +158,7 @@ jobs:
         run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests
+        id: run_tests
         run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
@@ -142,3 +170,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ needs.pr-info.outputs.pr_number }}
+
+      - name: Update check run
+        if: always() && steps.create_check.outputs.check_id
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHECK_ID: ${{ steps.create_check.outputs.check_id }}
+          TEST_OUTCOME: ${{ steps.run_tests.outcome }}
+        run: |
+          if [ "$TEST_OUTCOME" = "success" ]; then
+            CONCLUSION="success"
+            TITLE="Integration tests passed"
+            SUMMARY="All integration tests passed for PR #${{ needs.pr-info.outputs.pr_number }}."
+          else
+            CONCLUSION="failure"
+            TITLE="Integration tests failed"
+            SUMMARY="Integration tests failed for PR #${{ needs.pr-info.outputs.pr_number }}. See [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+          fi
+          gh api -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -f conclusion="$CONCLUSION" \
+            -f "output[title]=$TITLE" \
+            -f "output[summary]=$SUMMARY" \
+            /repos/${{ github.repository }}/check-runs/${CHECK_ID}
