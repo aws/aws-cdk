@@ -223,6 +223,7 @@ export class DataIdentifier {
   public static readonly DRIVERSLICENSE_SK = new DataIdentifier('DriversLicense-SK');
   public static readonly DRIVERSLICENSE_US = new DataIdentifier('DriversLicense-US');
   public static readonly DRUGENFORCEMENTAGENCYNUMBER_US = new DataIdentifier('DrugEnforcementAgencyNumber-US');
+  public static readonly DATEOFBIRTH = new DataIdentifier('DateOfBirth');
   public static readonly ELECTORALROLLNUMBER_GB = new DataIdentifier('ElectoralRollNumber-GB');
   public static readonly EMAILADDRESS = new DataIdentifier('EmailAddress');
   public static readonly HEALTHINSURANCECARDNUMBER_EU = new DataIdentifier('HealthInsuranceCardNumber-EU');
