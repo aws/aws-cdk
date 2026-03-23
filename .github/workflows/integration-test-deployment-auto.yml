@@ -1,69 +1,60 @@
 name: Integration Test deployment (Auto)
 
-# This workflow automatically runs integration tests when a PR with snapshot changes
-# is approved by a CDK team member. No manual approval required.
+# Privileged workflow that runs integration tests when triggered by the
+# "Integration Test Auto Trigger" workflow. Uses workflow_run to run in the
+# base repo context with access to secrets, vars, and OIDC.
 #
-# SHADOW MODE: This workflow is in shadow mode - failures don't block PR merges.
+# SHADOW MODE: Failures don't block PR merges.
 # Once validated, this will replace the label-based workflow (integration-test-deployment.yml).
 
 on:
-  pull_request_review:
-    types: [submitted]
+  workflow_run:
+    workflows: ["Integration Test Auto Trigger"]
+    types:
+      - completed
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
-  # Early validation: Check if approver is a CDK team member and PR has snapshot changes
-  validate_approver:
-    if: github.event.review.state == 'approved'
+  pr-info:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     outputs:
-      should_run: ${{ steps.check_team.outputs.is_member == 'true' && steps.check_snapshots.outputs.has_snapshots == 'true' }}
-    permissions:
-      contents: read
-      pull-requests: read
+      pr_number: ${{ steps.pr_output.outputs.pr_number }}
+      head_sha: ${{ steps.pr_output.outputs.head_sha }}
+      base_sha: ${{ steps.pr_output.outputs.base_sha }}
+      reviewer: ${{ steps.pr_output.outputs.reviewer }}
     steps:
-      - name: Checkout for path filtering
-        uses: actions/checkout@v6
+      - name: Download trigger context
+        uses: actions/download-artifact@v8
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          name: integ-test-trigger-context
+          path: trigger-context/
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: "lts/*"
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build deployment-integ
-        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
-
-      - name: Check for snapshot changes
-        id: check_snapshots
-        env:
-          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
-          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
+      - name: Parse trigger context
+        id: pr_output
         run: |
-          # Reuses getChangedSnapshots() from utils.ts — single source of truth
-          if yarn --cwd tools/@aws-cdk/integration-test-deployment check-snapshots; then
-            echo "has_snapshots=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_snapshots=false" >> $GITHUB_OUTPUT
-          fi
+          echo "pr_number=$(cat trigger-context/pr_number)" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(cat trigger-context/head_sha)" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$(cat trigger-context/base_sha)" >> "$GITHUB_OUTPUT"
+          echo "reviewer=$(cat trigger-context/reviewer)" >> "$GITHUB_OUTPUT"
 
+  validate-approver:
+    needs: pr-info
+    runs-on: ubuntu-latest
+    outputs:
+      is_member: ${{ steps.check_team.outputs.is_member }}
+    steps:
       - name: Check if approver is CDK team member
         id: check_team
-        if: steps.check_snapshots.outputs.has_snapshots == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
-          APPROVER: ${{ github.event.review.user.login }}
+          APPROVER: ${{ needs.pr-info.outputs.reviewer }}
         run: |
-          # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
-          # https://docs.github.com/en/rest/teams/members#get-team-membership-for-a-user
           if gh api "orgs/aws/teams/aws-cdk-team/memberships/${APPROVER}" --jq '.state' 2>/dev/null | grep -q "active"; then
             echo "${APPROVER} is an active CDK team member"
             echo "is_member=true" >> $GITHUB_OUTPUT
@@ -73,20 +64,17 @@ jobs:
           fi
 
   integration_test_deployment_auto:
-    needs: validate_approver
-    # Only run if approver is a CDK team member AND PR has snapshot changes
-    if: needs.validate_approver.outputs.should_run == 'true'
+    needs: [pr-info, validate-approver]
+    if: needs.validate-approver.outputs.is_member == 'true'
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
-    # No environment - runs automatically without manual approval
+    timeout-minutes: 7200
     # Shadow mode: workflow reports success even if tests fail
     continue-on-error: true
     name: 'Deploy integration test snapshots (Auto)'
 
-    # Job-level permissions for least privilege
     permissions:
       id-token: write # Required for OIDC authentication with AWS Atmosphere
-      pull-requests: read # Required to check PR reviews and labels
-      contents: read # Required to checkout code
+      contents: read
 
     env:
       PR_BUILD: true
@@ -95,7 +83,7 @@ jobs:
       - name: Checkout HEAD
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ needs.pr-info.outputs.head_sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -149,9 +137,8 @@ jobs:
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL }}
           CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
           CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
-          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
-          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
-          # GitHub context for preflight check (validates CDK team membership)
+          TARGET_BRANCH_COMMIT: ${{ needs.pr-info.outputs.base_sha }}
+          SOURCE_BRANCH_COMMIT: ${{ needs.pr-info.outputs.head_sha }}
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ needs.pr-info.outputs.pr_number }}
