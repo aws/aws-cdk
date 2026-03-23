@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "EventsPatternValidationInteg/DefaultTest": {
+      "stacks": [
+        "EventsPatternValidationStack"
+      ],
+      "assertionStack": "EventsPatternValidationInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EventsPatternValidationIntegDefaultTestDeployAssert078FA7D5"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

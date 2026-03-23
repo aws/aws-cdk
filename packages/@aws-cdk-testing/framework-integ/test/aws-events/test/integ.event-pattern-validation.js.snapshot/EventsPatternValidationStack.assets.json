@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "116cdd17e0ff975fa791637700eacf187c45dc73751925fcb4cea22ffd3af3cb": {
+      "displayName": "EventsPatternValidationStack Template",
+      "source": {
+        "path": "EventsPatternValidationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dd2edad1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "116cdd17e0ff975fa791637700eacf187c45dc73751925fcb4cea22ffd3af3cb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
