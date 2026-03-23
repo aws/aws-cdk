@@ -201,7 +201,10 @@ export interface DistributionProps {
   readonly geoRestriction?: GeoRestriction;
 
   /**
-   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   * Specify the HTTP version(s) that you want viewers to use to communicate with CloudFront.
+   *
+   * Note that setting `HTTP3` enables HTTP/3 only and does *not* include HTTP/2.
+   * To support both HTTP/2 and HTTP/3, use `HTTP2_AND_3`.
    *
    * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
    *
@@ -901,7 +904,7 @@ export enum HttpVersion {
   HTTP2 = 'http2',
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
-  /** HTTP 3 */
+  /** HTTP 3 only (does not include HTTP/2) */
   HTTP3 = 'http3',
 }
 
