@@ -1,7 +1,8 @@
 import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
-import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { Annotations, ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { isServicePrincipal } from './private/principal-utils';
 
 /**
  * Construction properties for TableGrants
@@ -108,6 +109,16 @@ export class TableGrants {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (isServicePrincipal(grantee.grantPrincipal)) {
+      Annotations.of(this.table).addWarningV2(
+        '@aws-cdk/aws-dynamodb:servicePrincipalGrantDropped',
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+      );
+      return iam.Grant.drop(grantee, 'DynamoDB grant* does not support ServicePrincipal grantees');
+    }
+
     return this.policyResource ? iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,

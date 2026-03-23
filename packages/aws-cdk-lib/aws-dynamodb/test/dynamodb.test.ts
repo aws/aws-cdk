@@ -2464,6 +2464,45 @@ describe('grants', () => {
     testGrant(['*'], (p, t) => t.grantFullAccess(p));
   });
 
+  test('grant* with ServicePrincipal drops grant', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com'));
+
+    // THEN
+    expect(grant.success).toBe(false);
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: Match.absent(),
+    });
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) drops grant', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new Table(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadData(principal);
+
+    // THEN
+    expect(grant.success).toBe(false);
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: Match.absent(),
+    });
+  });
+
   testDeprecated('"Table.grantListStreams" allows principal to list all streams', () => {
     // GIVEN
     const stack = new Stack();
@@ -5296,7 +5335,7 @@ test('Throws when more than four multi-attribute sort keys are specified', () =>
 });
 
 describe('L1 table grants', () => {
-  test('grant read permission to service principal (L1)', () => {
+  test('grant read permission to service principal (L1) drops grant', () => {
     const stack = new Stack();
     const table = new CfnTable(stack, 'Table', {
       keySchema: [{ attributeName: 'id', keyType: 'HASH' }],
@@ -5304,19 +5343,10 @@ describe('L1 table grants', () => {
     });
     const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
 
-    TableGrants.fromTable(table).readData(principal);
-
+    const grant = TableGrants.fromTable(table).readData(principal);
+    expect(grant.success).toBe(false);
     Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
-      ResourcePolicy: {
-        PolicyDocument: {
-          Statement: Match.arrayWith([{
-            Action: ['dynamodb:BatchGetItem', 'dynamodb:Query', 'dynamodb:GetItem', 'dynamodb:Scan', 'dynamodb:ConditionCheckItem', 'dynamodb:DescribeTable'],
-            Effect: 'Allow',
-            Principal: { Service: 'lambda.amazonaws.com' },
-            Resource: '*',
-          }]),
-        },
-      },
+      ResourcePolicy: Match.absent(),
     });
   });
 });

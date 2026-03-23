@@ -1310,6 +1310,67 @@ describe('grants', () => {
       ]),
     });
   });
+
+  test('grant* with ServicePrincipal drops grant', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com'));
+
+    // THEN
+    expect(grant.success).toBe(false);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: Match.absent(),
+        }),
+      ]),
+    });
+  });
+
+  test('grant with ServicePrincipal drops grant', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem');
+
+    // THEN
+    expect(grant.success).toBe(false);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: Match.absent(),
+        }),
+      ]),
+    });
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) drops grant', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadData(principal);
+
+    // THEN
+    expect(grant.success).toBe(false);
+  });
 });
 
 describe('replica tables', () => {
