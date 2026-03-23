@@ -7,6 +7,7 @@ import { AwsLogDriver, Cluster } from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
 import type { Tag } from '../../../aws-events-targets';
 import { EcsTask } from '../../../aws-events-targets';
+import type { IRole } from '../../../aws-iam';
 import { Stack, ValidationError } from '../../../core';
 
 /**
@@ -88,6 +89,13 @@ export interface ScheduledTaskBaseProps {
    * @default - No tags are applied to the task
    */
   readonly tags?: Tag[];
+
+  /**
+   * Existing IAM role to run the ECS task.
+   *
+   * @default - A new IAM role is created
+   */
+  readonly role?: IRole;
 }
 
 export interface ScheduledTaskImageProps {
@@ -185,6 +193,11 @@ export abstract class ScheduledTaskBase extends Construct {
   public readonly tags?: Tag[];
 
   /**
+   * The IAM role to run the ECS task.
+   */
+  private readonly _role?: IRole;
+
+  /**
    * Constructs a new instance of the ScheduledTaskBase class.
    */
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
@@ -199,6 +212,7 @@ export abstract class ScheduledTaskBase extends Construct {
     this._securityGroups = props.securityGroups;
     this.propagateTags = props.propagateTags;
     this.tags = props.tags;
+    this._role = props.role;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
@@ -226,6 +240,7 @@ export abstract class ScheduledTaskBase extends Construct {
       securityGroups: this._securityGroups,
       propagateTags: this.propagateTags,
       tags: this.tags,
+      role: this._role,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
