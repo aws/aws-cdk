@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "TableV2GrantsInteg/DefaultTest": {
+      "stacks": [
+        "TableV2GrantsStack"
+      ],
+      "assertionStack": "TableV2GrantsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "TableV2GrantsIntegDefaultTestDeployAssert1C993CE7"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

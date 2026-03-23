@@ -4376,3 +4376,22 @@ test('can add GSI with both multi-attribute partition and sort keys', () => {
     ],
   });
 });
+
+test('TableV2 does not pass deprecated encryptedResource and policyResource to TableGrants', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.awsManagedKey(),
+  });
+
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  });
+  table.grantReadData(role);
+
+  const warnings = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+  const deprecatedWarnings = warnings.filter(w =>
+    typeof w.entry.data === 'string' && w.entry.data.includes('deprecated'),
+  );
+  expect(deprecatedWarnings).toHaveLength(0);
+});

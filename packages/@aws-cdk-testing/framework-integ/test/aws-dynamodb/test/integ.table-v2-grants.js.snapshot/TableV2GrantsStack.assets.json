@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "e3f0df8700614867036c722cc364cf1f2d45313211566de81eba07026041974e": {
+      "displayName": "TableV2GrantsStack Template",
+      "source": {
+        "path": "TableV2GrantsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5f678993": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e3f0df8700614867036c722cc364cf1f2d45313211566de81eba07026041974e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
