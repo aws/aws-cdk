@@ -28,6 +28,16 @@ export interface RestApiOriginProps extends cloudfront.OriginProps {
    * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
+
+  /**
+   * Configures mutual TLS (mTLS) authentication between CloudFront and your origin server.
+   *
+   * When specified, CloudFront uses the provided client certificate from ACM
+   * to authenticate with the origin using mutual TLS.
+   *
+   * @default - no mutual TLS authentication
+   */
+  readonly originMtlsConfig?: cloudfront.OriginMtlsConfig;
 }
 
 /**
@@ -54,6 +64,10 @@ export class RestApiOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
+      // certificateRef.certificateId returns the certificate ARN via CertificateBase
+      originMtlsConfig: this.props.originMtlsConfig
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        : undefined,
     };
   }
 }
