@@ -1,3 +1,4 @@
+import * as acm from '../../aws-certificatemanager';
 import * as cloudfront from '../../aws-cloudfront';
 import { App, Duration, Stack } from '../../core';
 import { HttpOrigin } from '../lib';
@@ -191,4 +192,30 @@ test('throw error for configuring readTimeout less than responseCompletionTimeou
       readTimeout: Duration.seconds(60),
     });
   }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
+});
+
+test('renders with originMtlsConfig', () => {
+  const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:1234:certificate/test-cert-id');
+  const origin = new HttpOrigin('www.example.com', {
+    originMtlsConfig: {
+      clientCertificate: cert,
+    },
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(originBindConfig.originProperty).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: 'www.example.com',
+    originCustomHeaders: undefined,
+    originPath: undefined,
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+      originMtlsConfig: {
+        clientCertificateArn: 'arn:aws:acm:us-east-1:1234:certificate/test-cert-id',
+      },
+    },
+  });
 });

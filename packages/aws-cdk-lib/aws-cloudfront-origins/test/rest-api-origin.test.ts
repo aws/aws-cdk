@@ -1,4 +1,5 @@
 import * as apigateway from '../../aws-apigateway';
+import * as acm from '../../aws-certificatemanager';
 import { Duration, Stack } from '../../core';
 import { RestApiOrigin } from '../lib';
 
@@ -185,3 +186,27 @@ test('throw error for configuring readTimeout less than responseCompletionTimeou
     });
   }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
 });
+
+test('renders with originMtlsConfig', () => {
+  const api = new apigateway.RestApi(stack, 'RestApi');
+  api.root.addMethod('GET');
+
+  const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id');
+  const origin = new RestApiOrigin(api, {
+    originMtlsConfig: {
+      clientCertificate: cert,
+    },
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(stack.resolve(originBindConfig.originProperty)).toEqual(
+    expect.objectContaining({
+      customOriginConfig: expect.objectContaining({
+        originMtlsConfig: {
+          clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/test-cert-id',
+        },
+      }),
+    }),
+  );
+});
+
