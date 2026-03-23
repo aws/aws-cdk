@@ -177,15 +177,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           CHECK_ID: ${{ steps.create_check.outputs.check_id }}
           TEST_OUTCOME: ${{ steps.run_tests.outcome }}
+          PR_NUMBER: ${{ needs.pr_info.outputs.pr_number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ "$TEST_OUTCOME" = "success" ]; then
             CONCLUSION="success"
             TITLE="Integration tests passed"
-            SUMMARY="All integration tests passed for PR #${{ needs.pr_info.outputs.pr_number }}."
+            SUMMARY="All integration tests passed for PR #${PR_NUMBER}."
           else
             CONCLUSION="failure"
             TITLE="Integration tests failed"
-            SUMMARY="Integration tests failed for PR #${{ needs.pr_info.outputs.pr_number }}. See [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+            SUMMARY="Integration tests failed for PR #${PR_NUMBER}. See [workflow run](${RUN_URL}) for details."
           fi
           gh api -X PATCH \
             -H "Accept: application/vnd.github+json" \
