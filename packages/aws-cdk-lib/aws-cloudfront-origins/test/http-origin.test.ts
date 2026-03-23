@@ -219,3 +219,15 @@ test('renders with originMtlsConfig', () => {
     },
   });
 });
+
+test('throws when originMtlsConfig is used with HTTP_ONLY protocol policy', () => {
+  const cert = acm.CfnCertificate.fromCertificateId(stack, 'Cert2', 'arn:aws:acm:us-east-1:1234:certificate/test-cert-id');
+  expect(() => {
+    new HttpOrigin('www.example.com', {
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
+      originMtlsConfig: {
+        clientCertificate: cert,
+      },
+    });
+  }).toThrow('originMtlsConfig requires a TLS connection to the origin, but protocolPolicy is set to HTTP_ONLY. Use HTTPS_ONLY or MATCH_VIEWER instead.');
+});

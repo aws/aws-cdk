@@ -1,6 +1,7 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import type * as cdk from '../../core';
+import { UnscopedValidationError } from '../../core';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
@@ -86,6 +87,13 @@ export class HttpOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
+
+    if (props.originMtlsConfig && props.protocolPolicy === cloudfront.OriginProtocolPolicy.HTTP_ONLY) {
+      throw new UnscopedValidationError(
+        'OriginMtlsConfigRequiresHttps',
+        'originMtlsConfig requires a TLS connection to the origin, but protocolPolicy is set to HTTP_ONLY. Use HTTPS_ONLY or MATCH_VIEWER instead.',
+      );
+    }
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
