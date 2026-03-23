@@ -117,6 +117,16 @@ export interface WebSocketApiProps {
    * @default false
    */
   readonly disableSchemaValidation?: boolean;
+
+  /**
+   * Specifies whether clients can invoke your API using the default endpoint.
+   * By default, clients can invoke your API with the default
+   * `https://{api_id}.execute-api.{region}.amazonaws.com` endpoint. Set this to
+   * true if you would like clients to use your custom domain name.
+   *
+   * @default false execute-api endpoint enabled.
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -188,6 +198,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
       ipAddressType: props?.ipAddressType,
       disableSchemaValidation: props?.disableSchemaValidation,
+      disableExecuteApiEndpoint: props?.disableExecuteApiEndpoint,
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
