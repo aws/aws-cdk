@@ -18,6 +18,18 @@ bedrock.FoundationModel.fromFoundationModelId(
 );
 ```
 
+Amazon Nova models are also available:
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'NovaModel',
+  bedrock.FoundationModelIdentifier.AMAZON_NOVA_2_LITE_V1_0,
+);
+```
+
 To look up a Bedrock provisioned throughput model:
 
 ```ts

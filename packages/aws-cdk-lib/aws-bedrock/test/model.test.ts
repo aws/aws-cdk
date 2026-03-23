@@ -38,4 +38,15 @@ describe('FoundationModel', () => {
     // THEN
     expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/new-base-model']] });
   });
+
+  test('Amazon Nova 2 Lite model identifier', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_NOVA_2_LITE_V1_0);
+
+    // THEN
+    expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/amazon.nova-2-lite-v1:0']] });
+  });
 });
