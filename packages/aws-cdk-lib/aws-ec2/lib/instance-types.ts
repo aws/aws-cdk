@@ -793,6 +793,16 @@ export enum InstanceClass {
   C7A = 'c7a',
 
   /**
+   * Compute optimized instances based on AMD EPYC processors, 8th generation
+   */
+  COMPUTE8_AMD = 'compute8-amd',
+
+  /**
+   * Compute optimized instances based on AMD EPYC processors, 8th generation
+   */
+  C8A = 'c8a',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'storage2',
@@ -1981,6 +1991,8 @@ export class InstanceType {
       [InstanceClass.C8I]: 'c8i',
       [InstanceClass.COMPUTE8_INTEL_FLEX]: 'c8i-flex',
       [InstanceClass.C8I_FLEX]: 'c8i-flex',
+      [InstanceClass.COMPUTE8_AMD]: 'c8a',
+      [InstanceClass.C8A]: 'c8a',
       [InstanceClass.STORAGE2]: 'd2',
       [InstanceClass.D2]: 'd2',
       [InstanceClass.STORAGE3]: 'd3',
