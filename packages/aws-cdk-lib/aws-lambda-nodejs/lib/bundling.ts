@@ -226,7 +226,6 @@ export class Bundling implements cdk.BundlingOptions {
     inputDir: string,
     outputDir: string,
     pathJoin: (...parts: string[]) => string,
-    formatPath: (p: string) => string,
   ): string[] {
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
       throw new ValidationError('SourceMapModeCannotSource', 'sourceMapMode cannot be used when sourceMap is false', scope);
@@ -242,7 +241,7 @@ export class Bundling implements cdk.BundlingOptions {
       `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile=${formatPath(pathJoin(outputDir, outFile))}`,
+      `--outfile=${pathJoin(outputDir, outFile)}`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
@@ -251,8 +250,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...Object.entries(this.props.define ?? {}).map(([key, value]) => `--define:${key}=${value}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${formatPath(pathJoin(inputDir, this.relativeTsconfigPath))}`] : [],
-      ...this.props.metafile ? [`--metafile=${formatPath(pathJoin(outputDir, 'index.meta.json'))}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${this.props.banner}`] : [],
       ...this.props.footer ? [`--footer:js=${this.props.footer}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
@@ -271,27 +270,19 @@ export class Bundling implements cdk.BundlingOptions {
         throw new ValidationError('CannotFindTsconfigJsonPre', 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
+      tscCommand = preparePosixShellCommand([options.tscRunner!, relativeEntryPath, ...compilerOptions.split(/\s+/).filter(Boolean)]);
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    const quotePath = (p: string) => `"${p}"`;
-    const rawArgs = this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, pathJoin, quotePath);
+    const rawArgs = this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, pathJoin);
 
-    // Shell-escape user-controlled args, quote paths
-    const safeArgs = rawArgs.map(arg => {
-      if (isUserControlledArg(arg)) {
-        return shellEscape(arg);
-      }
-      return arg;
-    });
-
-    const esbuildCommand: string[] = [
+    const esbuildArgv: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${relativeEntryPath}"`,
-      ...safeArgs,
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
+      '--bundle', relativeEntryPath,
+      ...rawArgs,
+      ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
+    const esbuildCommand = preparePosixShellCommand(esbuildArgv);
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -326,7 +317,7 @@ export class Bundling implements cdk.BundlingOptions {
     return chain([
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
       tscCommand,
-      esbuildCommand.join(' '),
+      esbuildCommand,
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
       ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
@@ -427,7 +418,7 @@ export class Bundling implements cdk.BundlingOptions {
     const esbuildRunner = esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : ['esbuild'];
 
     const esbuildArgs: string[] = [
-      ...this.buildEsbuildArgs(scope, this.projectRoot, outputDir, path.join, (p: string) => p),
+      ...this.buildEsbuildArgs(scope, this.projectRoot, outputDir, path.join),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
 
@@ -564,25 +555,21 @@ class OsCommand {
 }
 
 /**
- * Escapes a string for safe inclusion in a single-quoted shell argument.
- * In bash single quotes, all characters are literal except ' itself.
- * To include a single quote, we end the quoting, add an escaped quote, and restart.
+ * Converts a clean argv array into a single POSIX shell command string.
+ * Each argument is escaped if it contains characters that have special
+ * meaning in a shell. Safe characters (alphanumeric plus a few punctuation
+ * marks commonly found in CLI flags) are left unquoted for readability.
  */
-function shellEscape(value: string): string {
-  return "'" + value.replace(/'/g, "'\\''") + "'";
+function preparePosixShellCommand(argv: string[]): string {
+  return argv.map(posixShellEscape).join(' ');
 }
 
 /**
- * Returns true if the arg contains user-controlled content that needs shell escaping.
- * Safe args (enums, booleans, controlled paths) don't need escaping.
+ * Escapes a single argument for safe inclusion in a POSIX shell command.
+ * Every argument is single-quoted unconditionally (like Python's shlex.quote).
  */
-const USER_CONTROLLED_PREFIXES = [
-  '--target=', '--external:', '--loader:', '--define:',
-  '--banner:', '--footer:', '--main-fields=', '--inject:',
-];
-
-function isUserControlledArg(arg: string): boolean {
-  return USER_CONTROLLED_PREFIXES.some(p => arg.startsWith(p));
+function posixShellEscape(arg: string): string {
+  return "'" + arg.replace(/'/g, "'\\''") + "'";
 }
 
 /**
@@ -617,23 +604,6 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
   }
 
   return `node${match[1]}`;
-}
-
-function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
-  const args = new Array<string>();
-  const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
-
-  for (const [key, value] of Object.entries(esbuildArgs)) {
-    if (value === true || value === '') {
-      args.push(key);
-    } else if (reSpecifiedKeys.includes(key)) {
-      args.push(shellEscape(`${key}:${value}`));
-    } else if (value) {
-      args.push(shellEscape(`${key}=${value}`));
-    }
-  }
-
-  return args.join(' ');
 }
 
 /**
