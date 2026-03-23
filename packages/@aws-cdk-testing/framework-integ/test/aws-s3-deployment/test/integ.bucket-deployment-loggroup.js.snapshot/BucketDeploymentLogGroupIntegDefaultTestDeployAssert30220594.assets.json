@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "4ae90fc43462e8e04ba652494790b8ae9051b860b4b4688e92abede40b1b2b24": {
+      "displayName": "BucketDeploymentLogGroupIntegDefaultTestDeployAssert30220594 Template",
+      "source": {
+        "path": "BucketDeploymentLogGroupIntegDefaultTestDeployAssert30220594.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6c1cd69f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4ae90fc43462e8e04ba652494790b8ae9051b860b4b4688e92abede40b1b2b24.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

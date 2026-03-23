@@ -1,45 +1,29 @@
 import * as path from 'path';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import type { Construct } from 'constructs';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 
-/**
- * Integration test for bucket deployment with custom log group:
- * - Lambda function writes logs to a custom CloudWatch Log Group
- * - Tests that custom log groups work correctly with bucket deployments
- */
-class TestBucketDeployment extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
+const app = new App();
+const stack = new Stack(app, 'BucketDeploymentLogGroupStack');
 
-    const destinationBucket = new s3.Bucket(this, 'Destination', {
-      websiteIndexDocument: 'index.html',
-      publicReadAccess: false,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true, // needed for integration test cleanup
-    });
-
-    new s3deploy.BucketDeployment(this, 'DeployWithCustomLogGroup', {
-      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
-      destinationBucket,
-      logGroup: new logs.LogGroup(this, 'LogGroup', {
-        retention: logs.RetentionDays.ONE_DAY,
-        removalPolicy: cdk.RemovalPolicy.DESTROY, // cleanup integ test
-      }),
-      retainOnDelete: false,
-    });
-  }
-}
-
-const app = new cdk.App();
-const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-loggroup');
-
-new integ.IntegTest(app, 'integ-test-bucket-deployment-loggroup', {
-  testCases: [testCase],
-  diffAssets: false,
+const bucket = new s3.Bucket(stack, 'Dest', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 
-app.synth();
+const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+  retention: logs.RetentionDays.ONE_DAY,
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+
+new s3deploy.BucketDeployment(stack, 'Deploy', {
+  sources: [s3deploy.Source.data('index.html', '<h1>Hello</h1>')],
+  destinationBucket: bucket,
+  logGroup,
+});
+
+new IntegTest(app, 'BucketDeploymentLogGroupInteg', {
+  testCases: [stack],
+});

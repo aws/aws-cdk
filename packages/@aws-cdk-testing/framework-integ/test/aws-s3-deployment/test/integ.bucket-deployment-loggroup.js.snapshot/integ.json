@@ -1,14 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "integ-test-bucket-deployment-loggroup/DefaultTest": {
+    "BucketDeploymentLogGroupInteg/DefaultTest": {
       "stacks": [
-        "test-bucket-deployment-loggroup"
+        "BucketDeploymentLogGroupStack"
       ],
-      "diffAssets": false,
-      "assertionStack": "integ-test-bucket-deployment-loggroup/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestbucketdeploymentloggroupDefaultTestDeployAssertB356FD0A"
+      "assertionStack": "BucketDeploymentLogGroupInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketDeploymentLogGroupIntegDefaultTestDeployAssert30220594"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1107.0"
 }
