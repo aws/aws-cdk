@@ -124,7 +124,11 @@ export interface StateMachineProps {
   readonly role?: iam.IRole;
 
   /**
-   * Maximum run time for this state machine
+   * Maximum run time for this state machine.
+   *
+   * Note: This only applies when the definition is provided using a `Chain` (via `definition` or
+   * `definitionBody` with `ChainDefinitionBody`). When using a `.asl.json` file or string-based
+   * definition, the timeout must be specified within the ASL definition itself.
    *
    * @default No timeout
    */
