@@ -1025,3 +1025,26 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
     HealthCheckGracePeriodSeconds: 120,
   });
 });
+
+test('test Fargate queue worker service construct - with custom task role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const iam = require('../../../aws-iam');
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    taskRole,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    TaskRoleArn: { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
+  });
+});
