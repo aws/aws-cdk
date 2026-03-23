@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "372a999ee42592f0c7f09be1c01b5d54e25ca4b957f5f7726eee3502c67cfbc7": {
+      "displayName": "CloudFrontFunctionUrlOACIntegDefaultTestDeployAssertBB60BDE4 Template",
+      "source": {
+        "path": "CloudFrontFunctionUrlOACIntegDefaultTestDeployAssertBB60BDE4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bf6a0da8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "372a999ee42592f0c7f09be1c01b5d54e25ca4b957f5f7726eee3502c67cfbc7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f176f090c693c785fa1ae7010f4f49cf17285bb086c8dee2a3832bfccffede3d": {
+      "displayName": "CloudFrontFunctionUrlOACStack Template",
+      "source": {
+        "path": "CloudFrontFunctionUrlOACStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5f44deca": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f176f090c693c785fa1ae7010f4f49cf17285bb086c8dee2a3832bfccffede3d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
