@@ -416,6 +416,14 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 });
 ```
 
+To disable the default execute-api endpoint for WebSocket APIs:
+
+```ts
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi', {
+  disableExecuteApiEndpoint: true,
+});
+```
+
 To retrieve a websocket URL and a callback URL:
 
 ```ts
