@@ -12,9 +12,9 @@ import * as cp from '../../../aws-codepipeline';
 import * as cpa from '../../../aws-codepipeline-actions';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import type * as s3 from '../../../aws-s3';
+import * as s3 from '../../../aws-s3';
 import type { Duration } from '../../../core';
-import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
+import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations, RemovalPolicy } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import type { FileSet, IFileSetProducer, StackAsset, StackDeployment, Step } from '../blueprint';
 import { AssetType, ManualApprovalStep, ShellStep } from '../blueprint';
@@ -271,6 +271,27 @@ export interface CodePipelineProps {
    * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
+
+  /**
+   * The removal policy to apply to the artifact bucket.
+   *
+   * Only applies when `artifactBucket` is not provided (i.e., the bucket is created internally).
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly artifactBucketRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether all objects should be automatically deleted when the artifact bucket is removed
+   * from the stack or when the stack is deleted.
+   *
+   * Requires `artifactBucketRemovalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   * Only applies when `artifactBucket` is not provided (i.e., the bucket is created internally).
+   *
+   * @default false
+   */
+  readonly artifactBucketAutoDeleteObjects?: boolean;
+
   /**
    * A map of region to S3 bucket name used for cross-region CodePipeline.
    * For every Action that you specify targeting a different region than the Pipeline itself,
@@ -522,7 +543,7 @@ export class CodePipeline extends PipelineBase {
         restartExecutionOnUpdate: true,
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
-        artifactBucket: this.props.artifactBucket,
+        artifactBucket: this.props.artifactBucket ?? this.createArtifactBucket(),
         usePipelineRoleForActions: this.usePipelineRoleForActions,
       });
     }
@@ -555,6 +576,22 @@ export class CodePipeline extends PipelineBase {
    */
   private get assetsScope(): Construct {
     return obtainScope(this, 'Assets');
+  }
+
+  /**
+   * Create an artifact bucket if removal policy options are specified, otherwise return undefined
+   * to let the underlying Pipeline create its own bucket.
+   */
+  private createArtifactBucket(): s3.IBucket | undefined {
+    if (this.props.artifactBucketRemovalPolicy === undefined && this.props.artifactBucketAutoDeleteObjects === undefined) {
+      return undefined;
+    }
+    return new s3.Bucket(this, 'ArtifactsBucket', {
+      removalPolicy: this.props.artifactBucketRemovalPolicy,
+      autoDeleteObjects: this.props.artifactBucketAutoDeleteObjects,
+      enforceSSL: true,
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+    });
   }
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
