@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "ALBBooleanAttrsInteg/DefaultTest": {
+      "stacks": [
+        "ALBBooleanAttrsStack"
+      ],
+      "assertionStack": "ALBBooleanAttrsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ALBBooleanAttrsIntegDefaultTestDeployAssert9B72733B"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

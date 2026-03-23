@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "7afecc06c6b4942e04a561b6b88552519494a7415b47b28b2ff30223414aa944": {
+      "displayName": "ALBBooleanAttrsStack Template",
+      "source": {
+        "path": "ALBBooleanAttrsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6e2e3283": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7afecc06c6b4942e04a561b6b88552519494a7415b47b28b2ff30223414aa944.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
