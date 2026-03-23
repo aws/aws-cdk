@@ -390,6 +390,8 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
+The IAM permissions for `batch:SubmitJob` are scoped to the specific job definition ARN rather than using a wildcard.
+
 ```ts
 import * as batch from 'aws-cdk-lib/aws-batch';
 declare const batchJobDefinition: batch.EcsJobDefinition;
