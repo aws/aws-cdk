@@ -173,6 +173,48 @@ describe('tests', () => {
     });
   });
 
+  test('Boolean attributes explicitly set to false are included in CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      dropInvalidHeaderFields: false,
+      preserveHostHeader: false,
+      xAmznTlsVersionAndCipherSuiteHeaders: false,
+      preserveXffClientPort: false,
+      wafFailOpen: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
+        {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'routing.http.preserve_host_header.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'routing.http.x_amzn_tls_version_and_cipher_suite.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'routing.http.xff_client_port.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'waf.fail_open.enabled',
+          Value: 'false',
+        },
+      ]),
+    });
+  });
+
   test.each([59, 604801])('throw error for invalid clientKeepAlive in seconds', (duration) => {
     // GIVEN
     const stack = new cdk.Stack();
