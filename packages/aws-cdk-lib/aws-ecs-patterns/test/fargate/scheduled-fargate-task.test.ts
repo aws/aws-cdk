@@ -655,3 +655,33 @@ test('Can create a scheduled Fargate Task - with customized container name', () 
     ],
   });
 });
+
+test('Can create a scheduled Fargate Task with custom role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new (require('../../../aws-iam')).Role(stack, 'CustomRole', {
+    assumedBy: new (require('../../../aws-iam')).ServicePrincipal('events.amazonaws.com'),
+  });
+
+  // WHEN
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: Match.arrayWith([
+      Match.objectLike({
+        RoleArn: { 'Fn::GetAtt': ['CustomRole1ABCC5F0', 'Arn'] },
+      }),
+    ]),
+  });
+});

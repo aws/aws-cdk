@@ -391,6 +391,22 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 });
 ```
 
+You can specify a custom IAM role for the ECS task:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const role: iam.IRole;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  role,
+});
+```
+
 ## Additional Examples
 
 In addition to using the constructs, users can also add logic to customize these constructs:
