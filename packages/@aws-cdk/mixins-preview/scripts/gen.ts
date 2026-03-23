@@ -6,6 +6,7 @@ import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
 import { generateAll as generateEvents } from './spec2eventbridge';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
+import { generateAll as generateMetrics } from './spec2metrics';
 
 const GO_PREFIX = 'preview';
 
@@ -21,6 +22,7 @@ async function main() {
   const results: GeneratorResult[] = [
     await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
+    await generateMetrics({ outputPath }),
   ];
 
   const moduleMap = mergeModuleMaps(...results.map(r => r.moduleMap));
@@ -115,6 +117,13 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
     if (existsSync(eventsFilePath)) {
       const eventsExportName = `./${moduleConfig.name}/events`;
       newExports[eventsExportName] = `./lib/services/${moduleConfig.name}/events.js`;
+    }
+
+    // @aws-cdk/mixins-preview/aws_s3/metrics => ./lib/services/aws-s3/metrics.js
+    const metricsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'metrics.ts');
+    if (existsSync(metricsFilePath)) {
+      const metricsExportName = `./${moduleConfig.name}/metrics`;
+      newExports[metricsExportName] = `./lib/services/${moduleConfig.name}/metrics.js`;
     }
   }
 
