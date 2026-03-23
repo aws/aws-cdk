@@ -1,3 +1,4 @@
+export * as aws_apigateway from './aws-apigateway';
 export * as aws_appmesh from './aws-appmesh';
 export * as aws_aps from './aws-aps';
 export * as aws_athena from './aws-athena';
