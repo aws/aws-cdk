@@ -1,0 +1,126 @@
+{
+  "/grant-service-principal-test-stack/GrantDropTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "DynamoDB grant* methods do not support ServicePrincipal grantees. Use table.addToResourcePolicy() for an explicit service-specific table policy with required service principal, actions, and conditions [ack: @aws-cdk/aws-dynamodb:servicePrincipalGrantDropped]",
+      "trace": [
+        "Annotations.addMessage (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:199:29)",
+        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
+        "TableGrants.actions (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-grants.js:91:49)",
+        "TableGrants.readWriteData (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-grants.js:184:29)",
+        "WrappedClass.grantReadWriteData (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:406:28)",
+        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.grant-service-principal.js:16:16)",
+        "Object.<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.grant-service-principal.js:39:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1529:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
+        "Module.load (node:internal/modules/cjs/loader:1275:32)",
+        "Module._load (node:internal/modules/cjs/loader:1096:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/grant-service-principal-test-stack/GrantDropTableV2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "DynamoDB grant* methods do not support ServicePrincipal grantees. Use table.addToResourcePolicy() for an explicit service-specific table policy with required service principal, actions, and conditions [ack: @aws-cdk/aws-dynamodb:servicePrincipalGrantDropped]",
+      "trace": [
+        "Annotations.addMessage (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:199:29)",
+        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
+        "WrappedClass.dropServicePrincipalGrant (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2-base.js:617:39)",
+        "WrappedClass.combinedGrant (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2-base.js:570:25)",
+        "WrappedClass.grantWriteData (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table-v2-base.js:196:21)",
+        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.grant-service-principal.js:22:16)",
+        "Object.<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.dynamodb.grant-service-principal.js:39:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1529:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
+        "Module.load (node:internal/modules/cjs/loader:1275:32)",
+        "Module._load (node:internal/modules/cjs/loader:1096:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/grant-service-principal-test-stack/Table3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/grant-service-principal-test-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/grant-service-principal-test-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/grant-service-principal-test-stack/GrantDropTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantDropTableD1602E19"
+    }
+  ],
+  "/grant-service-principal-test-stack/GrantDropTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/grant-service-principal-test-stack/GrantDropTableV2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantDropTableV21DD83ABC"
+    }
+  ],
+  "/grant-service-principal-test-stack/Table3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Table3D174A7C6"
+    }
+  ],
+  "/grant-service-principal-test-stack/Table3/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
