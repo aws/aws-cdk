@@ -245,10 +245,14 @@ export class Alias extends AliasBase {
    * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
+    const normalizedAliasName = !Token.isUnresolved(aliasName) && !aliasName.startsWith(REQUIRED_ALIAS_PREFIX)
+      ? REQUIRED_ALIAS_PREFIX + aliasName
+      : aliasName;
+
     class Import extends Resource implements IAlias {
-      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
-      public readonly keyId = aliasName;
-      public readonly aliasName = aliasName;
+      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: normalizedAliasName });
+      public readonly keyId = normalizedAliasName;
+      public readonly aliasName = normalizedAliasName;
       public get aliasTargetKey(): IKey { throw new ValidationError('CannotAccessAliasTargetKey', 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
       public addAlias(_alias: string): Alias { throw new ValidationError('CannotAddAliasToImported', 'Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {

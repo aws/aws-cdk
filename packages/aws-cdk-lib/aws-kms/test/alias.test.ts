@@ -214,6 +214,41 @@ test('imported alias by name - will throw an error when accessing the key', () =
   expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
 });
 
+test('imported alias by name - automatically prefixes alias/ when not provided', () => {
+  const stack = new Stack();
+
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+
+  new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+  Template.fromStack(stack).hasOutput('OutId', {
+    Value: 'alias/myAlias',
+  });
+  Template.fromStack(stack).hasOutput('OutArn', {
+    Value: {
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':kms:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':alias/myAlias',
+      ]],
+    },
+  });
+});
+
+test('imported alias by name - does not double-prefix alias/', () => {
+  const stack = new Stack();
+
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
 test('imported alias by name - grantDecrypt applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
   stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
