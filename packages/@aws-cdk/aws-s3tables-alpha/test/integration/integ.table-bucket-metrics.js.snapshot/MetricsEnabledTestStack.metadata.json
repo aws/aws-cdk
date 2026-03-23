@@ -1,0 +1,26 @@
+{
+  "/MetricsEnabledTestStack/MetricsEnabledBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MetricsEnabledTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MetricsEnabledTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MetricsEnabledTestStack/MetricsEnabledBucket/MetricsEnabledBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MetricsEnabledBucket01C9F646"
+    }
+  ]
+}
