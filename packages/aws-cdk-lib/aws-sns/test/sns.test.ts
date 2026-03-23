@@ -1109,8 +1109,8 @@ describe('Topic', () => {
         const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
         expect(propertyAssignmentEntry).toBeDefined();
-        expect(propertyAssignmentEntry.data).toEqual('DisplayName');
-        expect(propertyAssignmentEntry.trace.some(
+        expect(propertyAssignmentEntry.data.propertyName).toEqual('DisplayName');
+        expect(propertyAssignmentEntry.data.stackTrace.some(
           (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
         ).toBe(true);
       } finally {

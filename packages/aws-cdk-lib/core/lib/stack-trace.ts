@@ -207,9 +207,9 @@ interface CallSite {
  */
 export function traceProperty(node: Node, propertyName: string) {
   if (debugModeEnabled()) {
-    node.addMetadata('aws:cdk:propertyAssignment', propertyName, {
-      stackTrace: true,
-      traceFromFunction: traceProperty,
+    node.addMetadata('aws:cdk:propertyAssignment', {
+      propertyName,
+      stackTrace: captureStackTrace(traceProperty),
     });
   }
 }
