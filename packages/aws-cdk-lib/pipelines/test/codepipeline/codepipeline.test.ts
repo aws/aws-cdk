@@ -765,6 +765,20 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
+test('artifact bucket removal policy can be configured', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    artifactBucketAutoDeleteObjects: true,
+  });
+  // THEN
+  const template = Template.fromStack(pipelineStack);
+  template.hasResource('AWS::S3::Bucket', {
+    UpdateReplacePolicy: 'Delete',
+    DeletionPolicy: 'Delete',
+  });
+});
+
 test('throws when deploy role session tags are used', () => {
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {

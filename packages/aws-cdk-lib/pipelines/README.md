@@ -523,6 +523,18 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+You can also configure the removal policy for the artifact bucket:
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  artifactBucketAutoDeleteObjects: true,
+  synth: new pipelines.ShellStep('Synth', {
+    commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+  }),
+});
+```
+
 #### Deploying without change sets
 
 Deployment is done by default with `CodePipeline` engine using change sets,
