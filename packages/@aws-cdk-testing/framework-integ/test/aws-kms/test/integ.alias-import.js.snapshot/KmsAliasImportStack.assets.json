@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "7218aedf2cf2dcd2425fba427138599b8584fa4c21802738dc991ad95b5e93c6": {
+      "displayName": "KmsAliasImportStack Template",
+      "source": {
+        "path": "KmsAliasImportStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-398e95fe": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7218aedf2cf2dcd2425fba427138599b8584fa4c21802738dc991ad95b5e93c6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

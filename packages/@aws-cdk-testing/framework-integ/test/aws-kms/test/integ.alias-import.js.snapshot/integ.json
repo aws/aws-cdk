@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "KmsAliasImportInteg/DefaultTest": {
+      "stacks": [
+        "KmsAliasImportStack"
+      ],
+      "assertionStack": "KmsAliasImportInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "KmsAliasImportIntegDefaultTestDeployAssertFFF276E4"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

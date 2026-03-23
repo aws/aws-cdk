@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "d492983a9b9d2c12207af9667636749d677ffe071ced66ab42584a73b822f47f": {
+      "displayName": "KmsAliasImportIntegDefaultTestDeployAssertFFF276E4 Template",
+      "source": {
+        "path": "KmsAliasImportIntegDefaultTestDeployAssertFFF276E4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-760199dd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d492983a9b9d2c12207af9667636749d677ffe071ced66ab42584a73b822f47f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
