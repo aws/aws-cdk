@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "9c2e4d59f68432028d3cc5dd4f51c8b13332f39a1bed383b3c163391d4299a64": {
+      "displayName": "PipelineArtifactBucketRemovalIntegDefaultTestDeployAssert74C6859B Template",
+      "source": {
+        "path": "PipelineArtifactBucketRemovalIntegDefaultTestDeployAssert74C6859B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3922dcf0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9c2e4d59f68432028d3cc5dd4f51c8b13332f39a1bed383b3c163391d4299a64.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

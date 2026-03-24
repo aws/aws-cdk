@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "PipelineArtifactBucketRemovalInteg/DefaultTest": {
+      "stacks": [
+        "PipelineArtifactBucketRemovalStack"
+      ],
+      "assertionStack": "PipelineArtifactBucketRemovalInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineArtifactBucketRemovalIntegDefaultTestDeployAssert74C6859B"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
