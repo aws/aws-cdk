@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "RemovalPolicyOptionsInteg/DefaultTest": {
+      "stacks": [
+        "RemovalPolicyOptionsStack"
+      ],
+      "assertionStack": "RemovalPolicyOptionsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "RemovalPolicyOptionsIntegDefaultTestDeployAssertF3B73B9F"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
