@@ -93,7 +93,7 @@ new ManagedEc2EcsComputeEnvironment(stack, 'MinScaleDownDelay', {
   images: [{
     image: new ec2.AmazonLinuxImage(),
   }],
-  minScaleDownDelayMinutes: 30,
+  minScaleDownDelay: Duration.minutes(30),
 });
 
 new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {

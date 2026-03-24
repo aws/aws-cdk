@@ -1382,6 +1382,7 @@ function validateMinScaleDownDelay(scope: Construct, minScaleDownDelay?: Duratio
   if (minutes === 0) return;
   if (minutes < 20 || minutes > 10080) {
     throw new ValidationError(
+      'ManagedComputeEnvironment',
       `Managed ComputeEnvironment '${scope.node.id}' specifies 'minScaleDownDelay' of ${minutes} minutes, but must be 0 (to disable) or between 20 and 10080`,
       scope,
     );
