@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "b5650bd983b235dd4d0aae88471150605cdaf9e285ee66c65550886b7eb157a8": {
+      "displayName": "VolumeGp3LargeSizeIntegDefaultTestDeployAssert589288B7 Template",
+      "source": {
+        "path": "VolumeGp3LargeSizeIntegDefaultTestDeployAssert589288B7.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dee273bd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b5650bd983b235dd4d0aae88471150605cdaf9e285ee66c65550886b7eb157a8.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

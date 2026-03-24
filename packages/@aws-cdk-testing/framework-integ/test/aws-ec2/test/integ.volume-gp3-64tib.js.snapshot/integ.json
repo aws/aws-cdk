@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "VolumeGp3LargeSizeInteg/DefaultTest": {
+      "stacks": [
+        "VolumeGp3LargeSizeStack"
+      ],
+      "assertionStack": "VolumeGp3LargeSizeInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "VolumeGp3LargeSizeIntegDefaultTestDeployAssert589288B7"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

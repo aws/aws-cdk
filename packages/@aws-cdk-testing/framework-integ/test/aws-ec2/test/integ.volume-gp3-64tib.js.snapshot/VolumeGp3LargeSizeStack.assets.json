@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "854c513e0bd804d71cc769e692751f390615fd14e212ce42a4e7e4fa8f5518f7": {
+      "displayName": "VolumeGp3LargeSizeStack Template",
+      "source": {
+        "path": "VolumeGp3LargeSizeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "123456789012-us-east-1-5b67c1d0": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "854c513e0bd804d71cc769e692751f390615fd14e212ce42a4e7e4fa8f5518f7.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
