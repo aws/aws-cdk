@@ -5,6 +5,7 @@ import type { GeneratorResult, ModuleMap, ModuleMapEntry, SubmoduleContribution 
 import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
 import { generateAll as generateEvents } from './spec2eventbridge';
+import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
 
 const GO_PREFIX = 'preview';
 
@@ -18,6 +19,7 @@ async function main() {
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
   const results: GeneratorResult[] = [
+    await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
   ];
 

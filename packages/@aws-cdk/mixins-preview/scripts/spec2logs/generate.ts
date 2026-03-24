@@ -1,19 +1,17 @@
 import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '@aws-cdk/spec2cdk';
 import { generate, loadPatchedSpec } from '@aws-cdk/spec2cdk';
 import { LogsDeliveryBuilder } from './builder';
+import { MIXINS_PREVIEW_BASE_NAMES } from '../config';
 import type { GeneratorResult } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
-import { PackageBaseNames } from '../util/jsii';
 
-export interface LogsDeliveryOptions extends Pick<Spec2CdkOptions<typeof LogsDeliveryBuilder>, 'outputPath' | 'clearOutput' | 'debug'>  {
-  readonly packageBases: PackageBaseNames;
-}
+type GenerateOptions = Pick<Spec2CdkOptions<typeof LogsDeliveryBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
 
-export async function generateAll(options: LogsDeliveryOptions): Promise<GeneratorResult> {
+export async function generateAll(options: GenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
   const services = await db.all('service');
   const moduleMap: ModuleMap = loadModuleMap({
-    packageBases: options.packageBases,
+    packageBases: MIXINS_PREVIEW_BASE_NAMES,
     respectOverrides: false,
   });
   const moduleRequests: GenerateModuleMap = {};

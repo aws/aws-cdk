@@ -1,7 +1,7 @@
 import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
-import { LogsDeliveryBuilder, type LogsDeliveryBuilderProps } from '../lib/log-delivery-mixins';
+import { LogsDeliveryBuilder, type LogsDeliveryBuilderProps } from '../../scripts/spec2logs';
 
 const renderer = new TypeScriptRenderer();
 let db: SpecDatabase;

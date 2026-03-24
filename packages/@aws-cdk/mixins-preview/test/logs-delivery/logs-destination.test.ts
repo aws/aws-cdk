@@ -1,11 +1,11 @@
-import { App, Stack } from '../../core';
-import { Bucket, CfnBucket } from '../../aws-s3';
-import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { DeliveryStream, CfnDeliveryStream, S3Bucket } from '../../aws-kinesisfirehose';
-import { CfnLogGroup, LogGroup, RetentionDays } from '../lib';
-import { CfnKey, Key } from '../../aws-kms';
-import { CloudwatchDeliveryDestination, FirehoseDeliveryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion, XRayDeliveryDestination } from '../lib/mixins';
-import { Match, Template } from '../../assertions';
+import { App, Stack } from 'aws-cdk-lib';
+import { Bucket, CfnBucket } from 'aws-cdk-lib/aws-s3';
+import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { DeliveryStream, CfnDeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
+import { CfnLogGroup, LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
+import { CloudwatchDeliveryDestination, FirehoseDeliveryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion, XRayDeliveryDestination } from '../../lib/services/aws-logs';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('cross acount destination', () => {

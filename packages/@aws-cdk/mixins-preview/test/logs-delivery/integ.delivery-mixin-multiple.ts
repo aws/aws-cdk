@@ -6,6 +6,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as events from 'aws-cdk-lib/aws-events';
 import { CfnEventBusLogsMixin } from '../../lib/services/aws-events/mixins';
 import '../../lib/with';
+import { CloudwatchDeliveryDestination } from '../../lib/services/aws-logs';
 
 const app = new cdk.App();
 
@@ -38,7 +39,7 @@ const bucket = new s3.Bucket(stack, 'DeliveryBucket', {
 });
 
 // Cloudwatch delivery destination to be used with toDestination
-const deliveryDestination = new logs.CloudwatchDeliveryDestination(stack, 'DeliveryDestination', {
+const deliveryDestination = new CloudwatchDeliveryDestination(stack, 'DeliveryDestination', {
   logGroup,
 });
 
