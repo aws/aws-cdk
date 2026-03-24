@@ -313,6 +313,18 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 
 when queue not provided by user, CDK will create a primary queue and a dead letter queue with default redrive policy and attach permission to the task to be able to access the primary queue.
 
+You can specify a custom task role:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskRole: iam.IRole;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  taskRole,
+});
+```
+
 NOTE: `QueueProcessingFargateService` adds a CPU Based scaling strategy by default. You can turn this off by setting `disableCpuBasedScaling: true`.
 
 ```ts

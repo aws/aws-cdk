@@ -8,6 +8,7 @@ import type {
 import {
   AwsLogDriver, Cluster,
 } from '../../../aws-ecs';
+import type { IRole } from '../../../aws-iam';
 import type { IQueue } from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack, ValidationError } from '../../../core';
@@ -194,6 +195,15 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * The role that will be used by the task.
+   *
+   * Only used when `image` is specified (not when `taskDefinition` is provided).
+   *
+   * @default - A new role is created
+   */
+  readonly taskRole?: IRole;
 
   /**
    * The maximum number of tasks, specified as a percentage of the Amazon ECS

@@ -5,6 +5,7 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
+import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -1024,4 +1025,47 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     HealthCheckGracePeriodSeconds: 120,
   });
+});
+
+test('test Fargate queue worker service construct - with custom task role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    taskRole,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    TaskRoleArn: { 'Fn::GetAtt': ['TaskRole30FC0FBB', 'Arn'] },
+  });
+});
+
+test('throws when both taskRole and taskDefinition are specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('Container', { image: ecs.ContainerImage.fromRegistry('test'), memoryLimitMiB: 512 });
+
+  // THEN
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      taskRole,
+    });
+  }).toThrow(/cannot specify both taskRole and taskDefinition/i);
 });
