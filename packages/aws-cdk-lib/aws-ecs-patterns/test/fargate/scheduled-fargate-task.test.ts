@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ScheduledFargateTask } from '../../lib';
 
@@ -661,8 +662,8 @@ test('Can create a scheduled Fargate Task with custom role', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  const role = new (require('../../../aws-iam')).Role(stack, 'CustomRole', {
-    assumedBy: new (require('../../../aws-iam')).ServicePrincipal('events.amazonaws.com'),
+  const role = new iam.Role(stack, 'CustomRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 
   // WHEN
