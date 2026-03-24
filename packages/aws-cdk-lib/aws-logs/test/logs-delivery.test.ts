@@ -1,12 +1,12 @@
-import { Stack } from 'aws-cdk-lib';
-import { Bucket, BucketEncryption, CfnBucket, CfnBucketPolicy } from 'aws-cdk-lib/aws-s3';
-import { Match, Template } from 'aws-cdk-lib/assertions';
-import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnDeliveryStream, DeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { CfnDeliveryDestination, CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from 'aws-cdk-lib/aws-logs';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
-import { DestinationLogsDelivery, FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../../lib/services/aws-logs';
+import { Stack } from '../../core';
+import { Bucket, BucketEncryption, CfnBucket, CfnBucketPolicy } from '../../aws-s3';
+import { Match, Template } from '../../assertions';
+import { AccountRootPrincipal, Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { CfnDeliveryStream, DeliveryStream, S3Bucket } from '../../aws-kinesisfirehose';
+import { CfnDeliveryDestination, CfnLogGroup, LogGroup, ResourcePolicy, RetentionDays } from '../lib';
+import { Secret } from '../../aws-secretsmanager';
+import { CfnKey, Key } from '../../aws-kms';
+import { DestinationLogsDelivery, FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery, S3LogsDeliveryPermissionsVersion, XRayLogsDelivery } from '../lib/mixins';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('S3 Delivery', () => {

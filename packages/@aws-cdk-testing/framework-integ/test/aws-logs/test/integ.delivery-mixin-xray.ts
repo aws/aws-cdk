@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as bedrock from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnMemoryLogsMixin } from '../../lib/services/aws-bedrockagentcore/mixins';
 import '../../lib/with';
@@ -22,7 +23,7 @@ const memory2 = new bedrock.CfnMemory(stack, 'Memory2', {
 });
 
 // destination for XRay Delivery Desintation to be used with toDestination
-const destination = new XRayDeliveryDestination(stack, 'DeliveryDestination', {
+const destination = new logs.XRayDeliveryDestination(stack, 'DeliveryDestination', {
   sourceResource: memory2.attrMemoryArn,
 });
 

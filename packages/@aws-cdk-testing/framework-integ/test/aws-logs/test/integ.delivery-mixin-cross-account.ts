@@ -41,7 +41,6 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import { CfnEventBusLogsMixin } from '../../lib/services/aws-events/mixins';
 import '../../lib/with';
-import { FirehoseDeliveryDestination, S3DeliveryDestination } from '../../lib/services/aws-logs';
 import type { Construct } from 'constructs';
 
 const app = new cdk.App();
@@ -98,14 +97,14 @@ class DestinationStack extends cdk.Stack {
     });
 
     // S3 delivery destination
-    new S3DeliveryDestination(this, 'S3DeliveryDestination', {
+    new logs.S3DeliveryDestination(this, 'S3DeliveryDestination', {
       bucket,
       encryptionKey: key,
       sourceAccountId: sourceAccount,
     });
 
     // Firehose delivery destination
-    new FirehoseDeliveryDestination(this, 'FHDeliveryDestination', {
+    new logs.FirehoseDeliveryDestination(this, 'FHDeliveryDestination', {
       deliveryStream,
       sourceAccountId: sourceAccount,
     });

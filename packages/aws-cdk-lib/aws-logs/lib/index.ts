@@ -13,6 +13,7 @@ export * from './query-definition';
 export * from './data-protection-policy';
 export * from './field-index-policy';
 export * from './transformer';
+export * from './mixins';
 
 // AWS::Logs CloudFormation Resources:
 export * from './logs.generated';

@@ -5,7 +5,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
-import { FirehoseLogsDelivery, LogGroupLogsDelivery, S3LogsDelivery } from '../../lib/services/aws-logs/logs-delivery';
 
 const app = new cdk.App();
 
@@ -63,9 +62,9 @@ const deliveryStream = new firehose.CfnDeliveryStream(stack, 'DeliveryStream', {
 });
 
 // Setup deliveries
-new S3LogsDelivery(destinationBucket).bind(stack, logType, eventBus.attrArn);
-new LogGroupLogsDelivery(destinationLogGroup).bind(stack, logType, eventBus.attrArn);
-new FirehoseLogsDelivery(deliveryStream).bind(stack, logType, eventBus.attrArn);
+new logs.S3LogsDelivery(destinationBucket).bind(stack, logType, eventBus.attrArn);
+new logs.LogGroupLogsDelivery(destinationLogGroup).bind(stack, logType, eventBus.attrArn);
+new logs.FirehoseLogsDelivery(deliveryStream).bind(stack, logType, eventBus.attrArn);
 
 new integ.IntegTest(app, 'DeliveryTest', {
   testCases: [stack],

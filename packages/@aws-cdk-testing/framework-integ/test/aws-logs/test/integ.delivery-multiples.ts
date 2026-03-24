@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as events from 'aws-cdk-lib/aws-events';
-import { LogGroupLogsDelivery } from '../../lib/services/aws-logs/logs-delivery';
 
 const app = new cdk.App();
 
@@ -28,8 +27,8 @@ const destinationLogGroupB = new logs.LogGroup(stack, 'DeliveryLogGroupB', {
 });
 
 // Setup deliveries
-const first = new LogGroupLogsDelivery(destinationLogGroupA).bind(stack, logType, eventBus.attrArn);
-const second = new LogGroupLogsDelivery(destinationLogGroupB).bind(stack, logType, eventBus.attrArn);
+const first = new logs.LogGroupLogsDelivery(destinationLogGroupA).bind(stack, logType, eventBus.attrArn);
+const second = new logs.LogGroupLogsDelivery(destinationLogGroupB).bind(stack, logType, eventBus.attrArn);
 
 second.delivery.node.addDependency(first.delivery);
 
