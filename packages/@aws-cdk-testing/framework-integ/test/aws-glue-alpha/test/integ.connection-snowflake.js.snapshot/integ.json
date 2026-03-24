@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "GlueSnowflakeConnectionInteg/DefaultTest": {
+      "stacks": [
+        "GlueSnowflakeConnectionStack"
+      ],
+      "assertionStack": "GlueSnowflakeConnectionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "GlueSnowflakeConnectionIntegDefaultTestDeployAssert6748ED87"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

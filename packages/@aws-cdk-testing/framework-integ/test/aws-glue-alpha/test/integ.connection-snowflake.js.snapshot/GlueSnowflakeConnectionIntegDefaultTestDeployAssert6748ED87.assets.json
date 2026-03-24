@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "ea5f45b443c48d1c82b6f07340baa88645fcfb5dc58bf62a55fdf66716868e31": {
+      "displayName": "GlueSnowflakeConnectionIntegDefaultTestDeployAssert6748ED87 Template",
+      "source": {
+        "path": "GlueSnowflakeConnectionIntegDefaultTestDeployAssert6748ED87.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a280c057": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ea5f45b443c48d1c82b6f07340baa88645fcfb5dc58bf62a55fdf66716868e31.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

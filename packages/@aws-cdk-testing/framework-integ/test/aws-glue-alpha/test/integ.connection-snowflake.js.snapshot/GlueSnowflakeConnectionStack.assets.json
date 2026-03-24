@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "4c4bcb6ee0b6c1734e13016ae4edc0c480f4095dc5c15249183de5cd7705a0a0": {
+      "displayName": "GlueSnowflakeConnectionStack Template",
+      "source": {
+        "path": "GlueSnowflakeConnectionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-147a259a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4c4bcb6ee0b6c1734e13016ae4edc0c480f4095dc5c15249183de5cd7705a0a0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
