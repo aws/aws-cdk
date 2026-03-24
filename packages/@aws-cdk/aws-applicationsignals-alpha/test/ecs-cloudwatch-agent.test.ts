@@ -233,7 +233,6 @@ describe('application signals cloudwatch agent integration', () => {
             Essential: true,
             Image: test.expectedImage,
             Name: 'cloudwatch-agent',
-            User: '0:1338',
             Cpu: 1024,
             Memory: 2048,
           },

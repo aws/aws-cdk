@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "a1de86dcaa389c83e3883f98cd222198c191970181917efde9c3521b680aadf5": {
+      "displayName": "CloudWatchAgentWindowsIntegDefaultTestDeployAssert51C2AFD2 Template",
+      "source": {
+        "path": "CloudWatchAgentWindowsIntegDefaultTestDeployAssert51C2AFD2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d46d2eb6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a1de86dcaa389c83e3883f98cd222198c191970181917efde9c3521b680aadf5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

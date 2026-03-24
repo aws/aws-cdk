@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "95524a0f977dc9bf90add8f5320625dc0de06e4f01063e3178812e995608b350": {
+      "displayName": "CloudWatchAgentWindowsStack Template",
+      "source": {
+        "path": "CloudWatchAgentWindowsStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c6f6c510": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "95524a0f977dc9bf90add8f5320625dc0de06e4f01063e3178812e995608b350.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

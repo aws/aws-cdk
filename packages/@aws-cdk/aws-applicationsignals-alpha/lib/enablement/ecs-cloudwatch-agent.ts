@@ -163,7 +163,7 @@ export class CloudWatchAgentIntegration extends Construct {
       logging: props.enableLogging? new ecs.AwsLogDriver({
         streamPrefix: props.containerName,
       }): undefined,
-      user: '0:1338',
+      user: props.operatingSystemFamily?.isWindows() ? undefined : '0:1338',
       portMappings: props.portMappings,
       environment: {
         CW_CONFIG_CONTENT: props.agentConfig ? props.agentConfig: JSON.stringify(CloudWatchAgentIntegration.DEFAULT_CONFIG),

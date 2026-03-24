@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "CloudWatchAgentWindowsInteg/DefaultTest": {
+      "stacks": [
+        "CloudWatchAgentWindowsStack"
+      ],
+      "assertionStack": "CloudWatchAgentWindowsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudWatchAgentWindowsIntegDefaultTestDeployAssert51C2AFD2"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
