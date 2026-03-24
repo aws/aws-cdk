@@ -148,6 +148,11 @@ export class ConnectionType {
   public static readonly STRIPE = new ConnectionType('STRIPE');
 
   /**
+   * Designates a connection to Snowflake.
+   */
+  public static readonly SNOWFLAKE = new ConnectionType('SNOWFLAKE');
+
+  /**
    * Designates a connection to Zendesk.
    */
   public static readonly ZENDESK = new ConnectionType('ZENDESK');

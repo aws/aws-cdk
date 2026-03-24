@@ -500,6 +500,8 @@ new glue.Connection(this, "RdsConnection", {
 
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
+Supported connection types include `JDBC`, `KAFKA`, `MONGODB`, `NETWORK`, `SNOWFLAKE`, and many more SaaS connectors.
+
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
 
 ## SecurityConfiguration

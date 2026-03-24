@@ -156,3 +156,7 @@ test('fromConnectionArn', () => {
   expect(connection.connectionName).toEqual('name');
   expect(connection.connectionArn).toEqual(connectionArn);
 });
+
+test('SNOWFLAKE connection type', () => {
+  expect(glue.ConnectionType.SNOWFLAKE.name).toEqual('SNOWFLAKE');
+});
