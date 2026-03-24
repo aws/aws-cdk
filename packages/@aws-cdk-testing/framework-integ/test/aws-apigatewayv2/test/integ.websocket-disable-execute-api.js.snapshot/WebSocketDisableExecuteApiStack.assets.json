@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "c86de7deff57eb7088c0fdf127d5df40ae875a378470a0dcec4aae4eafb0ed0f": {
+      "displayName": "WebSocketDisableExecuteApiStack Template",
+      "source": {
+        "path": "WebSocketDisableExecuteApiStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-629d7505": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c86de7deff57eb7088c0fdf127d5df40ae875a378470a0dcec4aae4eafb0ed0f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

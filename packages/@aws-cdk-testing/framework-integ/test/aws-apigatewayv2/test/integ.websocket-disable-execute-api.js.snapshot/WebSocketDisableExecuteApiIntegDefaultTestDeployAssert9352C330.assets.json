@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f26a7f68ed5156bc5b1431b7a04a94dfd2ffe291dccc320ace796c4f23fb74eb": {
+      "displayName": "WebSocketDisableExecuteApiIntegDefaultTestDeployAssert9352C330 Template",
+      "source": {
+        "path": "WebSocketDisableExecuteApiIntegDefaultTestDeployAssert9352C330.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-2674e162": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f26a7f68ed5156bc5b1431b7a04a94dfd2ffe291dccc320ace796c4f23fb74eb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "WebSocketDisableExecuteApiInteg/DefaultTest": {
+      "stacks": [
+        "WebSocketDisableExecuteApiStack"
+      ],
+      "assertionStack": "WebSocketDisableExecuteApiInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "WebSocketDisableExecuteApiIntegDefaultTestDeployAssert9352C330"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
