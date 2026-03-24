@@ -353,3 +353,32 @@ test('auto subdomain with IAM role', () => {
     },
   });
 });
+
+test('blank prefix is omitted from subdomain settings to avoid stack drift', () => {
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.unsafePlainText('secret'),
+    }),
+  });
+  const prodBranch = app.addBranch('main');
+  const domain = new amplify.Domain(stack, 'Domain', {
+    app,
+    domainName: 'example.com',
+  });
+
+  // WHEN
+  domain.mapSubDomain(prodBranch, '');
+
+  // THEN - prefix should not appear in the template
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
+    SubDomainSettings: [
+      {
+        BranchName: 'main',
+      },
+    ],
+  });
+});
