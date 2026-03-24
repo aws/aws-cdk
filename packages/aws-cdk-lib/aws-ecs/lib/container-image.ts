@@ -20,7 +20,8 @@ export abstract class ContainerImage {
   /**
    * Reference an image in an ECR repository
    *
-   * @param tag If you don't specify this parameter, `latest` is used as default.
+   * @param tag Image tag or digest. Supports both tag (e.g., 'latest') and digest
+   * (e.g., 'sha256:abc123') formats. If you don't specify this parameter, `latest` is used as default.
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
     return new EcrImage(repository, tag);
