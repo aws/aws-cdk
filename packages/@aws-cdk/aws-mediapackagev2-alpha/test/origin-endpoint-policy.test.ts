@@ -1,5 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { App, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
 
@@ -123,6 +124,83 @@ test('MediaPackageV2 Origin Endpoint Policy Configuration - creation with constr
         },
         Sid: 'AllowRequestsFromCloudFront',
       }],
+    },
+  });
+});
+
+test('OriginEndpointPolicy accepts initial policyDocument', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', {
+    channelGroup: group,
+  });
+  const origin = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+  });
+
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+    originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          sid: 'TestStatement',
+          effect: Effect.ALLOW,
+          principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+          actions: ['mediapackagev2:GetObject'],
+          resources: [origin.originEndpointArn],
+        }),
+      ],
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    Policy: {
+      Statement: [{
+        Sid: 'TestStatement',
+        Effect: 'Allow',
+        Action: 'mediapackagev2:GetObject',
+        Principal: { Service: 'cloudfront.amazonaws.com' },
+      }],
+    },
+  });
+});
+
+test('OriginEndpoint cdnAuth from constructor props is applied to policy', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', {
+    channelGroup: group,
+  });
+
+  const cdnSecret = new Secret(stack, 'CdnSecret', {
+    secretName: 'cdn-auth-secret',
+  });
+  const cdnRole = new Role(stack, 'CdnRole', {
+    assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com'),
+  });
+
+  const origin = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+    cdnAuth: {
+      secrets: [cdnSecret],
+      role: cdnRole,
+    },
+  });
+
+  origin.addToResourcePolicy(new PolicyStatement({
+    sid: 'AllowCloudFront',
+    effect: Effect.ALLOW,
+    principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+    actions: ['mediapackagev2:GetObject'],
+    resources: [origin.originEndpointArn],
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    CdnAuthConfiguration: {
+      CdnIdentifierSecretArns: [Match.anyValue()],
+      SecretsRoleArn: Match.anyValue(),
     },
   });
 });

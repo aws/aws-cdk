@@ -1,5 +1,5 @@
 import type { IResource } from 'aws-cdk-lib';
-import { RemovalPolicy, Resource, Stack, ArnFormat, Lazy, Names, Duration, ValidationError } from 'aws-cdk-lib';
+import { RemovalPolicy, Resource, Stack, ArnFormat, Lazy, Names, Duration, ValidationError, Token } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnChannelGroup } from 'aws-cdk-lib/aws-mediapackagev2';
@@ -136,7 +136,7 @@ export interface ChannelGroupAttributes {
 /**
  * A new or imported Channel Group.
  */
-abstract class ChannelGroupBase extends Resource implements IChannelGroup, IChannelGroupRef {
+abstract class ChannelGroupBase extends Resource implements IChannelGroup {
   /**
    * Creates a Channel Group construct that represents an external (imported) Channel Group.
    */
@@ -144,7 +144,6 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup, IChan
     class Import extends ChannelGroupBase implements IChannelGroup {
       public readonly channelGroupName = attrs.channelGroupName;
       public readonly channelGroupArn = Stack.of(this).formatArn({
-        partition: 'aws',
         service: 'mediapackagev2',
         resource: 'channelGroup',
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
@@ -327,7 +326,7 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
     addConstructMetadata(this, props);
 
     // Validate channelGroupName if provided
-    if (props?.channelGroupName != null) {
+    if (props?.channelGroupName != null && !Token.isUnresolved(props.channelGroupName)) {
       if (props.channelGroupName.length < 1 || props.channelGroupName.length > 256) {
         throw new ValidationError('ChannelGroupNameLength', 'Channel group name must be between 1 and 256 characters in length.', this);
       }
@@ -337,7 +336,7 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
     }
 
     // Validate description if provided
-    if (props?.description && props.description.length > 1024) {
+    if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
       throw new ValidationError('ChannelGroupDescriptionLength', 'Channel group description must not exceed 1024 characters.', this);
     }
 

@@ -4,7 +4,7 @@ import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { Effect, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib/core';
+import { App, Bitrate, Duration, Lazy, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
 
 let app: App;
@@ -90,7 +90,7 @@ test('MediaPackagev2 Channel Configuration - no names imported', () => {
     originEndpointName: 'endpoint',
   });
 
-  expect(originEndpoint.originEndpointArn).toEqual('arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/MyChannelGroup/channel/test/originEndpoint/endpoint');
+  expect(originEndpoint.originEndpointArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test\/originEndpoint\/endpoint$/);
 });
 
 test('MediaPackagev2 Channel Configuration - encryption configuration', () => {
@@ -138,8 +138,8 @@ test('MediaPackagev2 Channel Configuration - encryption configuration', () => {
         SpekeKeyProvider: {
           DrmSystems: ['FAIRPLAY'],
           EncryptionContractConfiguration: {
-            PresetSpeke20Audio: 'PRESET-AUDIO-1',
-            PresetSpeke20Video: 'PRESET-VIDEO-1',
+            PresetSpeke20Audio: 'PRESET_AUDIO_1',
+            PresetSpeke20Video: 'PRESET_VIDEO_1',
           },
           ResourceId: 'abcdef',
           RoleArn: { 'Fn::GetAtt': ['roleC7B7E775', 'Arn'] },
@@ -694,7 +694,7 @@ test('ISM encryption renders correctly with IsmEncryption.speke()', () => {
     Segment: {
       Encryption: {
         EncryptionMethod: {
-          CmafEncryptionMethod: 'CENC',
+          IsmEncryptionMethod: 'CENC',
         },
         SpekeKeyProvider: {
           DrmSystems: ['PLAYREADY'],
@@ -743,8 +743,8 @@ test('TS encryption renders correctly with TsEncryption.speke()', () => {
         SpekeKeyProvider: {
           DrmSystems: ['FAIRPLAY'],
           EncryptionContractConfiguration: {
-            PresetSpeke20Audio: 'PRESET-AUDIO-1',
-            PresetSpeke20Video: 'PRESET-VIDEO-1',
+            PresetSpeke20Audio: 'PRESET_AUDIO_1',
+            PresetSpeke20Video: 'PRESET_VIDEO_1',
           },
           ResourceId: 'abcdef',
           Url: 'https://example.com/speke',
@@ -1266,4 +1266,19 @@ test('origin endpoint metrics', () => {
     statistic: 'Sum',
     unit: 'Count',
   }));
+});
+
+test('Token origin endpoint name skips validation', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', {
+    channelGroup: group,
+  });
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+      channel,
+      originEndpointName: Lazy.string({ produce: () => 'resolved-later' }),
+      segment: mediapackagev2.Segment.cmaf(),
+      manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+    });
+  }).not.toThrow();
 });

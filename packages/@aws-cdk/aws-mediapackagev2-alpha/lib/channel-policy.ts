@@ -14,6 +14,13 @@ export interface ChannelPolicyProps {
    * Channel to apply the Channel Policy to.
    */
   readonly channel: IChannel;
+
+  /**
+   * Initial policy document to apply.
+   *
+   * @default - empty policy document
+   */
+  readonly policyDocument?: PolicyDocument;
 }
 
 /**
@@ -44,14 +51,14 @@ export class ChannelPolicy extends Resource {
   /**
    * A policy document containing permissions to add to the specified channel.
    */
-  public readonly document = new PolicyDocument({
-    statements: [],
-  });
+  public readonly document: PolicyDocument;
 
   constructor(scope: Construct, id: string, props: ChannelPolicyProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.document = props.policyDocument ?? new PolicyDocument();
 
     new CfnChannelPolicy(this, 'Resource', {
       channelGroupName: props.channel.channelGroupName,

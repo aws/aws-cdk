@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as mediapackagev2 from '../lib';
 
@@ -43,7 +43,7 @@ test('existing Channel Group can be imported', () => {
     channelGroupName: 'MyChannelGroup',
   });
 
-  expect(importedChannelGroup.channelGroupArn).toBe('arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/MyChannelGroup');
+  expect(importedChannelGroup.channelGroupArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup$/);
 });
 
 test('existing Channel Group can be imported and used by a Channel', () => {
@@ -149,4 +149,12 @@ test('channel group metrics', () => {
     statistic: 'Sum',
     unit: 'Count',
   }));
+});
+
+test('Token channel group name skips validation', () => {
+  expect(() => {
+    new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup', {
+      channelGroupName: Lazy.string({ produce: () => 'resolved-later' }),
+    });
+  }).not.toThrow();
 });

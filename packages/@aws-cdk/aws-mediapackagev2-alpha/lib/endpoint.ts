@@ -1,5 +1,5 @@
 import type { Bitrate, IResource } from 'aws-cdk-lib';
-import { RemovalPolicy, ArnFormat, Duration, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
+import { RemovalPolicy, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
@@ -465,7 +465,11 @@ export abstract class Manifest {
   }
 
   /**
-   * Called when the manifest is bound to an OriginEndpoint
+   * Called when the manifest is bound to an OriginEndpoint.
+   *
+   * This is an internal method used by the construct library and should not be
+   * called or implemented by external consumers. It may change without notice.
+   *
    * @internal
    */
   public abstract _bind(context: ManifestBindContext): void;
@@ -815,16 +819,16 @@ export enum PresetSpeke20Audio {
   /**
    * Use one content key to encrypt all of the audio tracks in your stream.
    */
-  PRESET_AUDIO_1='PRESET-AUDIO-1',
+  PRESET_AUDIO_1='PRESET_AUDIO_1',
   /**
    * Use one content key to encrypt all of the stereo audio tracks and one content key to encrypt all of the multichannel audio tracks.
    */
-  PRESET_AUDIO_2='PRESET-AUDIO-2',
+  PRESET_AUDIO_2='PRESET_AUDIO_2',
   /**
    * Use one content key to encrypt all of the stereo audio tracks, one content key to encrypt all of the multichannel audio tracks with 3 to 6 channels,
    * and one content key to encrypt all of the multichannel audio tracks with more than 6 channels.
    */
-  PRESET_AUDIO_3='PRESET-AUDIO-3',
+  PRESET_AUDIO_3='PRESET_AUDIO_3',
   /**
    * Use the same content key for all of the audio and video tracks in your stream.
    */
@@ -844,39 +848,39 @@ export enum PresetSpeke20Video {
   /**
    * Use one content key to encrypt all of the video tracks in your stream.
    */
-  PRESET_VIDEO_1='PRESET-VIDEO-1',
+  PRESET_VIDEO_1='PRESET_VIDEO_1',
   /**
    * Use one content key to encrypt all of the SD video tracks and one content key for all HD and higher resolutions video tracks.
    */
-  PRESET_VIDEO_2='PRESET-VIDEO-2',
+  PRESET_VIDEO_2='PRESET_VIDEO_2',
   /**
    * Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks and one content key for all UHD video tracks.
    */
-  PRESET_VIDEO_3='PRESET-VIDEO-3',
+  PRESET_VIDEO_3='PRESET_VIDEO_3',
   /**
    * Use one content key to encrypt all of the SD video tracks, one content key for HD video tracks,
    * one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.
    */
-  PRESET_VIDEO_4='PRESET-VIDEO-4',
+  PRESET_VIDEO_4='PRESET_VIDEO_4',
   /**
    * Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks,
    * one content key for all UHD1 video tracks and one content key for all UHD2 video tracks.
    */
-  PRESET_VIDEO_5='PRESET-VIDEO-5',
+  PRESET_VIDEO_5='PRESET_VIDEO_5',
   /**
    * Use one content key to encrypt all of the SD video tracks, one content key for HD1 video tracks, one content key for HD2 video tracks
    * and one content key for all UHD video tracks.
    */
-  PRESET_VIDEO_6='PRESET-VIDEO-6',
+  PRESET_VIDEO_6='PRESET_VIDEO_6',
   /**
    * Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks and one content key for all UHD video tracks.
    */
-  PRESET_VIDEO_7='PRESET-VIDEO-7',
+  PRESET_VIDEO_7='PRESET_VIDEO_7',
   /**
    * Use one content key to encrypt all of the SD+HD1 video tracks, one content key for HD2 video tracks, one content key for all UHD1
    * video tracks and one content key for all UHD2 video tracks.
    */
-  PRESET_VIDEO_8='PRESET-VIDEO-8',
+  PRESET_VIDEO_8='PRESET_VIDEO_8',
   /**
    * Use the same content key for all of the video and audio tracks in your stream.
    */
@@ -2061,16 +2065,31 @@ export interface IsmSpekeEncryptionProps {
  */
 export abstract class EncryptionConfiguration {
   /**
+   * Binds the encryption configuration to produce the CloudFormation property.
+   *
+   * This is an internal method used by the construct library and should not be
+   * called or implemented by external consumers. It may change without notice.
+   *
    * @internal
    */
   public abstract _bind(scope: Construct): CfnOriginEndpoint.EncryptionProperty;
 
   /**
+   * Returns the IAM role used for encryption, if any.
+   *
+   * This is an internal method used by the construct library and should not be
+   * called or implemented by external consumers. It may change without notice.
+   *
    * @internal
    */
   public abstract _getRole(): IRole | undefined;
 
   /**
+   * Returns the ACM certificate used for content key encryption, if any.
+   *
+   * This is an internal method used by the construct library and should not be
+   * called or implemented by external consumers. It may change without notice.
+   *
    * @internal
    */
   public abstract _getCertificate(): ICertificate | undefined;
@@ -2226,7 +2245,7 @@ export class IsmEncryption extends EncryptionConfiguration {
   public _bind(_scope: Construct): CfnOriginEndpoint.EncryptionProperty {
     const p = this.config;
     return {
-      encryptionMethod: { cmafEncryptionMethod: 'CENC' },
+      encryptionMethod: { ismEncryptionMethod: 'CENC' },
       spekeKeyProvider: {
         certificateArn: p.certificate?.certificateArn,
         drmSystems: (p.drmSystems ?? [IsmDrmSystem.PLAYREADY]).map(d => d.toString()),
@@ -2474,7 +2493,7 @@ export class Segment {
   }
 }
 
-abstract class OriginEndpointBase extends Resource implements IOriginEndpoint, IOriginEndpointRef {
+abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
   /**
    * Creates an OriginEndpoint construct that represents an external (imported) Origin Endpoint.
    */
@@ -2491,7 +2510,6 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint, I
       public readonly originEndpointName = attrs.originEndpointName;
       protected autoCreatePolicy = false;
       public readonly originEndpointArn = Stack.of(this).formatArn({
-        partition: 'aws',
         service: 'mediapackagev2',
         resource: `channelGroup/${attrs.channelGroupName}/channel/${this.channelName}/originEndpoint`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
@@ -2540,6 +2558,16 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint, I
    * CDN authorization configuration to be applied when the policy is created.
    */
   private cdnAuthConfig?: CdnAuthConfiguration;
+
+  /**
+   * Set CDN auth config. Used by subclass constructors.
+   * @internal
+   */
+  protected _setCdnAuth(cdnAuth: CdnAuthConfiguration): void {
+    if (!this.cdnAuthConfig) {
+      this.cdnAuthConfig = cdnAuth;
+    }
+  }
 
   /**
    * Configure origin endpoint policy.
@@ -2771,7 +2799,7 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     addConstructMetadata(this, props);
 
     // Validate originEndpointName if provided
-    if (props.originEndpointName != null) {
+    if (props.originEndpointName != null && !Token.isUnresolved(props.originEndpointName)) {
       if (props.originEndpointName.length < 1 || props.originEndpointName.length > 256) {
         throw new ValidationError('OriginEndpointNameLength', 'Origin endpoint name must be between 1 and 256 characters in length.', this);
       }
@@ -2781,7 +2809,7 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     }
 
     // Validate description if provided
-    if (props.description && props.description.length > 1024) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
       throw new ValidationError('OriginEndpointDescriptionLength', 'Origin endpoint description must not exceed 1024 characters.', this);
     }
 
@@ -2869,5 +2897,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     this.originEndpointArn = origin.attrArn;
 
     origin.applyRemovalPolicy(props?.removalPolicy ?? RemovalPolicy.DESTROY);
+
+    // Pre-set CDN auth config if provided in props
+    if (props.cdnAuth) {
+      this._setCdnAuth(props.cdnAuth);
+    }
   }
 }

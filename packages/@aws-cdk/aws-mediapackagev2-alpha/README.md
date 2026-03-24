@@ -232,7 +232,7 @@ originEndpoint.addToResourcePolicy(new iam.PolicyStatement({
   sid: 'AllowCloudFrontServicePrincipal',
   principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
   effect: iam.Effect.ALLOW,
-  actions: ['mediapackagev2:GetObject'],
+  actions: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
   resources: [originEndpoint.originEndpointArn],
   conditions: {
     StringEquals: {

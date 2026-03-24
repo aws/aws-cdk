@@ -1,0 +1,166 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2tsencryptionGroup27ED666C"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2tsencryptionGroup27ED666C",
+    "ChannelName": "awscdkmediapackagev2tsencryptionChannel2A089C13",
+    "InputType": "HLS"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SpekeRoleE39491EA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediapackagev2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TsSampleAes3ED795FE": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2tsencryptionGroup27ED666C",
+    "ChannelName": "awscdkmediapackagev2tsencryptionChannel2A089C13",
+    "ContainerType": "TS",
+    "HlsManifests": [
+     {
+      "ManifestName": "sample-aes"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2tsencryptionTsSampleAes4D680C16",
+    "Segment": {
+     "Encryption": {
+      "EncryptionMethod": {
+       "TsEncryptionMethod": "SAMPLE_AES"
+      },
+      "SpekeKeyProvider": {
+       "DrmSystems": [
+        "FAIRPLAY"
+       ],
+       "EncryptionContractConfiguration": {
+        "PresetSpeke20Audio": "PRESET_AUDIO_1",
+        "PresetSpeke20Video": "PRESET_VIDEO_1"
+       },
+       "ResourceId": "ts-sample-aes-content",
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "SpekeRoleE39491EA",
+         "Arn"
+        ]
+       },
+       "Url": "https://example.com/speke"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD",
+    "SpekeRoleE39491EA"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TsAes12822141EB8": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2tsencryptionGroup27ED666C",
+    "ChannelName": "awscdkmediapackagev2tsencryptionChannel2A089C13",
+    "ContainerType": "TS",
+    "HlsManifests": [
+     {
+      "ManifestName": "aes128"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2tsencryptionTsAes12880092954",
+    "Segment": {
+     "Encryption": {
+      "EncryptionMethod": {
+       "TsEncryptionMethod": "AES_128"
+      },
+      "SpekeKeyProvider": {
+       "DrmSystems": [
+        "CLEAR_KEY_AES_128"
+       ],
+       "EncryptionContractConfiguration": {
+        "PresetSpeke20Audio": "PRESET_AUDIO_1",
+        "PresetSpeke20Video": "PRESET_VIDEO_1"
+       },
+       "ResourceId": "ts-aes128-content",
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "SpekeRoleE39491EA",
+         "Arn"
+        ]
+       },
+       "Url": "https://example.com/speke"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD",
+    "SpekeRoleE39491EA"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

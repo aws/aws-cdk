@@ -1,8 +1,7 @@
 import { Template } from 'aws-cdk-lib/assertions';
-import { ArnPrincipal, Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, Effect, PolicyDocument, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
-
 let app: App;
 let stack: Stack;
 beforeEach(() => {
@@ -83,3 +82,34 @@ test('MediaPackagev2 Channel Group Configuration - creation with construct', () 
   });
 });
 
+test('ChannelPolicy accepts initial policyDocument', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', {
+    channelGroup: group,
+  });
+
+  new mediapackagev2.ChannelPolicy(stack, 'Policy', {
+    channel,
+    policyDocument: new PolicyDocument({
+      statements: [
+        new PolicyStatement({
+          sid: 'TestStatement',
+          effect: Effect.ALLOW,
+          principals: [new ArnPrincipal('arn:aws:iam::123456789012:role/TestRole')],
+          actions: ['mediapackagev2:PutObject'],
+          resources: [channel.channelArn],
+        }),
+      ],
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::ChannelPolicy', {
+    Policy: {
+      Statement: [{
+        Sid: 'TestStatement',
+        Effect: 'Allow',
+        Action: 'mediapackagev2:PutObject',
+      }],
+    },
+  });
+});

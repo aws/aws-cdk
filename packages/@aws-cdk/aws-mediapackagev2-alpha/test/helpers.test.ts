@@ -45,8 +45,8 @@ describe('Encryption Helper', () => {
         resourceId: 'test-resource-id',
         url: 'https://example.com/speke',
         encryptionContractConfiguration: {
-          presetSpeke20Audio: 'PRESET-AUDIO-1',
-          presetSpeke20Video: 'PRESET-VIDEO-1',
+          presetSpeke20Audio: 'PRESET_AUDIO_1',
+          presetSpeke20Video: 'PRESET_VIDEO_1',
         },
       }),
     }));
@@ -94,8 +94,8 @@ describe('Encryption Helper', () => {
       encryptionMethod: { tsEncryptionMethod: 'SAMPLE_AES' },
       spekeKeyProvider: expect.objectContaining({
         encryptionContractConfiguration: {
-          presetSpeke20Audio: 'PRESET-AUDIO-1',
-          presetSpeke20Video: 'PRESET-VIDEO-1',
+          presetSpeke20Audio: 'PRESET_AUDIO_1',
+          presetSpeke20Video: 'PRESET_VIDEO_1',
         },
       }),
     }));
@@ -111,7 +111,7 @@ describe('Encryption Helper', () => {
 
     const result = encryption._bind(stack);
     expect(result).toEqual(expect.objectContaining({
-      encryptionMethod: { cmafEncryptionMethod: 'CENC' },
+      encryptionMethod: { ismEncryptionMethod: 'CENC' },
       spekeKeyProvider: expect.objectContaining({
         encryptionContractConfiguration: {
           presetSpeke20Audio: 'SHARED',

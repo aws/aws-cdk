@@ -32,6 +32,13 @@ export interface OriginEndpointPolicyProps {
   readonly originEndpoint: IOriginEndpoint;
 
   /**
+   * Initial policy document to apply.
+   *
+   * @default - empty policy document
+   */
+  readonly policyDocument?: PolicyDocument;
+
+  /**
    * Optional CDN Authorization configuration.
    *
    * @default - No header based CDN authorization
@@ -68,12 +75,14 @@ export class OriginEndpointPolicy extends Resource {
   /**
    * A policy document containing permissions to add to the specified Origin Endpoint.
    */
-  public readonly document = new PolicyDocument();
+  public readonly document: PolicyDocument;
 
   constructor(scope: Construct, id: string, props: OriginEndpointPolicyProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this.document = props.policyDocument ?? new PolicyDocument();
 
     new CfnOriginEndpointPolicy(this, 'Resource', {
       channelGroupName: props.originEndpoint.channelGroupName,

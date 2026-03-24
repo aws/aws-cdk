@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Lazy, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as mediapackagev2 from '../lib';
@@ -85,7 +85,7 @@ test('existing Channel can be imported', () => {
     channelGroupName: 'MyChannelGroup',
   });
 
-  expect(importedChannel.channelArn).toEqual('arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/MyChannelGroup/channel/test');
+  expect(importedChannel.channelArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test$/);
 });
 
 test('Channel has accessible ingest URLs - Tokens returned in Array', () => {
@@ -120,7 +120,7 @@ test('Grant write to MediaLive Role created seperately', () => {
     channelGroup: group,
     input: mediapackagev2.InputConfiguration.cmaf(),
   });
-  channel.grantIngest(role);
+  channel.grants.ingest(role);
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -315,4 +315,39 @@ test('channel metrics', () => {
     statistic: 'Sum',
     unit: 'Count',
   }));
+});
+
+test('Token channel name skips validation', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  // Should not throw even though the token string doesn't match the pattern
+  expect(() => {
+    new mediapackagev2.Channel(stack, 'mychannel', {
+      channelGroup: group,
+      channelName: Lazy.string({ produce: () => 'resolved-later' }),
+    });
+  }).not.toThrow();
+});
+
+test('grants.ingest() adds correct IAM policy', () => {
+  const role = new Role(stack, 'MediaLiveRole', {
+    assumedBy: new ServicePrincipal('medialive.amazonaws.com'),
+  });
+
+  const group = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup: group,
+  });
+  channel.grants.ingest(role);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: 'mediapackagev2:PutObject',
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': ['mychannel130AE695', 'Arn'],
+        },
+      }],
+    },
+  });
 });

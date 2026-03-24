@@ -1,8 +1,8 @@
 import type { IResource } from 'aws-cdk-lib';
-import { RemovalPolicy, Resource, Stack, ArnFormat, Lazy, Names, Fn, Duration, ValidationError, CfnResource } from 'aws-cdk-lib';
+import { RemovalPolicy, Resource, Stack, ArnFormat, Lazy, Names, Fn, Duration, ValidationError, CfnResource, Token } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import type { PolicyStatement, AddToResourcePolicyResult, IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
+import type { PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
 import { CfnChannel } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IChannelRef, ChannelReference } from 'aws-cdk-lib/aws-mediapackagev2';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -62,6 +62,11 @@ export interface IChannel extends IResource, IChannelRef {
    * @attribute
    */
   readonly channelGroup?: IChannelGroup;
+
+  /**
+   * Grants IAM resource policy to the role used to write to MediaPackage V2 Channel.
+   */
+  readonly grants: ChannelGrants;
 
   /**
    * Add Origin Endpoint for this Channel.
@@ -125,13 +130,6 @@ export interface IChannel extends IResource, IChannelRef {
    * @default - sum over 60 seconds
    */
   metricEgressRequestCount(options?: MetricOptions): Metric;
-
-  /**
-   * Grants IAM resource policy to the role used to write to MediaPackage V2 Channel.
-   *
-   * @param grantee The principal to grant permissions to
-   */
-  grantIngest(grantee: IGrantable): Grant;
 }
 
 /**
@@ -336,7 +334,7 @@ export interface ChannelAttributes {
 /**
  * A new or imported Channel.
  */
-abstract class ChannelBase extends Resource implements IChannel, IChannelRef {
+abstract class ChannelBase extends Resource implements IChannel {
   /**
    * Creates a Channel construct that represents an external (imported) Channel.
    */
@@ -347,7 +345,6 @@ abstract class ChannelBase extends Resource implements IChannel, IChannelRef {
       public readonly channelName = attrs.channelName;
       protected autoCreatePolicy = false;
       public readonly channelArn = Stack.of(this).formatArn({
-        partition: 'aws',
         service: 'mediapackagev2',
         resource: `channelGroup/${attrs.channelGroupName}/channel`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
@@ -389,15 +386,6 @@ abstract class ChannelBase extends Resource implements IChannel, IChannelRef {
    * Collection of grant methods for this channel
    */
   public readonly grants = ChannelGrants.fromChannel(this);
-
-  /**
-   * Grants IAM resource policy to the role used by AWS Elemental MediaLive to write to MediaPackage V2 Channel.
-   *
-   * @param grantee The principal to grant permissions to
-   */
-  grantIngest(grantee: IGrantable): Grant {
-    return this.grants.ingest(grantee);
-  }
 
   /**
    * Add Origin Endpoint for this Channel.
@@ -576,7 +564,7 @@ export class Channel extends ChannelBase implements IChannel {
     addConstructMetadata(this, props);
 
     // Validate channelName if provided
-    if (props.channelName != null) {
+    if (props.channelName != null && !Token.isUnresolved(props.channelName)) {
       if (props.channelName.length < 1 || props.channelName.length > 256) {
         throw new ValidationError('ChannelNameLength', 'Channel name must be between 1 and 256 characters in length.', this);
       }
@@ -586,7 +574,7 @@ export class Channel extends ChannelBase implements IChannel {
     }
 
     // Validate description if provided
-    if (props.description && props.description.length > 1024) {
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
       throw new ValidationError('ChannelDescriptionLength', 'Channel description must not exceed 1024 characters.', this);
     }
 
