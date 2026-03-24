@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "ed82cf946212ca9177a05e76f0f4f42e9bd56836ddb057f13ecc9daee3a76095": {
+      "displayName": "DataProtectionDateOfBirthIntegDefaultTestDeployAssert73DC7B77 Template",
+      "source": {
+        "path": "DataProtectionDateOfBirthIntegDefaultTestDeployAssert73DC7B77.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5e375c2d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ed82cf946212ca9177a05e76f0f4f42e9bd56836ddb057f13ecc9daee3a76095.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

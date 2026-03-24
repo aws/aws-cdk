@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "DataProtectionDateOfBirthInteg/DefaultTest": {
+      "stacks": [
+        "DataProtectionDateOfBirthStack"
+      ],
+      "assertionStack": "DataProtectionDateOfBirthInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "DataProtectionDateOfBirthIntegDefaultTestDeployAssert73DC7B77"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
