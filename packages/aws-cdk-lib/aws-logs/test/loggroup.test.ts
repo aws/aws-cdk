@@ -853,6 +853,10 @@ describe('log group', () => {
     });
   });
 
+  test('DateOfBirth data identifier has correct name', () => {
+    expect(DataIdentifier.DATEOFBIRTH.toString()).toEqual('DateOfBirth');
+  });
+
   test('set data protection policy with mix of managed and custom data identifiers', () => {
     // GIVEN
     const stack = new Stack();

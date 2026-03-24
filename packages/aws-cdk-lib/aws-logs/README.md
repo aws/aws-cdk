@@ -449,6 +449,7 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
   description: 'policy description',
   identifiers: [
     logs.DataIdentifier.DRIVERSLICENSE_US, // managed data identifier
+    logs.DataIdentifier.DATEOFBIRTH, // date of birth data identifier
     new logs.DataIdentifier('EmailAddress'), // forward compatibility for new managed data identifiers
     new logs.CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')], // custom data identifier
   logGroupAuditDestination: logGroupDestination,
