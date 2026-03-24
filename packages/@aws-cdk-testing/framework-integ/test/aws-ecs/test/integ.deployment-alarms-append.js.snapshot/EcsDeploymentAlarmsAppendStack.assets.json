@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "2a8cddef7d04b2d2ecb6d9c2657b70d2435965d40918750a1c1c859a9ccc138c": {
+      "displayName": "EcsDeploymentAlarmsAppendStack Template",
+      "source": {
+        "path": "EcsDeploymentAlarmsAppendStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d54eb2eb": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2a8cddef7d04b2d2ecb6d9c2657b70d2435965d40918750a1c1c859a9ccc138c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

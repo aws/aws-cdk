@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "EcsDeploymentAlarmsAppendInteg/DefaultTest": {
+      "stacks": [
+        "EcsDeploymentAlarmsAppendStack"
+      ],
+      "assertionStack": "EcsDeploymentAlarmsAppendInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsDeploymentAlarmsAppendIntegDefaultTestDeployAssertC188EF63"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
