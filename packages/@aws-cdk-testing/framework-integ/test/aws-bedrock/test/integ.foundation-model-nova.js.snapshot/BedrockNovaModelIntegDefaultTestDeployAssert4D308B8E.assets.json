@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f76970aa6143d2ebfacfecfc9502514c913e39d29b1fbdb22e9cd87d5607d3a9": {
+      "displayName": "BedrockNovaModelIntegDefaultTestDeployAssert4D308B8E Template",
+      "source": {
+        "path": "BedrockNovaModelIntegDefaultTestDeployAssert4D308B8E.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ba5410be": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f76970aa6143d2ebfacfecfc9502514c913e39d29b1fbdb22e9cd87d5607d3a9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

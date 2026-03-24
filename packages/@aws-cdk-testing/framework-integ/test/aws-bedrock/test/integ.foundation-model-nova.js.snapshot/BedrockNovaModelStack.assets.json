@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "2cb6643cfac32aae2310a8bc78c1959a775a4c0c2874bcc8fbc4b06886afdf29": {
+      "displayName": "BedrockNovaModelStack Template",
+      "source": {
+        "path": "BedrockNovaModelStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8bfe3416": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2cb6643cfac32aae2310a8bc78c1959a775a4c0c2874bcc8fbc4b06886afdf29.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

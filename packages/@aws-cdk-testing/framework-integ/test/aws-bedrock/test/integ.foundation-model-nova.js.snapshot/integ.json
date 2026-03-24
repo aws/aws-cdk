@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "BedrockNovaModelInteg/DefaultTest": {
+      "stacks": [
+        "BedrockNovaModelStack"
+      ],
+      "assertionStack": "BedrockNovaModelInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockNovaModelIntegDefaultTestDeployAssert4D308B8E"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
