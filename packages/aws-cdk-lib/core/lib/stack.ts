@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import type { IConstruct } from 'constructs';
+import type { IConstruct, IMixin } from 'constructs';
 import { Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
@@ -15,6 +15,7 @@ import { CfnResource, TagType } from './cfn-resource';
 import { ContextProvider } from './context-provider';
 import type { Environment, ResourceEnvironment } from './environment';
 import { FeatureFlags } from './feature-flags';
+import { withMixins } from './mixins/private/mixin-metadata';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { PERMISSIONS_BOUNDARY_CONTEXT_KEY } from './permissions-boundary';
 import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/cloudformation-lang';
@@ -614,6 +615,10 @@ export class Stack extends Construct implements ITaggable {
         priority: mutatingAspectPrio32333(this),
       });
     }
+  }
+
+  public with(...mixins: IMixin[]): IConstruct {
+    return withMixins(this, ...mixins);
   }
 
   /**
