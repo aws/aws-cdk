@@ -23,7 +23,7 @@ export function postProcessXml(outputFile: string, fileMapping: Map<string, stri
     let correctedXml = reverseFilenames(xmlContent, fileMapping);
     
     correctedXml = correctedXml.replace(/<failure message="([^"]*)"/g, (match, message) => {
-      return `<failure message="${message} for Type: ${type}"`;
+      return `<failure message="[Type: ${type}] ${message}"`;
     });
     
     fs.writeFileSync(outputFile, correctedXml);
@@ -43,8 +43,12 @@ export function enhanceXmlWithFormattedFailures(xmlFilePath: string): void {
     xmlContent = xmlContent.replace(
       /<failure message="([^"]*)">([\s\S]*?)<\/failure>/g,
       (match, messageAttr, content) => {
-        const splitContent = content.replace(/Check was not compliant as property/g, '\nCheck was not compliant as property');
-        return `<failure message="${messageAttr}">${splitContent}</failure>`;
+        // Extract and concatenate all custom messages from {{...}} in the body
+        const customMsgMatch = content.match(/##ERROR:([\s\S]*?)##/);
+        const customMsg = customMsgMatch ? customMsgMatch[1] : messageAttr;
+        let splitContent = content.replace(/##ERROR:([\s\S]*?)##/g, '');
+        splitContent = splitContent.replace(/Check was not compliant as property/g, '\nCheck was not compliant as property');
+        return `<failure message="${customMsg}">${splitContent}</failure>`;
       }
     );
     
@@ -69,20 +73,20 @@ export async function runCfnGuardValidation(
       `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
     ]);
     
-    postProcessXml(outputFile, fileMapping, type);
     if (enhanceXml) {
       enhanceXmlWithFormattedFailures(outputFile);
     }
+    postProcessXml(outputFile, fileMapping, type);
     
     core.info(`✅ CFN-Guard (${type}) validation passed`);
     return true;
   } catch (err) {
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
     
-    postProcessXml(outputFile, fileMapping, type);
     if (enhanceXml) {
       enhanceXmlWithFormattedFailures(outputFile);
     }
+    postProcessXml(outputFile, fileMapping, type);
     
     return false;
   }
