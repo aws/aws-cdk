@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "4cab0badf2874e912b3b714bdf835616bd21fbfcdf0dbaf723866f535443d407": {
+      "displayName": "QueueProcessingTaskRoleIntegDefaultTestDeployAssert6FC87021 Template",
+      "source": {
+        "path": "QueueProcessingTaskRoleIntegDefaultTestDeployAssert6FC87021.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-881f5478": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4cab0badf2874e912b3b714bdf835616bd21fbfcdf0dbaf723866f535443d407.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

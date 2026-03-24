@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "95f246549cafccc6467d17ec965e004f4e72bfd171d4b475389fc44af98d2c60": {
+      "displayName": "QueueProcessingTaskRoleStack Template",
+      "source": {
+        "path": "QueueProcessingTaskRoleStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-6576be38": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "95f246549cafccc6467d17ec965e004f4e72bfd171d4b475389fc44af98d2c60.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "QueueProcessingTaskRoleInteg/DefaultTest": {
+      "stacks": [
+        "QueueProcessingTaskRoleStack"
+      ],
+      "assertionStack": "QueueProcessingTaskRoleInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "QueueProcessingTaskRoleIntegDefaultTestDeployAssert6FC87021"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
