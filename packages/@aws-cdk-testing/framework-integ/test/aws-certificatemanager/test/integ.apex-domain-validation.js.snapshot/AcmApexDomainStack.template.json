@@ -1,0 +1,80 @@
+{
+ "Resources": {
+  "ZoneA5DE4B68": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "example.com."
+   },
+   "Metadata": {
+    "aws:cdk:path": "AcmApexDomainStack/Zone/Resource"
+   }
+  },
+  "Cert5C9FAEC1": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "test.tostring.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "test.tostring.example.com",
+      "HostedZoneId": {
+       "Ref": "ZoneA5DE4B68"
+      }
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "AcmApexDomainStack/Cert"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AcmApexDomainStack/Cert/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02KMQ7CMAwA39I9MYHCC7oww8aC3MRFbqkjJS4dovy9QgxlOt3pHDhwDa7Z+jDZN/dQ7op+MrjmZ0lxUbq0UK4xK4VHFDLdILtV4ykpD+xRaUbBFyUo3d6++5/WWo3EQDDmw+d0hmMLrhkzs02LKM8Etx83XsKPlJgAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "AcmApexDomainStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

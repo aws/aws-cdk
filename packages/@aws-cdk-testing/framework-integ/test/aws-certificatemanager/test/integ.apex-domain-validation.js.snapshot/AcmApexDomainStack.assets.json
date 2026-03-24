@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "ee31afe7d33fa5e7fb4e54f06b4f01dc145316618820edaaa2e06b7282c09672": {
+      "displayName": "AcmApexDomainStack Template",
+      "source": {
+        "path": "AcmApexDomainStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "123456789012-us-east-1-3e582d1d": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-east-1",
+          "objectKey": "ee31afe7d33fa5e7fb4e54f06b4f01dc145316618820edaaa2e06b7282c09672.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "23ad6010729e0474824dc95578e701a8689da8fd671a76cddbaabbd69c902dac": {
+      "displayName": "AcmApexDomainIntegDefaultTestDeployAssertEA9BAF34 Template",
+      "source": {
+        "path": "AcmApexDomainIntegDefaultTestDeployAssertEA9BAF34.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c4956dce": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "23ad6010729e0474824dc95578e701a8689da8fd671a76cddbaabbd69c902dac.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
