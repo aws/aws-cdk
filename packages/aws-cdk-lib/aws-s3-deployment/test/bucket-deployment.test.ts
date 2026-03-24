@@ -112,6 +112,30 @@ test('deploy with log group', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 7 });
 });
 
+test('deploy with log group adds dependency from handler to log group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+    retention: logs.RetentionDays.ONE_WEEK,
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    logGroup,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::Lambda::Function', {
+    DependsOn: Match.arrayWith([
+      Match.stringLikeRegexp('LogGroup'),
+    ]),
+  });
+});
+
 test('deploy from local directory assets', () => {
   // GIVEN
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });

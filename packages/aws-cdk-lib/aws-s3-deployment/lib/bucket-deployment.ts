@@ -406,6 +406,12 @@ export class BucketDeployment extends Construct {
       logGroup: props.logGroup,
     });
 
+    // Ensure the log group is not deleted before the Lambda handler during stack deletion.
+    // Otherwise the Lambda may run after the log group is deleted, causing it to be recreated.
+    if (props.logGroup) {
+      handler.node.addDependency(props.logGroup);
+    }
+
     const handlerRole = handler.role;
     if (!handlerRole) { throw new ValidationError('Lambda', 'lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;

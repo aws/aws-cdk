@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "BucketDeploymentLogGroupDependencyInteg/DefaultTest": {
+      "stacks": [
+        "BucketDeploymentLogGroupDependencyStack"
+      ],
+      "assertionStack": "BucketDeploymentLogGroupDependencyInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketDeploymentLogGroupDependencyIntegDefaultTestDeployAssertB73BC0A9"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
