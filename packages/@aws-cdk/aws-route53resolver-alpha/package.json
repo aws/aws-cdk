@@ -1,7 +1,6 @@
 {
   "name": "@aws-cdk/aws-route53resolver-alpha",
   "version": "0.0.0",
-  "private": false,
   "description": "The CDK Construct Library for AWS::Route53Resolver",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -90,7 +89,6 @@
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.5.0"
   },
-  "dependencies": {},
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.5.0"

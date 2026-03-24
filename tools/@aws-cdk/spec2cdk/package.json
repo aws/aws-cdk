@@ -9,8 +9,8 @@
     "directory": "tools/@aws-cdk/spec2cdk"
   },
   "bin": {
-    "spec2cdk": "bin/spec2cdk",
-    "gen-cdk": "bin/gen-cdk"
+    "gen-cdk": "bin/gen-cdk",
+    "spec2cdk": "bin/spec2cdk"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

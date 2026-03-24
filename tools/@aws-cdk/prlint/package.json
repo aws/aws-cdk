@@ -16,9 +16,9 @@
     "@octokit/rest": "^18",
     "@octokit/webhooks-definitions": "^3.68.1",
     "conventional-commits-parser": "^3.2.4",
-    "make-runnable": "^1.4.1",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.3"
+    "glob": "^7.2.3",
+    "make-runnable": "^1.4.1"
   },
   "devDependencies": {
     "@aws-cdk/eslint-config": "0.0.0",

@@ -2,9 +2,7 @@
   "name": "@aws-cdk/integration-test-deployment",
   "version": "0.0.0",
   "private": true,
-  "bin": {
-    "integration-test-deployment": "bin/index.js"
-  },
+  "bin": "bin/index.js",
   "scripts": {
     "clean": "tsc --build --clean",
     "build": "tsc --build",

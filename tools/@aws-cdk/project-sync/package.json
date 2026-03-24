@@ -2,9 +2,7 @@
   "name": "@aws-cdk/project-sync",
   "version": "0.0.0",
   "private": true,
-  "bin": {
-    "project-sync": "bin/project-sync.ts"
-  },
+  "bin": "bin/project-sync.ts",
   "scripts": {
     "build": "tsc --build",
     "build+test": "npm run build && npm run test",

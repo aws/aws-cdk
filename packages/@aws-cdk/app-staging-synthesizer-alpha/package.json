@@ -1,6 +1,5 @@
 {
   "name": "@aws-cdk/app-staging-synthesizer-alpha",
-  "private": false,
   "version": "0.0.0",
   "description": "Cdk synthesizer for with app-scoped staging stack",
   "main": "lib/index.js",
@@ -89,12 +88,12 @@
     }
   },
   "devDependencies": {
-    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "^2.196.1",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
-    "constructs": "^10.5.0",
-    "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0"
+    "@aws-cdk/pkglint": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.5.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",

@@ -14,15 +14,13 @@
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
-  "bin": {
-    "awslint": "bin/awslint"
-  },
+  "bin": "bin/awslint",
   "dependencies": {
     "@jsii/spec": "1.127.0",
     "chalk": "^4",
+    "change-case": "^4.1.2",
     "fs-extra": "^9.1.0",
     "jsii-reflect": "1.127.0",
-    "change-case": "^4.1.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {

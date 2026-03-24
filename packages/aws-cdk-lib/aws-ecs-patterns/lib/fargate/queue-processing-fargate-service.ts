@@ -82,6 +82,9 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     if (props.taskDefinition && props.image) {
       throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify only one of taskDefinition or image', this);
     } else if (props.taskDefinition) {
+      if (props.taskRole) {
+        throw new ValidationError('CannotSpecifyTaskRoleWithTaskDefinition', 'You cannot specify both taskRole and taskDefinition. The task role is already defined in the task definition.', this);
+      }
       this.taskDefinition = props.taskDefinition;
     } else if (props.image) {
       // Create a Task Definition for the container to start

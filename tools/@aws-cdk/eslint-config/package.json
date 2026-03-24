@@ -6,8 +6,8 @@
   "main": "index.js",
   "description": "ESlint config for this repository",
   "scripts": {
-      "build": "true",
-      "test": "true"
+    "build": "true",
+    "test": "true"
   },
   "repository": {
     "type": "git",
@@ -22,14 +22,14 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "eslint": "^9",
     "@cdklabs/eslint-plugin": "^1.5.4",
-    "typescript-eslint": "^8",
     "@stylistic/eslint-plugin": "^5",
+    "eslint": "^9",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jest": "^28",
-    "eslint-plugin-jsdoc": "^50.8.0"
+    "eslint-plugin-jsdoc": "^50.8.0",
+    "typescript-eslint": "^8"
   }
 }
