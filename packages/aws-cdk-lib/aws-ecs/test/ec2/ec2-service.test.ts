@@ -2798,6 +2798,26 @@ describe('ec2 service', () => {
         expect(() => service.enableDeploymentAlarms([])).toThrow('at least one alarm name is required when calling enableDeploymentAlarms(), received empty array');
       });
 
+      test('enableDeploymentAlarms adds alarms on subsequent calls', () => {
+        const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+        });
+
+        service.enableDeploymentAlarms(['Alarm1']);
+        service.enableDeploymentAlarms(['Alarm2', 'Alarm3']);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          DeploymentConfiguration: {
+            Alarms: {
+              AlarmNames: ['Alarm1', 'Alarm2', 'Alarm3'],
+              Enable: true,
+              Rollback: true,
+            },
+          },
+        });
+      });
+
       test('no deployment alarms configured', () => {
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
