@@ -208,14 +208,14 @@ origin.addToResourcePolicy(new PolicyStatement({
 
 ### Granting Ingest Access to MediaLive
 
-To allow AWS Elemental MediaLive to ingest content into a MediaPackage channel, use the `grantIngest()` method:
+To allow AWS Elemental MediaLive to ingest content into a MediaPackage channel, use the `grants.ingest()` method:
 
 ```ts
 declare const channel: Channel;
 declare const mediaLiveRole: iam.IRole;
 
 // Grant MediaLive permission to ingest content
-channel.grantIngest(mediaLiveRole);
+channel.grants.ingest(mediaLiveRole);
 ```
 
 ### CloudFront Integration
