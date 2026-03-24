@@ -7,5 +7,5 @@ import type { IPrincipal } from '../../../aws-iam';
  */
 export function isServicePrincipal(principal: IPrincipal): boolean {
   const principalJson = principal.policyFragment.principalJson;
-  return Object.keys(principalJson).length === 1 && 'Service' in principalJson;
+  return 'Service' in principalJson;
 }
