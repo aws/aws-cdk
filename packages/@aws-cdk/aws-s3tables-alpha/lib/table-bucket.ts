@@ -163,6 +163,29 @@ export enum RequestMetricsStatus {
 }
 
 /**
+ * Storage class for S3 Tables.
+ *
+ * Determines the storage tier used for table data, allowing optimization
+ * for different access patterns and cost profiles.
+ */
+export enum StorageClass {
+  /**
+   * Standard storage class for frequently accessed data.
+   *
+   * Use this for tables with consistent, high-frequency access patterns.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Intelligent-Tiering storage class that automatically moves data between access tiers.
+   *
+   * Use this for tables with unknown or changing access patterns to optimize costs
+   * while maintaining performance for frequently accessed data.
+   */
+  INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+}
+
+/**
  * Controls Server Side Encryption (SSE) for this TableBucket.
  */
 export enum TableBucketEncryption {
@@ -374,6 +397,16 @@ export interface TableBucketProps {
    * @default - Request metrics are disabled
    */
   readonly requestMetricsStatus?: RequestMetricsStatus;
+
+  /**
+   * The storage class for the table bucket.
+   *
+   * Determines the storage tier used for table data, allowing optimization
+   * for different access patterns and cost profiles.
+   *
+   * @default - STANDARD storage class
+   */
+  readonly storageClass?: StorageClass;
 }
 
 /**
@@ -627,6 +660,7 @@ export class TableBucket extends TableBucketBase {
       },
       encryptionConfiguration: bucketEncryption,
       metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
+      storageClassConfiguration: props.storageClass ? { storageClass: props.storageClass } : undefined,
     });
 
     this.resource.applyRemovalPolicy(props.removalPolicy);
@@ -743,4 +777,3 @@ export class TableBucket extends TableBucketBase {
     }));
   }
 }
-

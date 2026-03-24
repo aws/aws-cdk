@@ -15,6 +15,7 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { INamespace } from './namespace';
 import * as perms from './permissions';
+import type { StorageClass } from './table-bucket';
 
 /**
  * Represents an S3 Table.
@@ -237,6 +238,18 @@ export interface TableProps {
    * @default false
    */
   readonly withoutMetadata?: boolean;
+
+  /**
+   * The storage class for the table.
+   *
+   * Determines the storage tier used for table data, allowing optimization
+   * for different access patterns and cost profiles.
+   *
+   * Note: This is a create-only property and cannot be changed after the table is created.
+   *
+   * @default - Inherits from the table bucket's storage class configuration
+   */
+  readonly storageClass?: StorageClass;
 }
 
 /**
@@ -779,6 +792,7 @@ export class Table extends TableBase {
       icebergMetadata: this.buildIcebergMetadata(props.icebergMetadata),
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
+      storageClassConfiguration: props.storageClass ? { storageClass: props.storageClass } : undefined,
     });
 
     this.namespace = props.namespace;
