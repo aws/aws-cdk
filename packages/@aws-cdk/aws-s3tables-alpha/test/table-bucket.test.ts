@@ -265,6 +265,67 @@ describe('TableBucket', () => {
     });
   });
 
+  describe('created with request metrics enabled', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'metrics-enabled-bucket',
+      requestMetricsStatus: s3tables.RequestMetricsStatus.ENABLED,
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'MetricsEnabledBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource`, () => {
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
+    });
+
+    test('has MetricsConfiguration with Enabled status', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
+        'MetricsConfiguration': {
+          'Status': 'Enabled',
+        },
+      });
+    });
+  });
+
+  describe('created with request metrics disabled', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'metrics-disabled-bucket',
+      requestMetricsStatus: s3tables.RequestMetricsStatus.DISABLED,
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'MetricsDisabledBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test('has MetricsConfiguration with Disabled status', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
+        'MetricsConfiguration': {
+          'Status': 'Disabled',
+        },
+      });
+    });
+  });
+
+  describe('created without request metrics configuration', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'no-metrics-bucket',
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'NoMetricsBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test('does not have MetricsConfiguration property', () => {
+      const template = Template.fromStack(stack);
+      const resources = template.findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const resourceKey = Object.keys(resources)[0];
+      expect(resources[resourceKey].Properties.MetricsConfiguration).toBeUndefined();
+    });
+  });
+
   describe('validateUnreferencedFileRemoval', () => {
     it('should not throw error when unreferencedFileRemovalProperty is undefined', () => {
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(undefined)).not.toThrow();
