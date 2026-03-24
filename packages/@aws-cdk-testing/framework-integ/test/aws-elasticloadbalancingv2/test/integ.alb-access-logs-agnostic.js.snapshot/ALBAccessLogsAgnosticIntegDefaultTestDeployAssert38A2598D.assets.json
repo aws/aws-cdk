@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "03262f2d1607d938dc39072802d20c913db6bd36daebf6e14833e7cfeb1cfa92": {
+      "displayName": "ALBAccessLogsAgnosticIntegDefaultTestDeployAssert38A2598D Template",
+      "source": {
+        "path": "ALBAccessLogsAgnosticIntegDefaultTestDeployAssert38A2598D.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-cc935f64": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "03262f2d1607d938dc39072802d20c913db6bd36daebf6e14833e7cfeb1cfa92.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

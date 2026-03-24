@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "43a7d22da55a2017f9db7a2becc727389a50d5ce0285a0430a8124f8e466e9e3": {
+      "displayName": "ALBAccessLogsAgnosticStack Template",
+      "source": {
+        "path": "ALBAccessLogsAgnosticStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3b4f6ef6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "43a7d22da55a2017f9db7a2becc727389a50d5ce0285a0430a8124f8e466e9e3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

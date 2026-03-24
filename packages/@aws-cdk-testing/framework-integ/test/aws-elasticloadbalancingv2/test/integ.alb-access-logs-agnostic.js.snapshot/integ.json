@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "ALBAccessLogsAgnosticInteg/DefaultTest": {
+      "stacks": [
+        "ALBAccessLogsAgnosticStack"
+      ],
+      "assertionStack": "ALBAccessLogsAgnosticInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ALBAccessLogsAgnosticIntegDefaultTestDeployAssert38A2598D"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
