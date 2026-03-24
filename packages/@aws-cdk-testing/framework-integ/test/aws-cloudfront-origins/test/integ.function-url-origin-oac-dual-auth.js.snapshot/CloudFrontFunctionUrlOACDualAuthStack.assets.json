@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "46da2110a49ad8cac635385b3cb97e221aaca8219dbffeb739c3f2c8fc7fbb14": {
+      "displayName": "CloudFrontFunctionUrlOACDualAuthStack Template",
+      "source": {
+        "path": "CloudFrontFunctionUrlOACDualAuthStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3d3054d7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "46da2110a49ad8cac635385b3cb97e221aaca8219dbffeb739c3f2c8fc7fbb14.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

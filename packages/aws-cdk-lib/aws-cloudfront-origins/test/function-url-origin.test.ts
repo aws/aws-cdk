@@ -591,4 +591,32 @@ describe('ipAddressType', () => {
       },
     });
   });
+
+  test('grants both InvokeFunctionUrl and InvokeFunction permissions for OAC', () => {
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: lambda.Code.fromInline('exports.handler = () => {}'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_20_X,
+    });
+
+    const fnUrl = fn.addFunctionUrl({
+      authType: lambda.FunctionUrlAuthType.AWS_IAM,
+    });
+
+    new cloudfront.Distribution(stack, 'MyDistribution', {
+      defaultBehavior: {
+        origin: FunctionUrlOrigin.withOriginAccessControl(fnUrl),
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunctionUrl',
+      Principal: 'cloudfront.amazonaws.com',
+    });
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      Principal: 'cloudfront.amazonaws.com',
+    });
+  });
 });
