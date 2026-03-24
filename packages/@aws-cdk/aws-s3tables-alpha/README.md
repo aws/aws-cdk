@@ -94,6 +94,82 @@ const sampleTableWithSchema = new Table(scope, 'ExampleSchemaTable', {
 
 Learn more about table buckets maintenance operations and default behavior from the [S3 Tables User Guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-table-buckets-maintenance.html)
 
+### Advanced Iceberg Table Configuration
+
+You can configure partition specifications, sort orders, and table properties for optimized query performance.
+
+The simplest way to add partitioning to your table:
+
+```ts
+// Build a table with partition spec (minimal configuration)
+const partitionedTable = new Table(scope, 'PartitionedTable', {
+    tableName: 'partitioned_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                { name: 'event_date', type: 'date', required: true },
+                { name: 'event_name', type: 'string' },
+            ],
+        },
+        icebergPartitionSpec: {
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
+                },
+            ],
+        },
+    },
+});
+```
+
+For full control, you can also configure sort orders and table properties:
+
+```ts
+// Build a table with partition spec, sort order, and table properties
+const advancedTable = new Table(scope, 'AdvancedTable', {
+    tableName: 'advanced_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    icebergMetadata: {
+        icebergSchema: {
+            schemaFieldList: [
+                { id: 1, name: 'event_date', type: 'date', required: true },
+                { id: 2, name: 'user_id', type: 'string', required: true },
+            ],
+        },
+        icebergPartitionSpec: {
+            specId: 0,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    name: 'date_partition',
+                    fieldId: 1000,
+                },
+            ],
+        },
+        icebergSortOrder: {
+            orderId: 1,
+            fields: [
+                {
+                    sourceId: 1,
+                    transform: IcebergTransform.IDENTITY,
+                    direction: SortDirection.ASC,
+                    nullOrder: NullOrder.NULLS_LAST,
+                },
+            ],
+        },
+        tableProperties: [
+            { key: 'write.format.default', value: 'parquet' },
+        ],
+    },
+});
+```
+
 ### Controlling Table Bucket Permissions
 
 ```ts
@@ -156,6 +232,20 @@ When using KMS encryption (`TableBucketEncryption.KMS`), if no encryption key is
 const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
     tableBucketName: 'table-bucket-2',
     encryption: TableBucketEncryption.KMS,
+});
+```
+
+### Enabling CloudWatch Request Metrics
+
+You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
+
+For more information about S3 Tables CloudWatch metrics, see the [S3 Tables CloudWatch Metrics documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-cloudwatch-metrics.html).
+
+```ts
+// Enable CloudWatch request metrics for the table bucket
+const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', {
+    tableBucketName: 'metrics-enabled-bucket',
+    requestMetricsStatus: RequestMetricsStatus.ENABLED,
 });
 ```
 

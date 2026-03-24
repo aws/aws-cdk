@@ -36,6 +36,7 @@ export class CdkCore extends ExternalModule {
   public readonly unionMapper = makeCallableExpr(this, 'unionMapper');
   public readonly requireProperty = makeCallableExpr(this, 'requireProperty');
   public readonly isResolvableObject = makeCallableExpr(this, 'isResolvableObject');
+  public readonly traceProperty = makeCallableExpr(this, 'traceProperty');
   public readonly mapArrayInPlace = makeCallableExpr(this, 'mapArrayInPlace');
 
   public readonly ValidationResult = $T(Type.fromName(this, 'ValidationResult'));
@@ -56,6 +57,10 @@ export class CdkCore extends ExternalModule {
 
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
+
+  public readonly Mixin = Type.fromName(this, 'Mixin');
+  public readonly IMergeStrategy = Type.fromName(this, 'IMergeStrategy');
+  public readonly PropertyMergeStrategy = $T(Type.fromName(this, 'PropertyMergeStrategy'));
 
   constructor(fqn: string) {
     super(fqn);
@@ -119,6 +124,7 @@ export class CdkErrors extends ExternalModule {
 export class Constructs extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
   public readonly IConstruct = Type.fromName(this, 'IConstruct');
+  public readonly IMixin = Type.fromName(this, 'IMixin');
 
   constructor() {
     super('constructs');

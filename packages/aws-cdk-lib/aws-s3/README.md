@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -314,9 +330,8 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
-  prefix: 'home/myusername/*',
-});
+const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -1133,4 +1148,52 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 if (sourceBucket.replicationRoleArn) {
   destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
+```
+
+## Mixins
+
+S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### BucketAutoDeleteObjects
+
+Automatically deletes all objects from a bucket when the bucket is removed from the stack or when the stack is deleted. Requires the bucket's removal policy to be set to `DESTROY`:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
+### BucketVersioning
+
+Enables or suspends versioning on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketBlockPublicAccess
+
+Blocks public access on an S3 bucket. Defaults to blocking all public access:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketBlockPublicAccess());
+```
+
+### BucketPolicyStatements
+
+Adds IAM policy statements to a bucket policy:
+
+```ts
+new s3.CfnBucketPolicy(this, 'Policy', {
+  bucket: new s3.CfnBucket(this, 'Bucket').ref,
+  policyDocument: new iam.PolicyDocument(),
+}).with(new s3.mixins.BucketPolicyStatements([
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
 ```
