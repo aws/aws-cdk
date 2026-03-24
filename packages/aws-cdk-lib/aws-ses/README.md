@@ -8,6 +8,11 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 Create a receipt rule set with rules and actions (actions can be found in the
 `aws-cdk-lib/aws-ses-actions` package):
 
+> **Note:** To receive email with Amazon SES, you must configure an MX record for your domain
+> pointing to the SES inbound SMTP endpoint for your region (e.g., `inbound-smtp.us-east-1.amazonaws.com`).
+> See [Publishing an MX record for Amazon SES email receiving](https://docs.aws.amazon.com/ses/latest/dg/receiving-email-mx-record.html)
+> for details.
+
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as actions from 'aws-cdk-lib/aws-ses-actions';
