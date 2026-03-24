@@ -155,6 +155,29 @@ export class Annotations {
   }
 
   /**
+   * Add an error annotation to this construct, along with a tracking ID
+   *
+   * The toolkit will fail deployment of any stack that has errors reported against it.
+   *
+   * The error code will be tracked by telemetry; this method should only be used
+   * by CDK source code.
+   *
+   * @param id The error ID.
+   * @param message The error message.
+   * @internal
+   */
+  public _addTrackableError(id: string, message: string) {
+    this.addError(message);
+
+    const type = 'aws:cdk:error-code';
+
+    const isNew = !this.scope.node.metadata.find((x) => x.type === type && x.data === id);
+    if (isNew) {
+      this.scope.node.addMetadata(type, id);
+    }
+  }
+
+  /**
    * Adds a deprecation warning for a specific API.
    *
    * Deprecations will be added only once per construct as a warning and will be
