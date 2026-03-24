@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "6618932567c858bd8d6658d5d6abb04dafbde9357812872f91540cf3c99cb1e0": {
+      "displayName": "ScheduledFargateTaskRoleStack Template",
+      "source": {
+        "path": "ScheduledFargateTaskRoleStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f246b2d8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6618932567c858bd8d6658d5d6abb04dafbde9357812872f91540cf3c99cb1e0.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

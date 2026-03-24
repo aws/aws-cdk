@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "ScheduledFargateTaskRoleInteg/DefaultTest": {
+      "stacks": [
+        "ScheduledFargateTaskRoleStack"
+      ],
+      "assertionStack": "ScheduledFargateTaskRoleInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ScheduledFargateTaskRoleIntegDefaultTestDeployAssertC937D50B"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,891 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/Resource"
+   }
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/Subnet"
+   }
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/RouteTable"
+   }
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/EIP"
+   }
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PublicSubnet1/NATGateway"
+   }
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1/Subnet"
+   }
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1/RouteTable"
+   }
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "ScheduledFargateTaskRoleStack/VPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/IGW"
+   }
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/VPC/VPCGW"
+   }
+  },
+  "ClusterEB0386A7": {
+   "Type": "AWS::ECS::Cluster",
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/Cluster/Resource"
+   }
+  },
+  "CustomRole6D8E6809": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/CustomRole/Resource"
+   }
+  },
+  "ScheduledTaskScheduledEventRule2EB8ABE4": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 day)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "ClusterEB0386A7",
+        "Arn"
+       ]
+      },
+      "EcsParameters": {
+       "LaunchType": "FARGATE",
+       "NetworkConfiguration": {
+        "AwsVpcConfiguration": {
+         "AssignPublicIp": "DISABLED",
+         "SecurityGroups": [
+          {
+           "Fn::GetAtt": [
+            "ScheduledTaskScheduledTaskDefSecurityGroupC1AF460D",
+            "GroupId"
+           ]
+          }
+         ],
+         "Subnets": [
+          {
+           "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+         ]
+        }
+       },
+       "TaskCount": 1,
+       "TaskDefinitionArn": {
+        "Ref": "ScheduledTaskScheduledTaskDef31C4FEF2"
+       }
+      },
+      "Id": "Target0",
+      "Input": "{}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "ScheduledTaskScheduledTaskDefEventsRoleB91A765E",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledEventRule/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefTaskRoleF3BC03C1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/TaskRole/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDef31C4FEF2": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "amazon/amazon-ecs-sample",
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "ScheduledTaskScheduledTaskDefScheduledContainerLogGroupD9BF440B"
+        },
+        "awslogs-stream-prefix": "ScheduledTask",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "ScheduledContainer"
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledTaskScheduledTaskDefExecutionRole65DF908A",
+      "Arn"
+     ]
+    },
+    "Family": "ScheduledFargateTaskRoleStackScheduledTaskScheduledTaskDef26A91B8C",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledTaskScheduledTaskDefTaskRoleF3BC03C1",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefScheduledContainerLogGroupD9BF440B": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/ScheduledContainer/LogGroup/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefExecutionRole65DF908A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefExecutionRoleDefaultPolicy2F74B50D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledTaskScheduledTaskDefScheduledContainerLogGroupD9BF440B",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledTaskScheduledTaskDefExecutionRoleDefaultPolicy2F74B50D",
+    "Roles": [
+     {
+      "Ref": "ScheduledTaskScheduledTaskDefExecutionRole65DF908A"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/ExecutionRole/DefaultPolicy/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefEventsRoleB91A765E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/EventsRole/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefEventsRoleDefaultPolicyBC9AC3BD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ecs:RunTask",
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "ClusterEB0386A7",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ScheduledTaskScheduledTaskDef31C4FEF2"
+       }
+      },
+      {
+       "Action": "ecs:TagResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
+          {
+           "Ref": "ClusterEB0386A7"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledTaskScheduledTaskDefExecutionRole65DF908A",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledTaskScheduledTaskDefTaskRoleF3BC03C1",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledTaskScheduledTaskDefEventsRoleDefaultPolicyBC9AC3BD",
+    "Roles": [
+     {
+      "Ref": "ScheduledTaskScheduledTaskDefEventsRoleB91A765E"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/EventsRole/DefaultPolicy/Resource"
+   }
+  },
+  "ScheduledTaskScheduledTaskDefSecurityGroupC1AF460D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/ScheduledTask/ScheduledTaskDef/SecurityGroup/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12P0W7CMAxFv4X34HVsP4DYhpCmqWonXpGbmmIICUocEIr671NboGhP9+bEsu/NIINsgpcw1fVhariCVArqg8JL2CTSM0jrk1aLrV3nC5XHyrAuY2VJOja6wkWhX6wMjXxk8xCcZhR29jHcmc9V3skPyhKFLnhVueczCo2LV1bIW3oMDElur7kI6t2RrKiSdPQs16V38dRneAatIh0gLUwMQr77vtsv9A12McPhg7Zs+R7yP3FWkC35kbWK8QipcEPpXnNnWPcpB9cf3pxQuhYBSr2jOhqqn84qOpOVAKmIt0XRUKuMawKkb9c8Gt1926qCgoteU6usqwn24eU8e4fXN8gm+8A89dEKHwmKQf8AuSGyw+YBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "ScheduledFargateTaskRoleStack/CDKMetadata/Default"
+   },
+   "Condition": "CDKMetadataAvailable"
+  }
+ },
+ "Conditions": {
+  "CDKMetadataAvailable": {
+   "Fn::Or": [
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "af-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-northeast-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-south-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-3"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ap-southeast-4"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "ca-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "cn-northwest-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-central-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-north-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-south-2"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Or": [
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "eu-west-3"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "il-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-central-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "me-south-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "sa-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-1"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-east-2"
+       ]
+      },
+      {
+       "Fn::Equals": [
+        {
+         "Ref": "AWS::Region"
+        },
+        "us-west-1"
+       ]
+      }
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "us-west-2"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

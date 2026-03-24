@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "f6b685330a93d65275a36f98b977c50768be55c2cff4c33286dd8f4eb8167bbe": {
+      "displayName": "ScheduledFargateTaskRoleIntegDefaultTestDeployAssertC937D50B Template",
+      "source": {
+        "path": "ScheduledFargateTaskRoleIntegDefaultTestDeployAssertC937D50B.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bdd7942a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f6b685330a93d65275a36f98b977c50768be55c2cff4c33286dd8f4eb8167bbe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
