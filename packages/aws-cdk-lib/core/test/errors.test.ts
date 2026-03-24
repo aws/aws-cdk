@@ -1,3 +1,6 @@
+import { rm, readFile } from 'fs/promises';
+import * as os from 'os';
+import * as path from 'path';
 import { inspect } from 'util';
 import { Bucket } from '../../aws-s3';
 import { App, Stack } from '../lib';
@@ -30,7 +33,7 @@ describe('ValidationError', () => {
       version: expect.stringMatching(/^\d+\.\d+\.\d+$/),
     });
     expect(error.message).toBe('this is an error');
-    expect(error.stack).toContain('ValidationError: this is an error');
+    expect(error.stack).toContain('«ValidationError» this is an error');
     expect(error.stack).toContain('└─ MyStack');
   });
 
@@ -40,7 +43,7 @@ describe('ValidationError', () => {
     expect(Errors.isConstructError(error)).toBe(true);
     expect(Errors.isValidationError(error)).toBe(true);
     expect(error.name).toBe('ValidationError');
-    expect(error.stack).toContain('ValidationError: this is an error');
+    expect(error.stack).toContain('«ValidationError» this is an error');
   });
 
   test('presentation of a ValidationError', () => {
@@ -55,7 +58,7 @@ describe('ValidationError', () => {
       // NodeJS will render an uncaught error using inspect()
       const errorString = inspect(e);
       expect(anonymizeBetweenParens(errorString)).toMatchInlineSnapshot(`
-"ErrorCode: There is an error here
+"«ErrorCode» There is an error here
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
@@ -75,12 +78,35 @@ Relates to construct:
       // NodeJS will render an uncaught error using inspect()
       const errorString = inspect(e);
       expect(anonymizeBetweenParens(errorString)).toMatchInlineSnapshot(`
-"ErrorCode: There is an error here
+"«ErrorCode» There is an error here
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
     ...jest-circus, node internals, jest-circus, jest-runner..."
 `);
+    }
+  });
+
+  test('writing error codes to disk', async () => {
+    const file = path.join(os.tmpdir(), 'errors.txt');
+    await rm(file, { force: true });
+    try {
+      process.env.CDK_ERROR_FILE = file;
+
+      try {
+        throw new UnscopedValidationError('Error1', 'bla');
+      } catch { }
+      const contents1 = await readFile(file, 'utf-8');
+      expect(contents1).toEqual('Error1');
+
+      try {
+        throw new UnscopedValidationError('Error2', 'bla');
+      } catch { }
+      const contents2 = await readFile(file, 'utf-8');
+      expect(contents2).toEqual('Error1\nError2');
+    } finally {
+      delete process.env.CDK_ERROR_FILE;
+      await rm(file, { force: true });
     }
   });
 });
