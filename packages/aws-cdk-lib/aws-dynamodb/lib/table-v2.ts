@@ -596,6 +596,12 @@ export interface TableAttributesV2 {
 
 /**
  * A DynamoDB Table.
+ *
+ * This construct creates an `AWS::DynamoDB::GlobalTable` CloudFormation resource,
+ * even for single-region tables. This is the recommended resource type for all
+ * new DynamoDB tables. See the
+ * [AWS blog post](https://aws.amazon.com/blogs/devops/a-new-and-improved-aws-cdk-construct-for-amazon-dynamodb-tables/)
+ * for more details on the differences between `Table` and `TableV2`.
  */
 @propertyInjectable
 export class TableV2 extends TableBaseV2 {
