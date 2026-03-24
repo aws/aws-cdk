@@ -734,16 +734,18 @@ export class AuroraMysqlEngineVersion {
    *   defaults to "5.7"
    */
   public static of(auroraMysqlFullVersion: string, auroraMysqlMajorVersion?: string): AuroraMysqlEngineVersion {
+    // Infer major version from full version if not provided
+    const majorVersion = auroraMysqlMajorVersion ?? (auroraMysqlFullVersion.startsWith('8.0') ? '8.0' : '5.7');
     // Detects whether the auto-pause feature is supported.
     // https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2-auto-pause.html#auto-pause-prereqs
-    const coercedVersion = semver.valid(semver.coerce(auroraMysqlMajorVersion));
-    const serverlessV2AutoPauseSupported = auroraMysqlMajorVersion === '8.0'
+    const coercedVersion = semver.valid(semver.coerce(majorVersion));
+    const serverlessV2AutoPauseSupported = majorVersion === '8.0'
       ? auroraMysqlFullVersion >= '8.0.mysql_aurora.3.08.0'
       : (coercedVersion != null && semver.satisfies(coercedVersion, '>=8.1'));
     return new AuroraMysqlEngineVersion(
-      auroraMysqlFullVersion, auroraMysqlMajorVersion,
+      auroraMysqlFullVersion, majorVersion,
       {
-        combineImportAndExportRoles: (auroraMysqlMajorVersion ? auroraMysqlMajorVersion !== '5.7' : false),
+        combineImportAndExportRoles: (majorVersion ? majorVersion !== '5.7' : false),
         serverlessV2AutoPauseSupported,
       },
     );

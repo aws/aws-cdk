@@ -78,6 +78,16 @@ describe('cluster engine', () => {
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
   });
 
+  test('AuroraMysqlEngineVersion.of() infers major version from full version', () => {
+    const version80 = AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.0');
+    expect(version80.auroraMysqlMajorVersion).toEqual('8.0');
+    expect(version80._combineImportAndExportRoles).toEqual(true);
+
+    const version57 = AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3');
+    expect(version57.auroraMysqlMajorVersion).toEqual('5.7');
+    expect(version57._combineImportAndExportRoles).toEqual(false);
+  });
+
   test('AuroraMysqlEngineVersion.of() determines serverlessV2AutoPauseSupported', () => {
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._serverlessV2AutoPauseSupported).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._serverlessV2AutoPauseSupported).toEqual(false);

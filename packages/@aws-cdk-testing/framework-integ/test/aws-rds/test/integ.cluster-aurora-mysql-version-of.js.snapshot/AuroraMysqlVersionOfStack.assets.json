@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "808e23b806e492cb19993a1b3b7431e4dfc137104fdafaeeccce0437b4675da1": {
+      "displayName": "AuroraMysqlVersionOfStack Template",
+      "source": {
+        "path": "AuroraMysqlVersionOfStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-01acffa7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "808e23b806e492cb19993a1b3b7431e4dfc137104fdafaeeccce0437b4675da1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
