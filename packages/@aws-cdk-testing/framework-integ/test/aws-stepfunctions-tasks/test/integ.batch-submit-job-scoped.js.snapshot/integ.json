@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "BatchSubmitJobScopedInteg/DefaultTest": {
+      "stacks": [
+        "BatchSubmitJobScopedStack"
+      ],
+      "assertionStack": "BatchSubmitJobScopedInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchSubmitJobScopedIntegDefaultTestDeployAssert21378C8C"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "1c60bae852454df7eaf6f35db25fb99a9895b68014af41e8e6305d8e95f84b88": {
+      "displayName": "BatchSubmitJobScopedIntegDefaultTestDeployAssert21378C8C Template",
+      "source": {
+        "path": "BatchSubmitJobScopedIntegDefaultTestDeployAssert21378C8C.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-157fa76a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1c60bae852454df7eaf6f35db25fb99a9895b68014af41e8e6305d8e95f84b88.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

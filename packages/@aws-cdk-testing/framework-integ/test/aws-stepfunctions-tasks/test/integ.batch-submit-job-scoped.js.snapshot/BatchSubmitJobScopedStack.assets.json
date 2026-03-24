@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "462e4236b1690a4002b79add6a8bacf0c96b9fa4cf843bfbc5471bd9af4821dc": {
+      "displayName": "BatchSubmitJobScopedStack Template",
+      "source": {
+        "path": "BatchSubmitJobScopedStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-d16e6176": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "462e4236b1690a4002b79add6a8bacf0c96b9fa4cf843bfbc5471bd9af4821dc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
