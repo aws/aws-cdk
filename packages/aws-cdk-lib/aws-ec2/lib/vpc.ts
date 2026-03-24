@@ -575,7 +575,7 @@ abstract class VpcBase extends Resource implements IVpc {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this)._addTrackableError('VpnGatewayNoMatchingSubnets', `enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`resource with array of nested properties with relationship 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -192,7 +192,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
+  private _permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
 
   /**
    * Create a new \`AWS::IAM::Resource\`.
@@ -207,11 +207,19 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.permissions = props.permissions;
+    this._permissions = props.permissions;
   }
 
   public get resourceRef(): ResourceReference {
     return {};
+  }
+
+  public get permissions(): Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable | undefined {
+    return this._permissions;
+  }
+  public set permissions(value: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable | undefined) {
+    cdk.traceProperty(this.node, "Permissions");
+    this._permissions = value;
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -685,7 +693,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnPolicy.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public principalArn?: string;
+  private _principalArn?: string;
 
   /**
    * Create a new \`AWS::IAM::Policy\`.
@@ -700,11 +708,19 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       properties: props
     });
 
-    this.principalArn = cdk.getRefProperty((props.principalArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.getRefProperty((props.principalArn as iamRefs.IUserRef)?.userRef, 'userArn') ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
+    this._principalArn = cdk.getRefProperty((props.principalArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.getRefProperty((props.principalArn as iamRefs.IUserRef)?.userRef, 'userArn') ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
     return {};
+  }
+
+  public get principalArn(): string | undefined {
+    return this._principalArn;
+  }
+  public set principalArn(value: string | undefined) {
+    cdk.traceProperty(this.node, "PrincipalArn");
+    this._principalArn = value;
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -980,7 +996,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnTask.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
+  private _executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
 
   /**
    * Create a new \`AWS::IAM::Task\`.
@@ -995,11 +1011,19 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
       properties: props
     });
 
-    this.executionConfig = props.executionConfig;
+    this._executionConfig = props.executionConfig;
   }
 
   public get taskRef(): TaskReference {
     return {};
+  }
+
+  public get executionConfig(): CfnTask.ExecutionConfigProperty | cdk.IResolvable | undefined {
+    return this._executionConfig;
+  }
+  public set executionConfig(value: CfnTask.ExecutionConfigProperty | cdk.IResolvable | undefined) {
+    cdk.traceProperty(this.node, "ExecutionConfig");
+    this._executionConfig = value;
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1330,7 +1354,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnJob.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+  private _config?: cdk.IResolvable | CfnJob.OldConfigProperty;
 
   /**
    * Create a new \`AWS::IAM::Job\`.
@@ -1345,11 +1369,19 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
       properties: props
     });
 
-    this.config = props.config;
+    this._config = props.config;
   }
 
   public get jobRef(): JobReference {
     return {};
+  }
+
+  public get config(): cdk.IResolvable | CfnJob.OldConfigProperty | undefined {
+    return this._config;
+  }
+  public set config(value: cdk.IResolvable | CfnJob.OldConfigProperty | undefined) {
+    cdk.traceProperty(this.node, "Config");
+    this._config = value;
   }
 
   protected get cfnProperties(): Record<string, any> {
@@ -1743,7 +1775,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnFunction.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public roleArn?: string;
+  private _roleArn?: string;
 
   /**
    * Create a new \`AWS::IAM::Function\`.
@@ -1758,11 +1790,19 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       properties: props
     });
 
-    this.roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
+    this._roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {
     return {};
+  }
+
+  public get roleArn(): string | undefined {
+    return this._roleArn;
+  }
+  public set roleArn(value: string | undefined) {
+    cdk.traceProperty(this.node, "RoleArn");
+    this._roleArn = value;
   }
 
   protected get cfnProperties(): Record<string, any> {
