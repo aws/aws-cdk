@@ -9,12 +9,13 @@ import * as kplus from 'cdk8s-plus-27';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

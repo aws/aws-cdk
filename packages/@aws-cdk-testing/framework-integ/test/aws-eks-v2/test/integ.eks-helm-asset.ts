@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
@@ -124,6 +125,7 @@ class EksClusterStack extends Stack {
 
 const app = new App({
   postCliContext: {
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
