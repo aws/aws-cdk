@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import type { Construct, IConstruct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
+import { BucketReflection } from './bucket-reflection';
 import type { IBucketNotificationDestination } from './destination';
 import { BucketAutoDeleteObjects } from './mixins';
 import { BucketNotifications } from './notifications-resource';
@@ -2200,20 +2201,34 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
       public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
       public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = encryptionKey;
-      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
       public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
-      public disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+
+      private readonly reflection: BucketReflection;
 
       constructor() {
         super(cfnBucket, id);
 
         this.node.defaultChild = cfnBucket;
+        this.reflection = BucketReflection.of(this);
+      }
+
+      public get bucketWebsiteDomainName() {
+        return this.reflection.bucketWebsiteDomainName;
+      }
+
+      public get isWebsite(): boolean | undefined {
+        return this.reflection.isWebsite;
+      }
+
+      public get disallowPublicAccess(): boolean | undefined {
+        return this.reflection.disallowPublicAccess;
+      }
+      public set disallowPublicAccess(_value: boolean | undefined) {
+        // Ignored — value is derived from the CfnBucket resource via reflection
       }
     }();
   }
@@ -2314,17 +2329,26 @@ export class Bucket extends BucketBase {
   }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
-  public readonly bucketWebsiteDomainName: string;
+  public get bucketWebsiteDomainName(): string {
+    return this.reflection.bucketWebsiteDomainName;
+  }
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
-  public readonly isWebsite?: boolean;
+  public get isWebsite(): boolean | undefined {
+    return this.reflection.isWebsite;
+  }
   public policy?: BucketPolicy;
 
   public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
-  public disallowPublicAccess?: boolean;
+  public get disallowPublicAccess(): boolean | undefined {
+    return this.reflection.disallowPublicAccess || undefined;
+  }
+  public set disallowPublicAccess(_value: boolean | undefined) {
+    // Ignored — value is derived from the CfnBucket resource via reflection
+  }
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
@@ -2333,6 +2357,7 @@ export class Bucket extends BucketBase {
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
   private readonly _resource: CfnBucket;
+  private readonly reflection: BucketReflection;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -2355,7 +2380,6 @@ export class Bucket extends BucketBase {
     }
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
-    this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
     const replicationConfiguration = this.renderReplicationConfiguration(props);
@@ -2383,6 +2407,7 @@ export class Bucket extends BucketBase {
       abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
     });
     this._resource = resource;
+    this.reflection = BucketReflection.of(this);
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -2390,11 +2415,9 @@ export class Bucket extends BucketBase {
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
-    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
