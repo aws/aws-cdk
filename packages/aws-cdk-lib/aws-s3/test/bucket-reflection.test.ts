@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import { Stack, App, Resource } from '../../core';
-import { tryFindBucketConstruct, tryFindBucketPolicyForBucket, tryFindKmsKeyforBucket } from '../lib/private/reflections';
+import { BucketReflection } from '../lib/bucket-reflection';
 
 /** Compare constructs by node path to avoid circular JSON serialization in Jest error messages */
 function expectSameConstruct(actual: any, expected: any) {
@@ -34,7 +34,7 @@ describe('find bucket policy', () => {
   describe('find in construct tree', () => {
     test('returns undefined when no bucket policy exists', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      expect(tryFindBucketPolicyForBucket(bucket)).toBeUndefined();
+      expect(BucketReflection.of(bucket).policy).toBeUndefined();
     });
 
     test('finds bucket policy as direct child of bucket', () => {
@@ -44,7 +44,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('finds bucket policy as transitive child of bucket', () => {
@@ -55,7 +55,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('finds bucket policy as sibling (child of parent)', () => {
@@ -66,7 +66,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('finds bucket policy in parent hierarchy', () => {
@@ -78,7 +78,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('finds cousin bucket policies', () => {
@@ -92,7 +92,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('prefers closest child over parent policy', () => {
@@ -107,7 +107,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), childPolicy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, childPolicy);
     });
 
     test('prefers closer transitive child over distant one', () => {
@@ -124,7 +124,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), closerPolicy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, closerPolicy);
     });
 
     test('prefers closer parent over distant parent', () => {
@@ -140,7 +140,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), closerPolicy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, closerPolicy);
     });
 
     test('ignores unrelated bucket policies', () => {
@@ -151,7 +151,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expect(tryFindBucketPolicyForBucket(bucket1)).toBeUndefined();
+      expect(BucketReflection.of(bucket1).policy).toBeUndefined();
     });
   });
 
@@ -163,7 +163,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches L2 Bucket with policy using bucketRef.bucketName', () => {
@@ -173,7 +173,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches L2 Bucket with policy using bucketArn', () => {
@@ -183,7 +183,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches L2 Bucket', () => {
@@ -193,7 +193,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches L1 Bucket', () => {
@@ -203,7 +203,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches custom IBucketRef implementation', () => {
@@ -213,7 +213,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
 
     test('matches L2 BucketPolicy', () => {
@@ -222,7 +222,7 @@ describe('find bucket policy', () => {
         bucket: bucket,
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy.node.defaultChild);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy.node.defaultChild);
     });
 
     test('ignores policy for different bucket name', () => {
@@ -233,7 +233,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expect(tryFindBucketPolicyForBucket(bucket)).toBeUndefined();
+      expect(BucketReflection.of(bucket).policy).toBeUndefined();
     });
 
     test('matches using attrArn', () => {
@@ -243,7 +243,7 @@ describe('find bucket policy', () => {
         policyDocument: {},
       });
 
-      expectSameConstruct(tryFindBucketPolicyForBucket(bucket), policy);
+      expectSameConstruct(BucketReflection.of(bucket).policy, policy);
     });
   });
 });
@@ -260,18 +260,18 @@ describe('find Bucket from Ref', () => {
   describe('find in construct tree', () => {
     test('returns Bucket if it exists', () => {
       const bucket = new s3.CfnBucket(stack, 'Bucket');
-      expectSameConstruct(tryFindBucketConstruct(bucket), bucket);
+      expectSameConstruct(BucketReflection.of(bucket).bucket, bucket);
     });
 
     test('returns correct Bucket if there are multiple in a stack', () => {
       const bucket1 = new s3.CfnBucket(stack, 'Bucket1');
       new s3.CfnBucket(stack, 'Bucket2');
-      expectSameConstruct(tryFindBucketConstruct(bucket1), bucket1);
+      expectSameConstruct(BucketReflection.of(bucket1).bucket, bucket1);
     });
 
     test('returns Bucket L1 if the initial bucket is an L2', () => {
       const bucket = new s3.Bucket(stack, 'Bucket');
-      expectSameConstruct(tryFindBucketConstruct(bucket), bucket.node.defaultChild);
+      expectSameConstruct(BucketReflection.of(bucket).bucket, bucket.node.defaultChild);
     });
 
     test('finds grandchild Bucket', () => {
@@ -279,7 +279,7 @@ describe('find Bucket from Ref', () => {
       const parent = new Construct(grandparent, 'Parent');
       const bucket = new s3.CfnBucket(parent, 'Bucket');
 
-      expectSameConstruct(tryFindBucketConstruct(bucket), bucket);
+      expectSameConstruct(BucketReflection.of(bucket).bucket, bucket);
     });
 
     test('finds correct bucket when there are multiple buckets at different levels of the construct tree', () => {
@@ -288,7 +288,11 @@ describe('find Bucket from Ref', () => {
       const parent = new Construct(grandparent, 'Parent');
       const bucket2 = new s3.CfnBucket(parent, 'Bucket2');
 
-      expectSameConstruct(tryFindBucketConstruct(bucket2), bucket2);
+      expectSameConstruct(BucketReflection.of(bucket2).bucket, bucket2);
+    });
+    test('throws when accessing bucket on custom IBucketRef without CfnBucket', () => {
+      const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
+      expect(() => BucketReflection.of(bucket).bucket).toThrow(/Unable to find underlying resource/);
     });
   });
 });
@@ -304,7 +308,7 @@ describe('find KMS key for Bucket', () => {
 
   test('returns undefined when bucket has no encryption', () => {
     const bucket = new s3.CfnBucket(stack, 'Bucket');
-    expect(tryFindKmsKeyforBucket(bucket)).toBeUndefined();
+    expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
   });
 
   test('returns undefined when bucket uses S3-managed encryption', () => {
@@ -317,7 +321,7 @@ describe('find KMS key for Bucket', () => {
         }],
       },
     });
-    expect(tryFindKmsKeyforBucket(bucket)).toBeUndefined();
+    expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
   });
 
   test('finds KMS key when bucket uses KMS encryption with key ref', () => {
@@ -335,7 +339,7 @@ describe('find KMS key for Bucket', () => {
       },
     });
 
-    expectSameConstruct(tryFindKmsKeyforBucket(bucket), key);
+    expectSameConstruct(BucketReflection.of(bucket).encryptionKey, key);
   });
 
   test('finds KMS key when bucket uses KMS encryption with key attrArn', () => {
@@ -353,7 +357,7 @@ describe('find KMS key for Bucket', () => {
       },
     });
 
-    expectSameConstruct(tryFindKmsKeyforBucket(bucket), key);
+    expectSameConstruct(BucketReflection.of(bucket).encryptionKey, key);
   });
 
   test('finds KMS key for L2 Bucket', () => {
@@ -363,7 +367,7 @@ describe('find KMS key for Bucket', () => {
       encryptionKey: key,
     });
 
-    expectSameConstruct(tryFindKmsKeyforBucket(bucket), key.node.defaultChild);
+    expectSameConstruct(BucketReflection.of(bucket).encryptionKey, key.node.defaultChild);
   });
 
   test('returns undefined when KMS key is not in the construct tree', () => {
@@ -378,6 +382,11 @@ describe('find KMS key for Bucket', () => {
       },
     });
 
-    expect(tryFindKmsKeyforBucket(bucket)).toBeUndefined();
+    expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
+  });
+
+  test('returns undefined for custom IBucketRef without CfnBucket', () => {
+    const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
+    expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
   });
 });
