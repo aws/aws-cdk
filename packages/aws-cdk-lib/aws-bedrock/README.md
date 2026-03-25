@@ -18,6 +18,24 @@ bedrock.FoundationModel.fromFoundationModelId(
 );
 ```
 
+To look up other supported foundation models, such as MiniMax or Z.AI (GLM):
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'MiniMaxModel',
+  bedrock.FoundationModelIdentifier.MINIMAX_M2_5,
+);
+
+bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'GlmModel',
+  bedrock.FoundationModelIdentifier.ZAI_GLM_5,
+);
+```
+
 To look up a Bedrock provisioned throughput model:
 
 ```ts
