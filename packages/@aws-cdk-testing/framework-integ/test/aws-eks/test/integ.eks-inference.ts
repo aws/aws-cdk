@@ -15,7 +15,11 @@ class EksClusterInferenceStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this),
+      // Pin to 1.32 because addAutoScalingGroupCapacity uses EksOptimizedImage
+      // which hardcodes AL2 SSM paths (amazon-linux-2-gpu/). AL2 GPU AMIs are
+      // only available for k8s 1.32 and earlier.
+      // See https://github.com/aws/aws-cdk/issues/29983
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.of('1.32')),
       albController: {
         version: eks.AlbControllerVersion.V2_5_1,
       },

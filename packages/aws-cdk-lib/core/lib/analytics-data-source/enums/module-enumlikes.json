@@ -153,6 +153,9 @@
       "TITAN_EMBED_TEXT_V2_256",
       "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_SONNET_4_6",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_V1_0",
@@ -1023,7 +1026,8 @@
     ],
     "MacBuildImage": [
       "BASE_14",
-      "BASE_15"
+      "BASE_15",
+      "BASE_26"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -3680,6 +3684,14 @@
       "SYNTHETICS_PYTHON_SELENIUM_5_1",
       "SYNTHETICS_PYTHON_SELENIUM_6_0",
       "SYNTHETICS_PYTHON_SELENIUM_7_0"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/core/lib/bitrate.ts": {
+    "BitrateUnit": [
+      "Bps",
+      "Kbps",
+      "Mbps",
+      "Gbps"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {

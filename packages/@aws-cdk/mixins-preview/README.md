@@ -1,4 +1,12 @@
-# CDK Mixins (Preview)
+# CDK Mixins
+
+
+> **Note**: The core Mixins mechanism  is now GA  and available in `constructs` and `aws-cdk-lib` (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`).
+> All service Mixins are now available in `aws-cdk-lib`.
+> Please update your imports.
+>
+> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**, which are still experimental.
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
@@ -14,14 +22,6 @@
 ---
 
 <!--END STABILITY BANNER-->
-
-> **Note**: The core Mixins mechanism (`Mixins`, `Mixin`, `IMixin`, `MixinApplicator`, `ConstructSelector`) is now available in `constructs` and `aws-cdk-lib`.
-> All service Mixins are now available in `aws-cdk-lib`.
-> Please update your imports.
->
-> This package continues to provide **Logs Delivery Mixins** and **EventBridge Event Facades**.
-
----
 
 CDK Mixins provide a new, advanced way to add functionality through composable abstractions.
 Unlike traditional L2 constructs that bundle all features together, Mixins allow you to pick and choose exactly the capabilities you need for constructs.
@@ -144,89 +144,17 @@ distribution
   .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
 ```
 
-### L1 Property Mixins
-
-For every CloudFormation resource, CDK Mixins automatically generates type-safe property mixins. These allow you to apply L1 properties with full TypeScript support:
-
-```typescript
-new s3.Bucket(scope, "Bucket")
-  .with(new CfnBucketPropsMixin({
-    versioningConfiguration: { status: "Enabled" },
-    publicAccessBlockConfiguration: {
-      blockPublicAcls: true,
-      blockPublicPolicy: true
-    }
-  }));
-```
-
-Deeply nested properties support cross-service references, such as passing a KMS key for encryption:
-
-```typescript
-const key = new kms.Key(scope, "Key");
-
-new s3.Bucket(scope, "Bucket")
-  .with(new CfnBucketPropsMixin({
-    bucketEncryption: {
-      serverSideEncryptionConfiguration: [{
-        serverSideEncryptionByDefault: {
-          sseAlgorithm: "aws:kms",
-          kmsMasterKeyId: key,
-        },
-      }],
-    },
-  }));
-```
-
-Property mixins support two merge strategies:
-
-```typescript
-// COMBINE (default): Deep merges properties with existing values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.combine() }
-));
-
-// OVERRIDE: Replaces existing property values
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { versioningConfiguration: { status: "Enabled" } },
-  { strategy: PropertyMergeStrategy.override() }
-));
-```
-
-You can also implement `IMergeStrategy` to define a custom strategy:
-
-```typescript
-class MyCustomStrategy implements IMergeStrategy {
-  public apply(target: object, source: object, allowedKeys: string[]) {
-    for (const key of allowedKeys) {
-      if (key in source) {
-        (target as any)[key] = (source as any)[key];
-      }
-    }
-  }
-}
-
-Mixins.of(bucket).apply(new CfnBucketPropsMixin(
-  { tags: [{ key: 'Extra', value: 'Tag' }] },
-  { strategy: new MyCustomStrategy() }
-));
-```
-
-Property mixins are available for all AWS services:
-
-```typescript
-import { CfnLogGroupPropsMixin } from '@aws-cdk/mixins-preview/aws-logs/mixins';
-import { CfnFunctionPropsMixin } from '@aws-cdk/mixins-preview/aws-lambda/mixins';
-import { CfnTablePropsMixin } from '@aws-cdk/mixins-preview/aws-dynamodb/mixins';
-```
-
 ---
 
 ## EventBridge Event Patterns
 
-CDK Mixins automatically generates typed EventBridge event patterns for AWS resources. These patterns work with both L1 and L2 constructs, providing a consistent interface for creating EventBridge rules.
+CDK Mixins automatically generates typed EventBridge event patterns for AWS resources. These patterns come in two flavors: **resource-specific** and **standalone**.
 
-### Event Patterns Basic Usage
+### Resource-Specific Event Patterns
+
+Resource-specific patterns are created by attaching a resource reference (e.g. an S3 bucket). The resource identifier is automatically injected into the event pattern, so calling a pattern method with no arguments still filters events to that specific resource. For example, an S3 `objectCreatedPattern()` will automatically include the bucket name in the pattern, meaning it only matches events from that particular bucket.
+
+#### Event Patterns Basic Usage
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
@@ -258,9 +186,7 @@ new events.CfnRule(scope, 'CfnRule', {
 });
 ```
 
-### Event Pattern Features
-
-**Automatic Resource Injection**: Resource identifiers are automatically included in patterns
+#### Event Pattern Features
 
 ```typescript
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
@@ -288,6 +214,62 @@ const pattern = bucketEvents.objectCreatedPattern({
 });
 ```
 
+### Standalone Event Patterns
+
+Standalone patterns are not tied to any specific resource. They match events across all resources of that type. For example, a standalone `awsAPICallViaCloudTrailPattern()` will match CloudTrail API calls for all S3 buckets in the account, not just a specific one.
+
+#### Event Patterns Basic Usage
+
+```typescript
+import { AWSAPICallViaCloudTrail, ObjectCreated, ObjectDeleted } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+declare const fn: lambda.Function;
+
+// Works with L2 Rule
+new events.Rule(scope, 'Rule', {
+  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+    tlsDetails: { tlsVersion: ['TLSv1.3'] },
+    eventMetadata: { region: ['us-east-1'] },
+  }),
+  targets: [new targets.LambdaFunction(fn)]
+});
+
+// Also works with L1 CfnRule
+new events.CfnRule(scope, 'CfnRule', {
+  state: 'ENABLED',
+  eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+    tlsDetails: { tlsVersion: ['TLSv1.3'] },
+    eventMetadata: { region: ['us-east-1'] },
+  }),
+  targets: [{ arn: fn.functionArn, id: 'L1' }]
+});
+```
+
+#### Event Pattern Features
+
+```typescript
+import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
+
+// Matches CloudTrail API calls across ALL S3 buckets
+const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern();
+```
+
+**Event Metadata Support**: Control EventBridge pattern metadata
+
+```typescript
+import { AWSAPICallViaCloudTrail } from '@aws-cdk/mixins-preview/aws-s3/events';
+import * as events from 'aws-cdk-lib/aws-events';
+
+const pattern = AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+  eventMetadata: {
+    region: events.Match.prefix('us-'),
+    version: ['0']
+  }
+});
+```
+
 ### Available Events
 
 Event patterns are generated for EventBridge events available in the AWS Event Schema Registry. Common examples:
@@ -302,5 +284,9 @@ Event patterns are generated for EventBridge events available in the AWS Event S
 Import events from service-specific modules:
 
 ```typescript
+// Resource-specific (filters to a specific bucket)
 import { BucketEvents } from '@aws-cdk/mixins-preview/aws-s3/events';
+
+// Standalone (matches across all buckets)
+import { AWSAPICallViaCloudTrail, ObjectCreated, ObjectDeleted } from '@aws-cdk/mixins-preview/aws-s3/events';
 ```
