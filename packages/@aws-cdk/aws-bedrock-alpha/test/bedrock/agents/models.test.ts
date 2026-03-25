@@ -267,5 +267,27 @@ describe('BedrockFoundationModel', () => {
       expect(BedrockFoundationModel.MISTRAL_LARGE_2402_V1.supportsAgents).toBe(true);
       expect(BedrockFoundationModel.MISTRAL_LARGE_2402_V1.supportsCrossRegion).toBe(false);
     });
+
+    test('MiniMax models are configured correctly', () => {
+      expect(BedrockFoundationModel.MINIMAX_M2.modelId).toBe('minimax.minimax-m2');
+      expect(BedrockFoundationModel.MINIMAX_M2.supportsAgents).toBe(true);
+
+      expect(BedrockFoundationModel.MINIMAX_M2_1.modelId).toBe('minimax.minimax-m2.1');
+      expect(BedrockFoundationModel.MINIMAX_M2_1.supportsAgents).toBe(true);
+
+      expect(BedrockFoundationModel.MINIMAX_M2_5.modelId).toBe('minimax.minimax-m2.5');
+      expect(BedrockFoundationModel.MINIMAX_M2_5.supportsAgents).toBe(true);
+    });
+
+    test('Z.AI GLM models are configured correctly', () => {
+      expect(BedrockFoundationModel.ZAI_GLM_4_7.modelId).toBe('zai.glm-4.7');
+      expect(BedrockFoundationModel.ZAI_GLM_4_7.supportsAgents).toBe(true);
+
+      expect(BedrockFoundationModel.ZAI_GLM_4_7_FLASH.modelId).toBe('zai.glm-4.7-flash');
+      expect(BedrockFoundationModel.ZAI_GLM_4_7_FLASH.supportsAgents).toBe(true);
+
+      expect(BedrockFoundationModel.ZAI_GLM_5.modelId).toBe('zai.glm-5');
+      expect(BedrockFoundationModel.ZAI_GLM_5.supportsAgents).toBe(true);
+    });
   });
 });

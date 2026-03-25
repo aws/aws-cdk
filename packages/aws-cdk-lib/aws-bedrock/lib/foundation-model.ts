@@ -446,6 +446,15 @@ export class FoundationModelIdentifier {
   /** Base model "mistral.pixtral-large-2502-v1:0". */
   public static readonly MISTRAL_PIXTRAL_LARGE_2502_V1_0 = new FoundationModelIdentifier('mistral.pixtral-large-2502-v1:0');
 
+  /** Base model "minimax.minimax-m2". */
+  public static readonly MINIMAX_M2 = new FoundationModelIdentifier('minimax.minimax-m2');
+
+  /** Base model "minimax.minimax-m2.1". */
+  public static readonly MINIMAX_M2_1 = new FoundationModelIdentifier('minimax.minimax-m2.1');
+
+  /** Base model "minimax.minimax-m2.5". */
+  public static readonly MINIMAX_M2_5 = new FoundationModelIdentifier('minimax.minimax-m2.5');
+
   /** Base Model "qwen.qwen3-32b-v1:0" */
   public static readonly QWEN_QWEN3_32B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-32b-v1:0');
 
@@ -514,6 +523,15 @@ export class FoundationModelIdentifier {
 
   /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
   public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "zai.glm-4.7". */
+  public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');
+
+  /** Base model "zai.glm-4.7-flash". */
+  public static readonly ZAI_GLM_4_7_FLASH = new FoundationModelIdentifier('zai.glm-4.7-flash');
+
+  /** Base model "zai.glm-5". */
+  public static readonly ZAI_GLM_5 = new FoundationModelIdentifier('zai.glm-5');
 
   /**
    * Constructor for foundation model identifier

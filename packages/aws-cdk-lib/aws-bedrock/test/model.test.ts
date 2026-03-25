@@ -28,6 +28,28 @@ describe('FoundationModel', () => {
     expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/anthropic.claude-v2']] });
   });
 
+  test('fromFoundationModelId with MiniMax M2.5 model', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.MINIMAX_M2_5);
+
+    // THEN
+    expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/minimax.minimax-m2.5']] });
+  });
+
+  test('fromFoundationModelId with ZAI GLM 5 model', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ZAI_GLM_5);
+
+    // THEN
+    expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/zai.glm-5']] });
+  });
+
   test('fromFoundationModelId with newer model ID', () => {
     // GIVEN
     const stack = new cdk.Stack();

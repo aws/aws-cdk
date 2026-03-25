@@ -941,6 +941,104 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     },
   );
 
+  /****************************************************************************
+   *                            MINIMAX
+   ***************************************************************************/
+
+  /**
+   * MiniMax M2 model, an efficient foundation model.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: General language tasks, efficient processing
+   */
+  public static readonly MINIMAX_M2 = new BedrockFoundationModel(
+    'minimax.minimax-m2',
+    {
+      supportsAgents: true,
+    },
+  );
+
+  /**
+   * MiniMax M2.1 model, an improved version of M2.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: General language tasks, improved accuracy
+   */
+  public static readonly MINIMAX_M2_1 = new BedrockFoundationModel(
+    'minimax.minimax-m2.1',
+    {
+      supportsAgents: true,
+    },
+  );
+
+  /**
+   * MiniMax M2.5 model, an agent-native frontier model.
+   * Trained for token-efficient reasoning, optimal task decomposition,
+   * and complex workflow completion.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: Agentic tasks, complex workflows, efficient reasoning
+   */
+  public static readonly MINIMAX_M2_5 = new BedrockFoundationModel(
+    'minimax.minimax-m2.5',
+    {
+      supportsAgents: true,
+    },
+  );
+
+  /****************************************************************************
+   *                            Z.AI (GLM)
+   ***************************************************************************/
+
+  /**
+   * Z.AI's GLM 4.7 model, a general-purpose large language model.
+   * Optimized for complex reasoning and agentic tasks.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: Complex reasoning, multi-step tasks, advanced coding
+   */
+  public static readonly ZAI_GLM_4_7 = new BedrockFoundationModel(
+    'zai.glm-4.7',
+    {
+      supportsAgents: true,
+    },
+  );
+
+  /**
+   * Z.AI's GLM 4.7 Flash model, a faster variant of GLM 4.7.
+   * Optimized for speed while maintaining quality.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: Quick responses, efficient processing
+   */
+  public static readonly ZAI_GLM_4_7_FLASH = new BedrockFoundationModel(
+    'zai.glm-4.7-flash',
+    {
+      supportsAgents: true,
+    },
+  );
+
+  /**
+   * Z.AI's GLM 5 model, a frontier-class general-purpose large language model.
+   * Built on the GLM 4.5 agent-centric foundation with support for multi-step
+   * reasoning, math, advanced coding, and tool-augmented workflows.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Best for: Complex systems engineering, long-horizon agentic tasks
+   */
+  public static readonly ZAI_GLM_5 = new BedrockFoundationModel(
+    'zai.glm-5',
+    {
+      supportsAgents: true,
+    },
+  );
+
   /**
    * Creates a BedrockFoundationModel from a FoundationModelIdentifier.
    * Use this method when you have a model identifier from the CDK.
