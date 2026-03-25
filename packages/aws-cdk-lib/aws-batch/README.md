@@ -249,7 +249,7 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 
 ### Controlling Scale-In Delay
 
-You can configure the minimum number of minutes to wait before scaling down after a scale-in event using `minScaleDownDelayMinutes`.
+You can configure the minimum amount of time to wait before scaling down after a scale-in event using `minScaleDownDelay`.
 This is useful to avoid thrashing when workloads are bursty. The value must be between 20 and 10080 (7 days).
 See the [ComputeScalingPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-batch-computeenvironment-computescalingpolicy.html) for more details.
 
@@ -258,7 +258,7 @@ declare const vpc: ec2.IVpc;
 
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   vpc,
-  minScaleDownDelayMinutes: 30,
+  minScaleDownDelay: cdk.Duration.minutes(30),
 });
 ```
 
