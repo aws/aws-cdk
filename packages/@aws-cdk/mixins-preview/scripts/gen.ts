@@ -5,7 +5,7 @@ import type { GeneratorResult, ModuleMap, ModuleMapEntry, SubmoduleContribution 
 import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
 import { generateAll as generateEvents } from './spec2eventbridge';
-import { generateAll as generateLogsDeliveryMixins } from '@aws-cdk/spec2cdk/lib/log-delivery-mixins'; 
+import { generateAll as generateLogsDeliveryMixins } from '@aws-cdk/spec2cdk/lib/log-delivery-mixins';
 import { MIXINS_PREVIEW_BASE_NAMES } from './config';
 
 const GO_PREFIX = 'preview';
