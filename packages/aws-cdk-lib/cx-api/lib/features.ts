@@ -151,6 +151,7 @@ export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManage
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
 export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1753,7 +1754,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
@@ -1779,6 +1779,29 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
+    detailsMd: `
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
+
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
+
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
+  },
+
   [AUTOMATIC_L1_TRAITS]: {
     type: FlagType.ApiDefault,
     summary: 'Automatically use the default L1 traits for L1 constructs`',
