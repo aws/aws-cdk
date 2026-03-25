@@ -1,12 +1,12 @@
 import type { Resource, Service, DimensionSet, Metric, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { naming } from '@aws-cdk/spec2cdk';
 import { Splat, ExternalModule, Module, ClassType, EnumType, StructType, Type, expr, stmt, MemberVisibility, Stability } from '@cdklabs/typewriter';
-import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import type { LocatedModule, ServiceSubmoduleProps } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { ResourceReference } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
-import { log } from '@aws-cdk/spec2cdk/lib/util';
+import type { AddServiceProps, LibraryBuilderProps } from '../cdk/library-builder';
+import { LibraryBuilder } from '../cdk/library-builder';
+import { ResourceReference } from '../cdk/reference-props';
+import type { LocatedModule, ServiceSubmoduleProps } from '../cdk/service-submodule';
+import { BaseServiceSubmodule } from '../cdk/service-submodule';
+import * as naming from '../naming';
+import { log } from '../util';
 
 /** A single dimension after merging: accumulates all known values from multiple DimensionSets sharing the same name */
 interface MergedDimension {
@@ -250,7 +250,7 @@ class DimensionSetClassGenerator {
     const method = this.dimensionSetClass.addMethod({
       name: methodName,
       returnType: Type.fromName(this.cloudwatchModule, 'IMetric'),
-      docs: { summary: metric.description ?? `Metric for CHANGE ${metric.name}`, default: `${metric.statistic} over 5 minutes` },
+      docs: { summary: metric.description ?? `The ${metric.name} metric`, default: `${metric.statistic} over 5 minutes` },
     });
     const optionsParam = method.addParameter({
       name: 'options',

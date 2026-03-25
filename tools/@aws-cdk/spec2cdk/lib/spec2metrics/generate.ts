@@ -1,17 +1,18 @@
-import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '@aws-cdk/spec2cdk';
-import { generate, loadPatchedSpec } from '@aws-cdk/spec2cdk';
+import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '../generate';
+import { generate, loadPatchedSpec } from '../generate';
 import { MetricsBuilder } from './builder';
-import { MIXINS_PREVIEW_BASE_NAMES } from '../config';
-import type { GeneratorResult } from '@aws-cdk/spec2cdk/lib/module-topology';
-import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
+import { loadModuleMap, type GeneratorResult, type ModuleMap } from '../module-topology';
+import type { PackageBaseNames } from '../util/jsii';
 
-type GenerateOptions = Pick<Spec2CdkOptions<typeof MetricsBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
+export interface MetricsGenerateOptions extends Pick<Spec2CdkOptions<typeof MetricsBuilder>, 'outputPath' | 'clearOutput' | 'debug'> {
+  readonly packageBases: PackageBaseNames;
+}
 
-export async function generateAll(options: GenerateOptions): Promise<GeneratorResult> {
+export async function generateAll(options: MetricsGenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
   const services = await db.all('service');
   const moduleMap: ModuleMap = loadModuleMap({
-    packageBases: MIXINS_PREVIEW_BASE_NAMES,
+    packageBases: options.packageBases,
     respectOverrides: false,
   });
   const moduleRequests: GenerateModuleMap = {};

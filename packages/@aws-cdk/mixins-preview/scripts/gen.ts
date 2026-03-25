@@ -6,7 +6,8 @@ import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
 import { generateAll as generateEvents } from './spec2eventbridge';
 import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
-import { generateAll as generateMetrics } from './spec2metrics';
+import { spec2metrics } from '@aws-cdk/spec2cdk';
+import { MIXINS_PREVIEW_BASE_NAMES } from './config';
 
 const GO_PREFIX = 'preview';
 
@@ -22,7 +23,7 @@ async function main() {
   const results: GeneratorResult[] = [
     await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
-    await generateMetrics({ outputPath }),
+    await spec2metrics.generateAll({ outputPath, packageBases: MIXINS_PREVIEW_BASE_NAMES }),
   ];
 
   const moduleMap = mergeModuleMaps(...results.map(r => r.moduleMap));
