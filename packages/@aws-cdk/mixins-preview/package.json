@@ -189,6 +189,8 @@
     "./aws-rds": "./lib/services/aws-rds/index.js",
     "./aws-rds/events": "./lib/services/aws-rds/events.js",
     "./aws-rds/mixins": "./lib/services/aws-rds/mixins.js",
+    "./aws-route53globalresolver": "./lib/services/aws-route53globalresolver/index.js",
+    "./aws-route53globalresolver/mixins": "./lib/services/aws-route53globalresolver/mixins.js",
     "./aws-route53profiles": "./lib/services/aws-route53profiles/index.js",
     "./aws-route53profiles/mixins": "./lib/services/aws-route53profiles/mixins.js",
     "./aws-route53recoveryreadiness": "./lib/services/aws-route53recoveryreadiness/index.js",
