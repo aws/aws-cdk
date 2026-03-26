@@ -232,7 +232,7 @@ export class Duration {
   /**
    * Returns a string representation of this `Duration`
    *
-   * This is is never the right function to use when you want to use the `Duration`
+   * This is never the right function to use when you want to use the `Duration`
    * object in a template. Use `toSeconds()`, `toMinutes()`, `toDays()`, etc. instead.
    */
   public toString(): string {
