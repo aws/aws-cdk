@@ -26,7 +26,7 @@ import {
  * -- bash verify.integ.graphql.sh [apiKey] [url]   -- shows query and mutation   --
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-appsync-integ');
 
 const userPool = new UserPool(stack, 'Pool', {

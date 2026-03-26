@@ -2,7 +2,7 @@ import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { UserPool, VerificationEmailStyle } from 'aws-cdk-lib/aws-cognito';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-link-custom-placeholder');
 
 const userpool = new UserPool(stack, 'myuserpool', {

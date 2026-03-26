@@ -8,6 +8,7 @@ import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
   },
 });

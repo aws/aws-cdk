@@ -2,7 +2,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 // we associate this stack with an explicit environment since this is required by the
 // environmental context provider used in `fromLookup`. CDK_INTEG_XXX are set

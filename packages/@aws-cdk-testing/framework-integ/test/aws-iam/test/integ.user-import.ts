@@ -5,7 +5,7 @@ import {
 } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'dummy-stack');
 
 const userArn = 'arn:aws:iam::123456789012:user/OthersExternalIamUser';

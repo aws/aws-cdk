@@ -15,7 +15,7 @@ import { CodeBuildStartBuild } from 'aws-cdk-lib/aws-scheduler-targets';
  * 2. The code build project updates the Parameter 'MyParameter' from value '🌧️' to '🌈':
  * 3. The code build project is invoked by the scheduler.
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-codebuild-start-build');
 
 const payload = {

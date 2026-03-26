@@ -15,7 +15,7 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * for AWS Glue, which as of 02/2020, is around 10-15 minutes.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const codeAsset = new assets.Asset(stack, 'Glue Job Script', {

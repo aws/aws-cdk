@@ -2,7 +2,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { DeploymentStrategy, RolloutStrategy } from 'aws-cdk-lib/aws-appconfig';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-appconfig-deployment-strategy');
 

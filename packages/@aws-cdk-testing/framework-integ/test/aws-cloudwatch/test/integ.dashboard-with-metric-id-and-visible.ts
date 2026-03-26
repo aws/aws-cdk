@@ -65,7 +65,7 @@ class DashboardWithMetricIdAndVisibleIntegrationTest extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'cdk-integ-dashboard-with-metric-id-and-visible', {
   testCases: [new DashboardWithMetricIdAndVisibleIntegrationTest(app, 'DashboardWithMetricIdAndVisibleIntegrationTest')],
 });

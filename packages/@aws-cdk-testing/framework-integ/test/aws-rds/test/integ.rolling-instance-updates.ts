@@ -33,7 +33,7 @@ class RollingInstanceUpdateTestStack extends IntegTestBaseStack {
 }
 
 // Beginning of the test suite
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new integTests.IntegTest(app, 'InstanceUpdateBehaviorTests', {
   testCases: [
     new RollingInstanceUpdateTestStack(app, 'BulkUpdate', {

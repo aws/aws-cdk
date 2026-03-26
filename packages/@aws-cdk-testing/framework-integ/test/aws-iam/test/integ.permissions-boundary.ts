@@ -2,7 +2,7 @@ import { App, Stack, PermissionsBoundary } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Role, ServicePrincipal, ManagedPolicy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const supportStack = new Stack(app, 'integ-permissions-boundary-support');
 new ManagedPolicy(supportStack, 'PB', {

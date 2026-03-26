@@ -47,7 +47,7 @@ class DashboardWithGraphWidgetWithStatisticIntegrationTest extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'cdk-integ-dashboard-with-graph-widget-with-statistic', {
   testCases: [new DashboardWithGraphWidgetWithStatisticIntegrationTest(app, 'DashboardWithGraphWidgetWithStatisticIntegrationTest')],
 });

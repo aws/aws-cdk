@@ -5,6 +5,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   treeMetadata: false,
   postCliContext: {
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,

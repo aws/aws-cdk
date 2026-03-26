@@ -2,7 +2,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Stack, App } from 'aws-cdk-lib';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-restrict-default-sg');
 
 const vpc = new Vpc(stack, 'Vpc', {

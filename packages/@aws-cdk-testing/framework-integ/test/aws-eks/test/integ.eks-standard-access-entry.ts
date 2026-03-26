@@ -40,6 +40,7 @@ class EksStandardAccessEntry extends Stack {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,

@@ -10,7 +10,7 @@ import { App, Duration, Size, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from 'aws-cdk-lib/aws-batch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'stack');
 const vpc = new Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 

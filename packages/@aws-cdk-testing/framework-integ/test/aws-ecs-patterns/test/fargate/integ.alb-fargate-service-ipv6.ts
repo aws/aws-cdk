@@ -5,7 +5,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-ecs-integ-alb-fg-ipv6');
 const vpc = new ec2.Vpc(stack, 'Vpc', {
   maxAzs: 2,

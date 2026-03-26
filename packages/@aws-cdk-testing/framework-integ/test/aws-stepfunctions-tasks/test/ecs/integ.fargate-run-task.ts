@@ -17,6 +17,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },

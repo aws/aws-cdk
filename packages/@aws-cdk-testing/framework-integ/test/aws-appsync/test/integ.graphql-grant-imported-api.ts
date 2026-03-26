@@ -80,7 +80,7 @@ class ImportedStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const originalStack = new OriginalStack(app, 'aws-appsync-integ');
 const importedStack = new ImportedStack(app, 'imported-stack', {
   apiId: originalStack.apiId,

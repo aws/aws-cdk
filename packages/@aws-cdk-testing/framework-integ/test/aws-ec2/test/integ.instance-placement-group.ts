@@ -6,7 +6,7 @@ import {
 } from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'ec2-instance-placementgroup-stack');
 
 // create a placementGroup

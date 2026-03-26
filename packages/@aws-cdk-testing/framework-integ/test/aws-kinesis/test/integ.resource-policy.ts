@@ -3,7 +3,7 @@ import { Stream, StreamConsumer } from 'aws-cdk-lib/aws-kinesis';
 import { AccountPrincipal, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'kinesis-resource-policy');
 
 const stream = new Stream(stack, 'MyStream');

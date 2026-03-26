@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'cdk-opensearch-advancedsecurity-with-saml');
 
 const user = new iam.User(stack, 'User');

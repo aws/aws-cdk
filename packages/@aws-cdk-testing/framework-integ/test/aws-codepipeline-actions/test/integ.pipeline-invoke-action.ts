@@ -7,6 +7,7 @@ import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,

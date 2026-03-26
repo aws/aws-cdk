@@ -52,6 +52,7 @@ class AppStage extends aws_cdk_lib_1.Stage {
     }
 }
 const app = new aws_cdk_lib_1.App({
+    context: { '@aws-cdk/core:disableGitSource': true },
     postCliContext: {
         '@aws-cdk/core:newStyleStackSynthesis': '1',
         '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,

@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-cdk-cloudtrail-inshights-test');
 
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');

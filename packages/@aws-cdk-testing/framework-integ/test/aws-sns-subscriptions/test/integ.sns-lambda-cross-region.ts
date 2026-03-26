@@ -5,7 +5,7 @@ import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /// !cdk-integ * pragma:enable-lookups
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const topicStack = new cdk.Stack(app, 'TopicStack', {
   env: {

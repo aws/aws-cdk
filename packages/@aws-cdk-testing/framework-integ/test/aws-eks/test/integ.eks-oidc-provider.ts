@@ -5,6 +5,7 @@ import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
   },

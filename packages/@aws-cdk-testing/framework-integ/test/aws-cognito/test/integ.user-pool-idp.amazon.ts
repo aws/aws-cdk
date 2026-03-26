@@ -7,7 +7,7 @@ import { ProviderAttribute, UserPool, UserPoolIdentityProviderAmazon } from 'aws
  * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'Login with Amazon' link shows up.
  * * If you plug in valid 'Login with Amazon' credentials, the federated log in should work.
  */
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-idp-amazon');
 
 const userpool = new UserPool(stack, 'pool', {

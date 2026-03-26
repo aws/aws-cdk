@@ -6,7 +6,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 import { ApplicationMultipleTargetGroupsFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-ecs-integ-fargate-multi-alb-health');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });

@@ -7,7 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 // ---------------------------------
 // Define a rule that triggers a put to a Kinesis stream encrypted by a customer-managed KMS key every 1min.
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-kinesis-event-target');
 

@@ -29,7 +29,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'cdk-integ-opensearch-instance-store');
 
 // These instance types (i4g, i4i, r7gd, r8gd) are not available in all regions.

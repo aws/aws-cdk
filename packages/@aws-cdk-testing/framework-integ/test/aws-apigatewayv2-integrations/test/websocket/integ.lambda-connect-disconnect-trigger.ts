@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

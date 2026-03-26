@@ -50,7 +50,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new IntegTest(app, 'DocdbClusterInteg', {
   testCases: [new TestStack(app, 'aws-cdk-docdb-integ')],

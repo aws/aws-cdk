@@ -5,6 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,
   },

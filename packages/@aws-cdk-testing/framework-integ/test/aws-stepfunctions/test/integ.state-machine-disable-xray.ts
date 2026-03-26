@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 new sfn.StateMachine(stack, 'StateMachine', {

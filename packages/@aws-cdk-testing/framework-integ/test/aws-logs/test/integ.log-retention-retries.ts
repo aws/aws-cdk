@@ -18,7 +18,7 @@ class LogRetentionRetriesStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const numberOfStacks = 3;
 const stacks = [...Array(numberOfStacks).keys()].map((i) => new LogRetentionRetriesStack(app, 'aws-cdk-log-retention-integ-retries' + i));
 

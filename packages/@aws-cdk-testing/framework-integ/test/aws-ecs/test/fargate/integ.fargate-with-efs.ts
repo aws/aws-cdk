@@ -30,7 +30,7 @@ class FargateWithEfsStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new FargateWithEfsStack(app, 'aws-ecs-fargate-efs');
 
 new integ.IntegTest(app, 'aws-ecs-fargate-test', {

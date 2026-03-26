@@ -12,7 +12,7 @@ export class Test extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'cloudwatch-logs-disabled', {
   testCases: [
     new Test(app, 'default-api'),

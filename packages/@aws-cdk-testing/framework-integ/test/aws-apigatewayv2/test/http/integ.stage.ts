@@ -5,7 +5,7 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
 import * as logs from 'aws-cdk-lib/aws-logs';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-http-stage');
 
 const testLogGroup = new logs.LogGroup(stack, 'MyLogGroup');

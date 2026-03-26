@@ -4,7 +4,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'Stack');
 
 const dlq = new sqs.Queue(stack, 'DLQ');

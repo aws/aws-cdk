@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-s3-legacy-name-integ');
 
 const legacyBucketFromName = s3.Bucket.fromBucketName(stack, 'LegacyBucketFromName', 'My_legacy_bucket1');

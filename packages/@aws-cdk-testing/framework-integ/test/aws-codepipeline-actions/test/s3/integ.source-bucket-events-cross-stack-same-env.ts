@@ -8,6 +8,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,

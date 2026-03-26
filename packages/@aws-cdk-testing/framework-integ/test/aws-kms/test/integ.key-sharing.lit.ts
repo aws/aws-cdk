@@ -2,7 +2,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 /// !show
 

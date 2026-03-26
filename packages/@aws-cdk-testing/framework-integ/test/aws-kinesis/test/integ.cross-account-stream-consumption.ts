@@ -7,7 +7,7 @@ const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';
 const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123';
 const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'StreamResourcesStack', {
   env: {

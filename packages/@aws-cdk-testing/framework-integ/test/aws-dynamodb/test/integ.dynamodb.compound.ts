@@ -2,7 +2,7 @@ import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AttributeType, ProjectionType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-cdk-dynamodb-compound-keys');
 
 const table = new Table(stack, 'Table', {

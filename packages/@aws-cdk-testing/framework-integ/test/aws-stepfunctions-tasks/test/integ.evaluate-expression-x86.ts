@@ -5,7 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-cdk-sfn-evaluate-expression-x86-integ');
 
 const evaluateExpression = new tasks.EvaluateExpression(stack, 'EvaluateExpression', {

@@ -2,7 +2,7 @@ import { App, Fn, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Group, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'integ-customize-role');
 

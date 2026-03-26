@@ -21,7 +21,7 @@ class TransformerIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new TransformerIntegStack(app, 'aws-cdk-transformer-integ');
 new IntegTest(app, 'transformer-create', {
   testCases: [testCase],

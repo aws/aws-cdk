@@ -10,7 +10,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * 1. Verify manually that the integration has type "AWS"
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-aws-websocket-sqs-integration');
 
 const sqsMessageQueue = new sqs.Queue(stack, 'MessageSQSQueue', {

@@ -7,7 +7,7 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import { QueueHook } from 'aws-cdk-lib/aws-autoscaling-hooktargets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class TestStack extends cdk.Stack {
   public readonly queueUrl: string;

@@ -4,7 +4,7 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-events-targets-api-gatewayv2-integ');
 
 const httpApi = new apigwv2.HttpApi(stack, 'HttpApi');

@@ -2,7 +2,7 @@ import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AccessKey, User } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-iam-access-key-1');
 
 const user = new User(stack, 'TestUser');

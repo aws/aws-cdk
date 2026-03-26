@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': false,
   },

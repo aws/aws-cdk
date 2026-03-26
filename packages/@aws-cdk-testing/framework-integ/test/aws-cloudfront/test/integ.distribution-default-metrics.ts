@@ -33,7 +33,7 @@ class DistributionMetricsTestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new DistributionMetricsTestStack(app, 'MyTestStack');
 
 new IntegTest(app, 'MyTest', {

@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDefinition', {

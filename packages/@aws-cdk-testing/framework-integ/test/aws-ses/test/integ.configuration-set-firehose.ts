@@ -6,7 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'ses-configuration-set-firehose');
 
 const configurationSet = new ses.ConfigurationSet(stack, 'ConfigurationSet', {

@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BedrockInvokeModel, Guardrail } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ');
 
 const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1);

@@ -9,7 +9,7 @@ import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets';
  * A message is sent to the queue by the scheduler every minute
  * The assertion checks that the expected payload in message is received by the queue
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-schedule');
 
 const queue = new Queue(stack, 'MyQueue', {

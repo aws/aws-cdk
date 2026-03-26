@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class TestStack extends cdk.Stack {
   constructor(scope:cdk.App, id: string, props?: cdk.StackProps) {

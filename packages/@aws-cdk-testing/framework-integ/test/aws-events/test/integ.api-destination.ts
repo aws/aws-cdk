@@ -3,7 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'events-api-destination-stack');
 

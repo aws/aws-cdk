@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-integ');
 
 const firstPassBranch = new sfn.Pass(stack, 'Pass Branch 1', {

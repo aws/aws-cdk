@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const producingStack = new cdk.Stack(app, 'CrossRegionRefProducerInteg', {
   crossRegionReferences: true,

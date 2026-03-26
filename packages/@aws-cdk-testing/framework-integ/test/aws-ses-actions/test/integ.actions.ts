@@ -30,6 +30,7 @@ const TEST_ORGANIZATION_ARN = 'arn:aws:workmail:us-east-1:339712719728:organizat
 const TEST_EMAIL = `test@${TEST_WORKMAIL_DOMAIN}`;
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

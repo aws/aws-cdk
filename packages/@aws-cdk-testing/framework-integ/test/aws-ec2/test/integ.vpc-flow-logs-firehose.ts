@@ -5,7 +5,7 @@ import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from 'aws-cdk-l
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {

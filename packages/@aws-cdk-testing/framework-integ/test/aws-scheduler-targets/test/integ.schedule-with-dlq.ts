@@ -5,7 +5,7 @@ import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SqsSendMessage } from 'aws-cdk-lib/aws-scheduler-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-schedule-dlq');
 
 const queue = new sqs.Queue(stack, 'ScheduleTargetQueue');

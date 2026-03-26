@@ -6,7 +6,8 @@ import {
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-const app = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true, [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: false } });
+const app = new App({ context: {
+    '@aws-cdk/core:disableGitSource': true, [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true, [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: false } });
 
 const roleStack = new Stack(app, 'integ-iam-imported-role-role-stack');
 

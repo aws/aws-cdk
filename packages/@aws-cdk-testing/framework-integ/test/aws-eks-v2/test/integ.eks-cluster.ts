@@ -357,6 +357,7 @@ const supportedRegions = [
 ];
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
     [EKS_USE_NATIVE_OIDC_PROVIDER]: false,

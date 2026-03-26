@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
 import { Universal } from 'aws-cdk-lib/aws-scheduler-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'AwsSchedulerTargetsUniversal');
 
 new scheduler.Schedule(stack, 'Schedule', {

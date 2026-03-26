@@ -7,7 +7,7 @@ import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new IntegTestBaseStack(app, 'cluster-replication');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });

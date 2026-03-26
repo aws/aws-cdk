@@ -5,7 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { DatabaseInstance, DatabaseInstanceEngine, StorageType } from 'aws-cdk-lib/aws-rds';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new IntegTestBaseStack(app, 'integRdsInstanceIo2');
 
 const vpc = new Vpc(stack, 'Vpc', { natGateways: 0 });

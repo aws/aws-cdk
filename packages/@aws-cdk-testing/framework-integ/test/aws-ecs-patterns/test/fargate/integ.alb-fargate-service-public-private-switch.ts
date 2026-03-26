@@ -6,6 +6,7 @@ import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import { ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID]: true,
   },

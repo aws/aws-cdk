@@ -5,7 +5,8 @@ import { ServicePrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
 const app = new App({
-  context: { [cxapi.KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: true },
+  context: {
+    '@aws-cdk/core:disableGitSource': true, [cxapi.KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL]: true },
 });
 const stack = new Stack(app, 'aws-cdk-kms');
 const alias = Alias.fromAliasName(stack, 'alias', 'alias/MyKey');

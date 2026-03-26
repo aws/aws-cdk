@@ -4,7 +4,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-globalaccelerator-integ');
 
 let accelerator = new globalaccelerator.Accelerator(stack, 'Accelerator', {

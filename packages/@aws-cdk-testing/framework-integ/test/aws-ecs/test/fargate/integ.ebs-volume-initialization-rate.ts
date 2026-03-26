@@ -73,7 +73,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'integ-aws-ecs-ebs-volume-initialization-rate');
 
 new integ.IntegTest(app, 'EBSVolumeInitializationRate', {

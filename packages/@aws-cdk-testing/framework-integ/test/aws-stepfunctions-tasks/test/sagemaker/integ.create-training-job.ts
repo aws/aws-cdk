@@ -20,7 +20,7 @@ import { S3Location, SageMakerCreateTrainingJob, InputMode } from 'aws-cdk-lib/a
  * -- aws stepfunctions start-execution --state-machine-arn <state-machine-arn-from-output> provides execution arn
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-stepfunctions-sagemaker');
 
 const encryptionKey = new Key(stack, 'EncryptionKey', {

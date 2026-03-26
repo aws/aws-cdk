@@ -8,7 +8,7 @@ import { Canary, Cleanup, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'canary-one');
 
 const bucket = new s3.Bucket(stack, 'MyTestBucket', {

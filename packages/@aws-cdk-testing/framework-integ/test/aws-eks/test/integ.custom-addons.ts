@@ -5,6 +5,7 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

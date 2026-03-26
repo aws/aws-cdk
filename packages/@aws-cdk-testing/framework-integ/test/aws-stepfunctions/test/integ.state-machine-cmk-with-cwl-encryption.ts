@@ -39,7 +39,7 @@ class KMSStateMachine extends cdk.Stack {
     });
   }
 }
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new KMSStateMachine(app, 'aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig');
 
 const testCase = new IntegTest(app, 'StateMachineAndActivityWithCMKEncryptionConfiguration', {

@@ -10,6 +10,7 @@ import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { SOLUTION_STACK_NAME } from '../../utils/aws-elasticbeanstalk';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

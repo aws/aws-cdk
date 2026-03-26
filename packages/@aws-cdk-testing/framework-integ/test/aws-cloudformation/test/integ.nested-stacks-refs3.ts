@@ -34,7 +34,7 @@ class ParentStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new ParentStack(app, 'nested-stacks-refs3-siblings');
 

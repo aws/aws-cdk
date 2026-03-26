@@ -30,7 +30,7 @@ import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 const account = process.env.CDK_INTEG_ACCOUNT || '111111111111';
 const multiAccount = process.env.CDK_INTEG_MULTI_ACCOUNT || '222222222222';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const replicaStack = new Stack(app, 'ReplicaStack', {
   env: { region: 'ca-central-1', account: multiAccount },

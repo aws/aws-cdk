@@ -4,6 +4,7 @@ import * as cr from 'aws-cdk-lib/custom-resources';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

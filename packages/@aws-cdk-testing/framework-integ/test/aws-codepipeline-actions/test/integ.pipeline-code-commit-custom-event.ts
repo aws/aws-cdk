@@ -15,7 +15,7 @@ const defaultFeatureFlag = {
   [PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE]: false,
   '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
 };
-const app = new cdk.App({ postCliContext: defaultFeatureFlag });
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true }, postCliContext: defaultFeatureFlag });
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-custom-event');
 const branch = 'test-branch';

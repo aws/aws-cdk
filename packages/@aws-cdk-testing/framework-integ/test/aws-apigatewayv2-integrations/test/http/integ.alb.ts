@@ -7,7 +7,7 @@ import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'integ-alb-integration');
 

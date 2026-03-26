@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'NlbEnablePrefixForIpv6NatStack');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {

@@ -72,7 +72,7 @@ function setupAssertions(testCaseStack: DistributedMapParallelStack, assertions:
     .next(expectSucceededExecution);
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const parallelStack = new DistributedMapParallelStack(app, 'DistributedMapParallelStack');
 
 const testCase = new integ.IntegTest(app, 'DistributedMapParallel', {

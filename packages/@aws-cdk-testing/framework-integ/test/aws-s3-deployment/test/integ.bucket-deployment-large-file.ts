@@ -18,6 +18,7 @@ import * as os from 'os';
  * - Validates both escaped and unescaped JSON handling
  */
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

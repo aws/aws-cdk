@@ -5,7 +5,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'FunctionUrlOriginIpAddressTypeStack');
 
 // Lambda function

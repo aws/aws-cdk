@@ -4,8 +4,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
-const app = new App({
-});
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout');
 

@@ -69,7 +69,7 @@ $ cdk destroy --app 'node integ.deployment-group.js' aws-cdk-codedeploy-ecs-dg
 ```
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-ecs-dg');
 
 // Network infrastructure

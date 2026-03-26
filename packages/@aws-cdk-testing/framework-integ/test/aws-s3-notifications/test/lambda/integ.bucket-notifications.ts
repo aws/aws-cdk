@@ -7,6 +7,7 @@ import * as constructs from 'constructs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-s3:keepNotificationInImportedBucket': false,

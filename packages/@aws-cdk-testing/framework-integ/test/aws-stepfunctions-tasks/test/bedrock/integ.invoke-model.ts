@@ -10,7 +10,7 @@ import { BedrockInvokeModel } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED
  * This integ test does not actually verify a Step Functions execution, as not all AWS accounts have Bedrock model access.
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
 
 const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1);

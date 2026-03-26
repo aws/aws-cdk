@@ -5,7 +5,7 @@ import { App, CfnParameter, Duration, Stack, Tags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment, EcsMachineImageType } from 'aws-cdk-lib/aws-batch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'batch-stack');
 const vpc = new ec2.Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });
 

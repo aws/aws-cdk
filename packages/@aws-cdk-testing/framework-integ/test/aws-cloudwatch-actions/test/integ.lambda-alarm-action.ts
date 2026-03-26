@@ -82,6 +82,7 @@ app.synth();
 
 const appWithFeatureFlag = new App({
   context: {
+    '@aws-cdk/core:disableGitSource': true,
     [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

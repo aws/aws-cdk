@@ -6,6 +6,7 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,

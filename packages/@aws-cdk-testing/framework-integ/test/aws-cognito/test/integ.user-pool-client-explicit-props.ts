@@ -3,6 +3,7 @@ import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { ClientAttributes, OAuthScope, StringAttribute, UserPool } from 'aws-cdk-lib/aws-cognito';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

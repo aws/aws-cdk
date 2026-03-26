@@ -39,7 +39,7 @@ for (let i = 0; i < 10; i++) { // 'K' to 'T'
   LSI_NON_KEY.push(String.fromCharCode(75 + i));
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, STACK_NAME);
 

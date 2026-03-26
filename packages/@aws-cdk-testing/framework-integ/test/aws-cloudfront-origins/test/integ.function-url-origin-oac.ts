@@ -5,6 +5,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

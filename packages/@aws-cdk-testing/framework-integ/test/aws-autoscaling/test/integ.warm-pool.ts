@@ -8,7 +8,7 @@ import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
  *
  * -- aws autoscaling describe-warm-pool --auto-scaling-group-name ASG has 0 and 'Stopped' as MinSize and PoolState, respectively.
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-autoscaling-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {

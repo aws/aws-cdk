@@ -5,7 +5,7 @@ import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from 'aws-c
  * Stack verification steps
  * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'cdk' sign in link shows up.
  */
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-idp-google');
 
 const userpool = new UserPool(stack, 'pool', {

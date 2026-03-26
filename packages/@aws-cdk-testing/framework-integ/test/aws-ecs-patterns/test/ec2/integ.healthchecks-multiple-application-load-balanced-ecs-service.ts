@@ -9,6 +9,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
   },
 });

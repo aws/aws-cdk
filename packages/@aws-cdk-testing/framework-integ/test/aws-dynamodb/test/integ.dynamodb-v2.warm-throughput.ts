@@ -41,7 +41,7 @@ export class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'warm-throughput-stack-v2', { env: { region: 'eu-west-1' } });
 
 new IntegTest(app, 'warm-throughput-integ-test-v2', {

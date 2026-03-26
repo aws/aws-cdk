@@ -27,7 +27,7 @@ class SomeSqsTarget implements scheduler.IScheduleTarget {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-schedule');
 const queue = new sqs.Queue(stack, 'ScheduleTargetQueue');
 const role = new iam.Role(stack, 'Role', {

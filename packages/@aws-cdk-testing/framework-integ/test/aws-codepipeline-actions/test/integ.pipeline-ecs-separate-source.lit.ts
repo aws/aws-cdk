@@ -209,7 +209,7 @@ export class PipelineStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 // the CodePipeline Stack needs to be created first
 const pipelineStack = new PipelineStack(app, 'aws-cdk-pipeline-ecs-separate-sources');

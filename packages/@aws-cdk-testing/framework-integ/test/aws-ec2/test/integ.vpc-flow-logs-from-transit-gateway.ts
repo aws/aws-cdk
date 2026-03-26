@@ -4,7 +4,7 @@ import { FlowLog, FlowLogResourceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-flow-logs');
 
 const vpc = new Vpc(stack, 'VPC');

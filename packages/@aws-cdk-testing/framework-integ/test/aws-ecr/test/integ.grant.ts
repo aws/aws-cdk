@@ -3,7 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 
 const repo = new ecr.Repository(stack, 'Repo');

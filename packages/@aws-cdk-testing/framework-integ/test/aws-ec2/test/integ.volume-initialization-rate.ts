@@ -3,7 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { SnapshotProvider } from './snapshot-provider';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'volume-initialization-rate-stack');
 

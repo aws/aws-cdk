@@ -8,6 +8,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,

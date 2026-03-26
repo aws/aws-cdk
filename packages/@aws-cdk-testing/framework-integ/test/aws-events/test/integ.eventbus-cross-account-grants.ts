@@ -5,6 +5,7 @@ import { EventBus } from 'aws-cdk-lib/aws-events';
 import { AccountPrincipal } from 'aws-cdk-lib/aws-iam';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

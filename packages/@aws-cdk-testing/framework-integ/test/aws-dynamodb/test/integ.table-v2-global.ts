@@ -79,7 +79,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 Tags.of(app).add('stage', 'IntegTest');
 new IntegTest(app, 'aws-cdk-global-table-integ', {
   // Global tables with replicas require a region-aware stack

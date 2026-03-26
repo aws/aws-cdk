@@ -6,7 +6,7 @@ import * as lb2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-codedeploy-server-dg-multi-lb');
 

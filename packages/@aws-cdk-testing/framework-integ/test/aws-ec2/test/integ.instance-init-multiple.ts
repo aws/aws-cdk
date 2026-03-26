@@ -9,7 +9,7 @@ const tmpDir = fs.mkdtempSync('/tmp/cfn-init-test');
 fs.writeFileSync(path.resolve(tmpDir, 'testConfigFile'), 'Hello World!\n');
 fs.writeFileSync(path.resolve(tmpDir, 'testConfigFile2'), 'Hello World2!\n');
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);

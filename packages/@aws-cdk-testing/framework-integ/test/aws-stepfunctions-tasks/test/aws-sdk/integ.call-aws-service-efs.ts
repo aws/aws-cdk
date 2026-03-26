@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { CallAwsService } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-call-aws-service-efs-integ');
 
 const task = new CallAwsService(stack, 'TagEfsAccessPoint', {

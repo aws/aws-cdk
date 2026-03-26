@@ -15,7 +15,7 @@ import { EventBridgePutEvents } from 'aws-cdk-lib/aws-scheduler-targets';
  * 2. Create a step function which updates the Parameter 'MyEventBridgePutParameter' from value '🐶' to '😺':
  * 3. Create an event bus and a rule which triggers the step function every 10 minutes (but it needs only one successful execution to pass)
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-event-bridge-put-events');
 
 const stateMachinePayload = {

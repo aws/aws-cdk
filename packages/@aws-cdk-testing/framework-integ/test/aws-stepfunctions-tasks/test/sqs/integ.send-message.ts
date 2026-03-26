@@ -18,7 +18,7 @@ import { SqsSendMessage } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * -- aws stepfunctions describe-execution --execution-arn <from previous command> returns a status of `Succeeded`
  * -- aws sqs receive-message --queue-url <queue-url-from-output> has a message of 'sending message over'
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-sqs-send-message-integ');
 const queue = new sqs.Queue(stack, 'show-me-the-messages');
 

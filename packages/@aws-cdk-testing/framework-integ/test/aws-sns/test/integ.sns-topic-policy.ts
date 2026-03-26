@@ -3,7 +3,7 @@ import { Topic, TopicPolicy } from 'aws-cdk-lib/aws-sns';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'SNSTopicPolicyStack');
 

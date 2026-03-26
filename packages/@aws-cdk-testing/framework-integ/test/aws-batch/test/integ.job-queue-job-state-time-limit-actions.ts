@@ -3,7 +3,7 @@ import { App, Stack, Duration } from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from 'aws-cdk-lib/aws-batch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'batch-stack-job-queue');
 const vpc = new Vpc(stack, 'vpc');
 

@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { Stream, StreamEncryption, StreamMode } from 'aws-cdk-lib/aws-kinesis';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integ-realtime-config');
 
 const role = new iam.Role(stack, 'Role', {

@@ -3,7 +3,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { executionSync } from './util';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-state-machine-variables-integ');
 
 const step1 = sfn.Pass.jsonata(stack, 'Step1', {

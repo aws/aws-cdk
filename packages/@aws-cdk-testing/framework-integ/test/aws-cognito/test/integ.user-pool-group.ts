@@ -27,7 +27,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'user-pool-group-stack');
 
 new IntegTest(app, 'integ-user-pool-group', {

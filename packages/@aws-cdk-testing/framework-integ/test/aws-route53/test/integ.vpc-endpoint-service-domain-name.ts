@@ -31,6 +31,7 @@ class DummyEndpointLoadBalancer implements ec2.IVpcEndpointServiceLoadBalancer {
 }
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

@@ -39,6 +39,7 @@ class JavaScriptCommonJsStack extends Stack {
 
 const app = new App({
   context: {
+    '@aws-cdk/core:disableGitSource': true,
     [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

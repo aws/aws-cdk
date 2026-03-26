@@ -6,7 +6,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ScheduledFargateTask } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class EventStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {

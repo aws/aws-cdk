@@ -7,7 +7,7 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {

@@ -109,7 +109,7 @@ class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution');
 
 const pipelineParameterList: SageMakerPipelineParameter[] = [{

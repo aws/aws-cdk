@@ -7,7 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'canary-artifact-s3-encryption');
 
 const bucket = new s3.Bucket(stack, 'MyTestBucket', {

@@ -7,6 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { S3SourceAction, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   treeMetadata: false,
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,

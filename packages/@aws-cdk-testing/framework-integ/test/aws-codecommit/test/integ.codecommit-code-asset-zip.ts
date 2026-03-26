@@ -3,7 +3,7 @@ import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import { Code } from 'aws-cdk-lib/aws-codecommit';
 import * as path from 'path';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-codecommit-repo-contents-zip-file');
 
 new codecommit.Repository(stack, 'Repo', {

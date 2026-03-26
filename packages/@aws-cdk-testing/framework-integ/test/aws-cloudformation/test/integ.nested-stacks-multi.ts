@@ -20,7 +20,7 @@ class MyNestedStack extends NestedStack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'nested-stacks-multi');
 new MyNestedStack(stack, 'NestedStack');
 

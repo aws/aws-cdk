@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-ecs-task-definition-enable-fault-injection');
 
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDefinition', {

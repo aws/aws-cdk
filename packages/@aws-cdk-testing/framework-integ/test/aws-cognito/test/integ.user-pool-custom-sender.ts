@@ -10,6 +10,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * * Verify the CustomEmailSender lambda was called via logged message in CloudWatch.
  */
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [cxapi.IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: true,
   },

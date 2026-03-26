@@ -3,7 +3,7 @@
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { App, Fn, NestedStack, Stack } from 'aws-cdk-lib';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack1 = new Stack(app, 'Stack1');
 const stack2 = new Stack(app, 'Stack2');
 

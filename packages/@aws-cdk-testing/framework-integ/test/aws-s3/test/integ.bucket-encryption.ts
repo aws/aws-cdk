@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-s3-bucket-encryption');
 

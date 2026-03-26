@@ -4,7 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'CapacityProviderAllFieldsStack');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });

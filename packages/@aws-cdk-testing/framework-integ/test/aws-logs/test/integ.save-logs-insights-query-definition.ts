@@ -53,7 +53,7 @@ class LogsInsightsQueryDefinitionIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new LogsInsightsQueryDefinitionIntegStack(app, 'aws-cdk-logs-insights-querydefinition-integ');
 new IntegTest(app, 'LogsInsightsQueryDefinitionIntegTest', {
   testCases: [stack],

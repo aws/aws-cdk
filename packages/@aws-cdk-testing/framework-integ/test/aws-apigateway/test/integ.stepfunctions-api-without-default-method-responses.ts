@@ -28,7 +28,7 @@ class SfnRestApiWithoutDefaultMethodResponsesStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new SfnRestApiWithoutDefaultMethodResponsesStack(app);
 
 new IntegTest(app, 'sfn-restapi-without-default-method-responses', {

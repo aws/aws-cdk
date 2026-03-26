@@ -19,7 +19,7 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
  * -- cdk destroy --app 'node integ.api-import.js' stack baseStack -- clean         --
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const baseStack = new cdk.Stack(app, 'baseStack');
 
 const baseApi = new appsync.GraphqlApi(baseStack, 'baseApi', {

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const aws_cdk_lib_1 = require("aws-cdk-lib");
 const integ = require("@aws-cdk/integ-tests-alpha");
 const ec2 = require("aws-cdk-lib/aws-ec2");
-const app = new aws_cdk_lib_1.App();
+const app = new aws_cdk_lib_1.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new aws_cdk_lib_1.Stack(app, 'stack');
 new ec2.PlacementGroup(stack, 'placementGroupNoProps');
 new ec2.PlacementGroup(stack, 'PlacementGroupOnlyPartition', {

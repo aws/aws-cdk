@@ -119,6 +119,6 @@ class GlueDataBrewJobStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new GlueDataBrewJobStack(app, 'aws-stepfunctions-tasks-databrew-start-job-run-integ');
 app.synth();

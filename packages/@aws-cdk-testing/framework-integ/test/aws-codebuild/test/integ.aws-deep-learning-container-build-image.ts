@@ -1,7 +1,7 @@
 import * as core from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
-const app = new core.App();
+const app = new core.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new core.Stack(app, 'aws-deep-learning-container-build-image');
 
 new codebuild.Project(stack, 'Project', {

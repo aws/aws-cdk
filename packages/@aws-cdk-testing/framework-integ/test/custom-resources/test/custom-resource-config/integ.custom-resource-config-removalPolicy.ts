@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'MyStack');
 
 let websiteBucket = new s3.Bucket(stack, 'WebsiteBucket', {});

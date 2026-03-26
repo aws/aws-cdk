@@ -25,7 +25,7 @@ class EcsContainerPortRangeStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new EcsContainerPortRangeStack(app, 'aws-ecs-container-port-range');
 
 new integ.IntegTest(app, 'EcsContainerPortRange', {

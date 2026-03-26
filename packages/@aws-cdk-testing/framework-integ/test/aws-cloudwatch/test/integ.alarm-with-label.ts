@@ -26,7 +26,7 @@ class AlarmWithLabelIntegrationTest extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new IntegTest(app, 'cdk-cloudwatch-alarms-with-label-integ-test', {
   testCases: [new AlarmWithLabelIntegrationTest(app, 'AlarmWithLabelIntegrationTest')],

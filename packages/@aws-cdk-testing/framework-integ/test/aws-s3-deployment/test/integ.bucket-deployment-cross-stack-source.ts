@@ -36,7 +36,7 @@ class Stack1 extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack2 = new Stack2(app, 'stack2');
 const stack1 = new Stack1(app, 'stack1', { userPool: stack2.userPool });
 

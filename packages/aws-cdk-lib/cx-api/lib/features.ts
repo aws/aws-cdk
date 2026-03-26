@@ -153,6 +153,7 @@ export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cd
 export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
 export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const DISABLE_GIT_SOURCE = '@aws-cdk/core:disableGitSource';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1814,6 +1815,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  [DISABLE_GIT_SOURCE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Disable git source information in the CloudFormation template metadata',
+    detailsMd: `
+      By default, the synthesized CloudFormation template includes an
+      \`AWS::CloudFormation::Source\` entry in the top-level \`Metadata\` section
+      containing the git remote repository URL and the latest commit hash.
+      Set this flag to \`true\` to disable this behavior.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
+    compatibilityWithOldBehaviorMd: 'Set this flag to `true` to stop emitting git source metadata in CloudFormation templates.',
   },
 };
 

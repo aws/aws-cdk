@@ -11,7 +11,7 @@ const myFeatureFlag = {
 };
 
 const app = new cdk.App({
-  context: myFeatureFlag,
+  context: { myFeatureFlag, '@aws-cdk/core:disableGitSource': true },
 });
 const stack = new cdk.Stack(app, 'aws-graphql-lambda-permissions');
 

@@ -5,7 +5,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { App, Size, Stack } from 'aws-cdk-lib/core';
 import * as batch from 'aws-cdk-lib/aws-batch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'stack');
 const jobQueue = new batch.JobQueue(stack, 'MyQueue', {
   computeEnvironments: [

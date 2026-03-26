@@ -1,7 +1,7 @@
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { App, Fn, NestedStack, Stack } from 'aws-cdk-lib';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const top = new Stack(app, 'nested-stacks-multi-refs');
 const level1 = new sns.Topic(top, 'Level1');
 const nested1 = new NestedStack(top, 'Nested1');

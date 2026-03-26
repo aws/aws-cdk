@@ -2,7 +2,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-codecommit-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {

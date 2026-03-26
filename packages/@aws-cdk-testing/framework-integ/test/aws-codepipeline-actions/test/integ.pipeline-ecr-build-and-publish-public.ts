@@ -15,7 +15,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
  * 6. After running the integ test, replace the value of `CONNECTION_ARN`, `REPO_OWNER`, and `REPO_NAME` written in the file generated in CloudAssembly (integ.THIS_FILE.js.snapshot/*) with the string `MOCK`
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'codepipeline-ecr-build-and-publish-public');
 

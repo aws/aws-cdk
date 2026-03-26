@@ -8,7 +8,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type { Construct } from 'constructs';
 import * as path from 'path';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class EC2DualStack extends cdk.Stack {
   public readonly instancePublicIp: string;

@@ -5,6 +5,7 @@ import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patte
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
   },

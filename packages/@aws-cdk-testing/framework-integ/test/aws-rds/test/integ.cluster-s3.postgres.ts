@@ -6,7 +6,7 @@ import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class PostgresS3TestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

@@ -36,7 +36,7 @@ class DistributedMapStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new DistributedMapStack(app, 'aws-stepfunctions-map-integ');
 
 const testCase = new IntegTest(app, 'DistributedMap', {

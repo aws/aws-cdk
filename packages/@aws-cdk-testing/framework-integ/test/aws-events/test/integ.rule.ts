@@ -3,7 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Rule, Match } from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'RuleStack');
 

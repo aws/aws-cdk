@@ -11,6 +11,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

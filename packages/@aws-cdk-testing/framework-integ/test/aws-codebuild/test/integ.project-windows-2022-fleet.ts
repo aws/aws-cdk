@@ -14,7 +14,7 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  * and then running the integ test was the workaround used.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-project-windows-2022-fleet');
 
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {

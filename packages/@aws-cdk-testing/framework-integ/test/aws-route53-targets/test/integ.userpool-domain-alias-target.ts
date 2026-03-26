@@ -26,7 +26,8 @@ class TestStack extends Stack {
 }
 
 const app = new App({
-  context: { [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: true },
+  context: {
+    '@aws-cdk/core:disableGitSource': true, [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: true },
 });
 const stack = new TestStack(app, 'userpool-domain-alias-target');
 new IntegTest(app, 'userpool-domain-alias-target-integ', {

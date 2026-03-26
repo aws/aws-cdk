@@ -25,7 +25,7 @@ class NatGatewayStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new NatGatewayStack(app, 'aws-cdk-vpc-nat-gateway-provider');
 
 new IntegTest(app, 'integ-test', {

@@ -4,7 +4,7 @@ import type { CfnVPC } from 'aws-cdk-lib/aws-ec2';
 import { IpAddresses, CfnIPAM, CfnIPAMPool, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-ipam-vpc');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 

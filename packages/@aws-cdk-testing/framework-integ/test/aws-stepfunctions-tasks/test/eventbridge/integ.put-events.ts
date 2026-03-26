@@ -9,7 +9,7 @@ import { EventBridgePutEvents } from 'aws-cdk-lib/aws-stepfunctions-tasks';
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> : should return status as SUCCEEDED
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eventbridge-put-events-integ');
 
 const eventBus = new events.EventBus(stack, 'EventBus', {

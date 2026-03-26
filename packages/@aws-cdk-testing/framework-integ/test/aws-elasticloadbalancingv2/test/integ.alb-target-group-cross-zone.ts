@@ -17,7 +17,7 @@ class TargetGroupCrossZoneStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TargetGroupCrossZoneStack(app, 'alb-target-group-cross-zone-stack');
 
 new IntegTest(app, 'alb-target-group-cross-zone-test-stack', {

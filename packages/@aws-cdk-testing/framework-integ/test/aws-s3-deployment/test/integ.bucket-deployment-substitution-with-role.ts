@@ -12,6 +12,7 @@ import type { Construct } from 'constructs';
  * - Validates that role configuration works correctly with file substitution
  */
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

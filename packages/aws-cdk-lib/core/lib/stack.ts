@@ -1429,11 +1429,25 @@ export class Stack extends Construct implements ITaggable {
       }
     }
 
+    const metadata: { [key: string]: any } = {};
+    if (!this.node.tryGetContext(cxapi.DISABLE_GIT_SOURCE)) {
+      const gitSource = getGitSource();
+      if (gitSource) {
+        metadata['AWS::CloudFormation::Source'] = {
+          Repository: gitSource.repository,
+          Commit: gitSource.commit,
+        };
+      }
+    }
+    if (this.templateOptions.metadata) {
+      Object.assign(metadata, this.templateOptions.metadata);
+    }
+
     const template: any = {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: this.templateOptions.metadata,
+      Metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
     };
 
     const elements = cfnElements(this);
@@ -1902,4 +1916,5 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
+import { getGitSource } from './private/git-source';
 /* eslint-enable import/order */

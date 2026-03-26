@@ -7,7 +7,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 import { ScheduledFargateTask } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-ecs-runtime-integ');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1, restrictDefaultSecurityGroup: false });

@@ -164,7 +164,7 @@ class S3ObjectsItemReaderTest {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const s3ObjectsItemReaderPathTest = new S3ObjectsItemReaderTest(app);
 s3ObjectsItemReaderPathTest.test();
 app.synth();

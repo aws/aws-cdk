@@ -156,6 +156,7 @@ class EksClusterStack extends Stack {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [EKS_USE_NATIVE_OIDC_PROVIDER]: false,

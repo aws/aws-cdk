@@ -17,7 +17,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-cdk-emr-add-step-runtime-role');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });

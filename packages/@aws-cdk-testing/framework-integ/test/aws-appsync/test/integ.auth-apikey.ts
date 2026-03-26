@@ -18,7 +18,7 @@ import { AuthorizationType, GraphqlApi, MappingTemplate, PrimaryKey, SchemaFile,
  * -- bash verify.integ.auth-apikey.sh --clean                      -- clean dependencies/stack   --
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-appsync-integ');
 
 const api = new GraphqlApi(stack, 'Api', {

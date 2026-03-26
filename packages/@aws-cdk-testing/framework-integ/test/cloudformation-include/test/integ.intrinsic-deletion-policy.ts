@@ -3,7 +3,7 @@ import * as inc from 'aws-cdk-lib/cloudformation-include';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 
-const app = new core.App();
+const app = new core.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new core.Stack(app, 'Stack');
 

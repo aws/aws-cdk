@@ -68,6 +68,6 @@ class ImportCertificates extends Construct {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new TestStack(app, 'cdk-ec2-client-vpn-endpoint');
 app.synth();

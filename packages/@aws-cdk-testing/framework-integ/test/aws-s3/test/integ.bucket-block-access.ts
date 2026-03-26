@@ -5,6 +5,7 @@ import { S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
   context: {
+    '@aws-cdk/core:disableGitSource': true,
     [S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT]: true,
   },
 });

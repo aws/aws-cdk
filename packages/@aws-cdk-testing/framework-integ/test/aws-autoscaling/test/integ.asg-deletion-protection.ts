@@ -4,7 +4,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { Template } from 'aws-cdk-lib/assertions';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stackName = 'aws-cdk-autoscaling-deletion-protection';
 const asgStack = new cdk.Stack(app, stackName);
 

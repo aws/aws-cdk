@@ -14,7 +14,7 @@ class ExampleComIntegration extends apigatewayv2.HttpRouteIntegration {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'IntegApiGatewayV2Iam');
 const user = new iam.User(stack, 'User');
 const userAccessKey = new iam.AccessKey(stack, 'UserAccess', {

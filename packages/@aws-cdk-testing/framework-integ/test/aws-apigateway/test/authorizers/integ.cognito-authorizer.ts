@@ -17,7 +17,7 @@ import { AuthorizationType, CognitoUserPoolsAuthorizer, MockIntegration, Passthr
  * *  c. `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: <Valid-IdToken>' <url>` should return 200
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'CognitoUserPoolsAuthorizerInteg');
 
 const userPool = new cognito.UserPool(stack, 'UserPool');

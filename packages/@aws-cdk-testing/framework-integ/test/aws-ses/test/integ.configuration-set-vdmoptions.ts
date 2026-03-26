@@ -2,7 +2,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ses from 'aws-cdk-lib/aws-ses';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'cdk-ses-configuration-set-vdmoptions-integ');
 
 const configurationSetVdmOptionsEnabled = new ses.ConfigurationSet(stack, 'VdmOptionsEnabled', {

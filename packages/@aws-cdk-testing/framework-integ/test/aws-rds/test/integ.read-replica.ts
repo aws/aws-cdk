@@ -6,7 +6,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 import { INTEG_TEST_LATEST_MYSQL, INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new IntegTestBaseStack(app, 'cdk-rds-read-replica');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', {

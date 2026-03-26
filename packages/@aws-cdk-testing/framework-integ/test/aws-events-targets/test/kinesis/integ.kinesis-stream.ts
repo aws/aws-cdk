@@ -6,7 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 // ---------------------------------
 // Define a rule that triggers a put to a Kinesis stream every 1min.
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-kinesis-event-target');
 

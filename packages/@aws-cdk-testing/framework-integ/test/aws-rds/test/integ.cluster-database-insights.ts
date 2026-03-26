@@ -5,7 +5,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine, DatabaseInsightsMode, PerformanceInsightRetention } from 'aws-cdk-lib/aws-rds';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-database-insights');
 const vpc = new Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 

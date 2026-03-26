@@ -19,6 +19,7 @@ class CustomAspect implements IAspect {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     // Force the intended behavior, from before we found this bug
     '@aws-cdk/core:aspectPrioritiesMutating': false,

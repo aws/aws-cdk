@@ -4,7 +4,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { CfnChannelGroup } from 'aws-cdk-lib/aws-mediapackagev2';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'cloudfront-origin-group-selection-criteria');
 
 const channelGroup = new CfnChannelGroup(stack, 'cg1', {

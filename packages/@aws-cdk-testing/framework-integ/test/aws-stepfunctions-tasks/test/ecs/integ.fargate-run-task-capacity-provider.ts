@@ -6,7 +6,7 @@ import { Duration } from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-fargate-run-task-capacity-provider');
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster');

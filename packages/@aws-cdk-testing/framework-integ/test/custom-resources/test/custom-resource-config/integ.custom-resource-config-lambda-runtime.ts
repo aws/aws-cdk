@@ -6,6 +6,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { CustomResourceConfig } from 'aws-cdk-lib/custom-resources';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

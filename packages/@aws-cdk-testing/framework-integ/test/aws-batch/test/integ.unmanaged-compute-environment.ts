@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { UnmanagedComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'batch-stack');
 
 new UnmanagedComputeEnvironment(stack, 'minimalProps');

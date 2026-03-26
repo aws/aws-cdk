@@ -36,7 +36,7 @@ class StepFunctionsTaskCreateTransformJobIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new StepFunctionsTaskCreateTransformJobIntegStack(app, 'aws-cdk-step-functions-task-create-transform-job-integ');
 
 new integ.IntegTest(app, 'SqsTest', {

@@ -2643,6 +2643,58 @@ describe('regionalFact', () => {
       },
     });
   });
+
+  test('git source metadata is included by default', () => {
+    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
+    process.env.CDK_DISABLE_GIT_SOURCE = '';
+    try {
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+      const assembly = app.synth();
+      const template = assembly.getStackByName(stack.stackName).template;
+      const source = template?.Metadata?.['AWS::CloudFormation::Source'];
+      expect(source).toBeDefined();
+      expect(typeof source.Repository).toBe('string');
+      expect(typeof source.Commit).toBe('string');
+      expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
+    } finally {
+      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
+    }
+  });
+
+  test('git source metadata is not included when CDK_DISABLE_GIT_SOURCE is set', () => {
+    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
+    process.env.CDK_DISABLE_GIT_SOURCE = '1';
+    try {
+      const app = new App();
+      const stack = new Stack(app, 'Stack');
+      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+      const assembly = app.synth();
+      const template = assembly.getStackByName(stack.stackName).template;
+      expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
+    } finally {
+      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
+    }
+  });
+
+  test('git source metadata is not included when context key is set', () => {
+    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
+    process.env.CDK_DISABLE_GIT_SOURCE = '';
+    try {
+      const app = new App({ context: { [cxapi.DISABLE_GIT_SOURCE]: true } });
+      const stack = new Stack(app, 'Stack');
+      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+      const assembly = app.synth();
+      const template = assembly.getStackByName(stack.stackName).template;
+      expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
+    } finally {
+      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
+    }
+  });
 });
 
 class StackWithPostProcessor extends Stack {

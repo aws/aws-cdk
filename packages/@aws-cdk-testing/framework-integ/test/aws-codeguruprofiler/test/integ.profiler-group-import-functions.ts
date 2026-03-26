@@ -3,7 +3,7 @@ import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ProfilingGroup } from 'aws-cdk-lib/aws-codeguruprofiler';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'ProfilingGroupTestStack');
 

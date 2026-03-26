@@ -30,7 +30,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  *     - `yarn integ aws-route53/test/integ.cross-account-zone-delegation.js --profiles cross-account`
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012'; // this account should NOT have af-south-1 enabled
 

@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const producer = new cdk.Stack(app, 'Producer');
 
 const nested = new cdk.NestedStack(producer, 'Nested');

@@ -7,7 +7,7 @@ import { UserPool } from 'aws-cdk-lib/aws-cognito';
  * * It didn't work if it returns 302 or 400.
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-domain-signinurl');
 
 const userpool = new UserPool(stack, 'UserPool', {

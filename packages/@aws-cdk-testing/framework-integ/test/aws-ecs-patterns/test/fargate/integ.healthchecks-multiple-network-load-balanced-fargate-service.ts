@@ -4,7 +4,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { NetworkMultipleTargetGroupsFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-ecs-integ-multi-nlb-healthchecks');
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const cluster = new Cluster(stack, 'Cluster', { vpc });

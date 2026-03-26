@@ -9,7 +9,7 @@ import { AuthorizationType, MockIntegration, PassthroughBehavior } from 'aws-cdk
  * * `curl -i <CFN output PetsURL>` should return HTTP code 200
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integtest-restapi-with-overriding-default-authorizer');
 
 // create a cognito user pool

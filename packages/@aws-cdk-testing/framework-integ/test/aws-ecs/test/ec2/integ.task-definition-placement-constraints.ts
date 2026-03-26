@@ -4,6 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,

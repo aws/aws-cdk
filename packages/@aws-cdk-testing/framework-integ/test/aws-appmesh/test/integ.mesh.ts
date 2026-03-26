@@ -3,7 +3,7 @@ import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as cdk from 'aws-cdk-lib';
 import * as appmesh from 'aws-cdk-lib/aws-appmesh';
 
-export const app = new cdk.App();
+export const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'mesh-stack', {});
 

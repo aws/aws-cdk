@@ -5,7 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const clusterIdentifier = 'test-cluster-lookup';
 
 const stackLookup = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-lookup', {

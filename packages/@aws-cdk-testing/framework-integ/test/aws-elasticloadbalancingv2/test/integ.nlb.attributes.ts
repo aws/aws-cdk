@@ -3,7 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { App, Stack } from 'aws-cdk-lib';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-cdk-nlb-attributes-integ');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {

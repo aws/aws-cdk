@@ -5,7 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-asg-integ');
 stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
 

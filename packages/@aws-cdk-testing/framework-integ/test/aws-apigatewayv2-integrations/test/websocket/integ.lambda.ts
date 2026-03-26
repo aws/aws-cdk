@@ -12,6 +12,7 @@ import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integra
  */
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

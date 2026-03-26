@@ -15,7 +15,7 @@ const GSI_TEST_CASE_1 = 'GSI-ContributorInsightsEnabled';
 const GSI_TEST_CASE_2 = 'GSI-ContributorInsightsDisabled';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, STACK_NAME);
 

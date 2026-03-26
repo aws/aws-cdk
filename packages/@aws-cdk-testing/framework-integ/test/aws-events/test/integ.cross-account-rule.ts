@@ -11,7 +11,7 @@ import { Rule } from 'aws-cdk-lib/aws-events';
  *  a support stack.
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const account = process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
 

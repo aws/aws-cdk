@@ -33,7 +33,7 @@ class OptionGroupTestStack extends IntegTestBaseStack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new OptionGroupTestStack(app, 'aws-rds-option-group');
 new IntegTest(app, 'OptionGroupTest', {
   testCases: [stack],

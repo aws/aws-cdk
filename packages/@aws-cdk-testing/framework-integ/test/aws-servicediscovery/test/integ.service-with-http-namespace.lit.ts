@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
 const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {

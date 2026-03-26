@@ -13,6 +13,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 // If successful, the output will contain "success"
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

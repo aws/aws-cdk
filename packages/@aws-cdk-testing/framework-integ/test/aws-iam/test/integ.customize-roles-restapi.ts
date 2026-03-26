@@ -3,7 +3,7 @@ import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RestApi } from 'aws-cdk-lib/aws-apigateway';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-customize-roles-restapi');
 Role.customizeRoles(stack, {
   usePrecreatedRoles: {

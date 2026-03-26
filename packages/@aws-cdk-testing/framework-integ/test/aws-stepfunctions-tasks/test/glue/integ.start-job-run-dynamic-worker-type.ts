@@ -7,7 +7,7 @@ import * as cdk from 'aws-cdk-lib';
 import { GlueStartJobRun, WorkerTypeV2 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class GlueStartJobRunWorkerStack extends cdk.Stack {
   readonly stateMachine: sfn.StateMachine;

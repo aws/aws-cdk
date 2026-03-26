@@ -4,7 +4,7 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as events from 'aws-cdk-lib/aws-events';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'EventBridgeApi', {

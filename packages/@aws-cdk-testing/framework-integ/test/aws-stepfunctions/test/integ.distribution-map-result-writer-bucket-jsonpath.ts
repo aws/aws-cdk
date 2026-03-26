@@ -8,6 +8,7 @@ const CSV_KEY = 'my-key.csv';
 
 const app = new App({
   context: {
+    '@aws-cdk/core:disableGitSource': true,
     [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: true,
   },
 });

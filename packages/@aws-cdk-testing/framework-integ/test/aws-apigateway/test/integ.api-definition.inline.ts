@@ -7,7 +7,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
  * * `curl -i <CFN output PetsURL>` should return HTTP code 200
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-inline');
 
 const api = new apigateway.SpecRestApi(stack, 'my-api', {

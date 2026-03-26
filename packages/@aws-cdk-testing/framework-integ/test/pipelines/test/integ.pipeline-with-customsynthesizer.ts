@@ -90,6 +90,7 @@ export class DeploymentStage extends Stage {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': true,

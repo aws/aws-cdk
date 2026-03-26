@@ -4,7 +4,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-ecs-encrypt-storage');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });

@@ -22,7 +22,7 @@ export class TestStack extends IntegTestBaseStack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'integ-test-acu', {
   testCases: [new TestStack(app, 'integ-aurora-serverlessv2-cluster-acu-0')],
 });

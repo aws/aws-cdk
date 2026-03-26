@@ -6,6 +6,7 @@ import { TestFunction } from './test-function';
 import { KinesisEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

@@ -4,7 +4,7 @@ import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpServiceDiscoveryIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'integ-service-discovery-integration');
 

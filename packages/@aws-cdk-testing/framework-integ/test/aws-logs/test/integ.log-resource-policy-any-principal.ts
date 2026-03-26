@@ -17,7 +17,7 @@ class LogGroupIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new LogGroupIntegStack(app, 'aws-cdk-log-group-resource-policy-any-integ');
 new IntegTest(app, 'LogGroupResourcePolicyAnyPrincialInteg', { testCases: [stack] });
 app.synth();

@@ -30,7 +30,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'cdk-route53-integ-delete-existing-record-set');
 
 new IntegTest(app, 'Rooute53DeleteExistingRecordSetInteg', {

@@ -4,7 +4,7 @@ import { User } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'appsync-elasticsearch');
 const user = new User(stack, 'User');
 const domain = new es.Domain(stack, 'Domain', {

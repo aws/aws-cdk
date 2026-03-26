@@ -2,7 +2,7 @@ import { App, CfnOutput, CfnParameter, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-parameter-arns');
 
 const input = new CfnParameter(stack, 'ParameterNameParameter', { type: 'String', default: 'myParamName' });

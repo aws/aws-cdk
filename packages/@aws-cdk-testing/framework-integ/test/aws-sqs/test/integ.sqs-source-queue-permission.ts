@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Queue, RedrivePermission } from 'aws-cdk-lib/aws-sqs';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-cdk-sqs');
 

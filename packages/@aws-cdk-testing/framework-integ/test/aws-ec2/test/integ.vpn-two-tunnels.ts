@@ -4,7 +4,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { SecretValue } from 'aws-cdk-lib/core';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-ec2-vpn-two-tunnels');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 

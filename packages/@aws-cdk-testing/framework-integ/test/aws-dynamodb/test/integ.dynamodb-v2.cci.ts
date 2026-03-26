@@ -4,7 +4,7 @@ import type { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

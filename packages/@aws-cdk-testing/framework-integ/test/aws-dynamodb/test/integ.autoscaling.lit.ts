@@ -2,7 +2,7 @@ import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb');
 
 const table = new dynamodb.Table(stack, 'Table', {

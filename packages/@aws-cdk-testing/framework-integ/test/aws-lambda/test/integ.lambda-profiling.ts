@@ -6,6 +6,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { Runtime, InlineCode, Function } from 'aws-cdk-lib/aws-lambda';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

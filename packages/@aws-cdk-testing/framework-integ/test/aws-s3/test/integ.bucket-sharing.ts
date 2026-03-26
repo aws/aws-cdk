@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 /**
  * Stack that defines the bucket

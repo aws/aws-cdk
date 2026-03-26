@@ -2,7 +2,7 @@ import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Bucket, StorageClass, TransitionDefaultMinimumObjectSize } from 'aws-cdk-lib/aws-s3';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 's3-lifecycle-transitions');
 

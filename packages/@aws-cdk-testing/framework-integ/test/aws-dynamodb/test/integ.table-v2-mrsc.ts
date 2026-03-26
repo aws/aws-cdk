@@ -24,7 +24,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'aws-cdk-global-table-integ', {
   testCases: [new TestStack(app, 'aws-cdk-global-table-mrsc', { env: { region: 'us-east-1' } })],
   regions: ['us-east-1'],

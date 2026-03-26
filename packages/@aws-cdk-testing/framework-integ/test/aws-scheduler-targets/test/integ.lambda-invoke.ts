@@ -22,6 +22,7 @@ const LAMBDA_TAGGING_PERMISSION = new iam.PolicyStatement(
  * The assertion checks that the expected tag is created by calling listTags on the lambda function
  */
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,

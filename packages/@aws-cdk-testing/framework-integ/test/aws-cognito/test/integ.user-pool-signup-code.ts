@@ -11,7 +11,7 @@ import { UserPool, UserPoolClient, VerificationEmailStyle } from 'aws-cdk-lib/aw
  * * An SMS with the message 'integ-test: Account verification code is <code>' should be received.
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-signup-code');
 
 const userpool = new UserPool(stack, 'myuserpool', {

@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-websockets');
 

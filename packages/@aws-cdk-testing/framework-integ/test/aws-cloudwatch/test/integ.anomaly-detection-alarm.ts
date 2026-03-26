@@ -2,7 +2,7 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Metric, ComparisonOperator, AnomalyDetectionAlarm, Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'AnomalyDetectionAlarmTestStack');
 
 // Create the test metric. Period will default to 300 seconds.

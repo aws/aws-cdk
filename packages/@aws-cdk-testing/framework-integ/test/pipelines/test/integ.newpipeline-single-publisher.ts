@@ -47,7 +47,7 @@ class AppStage extends Stage {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new PipelineStack(app, 'PipelineStackSinglePublisher');
 new IntegTest(app, 'PipelineStackSinglePublisher-integ', {
   testCases: [stack],

@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'TestStack');
 
 new s3.Bucket(stack, 'TestBucket');

@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integ-assets-docker');
 
 const asset = new assets.DockerImageAsset(stack, 'DockerImage', {

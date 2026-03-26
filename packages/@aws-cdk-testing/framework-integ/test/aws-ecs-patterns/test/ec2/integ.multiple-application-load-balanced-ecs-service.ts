@@ -7,6 +7,7 @@ import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-p
 import { REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS]: false,

@@ -3,7 +3,7 @@ import { App, DockerImage, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'cdk-integ-assets-bundling-docker-opts');
 
 new assets.Asset(stack, 'BundledAsset', {

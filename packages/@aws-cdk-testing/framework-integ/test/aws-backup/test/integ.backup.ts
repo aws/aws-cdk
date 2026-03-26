@@ -76,6 +76,6 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new TestStack(app, 'cdk-backup');
 app.synth();

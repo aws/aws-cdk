@@ -7,7 +7,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { BatchSubmitJob } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'cdk-submit-job-queue-json-path');
 
 const vpc = new ec2.Vpc(stack, 'vpc', { restrictDefaultSecurityGroup: false });

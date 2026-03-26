@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { FileSystem } from 'aws-cdk-lib/aws-efs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'test-efs-one-zone-integ');
 
 const vpc = new ec2.Vpc(stack, 'Vpc');

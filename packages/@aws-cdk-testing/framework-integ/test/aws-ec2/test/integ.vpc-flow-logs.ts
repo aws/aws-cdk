@@ -7,7 +7,7 @@ import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc, Instance, InstanceType, InstanceClass, InstanceSize, MachineImage, AmazonLinuxGeneration } from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class FeatureFlagStack extends Stack {
   public readonly bucketArn: string;

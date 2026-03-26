@@ -18,6 +18,7 @@ import { CodePipelineStartPipelineExecution } from 'aws-cdk-lib/aws-scheduler-ta
  * 3. The pipeline is invoked by the scheduler every minute (but it needs only one successful execution to pass).
  */
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,

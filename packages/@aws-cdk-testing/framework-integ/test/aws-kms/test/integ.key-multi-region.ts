@@ -11,7 +11,7 @@ class KmsKeyMultiRegionStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new KmsKeyMultiRegionStack(app);
 
 new IntegTest(app, 'kms-key-multi-region', {

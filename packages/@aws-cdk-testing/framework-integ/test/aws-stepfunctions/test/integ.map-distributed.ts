@@ -9,7 +9,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
  * -- aws stepfunctions describe-state-machine --state-machine-arn <stack-output> has a status of `ACTIVE`
  * -- aws iam get-role-policy --role-name <role-name> --policy-name <policy-name> has all actions mapped to respective resources.
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'cdk-stepfunctions-map-distributed-stack');
 
 const map = new sfn.Map(stack, 'Map', {

@@ -26,7 +26,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new TestStack(app, 'aws-cdk-metricfilter-unit-integ');
 
 new IntegTest(app, 'metricfilter-unit', {

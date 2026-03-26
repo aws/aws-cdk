@@ -7,6 +7,7 @@ import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from 'aws-cdk-lib/cx-api'
 import type { Construct } from 'constructs';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,

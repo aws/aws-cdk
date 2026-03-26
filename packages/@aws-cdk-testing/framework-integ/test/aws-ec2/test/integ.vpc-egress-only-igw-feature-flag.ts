@@ -14,7 +14,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
  * Each stack creates a VPC with a public subnet.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class VpcEgressOnlyIGWFeatureFlagEnabledStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

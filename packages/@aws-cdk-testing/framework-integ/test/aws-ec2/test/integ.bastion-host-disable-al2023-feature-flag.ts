@@ -9,7 +9,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

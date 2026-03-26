@@ -8,6 +8,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as path from 'path';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

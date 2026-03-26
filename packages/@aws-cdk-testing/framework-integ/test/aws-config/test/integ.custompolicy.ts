@@ -4,7 +4,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as config from 'aws-cdk-lib/aws-config';
 import { ConfigPrerequisites } from './config-test-helpers';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-config-custompolicy');
 
 const prerequisites = new ConfigPrerequisites(stack, 'ConfigPrerequisites', {

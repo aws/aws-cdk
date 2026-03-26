@@ -58,7 +58,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'BucketReplicationTestStack');
 const integ = new IntegTest(app, 'ReplicationInteg', {
   testCases: [stack],

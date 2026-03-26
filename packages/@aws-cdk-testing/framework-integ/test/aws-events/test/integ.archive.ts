@@ -3,7 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { CfnArchive } from 'aws-cdk-lib/aws-events';
 import { Archive, EventBus } from 'aws-cdk-lib/aws-events';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'IntegStack');
 

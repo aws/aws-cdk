@@ -3,7 +3,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class EventSourceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

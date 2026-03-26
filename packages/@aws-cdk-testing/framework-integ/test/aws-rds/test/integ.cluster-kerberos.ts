@@ -7,7 +7,7 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new IntegTestBaseStack(app, 'cluster-kerberos');
 const vpc = new ec2.Vpc(stack, 'VPC');

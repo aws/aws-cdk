@@ -74,6 +74,7 @@ class PipelineStack extends Stack {
  * Integration test that ensures the pipeline can be deployed.
  */
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,

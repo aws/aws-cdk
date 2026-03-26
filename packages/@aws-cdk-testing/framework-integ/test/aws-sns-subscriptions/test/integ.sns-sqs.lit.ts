@@ -25,7 +25,10 @@ class SnsToSqs extends cdk.Stack {
 }
 
 const app = new cdk.App({
-  context: restrictSqsDescryption,
+  context: {
+    restrictSqsDescryption,
+    '@aws-cdk/core:disableGitSource': true,
+  },
 });
 
 new SnsToSqs(app, 'aws-cdk-sns-sqs');

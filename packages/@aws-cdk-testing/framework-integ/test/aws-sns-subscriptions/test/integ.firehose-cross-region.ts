@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const topicStack = new cdk.Stack(app, 'aws-cdk-sns-firehose-topicstack', {
   env: { region: 'us-east-1' },
 });

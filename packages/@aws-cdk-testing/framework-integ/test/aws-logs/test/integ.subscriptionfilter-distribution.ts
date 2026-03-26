@@ -21,7 +21,7 @@ class SubscriptionFilterDistributionIntegStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new SubscriptionFilterDistributionIntegStack(app, 'aws-cdk-subscriptionfilter-distribution-integ');
 
 new IntegTest(app, 'integ-test', {

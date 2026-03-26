@@ -9,7 +9,7 @@ import { KinesisStreamPutRecord } from 'aws-cdk-lib/aws-scheduler-targets';
  * A record is put to the kinesis data stream by the scheduler
  * The assertion checks that the expected record is received by the stream
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-kinesis-stream-put-record');
 
 const payload = {

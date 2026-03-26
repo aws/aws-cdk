@@ -28,7 +28,7 @@ class NatInstanceStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances-v2-with-public-ip');
 
 new IntegTest(app, 'nat-instance-v2-with-public-ip-integ-test', {

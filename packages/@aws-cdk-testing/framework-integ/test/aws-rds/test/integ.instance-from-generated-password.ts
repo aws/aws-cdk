@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class DatabaseInstanceStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

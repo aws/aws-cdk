@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integ-distribution-extensive');
 
 new cloudfront.Distribution(stack, 'MyDist', {

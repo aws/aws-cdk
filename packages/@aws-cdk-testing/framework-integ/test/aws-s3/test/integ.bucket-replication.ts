@@ -68,6 +68,7 @@ class TestStack extends Stack {
 
 // Disabled SET_UNIQUE_REPLICATION_ROLE_NAME feature flag
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [SET_UNIQUE_REPLICATION_ROLE_NAME]: false,
   },

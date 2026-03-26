@@ -3,6 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codedeploy from 'aws-cdk-lib/aws-codedeploy';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

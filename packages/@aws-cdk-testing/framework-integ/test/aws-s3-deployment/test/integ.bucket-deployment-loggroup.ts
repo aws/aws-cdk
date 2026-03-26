@@ -34,7 +34,7 @@ class TestBucketDeployment extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-loggroup');
 
 new integ.IntegTest(app, 'integ-test-bucket-deployment-loggroup', {

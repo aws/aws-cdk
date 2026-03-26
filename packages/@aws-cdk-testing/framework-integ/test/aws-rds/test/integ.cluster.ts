@@ -88,7 +88,7 @@ class TestStack extends IntegTestBaseStack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'aws-cdk-rds-integ');
 new IntegTest(app, 'test-rds-cluster', {
   testCases: [stack],

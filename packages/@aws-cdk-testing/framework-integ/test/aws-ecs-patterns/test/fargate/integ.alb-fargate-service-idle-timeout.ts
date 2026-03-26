@@ -6,6 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
   },

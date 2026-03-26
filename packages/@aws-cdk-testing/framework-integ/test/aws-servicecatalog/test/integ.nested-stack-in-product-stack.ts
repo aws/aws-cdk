@@ -8,6 +8,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

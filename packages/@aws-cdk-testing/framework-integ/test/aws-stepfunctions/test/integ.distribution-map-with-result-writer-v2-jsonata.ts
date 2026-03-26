@@ -44,6 +44,7 @@ class DistributedMapStack extends cdk.Stack {
 
 const app = new cdk.App({
   context: {
+    '@aws-cdk/core:disableGitSource': true,
     [STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2]: true,
   },
 });

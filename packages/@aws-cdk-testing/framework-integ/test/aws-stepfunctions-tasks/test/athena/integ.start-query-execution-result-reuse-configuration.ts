@@ -4,7 +4,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AthenaStartQueryExecution, EncryptionOption } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-athena-start-query-execution-result-reuse-configuration-integ');
 
 const resultBucket = new Bucket(stack, 'Bucket', {

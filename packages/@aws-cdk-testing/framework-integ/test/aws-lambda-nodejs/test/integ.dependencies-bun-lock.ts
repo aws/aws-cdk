@@ -5,6 +5,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

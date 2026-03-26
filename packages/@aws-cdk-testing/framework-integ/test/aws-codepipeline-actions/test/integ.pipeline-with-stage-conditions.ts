@@ -9,6 +9,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,

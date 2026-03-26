@@ -7,7 +7,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-s3-notifications-scoped-permissions');
 

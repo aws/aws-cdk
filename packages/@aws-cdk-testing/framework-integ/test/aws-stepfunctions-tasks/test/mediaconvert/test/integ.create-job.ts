@@ -25,7 +25,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha/lib';
  * -- aws mediaconvert get-job --id <job-id>
  *
  */
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-cdk-mediaconvert-create-job-test-stack');
 

@@ -6,7 +6,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
  * This test creates resources using alphanumeric logical IDs.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app);
 

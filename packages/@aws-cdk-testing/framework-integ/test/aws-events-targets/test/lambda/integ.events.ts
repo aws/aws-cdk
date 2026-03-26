@@ -6,6 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

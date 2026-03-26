@@ -8,6 +8,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 // GIVEN
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   treeMetadata: false,
 });
 

@@ -6,6 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

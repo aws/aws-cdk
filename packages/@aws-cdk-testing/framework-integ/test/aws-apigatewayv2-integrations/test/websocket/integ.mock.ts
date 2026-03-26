@@ -8,7 +8,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * 1. Verify manually that the integration has type "MOCK"
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-mock-websocket-integration');
 
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {

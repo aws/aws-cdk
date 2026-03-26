@@ -7,7 +7,7 @@ import * as cdk from 'aws-cdk-lib';
 import type * as constructs from 'constructs';
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream');
 

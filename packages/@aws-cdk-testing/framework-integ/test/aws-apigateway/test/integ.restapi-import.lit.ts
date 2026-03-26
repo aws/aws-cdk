@@ -129,4 +129,4 @@ class DeployStack extends NestedStack {
   }
 }
 
-new RootStack(new App());
+new RootStack(new App({ context: { '@aws-cdk/core:disableGitSource': true } }));

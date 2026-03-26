@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib/core';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'canary-vpc');
 
 const vpc = new ec2.Vpc(stack, 'MyVpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });

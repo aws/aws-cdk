@@ -12,7 +12,7 @@ import { StepFunctionsStartExecution } from 'aws-cdk-lib/aws-scheduler-targets';
  * 2. The step functions updates the Parameter 'MyParameter' from value '🌧️' to '🌈':
  * 3. The step function is invoked by the scheduler every 10 minutes (but it needs only one successful execution to pass).
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-sfn-start-execution');
 
 const payload = {

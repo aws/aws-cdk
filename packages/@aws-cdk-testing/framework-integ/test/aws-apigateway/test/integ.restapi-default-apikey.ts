@@ -5,6 +5,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

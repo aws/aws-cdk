@@ -12,6 +12,7 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,

@@ -65,7 +65,7 @@ export class TestCase extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'integ-test', {
   testCases: [new TestCase(app, 'integ-ec2-machine-image-test')],
   enableLookups: true,

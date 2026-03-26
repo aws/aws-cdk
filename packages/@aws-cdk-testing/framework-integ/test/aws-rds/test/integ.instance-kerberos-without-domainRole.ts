@@ -6,7 +6,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new IntegTestBaseStack(app, 'instance-kerberos-without-domainRole');
 const vpc = new ec2.Vpc(stack, 'VPC');

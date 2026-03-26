@@ -44,7 +44,7 @@ class SecondStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const first = new FirstStack(app, 'FirstStack');
 const testCase = new SecondStack(app, 'SecondStack', { lambda: first.firstLambda });
 

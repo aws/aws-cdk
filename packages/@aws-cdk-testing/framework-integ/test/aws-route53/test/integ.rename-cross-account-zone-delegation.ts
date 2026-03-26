@@ -8,7 +8,7 @@ interface ChildStacksProps extends cdk.StackProps {
   subZoneName: string;
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012'; // this account should NOT have af-south-1 enabled
 
@@ -58,7 +58,7 @@ class ChildStack extends cdk.Stack {
   }
 }
 
-const oldApp = new cdk.App();
+const oldApp = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const oldParentStack = new ParentStack(oldApp, 'parent-stack', {
   env: {
@@ -77,7 +77,7 @@ const oldChildStack = new ChildStack(oldApp, 'child-stack', {
 
 oldChildStack.addDependency(oldParentStack);
 
-const newApp = new cdk.App();
+const newApp = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const newParentStack = new ParentStack(newApp, 'parent-stack', {
   env: {

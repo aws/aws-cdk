@@ -10,7 +10,7 @@ const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => 
   return value as C;
 };
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-nlb-dualstack-internet-facing');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {

@@ -10,6 +10,7 @@ import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-p
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,

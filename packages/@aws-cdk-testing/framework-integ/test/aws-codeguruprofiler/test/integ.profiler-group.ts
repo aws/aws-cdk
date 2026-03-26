@@ -22,7 +22,7 @@ class ProfilerGroupIntegrationTest extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 // AWS::CodeGuruProfiler::ProfilingGroup is not available in all regions.
 // Verify with: aws cloudformation describe-type --type RESOURCE --type-name AWS::CodeGuruProfiler::ProfilingGroup --region <region>

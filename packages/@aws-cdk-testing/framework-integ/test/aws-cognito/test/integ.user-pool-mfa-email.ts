@@ -8,7 +8,7 @@ import { AdvancedSecurityMode, FeaturePlan, Mfa, UserPool, UserPoolEmail } from 
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME".');
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-email-mfa');
 
 const userpool = new UserPool(stack, 'myuserpool', {

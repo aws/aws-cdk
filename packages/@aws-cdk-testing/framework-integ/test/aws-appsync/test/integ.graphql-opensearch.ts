@@ -73,7 +73,7 @@ class OpensSearch23Stack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new OpensSearch23Stack(app);
 new IntegTest(app, 'opensearch-2.3-stack', {
   testCases: [testCase],

@@ -6,7 +6,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ', { env: { region: 'us-west-2' } });
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 

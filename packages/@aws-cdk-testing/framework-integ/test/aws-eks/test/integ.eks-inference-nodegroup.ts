@@ -40,6 +40,7 @@ class EksClusterInferenceStack extends Stack {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,

@@ -5,6 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

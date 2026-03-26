@@ -6,7 +6,7 @@ import { ProviderAttribute, UserPool, UserPoolIdentityProviderApple } from 'aws-
  * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'Sign In With Apple' link shows up.
  * * If you plug in valid 'Sign In With Apple' credentials, the federated log in should work.
  */
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-user-pool-idp-apple');
 
 const userpool = new UserPool(stack, 'pool', {

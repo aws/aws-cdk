@@ -6,7 +6,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 
 // WHEN
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 // GIVEN
 class ALBListenerStack extends cdk.Stack {

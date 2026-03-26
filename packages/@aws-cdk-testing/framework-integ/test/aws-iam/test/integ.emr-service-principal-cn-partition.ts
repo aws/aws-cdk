@@ -76,7 +76,7 @@ class EmrServicePrincipalTestStack extends cdk.Stack {
 
 const region = 'cn-north-1';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testingStack = new EmrServicePrincipalTestStack(app, 'EmrServicePrincipalTestingStack', {
   env: {
     region: region,

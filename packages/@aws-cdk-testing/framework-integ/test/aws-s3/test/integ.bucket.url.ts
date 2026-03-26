@@ -18,7 +18,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new IntegTest(app, 'cdk-integ-s3-urls', {
   testCases: [new TestStack(app, 'aws-cdk-s3-urls')],

@@ -6,7 +6,7 @@ const events = require("aws-cdk-lib/aws-events");
 const sqs = require("aws-cdk-lib/aws-sqs");
 const cdk = require("aws-cdk-lib");
 const targets = require("aws-cdk-lib/aws-events-targets");
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'batch-events');
 const queue = new batch.JobQueue(stack, 'MyQueue', {
     computeEnvironments: [

@@ -8,7 +8,7 @@ import { AthenaStartQueryExecution, AthenaStopQueryExecution, EncryptionOption }
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED and a query-execution-id
  * * aws athena get-query-execution --query-execution-id <query-execution-id generated before> : should return QueryExecution
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-athena-stop-query-execution-integ');
 
 const query = sfn.JsonPath.stringAt('$.queryString');

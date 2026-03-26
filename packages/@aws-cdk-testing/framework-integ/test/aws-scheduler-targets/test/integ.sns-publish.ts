@@ -12,7 +12,7 @@ import { SnsPublish } from 'aws-cdk-lib/aws-scheduler-targets';
  * 2. The SQS queue subscribes the topic
  * 3. The assertion checks that the expected message is delivered to the queue by calling an api
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'AwsSchedulerTargetsSnsPublish');
 
 const message = 'Hello, Scheduler!';

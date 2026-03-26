@@ -57,7 +57,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'client-vpn-endpoint-integ', {
   testCases: [
     new TestStack(app, 'client-vpn-endpoint-stack', {

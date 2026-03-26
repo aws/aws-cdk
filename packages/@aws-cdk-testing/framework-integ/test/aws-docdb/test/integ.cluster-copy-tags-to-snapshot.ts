@@ -4,7 +4,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
 import { DOCDB_ENGINE_VERSION } from './docdb-integ-test-constraints';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-docdb-integ');
 

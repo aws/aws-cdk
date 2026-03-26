@@ -47,7 +47,7 @@ class HelmChartLoggingStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new HelmChartLoggingStack(app, 'aws-cdk-eks-helm-logging-test');
 

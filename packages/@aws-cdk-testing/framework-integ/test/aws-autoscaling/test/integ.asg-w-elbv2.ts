@@ -89,7 +89,7 @@ class ElbV2AsgAtgStack extends cdk.Stack {
     asg.attachToApplicationTargetGroup(atg2);
   }
 }
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [

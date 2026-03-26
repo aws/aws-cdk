@@ -55,6 +55,7 @@ class AppStage extends Stage {
 }
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': true,

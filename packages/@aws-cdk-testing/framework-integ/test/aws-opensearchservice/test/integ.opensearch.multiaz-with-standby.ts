@@ -3,7 +3,7 @@ import { EbsDeviceVolumeType } from 'aws-cdk-lib/aws-ec2';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'cdk-integ-opensearch-multiaz-with-standby');
 

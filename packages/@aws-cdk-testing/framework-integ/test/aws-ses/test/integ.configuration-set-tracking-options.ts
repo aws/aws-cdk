@@ -32,7 +32,7 @@ class ConfigurationSetStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new integ.IntegTest(app, 'ConfigurationSetInteg', {
   testCases: [new ConfigurationSetStack(app, 'ses-configuration-set-tracking-options-integ', {

@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as chatbot from 'aws-cdk-lib/aws-chatbot';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testStack = new cdk.Stack(app, 'ChatbotInteg');
 new chatbot.SlackChannelConfiguration(testStack, 'MySlackChannel', {
   slackChannelConfigurationName: 'test-channel',

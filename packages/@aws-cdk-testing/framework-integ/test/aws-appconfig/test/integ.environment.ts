@@ -4,7 +4,7 @@ import { Alarm, ComparisonOperator, CompositeAlarm, Metric, TreatMissingData } f
 import { Role, ServicePrincipal, Effect, PolicyStatement, PolicyDocument } from 'aws-cdk-lib/aws-iam';
 import { Application, ConfigurationContent, DeletionProtectionCheck, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from 'aws-cdk-lib/aws-appconfig';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-appconfig-environment');
 

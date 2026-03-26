@@ -19,7 +19,7 @@ import { password, username } from './my-lambda-handler';
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> : should return status as SUCCEEDED
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-http-invoke-json-path-integ');
 
 const authorizerHandler = new lambda.NodejsFunction(stack, 'AuthorizerHandler', {

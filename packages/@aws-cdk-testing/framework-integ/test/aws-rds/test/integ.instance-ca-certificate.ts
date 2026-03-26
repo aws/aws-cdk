@@ -5,7 +5,7 @@ import { IntegTestBaseStack } from './integ-test-base-stack';
 import { CaCertificate, DatabaseInstance, DatabaseInstanceEngine } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-ca-certificate');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });

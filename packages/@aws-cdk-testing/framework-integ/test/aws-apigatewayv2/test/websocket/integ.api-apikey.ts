@@ -2,7 +2,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigw from 'aws-cdk-lib/aws-apigatewayv2';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-websockets');
 

@@ -20,7 +20,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new IntegTest(app, 'saml-provider-test', {
   testCases: [new TestStack(app, 'cdk-saml-provider')],

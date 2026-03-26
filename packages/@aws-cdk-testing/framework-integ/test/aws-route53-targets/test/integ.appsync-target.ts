@@ -50,7 +50,7 @@ if (!domainName) throw new Error('For this test you must provide your own Domain
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
 if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new TestStack(app, 'aws-cdk-appsync-alias-integ', { certificateArn, domainName, hostedZoneId });
 new IntegTest(app, 'appsync-domain-name', {
   enableLookups: true,

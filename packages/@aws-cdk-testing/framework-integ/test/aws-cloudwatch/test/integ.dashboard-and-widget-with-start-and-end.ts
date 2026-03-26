@@ -39,7 +39,7 @@ class TestStack extends Stack {
     dashboard.addWidgets(gaugeWidget);
   }
 }
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'cdk-integ-dashboard-and-widget-with-start-and-end', {
   testCases: [new TestStack(app, 'DashboardAndWidgetWithStartAndEnd')],
 });

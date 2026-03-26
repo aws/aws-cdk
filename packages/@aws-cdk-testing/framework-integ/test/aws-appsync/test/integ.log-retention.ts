@@ -5,7 +5,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import type { LogConfig } from 'aws-cdk-lib/aws-appsync';
 import { GraphqlApi, SchemaFile } from 'aws-cdk-lib/aws-appsync';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'AppSyncIntegLogRetention');
 
 const retentionTime = RetentionDays.ONE_WEEK;

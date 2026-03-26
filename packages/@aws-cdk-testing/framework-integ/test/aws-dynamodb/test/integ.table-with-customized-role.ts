@@ -62,7 +62,7 @@ class TestStack2 extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'cdk-table-with-customized-role', {});
 const stack2 = new TestStack2(app, 'cdk-table-with-customized-role2', {});
 new IntegTest(app, 'cdk-dynamodb-customized-role-integ', {

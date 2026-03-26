@@ -3,7 +3,7 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as ses from 'aws-cdk-lib/aws-ses';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'ses-configuration-set-event-bus');
 
 const configurationSet = new ses.ConfigurationSet(stack, 'ConfigurationSet', {

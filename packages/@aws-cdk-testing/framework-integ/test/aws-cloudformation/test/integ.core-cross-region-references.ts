@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 
 // GIVEN
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   treeMetadata: false,
 });
 

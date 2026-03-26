@@ -12,7 +12,7 @@ import { Application, ConfigurationContent, DeploymentStrategy, Environment, Hos
  * violating AppConfig's simultaneous deployment rule.
  */
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'aws-appconfig-multi-config-env');
 const application = new Application(stack, 'MyApplicationForEnv');
 const env = new Environment(stack, 'MultiConfigEnvironment', {

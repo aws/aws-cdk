@@ -31,6 +31,7 @@ import { SET_UNIQUE_REPLICATION_ROLE_NAME } from 'aws-cdk-lib/cx-api';
  * */
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     [SET_UNIQUE_REPLICATION_ROLE_NAME]: false,
   },

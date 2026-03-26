@@ -89,7 +89,7 @@ export class MainStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new MainStack(app, 'integ-bucket-deployment-cross-stack-ssm');
 
 new integ.IntegTest(app, 'integ-bucket-deployment-cross-stack-ssm-source', {

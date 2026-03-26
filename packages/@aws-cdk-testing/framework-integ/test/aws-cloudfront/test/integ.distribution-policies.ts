@@ -4,7 +4,7 @@ import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { OriginRequestPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integ-distribution-policies');
 
 const cachePolicy = new cloudfront.CachePolicy(stack, 'CachePolicy', {

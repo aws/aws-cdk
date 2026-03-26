@@ -33,7 +33,7 @@ export class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'alarm-metrics');
 
 new IntegTest(app, 'alarm-metrics-integ', {

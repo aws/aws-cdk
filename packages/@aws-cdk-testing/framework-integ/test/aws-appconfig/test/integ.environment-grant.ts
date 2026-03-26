@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack } from 'aws-cdk-lib';
 import { Application, Environment } from 'aws-cdk-lib/aws-appconfig';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-appconfig-environment-grant');
 

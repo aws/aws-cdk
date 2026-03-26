@@ -10,7 +10,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 // Connect the topic with a queue. This means that the queue should have
 // a message sent to it every minute.
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-sns-event-target');
 

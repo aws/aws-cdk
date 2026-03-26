@@ -3,7 +3,7 @@ import { App, Stack, RemovalPolicy, SecretValue } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { CaCertificate, DatabaseCluster } from 'aws-cdk-lib/aws-docdb';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'cdk-integ-docdb-cluster-instance-ca-certificate');
 

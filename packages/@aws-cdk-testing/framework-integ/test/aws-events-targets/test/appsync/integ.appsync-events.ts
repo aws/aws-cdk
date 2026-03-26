@@ -6,7 +6,7 @@ import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class AwsAppSyncEvent extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {

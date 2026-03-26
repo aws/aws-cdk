@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { CfnInclude } from 'aws-cdk-lib/cloudformation-include';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integ-cfninclude-novalue-boolean');
 
 const templateFile = path.join(__dirname, 'test-templates', 'novalue-boolean.json');

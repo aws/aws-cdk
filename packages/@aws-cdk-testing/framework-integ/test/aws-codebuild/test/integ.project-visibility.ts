@@ -5,7 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 class VisibilityTestStack extends Stack {
   constructor(scope: Construct, id: string) {

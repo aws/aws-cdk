@@ -6,6 +6,7 @@ import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId
 import type { Construct } from 'constructs';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

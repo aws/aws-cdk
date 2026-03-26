@@ -4,7 +4,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import { PrivateHostedZone } from 'aws-cdk-lib/aws-route53';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-route53-integ');
 

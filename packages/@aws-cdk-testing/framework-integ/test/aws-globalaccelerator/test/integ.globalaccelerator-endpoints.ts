@@ -6,6 +6,7 @@ import { ApplicationLoadBalancer } from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 import { ApplicationLoadBalancerEndpoint } from 'aws-cdk-lib/aws-globalaccelerator-endpoints';
 
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

@@ -5,6 +5,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { LinuxParameters } from 'aws-cdk-lib/aws-ecs';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,

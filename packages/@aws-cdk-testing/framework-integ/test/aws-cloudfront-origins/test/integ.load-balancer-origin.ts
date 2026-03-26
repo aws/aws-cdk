@@ -4,7 +4,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as cdk from 'aws-cdk-lib';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'cloudfront-load-balancer-origin');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });

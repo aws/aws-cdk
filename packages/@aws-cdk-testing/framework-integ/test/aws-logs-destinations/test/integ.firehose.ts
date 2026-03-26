@@ -29,7 +29,7 @@ class FirehoseEnv extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new FirehoseEnv(app, 'firehose-logsubscription-integ');
 
 // If the proper dependency is not set, then the deployment fails with:

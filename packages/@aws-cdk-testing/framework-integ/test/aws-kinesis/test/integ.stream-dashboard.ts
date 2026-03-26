@@ -2,7 +2,7 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { App, Stack } from 'aws-cdk-lib';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'integ-kinesis-stream-dashboard');
 
 const stream = new Stream(stack, 'myStream');

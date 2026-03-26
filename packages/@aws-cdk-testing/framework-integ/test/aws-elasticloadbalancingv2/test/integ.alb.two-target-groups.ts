@@ -24,7 +24,7 @@ class AddTwoTargetGroupsAtOnce extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'issue-24805', {
   testCases: [
     new AddTwoTargetGroupsAtOnce(app, 'Basic'),

@@ -64,6 +64,7 @@ class EventApiApiGrantStack extends cdk.Stack {
 }
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

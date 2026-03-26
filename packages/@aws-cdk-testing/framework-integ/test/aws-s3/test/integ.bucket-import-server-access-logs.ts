@@ -6,7 +6,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 // Reproduces the issues experienced in #23588 and #23547, both resulting from
 // not validating log delivery is applied correctly when the target bucket for
 // server access logs is in another account.
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const targetBucketStack = new cdk.Stack(app, 'aws-cdk-s3-access-logs-target');
 const sourceBucketStack = new cdk.Stack(app, 'aws-cdk-s3-access-logs-delivery');
 

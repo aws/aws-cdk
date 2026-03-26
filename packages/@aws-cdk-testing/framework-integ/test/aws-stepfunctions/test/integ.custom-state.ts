@@ -6,7 +6,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
  *
  * -- aws stepfunctions describe-state-machine --state-machine-arn <stack-output> has a status of `ACTIVE`
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-stepfunctions-custom-state-integ');
 
 const finalStatus = new sfn.Pass(stack, 'final step');

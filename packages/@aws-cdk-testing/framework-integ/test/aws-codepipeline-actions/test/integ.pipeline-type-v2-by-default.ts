@@ -6,6 +6,7 @@ import { CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   treeMetadata: false,
   postCliContext: {
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,

@@ -8,7 +8,7 @@ import {
 } from 'aws-cdk-lib/aws-appconfig';
 import * as path from 'path';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-appconfig-configuration-kms');
 

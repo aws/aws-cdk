@@ -88,7 +88,7 @@ export class TestStack extends Stack {
 }
 
 // Test Setup
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new TestStack(app, 'add-to-resource-policy-test-stack');
 
 // Integration Test Configuration

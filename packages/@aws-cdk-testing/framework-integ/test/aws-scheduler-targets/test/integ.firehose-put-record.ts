@@ -11,7 +11,7 @@ import { FirehosePutRecord } from 'aws-cdk-lib/aws-scheduler-targets';
  * The firehose deliveries the record to S3 bucket
  * The assertion checks there is an object in the S3 bucket
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-firehose-put-record');
 
 const payload = {

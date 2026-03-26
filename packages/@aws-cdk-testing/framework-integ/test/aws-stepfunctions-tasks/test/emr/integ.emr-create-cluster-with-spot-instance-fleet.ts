@@ -3,7 +3,7 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new Stack(app, 'aws-cdk-emr-create-cluster-with-spot-instance-fleet');
 

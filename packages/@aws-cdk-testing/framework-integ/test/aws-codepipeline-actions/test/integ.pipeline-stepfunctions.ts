@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new cdk.App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
     '@aws-cdk/pipelines:reduceStageRoleTrustScope': false,

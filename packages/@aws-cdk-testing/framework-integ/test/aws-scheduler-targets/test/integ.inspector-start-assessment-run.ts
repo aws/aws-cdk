@@ -13,7 +13,7 @@ import { InspectorStartAssessmentRun } from 'aws-cdk-lib/aws-scheduler-targets';
  * An inspector assessment run by the scheduler
  * The assertion checks whether the assessment run
  */
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-inspector-start-assessment-run');
 
 const assessmentTarget = new CfnAssessmentTarget(stack, 'MyAssessmentTarget');

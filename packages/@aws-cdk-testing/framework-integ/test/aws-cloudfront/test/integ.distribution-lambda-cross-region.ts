@@ -11,7 +11,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 // Hardcoded region is intentional — this test validates cross-region EdgeFunction
 // behavior (main stack in eu-west-1, edge lambdas auto-created in us-east-1).

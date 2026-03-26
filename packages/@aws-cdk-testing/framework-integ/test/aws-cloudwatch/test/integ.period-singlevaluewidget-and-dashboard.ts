@@ -22,7 +22,7 @@ class TestStack extends Stack {
     dashboard.addWidgets(widget);
   }
 }
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const testCase = new TestStack(app, 'aws-cdk-cloudwatch-singlevaluewidget-period-integ');
 new IntegTest(app, 'singlevaluewidget-with-period', {
   testCases: [testCase],

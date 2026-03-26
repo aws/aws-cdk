@@ -5,7 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-dynamic-partitioning-lambda');
 

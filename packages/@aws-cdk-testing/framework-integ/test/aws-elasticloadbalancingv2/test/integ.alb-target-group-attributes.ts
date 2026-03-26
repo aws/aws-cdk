@@ -1,7 +1,7 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Stack, aws_ec2 as ec2, aws_elasticloadbalancingv2 as elbv2, App } from 'aws-cdk-lib';
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new Stack(app, 'alb-target-group-attributes');
 
 const vpc = new ec2.Vpc(stack, 'Stack');

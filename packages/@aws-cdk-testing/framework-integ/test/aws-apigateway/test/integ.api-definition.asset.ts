@@ -9,7 +9,7 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
  * * `curl -s -o /dev/null -w "%{http_code}" <CFN output BooksURL>` should return HTTP code 200
  */
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 const stack = new cdk.Stack(app, 'integtest-restapi-fromdefinition-asset');
 
 const api = new apigateway.SpecRestApi(stack, 'my-api', {

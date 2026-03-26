@@ -22,7 +22,7 @@ class TestStack extends IntegTestBaseStack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 
 new integ.IntegTest(app, 'InstanceGp3Test', {
   testCases: [new TestStack(app, 'cdk-integ-rds-instance-gp3')],

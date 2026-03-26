@@ -22,7 +22,7 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const enableEmrServicePolicyV2 = { [ENABLE_EMR_SERVICE_POLICY_V2]: true };
 const app = new App({
-  context: enableEmrServicePolicyV2,
+  context: { enableEmrServicePolicyV2, '@aws-cdk/core:disableGitSource': true },
 });
 
 const stack = new Stack(app, 'aws-cdk-emr-create-cluster-v2-policy');

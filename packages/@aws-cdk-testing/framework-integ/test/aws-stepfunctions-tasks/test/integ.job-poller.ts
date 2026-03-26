@@ -45,6 +45,6 @@ class JobPollerStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new JobPollerStack(app, 'aws-stepfunctions-integ');
 app.synth();

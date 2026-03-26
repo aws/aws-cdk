@@ -10,6 +10,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 // Create a single app for both stacks
 const app = new App({
+  context: { '@aws-cdk/core:disableGitSource': true },
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

@@ -32,7 +32,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({ context: { '@aws-cdk/core:disableGitSource': true } });
 new IntegTest(app, 'integ-cloudfront-custom-s3', {
   testCases: [new TestStack(app, 'cloudfront-custom-s3-stack')],
   diffAssets: true,
