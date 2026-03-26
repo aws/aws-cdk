@@ -137,7 +137,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
    * events specified by you are emitted. Similar to `onEvent` API.
    *
    * You can also use the methods to define rules for the specific event emitted.
-   * eg: `notifyOnPullRequstCreated`.
+   * eg: `notifyOnPullRequestCreated`.
    *
    * @returns CodeStar Notifications rule associated with this repository.
    */
