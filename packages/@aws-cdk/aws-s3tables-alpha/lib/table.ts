@@ -506,13 +506,13 @@ export interface TablePropertyEntry {
 
 /**
  * Contains details about the metadata for an Iceberg table.
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
 export interface IcebergMetadataProperty {
   /**
    * Contains details about the schema for an Iceberg table.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
    */
   readonly icebergSchema: IcebergSchemaProperty;
 
