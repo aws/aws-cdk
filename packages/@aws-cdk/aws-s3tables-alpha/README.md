@@ -277,6 +277,18 @@ const permissions = new iam.PolicyStatement({
 table.addToResourcePolicy(permissions);
 ```
 
+### Tagging
+
+Both `TableBucket` and `Table` support tagging through CDK's standard tagging mechanism:
+
+```ts
+Tags.of(tableBucket).add('Environment', 'Production');
+Tags.of(table).add('Team', 'DataEngineering');
+
+// Stack-level tags propagate to all resources
+Tags.of(stack).add('Project', 'DataLake');
+```
+
 ## Coming Soon
 
 L2 Construct support for:

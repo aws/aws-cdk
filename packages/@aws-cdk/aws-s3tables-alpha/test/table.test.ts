@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
@@ -514,6 +514,52 @@ describe('Table', () => {
           openTableFormat: s3tables.OpenTableFormat.ICEBERG,
         });
       }).toThrow('Table name must start with a lowercase letter or number');
+    });
+  });
+
+  describe('tagging', () => {
+    test('implements ITaggableV2', () => {
+      const table = new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+      expect(core.TagManager.of(table)).toBeDefined();
+    });
+
+    test('tags are applied to the table', () => {
+      const table = new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+
+      core.Tags.of(table).add('Environment', 'Production');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+        ]),
+      });
+    });
+
+    test('stack-level tags propagate to table', () => {
+      new s3tables.Table(stack, 'TaggedTable', {
+        tableName: 'tagged_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+      });
+
+      core.Tags.of(stack).add('StackTag', 'Propagated');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'StackTag', Value: 'Propagated' }),
+        ]),
+      });
     });
   });
 
