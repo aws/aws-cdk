@@ -412,6 +412,12 @@ function collectAndMergeDimensionSets(db: SpecDatabase, metrics: Metric[]): Merg
         metrics: [],
       };
       byName.set(key, merged);
+    } else {
+      const mergedDimNames = new Set(merged.dimensions.map(d => d.name));
+      const incomingDimNames = new Set(dimSet.dimensions.map(d => d.name));
+      if (mergedDimNames.size !== incomingDimNames.size || [...mergedDimNames].some(n => !incomingDimNames.has(n))) {
+        throw new Error(`DimensionSets with name '${key}' have divergent dimension lists: [${[...mergedDimNames].join(', ')}] vs [${[...incomingDimNames].join(', ')}]`);
+      }
     }
 
     for (const dim of dimSet.dimensions) {
