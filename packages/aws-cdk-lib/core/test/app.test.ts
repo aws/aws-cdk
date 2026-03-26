@@ -382,42 +382,6 @@ describe('app', () => {
     const stack = new Stack(stage, 'TestStack');
     expect(App.of(stack)).toBe(app);
   });
-
-  test('gitSource is populated by default and propagated to stacks', () => {
-    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
-    process.env.CDK_DISABLE_GIT_SOURCE = '';
-    try {
-      const app = new App();
-      const stack = new Stack(app, 'Stack');
-      new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-      expect(app.gitSource).toBeDefined();
-      expect(typeof app.gitSource!.repository).toBe('string');
-      expect(typeof app.gitSource!.commit).toBe('string');
-      expect(app.gitSource!.commit).toMatch(/^[a-f0-9]{40}$/);
-
-      const assembly = app.synth();
-      const template = assembly.getStackByName(stack.stackName).template;
-      const source = template?.Metadata?.['AWS::CloudFormation::Source'];
-      expect(source).toEqual({
-        Repository: app.gitSource!.repository,
-        Commit: app.gitSource!.commit,
-      });
-    } finally {
-      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
-    }
-  });
-
-  test('gitSource is undefined when CDK_DISABLE_GIT_SOURCE is set', () => {
-    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
-    process.env.CDK_DISABLE_GIT_SOURCE = '1';
-    try {
-      const app = new App();
-      expect(app.gitSource).toBeUndefined();
-    } finally {
-      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
-    }
-  });
 });
 
 class MyConstruct extends Construct {

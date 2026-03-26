@@ -1,6 +1,5 @@
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
-import { getGitSource } from './private/git-source';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -180,14 +179,6 @@ export class App extends Stage {
   public readonly _treeMetadata: boolean;
 
   /**
-   * Git source information for the repository containing this CDK app.
-   * Contains the repository URL and commit hash, or `undefined` if
-   * git information is not available or has been disabled via
-   * `CDK_DISABLE_GIT_SOURCE`.
-   */
-  public readonly gitSource: { readonly repository: string; readonly commit: string } | undefined;
-
-  /**
    * Initializes a CDK application.
    * @param props initialization properties
    */
@@ -228,7 +219,6 @@ export class App extends Stage {
     }
 
     this._treeMetadata = props.treeMetadata ?? true;
-    this.gitSource = getGitSource();
   }
 
   private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
