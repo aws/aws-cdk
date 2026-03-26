@@ -115,7 +115,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
       const metricsClass = new ClassType(module, {
         name: nsClassName,
         export: true,
-        docs: { summary: `CloudWatch metrics for ${namespace}` },
+        docs: { summary: `CloudWatch metrics for ${namespace}`, stability: Stability.External },
       });
 
       const dimSetClasses = new Map<string, ClassType>();
@@ -201,7 +201,7 @@ class DimensionSetClassGenerator {
     this.dimensionSetClass = new ClassType(scope, {
       name: className,
       export: true,
-      docs: { summary: `Metrics for dimension set: ${merged.name} {${merged.dimensions.map(d => d.name).join(', ') || 'no dimensions'}}` },
+      docs: { summary: `Metrics for dimension set: ${merged.name} {${merged.dimensions.map(d => d.name).join(', ') || 'no dimensions'}}`, stability: Stability.External },
     });
 
     this.dimensionSetClass.addProperty({
