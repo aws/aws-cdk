@@ -217,7 +217,31 @@ export class ResourceClass extends ClassType implements Referenceable {
     }
 
     for (const prop of this.decider.classProperties) {
-      this.addProperty(prop.propertySpec);
+      const spec = prop.propertySpec;
+      if (spec.immutable) {
+        this.addProperty(spec);
+      } else {
+        // For mutable properties, generate getter and setter
+        const backingFieldName = `_${spec.name}`;
+        this.addProperty({
+          name: backingFieldName,
+          type: spec.type,
+          optional: spec.optional,
+          visibility: MemberVisibility.Private,
+          docs: spec.docs,
+        });
+        this.addProperty({
+          name: spec.name,
+          type: spec.type,
+          optional: spec.optional,
+          docs: spec.docs,
+          getterBody: Block.with(stmt.ret($this[backingFieldName])),
+          setterBody: (value: Expression) => Block.with(
+            CDK_CORE.traceProperty($this.node, expr.lit(prop.cfnName)),
+            stmt.assign($this[backingFieldName], value),
+          ),
+        });
+      }
     }
 
     // Copy properties onto class and props type
@@ -680,7 +704,7 @@ export class ResourceClass extends ClassType implements Referenceable {
       stmt.constVar(propsResult, reverseMapper.call(resourceProperties)),
       stmt
         .if_(CDK_CORE.isResolvableObject(propsResult.value))
-        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.lit('Unexpected IResolvable'), scope)))),
+        .then(stmt.block(stmt.throw_(CDK_CORE.errors.ValidationError.newInstance(expr.lit('UnexpectedIResolvable'), expr.lit('Unexpected IResolvable'), scope)))),
       stmt.constVar(ret, this.newInstance(scope, id, propsResult.value)),
     );
 
@@ -745,8 +769,8 @@ export class ResourceClass extends ClassType implements Referenceable {
 
     init.addBody(
       // Props
-      ...this.decider.classProperties.map(({ propertySpec: { name }, initializer }) =>
-        stmt.assign($this[name], initializer(props)),
+      ...this.decider.classProperties.map(({ propertySpec: { name, immutable }, initializer }) =>
+        stmt.assign($this[immutable ? name : `_${name}`], initializer(props)),
       ),
     );
 

@@ -13,9 +13,9 @@ import { DefaultEncryptedResourceFactories, DefaultPolicyFactories } from '../..
 import { KeyGrants } from '../../../aws-kms';
 import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { ValidationError } from '../../../core';
+import { BucketReflection } from '../bucket-reflection';
 import { BucketPolicyStatements } from '../mixins/bucket-policy';
 import { CfnBucket, CfnBucketPolicy } from '../s3.generated';
-import { tryFindBucketPolicyForBucket, tryFindKmsKeyforBucket } from './reflections';
 
 /**
  * Factory to create an encrypted resource for a Bucket.
@@ -34,7 +34,7 @@ class EncryptedCfnBucket implements IEncryptedResource {
   }
 
   public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
-    const key = tryFindKmsKeyforBucket(this.bucket);
+    const key = BucketReflection.of(this.bucket).encryptionKey;
     return {
       grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
     };
@@ -60,7 +60,7 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.policy) {
-      this.policy = tryFindBucketPolicyForBucket(this.bucket) ?? new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
+      this.policy = BucketReflection.of(this.bucket)?.policy ?? new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
         bucket: this.bucket.ref,
         policyDocument: { Statement: [] },
       });
@@ -74,7 +74,7 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
   if (!CfnBucket.isCfnBucket(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnBucket`, resource);
   }
 
   return factory(resource);
