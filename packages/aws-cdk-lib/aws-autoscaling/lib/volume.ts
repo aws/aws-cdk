@@ -30,7 +30,7 @@ export interface BlockDevice {
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
    *
    * @default true - device mapping is left untouched
-   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping.
+   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to suppress a mapping.
    *
    */
   readonly mappingEnabled?: boolean;
@@ -163,7 +163,7 @@ export class BlockDeviceVolume {
   }
 
   /**
-   * Supresses a volume mapping
+   * Suppresses a volume mapping
    */
   public static noDevice() {
     return this._NO_DEVICE;
