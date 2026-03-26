@@ -207,7 +207,7 @@ export interface ContainerMountPoint extends BaseMountPoint {
  */
 export class ServiceManagedVolume extends Construct {
   /**
-   * Name of the volume, referenced by taskdefintion and mount point.
+   * Name of the volume, referenced by task definition and mount point.
    */
   public readonly name: string;
 
