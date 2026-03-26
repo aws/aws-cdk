@@ -3,7 +3,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import type {
   IResource,
+  ITaggableV2,
   RemovalPolicy,
+  TagManager,
 } from 'aws-cdk-lib/core';
 import {
   Resource,
@@ -647,7 +649,7 @@ export interface TableAttributes {
  * An S3 Table with helpers.
  */
 @propertyInjectable
-export class Table extends TableBase {
+export class Table extends TableBase implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.Table';
 
@@ -752,6 +754,11 @@ export class Table extends TableBase {
   private readonly _resource: CfnTable;
 
   /**
+   * The tag manager for this resource.
+   */
+  public readonly cdkTagManager: TagManager;
+
+  /**
    * The name of this table
    */
   public readonly tableName: string;
@@ -798,6 +805,7 @@ export class Table extends TableBase {
     this.namespace = props.namespace;
     this.tableName = props.tableName;
     this.tableArn = this._resource.attrTableArn;
+    this.cdkTagManager = this._resource.cdkTagManager;
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.node.addDependency(this.namespace);
   }

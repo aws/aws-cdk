@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
@@ -523,6 +523,45 @@ describe('TableBucket', () => {
       expect(() => s3tables.TableBucket.validateTableBucketName('')).toThrow(
         /Bucket name must be at least 3/,
       );
+    });
+  });
+
+  describe('tagging', () => {
+    test('implements ITaggableV2', () => {
+      const tableBucket = new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+      expect(core.TagManager.of(tableBucket)).toBeDefined();
+    });
+
+    test('tags are applied to the table bucket', () => {
+      const tableBucket = new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+
+      core.Tags.of(tableBucket).add('Environment', 'Production');
+      core.Tags.of(tableBucket).add('Team', 'DataEng');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+          Match.objectLike({ Key: 'Team', Value: 'DataEng' }),
+        ]),
+      });
+    });
+
+    test('stack-level tags propagate to table bucket', () => {
+      new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+
+      core.Tags.of(stack).add('StackTag', 'Propagated');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'StackTag', Value: 'Propagated' }),
+        ]),
+      });
     });
   });
 });
