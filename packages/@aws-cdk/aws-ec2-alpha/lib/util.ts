@@ -439,7 +439,6 @@ export class CidrBlockIpv6 {
     const blocks = this.parseBigIntParts(ipv6Address);
     let ipv6Number = BigInt(0);
     for (const block of blocks) {
-      /* tslint:disable:no-bitwise */
       ipv6Number = (ipv6Number << BigInt(16)) + block;
     }
     return ipv6Number;
