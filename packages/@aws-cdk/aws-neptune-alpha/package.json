@@ -51,7 +51,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "CDK_DISABLE_GIT_SOURCE=1 integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
