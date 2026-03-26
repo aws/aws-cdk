@@ -164,6 +164,10 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
     for (const dimSet of resourceDimSets) {
       factoryGen.tryAddFactory(dimSet);
     }
+
+    for (const { metricsClass } of submodule.namespaceMetrics.values()) {
+      submodule.registerResource(resource.cloudFormationType, metricsClass);
+    }
   }
 
   protected postprocessSubmodule(submodule: MetricsServiceModule, _props?: AddServiceProps): void {
