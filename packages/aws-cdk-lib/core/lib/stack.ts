@@ -1430,7 +1430,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     const metadata: { [key: string]: any } = {};
-    const gitSource = getGitSource();
+    const app = App.isApp(this.node.root) ? this.node.root as App : undefined;
+    const gitSource = app?.gitSource ?? getGitSource();
     if (gitSource) {
       metadata['AWS::CloudFormation::Source'] = {
         Repository: gitSource.repository,
