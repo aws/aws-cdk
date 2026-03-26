@@ -522,6 +522,18 @@ class TargetGroupListenerAction extends ListenerAction {
  */
 class AuthenticateJwtAction extends ListenerAction {
   constructor(options: AuthenticateJwtOptions) {
+    if (!Token.isUnresolved(options.jwksEndpoint)) {
+      if (!options.jwksEndpoint.startsWith('https://')) {
+        throw new UnscopedValidationError('JwksEndpointMustUseHttps', `JWKS endpoint must use HTTPS protocol, got: ${options.jwksEndpoint}`);
+      }
+      if (options.jwksEndpoint.length > 256) {
+        throw new UnscopedValidationError('JwksEndpointTooLong', `JWKS endpoint must be 256 characters or fewer, got ${options.jwksEndpoint.length} characters`);
+      }
+    }
+    if (!Token.isUnresolved(options.issuer) && options.issuer.length > 256) {
+      throw new UnscopedValidationError('IssuerTooLong', `Issuer must be 256 characters or fewer, got ${options.issuer.length} characters`);
+    }
+
     super({
       type: 'jwt-validation',
       jwtValidationConfig: {
