@@ -157,7 +157,7 @@ function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRe
 }
 
 /**
- * Return items that exist in both the the old parameters and the new parameters,
+ * Return items that exist in both the old parameters and the new parameters,
  * but have different values
  *
  * @param oldParams the exports that existed previous to this execution
