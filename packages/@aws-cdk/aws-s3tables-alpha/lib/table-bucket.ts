@@ -2,7 +2,7 @@ import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
-import type { IResource, RemovalPolicy } from 'aws-cdk-lib/core';
+import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
 import { Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -143,6 +143,21 @@ export enum UnreferencedFileRemovalStatus {
 
   /**
    * Disable unreferenced file removal.
+   */
+  DISABLED = 'Disabled',
+}
+
+/**
+ * Controls whether CloudWatch request metrics are enabled or disabled for the table bucket.
+ */
+export enum RequestMetricsStatus {
+  /**
+   * Enable CloudWatch request metrics for the table bucket.
+   */
+  ENABLED = 'Enabled',
+
+  /**
+   * Disable CloudWatch request metrics for the table bucket.
    */
   DISABLED = 'Disabled',
 }
@@ -349,6 +364,16 @@ export interface TableBucketProps {
    * @default RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * CloudWatch request metrics configuration for the table bucket.
+   *
+   * When enabled, S3 Tables publishes CloudWatch request metrics for the table bucket.
+   * Request metrics provide insight into Amazon S3 Tables requests.
+   *
+   * @default - Request metrics are disabled
+   */
+  readonly requestMetricsStatus?: RequestMetricsStatus;
 }
 
 /**
@@ -407,7 +432,7 @@ export interface TableBucketAttributes {
  * });
  */
 @propertyInjectable
-export class TableBucket extends TableBucketBase {
+export class TableBucket extends TableBucketBase implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.TableBucket';
 
@@ -572,6 +597,11 @@ export class TableBucket extends TableBucketBase {
   private readonly resource: s3tables.CfnTableBucket;
 
   /**
+   * The tag manager for this resource.
+   */
+  public readonly cdkTagManager: TagManager;
+
+  /**
    * The resource policy for this tableBucket.
    */
   public readonly tableBucketPolicy?: TableBucketPolicy;
@@ -601,8 +631,10 @@ export class TableBucket extends TableBucketBase {
         unreferencedDays: props.unreferencedFileRemoval?.unreferencedDays,
       },
       encryptionConfiguration: bucketEncryption,
+      metricsConfiguration: props.requestMetricsStatus ? { status: props.requestMetricsStatus } : undefined,
     });
 
+    this.cdkTagManager = this.resource.cdkTagManager;
     this.resource.applyRemovalPolicy(props.removalPolicy);
   }
 
