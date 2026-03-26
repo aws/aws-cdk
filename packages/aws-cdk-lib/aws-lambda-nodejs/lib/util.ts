@@ -197,6 +197,54 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
   return compilerOptionsString.trim();
 }
 
+/**
+ * Returns tsconfig compiler options as an array of CLI arguments for direct spawn.
+ */
+export function getTsconfigCompilerOptionsArray(tsconfigPath: string): string[] {
+  const compilerOptions = extractTsConfig(tsconfigPath);
+  const excludedCompilerOptions = [
+    'composite',
+    'charset',
+    'noEmit',
+    'tsBuildInfoFile',
+  ];
+
+  const options: Record<string, any> = {
+    ...compilerOptions,
+    incremental: false,
+    rootDir: './',
+    outDir: './',
+  };
+
+  const args: string[] = [];
+  Object.keys(options).sort().forEach((key: string) => {
+    if (excludedCompilerOptions.includes(key)) {
+      return;
+    }
+
+    const value = options[key];
+    const option = '--' + key;
+    const type = typeof value;
+
+    if (type === 'boolean') {
+      args.push(option);
+      if (!value) {
+        args.push('false');
+      }
+    } else if (type === 'string') {
+      args.push(option, value);
+    } else if (type === 'object') {
+      if (Array.isArray(value)) {
+        args.push(option, value.join(','));
+      }
+    } else {
+      throw new UnscopedValidationError('UnsupportedCompilerOption', `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+    }
+  });
+
+  return args;
+}
+
 function extractTsConfig(tsconfigPath: string, previousCompilerOptions?: Record<string, any>): Record<string, any> | undefined {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { extends: extendedConfig, compilerOptions } = require(tsconfigPath);

@@ -116,10 +116,10 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.1.1",
+    "@aws-cdk/cloud-assembly-api": "^2.2.0",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
-    "@aws-cdk/cloud-assembly-schema": "^52.1.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
@@ -129,7 +129,7 @@
     "punycode": "^2.3.1",
     "semver": "^7.7.4",
     "table": "^6.9.0",
-    "yaml": "1.10.2",
+    "yaml": "1.10.3",
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
