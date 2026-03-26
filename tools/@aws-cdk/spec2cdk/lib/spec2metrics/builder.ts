@@ -193,10 +193,9 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
  */
 class DimensionSetClassGenerator {
   public readonly dimensionSetClass: ClassType;
-  public readonly propsStruct?: StructType;
 
   constructor(
-    scope: ClassType,
+    private readonly scope: ClassType,
     private readonly merged: MergedDimensionSet,
     private readonly cloudwatchModule: ExternalModule,
   ) {
@@ -215,38 +214,42 @@ class DimensionSetClassGenerator {
       visibility: MemberVisibility.Private,
     });
 
-    if (merged.dimensions.length > 0) {
-      this.propsStruct = new StructType(scope, {
-        name: `${className}Props`,
-        export: true,
-        docs: { summary: `Dimensions for ${className}`, stability: Stability.External },
-      });
-      for (const dim of merged.dimensions) {
-        const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
-        let propType: Type = Type.STRING;
+    const propsStruct = merged.dimensions.length > 0
+      ? this.buildPropsStruct(className, merged.dimensions)
+      : undefined;
 
-        if (dim.knownValues.length > 0) {
-          const enumType = new EnumType(scope, {
-            name: `${className}${sanitizeName(dim.name)}`,
-            export: true,
-            docs: { summary: `Known values for the ${dim.name} dimension` },
-          });
-          for (const value of dim.knownValues) {
-            enumType.addMember({ name: dimensionEnumMemberName(value), value, docs: `${dim.name} = ${value}` });
-          }
-          propType = enumType.type;
-        }
+    this.addConstructor(propsStruct);
+  }
 
-        this.propsStruct.addProperty({
-          name: propName,
-          type: propType,
-          docs: { summary: `The ${dim.name} dimension` },
+  private buildPropsStruct(className: string, dimensions: MergedDimension[]): StructType {
+    const propsStruct = new StructType(this.scope, {
+      name: `${className}Props`,
+      export: true,
+      docs: { summary: `Dimensions for ${className}`, stability: Stability.External },
+    });
+    for (const dim of dimensions) {
+      const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
+      let propType: Type = Type.STRING;
+
+      if (dim.knownValues.length > 0) {
+        const enumType = new EnumType(this.scope, {
+          name: `${className}${sanitizeName(dim.name)}`,
+          export: true,
+          docs: { summary: `Known values for the ${dim.name} dimension` },
         });
+        for (const value of dim.knownValues) {
+          enumType.addMember({ name: dimensionEnumMemberName(value), value, docs: `${dim.name} = ${value}` });
+        }
+        propType = enumType.type;
       }
-      this.addConstructorWithProps();
-    } else {
-      this.addEmptyConstructor();
+
+      propsStruct.addProperty({
+        name: propName,
+        type: propType,
+        docs: { summary: `The ${dim.name} dimension` },
+      });
     }
+    return propsStruct;
   }
 
   public addMetricMethod(metric: Metric) {
@@ -274,25 +277,19 @@ class DimensionSetClassGenerator {
     );
   }
 
-  private addConstructorWithProps() {
+  private addConstructor(propsStruct?: StructType) {
     const ctor = this.dimensionSetClass.addInitializer({});
-    const propsParam = ctor.addParameter({ name: 'props', type: this.propsStruct!.type });
 
-    const dimEntries = this.merged.dimensions.map(dim => {
-      const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
-      return [dim.name, propsParam.prop(propName)] as const;
-    });
-
-    ctor.addBody(
-      stmt.assign(expr.this_().prop('dimensions'), expr.object(dimEntries)),
-    );
-  }
-
-  private addEmptyConstructor() {
-    const ctor = this.dimensionSetClass.addInitializer({});
-    ctor.addBody(
-      stmt.assign(expr.this_().prop('dimensions'), expr.object([])),
-    );
+    if (propsStruct) {
+      const propsParam = ctor.addParameter({ name: 'props', type: propsStruct.type });
+      const dimEntries = this.merged.dimensions.map(dim => {
+        const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
+        return [dim.name, propsParam.prop(propName)] as const;
+      });
+      ctor.addBody(stmt.assign(expr.this_().prop('dimensions'), expr.object(dimEntries)));
+    } else {
+      ctor.addBody(stmt.assign(expr.this_().prop('dimensions'), expr.object([])));
+    }
   }
 }
 
