@@ -10,7 +10,7 @@ import { Token } from './token';
 
 /**
  * CloudFormation intrinsic functions.
- * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+ * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
 export class Fn {
   /**

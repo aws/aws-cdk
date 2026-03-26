@@ -17,7 +17,7 @@ import type { FileSystemReference, IFileSystemRef } from '../../interfaces/gener
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
  * or Archive storage.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
 

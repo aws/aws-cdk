@@ -431,7 +431,7 @@ export interface InstanceProps {
    * Alternatively, if you set InstanceInitiatedShutdownBehavior to terminate, you can terminate the instance
    * by running the shutdown command from the instance.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
    *
    * @default false
    */
