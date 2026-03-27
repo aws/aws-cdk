@@ -173,6 +173,28 @@ describe('tests', () => {
     });
   });
 
+  test('setting dropInvalidHeaderFields to false includes attribute in template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      dropInvalidHeaderFields: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
+        {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'false',
+        },
+      ]),
+    });
+  });
+
   test.each([59, 604801])('throw error for invalid clientKeepAlive in seconds', (duration) => {
     // GIVEN
     const stack = new cdk.Stack();
