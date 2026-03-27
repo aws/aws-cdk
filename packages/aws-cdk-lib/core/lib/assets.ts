@@ -198,6 +198,21 @@ export interface DockerImageAssetSource {
   readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
+   * Build contexts to pass to the `docker build` command.
+   *
+   * Build contexts can be used to specify additional directories or images
+   * to use during the build. Each entry specifies a named build context
+   * and its source (a directory path, a URL, or a docker image).
+   *
+   * Only allowed when `directoryName` is specified.
+   *
+   * @see https://docs.docker.com/build/building/context/#additional-build-contexts
+   *
+   * @default - no additional build contexts
+   */
+  readonly dockerBuildContexts?: { [key: string]: string };
+
+  /**
    * Build secrets to pass to the `docker build` command.
    *
    * Since Docker build secrets are resolved before deployment, keys and
