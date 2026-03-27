@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { ICanary } from './canary';
-import { CfnGroup, GroupReference, IGroupRef } from './synthetics.generated';
+import type { Construct } from 'constructs';
+import type { ICanary } from './canary';
+import type { GroupReference, IGroupRef } from './synthetics.generated';
+import { CfnGroup } from './synthetics.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 
 /**
@@ -112,16 +114,19 @@ export class Group extends cdk.Resource implements IGroup {
   public readonly groupId: string;
 
   /**
-   * The name of the group
-   * @attribute
-   */
-  public readonly groupName: string;
-
-  /**
    * The ARN of the group
    * @attribute
    */
   public readonly groupArn: string;
+
+  /**
+   * The name of the group
+   * @attribute
+   */
+  @memoizedGetter
+  public get groupName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * A reference to the group.
@@ -157,7 +162,6 @@ export class Group extends cdk.Resource implements IGroup {
     });
 
     this.groupId = this._resource.attrId;
-    this.groupName = this.getResourceNameAttribute(this._resource.ref);
     this.groupArn = cdk.Stack.of(this).formatArn({
       service: 'synthetics',
       resource: 'group',
