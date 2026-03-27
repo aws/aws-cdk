@@ -74,8 +74,6 @@ jobs:
 
       - name: Build
         run: /bin/bash ./build.sh --ci --concurrency 10
-        env:
-          CDK_DISABLE_GIT_SOURCE: 'true'
 
       - name: Run Rosetta
         run: /bin/bash ./scripts/run-rosetta.sh
