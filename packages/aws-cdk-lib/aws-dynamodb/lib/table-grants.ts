@@ -2,7 +2,7 @@ import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
-import { isServicePrincipal } from './private/principal-utils';
+import { isUnsupportedServicePrincipal } from './private/principal-utils';
 
 /**
  * Construction properties for TableGrants
@@ -109,7 +109,7 @@ export class TableGrants {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    if (isServicePrincipal(grantee.grantPrincipal)) {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
       throw new ValidationError(
         '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
         'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
