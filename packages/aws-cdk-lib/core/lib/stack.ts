@@ -543,6 +543,15 @@ export class Stack extends Construct implements ITaggable {
 
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
+
+    const gitSource = getGitSource();
+    if (gitSource) {
+      this.addMetadata('AWS::CloudFormation::Source', {
+        Repository: gitSource.repository,
+        Commit: gitSource.commit,
+      });
+      this.node.addMetadata('aws:cdk:source', gitSource);
+    }
   }
 
   /**
@@ -1429,23 +1438,11 @@ export class Stack extends Construct implements ITaggable {
       }
     }
 
-    const metadata: { [key: string]: any } = {};
-    const gitSource = getGitSource();
-    if (gitSource) {
-      metadata['AWS::CloudFormation::Source'] = {
-        Repository: gitSource.repository,
-        Commit: gitSource.commit,
-      };
-    }
-    if (this.templateOptions.metadata) {
-      Object.assign(metadata, this.templateOptions.metadata);
-    }
-
     const template: any = {
       Description: this.templateOptions.description,
       Transform: transform,
       AWSTemplateFormatVersion: this.templateOptions.templateFormatVersion,
-      Metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+      Metadata: this.templateOptions.metadata,
     };
 
     const elements = cfnElements(this);

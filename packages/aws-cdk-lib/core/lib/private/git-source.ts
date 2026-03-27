@@ -2,13 +2,31 @@ import type { ExecSyncOptionsWithStringEncoding } from 'child_process';
 import { execSync } from 'child_process';
 import * as path from 'path';
 
+type GitSource = { repository: string; commit: string } | undefined;
+let cached: { value: GitSource } | undefined;
+
 /**
  * Retrieves git source information (remote URL and latest commit) for the current repository.
  * Uses the CDK app entry point to determine the correct git repository.
  * Returns undefined if git is not available, the app is not in a git repo,
  * or CDK_DISABLE_GIT_SOURCE is set.
+ * Results are cached for the lifetime of the process.
  */
-export function getGitSource(): { repository: string; commit: string } | undefined {
+export function getGitSource(): GitSource {
+  if (cached) {
+    return cached.value;
+  }
+  const value = _getGitSource();
+  cached = { value };
+  return value;
+}
+
+/** @internal */
+export function clearGitSourceCache() {
+  cached = undefined;
+}
+
+function _getGitSource(): GitSource {
   if (process.env.CDK_DISABLE_GIT_SOURCE == '1' || process.env.CDK_DISABLE_GIT_SOURCE == 'true') {
     return undefined;
   }

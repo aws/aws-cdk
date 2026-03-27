@@ -18,9 +18,11 @@ import {
   TagManager,
   TagType,
 } from '../lib';
+import { clearGitSourceCache } from '../lib/private/git-source';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
+import * as path from "node:path";
 
 describe('stack', () => {
   test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
@@ -2647,26 +2649,38 @@ describe('regionalFact', () => {
   test('git source metadata is included by default', () => {
     const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
     process.env.CDK_DISABLE_GIT_SOURCE = '';
+    clearGitSourceCache();
     try {
       const app = new App();
       const stack = new Stack(app, 'Stack');
       new CfnResource(stack, 'Resource', { type: 'MyResource' });
 
       const assembly = app.synth();
-      const template = assembly.getStackByName(stack.stackName).template;
+      const stackArtifact = assembly.getStackByName(stack.stackName);
+      const template = stackArtifact.template;
       const source = template?.Metadata?.['AWS::CloudFormation::Source'];
       expect(source).toBeDefined();
       expect(typeof source.Repository).toBe('string');
       expect(typeof source.Commit).toBe('string');
       expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
+
+      const md = JSON.parse(fs.readFileSync(path.join(assembly.directory, stackArtifact.manifest.additionalMetadataFile!)).toString());
+      expect(md['/Stack']).toMatchObject([{
+        data: expect.objectContaining({
+          commit: expect.stringMatching(/[a-f0-9]+/),
+          repository: 'git@github.com:aws/aws-cdk.git',
+        }),
+      }]);
     } finally {
       process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
+      clearGitSourceCache();
     }
   });
 
   test('git source metadata is not included when CDK_DISABLE_GIT_SOURCE is set', () => {
     const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
     process.env.CDK_DISABLE_GIT_SOURCE = '1';
+    clearGitSourceCache();
     try {
       const app = new App();
       const stack = new Stack(app, 'Stack');
@@ -2677,6 +2691,7 @@ describe('regionalFact', () => {
       expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
     } finally {
       process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
+      clearGitSourceCache();
     }
   });
 });
