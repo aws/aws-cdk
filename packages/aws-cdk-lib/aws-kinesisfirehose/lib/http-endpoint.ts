@@ -109,7 +109,7 @@ export abstract class HttpEndpointAuthentication {
    * @param accessKey The access key
    */
   public static accessKey(accessKey: string): HttpEndpointAuthentication {
-    return new HttpEndpointAccesKeyAuthentication(accessKey);
+    return new HttpEndpointAccessKeyAuthentication(accessKey);
   }
 
   /**
@@ -129,7 +129,7 @@ export abstract class HttpEndpointAuthentication {
   abstract bind(scope: Construct): HttpEndpointAuthenticationOptions;
 }
 
-class HttpEndpointAccesKeyAuthentication extends HttpEndpointAuthentication {
+class HttpEndpointAccessKeyAuthentication extends HttpEndpointAuthentication {
   constructor(private readonly accessKey: string) { super(); }
 
   bind(scope: Construct): HttpEndpointAuthenticationOptions {
@@ -153,7 +153,7 @@ class HttpEndpointSecretsManagerAuthentication extends HttpEndpointAuthenticatio
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Encoding
  */
 export enum ContentEncoding {
-  /** No content-encoing */
+  /** No content-encoding */
   NONE = 'NONE',
   /** gzip */
   GZIP = 'GZIP',
