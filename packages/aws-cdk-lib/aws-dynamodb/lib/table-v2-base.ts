@@ -8,7 +8,7 @@ import { MathExpression, Metric } from '../../aws-cloudwatch';
 import type { AddToResourcePolicyResult, GrantOnKeyResult, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Grant } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
-import { Annotations, Resource, ValidationError } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { isServicePrincipal } from './private/principal-utils';
 import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
@@ -103,7 +103,13 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     if (isServicePrincipal(grantee.grantPrincipal)) {
-      return this.dropServicePrincipalGrant(grantee);
+      throw new ValidationError(
+        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this,
+      );
     }
     const resourceArns = [this.tableArn];
     this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
@@ -495,7 +501,13 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     streamActions?: string[];
   }) {
     if (isServicePrincipal(grantee.grantPrincipal)) {
-      return this.dropServicePrincipalGrant(grantee);
+      throw new ValidationError(
+        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this,
+      );
     }
 
     if (options.keyActions && this.encryptionKey) {
@@ -547,16 +559,6 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       region: props?.region ?? this.region,
       account: props?.account ?? this.stack.account,
     });
-  }
-
-  private dropServicePrincipalGrant(grantee: IGrantable): Grant {
-    Annotations.of(this).addWarningV2(
-      '@aws-cdk/aws-dynamodb:servicePrincipalGrantDropped',
-      'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
-      'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
-      'with required service principal, actions, and conditions',
-    );
-    return Grant.drop(grantee, 'DynamoDB grant* does not support ServicePrincipal grantees');
   }
 
   /**

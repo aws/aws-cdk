@@ -1311,51 +1311,31 @@ describe('grants', () => {
     });
   });
 
-  test('grant* with ServicePrincipal drops grant', () => {
+  test('grant* with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    // WHEN
-    const grant = table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com'));
-
     // THEN
-    expect(grant.success).toBe(false);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      Replicas: Match.arrayWith([
-        Match.objectLike({
-          ResourcePolicy: Match.absent(),
-        }),
-      ]),
-    });
+    expect(() => table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 
-  test('grant with ServicePrincipal drops grant', () => {
+  test('grant with ServicePrincipal throws error', () => {
     // GIVEN
     const stack = new Stack();
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    // WHEN
-    const grant = table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem');
-
     // THEN
-    expect(grant.success).toBe(false);
-
-    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-      Replicas: Match.arrayWith([
-        Match.objectLike({
-          ResourcePolicy: Match.absent(),
-        }),
-      ]),
-    });
+    expect(() => table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem'))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 
-  test('grant* with wrapped ServicePrincipal (withConditions) drops grant', () => {
+  test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
     // GIVEN
     const stack = new Stack();
     const table = new TableV2(stack, 'Table', {
@@ -1366,10 +1346,10 @@ describe('grants', () => {
     const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
       StringEquals: { 'aws:SourceAccount': '123456789012' },
     });
-    const grant = table.grantReadData(principal);
 
     // THEN
-    expect(grant.success).toBe(false);
+    expect(() => table.grantReadData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 });
 
