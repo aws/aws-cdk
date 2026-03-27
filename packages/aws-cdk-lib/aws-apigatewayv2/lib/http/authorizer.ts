@@ -192,7 +192,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     }
 
     if (props.type !== HttpAuthorizerType.LAMBDA && props.role) {
-      throw new ValidationError('role is supported only for Lambda authorizers', scope);
+      throw new ValidationError('RoleSupportedOnlyForLambdaAuthorizers', 'role is supported only for Lambda authorizers', scope);
     }
 
     /**

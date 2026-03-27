@@ -1,6 +1,6 @@
 import { Template } from '../../../assertions';
 import { Role, ServicePrincipal } from '../../../aws-iam';
-import { Stack, ValidationError } from '../../../core';
+import { Stack } from '../../../core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType,
 } from '../../lib';
@@ -100,7 +100,7 @@ describe('HttpAuthorizer', () => {
         jwtAudience: ['3131231'],
         jwtIssuer: 'https://test.us.auth0.com',
         role: new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') }),
-      })).toThrow(new ValidationError('role is supported only for Lambda authorizers', stack));
+      })).toThrow(/role is supported only for Lambda authorizers/);
     });
 
 
@@ -115,7 +115,7 @@ describe('HttpAuthorizer', () => {
         identitySource: ['$request.header.Authorization'],
         type: HttpAuthorizerType.IAM,
         role: new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') }),
-      })).toThrow(new ValidationError('role is supported only for Lambda authorizers', stack));
+      })).toThrow(/role is supported only for Lambda authorizers/);
     });
   })
 });
