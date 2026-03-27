@@ -6,6 +6,8 @@ import subprocess
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+MAX_ERROR_LENGTH = 2048
+
 # these are coming from the kubectl layer
 os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 
@@ -63,7 +65,12 @@ def kubectl(args):
                 retry = retry - 1
                 logger.info("kubectl timed out, retries left: %s" % retry)
             else:
-                raise Exception(output)
+                error_msg = output.decode('utf-8', errors='replace')
+
+                if len(error_msg) > MAX_ERROR_LENGTH:
+                    error_msg = error_msg[:MAX_ERROR_LENGTH] + "...[truncated]"
+
+                raise Exception(error_msg)
         else:
             logger.info(output)
             return
