@@ -19,6 +19,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Construct } from 'constructs';
 // Internal imports
+import type { IGateway } from '../gateway/gateway-base';
 import { PolicyEnginePerms } from './perms';
 
 /******************************************************************************
@@ -90,6 +91,21 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
    * @param grantee - The IAM principal to grant evaluation permissions to
    */
   grantEvaluate(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grants the full set of permissions required for a gateway execution role to use
+   * this policy engine, correctly scoped to both the policy engine and gateway ARNs.
+   *
+   * Per the AWS docs, `AuthorizeAction` and `PartiallyAuthorizeActions` require
+   * both the policy engine ARN and the gateway ARN as resources, while
+   * `GetPolicyEngine` only needs the policy engine ARN.
+   *
+   * This follows the same pattern as Lambda's `grantInvokeVersion(grantee, version)`.
+   *
+   * @param grantee - The IAM principal (gateway execution role) to grant permissions to
+   * @param gateway - The gateway that will use this policy engine
+   */
+  grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant;
 
   /**
    * Return the given named metric for this policy engine.
@@ -217,6 +233,38 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    */
   public grantEvaluate(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...PolicyEnginePerms.EVALUATE_PERMS);
+  }
+
+  /**
+   * Grants the full set of permissions required for a gateway execution role to use
+   * this policy engine, correctly scoped to both the policy engine and gateway ARNs.
+   *
+   * Per the AWS docs:
+   * - `GetPolicyEngine` → policy engine ARN only
+   * - `AuthorizeAction` + `PartiallyAuthorizeActions` → policy engine ARN **and** gateway ARN
+   *
+   * [disable-awslint:no-grants]
+   *
+   * @param grantee - The IAM principal (gateway execution role) to grant permissions to
+   * @param gateway - The gateway that will use this policy engine
+   * @returns A combined IAM Grant representing all granted permissions
+   */
+  public grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant {
+    // GetPolicyEngine only needs the policy engine ARN
+    const getPolicyEngineGrant = this.grant(grantee, 'bedrock-agentcore:GetPolicyEngine');
+
+    // AuthorizeAction + PartiallyAuthorizeActions require BOTH the policy engine ARN and gateway ARN
+    const authorizationGrant = iam.Grant.addToPrincipal({
+      grantee,
+      actions: [
+        'bedrock-agentcore:AuthorizeAction',
+        'bedrock-agentcore:PartiallyAuthorizeActions',
+      ],
+      resourceArns: [this.policyEngineArn, gateway.gatewayArn],
+      scope: this,
+    });
+
+    return getPolicyEngineGrant.combine(authorizationGrant);
   }
 
   /**

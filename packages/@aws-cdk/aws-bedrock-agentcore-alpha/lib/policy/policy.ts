@@ -226,6 +226,7 @@ export class Policy extends PolicyBase {
     // ------------------------------------------------------
     if (!props.definition && !props.statement) {
       throw new ValidationError(
+        'PolicyDefinitionRequired',
         `Policy '${this.physicalName}' must specify either 'definition' (raw Cedar string) or 'statement' (PolicyStatement builder), but neither was provided.`,
         this,
       );
@@ -233,6 +234,7 @@ export class Policy extends PolicyBase {
 
     if (props.definition && props.statement) {
       throw new ValidationError(
+        'PolicyDefinitionConflict',
         `Policy '${this.physicalName}' must specify either 'definition' OR 'statement', but not both. ` +
         'Use definition for raw Cedar strings, or statement for the type-safe builder.',
         this,

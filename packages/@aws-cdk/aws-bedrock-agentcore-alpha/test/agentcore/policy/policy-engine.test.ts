@@ -15,6 +15,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import { Gateway } from '../../../lib/gateway/gateway';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 
 describe('PolicyEngine default tests', () => {
@@ -402,6 +403,84 @@ describe('PolicyEngine grant methods tests', () => {
               'bedrock-agentcore:PartiallyAuthorizeActions',
             ]),
             Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantEvaluateForGateway should scope GetPolicyEngine to policy engine ARN only', () => {
+    const newApp = new cdk.App();
+    const newStack = new cdk.Stack(newApp, 'gateway-eval-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const newEngine = new PolicyEngine(newStack, 'gateway-eval-engine', {
+      policyEngineName: 'gateway_eval_engine',
+    });
+    const newRole = new iam.Role(newStack, 'gateway-eval-role', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+    const gateway = new Gateway(newStack, 'gateway-eval-gateway', {
+      gatewayName: 'eval-gateway',
+      role: newRole,
+    });
+
+    newEngine.grantEvaluateForGateway(newRole, gateway);
+
+    const template = Template.fromStack(newStack);
+    // GetPolicyEngine scoped to policy engine ARN only
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetPolicyEngine',
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('gatewayevalengine.*'), 'PolicyEngineArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantEvaluateForGateway should scope AuthorizeAction and PartiallyAuthorizeActions to both ARNs', () => {
+    const newApp = new cdk.App();
+    const newStack = new cdk.Stack(newApp, 'gateway-auth-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const newEngine = new PolicyEngine(newStack, 'gateway-auth-engine', {
+      policyEngineName: 'gateway_auth_engine',
+    });
+    const newRole = new iam.Role(newStack, 'gateway-auth-role', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+    const gateway = new Gateway(newStack, 'gateway-auth-gateway', {
+      gatewayName: 'auth-gateway',
+      role: newRole,
+    });
+
+    newEngine.grantEvaluateForGateway(newRole, gateway);
+
+    const template = Template.fromStack(newStack);
+    // AuthorizeAction + PartiallyAuthorizeActions scoped to BOTH policy engine and gateway ARNs
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:AuthorizeAction',
+              'bedrock-agentcore:PartiallyAuthorizeActions',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('gatewayauthengine.*'), 'PolicyEngineArn']),
+              }),
+              Match.objectLike({
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('gatewayauthgateway.*'), 'GatewayArn']),
+              }),
+            ]),
           }),
         ]),
       },

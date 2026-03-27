@@ -118,6 +118,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [PolicyEngine Properties](#policyengine-properties)
     - [Policy Properties](#policy-properties)
     - [Basic PolicyEngine and Policy Creation](#basic-policyengine-and-policy-creation)
+    - [Associating a Policy Engine with a Gateway](#associating-a-policy-engine-with-a-gateway)
     - [Type-Safe Policy Builder](#type-safe-policy-builder)
     - [PolicyEngine with KMS Encryption](#policyengine-with-kms-encryption)
     - [Policy Validation Modes](#policy-validation-modes)
@@ -1184,6 +1185,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 | `kmsKey` | `kms.IKey` | No | The AWS KMS key used to encrypt data associated with the gateway |
 | `role` | `iam.IRole` | No | The IAM role that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
+| `policyEngineConfiguration` | `GatewayPolicyEngineConfig` | No | Associates a policy engine with this gateway. All agent requests are evaluated against the Cedar policies in the engine. The gateway role is automatically granted evaluate permissions. Default: no policy engine |
 
 ### Basic Gateway Creation
 
@@ -2578,16 +2580,18 @@ permit(
 Create a policy engine and add policies to it.
 
 ```typescript fixture=default
-// Create a Gateway 
-const gateway = new agentcore.Gateway(this, "MyGateway", {
-  gatewayName: "my-gateway",
-  description: "Gateway for tool access",
-});
 
 // Create a Policy engine  
 const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
   policyEngineName: "my_policy_engine",
   description: "Policy engine for access control",
+});
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  policyEngineConfiguration: {
+    policyEngine: policyEngine,
+  },
 });
 
 // Add policy to policy engine

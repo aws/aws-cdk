@@ -10,6 +10,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 // Internal imports
+import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayBase } from './gateway-base';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
@@ -25,6 +26,54 @@ import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
+
+/******************************************************************************
+ *                         Policy Engine Types
+ *****************************************************************************/
+
+/**
+ * The enforcement mode for a policy engine associated with a gateway.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-gateway-gatewaypolicyengineconfiguration.html
+ */
+export enum PolicyEngineMode {
+  /**
+   * Evaluates actions and adds traces but does not enforce decisions.
+   * Use this mode for testing and validation before enabling enforcement.
+   */
+  LOG_ONLY = 'LOG_ONLY',
+
+  /**
+   * Enforces decisions by allowing or denying agent operations based on Cedar policies.
+   */
+  ENFORCE = 'ENFORCE',
+}
+
+/**
+ * Configuration for associating a policy engine with a gateway.
+ *
+ * When configured, the policy engine intercepts all agent requests through this
+ * gateway and evaluates them against the defined Cedar policies.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-gateway-gatewaypolicyengineconfiguration.html
+ */
+export interface GatewayPolicyEngineConfig {
+  /**
+   * The policy engine to associate with this gateway.
+   * The policy engine must contain Cedar policies that define the authorization rules.
+   */
+  readonly policyEngine: IPolicyEngine;
+
+  /**
+   * The enforcement mode for the policy engine.
+   *
+   * - `LOG_ONLY`: Evaluates and logs decisions without enforcing them. Use for testing.
+   * - `ENFORCE`: Actively allows or denies requests based on Cedar policy evaluation.
+   *
+   * @default PolicyEngineMode.LOG_ONLY
+   */
+  readonly mode?: PolicyEngineMode;
+}
 
 /******************************************************************************
  *                                Props
@@ -290,6 +339,22 @@ export interface GatewayProps {
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
    */
   readonly interceptorConfigurations?: IInterceptor[];
+
+  /**
+   * The policy engine configuration for this gateway.
+   *
+   * When provided, the specified policy engine will be associated with this gateway.
+   * All agent requests through this gateway will be evaluated against the Cedar policies
+   * defined in the policy engine.
+   *
+   * The gateway's execution role will automatically be granted evaluation permissions
+   * (`bedrock-agentcore:AuthorizeAction` and `bedrock-agentcore:PartiallyAuthorizeActions`)
+   * on the policy engine.
+   *
+   * @default - No policy engine (requests are not subject to Cedar policy authorization)
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-engine.html
+   */
+  readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
 }
 
 /**
@@ -479,6 +544,11 @@ export class Gateway extends GatewayBase {
   private responseInterceptorConfig?: InterceptorBindConfig;
 
   /**
+   * The policy engine configuration associated with this gateway.
+   */
+  public readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
+
+  /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
   public userPoolDomain?: cognito.IUserPoolDomain;
@@ -550,6 +620,8 @@ export class Gateway extends GatewayBase {
       this.validateAndInitializeInterceptors(props.interceptorConfigurations);
     }
 
+    this.policyEngineConfiguration = props.policyEngineConfiguration;
+
     // ------------------------------------------------------
     // L1 Instantiation
     // ------------------------------------------------------
@@ -563,6 +635,12 @@ export class Gateway extends GatewayBase {
       }),
       kmsKeyArn: this.kmsKey?.keyArn,
       name: this.name,
+      policyEngineConfiguration: this.policyEngineConfiguration
+        ? {
+          arn: this.policyEngineConfiguration.policyEngine.policyEngineArn,
+          mode: this.policyEngineConfiguration.mode ?? PolicyEngineMode.LOG_ONLY,
+        }
+        : undefined,
       protocolConfiguration: this.protocolConfiguration._render(),
       protocolType: this.protocolConfiguration.protocolType,
       roleArn: this.role?.roleArn,
@@ -576,6 +654,13 @@ export class Gateway extends GatewayBase {
     this.createdAt = _resource.attrCreatedAt;
     this.updatedAt = _resource.attrUpdatedAt;
     this.statusReason = _resource.attrStatusReasons;
+
+    // Policy engine IAM grants — must come after L1 instantiation so this.gatewayArn is set
+    if (this.policyEngineConfiguration) {
+      // Grant evaluation permissions correctly scoped to both the policy engine ARN
+      // and the gateway ARN (required by AuthorizeAction + PartiallyAuthorizeActions)
+      this.policyEngineConfiguration.policyEngine.grantEvaluateForGateway(this.role, this);
+    }
   }
 
   /**
