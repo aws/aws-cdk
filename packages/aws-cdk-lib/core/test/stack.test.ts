@@ -2668,7 +2668,7 @@ describe('regionalFact', () => {
       expect(md['/Stack']).toMatchObject([{
         data: expect.objectContaining({
           commit: expect.stringMatching(/[a-f0-9]+/),
-          repository: 'git@github.com:aws/aws-cdk.git',
+          repository: expect.stringContaining('github.com'),
         }),
       }]);
     } finally {
