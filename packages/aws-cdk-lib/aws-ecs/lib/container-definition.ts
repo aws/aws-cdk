@@ -12,6 +12,7 @@ import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -581,7 +582,7 @@ export class ContainerDefinition extends Construct {
     super(scope, id);
     if (props.memoryLimitMiB !== undefined && props.memoryReservationMiB !== undefined) {
       if (props.memoryLimitMiB < props.memoryReservationMiB) {
-        throw new ValidationError('MemoryLimitMibShouldLessThan', 'MemoryLimitMiB should not be less than MemoryReservationMiB.', this);
+        throw new ValidationError(lit`MemoryLimitMibShouldLessThan`, 'MemoryLimitMiB should not be less than MemoryReservationMiB.', this);
       }
     }
     this.essential = props.essential ?? true;
@@ -627,7 +628,7 @@ export class ContainerDefinition extends Construct {
       this.credentialSpecs = [];
 
       if (props.credentialSpecs.length > 1) {
-        throw new ValidationError('OnlyCredentialSpecAllowed', 'Only one credential spec is allowed per container definition.', this);
+        throw new ValidationError(lit`OnlyCredentialSpecAllowed`, 'Only one credential spec is allowed per container definition.', this);
       }
 
       for (const credSpec of props.credentialSpecs) {
@@ -666,7 +667,7 @@ export class ContainerDefinition extends Construct {
    */
   public addLink(container: ContainerDefinition, alias?: string) {
     if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) {
-      throw new ValidationError('NetworkModeBridgeContainer', 'You must use network mode Bridge to add container links.', this);
+      throw new ValidationError(lit`NetworkModeBridgeContainer`, 'You must use network mode Bridge to add container links.', this);
     }
     if (alias !== undefined) {
       this.links.push(`${container.containerName}:${alias}`);
@@ -758,7 +759,7 @@ export class ContainerDefinition extends Construct {
           return resource;
         }
       }
-      throw new ValidationError('ResourceValueContainerDefinition', `Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`, this);
+      throw new ValidationError(lit`ResourceValueContainerDefinition`, `Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`, this);
     }));
   }
 
@@ -817,7 +818,7 @@ export class ContainerDefinition extends Construct {
   private setNamedPort(pm: PortMapping) :void {
     if (!pm.name) return;
     if (this._namedPorts.has(pm.name)) {
-      throw new ValidationError('PortMappingNameAlready', `Port mapping name '${pm.name}' already exists on this container`, this);
+      throw new ValidationError(lit`PortMappingNameAlready`, `Port mapping name '${pm.name}' already exists on this container`, this);
     }
     this._namedPorts.set(pm.name, pm);
   }
@@ -839,13 +840,13 @@ export class ContainerDefinition extends Construct {
 
   private validateRestartPolicy(enableRestartPolicy?: boolean, restartIgnoredExitCodes?: number[], restartAttemptPeriod?: cdk.Duration) {
     if (enableRestartPolicy === false && (restartIgnoredExitCodes !== undefined || restartAttemptPeriod !== undefined)) {
-      throw new ValidationError('RestartIgnoredExitCodesRestartAttemptPeriodCannotSpecified', 'The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false', this);
+      throw new ValidationError(lit`RestartIgnoredExitCodesRestartAttemptPeriodCannotSpecified`, 'The restartIgnoredExitCodes and restartAttemptPeriod cannot be specified if enableRestartPolicy is false', this);
     }
     if (restartIgnoredExitCodes && restartIgnoredExitCodes.length > 50) {
-      throw new ValidationError('OnlySpecifiedRestartIgnoredExitCodes', `Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`, this);
+      throw new ValidationError(lit`OnlySpecifiedRestartIgnoredExitCodes`, `Only up to 50 can be specified for restartIgnoredExitCodes, got: ${restartIgnoredExitCodes.length}`, this);
     }
     if (restartAttemptPeriod && (restartAttemptPeriod.toSeconds() < 60 || restartAttemptPeriod.toSeconds() > 1800)) {
-      throw new ValidationError('MustBeRestartAttemptPeriodBetweenSeconds', `The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`, this);
+      throw new ValidationError(lit`MustBeRestartAttemptPeriodBetweenSeconds`, `The restartAttemptPeriod must be between 60 seconds and 1800 seconds, got ${restartAttemptPeriod.toSeconds()} seconds`, this);
     }
   }
 
@@ -869,7 +870,7 @@ export class ContainerDefinition extends Construct {
    */
   public get ingressPort(): number {
     if (this.portMappings.length === 0) {
-      throw new ValidationError('ContainerHasntDefinedPorts', `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`, this);
+      throw new ValidationError(lit`ContainerHasntDefinedPorts`, `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`, this);
     }
     const defaultPortMapping = this.portMappings[0];
 
@@ -882,7 +883,7 @@ export class ContainerDefinition extends Construct {
     }
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new ValidationError('FirstPortMappingContainer', `The first port mapping of the container ${this.containerName} must expose a single port.`, this);
+      throw new ValidationError(lit`FirstPortMappingContainer`, `The first port mapping of the container ${this.containerName} must expose a single port.`, this);
     }
 
     return defaultPortMapping.containerPort;
@@ -893,12 +894,12 @@ export class ContainerDefinition extends Construct {
    */
   public get containerPort(): number {
     if (this.portMappings.length === 0) {
-      throw new ValidationError('ContainerHasntDefinedPorts', `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`, this);
+      throw new ValidationError(lit`ContainerHasntDefinedPorts`, `Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`, this);
     }
     const defaultPortMapping = this.portMappings[0];
 
     if (defaultPortMapping.containerPortRange !== undefined) {
-      throw new ValidationError('FirstPortMappingContainer', `The first port mapping of the container ${this.containerName} must expose a single port.`, this);
+      throw new ValidationError(lit`FirstPortMappingContainer`, `The first port mapping of the container ${this.containerName} must expose a single port.`, this);
     }
 
     return defaultPortMapping.containerPort;
@@ -1061,18 +1062,18 @@ function renderCredentialSpec(credSpec: CredentialSpecConfig): string {
 function renderHealthCheck(scope: Construct, hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   if (hc.interval?.toSeconds() !== undefined) {
     if (5 > hc.interval?.toSeconds() || hc.interval?.toSeconds() > 300) {
-      throw new ValidationError('MustBeIntervalBetweenSeconds', 'Interval must be between 5 seconds and 300 seconds.', scope);
+      throw new ValidationError(lit`MustBeIntervalBetweenSeconds`, 'Interval must be between 5 seconds and 300 seconds.', scope);
     }
   }
 
   if (hc.timeout?.toSeconds() !== undefined) {
     if (2 > hc.timeout?.toSeconds() || hc.timeout?.toSeconds() > 120) {
-      throw new ValidationError('MustBeTimeoutBetweenSeconds', 'Timeout must be between 2 seconds and 120 seconds.', scope);
+      throw new ValidationError(lit`MustBeTimeoutBetweenSeconds`, 'Timeout must be between 2 seconds and 120 seconds.', scope);
     }
   }
   if (hc.interval?.toSeconds() !== undefined && hc.timeout?.toSeconds() !== undefined) {
     if (hc.interval?.toSeconds() < hc.timeout?.toSeconds()) {
-      throw new ValidationError('ShouldBeHealthCheckInterval', 'Health check interval should be longer than timeout.', scope);
+      throw new ValidationError(lit`ShouldBeHealthCheckInterval`, 'Health check interval should be longer than timeout.', scope);
     }
   }
 
@@ -1090,7 +1091,7 @@ function getHealthCheckCommand(scope: Construct, hc: HealthCheck): string[] {
   const hcCommand = new Array<string>();
 
   if (cmd.length === 0) {
-    throw new ValidationError('MustBeLeastArgumentSupplied', 'At least one argument must be supplied for health check command.', scope);
+    throw new ValidationError(lit`MustBeLeastArgumentSupplied`, 'At least one argument must be supplied for health check command.', scope);
   }
 
   if (cmd.length === 1) {
@@ -1331,39 +1332,39 @@ export class PortMap {
    */
   public validate(): void {
     if (!this.isvalidPortName()) {
-      throw new UnscopedValidationError('PortMappingNameCannot', 'Port mapping name cannot be an empty string.');
+      throw new UnscopedValidationError(lit`PortMappingNameCannot`, 'Port mapping name cannot be an empty string.');
     }
 
     if (this.portmapping.containerPort === ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange === undefined) {
-      throw new UnscopedValidationError('MustBeContainerPortRangeContainerPortEqual', `The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
+      throw new UnscopedValidationError(lit`MustBeContainerPortRangeContainerPortEqual`, `The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
     }
 
     if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange !== undefined) {
-      throw new UnscopedValidationError('CannotContainerPortContainerPortRange', 'Cannot set "containerPort" and "containerPortRange" at the same time.');
+      throw new UnscopedValidationError(lit`CannotContainerPortContainerPortRange`, 'Cannot set "containerPort" and "containerPortRange" at the same time.');
     }
 
     if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
       if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
           && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
-        throw new UnscopedValidationError('MustBeHostPortLeft', 'The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+        throw new UnscopedValidationError(lit`MustBeHostPortLeft`, 'The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
       }
     }
 
     if (this.portmapping.containerPortRange !== undefined) {
       if (cdk.Token.isUnresolved(this.portmapping.containerPortRange)) {
-        throw new UnscopedValidationError('MustBeValueContainerPortRangeConcrete', 'The value of containerPortRange must be concrete (no Tokens)');
+        throw new UnscopedValidationError(lit`MustBeValueContainerPortRangeConcrete`, 'The value of containerPortRange must be concrete (no Tokens)');
       }
 
       if (this.portmapping.hostPort !== undefined) {
-        throw new UnscopedValidationError('CannotSetHostPortWithRange', 'Cannot set "hostPort" while using a port range for the container.');
+        throw new UnscopedValidationError(lit`CannotSetHostPortWithRange`, 'Cannot set "hostPort" while using a port range for the container.');
       }
 
       if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
-        throw new UnscopedValidationError('IsRequiredEitherAwsVpcBridge', 'Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+        throw new UnscopedValidationError(lit`IsRequiredEitherAwsVpcBridge`, 'Either AwsVpc or Bridge network mode is required to set a port range for the container.');
       }
 
       if (!/^\d+-\d+$/.test(this.portmapping.containerPortRange)) {
-        throw new UnscopedValidationError('MustBeContainerPortRangeStringFormat', 'The containerPortRange must be a string in the format [start port]-[end port].');
+        throw new UnscopedValidationError(lit`MustBeContainerPortRangeStringFormat`, 'The containerPortRange must be a string in the format [start port]-[end port].');
       }
     }
   }
@@ -1412,10 +1413,10 @@ export class ServiceConnect {
    */
   public validate() :void {
     if (!this.isValidNetworkmode()) {
-      throw new UnscopedValidationError('ServiceConnectRelatedPort', `Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
+      throw new UnscopedValidationError(lit`ServiceConnectRelatedPort`, `Service connect related port mapping fields 'name' and 'appProtocol' are not supported for network mode ${this.networkmode}`);
     }
     if (!this.isValidPortName()) {
-      throw new UnscopedValidationError('ServiceConnectRelatedPortMapping', 'Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
+      throw new UnscopedValidationError(lit`ServiceConnectRelatedPortMapping`, 'Service connect-related port mapping field \'appProtocol\' cannot be set without \'name\'');
     }
   }
 

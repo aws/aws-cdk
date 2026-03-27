@@ -30,6 +30,7 @@ import type { Construct } from 'constructs';
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 import { CodeInterpreterNetworkConfiguration } from '../network/network-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -200,7 +201,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('VpcNotConfigured', 'Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError(lit`VpcNotConfigured`, 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

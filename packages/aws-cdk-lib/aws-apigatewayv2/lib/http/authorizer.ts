@@ -5,6 +5,7 @@ import type { Duration } from '../../../core';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { IAuthorizer } from '../common';
 import type { AuthorizerReference } from '../index';
@@ -174,11 +175,11 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     let authorizerPayloadFormatVersion = props.payloadFormatVersion;
 
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
-      throw new ValidationError('JwtAudienceJwtIssuerMandatory', 'jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
+      throw new ValidationError(lit`JwtAudienceJwtIssuerMandatory`, 'jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
     }
 
     if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('AuthorizerUriMandatoryLambdaAuthorizers', 'authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError(lit`AuthorizerUriMandatoryLambdaAuthorizers`, 'authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     /**

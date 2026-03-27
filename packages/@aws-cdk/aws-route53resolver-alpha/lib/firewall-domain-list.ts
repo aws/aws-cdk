@@ -7,6 +7,7 @@ import { Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A Firewall Domain List
@@ -49,7 +50,7 @@ export abstract class FirewallDomains {
   public static fromList(list: string[]): FirewallDomains {
     for (const domain of list) {
       if (!/^([\w-.]{1,255}|\*[\w-.]{1,254})$/.test(domain)) {
-        throw new UnscopedValidationError('InvalidDomain', `Invalid domain: ${domain}. Domain can optionally start with *. Max length of 255. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+        throw new UnscopedValidationError(lit`InvalidDomain`, `Invalid domain: ${domain}. Domain can optionally start with *. Max length of 255. Valid characters: A-Z, a-z, 0-9, _, -, .`);
       }
     }
 
@@ -69,7 +70,7 @@ export abstract class FirewallDomains {
    */
   public static fromS3Url(url: string): FirewallDomains {
     if (!Token.isUnresolved(url) && !url.startsWith('s3://')) {
-      throw new UnscopedValidationError('InvalidS3Url', `The S3 URL must start with s3://, got ${url}`);
+      throw new UnscopedValidationError(lit`InvalidS3Url`, `The S3 URL must start with s3://, got ${url}`);
     }
 
     return {
@@ -102,7 +103,7 @@ export abstract class FirewallDomains {
     // cdk-assets will correctly set the content type for the S3 object
     // if the file has the correct extension
     if (path.extname(assetPath) !== '.txt') {
-      throw new UnscopedValidationError('InvalidAssetExtension', `FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
+      throw new UnscopedValidationError(lit`InvalidAssetExtension`, `FirewallDomains.fromAsset() expects a file with the .txt extension, got ${assetPath}`);
     }
 
     return {
@@ -110,7 +111,7 @@ export abstract class FirewallDomains {
         const asset = new Asset(scope, 'Domains', { path: assetPath });
 
         if (!asset.isFile) {
-          throw new UnscopedValidationError('AssetMustBeFile', 'FirewallDomains.fromAsset() expects a file');
+          throw new UnscopedValidationError(lit`AssetMustBeFile`, 'FirewallDomains.fromAsset() expects a file');
         }
 
         return { domainFileUrl: asset.s3ObjectUrl };
@@ -219,7 +220,7 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
     addConstructMetadata(this, props);
 
     if (props.name && !Token.isUnresolved(props.name) && !/^[\w-.]{1,128}$/.test(props.name)) {
-      throw new UnscopedValidationError('InvalidDomainListName', `Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
+      throw new UnscopedValidationError(lit`InvalidDomainListName`, `Invalid domain list name: ${props.name}. The name must have 1-128 characters. Valid characters: A-Z, a-z, 0-9, _, -, .`);
     }
 
     const domainsConfig = props.domains.bind(this);

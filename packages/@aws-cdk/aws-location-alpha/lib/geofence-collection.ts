@@ -7,6 +7,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { generateUniqueId } from './util';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A Geofence Collection
@@ -87,7 +88,7 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     const parsedArn = Stack.of(scope).splitArn(geofenceCollectionArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError('GeofenceCollectionArnMissingResourceName', `Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
+      throw new UnscopedValidationError(lit`GeofenceCollectionArnMissingResourceName`, `Geofence Collection Arn ${geofenceCollectionArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IGeofenceCollection {
@@ -127,16 +128,16 @@ export class GeofenceCollection extends Resource implements IGeofenceCollection 
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError('GeofenceCollectionDescriptionTooLong', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError(lit`GeofenceCollectionDescriptionTooLong`, `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.geofenceCollectionName !== undefined && !Token.isUnresolved(props.geofenceCollectionName)) {
       if (props.geofenceCollectionName.length < 1 || props.geofenceCollectionName.length > 100) {
-        throw new ValidationError('GeofenceCollectionNameInvalidLength', `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`, this);
+        throw new ValidationError(lit`GeofenceCollectionNameInvalidLength`, `\`geofenceCollectionName\` must be between 1 and 100 characters, got: ${props.geofenceCollectionName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.geofenceCollectionName)) {
-        throw new ValidationError('GeofenceCollectionNameInvalidCharacters', `\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`, this);
+        throw new ValidationError(lit`GeofenceCollectionNameInvalidCharacters`, `\`geofenceCollectionName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.geofenceCollectionName}.`, this);
       }
     }
     const geofenceCollection = new CfnGeofenceCollection(this, 'Resource', {

@@ -25,6 +25,7 @@ import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Props
@@ -793,7 +794,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError('GatewayNameLengthInvalid', lengthErrors.join('\n'), this);
+      throw new ValidationError(lit`GatewayNameLengthInvalid`, lengthErrors.join('\n'), this);
     }
 
     const patternErrors = validateFieldPattern(
@@ -804,7 +805,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError('GatewayNamePatternInvalid', patternErrors.join('\n'), this);
+      throw new ValidationError(lit`GatewayNamePatternInvalid`, patternErrors.join('\n'), this);
     }
   }
 
@@ -828,7 +829,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError('GatewayDescriptionInvalid', errors.join('\n'), this);
+      throw new ValidationError(lit`GatewayDescriptionInvalid`, errors.join('\n'), this);
     }
   }
 
@@ -942,7 +943,7 @@ export class Gateway extends GatewayBase {
     if (interceptionPoint === InterceptionPoint.REQUEST) {
       if (this.requestInterceptorConfig) {
         throw new ValidationError(
-          'RequestInterceptorAlreadyExists',
+          lit`RequestInterceptorAlreadyExists`,
           'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
           this,
         );
@@ -951,7 +952,7 @@ export class Gateway extends GatewayBase {
     } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
       if (this.responseInterceptorConfig) {
         throw new ValidationError(
-          'ResponseInterceptorAlreadyExists',
+          lit`ResponseInterceptorAlreadyExists`,
           'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
           this,
         );
@@ -970,7 +971,7 @@ export class Gateway extends GatewayBase {
 
     if (requestCount > 1) {
       throw new ValidationError(
-        'TooManyRequestInterceptors',
+        lit`TooManyRequestInterceptors`,
         `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
         this,
       );
@@ -978,7 +979,7 @@ export class Gateway extends GatewayBase {
 
     if (responseCount > 1) {
       throw new ValidationError(
-        'TooManyResponseInterceptors',
+        lit`TooManyResponseInterceptors`,
         `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
         this,
       );

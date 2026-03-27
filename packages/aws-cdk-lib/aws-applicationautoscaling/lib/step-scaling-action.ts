@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
@@ -103,7 +104,7 @@ export class StepScalingAction extends Construct {
    */
   public addAdjustment(adjustment: AdjustmentTier) {
     if (adjustment.lowerBound === undefined && adjustment.upperBound === undefined) {
-      throw new ValidationError('LeastOneLowerBoundUpper', 'At least one of lowerBound or upperBound is required', this);
+      throw new ValidationError(lit`LeastOneLowerBoundUpper`, 'At least one of lowerBound or upperBound is required', this);
     }
     this.adjustments.push({
       metricIntervalLowerBound: adjustment.lowerBound,

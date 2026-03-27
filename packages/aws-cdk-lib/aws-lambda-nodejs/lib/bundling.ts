@@ -11,6 +11,7 @@ import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -115,7 +116,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
     if (this.relativeDepsLockFilePath.includes('..')) {
-      throw new ValidationError('ExpectedDepsLockFilePath', `Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`, scope);
+      throw new ValidationError(lit`ExpectedDepsLockFilePath`, `Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`, scope);
     }
 
     if (props.tsconfig) {
@@ -123,11 +124,11 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
-      throw new ValidationError('PreCompilationTypescriptFiles', 'preCompilation can only be used with typescript files', scope);
+      throw new ValidationError(lit`PreCompilationTypescriptFiles`, 'preCompilation can only be used with typescript files', scope);
     }
 
     if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
-      throw new ValidationError('ScriptModuleOutputFormatSupported', `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
+      throw new ValidationError(lit`ScriptModuleOutputFormatSupported`, `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
     }
 
     /**
@@ -228,7 +229,7 @@ export class Bundling implements cdk.BundlingOptions {
     pathJoin: (...parts: string[]) => string,
   ): string[] {
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('SourceMapModeCannotSource', 'sourceMapMode cannot be used when sourceMap is false', scope);
+      throw new ValidationError(lit`SourceMapModeCannotSource`, 'sourceMapMode cannot be used when sourceMap is false', scope);
     }
 
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
@@ -267,7 +268,7 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.preCompilation) {
       const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        throw new ValidationError('CannotFindTsconfigJsonPre', 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
+        throw new ValidationError(lit`CannotFindTsconfigJsonPre`, 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptionsArray = getTsconfigCompilerOptionsArray(tsconfig);
       tscCommand = preparePosixShellCommand([options.tscRunner!, relativeEntryPath, ...compilerOptionsArray]);
@@ -290,7 +291,7 @@ export class Bundling implements cdk.BundlingOptions {
       // modules versions from it.
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
-        throw new ValidationError('CannotFindPackageJsonProject', 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
+        throw new ValidationError(lit`CannotFindPackageJsonProject`, 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
       }
 
       // Determine dependencies versions, lock file and installer
@@ -339,7 +340,7 @@ export class Bundling implements cdk.BundlingOptions {
         }
 
         if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
-          throw new ValidationError('ExpectedEsbuildVersion', `Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
+          throw new ValidationError(lit`ExpectedEsbuildVersion`, `Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
         const execOptions = {
@@ -374,7 +375,7 @@ export class Bundling implements cdk.BundlingOptions {
               try {
                 step.operation();
               } catch (err) {
-                throw new ValidationError('LocalBundlingFileOperationFailed', `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
+                throw new ValidationError(lit`LocalBundlingFileOperationFailed`, `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
               }
               break;
           }
@@ -408,7 +409,7 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.preCompilation) {
       const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
       if (!tsconfig) {
-        throw new ValidationError('CannotFindTsconfigJsonPre', 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
+        throw new ValidationError(lit`CannotFindTsconfigJsonPre`, 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
       }
       const compilerOptionsArray = getTsconfigCompilerOptionsArray(tsconfig);
       const tscRunner = tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : ['tsc']);
@@ -432,7 +433,7 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.nodeModules) {
       const pkgPath = findUp('package.json', path.dirname(this.props.entry));
       if (!pkgPath) {
-        throw new ValidationError('CannotFindPackageJsonProject', 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
+        throw new ValidationError(lit`CannotFindPackageJsonProject`, 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
       }
 
       // Before install hooks
@@ -604,7 +605,7 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
-    throw new ValidationError('CannotExtractVersionRuntime', 'Cannot extract version from runtime.', scope);
+    throw new ValidationError(lit`CannotExtractVersionRuntime`, 'Cannot extract version from runtime.', scope);
   }
 
   return `node${match[1]}`;

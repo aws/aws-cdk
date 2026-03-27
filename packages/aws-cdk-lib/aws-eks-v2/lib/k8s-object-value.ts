@@ -3,6 +3,7 @@ import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Token, Duration, ValidationError } from '../../core';
 import type { RemovalPolicy } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for KubernetesObjectValue.
@@ -80,7 +81,7 @@ export class KubernetesObjectValue extends Construct {
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
 
     if (!provider) {
-      throw new ValidationError('KubectlProviderDefinedClusterDefine', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError(lit`KubectlProviderDefinedClusterDefine`, 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     this._resource = new CustomResource(this, 'Resource', {

@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Conditions that can be applied to string attributes.
@@ -133,10 +134,10 @@ export class SubscriptionFilter {
     const conditions = new Array<any>();
 
     if (stringConditions.whitelist && stringConditions.allowlist) {
-      throw new UnscopedValidationError('DeprecatedPleaseInstead', '`whitelist` is deprecated; please use `allowlist` instead');
+      throw new UnscopedValidationError(lit`DeprecatedPleaseInstead`, '`whitelist` is deprecated; please use `allowlist` instead');
     }
     if (stringConditions.blacklist && stringConditions.denylist) {
-      throw new UnscopedValidationError('DeprecatedPleaseInstead', '`blacklist` is deprecated; please use `denylist` instead');
+      throw new UnscopedValidationError(lit`DeprecatedPleaseInstead`, '`blacklist` is deprecated; please use `denylist` instead');
     }
     const allowlist = stringConditions.allowlist ?? stringConditions.whitelist;
     const denylist = stringConditions.denylist ?? stringConditions.blacklist;
@@ -167,7 +168,7 @@ export class SubscriptionFilter {
     const conditions = new Array<any>();
 
     if (numericConditions.whitelist && numericConditions.allowlist) {
-      throw new UnscopedValidationError('DeprecatedPleaseInstead', '`whitelist` is deprecated; please use `allowlist` instead');
+      throw new UnscopedValidationError(lit`DeprecatedPleaseInstead`, '`whitelist` is deprecated; please use `allowlist` instead');
     }
     const allowlist = numericConditions.allowlist ?? numericConditions.whitelist;
 

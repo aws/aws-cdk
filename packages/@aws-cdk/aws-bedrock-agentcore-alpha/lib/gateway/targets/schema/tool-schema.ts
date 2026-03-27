@@ -7,6 +7,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Tool Schema Configuration
@@ -223,7 +224,7 @@ export class AssetToolSchema extends ToolSchema {
   public _render(): any {
     if (!this.asset) {
       throw new UnscopedValidationError(
-        'ToolSchemaNotBound',
+        lit`ToolSchemaNotBound`,
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }
@@ -238,7 +239,7 @@ export class AssetToolSchema extends ToolSchema {
   public grantPermissionsToRole(role: IRole): void {
     if (!this.asset) {
       throw new UnscopedValidationError(
-        'ToolSchemaNotBound',
+        lit`ToolSchemaNotBound`,
         'ToolSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }

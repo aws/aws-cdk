@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import * as cdk from 'aws-cdk-lib';
 import { ValidationError } from 'aws-cdk-lib';
 import type { IConstruct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The CFN NAG suppress rule interface
@@ -62,7 +63,7 @@ export function generatePhysicalName(
   }
 
   if (prefix.length + allParts.length + stackIdGuidLength + 1 /* hyphen */ > maxLength) {
-    throw new ValidationError('GeneratedNameTooLong', `The generated name is longer than the maximum length of ${maxLength}`, scope);
+    throw new ValidationError(lit`GeneratedNameTooLong`, `The generated name is longer than the maximum length of ${maxLength}`, scope);
   }
 
   return prefix.toLowerCase() + allParts + '-' + uniqueStackIdPart;
@@ -130,7 +131,7 @@ export function generatePhysicalNameV2(
   } = options ?? {};
   const hash = objectToHash(destroyCreate);
   if (maxLength < (prefix + hash + separator).length) {
-    throw new ValidationError('PrefixTooLong', `The prefix length (${prefix.length}) plus hash length (${hash.length}) and separator length (${separator.length}) exceeds the maximum allowed length of ${maxLength}`, scope);
+    throw new ValidationError(lit`PrefixTooLong`, `The prefix length (${prefix.length}) plus hash length (${hash.length}) and separator length (${separator.length}) exceeds the maximum allowed length of ${maxLength}`, scope);
   }
   const uniqueName = cdk.Names.uniqueResourceName(
     scope,
@@ -138,7 +139,7 @@ export function generatePhysicalNameV2(
   );
   const name = `${prefix}${hash}${separator}${uniqueName}`;
   if (name.length > maxLength) {
-    throw new ValidationError('GeneratedNameTooLong', `The generated name is longer than the maximum length of ${maxLength}`, scope);
+    throw new ValidationError(lit`GeneratedNameTooLong`, `The generated name is longer than the maximum length of ${maxLength}`, scope);
   }
   return lower ? name.toLowerCase() : name;
 }

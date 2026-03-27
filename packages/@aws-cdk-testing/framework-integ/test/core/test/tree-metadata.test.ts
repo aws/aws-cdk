@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import type { TreeInspector } from 'aws-cdk-lib';
 import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
 
 abstract class AbstractCfnResource extends CfnResource {
@@ -466,7 +467,7 @@ describe('tree metadata', () => {
   test('failing nodes', () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
-        throw new AssumptionError('ForcedInspectError', 'Forcing an inspect error');
+        throw new AssumptionError(lit`ForcedInspectError`, 'Forcing an inspect error');
       }
     }
 

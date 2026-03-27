@@ -6,6 +6,7 @@ import type { Construct } from 'constructs';
 import { UserEngine } from './common';
 import type { UserBaseProps } from './user-base';
 import { UserBase } from './user-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const ELASTICACHE_NOPASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.NoPasswordUser');
 
@@ -93,7 +94,7 @@ export class NoPasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine)) {
-      throw new ValidationError('UnsupportedEngineForNoPassword', `Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
+      throw new ValidationError(lit`UnsupportedEngineForNoPassword`, `Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

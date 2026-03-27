@@ -3,6 +3,7 @@ import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { noEmptyObject } from '../private/util';
@@ -282,7 +283,7 @@ export class Task extends State implements INextable {
 
   private taskMetric(prefix: string | undefined, suffix: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (prefix === undefined) {
-      throw new cdk.UnscopedValidationError('TaskResourceDoesNotExposeMetrics', 'This Task Resource does not expose metrics');
+      throw new cdk.UnscopedValidationError(lit`TaskResourceDoesNotExposeMetrics`, 'This Task Resource does not expose metrics');
     }
     return this.metric(prefix + suffix, props);
   }

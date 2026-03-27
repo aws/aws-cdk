@@ -5,6 +5,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IFirewallRuleGroup } from './firewall-rule-group';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -115,7 +116,7 @@ export class FirewallRuleGroupAssociation extends Resource {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
-      throw new ValidationError('InvalidPriority', `Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
+      throw new ValidationError(lit`InvalidPriority`, `Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {

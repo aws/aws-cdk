@@ -1,5 +1,6 @@
 import * as sfn from '../../aws-stepfunctions';
 import { Aws, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Suffixes corresponding to different service integration patterns
@@ -15,7 +16,7 @@ resourceArnSuffix.set(sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN, '.waitF
 
 export function getResourceArn(service: string, api: string, integrationPattern: sfn.ServiceIntegrationPattern): string {
   if (!service || !api) {
-    throw new UnscopedValidationError('MustBeBothServiceApi', "Both 'service' and 'api' must be provided to build the resource ARN.");
+    throw new UnscopedValidationError(lit`MustBeBothServiceApi`, "Both 'service' and 'api' must be provided to build the resource ARN.");
   }
   return `arn:${Aws.PARTITION}:states:::${service}:${api}` +
         (integrationPattern ? resourceArnSuffix.get(integrationPattern) : '');

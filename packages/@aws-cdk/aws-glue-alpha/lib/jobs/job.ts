@@ -9,6 +9,7 @@ import type { IConnection } from '../connection';
 import type { MetricType, WorkerType, GlueVersion } from '../constants';
 import { JobState } from '../constants';
 import type { ISecurityConfiguration } from '../security-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -489,7 +490,7 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError('ReservedArgumentUsed', `The ${arg} argument is reserved by Glue. Don't set it`, this);
+          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }

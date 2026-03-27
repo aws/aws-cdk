@@ -12,6 +12,7 @@ import type { IResource as IResourceBase } from '../../core';
 import { Resource as ResourceConstruct } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IResource extends IResourceBase, IResourceRef {
@@ -211,11 +212,11 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // Access-Control-Allow-Origin
 
     if (options.allowOrigins.length === 0) {
-      throw new ValidationError('AllowOriginsContainLeastOne', 'allowOrigins must contain at least one origin', this);
+      throw new ValidationError(lit`AllowOriginsContainLeastOne`, 'allowOrigins must contain at least one origin', this);
     }
 
     if (options.allowOrigins.includes('*') && options.allowOrigins.length > 1) {
-      throw new ValidationError('InvalidAllowOriginsCannotMix', `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
+      throw new ValidationError(lit`InvalidAllowOriginsCannotMix`, `Invalid "allowOrigins" - cannot mix "*" with specific origins: ${options.allowOrigins.join(',')}`, this);
     }
 
     // we use the first origin here and if there are more origins in the list, we
@@ -236,7 +237,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (allowMethods.includes('ANY')) {
       if (allowMethods.length > 1) {
-        throw new ValidationError('CannotUsedOtherMethod', `ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`, this);
+        throw new ValidationError(lit`CannotUsedOtherMethod`, `ANY cannot be used with any other method. Received: ${allowMethods.join(',')}`, this);
       }
 
       allowMethods = Cors.ALL_METHODS;
@@ -257,7 +258,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     let maxAgeSeconds;
 
     if (options.maxAge && options.disableCache) {
-      throw new ValidationError('OptionsMaxageDisablecacheMutually', 'The options "maxAge" and "disableCache" are mutually exclusive', this);
+      throw new ValidationError(lit`OptionsMaxageDisablecacheMutually`, 'The options "maxAge" and "disableCache" are mutually exclusive', this);
     }
 
     if (options.maxAge) {
@@ -360,7 +361,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
     if (path.startsWith('/')) {
       if (this.path !== '/') {
-        throw new ValidationError('PathStartOnlyResource', `Path may start with "/" only for the resource, but we are at: ${this.path}`, this);
+        throw new ValidationError(lit`PathStartOnlyResource`, `Path may start with "/" only for the resource, but we are at: ${this.path}`, this);
       }
 
       // trim trailing "/"
@@ -370,7 +371,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     const parts = path.split('/');
     const next = parts.shift();
     if (!next || next === '') {
-      throw new ValidationError('ResourcePathCannotCalledEmpty', 'resourceForPath cannot be called with an empty path', this);
+      throw new ValidationError(lit`ResourcePathCannotCalledEmpty`, 'resourceForPath cannot be called with an empty path', this);
     }
 
     let resource = this.getResource(next);
@@ -434,11 +435,11 @@ export class Resource extends ResourceBase {
       public readonly defaultCorsPreflightOptions?: CorsOptions = undefined;
 
       public get parentResource(): IResource {
-        throw new ValidationError('ParentResourceConfiguredImportedResource', 'parentResource is not configured for imported resource.', scope);
+        throw new ValidationError(lit`ParentResourceConfiguredImportedResource`, 'parentResource is not configured for imported resource.', scope);
       }
 
       public get restApi(): RestApi {
-        throw new ValidationError('RestApiConfiguredImportedResource', 'restApi is not configured for imported resource.', scope);
+        throw new ValidationError(lit`RestApiConfiguredImportedResource`, 'restApi is not configured for imported resource.', scope);
       }
     }
 
@@ -508,7 +509,7 @@ export class Resource extends ResourceBase {
    */
   public get restApi(): RestApi {
     if (!this.parentResource) {
-      throw new ValidationError('ParentResourceUnexpectedlyDefined', 'parentResource was unexpectedly not defined', this);
+      throw new ValidationError(lit`ParentResourceUnexpectedlyDefined`, 'parentResource was unexpectedly not defined', this);
     }
     return this.parentResource.restApi;
   }
@@ -588,7 +589,7 @@ function validateResourcePathPart(part: string, scope: Construct) {
   }
 
   if (!/^[a-zA-Z0-9:\.\_\-\$]+$/.test(part)) {
-    throw new ValidationError('ResourceSPathPartOnly', `Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
+    throw new ValidationError(lit`ResourceSPathPartOnly`, `Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`, scope);
   }
 }

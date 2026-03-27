@@ -11,6 +11,7 @@ import type { IKey } from '../../aws-kms';
 import type { IResource, ResourceProps } from '../../core';
 import { Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Represents an SNS topic
@@ -140,7 +141,7 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
     // We use the subscriber's id as the construct id. There's no meaning
     // to subscribing the same subscriber twice on the same topic.
     if (scope.node.tryFindChild(id)) {
-      throw new ValidationError('SubscriptionAlreadyExistsUnder', `A subscription with id "${id}" already exists under the scope ${scope.node.path}`, scope);
+      throw new ValidationError(lit`SubscriptionAlreadyExistsUnder`, `A subscription with id "${id}" already exists under the scope ${scope.node.path}`, scope);
     }
 
     const subscription = new Subscription(scope, id, {

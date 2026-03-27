@@ -4,6 +4,7 @@ import type { IResource } from '../../../core';
 import { Fn, Lazy, Names, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStore } from '../elasticloadbalancingv2.generated';
@@ -133,11 +134,11 @@ export class TrustStore extends Resource implements ITrustStore {
 
     if (props.trustStoreName !== undefined && !Token.isUnresolved(props.trustStoreName)) {
       if (props.trustStoreName.length < 1 || props.trustStoreName.length > 32) {
-        throw new ValidationError('MustBeTruststorename132Characters', `trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
+        throw new ValidationError(lit`MustBeTruststorename132Characters`, `trustStoreName '${props.trustStoreName}' must be 1-32 characters long.`, this);
       }
       const validNameRegex = /^([a-zA-Z0-9]+-)*[a-zA-Z0-9]+$/;
       if (!validNameRegex.test(props.trustStoreName)) {
-        throw new ValidationError('TruststorenameContainOnlyAlphanumeric', `trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
+        throw new ValidationError(lit`TruststorenameContainOnlyAlphanumeric`, `trustStoreName '${props.trustStoreName}' must contain only alphanumeric characters and hyphens, and cannot begin or end with a hyphen.`, this);
       }
     }
 

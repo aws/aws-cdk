@@ -34,6 +34,7 @@ import {
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -567,16 +568,16 @@ export class Instance extends Resource implements IInstance {
     addConstructMetadata(this, props);
 
     if (props.initOptions && !props.init) {
-      throw new ValidationError('RequiresSettingInitoptionsRequires', 'Setting \'initOptions\' requires that \'init\' is also set', this);
+      throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError(lit`CannotSpecifyKeyNameKey`, 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new ValidationError('CreditSpecificationSupportedInstanceType', `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
+      throw new ValidationError(lit`CreditSpecificationSupportedInstanceType`, `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
     }
 
     if (props.securityGroup) {
@@ -593,7 +594,7 @@ export class Instance extends Resource implements IInstance {
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('CannotProvideInstanceProfileRole', 'You cannot provide both instanceProfile and role', this);
+      throw new ValidationError(lit`CannotProvideInstanceProfileRole`, 'You cannot provide both instanceProfile and role', this);
     }
 
     let iamInstanceProfile: string | undefined = undefined;
@@ -630,13 +631,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        Annotations.of(this)._addTrackableError('AmbiguousSubnetForAz', `Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this)._addTrackableError(lit`AmbiguousSubnetForAz`, `Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        Annotations.of(this)._addTrackableError('NoMatchingSubnets', `Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this)._addTrackableError(lit`NoMatchingSubnets`, `Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
@@ -659,11 +660,11 @@ export class Instance extends Resource implements IInstance {
       }] : undefined;
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
-      throw new ValidationError('IncompatibleKeyPairType', `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+      throw new ValidationError(lit`IncompatibleKeyPairType`, `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
-      throw new ValidationError('CanTBothTrueSame', 'You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance', this);
+      throw new ValidationError(lit`CanTBothTrueSame`, 'You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance', this);
     }
 
     if (
@@ -671,13 +672,13 @@ export class Instance extends Resource implements IInstance {
       !Token.isUnresolved(props.ipv6AddressCount) &&
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
-      throw new ValidationError('MustBeIpv6addresscountNonNegativeInteger', `\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`, this);
+      throw new ValidationError(lit`MustBeIpv6addresscountNonNegativeInteger`, `\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`, this);
     }
 
     if (
       props.ipv6AddressCount !== undefined &&
       props.associatePublicIpAddress !== undefined) {
-      throw new ValidationError('SetIpvAddressCountAssociate', 'You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
+      throw new ValidationError(lit`SetIpvAddressCountAssociate`, 'You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -717,7 +718,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new ValidationError('SetAssociatePublicIpAddress', "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
+      throw new ValidationError(lit`SetAssociatePublicIpAddress`, "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
     }
 
     this.osType = imageConfig.osType;
@@ -893,13 +894,13 @@ export class Instance extends Resource implements IInstance {
     // are set directly on the instance. Using both would result in a CloudFormation
     // deployment error, so we prevent this combination at synthesis time.
     if (props.requireImdsv2) {
-      throw new ValidationError('CannotRequireImdsvMetadataOptions', 'Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
+      throw new ValidationError(lit`CannotRequireImdsvMetadataOptions`, 'Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
     }
 
     // Validate httpPutResponseHopLimit range
     if (props.httpPutResponseHopLimit !== undefined &&
       (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
-      throw new ValidationError('HttpPutResponseHopLimit', 'httpPutResponseHopLimit must be between 1 and 64', this);
+      throw new ValidationError(lit`HttpPutResponseHopLimit`, 'httpPutResponseHopLimit must be between 1 and 64', this);
     }
 
     return {

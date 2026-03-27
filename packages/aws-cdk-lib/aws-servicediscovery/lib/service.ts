@@ -15,6 +15,7 @@ import type * as elbv2 from '../../aws-elasticloadbalancingv2';
 import type { IResource } from '../../core';
 import { Duration, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IServiceRef, ServiceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
@@ -244,7 +245,7 @@ export class Service extends ServiceBase {
 
     if (namespaceType == NamespaceType.HTTP && discoveryType == DiscoveryType.DNS_AND_API) {
       throw new ValidationError(
-        'HttpNamespaceCannotUseDnsAndApi',
+        lit`HttpNamespaceCannotUseDnsAndApi`,
         'Cannot specify `discoveryType` of DNS_AND_API when using an HTTP namespace.', this,
       );
     }
@@ -255,22 +256,22 @@ export class Service extends ServiceBase {
       (props.routingPolicy || props.dnsRecordType)
     ) {
       throw new ValidationError(
-        'HttpNamespaceCannotSpecifyRoutingPolicyOrDnsRecord',
+        lit`HttpNamespaceCannotSpecifyRoutingPolicyOrDnsRecord`,
         'Cannot specify `routingPolicy` or `dnsRecord` when using an HTTP namespace.', this,
       );
     }
 
     if (props.healthCheck && props.customHealthCheck) {
-      throw new ValidationError('CannotSpecifyBothHealthCheckConfigs', 'Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.', this);
+      throw new ValidationError(lit`CannotSpecifyBothHealthCheckConfigs`, 'Cannot specify both `healthCheckConfig` and `healthCheckCustomConfig`.', this);
     }
 
     if (namespaceType === NamespaceType.DNS_PRIVATE && props.healthCheck) {
-      throw new ValidationError('CannotSpecifyHealthCheckForPrivateDns', 'Cannot specify `healthCheckConfig` for a Private DNS namespace.', this);
+      throw new ValidationError(lit`CannotSpecifyHealthCheckForPrivateDns`, 'Cannot specify `healthCheckConfig` for a Private DNS namespace.', this);
     }
 
     if (props.routingPolicy === RoutingPolicy.MULTIVALUE
         && props.dnsRecordType === DnsRecordType.CNAME) {
-      throw new ValidationError('CannotUseCnameWithMultivalue', 'Cannot use `CNAME` record when routing policy is `Multivalue`.', this);
+      throw new ValidationError(lit`CannotUseCnameWithMultivalue`, 'Cannot use `CNAME` record when routing policy is `Multivalue`.', this);
     }
 
     // Additional validation for eventual attachment of LBs
@@ -279,13 +280,13 @@ export class Service extends ServiceBase {
     // routingPolicy anyway, so might as well do the validation as well.
     if (props.routingPolicy === RoutingPolicy.MULTIVALUE
         && props.loadBalancer) {
-      throw new ValidationError('CannotRegisterLoadBalancerWithMultivalue', 'Cannot register loadbalancers when routing policy is `Multivalue`.', this);
+      throw new ValidationError(lit`CannotRegisterLoadBalancerWithMultivalue`, 'Cannot register loadbalancers when routing policy is `Multivalue`.', this);
     }
 
     if (props.healthCheck
         && props.healthCheck.type === HealthCheckType.TCP
         && props.healthCheck.resourcePath) {
-      throw new ValidationError('CannotSpecifyResourcePathWithTcp', 'Cannot specify `resourcePath` when using a `TCP` health check.', this);
+      throw new ValidationError(lit`CannotSpecifyResourcePathWithTcp`, 'Cannot specify `resourcePath` when using a `TCP` health check.', this);
     }
 
     // Set defaults where necessary
@@ -299,7 +300,7 @@ export class Service extends ServiceBase {
       && (!(dnsRecordType === DnsRecordType.A
         || dnsRecordType === DnsRecordType.AAAA
         || dnsRecordType === DnsRecordType.A_AAAA))) {
-      throw new ValidationError('LoadBalancerRequiresAOrAaaaRecords', 'Must support `A` or `AAAA` records to register loadbalancers.', this);
+      throw new ValidationError(lit`LoadBalancerRequiresAOrAaaaRecords`, 'Must support `A` or `AAAA` records to register loadbalancers.', this);
     }
 
     const dnsConfig: CfnService.DnsConfigProperty | undefined =

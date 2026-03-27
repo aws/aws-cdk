@@ -11,6 +11,7 @@ import type { IResource } from '../../core';
 import { Arn, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
@@ -262,7 +263,7 @@ export class DomainName extends Resource implements IDomainName {
     this.securityPolicy = props.securityPolicy;
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
-      throw new ValidationError('DomainNameDoesNotSupportUppercase', `Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
+      throw new ValidationError(lit`DomainNameDoesNotSupportUppercase`, `Domain name does not support uppercase letters. Got: ${props.domainName}`, scope);
     }
 
     // Skip all security-policy-related validations when any relevant field is a CDK token.
@@ -277,7 +278,7 @@ export class DomainName extends Resource implements IDomainName {
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html
       if (props.mtls && this.isEnhancedSecurityPolicy(this.securityPolicy)) {
         throw new ValidationError(
-          'MtlsNotSupportedWithEnhancedSecurityPolicy',
+          lit`MtlsNotSupportedWithEnhancedSecurityPolicy`,
           'Mutual TLS (mTLS) cannot be enabled on a domain name that uses an enhanced security policy. ' +
           'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
           this,
@@ -289,7 +290,7 @@ export class DomainName extends Resource implements IDomainName {
       if (this.isEnhancedSecurityPolicy(this.securityPolicy) &&
           props.endpointAccessMode === undefined) {
         throw new ValidationError(
-          'EndpointAccessModeRequiredForEnhancedSecurityPolicy',
+          lit`EndpointAccessModeRequiredForEnhancedSecurityPolicy`,
           'Enhanced security policies require endpointAccessMode to be specified (BASIC or STRICT). ' +
           'STRICT is recommended for production workloads. ' +
           'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
@@ -303,7 +304,7 @@ export class DomainName extends Resource implements IDomainName {
       if (!this.isEnhancedSecurityPolicy(this.securityPolicy) &&
           props.endpointAccessMode !== undefined) {
         throw new ValidationError(
-          'EndpointAccessModeNotSupportedForLegacySecurityPolicy',
+          lit`EndpointAccessModeNotSupportedForLegacySecurityPolicy`,
           'endpointAccessMode is not supported for legacy security policies (TLS_1_0, TLS_1_2). ' +
           'It can only be specified when using enhanced security policies (those starting with SecurityPolicy_). ' +
           'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-security-policies.html#apigateway-security-policies-endpoint-access-mode',
@@ -354,14 +355,14 @@ export class DomainName extends Resource implements IDomainName {
   private validateBasePath(path?: string): boolean {
     if (this.isMultiLevel(path)) {
       if (this.endpointType === EndpointType.EDGE) {
-        throw new ValidationError('MultiLevelBasePathOnlySupported', 'multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
+        throw new ValidationError(lit`MultiLevelBasePathOnlySupported`, 'multi-level basePath is only supported when endpointType is EndpointType.REGIONAL', this);
       }
       // Multi-level API mappings (using ApiGatewayV2::ApiMapping) require TLS 1.2 or higher security policy.
       // TLS 1.0 does not support multi-level base path mappings.
       // See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html
       if (this.securityPolicy && !Token.isUnresolved(this.securityPolicy) && this.securityPolicy === SecurityPolicy.TLS_1_0) {
         throw new ValidationError(
-          'DomainNameRequiresTLS12',
+          lit`DomainNameRequiresTLS12`,
           'securityPolicy must be TLS 1.2 or higher for multi-level basePath. ' +
           'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html',
           this,
@@ -389,10 +390,10 @@ export class DomainName extends Resource implements IDomainName {
   @MethodMetadata()
   public addBasePathMapping(targetApi: IRestApiRef, options: BasePathMappingOptions = {}): BasePathMapping {
     if (this.basePaths.has(options.basePath)) {
-      throw new ValidationError('DomainNameAlreadyMappingPath', `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
+      throw new ValidationError(lit`DomainNameAlreadyMappingPath`, `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     if (this.isMultiLevel(options.basePath)) {
-      throw new ValidationError('BasePathMappingDoesNotSupportMultiLevel', 'BasePathMapping does not support multi-level paths. Use "addApiMapping instead.', this);
+      throw new ValidationError(lit`BasePathMappingDoesNotSupportMultiLevel`, 'BasePathMapping does not support multi-level paths. Use "addApiMapping instead.', this);
     }
 
     this.basePaths.add(options.basePath);
@@ -420,7 +421,7 @@ export class DomainName extends Resource implements IDomainName {
   @MethodMetadata()
   public addApiMapping(targetStage: IStageRef, options: ApiMappingOptions = {}): void {
     if (this.basePaths.has(options.basePath)) {
-      throw new ValidationError('DomainNameAlreadyMappingPath', `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
+      throw new ValidationError(lit`DomainNameAlreadyMappingPath`, `DomainName ${this.node.id} already has a mapping for path ${options.basePath}`, this);
     }
     this.validateBasePath(options.basePath);
 
@@ -467,7 +468,7 @@ export class DomainName extends Resource implements IDomainName {
 
     if (endpointType === EndpointType.EDGE && DomainName.NON_EDGE_ONLY_POLICIES.includes(policy)) {
       throw new ValidationError(
-        'SecurityPolicyNotSupportedForEdgeEndpoint',
+        lit`SecurityPolicyNotSupportedForEdgeEndpoint`,
         `Security policy ${policy} is not supported for edge-optimized endpoints. ` +
         'Use a security policy that supports edge-optimized endpoints. ' +
         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',
@@ -477,7 +478,7 @@ export class DomainName extends Resource implements IDomainName {
 
     if (endpointType !== EndpointType.EDGE && DomainName.EDGE_ONLY_POLICIES.includes(policy)) {
       throw new ValidationError(
-        'SecurityPolicyOnlySupportedForEdgeEndpoint',
+        lit`SecurityPolicyOnlySupportedForEdgeEndpoint`,
         `Security policy ${policy} is only supported for edge-optimized endpoints. ` +
         'Use a policy that supports non-edge endpoints. ' +
         'See: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-custom-domain-tls-version.html',

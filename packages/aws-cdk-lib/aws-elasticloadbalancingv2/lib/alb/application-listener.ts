@@ -14,6 +14,7 @@ import type { Duration } from '../../../core';
 import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -220,7 +221,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   public static fromLookup(scope: Construct, id: string, options: ApplicationListenerLookupOptions): IApplicationListener {
     if (Token.isUnresolved(options.listenerArn)) {
-      throw new ValidationError('ArgumentsLookUpLoadBalancer', 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
+      throw new ValidationError(lit`ArgumentsLookUpLoadBalancer`, 'All arguments to look up a load balancer listener must be concrete (no Tokens)', scope);
     }
 
     let listenerProtocol: cxschema.LoadBalancerListenerProtocol | undefined;
@@ -276,7 +277,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
     if (protocol === undefined || port === undefined) {
-      throw new ValidationError('IsRequiredLeastPortProtocol', 'At least one of \'port\' or \'protocol\' is required', scope);
+      throw new ValidationError(lit`IsRequiredLeastPortProtocol`, 'At least one of \'port\' or \'protocol\' is required', scope);
     }
 
     validateMutualAuthentication(scope, props.mutualAuthentication);
@@ -334,7 +335,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     });
 
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new ValidationError('SpecifyOneDefaultActionDefault', 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
+      throw new ValidationError(lit`SpecifyOneDefaultActionDefault`, 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -471,7 +472,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   @MethodMetadata()
   public addTargets(id: string, props: AddApplicationTargetsProps): ApplicationTargetGroup {
     if (!this.loadBalancer.vpc) {
-      throw new ValidationError('CallAddTargetsConstructedLoad', 'Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
+      throw new ValidationError(lit`CallAddTargetsConstructedLoad`, 'Can only call addTargets() when using a constructed Load Balancer or an imported Load Balancer with specified vpc; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new ApplicationTargetGroup(this, id + 'Group', {
@@ -508,11 +509,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
      * Inlining the duplication functionality in v2 only (for now).
      */
     if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
-      throw new ValidationError('MustBe', '`statusCode` must be 2XX, 4XX or 5XX.', this);
+      throw new ValidationError(lit`MustBe`, '`statusCode` must be 2XX, 4XX or 5XX.', this);
     }
 
     if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-      throw new ValidationError('MessageBodyCannotCharacters', '`messageBody` cannot have more than 1024 characters.', this);
+      throw new ValidationError(lit`MessageBodyCannotCharacters`, '`messageBody` cannot have more than 1024 characters.', this);
     }
 
     if (props.priority) {
@@ -553,11 +554,11 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
      * Inlining the duplication functionality in v2 only (for now).
      */
     if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
-      throw new ValidationError('MustBeHttp', '`protocol` must be HTTP, HTTPS, or #{protocol}.', this);
+      throw new ValidationError(lit`MustBeHttp`, '`protocol` must be HTTP, HTTPS, or #{protocol}.', this);
     }
 
     if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-      throw new ValidationError('StatusCode', '`statusCode` must be HTTP_301 or HTTP_302.', this);
+      throw new ValidationError(lit`StatusCode`, '`statusCode` must be HTTP_301 or HTTP_302.', this);
     }
 
     if (props.priority) {
@@ -783,7 +784,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new ValidationError('CannotAddDefaultTargetGroups', 'Cannot add default Target Groups to imported ApplicationListener', this);
+      throw new ValidationError(lit`CannotAddDefaultTargetGroups`, 'Cannot add default Target Groups to imported ApplicationListener', this);
     }
   }
 
@@ -799,7 +800,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * @returns The newly created target group
    */
   public addTargets(_id: string, _props: AddApplicationTargetsProps): ApplicationTargetGroup {
-    throw new ValidationError('CallAddTargetsConstructedApplication', 'Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
+    throw new ValidationError(lit`CallAddTargetsConstructedApplication`, 'Can only call addTargets() when using a constructed ApplicationListener; construct a new TargetGroup and use addTargetGroup.', this);
   }
 
   /**
@@ -834,7 +835,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
         ...props,
       });
     } else {
-      throw new ValidationError('PrioritySetActionsAddedImported', 'priority must be set for actions added to an imported listener', this);
+      throw new ValidationError(lit`PrioritySetActionsAddedImported`, 'priority must be set for actions added to an imported listener', this);
     }
   }
 }
@@ -1128,7 +1129,7 @@ function checkAddRuleProps(scope: Construct, props: AddRuleProps) {
     props.hostHeader !== undefined || props.pathPattern !== undefined || props.pathPatterns !== undefined;
   const hasPriority = props.priority !== undefined;
   if (hasAnyConditions !== hasPriority) {
-    throw new ValidationError('SettingConditions', 'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa', scope);
+    throw new ValidationError(lit`SettingConditions`, 'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa', scope);
   }
 }
 
@@ -1141,21 +1142,21 @@ function validateMutualAuthentication(scope: Construct, mutualAuthentication?: M
 
   if (currentMode === MutualAuthenticationMode.VERIFY) {
     if (!mutualAuthentication.trustStore) {
-      throw new ValidationError('TruststoreMode', `You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`, scope);
+      throw new ValidationError(lit`TruststoreMode`, `You must set 'trustStore' when 'mode' is '${MutualAuthenticationMode.VERIFY}'`, scope);
     }
   }
 
   if (currentMode === MutualAuthenticationMode.OFF || currentMode === MutualAuthenticationMode.PASS_THROUGH) {
     if (mutualAuthentication.trustStore) {
-      throw new ValidationError('CannotTruststoreMode', `You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+      throw new ValidationError(lit`CannotTruststoreMode`, `You cannot set 'trustStore' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
 
     if (mutualAuthentication.ignoreClientCertificateExpiry !== undefined) {
-      throw new ValidationError('CannotSetIgnoreClientCertificate', `You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+      throw new ValidationError(lit`CannotSetIgnoreClientCertificate`, `You cannot set 'ignoreClientCertificateExpiry' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
 
     if (mutualAuthentication.advertiseTrustStoreCaNames !== undefined) {
-      throw new ValidationError('CannotSetAdvertiseTrustStore', `You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
+      throw new ValidationError(lit`CannotSetAdvertiseTrustStore`, `You cannot set 'advertiseTrustStoreCaNames' when 'mode' is '${MutualAuthenticationMode.OFF}' or '${MutualAuthenticationMode.PASS_THROUGH}'`, scope);
     }
   }
 }

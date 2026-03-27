@@ -8,6 +8,7 @@ import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import type { SparkJobProps } from './spark-job';
 import { SparkJob } from './spark-job';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -91,7 +92,7 @@ export class ScalaSparkStreamingJob extends SparkJob {
     };
 
     if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new ValidationError('WorkerTypeAndNumberRequired', 'Both workerType and numberOfWorkers must be set', this);
+      throw new ValidationError(lit`WorkerTypeAndNumberRequired`, 'Both workerType and numberOfWorkers must be set', this);
     }
 
     this.resource = new CfnJob(this, 'Resource', {

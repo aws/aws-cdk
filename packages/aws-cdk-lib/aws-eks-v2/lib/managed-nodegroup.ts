@@ -15,6 +15,7 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import { isGpuInstanceType } from './private/nodegroup';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * NodeGroup interface
@@ -451,21 +452,21 @@ export class Nodegroup extends Resource implements INodegroup {
     withResolved(this.desiredSize, this.maxSize, (desired, max) => {
       if (desired === undefined) {return ;}
       if (desired > max) {
-        throw new ValidationError('DesiredCapacityCannotBeGreaterThanMaxSize', `Desired capacity ${desired} can't be greater than max size ${max}`, this);
+        throw new ValidationError(lit`DesiredCapacityCannotBeGreaterThanMaxSize`, `Desired capacity ${desired} can't be greater than max size ${max}`, this);
       }
     });
 
     withResolved(this.desiredSize, this.minSize, (desired, min) => {
       if (desired === undefined) {return ;}
       if (desired < min) {
-        throw new ValidationError('MinimumCapacityCannotBeGreaterThanDesiredSize', `Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
+        throw new ValidationError(lit`MinimumCapacityCannotBeGreaterThanDesiredSize`, `Minimum capacity ${min} can't be greater than desired size ${desired}`, this);
       }
     });
 
     if (props.launchTemplateSpec && props.diskSize) {
       // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
       // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
-      throw new ValidationError('DiskSizeMustBeSpecifiedInLaunchTemplate', 'diskSize must be specified within the launch template', this);
+      throw new ValidationError(lit`DiskSizeMustBeSpecifiedInLaunchTemplate`, 'diskSize must be specified within the launch template', this);
     }
 
     let possibleAmiTypes: NodegroupAmiType[] = [];
@@ -482,13 +483,13 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new ValidationError('AmiTypeDoesNotMatchInstanceArchitecture', `The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
+        throw new ValidationError(lit`AmiTypeDoesNotMatchInstanceArchitecture`, `The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`, this);
       }
 
       // if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
       if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
       props.instanceTypes.filter(isWindowsSupportedInstanceType).length < props.instanceTypes.length) {
-        throw new ValidationError('InstanceTypeDoesNotSupportWindows', 'The specified instanceType does not support Windows workloads. '
+        throw new ValidationError(lit`InstanceTypeDoesNotSupportWindows`, 'The specified instanceType does not support Windows workloads. '
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
@@ -623,17 +624,17 @@ export class Nodegroup extends Resource implements INodegroup {
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
     if (!maxUnavailable && !maxUnavailablePercentage) return;
     if (maxUnavailable && maxUnavailablePercentage) {
-      throw new ValidationError('MaxUnavailableAndPercentageMutuallyExclusive', 'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
+      throw new ValidationError(lit`MaxUnavailableAndPercentageMutuallyExclusive`, 'maxUnavailable and maxUnavailablePercentage are not allowed to be defined together', this);
     }
     if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
-      throw new ValidationError('MaxUnavailablePercentageOutOfRange', `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
+      throw new ValidationError(lit`MaxUnavailablePercentageOutOfRange`, `maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`, this);
     }
     if (maxUnavailable) {
       if (maxUnavailable > this.maxSize) {
-        throw new ValidationError('MaxUnavailableExceedsMaxSize', `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
+        throw new ValidationError(lit`MaxUnavailableExceedsMaxSize`, `maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`, this);
       }
       if (maxUnavailable < 1 || maxUnavailable > 100) {
-        throw new ValidationError('MaxUnavailableOutOfRange', `maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
+        throw new ValidationError(lit`MaxUnavailableOutOfRange`, `maxUnavailable must be between 1 and 100, got ${maxUnavailable}`, this);
       }
     }
   }
@@ -706,11 +707,11 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new UnscopedValidationError('CannotDetermineCompatibleAmiType', `Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
+    throw new UnscopedValidationError(lit`CannotDetermineCompatibleAmiType`, `Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString()).join(', ')}`);
   }
 
   if (architectures.size > 1) {
-    throw new UnscopedValidationError('InstanceTypesDifferentArchitecturesNotAllowed', 'instanceTypes of different architectures is not allowed');
+    throw new UnscopedValidationError(lit`InstanceTypesDifferentArchitecturesNotAllowed`, 'instanceTypes of different architectures is not allowed');
   }
 
   return archAmiMap.get(Array.from(architectures)[0])!;

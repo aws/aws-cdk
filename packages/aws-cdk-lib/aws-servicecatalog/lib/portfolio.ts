@@ -17,6 +17,7 @@ import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IPortfolioRef, PortfolioReference } from '../../interfaces/generated/aws-servicecatalog-interfaces.generated';
 
@@ -332,7 +333,7 @@ export class Portfolio extends PortfolioBase {
     const portfolioId = arn.resourceName;
 
     if (!portfolioId) {
-      throw new ValidationError('MissingPortfolioIdFromArn', 'Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
+      throw new ValidationError(lit`MissingPortfolioIdFromArn`, 'Missing required Portfolio ID from Portfolio ARN: ' + portfolioArn, scope);
     }
 
     class Import extends PortfolioBase {

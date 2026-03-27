@@ -11,6 +11,7 @@ import type { Construct } from 'constructs';
 import * as perms from './permissions';
 import { TableBucketPolicy } from './table-bucket-policy';
 import { validateTableBucketAttributes } from './util';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Interface definition for S3 Table Buckets
@@ -537,7 +538,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidTableBucketName',
+        lit`InvalidTableBucketName`,
         `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -584,7 +585,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidUnreferencedFileRemovalProperty',
+        lit`InvalidUnreferencedFileRemovalProperty`,
         `Invalid UnreferencedFileRemovalProperty})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -713,10 +714,10 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
           },
         };
       } else {
-        throw new UnscopedValidationError('InvalidEncryptionConfiguration', 'Expected encryption = `KMS` with user provided encryption key');
+        throw new UnscopedValidationError(lit`InvalidEncryptionConfiguration`, 'Expected encryption = `KMS` with user provided encryption key');
       }
     }
-    throw new UnscopedValidationError('UnknownEncryptionConfiguration', `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+    throw new UnscopedValidationError(lit`UnknownEncryptionConfiguration`, `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
   }
 
   /**

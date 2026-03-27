@@ -8,6 +8,7 @@ import type { Duration, IResource } from '../../core';
 import { Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IUrlRef, UrlReference } from '../../interfaces/generated/aws-lambda-interfaces.generated';
 
@@ -233,11 +234,11 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
     addConstructMetadata(this, props);
 
     if (this.instanceOfVersion(props.function)) {
-      throw new ValidationError('FunctionUrlCannotVersion', 'FunctionUrl cannot be used with a Version', this);
+      throw new ValidationError(lit`FunctionUrlCannotVersion`, 'FunctionUrl cannot be used with a Version', this);
     }
 
     if (props.function.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('FunctionUrlSupportedFunctionsTenant', 'FunctionUrl is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError(lit`FunctionUrlSupportedFunctionsTenant`, 'FunctionUrl is not supported for functions with tenant isolation mode', this);
     }
 
     // If the target function is an alias, then it must be configured using the underlying function
@@ -304,7 +305,7 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
 
   private renderCors(cors: FunctionUrlCorsOptions): CfnUrl.CorsProperty {
     if (cors.maxAge && !cors.maxAge.isUnresolved() && cors.maxAge.toSeconds() > 86400) {
-      throw new ValidationError('FunctionUrlMaxAgeLess', `FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`, this);
+      throw new ValidationError(lit`FunctionUrlMaxAgeLess`, `FunctionUrl CORS maxAge should be less than or equal to 86400 secs (got ${cors.maxAge.toSeconds()})`, this);
     }
 
     return {

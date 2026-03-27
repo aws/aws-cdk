@@ -10,6 +10,7 @@ import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import type { TableHandlerProps } from './private/handler-props';
 import type { IUser } from './user';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
@@ -307,27 +308,27 @@ export class Table extends TableBase {
     try {
       getDistKeyColumn(columns);
     } catch {
-      throw new cdk.ValidationError('MultipleDistKeys', 'Only one column can be configured as distKey.', this);
+      throw new cdk.ValidationError(lit`MultipleDistKeys`, 'Only one column can be configured as distKey.', this);
     }
   }
 
   private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
     const distKeyColumn = getDistKeyColumn(columns);
     if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
-      throw new cdk.ValidationError('DistStyleMustBeKey', `Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`, this);
+      throw new cdk.ValidationError(lit`DistStyleMustBeKey`, `Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`, this);
     }
     if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
-      throw new cdk.ValidationError('DistKeyRequiredForKeyStyle', 'distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.', this);
+      throw new cdk.ValidationError(lit`DistKeyRequiredForKeyStyle`, 'distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.', this);
     }
   }
 
   private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
     const sortKeyColumns = getSortKeyColumns(columns);
     if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
-      throw new cdk.ValidationError('SortKeyRequiredForSortStyle', `sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`, this);
+      throw new cdk.ValidationError(lit`SortKeyRequiredForSortStyle`, `sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`, this);
     }
     if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
-      throw new cdk.ValidationError('AutoSortStyleConflictsWithSortKey', `sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`, this);
+      throw new cdk.ValidationError(lit`AutoSortStyleConflictsWithSortKey`, `sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`, this);
     }
   }
 
@@ -343,12 +344,12 @@ export class Table extends TableBase {
       const column = newColumns[i];
       if (column.id) {
         if (columnIds.has(column.id)) {
-          throw new cdk.ValidationError('DuplicateColumnId', `Column id '${column.id}' is not unique.`, this);
+          throw new cdk.ValidationError(lit`DuplicateColumnId`, `Column id '${column.id}' is not unique.`, this);
         }
         columnIds.add(column.id);
       } else {
         if (columnIds.has(column.name)) {
-          throw new cdk.ValidationError('DuplicateColumnName', `Column name '${column.name}' is not unique amongst the column ids.`, this);
+          throw new cdk.ValidationError(lit`DuplicateColumnName`, `Column name '${column.name}' is not unique amongst the column ids.`, this);
         }
         newColumns[i] = { ...column, id: column.name };
         columnIds.add(column.name);

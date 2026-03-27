@@ -18,6 +18,7 @@ import * as iam from '../../aws-iam';
 import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 export interface MethodOptions {
@@ -343,7 +344,7 @@ export class Method extends Resource {
 
     // if the authorizer defines an authorization type and we also have an explicit option set, check that they are the same
     if (authorizerAuthType && optionsAuthType && authorizerAuthType !== optionsAuthType) {
-      throw new ValidationError('AuthorizationTypeMismatch', `${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
+      throw new ValidationError(lit`AuthorizationTypeMismatch`, `${this.resource}/${this.httpMethod} - Authorization type is set to ${optionsAuthType} ` +
         `which is different from what is required by the authorizer [${authorizerAuthType}]`, this);
     }
 
@@ -422,7 +423,7 @@ export class Method extends Resource {
 
   private requestValidatorId(options: MethodOptions): string | undefined {
     if (options.requestValidator && options.requestValidatorOptions) {
-      throw new ValidationError('MustBeOnlyRequestValidatorRequestValidatorOptions', 'Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.', this);
+      throw new ValidationError(lit`MustBeOnlyRequestValidatorRequestValidatorOptions`, 'Only one of \'requestValidator\' or \'requestValidatorOptions\' must be specified.', this);
     }
 
     if (options.requestValidatorOptions) {

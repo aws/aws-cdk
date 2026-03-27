@@ -5,6 +5,7 @@ import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
 import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import type { IListenerAction } from '../shared/listener-action';
 
@@ -41,7 +42,7 @@ export class ListenerAction implements IListenerAction {
    */
   public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('NeedLeastTargetgroupListeneraction', 'Need at least one targetGroup in a ListenerAction.forward()');
+      throw new UnscopedValidationError(lit`NeedLeastTargetgroupListeneraction`, 'Need at least one targetGroup in a ListenerAction.forward()');
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
@@ -61,7 +62,7 @@ export class ListenerAction implements IListenerAction {
    */
   public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('NeedLeastTargetgroupListeneraction', 'Need at least one targetGroup in a ListenerAction.weightedForward()');
+      throw new UnscopedValidationError(lit`NeedLeastTargetgroupListeneraction`, 'Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
 
     return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
@@ -115,10 +116,10 @@ export class ListenerAction implements IListenerAction {
    */
   public static redirect(options: RedirectOptions): ListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
-      throw new UnscopedValidationError('PreventRedirectLoops', 'To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
+      throw new UnscopedValidationError(lit`PreventRedirectLoops`, 'To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
     }
     if (options.path && !Token.isUnresolved(options.path) && !options.path.startsWith('/')) {
-      throw new UnscopedValidationError('RedirectPathStart', `Redirect path must start with a \'/\', got: ${options.path}`);
+      throw new UnscopedValidationError(lit`RedirectPathStart`, `Redirect path must start with a \'/\', got: ${options.path}`);
     }
 
     return new ListenerAction({
@@ -202,7 +203,7 @@ export class ListenerAction implements IListenerAction {
    */
   protected addRuleAction(actionJson: CfnListenerRule.ActionProperty) {
     if (this._actionJson) {
-      throw new UnscopedValidationError('RuleActionAlready', 'rule action is already set');
+      throw new UnscopedValidationError(lit`RuleActionAlready`, 'rule action is already set');
     }
     this._actionJson = actionJson;
   }

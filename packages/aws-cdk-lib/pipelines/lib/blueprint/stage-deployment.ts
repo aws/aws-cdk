@@ -2,6 +2,7 @@ import { StackDeployment } from './stack-deployment';
 import type { StackSteps, Step } from './step';
 import type * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CloudFormationStackArtifact } from '../../../cx-api';
 import { isStackArtifact } from '../private/cloud-assembly-internals';
 import { pipelineSynth } from '../private/construct-internals';
@@ -57,13 +58,13 @@ export class StageDeployment {
     if (assembly.stacks.length === 0) {
       // If we don't check here, a more puzzling "stage contains no actions"
       // error will be thrown come deployment time.
-      throw new ValidationError('GivenStageConstruct', `The given Stage construct ('${stage.node.path}') should contain at least one Stack`, stage);
+      throw new ValidationError(lit`GivenStageConstruct`, `The given Stage construct ('${stage.node.path}') should contain at least one Stack`, stage);
     }
 
     const stepFromArtifact = new Map<CloudFormationStackArtifact, StackDeployment>();
     for (const artifact of assembly.stacks) {
       if (artifact.assumeRoleAdditionalOptions?.Tags && artifact.assumeRoleArn) {
-        throw new ValidationError('DeploymentStack', `Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`, stage);
+        throw new ValidationError(lit`DeploymentStack`, `Deployment of stack ${artifact.stackName} requires assuming the role ${artifact.assumeRoleArn} with session tags, but assuming roles with session tags is not supported by CodePipeline.`, stage);
       }
       const step = StackDeployment.fromArtifact(artifact);
       stepFromArtifact.set(artifact, step);
@@ -73,7 +74,7 @@ export class StageDeployment {
         const stackArtifact = assembly.getStackArtifact(stackstep.stack.artifactId);
         const thisStep = stepFromArtifact.get(stackArtifact);
         if (!thisStep) {
-          throw new ValidationError('LogicErrorAddedStepArtifact', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
+          throw new ValidationError(lit`LogicErrorAddedStepArtifact`, 'Logic error: we just added a step for this artifact but it disappeared.', stage);
         }
         thisStep.addStackSteps(stackstep.pre ?? [], stackstep.changeSet ?? [], stackstep.post ?? []);
       }
@@ -82,14 +83,14 @@ export class StageDeployment {
     for (const artifact of assembly.stacks) {
       const thisStep = stepFromArtifact.get(artifact);
       if (!thisStep) {
-        throw new ValidationError('LogicErrorAddedStepArtifact', 'Logic error: we just added a step for this artifact but it disappeared.', stage);
+        throw new ValidationError(lit`LogicErrorAddedStepArtifact`, 'Logic error: we just added a step for this artifact but it disappeared.', stage);
       }
 
       const stackDependencies = artifact.dependencies.filter(isStackArtifact);
       for (const dep of stackDependencies) {
         const depStep = stepFromArtifact.get(dep);
         if (!depStep) {
-          throw new ValidationError('StackDependsStackFound', `Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`, stage);
+          throw new ValidationError(lit`StackDependsStackFound`, `Stack '${artifact.id}' depends on stack not found in same Stage: '${dep.id}'`, stage);
         }
         thisStep.addStackDependency(depStep);
       }

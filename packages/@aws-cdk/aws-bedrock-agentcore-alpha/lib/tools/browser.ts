@@ -34,6 +34,7 @@ import type { Construct } from 'constructs';
 import * as perms from './perms';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from './validation-helpers';
 import { BrowserNetworkConfiguration } from '../network/network-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              CONSTANTS
@@ -236,7 +237,7 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('VpcNotConfigured', 'Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError(lit`VpcNotConfigured`, 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

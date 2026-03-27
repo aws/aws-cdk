@@ -1,6 +1,7 @@
 import type { IUserPoolClient, IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { GatewayCustomClaim } from './custom-claim';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Authorizer Configuration
@@ -182,7 +183,7 @@ export abstract class GatewayAuthorizer {
   public static usingCustomJwt(configuration: CustomJwtConfiguration): IGatewayAuthorizerConfig {
     // At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer
     if (!configuration.allowedAudience && !configuration.allowedClients && !configuration.allowedScopes && !configuration.customClaims) {
-      throw new UnscopedValidationError('CustomJwtConfigurationRequired', 'At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer');
+      throw new UnscopedValidationError(lit`CustomJwtConfigurationRequired`, 'At least one of allowedAudience, allowedClients, allowedScopes, or customClaims must be defined for CUSTOM_JWT authorizer');
     }
     return new CustomJwtAuthorizer(configuration);
   }

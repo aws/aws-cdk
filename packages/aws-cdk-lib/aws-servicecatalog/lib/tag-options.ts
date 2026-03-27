@@ -5,6 +5,7 @@ import { CfnTagOption } from './servicecatalog.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -47,7 +48,7 @@ export class TagOptions extends cdk.Resource {
 
   private createUnderlyingTagOptions(allowedValuesForTags: { [tagKey: string]: string[] }): CfnTagOption[] {
     if (Object.keys(allowedValuesForTags).length === 0) {
-      throw new ValidationError('NoTagOptionKeysOrValues', `No tag option keys or values were provided for resource ${this.node.path}`, this);
+      throw new ValidationError(lit`NoTagOptionKeysOrValues`, `No tag option keys or values were provided for resource ${this.node.path}`, this);
     }
     var tagOptions: CfnTagOption[] = [];
 
@@ -56,7 +57,7 @@ export class TagOptions extends cdk.Resource {
 
       const uniqueTagValues = new Set(tagValues);
       if (uniqueTagValues.size === 0) {
-        throw new ValidationError('NoTagOptionValues', `No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`, this);
+        throw new ValidationError(lit`NoTagOptionValues`, `No tag option values were provided for tag option key ${tagKey} for resource ${this.node.path}`, this);
       }
       uniqueTagValues.forEach((tagValue: string) => {
         InputValidator.validateLength(this.node.addr, 'TagOption value', 1, 256, tagValue);

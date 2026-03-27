@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties used to define healthchecks.
@@ -138,19 +139,19 @@ class HealthCheckImpl extends HealthCheck {
     private readonly path?: string) {
     super();
     if (healthyThreshold < 2 || healthyThreshold > 10) {
-      throw new cdk.UnscopedValidationError('HealthyThresholdOutOfRange', 'healthyThreshold must be between 2 and 10');
+      throw new cdk.UnscopedValidationError(lit`HealthyThresholdOutOfRange`, 'healthyThreshold must be between 2 and 10');
     }
 
     if (unhealthyThreshold < 2 || unhealthyThreshold > 10) {
-      throw new cdk.UnscopedValidationError('UnhealthyThresholdOutOfRange', 'unhealthyThreshold must be between 2 and 10');
+      throw new cdk.UnscopedValidationError(lit`UnhealthyThresholdOutOfRange`, 'unhealthyThreshold must be between 2 and 10');
     }
 
     if (interval.toMilliseconds() < 5000 || interval.toMilliseconds() > 300_000) {
-      throw new cdk.UnscopedValidationError('IntervalOutOfRange', 'interval must be between 5 seconds and 300 seconds');
+      throw new cdk.UnscopedValidationError(lit`IntervalOutOfRange`, 'interval must be between 5 seconds and 300 seconds');
     }
 
     if (timeout.toMilliseconds() < 2000 || timeout.toMilliseconds() > 60_000) {
-      throw new cdk.UnscopedValidationError('TimeoutOutOfRange', 'timeout must be between 2 seconds and 60 seconds');
+      throw new cdk.UnscopedValidationError(lit`TimeoutOutOfRange`, 'timeout must be between 2 seconds and 60 seconds');
     }
 
     // Default to / for HTTP Health Checks

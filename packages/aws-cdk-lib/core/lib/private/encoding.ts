@@ -2,6 +2,7 @@ import { UnscopedValidationError } from '../errors';
 import type { IFragmentConcatenator, IResolvable } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { isResolvableObject } from '../token';
+import { lit } from './literal-string';
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
@@ -167,10 +168,10 @@ const BITS32 = Math.pow(2, 32);
  */
 export function createTokenDouble(x: number) {
   if (Math.floor(x) !== x || x < 0) {
-    throw new UnscopedValidationError('OnlyEncodePositiveIntegers', 'Can only encode positive integers');
+    throw new UnscopedValidationError(lit`OnlyEncodePositiveIntegers`, 'Can only encode positive integers');
   }
   if (x > MAX_ENCODABLE_INTEGER) {
-    throw new UnscopedValidationError('IndexLargeEncode', `Got an index too large to encode: ${x}`);
+    throw new UnscopedValidationError(lit`IndexLargeEncode`, `Got an index too large to encode: ${x}`);
   }
 
   const buf = new ArrayBuffer(8);

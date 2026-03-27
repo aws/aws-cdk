@@ -12,6 +12,7 @@ import type { Construct } from 'constructs';
 import type { IPromptVariant } from './prompt-variant';
 import { PromptVersion } from './prompt-version';
 import * as validation from '../agents/validation-helpers';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              COMMON
@@ -386,7 +387,7 @@ export class Prompt extends PromptBase implements IPrompt {
    */
   private validatePromptDefault(props: PromptProps) {
     if (props.defaultVariant && !props.variants?.includes(props.defaultVariant)) {
-      throw new ValidationError('DefaultVariantMissing', 'The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
+      throw new ValidationError(lit`DefaultVariantMissing`, 'The \'defaultVariant\' needs to be included in the \'variants\' array.', this);
     }
   }
 

@@ -6,6 +6,7 @@ import { Node } from 'constructs';
 import type { ISynthesisSession } from './types';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../errors';
+import { lit } from '../private/literal-string';
 import { Stack } from '../stack';
 import { Token } from '../token';
 
@@ -152,7 +153,7 @@ export function contentHash(content: string) {
  */
 export function assertBound<A>(x: A | undefined): asserts x is NonNullable<A> {
   if (x === null && x === undefined) {
-    throw new UnscopedValidationError('CallBindstackFirst', 'You must call bindStack() first');
+    throw new UnscopedValidationError(lit`CallBindstackFirst`, 'You must call bindStack() first');
   }
 }
 

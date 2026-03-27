@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { UnscopedValidationError, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
@@ -53,9 +54,9 @@ export class MetadataExtractionProcessor implements IDataProcessor {
   public static jq16(query: Record<string, string>): MetadataExtractionProcessor {
     const keys = Object.keys(query);
     if (keys.length === 0) {
-      throw new UnscopedValidationError('MetadataExtractionQueryCannotBeEmpty', 'The query for MetadataExtractionProcessor should not be empty.');
+      throw new UnscopedValidationError(lit`MetadataExtractionQueryCannotBeEmpty`, 'The query for MetadataExtractionProcessor should not be empty.');
     } else if (keys.length > 50) {
-      throw new UnscopedValidationError('MetadataExtractionQueryExceedsLimit', 'The query for MetadataExtractionProcessor cannot exceed the limit of 50 keys.');
+      throw new UnscopedValidationError(lit`MetadataExtractionQueryExceedsLimit`, 'The query for MetadataExtractionProcessor cannot exceed the limit of 50 keys.');
     }
     // Extraction query for JQ 1.6 is not a JSON, but a JQ expression.
     // For example:
@@ -79,7 +80,7 @@ export class MetadataExtractionProcessor implements IDataProcessor {
   bind(scope: Construct, options: DataProcessorBindOptions): DataProcessorConfig {
     // CFN validation message: "class com.amazonaws.services.firehose.internal.model.MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled."
     if (!options.dynamicPartitioningEnabled) {
-      throw new ValidationError('MetadataExtractionProcessorRequiresDynamicPartitioning', 'MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled.', scope);
+      throw new ValidationError(lit`MetadataExtractionProcessorRequiresDynamicPartitioning`, 'MetadataExtractionProcessor can only be present when Dynamic Partitioning is enabled.', scope);
     }
 
     // CFN validation message: "MetaDataExtraction JQ Query can't contain keys that are not present in the S3 Prefix expression"
@@ -90,7 +91,7 @@ export class MetadataExtractionProcessor implements IDataProcessor {
       usedKeys.add(match[1]);
     }
     if (!(this.keys.length === usedKeys.size && this.keys.every((key) => usedKeys.has(key)))) {
-      throw new ValidationError('DynamicPartitioningInlineParsingKeyMismatch', 'When dynamic partitioning via inline parsing is enabled, you must use all specified dynamic partitioning key values for partitioning your data source.', scope);
+      throw new ValidationError(lit`DynamicPartitioningInlineParsingKeyMismatch`, 'When dynamic partitioning via inline parsing is enabled, you must use all specified dynamic partitioning key values for partitioning your data source.', scope);
     }
 
     const parameters: CfnDeliveryStream.ProcessorParameterProperty[] = [

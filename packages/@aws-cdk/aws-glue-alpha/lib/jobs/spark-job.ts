@@ -7,6 +7,7 @@ import type * as constructs from 'constructs';
 import type { Code } from '../code';
 import type { JobProps } from './job';
 import { Job } from './job';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Code props for different {@link Code} assets used by different types of Spark jobs.
@@ -219,7 +220,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new UnscopedValidationError('InvalidSparkUiPrefix', `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(lit`InvalidSparkUiPrefix`, `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

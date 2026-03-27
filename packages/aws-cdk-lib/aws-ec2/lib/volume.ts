@@ -23,6 +23,7 @@ import {
 } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -189,7 +190,7 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new UnscopedValidationError('VolumeIndexMustBeNonNegative', `volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(lit`VolumeIndexMustBeNonNegative`, `volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);
@@ -668,7 +669,7 @@ export class Volume extends VolumeBase {
     }
     // Check that the provided volumeId looks like it could be valid.
     if (!Token.isUnresolved(attrs.volumeId) && !/^vol-[0-9a-fA-F]+$/.test(attrs.volumeId)) {
-      throw new ValidationError('VolumeIdPatternMismatch', '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token', scope);
+      throw new ValidationError(lit`VolumeIdPatternMismatch`, '`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token', scope);
     }
     return new Import(scope, id);
   }
@@ -731,15 +732,15 @@ export class Volume extends VolumeBase {
 
   protected validateProps(props: VolumeProps) {
     if (!(props.size || props.snapshotId)) {
-      throw new ValidationError('SizeOrSnapshotRequired', 'Must provide at least one of `size` or `snapshotId`', this);
+      throw new ValidationError(lit`SizeOrSnapshotRequired`, 'Must provide at least one of `size` or `snapshotId`', this);
     }
 
     if (props.snapshotId && !Token.isUnresolved(props.snapshotId) && !/^snap-[0-9a-fA-F]+$/.test(props.snapshotId)) {
-      throw new ValidationError('SnapshotIdPatternMismatch', '`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
+      throw new ValidationError(lit`SnapshotIdPatternMismatch`, '`snapshotId` does not match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token', this);
     }
 
     if (props.encryptionKey && !props.encrypted) {
-      throw new ValidationError('EncryptedRequiredWithKey', '`encrypted` must be true when providing an `encryptionKey`.', this);
+      throw new ValidationError(lit`EncryptedRequiredWithKey`, '`encrypted` must be true when providing an `encryptionKey`.', this);
     }
 
     if (
@@ -751,7 +752,7 @@ export class Volume extends VolumeBase {
       !props.iops
     ) {
       throw new ValidationError(
-        'IopsRequiredForProvisionedVolumes',
+        lit`IopsRequiredForProvisionedVolumes`,
         '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
         this,
       );
@@ -767,7 +768,7 @@ export class Volume extends VolumeBase {
         ].includes(volumeType)
       ) {
         throw new ValidationError(
-          'IopsOnlyForSpecificVolumeTypes',
+          lit`IopsOnlyForSpecificVolumeTypes`,
           '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
           this,
         );
@@ -780,7 +781,7 @@ export class Volume extends VolumeBase {
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
       if (props.iops < Min || props.iops > Max) {
-        throw new ValidationError('IopsOutOfRange', `\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
+        throw new ValidationError(lit`IopsOutOfRange`, `\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`, this);
       }
 
       // Enforce maximum ratio of IOPS/GiB:
@@ -791,7 +792,7 @@ export class Volume extends VolumeBase {
       maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
       const maximumRatio = maximumRatios[volumeType];
       if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
-        throw new ValidationError('IopsToSizeRatioExceeded', `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
+        throw new ValidationError(lit`IopsToSizeRatioExceeded`, `\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`, this);
       }
 
       const maximumThroughputRatios: { [key: string]: number } = {};
@@ -800,7 +801,7 @@ export class Volume extends VolumeBase {
       if (props.throughput && props.iops) {
         const iopsRatio = (props.throughput / props.iops);
         if (iopsRatio > maximumThroughputRatio) {
-          throw new ValidationError('ThroughputToIopsRatioExceeded', `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
+          throw new ValidationError(lit`ThroughputToIopsRatioExceeded`, `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, this);
         }
       }
     }
@@ -813,7 +814,7 @@ export class Volume extends VolumeBase {
           EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
         ].includes(volumeType)
       ) {
-        throw new ValidationError('MultiAttachOnlyForProvisionedIops', 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
+        throw new ValidationError(lit`MultiAttachOnlyForProvisionedIops`, 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.', this);
       }
     }
 
@@ -832,7 +833,7 @@ export class Volume extends VolumeBase {
       const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {
-        throw new ValidationError('VolumeSizeOutOfRange', `\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
+        throw new ValidationError(lit`VolumeSizeOutOfRange`, `\`${volumeType}\` volumes must be between ${Min} GiB and ${Max} GiB in size.`, this);
       }
     }
 
@@ -841,14 +842,14 @@ export class Volume extends VolumeBase {
       const { Min, Max } = throughputRange;
       if (props.volumeType != EbsDeviceVolumeType.GP3) {
         throw new ValidationError(
-          'ThroughputRequiresGp3',
+          lit`ThroughputRequiresGp3`,
           'throughput property requires volumeType: EbsDeviceVolumeType.GP3',
           this,
         );
       }
       if (props.throughput < Min || props.throughput > Max) {
         throw new ValidationError(
-          'ThroughputOutOfRange',
+          lit`ThroughputOutOfRange`,
           `throughput property takes a minimum of ${Min} and a maximum of ${Max}`,
           this,
         );
@@ -857,13 +858,13 @@ export class Volume extends VolumeBase {
 
     if (props.volumeInitializationRate) {
       if (!props.snapshotId) {
-        throw new ValidationError('VolumeInitializationRateRequiresSnapshot', 'volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
+        throw new ValidationError(lit`VolumeInitializationRateRequiresSnapshot`, 'volumeInitializationRate can only be specified when creating a volume from a snapshot.', this);
       }
 
       if (!props.volumeInitializationRate.isUnresolved()) {
         const rateMiBs = props.volumeInitializationRate.toMebibytes({ rounding: SizeRoundingBehavior.NONE });
         if (rateMiBs < 100 || rateMiBs > 300) {
-          throw new ValidationError('VolumeInitializationRateOutOfRange', `volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
+          throw new ValidationError(lit`VolumeInitializationRateOutOfRange`, `volumeInitializationRate must be between 100 and 300 MiB/s, got: ${rateMiBs} MiB/s`, this);
         }
       }
     }

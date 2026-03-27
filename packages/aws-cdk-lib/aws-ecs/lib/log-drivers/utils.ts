@@ -1,6 +1,7 @@
 import type { BaseLogDriverProps } from './base-log-driver';
 import type { Duration } from '../../../core';
 import { SecretValue, Token, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { TaskDefinition } from '../base/task-definition';
 import type { Secret } from '../container-definition';
 import type { CfnTaskDefinition } from '../ecs.generated';
@@ -22,7 +23,7 @@ export function removeEmpty<T>(x: { [key: string]: (T | undefined | string) }): 
  */
 export function ensurePositiveInteger(val: number) {
   if (!Token.isUnresolved(val) && Number.isInteger(val) && val < 0) {
-    throw new UnscopedValidationError('ValueMustBePositiveInteger', `\`${val}\` must be a positive integer.`);
+    throw new UnscopedValidationError(lit`ValueMustBePositiveInteger`, `\`${val}\` must be a positive integer.`);
   }
 }
 
@@ -31,7 +32,7 @@ export function ensurePositiveInteger(val: number) {
  */
 export function ensureInRange(val: number, start: number, end: number) {
   if (!Token.isUnresolved(val) && !(val >= start && val <= end)) {
-    throw new UnscopedValidationError('ValueMustBeWithinRange', `\`${val}\` must be within range ${start}:${end}`);
+    throw new UnscopedValidationError(lit`ValueMustBeWithinRange`, `\`${val}\` must be within range ${start}:${end}`);
   }
 }
 

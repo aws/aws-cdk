@@ -4,6 +4,7 @@ import type * as ecs from '../../../aws-ecs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**
@@ -82,12 +83,12 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new cdk.UnscopedValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
+      throw new cdk.UnscopedValidationError(lit`InvalidServiceIntegrationPattern`, `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call ECS.`);
     }
 
     if (this.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN
       && !sfn.FieldUtils.containsTaskToken(props.containerOverrides?.map(override => override.environment))) {
-      throw new cdk.UnscopedValidationError('TaskTokenRequired', 'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
+      throw new cdk.UnscopedValidationError(lit`TaskTokenRequired`, 'Task Token is required in at least one `containerOverrides.environment` for callback. Use JsonPath.taskToken to set the token.');
     }
 
     for (const override of this.props.containerOverrides || []) {
@@ -95,7 +96,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       if (!cdk.Token.isUnresolved(name)) {
         const cont = this.props.taskDefinition.node.tryFindChild(name);
         if (!cont) {
-          throw new cdk.UnscopedValidationError('OverridesMentionContainerName', `Overrides mention container with name '${name}', but no such container in task definition`);
+          throw new cdk.UnscopedValidationError(lit`OverridesMentionContainerName`, `Overrides mention container with name '${name}', but no such container in task definition`);
         }
       }
     }

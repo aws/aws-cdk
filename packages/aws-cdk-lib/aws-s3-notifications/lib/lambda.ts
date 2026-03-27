@@ -5,6 +5,7 @@ import * as s3 from '../../aws-s3';
 import type { CfnResource } from '../../core';
 import { Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Use a Lambda function as a bucket notification destination
@@ -17,7 +18,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
     const permissionId = `AllowBucketNotificationsTo${Names.nodeUniqueId(this.fn.permissionsNode)}`;
 
     if (!(bucket instanceof Construct)) {
-      throw new ValidationError('LambdaDestinationFunction', `LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
+      throw new ValidationError(lit`LambdaDestinationFunction`, `LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
         bucket construct (Bucket ${bucket.bucketRef.bucketName})`, scope);
     }
 

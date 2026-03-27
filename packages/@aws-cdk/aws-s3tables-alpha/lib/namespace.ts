@@ -6,6 +6,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { ITableBucket } from './table-bucket';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Represents an S3 Tables Namespace.
@@ -133,7 +134,7 @@ export class Namespace extends Resource implements INamespace {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidNamespaceName',
+        lit`InvalidNamespaceName`,
         `Invalid S3 Tables namespace name (value: ${namespaceName})${EOL}${errors.join(EOL)}`,
       );
     }

@@ -9,6 +9,7 @@ import type { MappingTemplate } from './mapping-template';
 import type { FunctionRuntime } from './runtime';
 import { Token, ValidationError } from '../../core';
 import { extractFunctionIdFromFunctionRef } from './private/ref-utils';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IFunctionConfigurationRef } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
@@ -134,25 +135,25 @@ export class Resolver extends Construct {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
+      throw new ValidationError(lit`CodeRequiredSpecifyingRuntime`, 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('MappingTemplatesCannotAlongsideCode', 'Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError(lit`MappingTemplatesCannotAlongsideCode`, 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (pipelineConfig && props.dataSource) {
-      throw new ValidationError('PipelineResolverCannotDataSource', `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
+      throw new ValidationError(lit`PipelineResolverCannotDataSource`, `Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`, scope);
     }
 
     if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
-      throw new ValidationError('CachingConfigSecondsReceived', `Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
+      throw new ValidationError(lit`CachingConfigSecondsReceived`, `Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`, scope);
     }
 
     if (props.cachingConfig?.cachingKeys) {
       if (props.cachingConfig.cachingKeys.find(cachingKey =>
         !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
-        throw new ValidationError('CachingConfigKeysBeginContext', `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
+        throw new ValidationError(lit`CachingConfigKeysBeginContext`, `Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`, scope);
       }
     }
 

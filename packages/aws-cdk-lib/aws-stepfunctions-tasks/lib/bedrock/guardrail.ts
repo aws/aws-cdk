@@ -1,4 +1,5 @@
 import { Arn, ArnFormat, Token, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Guradrail settings for BedrockInvokeModel
@@ -13,7 +14,7 @@ export class Guardrail {
   public static enable(identifier: string, version: number): Guardrail {
     if (!Token.isUnresolved(version)) {
       if (version < 1 || version > 99999999) {
-        throw new UnscopedValidationError('GuardrailVersionOutOfRange', `\`version\` must be between 1 and 99999999, got ${version}.`);
+        throw new UnscopedValidationError(lit`GuardrailVersionOutOfRange`, `\`version\` must be between 1 and 99999999, got ${version}.`);
       }
     }
     return new Guardrail(identifier, version.toString());
@@ -39,7 +40,7 @@ export class Guardrail {
       if (guardrailIdentifier.startsWith('arn:')) {
         const arn = Arn.split(guardrailIdentifier, ArnFormat.SLASH_RESOURCE_NAME);
         if (!arn.resourceName) {
-          throw new UnscopedValidationError('InvalidGuardrailArnFormat', `Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
+          throw new UnscopedValidationError(lit`InvalidGuardrailArnFormat`, `Invalid ARN format. The ARN of Guradrail should have the format: \`arn:<partition>:bedrock:<region>:<account-id>:guardrail/<guardrail-name>\`, got ${guardrailIdentifier}.`);
         }
         gurdrailId = arn.resourceName;
       } else {
@@ -48,11 +49,11 @@ export class Guardrail {
 
       const guardrailPattern = /^[a-z0-9]+$/;
       if (!guardrailPattern.test(gurdrailId)) {
-        throw new UnscopedValidationError('GuardrailContainOnlyLowercase', `The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
+        throw new UnscopedValidationError(lit`GuardrailContainOnlyLowercase`, `The id of Guardrail must contain only lowercase letters and numbers, got ${gurdrailId}.`);
       }
 
       if (guardrailIdentifier.length > 2048) {
-        throw new UnscopedValidationError('GuardrailIdentifierTooLong', `\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
+        throw new UnscopedValidationError(lit`GuardrailIdentifierTooLong`, `\`guardrailIdentifier\` length must be between 0 and 2048, got ${guardrailIdentifier.length}.`);
       }
     }
   }

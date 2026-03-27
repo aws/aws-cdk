@@ -6,6 +6,7 @@ import { CfnConfigurationSet } from './ses.generated';
 import type { IResource } from '../../core';
 import { Duration, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
@@ -229,18 +230,18 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     addConstructMetadata(this, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new ValidationError('DisableSuppressionListTrueSuppression', 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
+      throw new ValidationError(lit`DisableSuppressionListTrueSuppression`, 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
-        throw new ValidationError('MaximumDeliveryDurationGreaterEqual', `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationGreaterEqual`, `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
-        throw new ValidationError('MaximumDeliveryDurationLessEqual', `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationLessEqual`, `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
     if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
-      throw new ValidationError('CustomTrackingHttpsPolicySet', 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+      throw new ValidationError(lit`CustomTrackingHttpsPolicySet`, 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
     }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {

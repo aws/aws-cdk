@@ -10,6 +10,7 @@ import type { Construct } from 'constructs';
 import type { Column } from './schema';
 import type { PartitionIndex, TableBaseProps } from './table-base';
 import { TableBase } from './table-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Encryption options for a Table.
@@ -158,7 +159,7 @@ export class S3Table extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError('DuplicateStorageParameterKey', `Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError(lit`DuplicateStorageParameterKey`, `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;
@@ -278,7 +279,7 @@ function createBucket(table: S3Table, props: S3TableProps) {
   let bucket = props.bucket;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
-    throw new UnscopedValidationError('EncryptionWithProvidedBucket', 'you can not specify encryption settings if you also provide a bucket');
+    throw new UnscopedValidationError(lit`EncryptionWithProvidedBucket`, 'you can not specify encryption settings if you also provide a bucket');
   }
 
   const encryption = props.encryption || TableEncryption.S3_MANAGED;

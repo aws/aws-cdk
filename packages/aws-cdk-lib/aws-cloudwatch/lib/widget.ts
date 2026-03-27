@@ -1,5 +1,6 @@
 import type { IMetric } from './metric-types';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The width of the grid we're filling
@@ -61,7 +62,7 @@ export abstract class ConcreteWidget implements IWidget {
     this.height = height;
 
     if (this.width > GRID_WIDTH) {
-      throw new UnscopedValidationError('WidgetTooWide', `Widget is too wide, max ${GRID_WIDTH} units allowed`);
+      throw new UnscopedValidationError(lit`WidgetTooWide`, `Widget is too wide, max ${GRID_WIDTH} units allowed`);
     }
   }
 

@@ -9,6 +9,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import type { IResource } from '../../core';
 import { Arn, ArnFormat, FileSystem, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -105,7 +106,7 @@ export class AssetImportSource extends ImportSource {
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
       throw new ValidationError(
-        'AssetAlreadyAssociatedWithStack',
+        lit`AssetAlreadyAssociatedWithStack`,
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
           'Create a new ImportSource instance for every stack.',
         scope,
@@ -149,7 +150,7 @@ export class InlineImportSource extends ImportSource {
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
       throw new ValidationError(
-        'AssetAlreadyAssociatedWithStack',
+        lit`AssetAlreadyAssociatedWithStack`,
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
         'Create a new ImportSource instance for every stack.',
         scope,
@@ -234,7 +235,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
   public static fromKeyValueStoreArn(scope: Construct, id: string, keyValueStoreArn: string): IKeyValueStore {
     const storeId = Arn.split(keyValueStoreArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!storeId) {
-      throw new ValidationError('InvalidKeyValueStoreArn', `Invalid Key Value Store Arn: '${keyValueStoreArn}'`, scope);
+      throw new ValidationError(lit`InvalidKeyValueStoreArn`, `Invalid Key Value Store Arn: '${keyValueStoreArn}'`, scope);
     }
     return new class Import extends Resource implements IKeyValueStore {
       readonly keyValueStoreArn: string = keyValueStoreArn;
@@ -250,7 +251,7 @@ export class KeyValueStore extends Resource implements IKeyValueStore {
       }
 
       public get keyValueStoreStatus(): string {
-        throw new ValidationError('StatusNotAvailableForImportedKeyValueStore', 'Status is not available for imported Key Value Store', scope);
+        throw new ValidationError(lit`StatusNotAvailableForImportedKeyValueStore`, 'Status is not available for imported Key Value Store', scope);
       }
     };
   }

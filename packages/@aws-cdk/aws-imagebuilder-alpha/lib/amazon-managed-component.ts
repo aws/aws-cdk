@@ -4,6 +4,7 @@ import type { IComponent } from './component';
 import { Component } from './component';
 import { Platform } from './os-version';
 import { LATEST_VERSION } from './private/constants';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties for an EC2 Image Builder Amazon-managed component
@@ -208,11 +209,11 @@ export abstract class AmazonManagedComponent {
     component: string,
   ) {
     if (opts.platform === undefined) {
-      throw new cdk.ValidationError('PlatformRequired', `a platform is required for ${component}`, scope);
+      throw new cdk.ValidationError(lit`PlatformRequired`, `a platform is required for ${component}`, scope);
     }
 
     if (cdk.Token.isUnresolved(opts.platform)) {
-      throw new cdk.ValidationError('PlatformCannotBeToken', `platform cannot be a token for ${component}`, scope);
+      throw new cdk.ValidationError(lit`PlatformCannotBeToken`, `platform cannot be a token for ${component}`, scope);
     }
   }
 
@@ -227,7 +228,7 @@ export abstract class AmazonManagedComponent {
     const componentName = config.supportedPlatforms[opts.platform];
 
     if (!componentName) {
-      throw new cdk.ValidationError('UnsupportedPlatform', `${opts.platform} is not a supported platform for ${config.component}`, scope);
+      throw new cdk.ValidationError(lit`UnsupportedPlatform`, `${opts.platform} is not a supported platform for ${config.component}`, scope);
     }
 
     return this.fromAmazonManagedComponentAttributes(scope, id, {

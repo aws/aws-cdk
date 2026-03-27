@@ -20,6 +20,7 @@ import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { Construct } from 'constructs';
 import type { Runtime } from './runtime';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Bedrock AgentCore runtime environment for code execution
@@ -179,7 +180,7 @@ class AssetImage extends AgentRuntimeArtifact {
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     if (!this.asset) {
-      throw new UnscopedValidationError('AssetNotInitialized', 'Asset not initialized. Call bind() before _render()');
+      throw new UnscopedValidationError(lit`AssetNotInitialized`, 'Asset not initialized. Call bind() before _render()');
     }
 
     // Return container configuration directly as expected by the runtime
@@ -269,7 +270,7 @@ class CodeAsset extends AgentRuntimeArtifact {
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     if (!this.asset) {
-      throw new UnscopedValidationError('AssetNotInitialized', 'Asset not initialized. Call bind() before _render()');
+      throw new UnscopedValidationError(lit`AssetNotInitialized`, 'Asset not initialized. Call bind() before _render()');
     }
 
     const s3Config: any = {
@@ -295,7 +296,7 @@ class ImageUriArtifact extends AgentRuntimeArtifact {
     const ecrPattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!Token.isUnresolved(containerUri) && !ecrPattern.test(containerUri)) {
       throw new UnscopedValidationError(
-        'InvalidEcrContainerUri',
+        lit`InvalidEcrContainerUri`,
         `Invalid ECR container URI format: ${containerUri}. Must be an ECR URI: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}`,
       );
     }

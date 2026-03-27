@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import type { IAsset } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import { AssetStaging, Names, Stack, Stage, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The sed pattern used to extract the image ID from docker load output
@@ -90,7 +91,7 @@ export class TarballImageAsset extends Construct implements IAsset {
     super(scope, id);
 
     if (!fs.existsSync(props.tarballFile)) {
-      throw new ValidationError('CannotFindFile', `Cannot find file at ${props.tarballFile}`, this);
+      throw new ValidationError(lit`CannotFindFile`, `Cannot find file at ${props.tarballFile}`, this);
     }
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });

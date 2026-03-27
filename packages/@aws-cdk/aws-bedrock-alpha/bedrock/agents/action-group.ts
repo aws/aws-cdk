@@ -4,6 +4,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { ActionGroupExecutor } from './api-executor';
 import type { ApiSchema } from './api-schema';
 import type { FunctionSchema } from './function-schema';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                           Signatures
@@ -192,7 +193,7 @@ export class AgentActionGroup {
   private validateProps(props: AgentActionGroupProps) {
     if (props.parentActionGroupSignature && (props.description || props.apiSchema || props.executor)) {
       throw new UnscopedValidationError(
-        'ParentActionGroupSignatureConflict',
+        lit`ParentActionGroupSignatureConflict`,
         'When parentActionGroupSignature is specified, you must leave the description, ' +
           'apiSchema, and actionGroupExecutor fields blank for this action group',
       );

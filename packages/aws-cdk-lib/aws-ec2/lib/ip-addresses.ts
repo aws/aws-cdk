@@ -5,6 +5,7 @@ import { CfnVPCCidrBlock } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import type { SubnetConfiguration } from './vpc';
 import { Fn, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * An abstract Provider of IpAddresses
@@ -286,13 +287,13 @@ class AwsIpam implements IIpAddresses {
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
     const cidrSplit = calculateCidrSplits(this.props.ipv4NetmaskLength, input.requestedSubnets.map((mask => {
       if ((mask.configuration.cidrMask === undefined) && (this.props.defaultSubnetIpv4NetmaskLength=== undefined) ) {
-        throw new UnscopedValidationError('CidrSubnetsCaseDefaultcidrmask', 'If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
+        throw new UnscopedValidationError(lit`CidrSubnetsCaseDefaultcidrmask`, 'If you have not set a cidr for all subnets in this case you must set a defaultCidrMask in AwsIpam Options');
       }
 
       const cidrMask = mask.configuration.cidrMask ?? this.props.defaultSubnetIpv4NetmaskLength;
 
       if (cidrMask === undefined) {
-        throw new UnscopedValidationError('ShouldNotShouldHappened', 'Should not have happened, but satisfies the type checker');
+        throw new UnscopedValidationError(lit`ShouldNotShouldHappened`, 'Should not have happened, but satisfies the type checker');
       }
 
       return cidrMask;
@@ -334,7 +335,7 @@ export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
   }
 
   if (split.netmask - MAX_COUNT_BITS < 1) {
-    throw new UnscopedValidationError('CannotSplitRange', `Cannot split an IP range into ${split.count} /${split.netmask}s`);
+    throw new UnscopedValidationError(lit`CannotSplitRange`, `Cannot split an IP range into ${split.count} /${split.netmask}s`);
   }
 
   const parentSplit = {
@@ -369,7 +370,7 @@ class Cidr implements IIpAddresses {
 
   constructor(private readonly cidrBlock: string) {
     if (Token.isUnresolved(cidrBlock)) {
-      throw new UnscopedValidationError('MustBeCidrPropertyConcrete', '\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
+      throw new UnscopedValidationError(lit`MustBeCidrPropertyConcrete`, '\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
     }
 
     this.networkBuilder = new NetworkBuilder(this.cidrBlock);

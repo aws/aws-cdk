@@ -3,6 +3,7 @@ import { App } from './app';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { lit, type LiteralString } from './private/literal-string';
 
 /**
  * Includes API for attaching annotations such as warning messages to constructs.
@@ -166,7 +167,7 @@ export class Annotations {
    * @param message The error message.
    * @internal
    */
-  public _addTrackableError(id: string, message: string) {
+  public _addTrackableError(id: LiteralString, message: string) {
     this.addError(message);
 
     const type = 'aws:cdk:error-code';
@@ -196,7 +197,7 @@ export class Annotations {
 
     // throw if CDK_BLOCK_DEPRECATIONS is set
     if (process.env.CDK_BLOCK_DEPRECATIONS) {
-      throw new UnscopedValidationError('ValidationError', `${this.scope.node.path}: ${text}`);
+      throw new UnscopedValidationError(lit`ValidationError`, `${this.scope.node.path}: ${text}`);
     }
 
     this.addWarningV2(`Deprecated:${api}`, text);

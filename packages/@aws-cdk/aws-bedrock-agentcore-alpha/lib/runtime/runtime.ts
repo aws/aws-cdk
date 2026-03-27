@@ -26,6 +26,7 @@ import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types
 import { ProtocolType } from './types';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
 import { RuntimeNetworkConfiguration } from '../network/network-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Constants
@@ -532,7 +533,7 @@ export class Runtime extends RuntimeBase {
       }
     }
     if (allErrors.length > 0) {
-      throw new ValidationError('InvalidRequestHeaderConfiguration', allErrors.join('\n'), this);
+      throw new ValidationError(lit`InvalidRequestHeaderConfiguration`, allErrors.join('\n'), this);
     }
   }
 
@@ -544,13 +545,13 @@ export class Runtime extends RuntimeBase {
     if (lifecycleConfiguration.idleRuntimeSessionTimeout && !lifecycleConfiguration.idleRuntimeSessionTimeout.isUnresolved()) {
       if (lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.idleRuntimeSessionTimeout.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
-        throw new ValidationError('InvalidIdleRuntimeSessionTimeout', `Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
+        throw new ValidationError(lit`InvalidIdleRuntimeSessionTimeout`, `Idle runtime session timeout must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
     }
     if (lifecycleConfiguration.maxLifetime && !lifecycleConfiguration.maxLifetime.isUnresolved()) {
       if (lifecycleConfiguration.maxLifetime.toSeconds() < LIFECYCLE_MIN_TIMEOUT.toSeconds()
         || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
-        throw new ValidationError('InvalidMaxLifetime', `Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
+        throw new ValidationError(lit`InvalidMaxLifetime`, `Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
     }
   }
@@ -585,7 +586,7 @@ export class Runtime extends RuntimeBase {
     // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError('InvalidRuntimeName', allErrors.join('\n'), this);
+      throw new ValidationError(lit`InvalidRuntimeName`, allErrors.join('\n'), this);
     }
   }
 
@@ -609,7 +610,7 @@ export class Runtime extends RuntimeBase {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError('InvalidDescription', errors.join('\n'), this);
+        throw new ValidationError(lit`InvalidDescription`, errors.join('\n'), this);
       }
     }
   }
@@ -627,7 +628,7 @@ export class Runtime extends RuntimeBase {
     // Validate number of entries (0-50)
     if (entries.length > 50) {
       throw new ValidationError(
-        'TooManyEnvironmentVariables',
+        lit`TooManyEnvironmentVariables`,
         `Too many environment variables: ${entries.length}. Maximum allowed is 50`,
         this,
       );
@@ -658,13 +659,13 @@ export class Runtime extends RuntimeBase {
       // Combine and throw if any errors
       const allErrors = [...lengthErrors, ...patternErrors];
       if (allErrors.length > 0) {
-        throw new ValidationError('InvalidEnvironmentVariableKey', allErrors.join('\n'), this);
+        throw new ValidationError(lit`InvalidEnvironmentVariableKey`, allErrors.join('\n'), this);
       }
 
       // Validate value length (0-2048 characters per CloudFormation)
       if (value.length > 2048) {
         throw new ValidationError(
-          'InvalidEnvironmentVariableValue',
+          lit`InvalidEnvironmentVariableValue`,
           `Invalid environment variable value length for key '${key}': ${value.length} characters. ` +
           'Values must not exceed 2048 characters',
           this,
@@ -705,11 +706,11 @@ export class Runtime extends RuntimeBase {
       // Combine key errors and throw if any
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
-        throw new ValidationError('InvalidTagKey', keyErrors.join('\n'), this);
+        throw new ValidationError(lit`InvalidTagKey`, keyErrors.join('\n'), this);
       }
 
       if (value === undefined || value === null) {
-        throw new ValidationError('NullTagValue', `Tag value for key "${key}" cannot be null or undefined`, this);
+        throw new ValidationError(lit`NullTagValue`, `Tag value for key "${key}" cannot be null or undefined`, this);
       }
 
       // Validate tag value length
@@ -731,7 +732,7 @@ export class Runtime extends RuntimeBase {
       // Combine value errors and throw if any
       const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
       if (valueErrors.length > 0) {
-        throw new ValidationError('InvalidTagValue', valueErrors.join('\n'), this);
+        throw new ValidationError(lit`InvalidTagValue`, valueErrors.join('\n'), this);
       }
     }
   }
@@ -754,7 +755,7 @@ export class Runtime extends RuntimeBase {
     const pattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!pattern.test(uri)) {
       throw new ValidationError(
-        'InvalidContainerUri',
+        lit`InvalidContainerUri`,
         `Invalid container URI format: ${uri}. Must be a valid ECR URI (e.g., 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-agent:latest)`,
         this,
       );
@@ -770,7 +771,7 @@ export class Runtime extends RuntimeBase {
     const arnPattern = /^arn:[a-z\-]+:iam::\d{12}:role\/[a-zA-Z0-9+=,.@\-_\/]+$/;
     if (!arnPattern.test(roleArn)) {
       throw new ValidationError(
-        'InvalidRoleArnFormat',
+        lit`InvalidRoleArnFormat`,
         `Invalid IAM role ARN format: ${roleArn}. ` +
         'Expected format: arn:<partition>:iam::<account-id>:role/<role-name> or arn:<partition>:iam::<account-id>:role/<path>/<role-name>',
         this,
@@ -782,12 +783,12 @@ export class Runtime extends RuntimeBase {
     const arnComponents = Arn.split(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (arnComponents.service !== 'iam') {
-      throw new ValidationError('InvalidRoleArnService', `Invalid service in ARN: ${arnComponents.service}. Expected 'iam' for IAM role ARN.`, this);
+      throw new ValidationError(lit`InvalidRoleArnService`, `Invalid service in ARN: ${arnComponents.service}. Expected 'iam' for IAM role ARN.`, this);
     }
 
     const accountId = arnComponents.account;
     if (!accountId || !/^\d{12}$/.test(accountId)) {
-      throw new ValidationError('InvalidRoleArnAccountId', `Invalid AWS account ID in role ARN: ${accountId}. Must be a 12-digit number.`, this);
+      throw new ValidationError(lit`InvalidRoleArnAccountId`, `Invalid AWS account ID in role ARN: ${accountId}. Must be a 12-digit number.`, this);
     }
 
     // Extract role name from resource
@@ -796,17 +797,17 @@ export class Runtime extends RuntimeBase {
     const resourceName = arnComponents.resourceName;
 
     if (resource !== 'role') {
-      throw new ValidationError('InvalidRoleArnResourceType', `Invalid resource type in ARN: ${resource}. Expected 'role' for IAM role ARN.`, this);
+      throw new ValidationError(lit`InvalidRoleArnResourceType`, `Invalid resource type in ARN: ${resource}. Expected 'role' for IAM role ARN.`, this);
     }
 
     if (!resourceName) {
-      throw new ValidationError('MissingRoleName', 'Role name is missing in the ARN', this);
+      throw new ValidationError(lit`MissingRoleName`, 'Role name is missing in the ARN', this);
     } else {
       const rolePathParts = resourceName.split('/');
       const roleName = rolePathParts[rolePathParts.length - 1];
 
       if (roleName.length > 64) {
-        throw new ValidationError('RoleNameTooLong', `Role name exceeds maximum length of 64 characters: ${roleName}`, this);
+        throw new ValidationError(lit`RoleNameTooLong`, `Role name exceeds maximum length of 64 characters: ${roleName}`, this);
       }
     }
 

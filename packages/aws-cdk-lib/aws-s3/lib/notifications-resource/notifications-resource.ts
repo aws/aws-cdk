@@ -4,6 +4,7 @@ import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { Bucket } from '../bucket';
@@ -100,7 +101,7 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new ValidationError('UnsupportedNotificationTargetType', 'Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
+        throw new ValidationError(lit`UnsupportedNotificationTargetType`, 'Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
     }
   }
 
@@ -210,12 +211,12 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
-      throw new ValidationError('NotificationKeyFilterMustSpecifyPrefixOrSuffix', 'NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
+      throw new ValidationError(lit`NotificationKeyFilterMustSpecifyPrefixOrSuffix`, 'NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
     }
 
     if (rule.suffix) {
       if (hasSuffix) {
-        throw new ValidationError('CannotSpecifyMultipleSuffixRules', 'Cannot specify more than one suffix rule in a filter.', scope);
+        throw new ValidationError(lit`CannotSpecifyMultipleSuffixRules`, 'Cannot specify more than one suffix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
       hasSuffix = true;
@@ -223,7 +224,7 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
     if (rule.prefix) {
       if (hasPrefix) {
-        throw new ValidationError('CannotSpecifyMultiplePrefixRules', 'Cannot specify more than one prefix rule in a filter.', scope);
+        throw new ValidationError(lit`CannotSpecifyMultiplePrefixRules`, 'Cannot specify more than one prefix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
       hasPrefix = true;

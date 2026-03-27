@@ -20,6 +20,7 @@ import type {
 import {
   TriggerSchedule,
 } from './trigger-options';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The base interface for Glue Workflow
@@ -269,9 +270,9 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
   private renderAction(action: Action): CfnTrigger.ActionProperty {
     // Validate that either job or crawler is provided, but not both
     if (!action.job && !action.crawler) {
-      throw new cdk.ValidationError('ActionJobOrCrawlerRequired', 'You must provide either a job or a crawler for the action.', this);
+      throw new cdk.ValidationError(lit`ActionJobOrCrawlerRequired`, 'You must provide either a job or a crawler for the action.', this);
     } else if (action.job && action.crawler) {
-      throw new cdk.ValidationError('ActionJobAndCrawlerMutuallyExclusive', 'You cannot provide both a job and a crawler for the action.', this);
+      throw new cdk.ValidationError(lit`ActionJobAndCrawlerMutuallyExclusive`, 'You cannot provide both a job and a crawler for the action.', this);
     }
 
     return {
@@ -287,19 +288,19 @@ export abstract class WorkflowBase extends cdk.Resource implements IWorkflow {
     const conditions = props.predicate.conditions?.map(condition => {
       // Validate that either job or crawler is provided, but not both
       if (!condition.job && !condition.crawlerName) {
-        throw new cdk.ValidationError('ConditionJobOrCrawlerRequired', 'You must provide either a job or a crawler for the condition.', this);
+        throw new cdk.ValidationError(lit`ConditionJobOrCrawlerRequired`, 'You must provide either a job or a crawler for the condition.', this);
       } else if (condition.job && condition.crawlerName) {
-        throw new cdk.ValidationError('ConditionJobAndCrawlerMutuallyExclusive', 'You cannot provide both a job and a crawler for the condition.', this);
+        throw new cdk.ValidationError(lit`ConditionJobAndCrawlerMutuallyExclusive`, 'You cannot provide both a job and a crawler for the condition.', this);
       }
 
       // Validate that if job is provided, job state is also provided
       if (condition.job && !condition.state) {
-        throw new cdk.ValidationError('ConditionJobStateRequired', 'If you provide a job for the condition, you must also provide a job state.', this);
+        throw new cdk.ValidationError(lit`ConditionJobStateRequired`, 'If you provide a job for the condition, you must also provide a job state.', this);
       }
 
       // Validate that if crawler is provided, crawler state is also provided
       if (condition.crawlerName && !condition.crawlState) {
-        throw new cdk.ValidationError('ConditionCrawlerStateRequired', 'If you provide a crawler for the condition, you must also provide a crawler state.', this);
+        throw new cdk.ValidationError(lit`ConditionCrawlerStateRequired`, 'If you provide a crawler for the condition, you must also provide a crawler state.', this);
       }
 
       return {

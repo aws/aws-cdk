@@ -10,6 +10,7 @@ import type { IResource, TimeZone } from '../../core';
 import { Lazy, Resource, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IScalableTargetRef, ScalableTargetReference } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
@@ -111,7 +112,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       public readonly scalableTargetId = scalableTargetId;
 
       public get scalableTargetRef(): ScalableTargetReference {
-        throw new ValidationError('CannotAccessScalableTargetRef', 'Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
+        throw new ValidationError(lit`CannotAccessScalableTargetRef`, 'Cannot access scalableTargetRef on a ScalableTarget imported by ID only. Use ScalableTarget.fromScalableTargetAttributes() instead.', this);
       }
     }
     return new Import(scope, id);
@@ -171,19 +172,19 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
     withResolved(props.maxCapacity, max => {
       if (max < 0) {
-        throw new ValidationError('MaxCapacityCannotNegative', `maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
+        throw new ValidationError(lit`MaxCapacityCannotNegative`, `maxCapacity cannot be negative, got: ${props.maxCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, min => {
       if (min < 0) {
-        throw new ValidationError('MinCapacityCannotNegative', `minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
+        throw new ValidationError(lit`MinCapacityCannotNegative`, `minCapacity cannot be negative, got: ${props.minCapacity}`, scope);
       }
     });
 
     withResolved(props.minCapacity, props.maxCapacity, (min, max) => {
       if (max < min) {
-        throw new ValidationError('MinCapacity', `minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
+        throw new ValidationError(lit`MinCapacity`, `minCapacity (${props.minCapacity}) should be lower than maxCapacity (${props.maxCapacity})`, scope);
       }
     });
 
@@ -221,7 +222,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
   @MethodMetadata()
   public scaleOnSchedule(id: string, action: ScalingSchedule) {
     if (action.minCapacity === undefined && action.maxCapacity === undefined) {
-      throw new ValidationError('SupplyLeastOneMinCapacity', `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
+      throw new ValidationError(lit`SupplyLeastOneMinCapacity`, `You must supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`, this);
     }
 
     // add a warning on synth when minute is not defined in a cron schedule

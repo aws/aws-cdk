@@ -8,6 +8,7 @@ import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const INFRASTRUCTURE_CONFIGURATION_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.InfrastructureConfiguration');
 
@@ -416,23 +417,23 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
     this.validateInfrastructureConfigurationName();
 
     if (props.subnetSelection && !props.vpc) {
-      throw new cdk.ValidationError('VpcRequiredForSubnetSelection', 'A vpc must be provided when using subnetSelection', this);
+      throw new cdk.ValidationError(lit`VpcRequiredForSubnetSelection`, 'A vpc must be provided when using subnetSelection', this);
     }
 
     const selectedSubnets = props.vpc?.selectSubnets(props.subnetSelection);
     if (props.vpc && selectedSubnets && selectedSubnets.subnetIds.length === 0) {
-      throw new cdk.ValidationError('NoSubnetsMatched', 'No subnets matched the given subnetSelection for the provided VPC.', this);
+      throw new cdk.ValidationError(lit`NoSubnetsMatched`, 'No subnets matched the given subnetSelection for the provided VPC.', this);
     }
 
     if (props.instanceProfile && props.role) {
-      throw new cdk.ValidationError('BothInstanceProfileAndRoleProvided', 'Both an instance profile and a role cannot be provided', this);
+      throw new cdk.ValidationError(lit`BothInstanceProfileAndRoleProvided`, 'Both an instance profile and a role cannot be provided', this);
     }
 
     if (!cdk.Token.isUnresolved(props.ec2InstanceTenancy)) {
       if (props.ec2InstanceTenancy === Tenancy.HOST) {
         if (props.ec2InstanceHostId === undefined && props.ec2InstanceHostResourceGroupArn === undefined) {
           throw new cdk.ValidationError(
-            'HostTenancyRequiresHostIdOrResourceGroup',
+            lit`HostTenancyRequiresHostIdOrResourceGroup`,
             'ec2InstanceHostId or ec2InstanceHostResourceGroupArn must be specified when ec2InstanceTenancy is set to host',
             this,
           );
@@ -440,7 +441,7 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
       } else {
         if (props.ec2InstanceHostId !== undefined) {
           throw new cdk.ValidationError(
-            'HostIdRequiresHostTenancy',
+            lit`HostIdRequiresHostTenancy`,
             'ec2InstanceHostId cannot be specified unless ec2InstanceTenancy is set to host',
             this,
           );
@@ -448,7 +449,7 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
 
         if (props.ec2InstanceHostResourceGroupArn !== undefined) {
           throw new cdk.ValidationError(
-            'HostResourceGroupArnRequiresHostTenancy',
+            lit`HostResourceGroupArnRequiresHostTenancy`,
             'ec2InstanceHostResourceGroupArn cannot be specified unless ec2InstanceTenancy is set to host',
             this,
           );
@@ -458,18 +459,18 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
 
     if (props.ec2InstanceHostId !== undefined && props.ec2InstanceHostResourceGroupArn !== undefined) {
       throw new cdk.ValidationError(
-        'HostIdAndResourceGroupArnConflict',
+        lit`HostIdAndResourceGroupArnConflict`,
         'ec2InstanceHostId and ec2InstanceHostResourceGroupArn cannot be used together',
         this,
       );
     }
 
     if (props.httpPutResponseHopLimit !== undefined && props.httpPutResponseHopLimit < 1) {
-      throw new cdk.ValidationError('HttpPutResponseHopLimitTooLow', 'httpPutResponseHopLimit must be at least 1', this);
+      throw new cdk.ValidationError(lit`HttpPutResponseHopLimitTooLow`, 'httpPutResponseHopLimit must be at least 1', this);
     }
 
     if (props.httpPutResponseHopLimit !== undefined && props.httpPutResponseHopLimit > 64) {
-      throw new cdk.ValidationError('HttpPutResponseHopLimitTooHigh', 'httpPutResponseHopLimit must be at most 64', this);
+      throw new cdk.ValidationError(lit`HttpPutResponseHopLimitTooHigh`, 'httpPutResponseHopLimit must be at most 64', this);
     }
 
     if (!props.instanceProfile && !props.role) {
@@ -566,19 +567,19 @@ export class InfrastructureConfiguration extends InfrastructureConfigurationBase
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('InfrastructureConfigurationNameTooLong', 'The infrastructureConfigurationName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError(lit`InfrastructureConfigurationNameTooLong`, 'The infrastructureConfigurationName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('InfrastructureConfigurationNameContainsSpaces', 'The infrastructureConfigurationName cannot contain spaces', this);
+      throw new cdk.ValidationError(lit`InfrastructureConfigurationNameContainsSpaces`, 'The infrastructureConfigurationName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('InfrastructureConfigurationNameContainsUnderscores', 'The infrastructureConfigurationName cannot contain underscores', this);
+      throw new cdk.ValidationError(lit`InfrastructureConfigurationNameContainsUnderscores`, 'The infrastructureConfigurationName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('InfrastructureConfigurationNameNotLowercase', 'The infrastructureConfigurationName must be lowercase', this);
+      throw new cdk.ValidationError(lit`InfrastructureConfigurationNameNotLowercase`, 'The infrastructureConfigurationName must be lowercase', this);
     }
   }
 

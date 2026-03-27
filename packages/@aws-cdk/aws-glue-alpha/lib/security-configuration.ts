@@ -6,6 +6,7 @@ import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.
@@ -199,7 +200,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     addConstructMetadata(this, props);
 
     if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
-      throw new cdk.ValidationError('EncryptionRequired', 'One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
+      throw new cdk.ValidationError(lit`EncryptionRequired`, 'One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined', this);
     }
 
     const kmsKeyCreationRequired =

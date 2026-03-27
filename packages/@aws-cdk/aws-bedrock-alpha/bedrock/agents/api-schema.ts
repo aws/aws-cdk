@@ -4,6 +4,7 @@ import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import type { Construct } from 'constructs';
 import { ActionGroupSchema } from './schema-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -103,7 +104,7 @@ export class AssetApiSchema extends ApiSchema {
    */
   public _render(): CfnAgent.APISchemaProperty {
     if (!this.asset) {
-      throw new UnscopedValidationError('SchemaNotBound', 'ApiSchema must be bound to a scope before rendering. Call bind() first.');
+      throw new UnscopedValidationError(lit`SchemaNotBound`, 'ApiSchema must be bound to a scope before rendering. Call bind() first.');
     }
 
     return {

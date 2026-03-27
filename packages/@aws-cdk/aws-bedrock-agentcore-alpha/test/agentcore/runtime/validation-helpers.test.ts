@@ -5,6 +5,7 @@ import {
   validateFieldPattern,
   throwIfInvalid,
 } from '../../../lib/runtime/validation-helpers';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 describe('validation-helpers tests', () => {
   describe('validateStringField', () => {
@@ -196,7 +197,7 @@ describe('validation-helpers tests', () => {
 
   describe('UnscopedValidationError', () => {
     test('Should be an instance of Error', () => {
-      const error = new UnscopedValidationError('TestError', 'Test error');
+      const error = new UnscopedValidationError(lit`TestError`, 'Test error');
       expect(error).toBeInstanceOf(Error);
       expect(error.name).toBe('TestError');
       expect(error.message).toBe('Test error');

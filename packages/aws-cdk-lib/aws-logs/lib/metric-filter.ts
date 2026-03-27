@@ -5,6 +5,7 @@ import type { MetricOptions } from '../../aws-cloudwatch';
 import { Metric } from '../../aws-cloudwatch';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
@@ -40,7 +41,7 @@ export class MetricFilter extends Resource {
 
     const numberOfDimensions = Object.keys(props.dimensions ?? {}).length;
     if (numberOfDimensions > 3) {
-      throw new ValidationError('MetricFilterSupportsMaximumDimensions', `MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
+      throw new ValidationError(lit`MetricFilterSupportsMaximumDimensions`, `MetricFilter only supports a maximum of 3 dimensions but received ${numberOfDimensions}.`, this);
     }
 
     // It looks odd to map this object to a singleton list, but that's how

@@ -1,4 +1,5 @@
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Throws an error if a duration is defined and not an integer number of seconds within a range.
@@ -7,6 +8,6 @@ export function validateSecondsInRangeOrUndefined(name: string, min: number, max
   if (duration === undefined) { return; }
   const value = duration.toSeconds();
   if (!Number.isInteger(value) || value < min || value > max) {
-    throw new cdk.UnscopedValidationError('InvalidDurationRange', `${name}: Must be an int between ${min} and ${max} seconds (inclusive); received ${value}.`);
+    throw new cdk.UnscopedValidationError(lit`InvalidDurationRange`, `${name}: Must be an int between ${min} and ${max} seconds (inclusive); received ${value}.`);
   }
 }

@@ -9,6 +9,7 @@ import type { IConnection } from './connection';
 import type { Column } from './schema';
 import type { PartitionIndex, TableBaseProps } from './table-base';
 import { TableBase } from './table-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**
@@ -86,7 +87,7 @@ export class ExternalTable extends TableBase {
           },
           parameters: props.storageParameters ? props.storageParameters.reduce((acc, param) => {
             if (param.key in acc) {
-              throw new ValidationError('DuplicateStorageParameterKey', `Duplicate storage parameter key: ${param.key}`, this);
+              throw new ValidationError(lit`DuplicateStorageParameterKey`, `Duplicate storage parameter key: ${param.key}`, this);
             }
             const key = param.key;
             acc[key] = param.value;

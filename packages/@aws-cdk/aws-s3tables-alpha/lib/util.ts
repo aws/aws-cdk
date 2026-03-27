@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
 import type { IConstruct } from 'constructs';
 import type { TableBucketAttributes } from './table-bucket';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export const S3_TABLES_SERVICE = 's3tables';
 
@@ -21,7 +22,7 @@ export function parseTableBucketArn(construct: IConstruct, props: TableBucketAtt
     });
   }
 
-  throw new cdk.ValidationError('CannotDetermineBucketArn', 'Cannot determine bucket ARN. At least `tableBucketArn` is needed', construct);
+  throw new cdk.ValidationError(lit`CannotDetermineBucketArn`, 'Cannot determine bucket ARN. At least `tableBucketArn` is needed', construct);
 }
 
 export function parseTableBucketName(construct: IConstruct, props: TableBucketAttributes): string {
@@ -38,7 +39,7 @@ export function parseTableBucketName(construct: IConstruct, props: TableBucketAt
     }
   }
 
-  throw new cdk.ValidationError('TableBucketNameRequired', 'tableBucketName is required and could not be inferred from context', construct);
+  throw new cdk.ValidationError(lit`TableBucketNameRequired`, 'tableBucketName is required and could not be inferred from context', construct);
 }
 
 export function parseTableBucketRegion(construct: IConstruct, props: TableBucketAttributes): string | undefined {

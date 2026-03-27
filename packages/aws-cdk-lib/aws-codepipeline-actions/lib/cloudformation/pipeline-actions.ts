@@ -4,6 +4,7 @@ import * as cloudformation from '../../../aws-cloudformation';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Action } from '../action';
 
 /**
@@ -349,7 +350,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     if (this._deploymentRole) {
       return this._deploymentRole;
     } else {
-      throw new cdk.UnscopedValidationError('ActionNotAddedToPipeline', `Cannot use the ${member} before the Action has been added to a Pipeline`);
+      throw new cdk.UnscopedValidationError(lit`ActionNotAddedToPipeline`, `Cannot use the ${member} before the Action has been added to a Pipeline`);
     }
   }
 }

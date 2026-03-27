@@ -7,6 +7,7 @@ import { Grant } from '../../../aws-iam';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
@@ -73,11 +74,11 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new ValidationError('UrlAvailableImportedStages', 'url is not available for imported stages.', scope);
+        throw new ValidationError(lit`UrlAvailableImportedStages`, 'url is not available for imported stages.', scope);
       }
 
       get callbackUrl(): string {
-        throw new ValidationError('CallbackUrlAvailableImportedStages', 'callback url is not available for imported stages.', scope);
+        throw new ValidationError(lit`CallbackUrlAvailableImportedStages`, 'callback url is not available for imported stages.', scope);
       }
 
       /**

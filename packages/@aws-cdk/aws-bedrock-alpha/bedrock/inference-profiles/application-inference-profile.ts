@@ -8,6 +8,7 @@ import type { Construct } from 'constructs';
 import type { IInferenceProfile } from './inference-profile';
 import { InferenceProfileBase, InferenceProfileType } from './inference-profile';
 import type { IBedrockInvokable } from '../models';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                        PROPS FOR NEW CONSTRUCT
@@ -290,19 +291,19 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
   private validateProps(props: ApplicationInferenceProfileProps): void {
     // Validate applicationInferenceProfileName is provided and not empty
     if (!props.applicationInferenceProfileName || props.applicationInferenceProfileName.trim() === '') {
-      throw new ValidationError('ProfileNameRequired', 'applicationInferenceProfileName is required and cannot be empty', this);
+      throw new ValidationError(lit`ProfileNameRequired`, 'applicationInferenceProfileName is required and cannot be empty', this);
     }
 
     // Validate applicationInferenceProfileName length
     if (props.applicationInferenceProfileName.length > 64) {
-      throw new ValidationError('ProfileNameTooLong', 'applicationInferenceProfileName cannot exceed 64 characters', this);
+      throw new ValidationError(lit`ProfileNameTooLong`, 'applicationInferenceProfileName cannot exceed 64 characters', this);
     }
 
     // Validate applicationInferenceProfileName pattern
     const namePattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
     if (!namePattern.test(props.applicationInferenceProfileName)) {
       throw new ValidationError(
-        'ProfileNameInvalidPattern',
+        lit`ProfileNameInvalidPattern`,
         'applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$',
         this,
       );
@@ -310,12 +311,12 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
 
     // Validate modelSource is provided
     if (!props.modelSource) {
-      throw new ValidationError('ModelSourceRequired', 'modelSource is required', this);
+      throw new ValidationError(lit`ModelSourceRequired`, 'modelSource is required', this);
     }
 
     // Validate description length if provided
     if (props.description !== undefined && props.description.length > 200) {
-      throw new ValidationError('DescriptionTooLong', 'description cannot exceed 200 characters', this);
+      throw new ValidationError(lit`DescriptionTooLong`, 'description cannot exceed 200 characters', this);
     }
 
     // Validate description pattern if provided
@@ -323,7 +324,7 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       const descriptionPattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
       if (!descriptionPattern.test(props.description)) {
         throw new ValidationError(
-          'DescriptionInvalidPattern',
+          lit`DescriptionInvalidPattern`,
           'description must match pattern ^([0-9a-zA-Z:.][ _-]?)+$',
           this,
         );

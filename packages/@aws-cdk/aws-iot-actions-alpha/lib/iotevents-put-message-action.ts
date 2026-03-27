@@ -1,6 +1,7 @@
 import type * as iot from '@aws-cdk/aws-iot-alpha';
 import type * as iotevents from '@aws-cdk/aws-iotevents-alpha';
 import { UnscopedValidationError } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
@@ -51,7 +52,7 @@ export class IotEventsPutMessageAction implements iot.IAction {
     this.role = props.role;
 
     if (this.batchMode && this.messageId) {
-      throw new UnscopedValidationError('MessageIdNotAllowedInBatchMode', 'messageId is not allowed when batchMode is true');
+      throw new UnscopedValidationError(lit`MessageIdNotAllowedInBatchMode`, 'messageId is not allowed when batchMode is true');
     }
   }
 

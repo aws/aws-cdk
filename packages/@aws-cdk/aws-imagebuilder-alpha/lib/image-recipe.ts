@@ -9,6 +9,7 @@ import type { Construct } from 'constructs';
 import type { BaseImage } from './base-image';
 import type { IContainerRecipe } from './container-recipe';
 import type { ComponentConfiguration, IRecipeBase } from './recipe-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const IMAGE_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ImageRecipe');
 
@@ -261,7 +262,7 @@ export class ImageRecipe extends ImageRecipeBase {
   public static fromImageRecipeAttributes(scope: Construct, id: string, attrs: ImageRecipeAttributes): IImageRecipe {
     if (!attrs.imageRecipeArn && !attrs.imageRecipeName) {
       throw new cdk.ValidationError(
-        'ImageRecipeAttributesRequired',
+        lit`ImageRecipeAttributesRequired`,
         'either imageRecipeArn or imageRecipeName must be provided to import an image recipe',
         scope,
       );
@@ -451,26 +452,26 @@ export class ImageRecipe extends ImageRecipeBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
-        'ImageRecipeNameTooLong',
+        lit`ImageRecipeNameTooLong`,
         `the imageRecipeName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('ImageRecipeNameNoSpaces', `the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ImageRecipeNameNoSpaces`, `the imageRecipeName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
       throw new cdk.ValidationError(
-        'ImageRecipeNameNoUnderscores',
+        lit`ImageRecipeNameNoUnderscores`,
         `the imageRecipeName cannot contain underscores, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('ImageRecipeNameMustBeLowercase', `the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ImageRecipeNameMustBeLowercase`, `the imageRecipeName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

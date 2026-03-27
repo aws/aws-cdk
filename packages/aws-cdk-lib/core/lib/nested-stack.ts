@@ -15,6 +15,7 @@ import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
+import { lit } from './private/literal-string';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
@@ -285,12 +286,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new UnscopedValidationError('NestedStacksCannotDefined', 'Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError(lit`NestedStacksCannotDefined`, 'Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new UnscopedValidationError('MustBeNestedStacksDefined', 'Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError(lit`MustBeNestedStacksDefined`, 'Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

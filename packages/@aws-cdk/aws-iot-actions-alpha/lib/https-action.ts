@@ -1,5 +1,6 @@
 import type * as iot from '@aws-cdk/aws-iot-alpha';
 import { Duration, Size, UnscopedValidationError } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
@@ -126,20 +127,20 @@ export class HttpsAction implements iot.IAction {
     if (this.batchConfig.maxBatchOpenDuration) {
       const ms = this.batchConfig.maxBatchOpenDuration.toMilliseconds();
       if (ms < Duration.millis(5).toMilliseconds() || ms > Duration.millis(200).toMilliseconds()) {
-        throw new UnscopedValidationError('InvalidMaxBatchOpenDuration', `maxBatchOpenDuration must be between 5 ms and 200 ms, got ${ms} ms`);
+        throw new UnscopedValidationError(lit`InvalidMaxBatchOpenDuration`, `maxBatchOpenDuration must be between 5 ms and 200 ms, got ${ms} ms`);
       }
     }
 
     if (this.batchConfig.maxBatchSize) {
       if (this.batchConfig.maxBatchSize < 2 || this.batchConfig.maxBatchSize > 10) {
-        throw new UnscopedValidationError('InvalidMaxBatchSize', `maxBatchSize must be between 2 and 10, got ${this.batchConfig.maxBatchSize}`);
+        throw new UnscopedValidationError(lit`InvalidMaxBatchSize`, `maxBatchSize must be between 2 and 10, got ${this.batchConfig.maxBatchSize}`);
       }
     }
 
     if (this.batchConfig.maxBatchSizeBytes) {
       const bytes = this.batchConfig.maxBatchSizeBytes.toBytes();
       if (bytes < Size.bytes(100).toBytes() || bytes > Size.kibibytes(128).toBytes()) {
-        throw new UnscopedValidationError('InvalidMaxBatchSizeBytes', `maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${bytes} bytes`);
+        throw new UnscopedValidationError(lit`InvalidMaxBatchSizeBytes`, `maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${bytes} bytes`);
       }
     }
   }

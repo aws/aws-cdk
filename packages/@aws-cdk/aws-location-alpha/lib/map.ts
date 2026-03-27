@@ -6,6 +6,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { generateUniqueId } from './util';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Represents the Amazon Location Service Map
@@ -247,7 +248,7 @@ export class Map extends Resource implements IMap {
     const parsedArn = Stack.of(scope).splitArn(mapArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError('MapArnMissingResourceName', `Map Arn ${mapArn} does not have a resource name.`);
+      throw new UnscopedValidationError(lit`MapArnMissingResourceName`, `Map Arn ${mapArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IMap {
@@ -287,16 +288,16 @@ export class Map extends Resource implements IMap {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError('MapDescriptionTooLong', `\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`, this);
+      throw new ValidationError(lit`MapDescriptionTooLong`, `\`description\` must be between 0 and 1000 characters, got: ${props.description.length} characters.`, this);
     }
 
     if (props.mapName !== undefined && !Token.isUnresolved(props.mapName)) {
       if (props.mapName.length < 1 || props.mapName.length > 100) {
-        throw new ValidationError('MapNameInvalidLength', `\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`, this);
+        throw new ValidationError(lit`MapNameInvalidLength`, `\`mapName\` must be between 1 and 100 characters, got: ${props.mapName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.mapName)) {
-        throw new ValidationError('MapNameInvalidCharacters', `\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`, this);
+        throw new ValidationError(lit`MapNameInvalidCharacters`, `\`mapName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.mapName}.`, this);
       }
     }
 

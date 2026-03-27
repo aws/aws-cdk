@@ -3,6 +3,7 @@ import type * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import { Fn, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Represents credentials used to access a Docker registry.
@@ -153,7 +154,7 @@ class EcrDockerCredential extends DockerCredential {
     super(opts.usages);
 
     if (repositories.length === 0) {
-      throw new UnscopedValidationError('SupplyLeastCreate', 'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
+      throw new UnscopedValidationError(lit`SupplyLeastCreate`, 'must supply at least one `ecr.IRepository` to create an `EcrDockerCredential`');
     }
     this.registryDomain = Fn.select(0, Fn.split('/', repositories[0].repositoryUri));
   }

@@ -4,6 +4,7 @@ import { Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A parameter group
@@ -111,7 +112,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
       this.parameters[name] = value;
       this.resource.parameters = this.parseParameters();
     } else if (existingValue !== value) {
-      throw new ValidationError('ConflictingParameterValue', `The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`, this);
+      throw new ValidationError(lit`ConflictingParameterValue`, `The parameter group already contains the parameter "${name}", but with a different value (Given: ${value}, Existing: ${existingValue}).`, this);
     }
   }
 }

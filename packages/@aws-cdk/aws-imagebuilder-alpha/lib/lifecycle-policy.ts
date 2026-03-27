@@ -6,6 +6,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IRecipeBase } from './recipe-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const LIFECYCLE_POLICY_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.LifecyclePolicy');
 
@@ -531,7 +532,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       if (recipe._isImageRecipe()) {
         if (resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
           throw new cdk.ValidationError(
-            'RecipeTypeMismatchForContainerPolicy',
+            lit`RecipeTypeMismatchForContainerPolicy`,
             `recipes in the resource selection must all be container recipes for policy type ${LifecyclePolicyResourceType.CONTAINER_IMAGE}`,
             this,
           );
@@ -546,7 +547,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       if (recipe._isContainerRecipe()) {
         if (resourceType === LifecyclePolicyResourceType.AMI_IMAGE) {
           throw new cdk.ValidationError(
-            'RecipeTypeMismatchForAmiPolicy',
+            lit`RecipeTypeMismatchForAmiPolicy`,
             `recipes in the resource selection must all be image recipes for policy type ${LifecyclePolicyResourceType.AMI_IMAGE}`,
             this,
           );
@@ -559,7 +560,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       }
 
       throw new cdk.ValidationError(
-        'InvalidRecipeType',
+        lit`InvalidRecipeType`,
         'recipes in the resource selection must either be an IImageRecipe or IContainerRecipe',
         this,
       );
@@ -633,24 +634,24 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
    */
   private validatePolicy(props: LifecyclePolicyProps): void {
     if (props.resourceSelection.recipes?.length && Object.keys(props.resourceSelection.tags || {}).length) {
-      throw new cdk.ValidationError('ResourceSelectionCannotContainBothRecipesAndTags', 'resource selection cannot contain both recipes and tags', this);
+      throw new cdk.ValidationError(lit`ResourceSelectionCannotContainBothRecipesAndTags`, 'resource selection cannot contain both recipes and tags', this);
     }
 
     if (!props.resourceSelection.recipes?.length && !Object.keys(props.resourceSelection.tags || {}).length) {
-      throw new cdk.ValidationError('ResourceSelectionRequired', 'resource selection must contain either recipes or tags', this);
+      throw new cdk.ValidationError(lit`ResourceSelectionRequired`, 'resource selection must contain either recipes or tags', this);
     }
 
     if (props.details.length === 0) {
-      throw new cdk.ValidationError('MinimumOneRuleRequired', 'a lifecycle policy must have at least 1 rule', this);
+      throw new cdk.ValidationError(lit`MinimumOneRuleRequired`, 'a lifecycle policy must have at least 1 rule', this);
     }
 
     if (props.details.length > 3) {
-      throw new cdk.ValidationError('MaximumThreeRulesExceeded', 'a lifecycle policy can only have up to 3 rules', this);
+      throw new cdk.ValidationError(lit`MaximumThreeRulesExceeded`, 'a lifecycle policy can only have up to 3 rules', this);
     }
 
     const actions = props.details.map((detail) => detail.action.type);
     if (new Set(actions).size != actions.length) {
-      throw new cdk.ValidationError('DuplicateActions', 'lifecycle policy rules may not have duplicate actions', this);
+      throw new cdk.ValidationError(lit`DuplicateActions`, 'lifecycle policy rules may not have duplicate actions', this);
     }
   }
 
@@ -669,19 +670,19 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
   ) {
     if (!cdk.Token.isUnresolved(resourceType) && resourceType === LifecyclePolicyResourceType.CONTAINER_IMAGE) {
       if (!cdk.Token.isUnresolved(action.type) && action.type !== LifecyclePolicyActionType.DELETE) {
-        throw new cdk.ValidationError('OnlyDeleteRulesForContainerPolicies', 'you may only specify DELETE rules for container policies', this);
+        throw new cdk.ValidationError(lit`OnlyDeleteRulesForContainerPolicies`, 'you may only specify DELETE rules for container policies', this);
       }
 
       if (action.includeAmis) {
-        throw new cdk.ValidationError('CannotIncludeAmisInContainerPolicy', 'you cannot include AMIs in a container policy', this);
+        throw new cdk.ValidationError(lit`CannotIncludeAmisInContainerPolicy`, 'you cannot include AMIs in a container policy', this);
       }
 
       if (action.includeSnapshots) {
-        throw new cdk.ValidationError('CannotIncludeSnapshotsInContainerPolicy', 'you cannot include snapshots in a container policy', this);
+        throw new cdk.ValidationError(lit`CannotIncludeSnapshotsInContainerPolicy`, 'you cannot include snapshots in a container policy', this);
       }
 
       if (amiExclusionRules !== undefined) {
-        throw new cdk.ValidationError('CannotExcludeAmisInContainerPolicy', 'you cannot exclude AMIs in a container policy', this);
+        throw new cdk.ValidationError(lit`CannotExcludeAmisInContainerPolicy`, 'you cannot exclude AMIs in a container policy', this);
       }
     }
 
@@ -690,7 +691,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       resourceType === LifecyclePolicyResourceType.AMI_IMAGE &&
       action.includeContainers
     ) {
-      throw new cdk.ValidationError('CannotIncludeContainersInAmiPolicy', 'you cannot include containers in an AMI policy', this);
+      throw new cdk.ValidationError(lit`CannotIncludeContainersInAmiPolicy`, 'you cannot include containers in an AMI policy', this);
     }
   }
 
@@ -702,20 +703,20 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
    */
   private validatePolicyDetailFilter(filter: LifecyclePolicyFilter) {
     if (filter.ageFilter !== undefined && filter.countFilter !== undefined) {
-      throw new cdk.ValidationError('AgeAndCountFilterConflict', 'either age count can be specified in a policy filter, but not both', this);
+      throw new cdk.ValidationError(lit`AgeAndCountFilterConflict`, 'either age count can be specified in a policy filter, but not both', this);
     }
 
     if (filter.ageFilter === undefined && filter.countFilter === undefined) {
-      throw new cdk.ValidationError('AgeOrCountFilterRequired', 'you must provide an age or count filter in the policy', this);
+      throw new cdk.ValidationError(lit`AgeOrCountFilterRequired`, 'you must provide an age or count filter in the policy', this);
     }
 
     const retainAtLeast = filter.ageFilter?.retainAtLeast;
     if (retainAtLeast !== undefined) {
       if (retainAtLeast < 1) {
-        throw new cdk.ValidationError('RetainAtLeastTooLow', 'the retainAtLeast filter value must be at least 1', this);
+        throw new cdk.ValidationError(lit`RetainAtLeastTooLow`, 'the retainAtLeast filter value must be at least 1', this);
       }
       if (retainAtLeast > 10) {
-        throw new cdk.ValidationError('RetainAtLeastTooHigh', 'the retainAtLeast filter value must be at most 10', this);
+        throw new cdk.ValidationError(lit`RetainAtLeastTooHigh`, 'the retainAtLeast filter value must be at most 10', this);
       }
     }
   }
@@ -738,7 +739,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
 
     const valueInDays = Math.ceil(duration.toDays());
     if (valueInDays < 1) {
-      throw new cdk.ValidationError('DurationTooShort', 'the provided duration must be at least 1 day', this);
+      throw new cdk.ValidationError(lit`DurationTooShort`, 'the provided duration must be at least 1 day', this);
     }
 
     if (valueInDays <= valueLimit) {
@@ -760,7 +761,7 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
       return { value: valueInYears, unit: 'YEARS' };
     }
 
-    throw new cdk.ValidationError('DurationTooLong', `the provided duration must be less than ${valueLimit} years`, this);
+    throw new cdk.ValidationError(lit`DurationTooLong`, `the provided duration must be less than ${valueLimit} years`, this);
   }
 
   private validateLifecyclePolicyName() {
@@ -769,19 +770,19 @@ export class LifecyclePolicy extends LifecyclePolicyBase {
     }
 
     if (this.physicalName.length > 128) {
-      throw new cdk.ValidationError('LifecyclePolicyNameTooLong', 'The lifecyclePolicyName cannot be longer than 128 characters', this);
+      throw new cdk.ValidationError(lit`LifecyclePolicyNameTooLong`, 'The lifecyclePolicyName cannot be longer than 128 characters', this);
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('LifecyclePolicyNameContainsSpaces', 'The lifecyclePolicyName cannot contain spaces', this);
+      throw new cdk.ValidationError(lit`LifecyclePolicyNameContainsSpaces`, 'The lifecyclePolicyName cannot contain spaces', this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('LifecyclePolicyNameContainsUnderscores', 'The lifecyclePolicyName cannot contain underscores', this);
+      throw new cdk.ValidationError(lit`LifecyclePolicyNameContainsUnderscores`, 'The lifecyclePolicyName cannot contain underscores', this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('LifecyclePolicyNameNotLowercase', 'The lifecyclePolicyName must be lowercase', this);
+      throw new cdk.ValidationError(lit`LifecyclePolicyNameNotLowercase`, 'The lifecyclePolicyName must be lowercase', this);
     }
   }
 }

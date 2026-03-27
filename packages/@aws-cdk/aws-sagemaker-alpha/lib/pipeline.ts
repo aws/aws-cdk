@@ -6,6 +6,7 @@ import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Validates a SageMaker Pipeline name according to AWS requirements.
@@ -24,12 +25,12 @@ function validatePipelineName(pipelineName: string, scope: Construct): void {
 
   // Check length constraints (1-256 characters)
   if (!pipelineName || pipelineName.length === 0 || pipelineName.length > 256) {
-    throw new ValidationError('InvalidPipelineNameLength', `Invalid pipeline name: "${pipelineName}". Pipeline name must be between 1-256 characters.`, scope);
+    throw new ValidationError(lit`InvalidPipelineNameLength`, `Invalid pipeline name: "${pipelineName}". Pipeline name must be between 1-256 characters.`, scope);
   }
 
   // Pattern from AWS docs: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$
   if (!/^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/.test(pipelineName)) {
-    throw new ValidationError('InvalidPipelineNamePattern', `Invalid pipeline name: "${pipelineName}". Pipeline name must match pattern: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$`, scope);
+    throw new ValidationError(lit`InvalidPipelineNamePattern`, `Invalid pipeline name: "${pipelineName}". Pipeline name must match pattern: ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$`, scope);
   }
 }
 
@@ -137,7 +138,7 @@ export class Pipeline extends Resource implements IPipeline {
         region: attrs.region,
       });
     } else {
-      throw new ValidationError('MissingPipelineIdentifier', 'Either pipelineArn or pipelineName must be provided', scope);
+      throw new ValidationError(lit`MissingPipelineIdentifier`, 'Either pipelineArn or pipelineName must be provided', scope);
     }
 
     class Import extends Resource implements IPipeline {
@@ -190,7 +191,7 @@ export class Pipeline extends Resource implements IPipeline {
     addConstructMetadata(this, props);
     // Suppress unused parameter warning
     void props;
-    throw new ValidationError('DirectPipelineInstantiation', 'Pipeline construct cannot be instantiated directly. Use Pipeline.fromPipelineArn() or Pipeline.fromPipelineName() to import existing pipelines.', scope);
+    throw new ValidationError(lit`DirectPipelineInstantiation`, 'Pipeline construct cannot be instantiated directly. Use Pipeline.fromPipelineArn() or Pipeline.fromPipelineName() to import existing pipelines.', scope);
   }
 
   /**

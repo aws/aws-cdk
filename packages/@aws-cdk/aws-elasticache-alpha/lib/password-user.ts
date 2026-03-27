@@ -7,6 +7,7 @@ import type { Construct } from 'constructs';
 import { UserEngine } from './common';
 import type { UserBaseProps } from './user-base';
 import { UserBase } from './user-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const ELASTICACHE_PASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.PasswordUser');
 
@@ -94,7 +95,7 @@ export class PasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (props.passwords.length < 1 || props.passwords.length > 2) {
-      throw new ValidationError('InvalidPasswordCount', 'Password authentication requires 1-2 passwords.', this);
+      throw new ValidationError(lit`InvalidPasswordCount`, 'Password authentication requires 1-2 passwords.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

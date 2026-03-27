@@ -6,6 +6,7 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { generateUniqueId, DataSource } from './util';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A Route Calculator
@@ -83,7 +84,7 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     const parsedArn = Stack.of(scope).splitArn(routeCalculatorArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new UnscopedValidationError('RouteCalculatorArnMissingResourceName', `Route Calculator Arn ${routeCalculatorArn} does not have a resource name.`);
+      throw new UnscopedValidationError(lit`RouteCalculatorArnMissingResourceName`, `Route Calculator Arn ${routeCalculatorArn} does not have a resource name.`);
     }
 
     class Import extends Resource implements IRouteCalculator {
@@ -123,16 +124,16 @@ export class RouteCalculator extends Resource implements IRouteCalculator {
     addConstructMetadata(this, props);
 
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1000) {
-      throw new ValidationError('RouteCalculatorDescriptionTooLong', `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError(lit`RouteCalculatorDescriptionTooLong`, `\`description\` must be between 0 and 1000 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.routeCalculatorName !== undefined && !Token.isUnresolved(props.routeCalculatorName)) {
       if (props.routeCalculatorName.length < 1 || props.routeCalculatorName.length > 100) {
-        throw new ValidationError('RouteCalculatorNameInvalidLength', `\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`, this);
+        throw new ValidationError(lit`RouteCalculatorNameInvalidLength`, `\`routeCalculatorName\` must be between 1 and 100 characters, got: ${props.routeCalculatorName.length} characters.`, this);
       }
 
       if (!/^[-._\w]+$/.test(props.routeCalculatorName)) {
-        throw new ValidationError('RouteCalculatorNameInvalidCharacters', `\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`, this);
+        throw new ValidationError(lit`RouteCalculatorNameInvalidCharacters`, `\`routeCalculatorName\` must contain only alphanumeric characters, hyphens, periods and underscores, got: ${props.routeCalculatorName}.`, this);
       }
     }
 

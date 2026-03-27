@@ -19,6 +19,7 @@ import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { exampleResourceArnComponents } from './private/example-resource-common';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The interface that represents the ExampleResource resource.
@@ -172,7 +173,7 @@ abstract class ExampleResourceBase extends Resource implements IExampleResource 
   /** Implement the ec2.IConnectable interface, using the _connections field. */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('ImportedResourceCannotManageSecurityGroups', 'An imported ExampleResource cannot manage its security groups', this);
+      throw new ValidationError(lit`ImportedResourceCannotManageSecurityGroups`, 'An imported ExampleResource cannot manage its security groups', this);
     }
     return this._connections;
   }
@@ -439,7 +440,7 @@ export class ExampleResource extends ExampleResourceBase {
     if (props.waitConditionHandleName !== undefined &&
         !Token.isUnresolved(props.waitConditionHandleName) &&
         !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-      throw new ValidationError('InvalidWaitConditionHandleName', 'waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
+      throw new ValidationError(lit`InvalidWaitConditionHandleName`, 'waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
         `got: '${props.waitConditionHandleName}'`, this);
     }
 

@@ -4,6 +4,7 @@ import { Compatibility, isEc2Compatible, isFargateCompatible, isExternalCompatib
 import type { IRole } from '../../../aws-iam';
 import { Resource, ValidationError } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import type { TaskDefinitionReference } from '../ecs.generated';
@@ -95,7 +96,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get networkMode(): NetworkMode {
     if (this._networkMode == undefined) {
-      throw new ValidationError('NetworkModeRequired', 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+      throw new ValidationError(lit`NetworkModeRequired`, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._networkMode;
@@ -104,7 +105,7 @@ export class ImportedTaskDefinition extends Resource implements IEc2TaskDefiniti
 
   public get taskRole(): IRole {
     if (this._taskRole == undefined) {
-      throw new ValidationError('TaskRoleRequired', 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+      throw new ValidationError(lit`TaskRoleRequired`, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition', this);
     } else {
       return this._taskRole;

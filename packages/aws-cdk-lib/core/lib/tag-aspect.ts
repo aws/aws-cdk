@@ -6,6 +6,7 @@ import { UnscopedValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import * as cxapi from '../../cx-api';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
+import { lit } from './private/literal-string';
 import type { ITaggable, ITaggableV2 } from './tag-manager';
 import { TagManager } from './tag-manager';
 
@@ -123,7 +124,7 @@ export class Tag extends TagBase {
   constructor(key: string, value: string, props: TagProps = {}) {
     super(key, props);
     if (value === undefined) {
-      throw new UnscopedValidationError('Value', `Tag '${key}' must have a value`);
+      throw new UnscopedValidationError(lit`Value`, `Tag '${key}' must have a value`);
     }
     this.value = value;
   }

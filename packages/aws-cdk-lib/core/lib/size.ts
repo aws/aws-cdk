@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Token } from './token';
 
 /**
@@ -96,7 +97,7 @@ export class Size {
 
   private constructor(amount: number, unit: StorageUnit) {
     if (!Token.isUnresolved(amount) && amount < 0) {
-      throw new UnscopedValidationError('StorageAmountsCannotNegative', `Storage amounts cannot be negative. Received: ${amount}`);
+      throw new UnscopedValidationError(lit`StorageAmountsCannotNegative`, `Storage amounts cannot be negative. Received: ${amount}`);
     }
     this.amount = amount;
     this.unit = unit;
@@ -221,7 +222,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
   if (fromUnit.inBytes === toUnit.inBytes) { return amount; }
   if (Token.isUnresolved(amount)) {
-    throw new UnscopedValidationError('MustBeSizeSpecifiedSize', `Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
+    throw new UnscopedValidationError(lit`MustBeSizeSpecifiedSize`, `Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
   }
 
   const multiplier = fromUnit.inBytes / toUnit.inBytes;
@@ -234,7 +235,7 @@ function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, opt
     default:
     case SizeRoundingBehavior.FAIL:
       if (!Number.isInteger(value)) {
-        throw new UnscopedValidationError('CannotConvertedIntoWhole', `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
+        throw new UnscopedValidationError(lit`CannotConvertedIntoWhole`, `'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
       }
       return value;
   }

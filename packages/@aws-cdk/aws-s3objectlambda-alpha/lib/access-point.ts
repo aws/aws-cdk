@@ -7,6 +7,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The interface that represents the AccessPoint resource.
@@ -152,16 +153,16 @@ export interface AccessPointAttributes {
  */
 function validateAccessPointName(name: string): void {
   if (name.length < 3 || name.length > 50) {
-    throw new UnscopedValidationError('AccessPointNameLengthInvalid', 'Access point name must be between 3 and 50 characters long');
+    throw new UnscopedValidationError(lit`AccessPointNameLengthInvalid`, 'Access point name must be between 3 and 50 characters long');
   }
   if (name.endsWith('-s3alias')) {
-    throw new UnscopedValidationError('AccessPointNameEndsWithS3Alias', 'Access point name cannot end with the suffix -s3alias');
+    throw new UnscopedValidationError(lit`AccessPointNameEndsWithS3Alias`, 'Access point name cannot end with the suffix -s3alias');
   }
   if (name[0] === '-' || name[name.length - 1] === '-') {
-    throw new UnscopedValidationError('AccessPointNameBeginsOrEndsWithDash', 'Access point name cannot begin or end with a dash');
+    throw new UnscopedValidationError(lit`AccessPointNameBeginsOrEndsWithDash`, 'Access point name cannot begin or end with a dash');
   }
   if (!/^[0-9a-z](.(?![\.A-Z_]))+[0-9a-z]$/.test(name)) {
-    throw new UnscopedValidationError('AccessPointNameInvalidCharacters', 'Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
+    throw new UnscopedValidationError(lit`AccessPointNameInvalidCharacters`, 'Access point name must begin with a number or lowercase letter and not contain underscores, uppercase letters, or periods');
   }
 }
 
@@ -180,7 +181,7 @@ export class AccessPoint extends AccessPointBase {
   public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
     const arn = core.Arn.split(attrs.accessPointArn, core.ArnFormat.SLASH_RESOURCE_NAME);
     if (!arn.resourceName) {
-      throw new UnscopedValidationError('UnableToParseAccessPointName', 'Unable to parse access point name');
+      throw new UnscopedValidationError(lit`UnableToParseAccessPointName`, 'Unable to parse access point name');
     }
     const name = arn.resourceName;
     class Import extends AccessPointBase {

@@ -7,6 +7,7 @@ import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                       API SCHEMA CLASS
@@ -126,7 +127,7 @@ export class AssetApiSchema extends ApiSchema {
   public _render(): any {
     if (!this.asset) {
       throw new UnscopedValidationError(
-        'ApiSchemaNotBound',
+        lit`ApiSchemaNotBound`,
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }

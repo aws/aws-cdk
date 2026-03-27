@@ -2,6 +2,7 @@ import { findReferencedPaths, jsonPathString, JsonPathToken, renderObject, rende
 import type { IResolvable } from '../../core';
 import { Token, JsonNull, UnscopedValidationError } from '../../core';
 import { findJsonataExpressions } from './private/jsonata';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Extract a field from the State Machine data or context
@@ -386,7 +387,7 @@ export class JsonPath {
   public static jsonToString(value: any): string {
     const path = jsonPathFromAny(value);
     if (!path) {
-      throw new UnscopedValidationError('InvalidJsonPathArgument', 'Argument to JsonPath.jsonToString() must be a JsonPath object');
+      throw new UnscopedValidationError(lit`InvalidJsonPathArgument`, 'Argument to JsonPath.jsonToString() must be a JsonPath object');
     }
 
     return new JsonPathToken(`States.JsonToString(${path})`).toString();
@@ -571,7 +572,7 @@ function validateJsonPath(path: string) {
   ) {
     const lastItem = intrinsicFunctionFullNames.pop();
     const intrinsicFunctionsStr = intrinsicFunctionFullNames.join(', ') + ', or ' + lastItem;
-    throw new UnscopedValidationError('InvalidJsonPathValue', `JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
+    throw new UnscopedValidationError(lit`InvalidJsonPathValue`, `JSON path values must be exactly '$', '$$', start with '$', start with '$$.', start with '$[', or start with an intrinsic function: ${intrinsicFunctionsStr}. Received: ${path}`);
   }
 }
 
@@ -579,12 +580,12 @@ function validateDataPath(path: string) {
   if (path !== '$'
     && !path.startsWith('$[')
     && !path.startsWith('$')) {
-    throw new UnscopedValidationError('InvalidDataJsonPathValue', "Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
+    throw new UnscopedValidationError(lit`InvalidDataJsonPathValue`, "Data JSON path values must either be exactly equal to '$', start with '$[' or start with '$'");
   }
 }
 
 function validateContextPath(path: string) {
   if (path !== '$$' && !path.startsWith('$$.')) {
-    throw new UnscopedValidationError('InvalidContextJsonPathValue', "Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
+    throw new UnscopedValidationError(lit`InvalidContextJsonPathValue`, "Context JSON path values must either be exactly equal to '$$' or start with '$$.'");
   }
 }

@@ -2,6 +2,7 @@ import type { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn
 import { UnscopedValidationError } from './errors';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
+import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
@@ -48,7 +49,7 @@ export class Fn {
    */
   public static join(delimiter: string, listOfValues: string[]): string {
     if (listOfValues.length === 0) {
-      throw new UnscopedValidationError('RequiresFnjoinRequiresLeast', 'FnJoin requires at least one value to be provided');
+      throw new UnscopedValidationError(lit`RequiresFnjoinRequiresLeast`, 'FnJoin requires at least one value to be provided');
     }
 
     return new FnJoin(delimiter, listOfValues).toString();
@@ -105,7 +106,7 @@ export class Fn {
 
     if (Token.isUnresolved(delimiter)) {
       // Limitation of CloudFormation
-      throw new UnscopedValidationError('ValidationError', 'Fn.split: \'delimiter\' may not be a token value');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.split: \'delimiter\' may not be a token value');
     }
 
     const split = Token.asList(new FnSplit(delimiter, source));
@@ -114,7 +115,7 @@ export class Fn {
     }
 
     if (Token.isUnresolved(assumedLength)) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.split: \'assumedLength\' may not be a token value');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.split: \'assumedLength\' may not be a token value');
     }
 
     return range(assumedLength).map(i => Fn.select(i, split));
@@ -271,7 +272,7 @@ export class Fn {
    */
   public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.conditionAnd() needs at least one argument');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
@@ -333,7 +334,7 @@ export class Fn {
    */
   public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.conditionOr() needs at least one argument');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
@@ -444,7 +445,7 @@ export class Fn {
     // short-circuit if array is not a token
     if (!Token.isUnresolved(array)) {
       if (!Array.isArray(array)) {
-        throw new UnscopedValidationError('ValidationError', 'Fn.length() needs an array');
+        throw new UnscopedValidationError(lit`ValidationError`, 'Fn.length() needs an array');
       }
       return array.length;
     }
@@ -667,7 +668,7 @@ class FnCidr extends FnBase {
    */
   constructor(ipBlock: any, count: any, sizeMask?: any) {
     if (count < 1 || count > 256) {
-      throw new UnscopedValidationError('MustBeFnCidrSCountAttribute', `Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
+      throw new UnscopedValidationError(lit`MustBeFnCidrSCountAttribute`, `Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
   }
@@ -859,7 +860,7 @@ class FnJoin implements IResolvable {
    */
   constructor(delimiter: string, listOfValues: any[]) {
     if (listOfValues.length === 0) {
-      throw new UnscopedValidationError('RequiresFnjoinRequiresLeast', 'FnJoin requires at least one value to be provided');
+      throw new UnscopedValidationError(lit`RequiresFnjoinRequiresLeast`, 'FnJoin requires at least one value to be provided');
     }
 
     this.delimiter = delimiter;

@@ -8,6 +8,7 @@ import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { IRoute } from '../common';
 
@@ -98,7 +99,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     addConstructMetadata(this, props);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new ValidationError('SetWebSocketAuthorizerConnect', 'You can only set a WebSocket authorizer to a $connect route.', scope);
+      throw new ValidationError(lit`SetWebSocketAuthorizerConnect`, 'You can only set a WebSocket authorizer to a $connect route.', scope);
     }
 
     this.webSocketApi = props.webSocketApi;

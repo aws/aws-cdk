@@ -5,6 +5,7 @@ import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export interface IDatabase extends IResource {
   /**
@@ -152,12 +153,12 @@ export class Database extends Resource implements IDatabase {
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new UnscopedValidationError('InvalidLocationUriLength', `locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
+    throw new UnscopedValidationError(lit`InvalidLocationUriLength`, `locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
   }
 }
 
 function validateDescription(description: string): void {
   if (description.length > 2048) {
-    throw new UnscopedValidationError('InvalidDescriptionLength', `description length must be less than or equal to 2048, got ${description.length}`);
+    throw new UnscopedValidationError(lit`InvalidDescriptionLength`, `description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

@@ -3,6 +3,7 @@ import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import type { ApplicationTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { ApplicationMultipleTargetGroupsServiceBaseProps } from '../base/application-multiple-target-groups-service-base';
 import {
@@ -103,7 +104,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('SpecifyOneTaskDefinitionTask', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionTask`, 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -132,10 +133,10 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         }
       }
     } else {
-      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('LeastOneEssentialContainerSpecified', 'At least one essential container must be specified', this);
+      throw new ValidationError(lit`LeastOneEssentialContainerSpecified`, 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({

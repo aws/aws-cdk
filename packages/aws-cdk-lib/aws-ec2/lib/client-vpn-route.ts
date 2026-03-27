@@ -4,6 +4,7 @@ import type { ISubnetRef } from './ec2.generated';
 import { CfnClientVpnRoute } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -89,13 +90,13 @@ export class ClientVpnRoute extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnRouteProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new ValidationError(
-        'ClientVpnEndpointRequired',
+        lit`ClientVpnEndpointRequired`,
         'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified', scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw new ValidationError(
-        'ClientVpnEndpointMutuallyExclusive',
+        lit`ClientVpnEndpointMutuallyExclusive`,
         'ClientVpnRoute: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
         scope,

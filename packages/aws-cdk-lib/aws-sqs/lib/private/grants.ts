@@ -15,6 +15,7 @@ import { KeyGrants } from '../../../aws-kms';
 import type { CfnResource } from '../../../core';
 import { ValidationError } from '../../../core';
 import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnQueue, CfnQueuePolicy } from '../sqs.generated';
 
@@ -81,7 +82,7 @@ class EncryptedCfnQueue implements IEncryptedResource {
 
 function ifCfnQueue<A>(resource: IConstruct, factory: (r: CfnQueue) => A): A {
   if (!CfnQueue.isCfnQueue(resource)) {
-    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnQueue`, resource);
+    throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnQueue`, resource);
   }
 
   return factory(resource);

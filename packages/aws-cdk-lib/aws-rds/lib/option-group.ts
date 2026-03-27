@@ -7,6 +7,7 @@ import type { IResource } from '../../core';
 import { Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -147,7 +148,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     const majorEngineVersion = props.engine.engineVersion?.majorVersion;
     if (!majorEngineVersion) {
-      throw new ValidationError('OptiongroupCannotUsedEngine', "OptionGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError(lit`OptiongroupCannotUsedEngine`, "OptionGroup cannot be used with an engine that doesn't specify a version", this);
     }
 
     props.configurations.forEach(config => this.addConfiguration(config));
@@ -169,7 +170,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
 
     if (configuration.port) {
       if (!configuration.vpc) {
-        throw new ValidationError('MustBeSpecifiedTogether', '`port` and `vpc` must be specified together.', this);
+        throw new ValidationError(lit`MustBeSpecifiedTogether`, '`port` and `vpc` must be specified together.', this);
       }
 
       const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0

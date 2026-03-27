@@ -3,6 +3,7 @@ import * as codebuild from '../../../aws-codebuild';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface CodeBuildStartBuildBatchOptions {
@@ -124,7 +125,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
         ];
         break;
       default:
-        throw new cdk.ValidationError('UnsupportedIntegrationPattern', `Unsupported integration pattern: ${this.integrationPattern}`, this);
+        throw new cdk.ValidationError(lit`UnsupportedIntegrationPattern`, `Unsupported integration pattern: ${this.integrationPattern}`, this);
     }
 
     return policyStatements;

@@ -15,6 +15,7 @@ import { Token } from 'aws-cdk-lib';
 import type { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Represents a custom claim validation configuration for Gateway JWT authorizers.
@@ -51,7 +52,7 @@ export class GatewayCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
     if (operator !== CustomClaimOperator.CONTAINS && operator !== CustomClaimOperator.CONTAINS_ANY) {
       throw new UnscopedValidationError(
-        'CustomClaimOperatorInvalid',
+        lit`CustomClaimOperatorInvalid`,
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
     }
@@ -69,10 +70,10 @@ export class GatewayCustomClaim {
     }
     // Validate that value matches the valueType
     if (valueType === CustomClaimValueType.STRING && typeof value !== 'string') {
-      throw new UnscopedValidationError('CustomClaimStringTypeInvalid', `Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
+      throw new UnscopedValidationError(lit`CustomClaimStringTypeInvalid`, `Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
     }
     if (valueType === CustomClaimValueType.STRING_ARRAY && !Array.isArray(value)) {
-      throw new UnscopedValidationError('CustomClaimStringArrayTypeInvalid', `Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
+      throw new UnscopedValidationError(lit`CustomClaimStringArrayTypeInvalid`, `Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
     }
   }
 
@@ -95,7 +96,7 @@ export class GatewayCustomClaim {
         const values = this.value as string[];
         if (!Token.isUnresolved(values[0]) && values.length !== 1) {
           throw new UnscopedValidationError(
-            'CustomClaimContainsOperatorInvalid',
+            lit`CustomClaimContainsOperatorInvalid`,
             `Custom claim '${this.name}': CONTAINS operator requires exactly one value, got ${values.length} values`,
           );
         }

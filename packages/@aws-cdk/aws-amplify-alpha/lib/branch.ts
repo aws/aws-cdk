@@ -21,6 +21,7 @@ import { App } from './app';
 import type { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A branch
@@ -200,7 +201,7 @@ export class Branch extends Resource implements IBranch {
       const isSSR = isServerSideRendered(platform);
 
       if (props.computeRole && !isSSR) {
-        throw new ValidationError('InvalidBranchComputeRolePlatform', '`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+        throw new ValidationError(lit`InvalidBranchComputeRolePlatform`, '`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
       }
     }
 

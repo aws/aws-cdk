@@ -18,6 +18,7 @@ import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTarg
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern } from '../validation-helpers';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Props
@@ -678,7 +679,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError('GatewayTargetNameInvalid', allErrors.join('\n'), this);
+      throw new ValidationError(lit`GatewayTargetNameInvalid`, allErrors.join('\n'), this);
     }
   }
 
@@ -701,7 +702,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     });
 
     if (errors.length > 0) {
-      throw new ValidationError('GatewayTargetDescriptionInvalid', errors.join('\n'), this);
+      throw new ValidationError(lit`GatewayTargetDescriptionInvalid`, errors.join('\n'), this);
     }
   }
 }

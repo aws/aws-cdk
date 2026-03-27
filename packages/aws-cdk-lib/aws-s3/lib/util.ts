@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { BucketAttributes } from './bucket';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 export function parseBucketArn(construct: IConstruct, props: BucketAttributes): string {
   // if we have an explicit bucket ARN, use it.
@@ -20,7 +21,7 @@ export function parseBucketArn(construct: IConstruct, props: BucketAttributes): 
     });
   }
 
-  throw new ValidationError('CannotDetermineBucketLeastBucket', 'Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed', construct);
+  throw new ValidationError(lit`CannotDetermineBucketLeastBucket`, 'Cannot determine bucket ARN. At least `bucketArn` or `bucketName` is needed', construct);
 }
 
 export function parseBucketName(construct: IConstruct, props: BucketAttributes): string | undefined {

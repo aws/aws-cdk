@@ -7,6 +7,7 @@ import type { Construct } from 'constructs';
 import { UserEngine } from './common';
 import type { UserBaseProps } from './user-base';
 import { UserBase } from './user-base';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.IamUser');
 
@@ -90,7 +91,7 @@ export class IamUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (this.userName !== this.userId) {
-      throw new ValidationError('IamUserNameMustEqualUserId', 'For IAM authentication, userName must be equal to userId.', this);
+      throw new ValidationError(lit`IamUserNameMustEqualUserId`, 'For IAM authentication, userName must be equal to userId.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

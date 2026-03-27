@@ -1,6 +1,7 @@
 import { CidrBlock, NetworkUtils } from './network-util';
 import type { ISubnet } from './vpc';
 import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 /**
  * Contains logic which chooses a set of subnets from a larger list, in conjunction
  * with SubnetSelection, to determine where to place AWS resources such as VPC
@@ -54,7 +55,7 @@ export abstract class SubnetFilter {
    * Executes the subnet filtering logic, returning a filtered set of subnets.
    */
   public selectSubnets(_subnets: ISubnet[]): ISubnet[] {
-    throw new UnscopedValidationError('CannotSelectSubnetsAbstractSubnet', 'Cannot select subnets with an abstract SubnetFilter. `selectSubnets` needs to be implmemented.');
+    throw new UnscopedValidationError(lit`CannotSelectSubnetsAbstractSubnet`, 'Cannot select subnets with an abstract SubnetFilter. `selectSubnets` needs to be implmemented.');
   }
 }
 

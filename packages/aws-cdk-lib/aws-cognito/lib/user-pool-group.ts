@@ -5,6 +5,7 @@ import type { IResource } from '../../core';
 import { Resource, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IUserPoolGroupRef, IUserPoolRef, UserPoolGroupReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
@@ -91,7 +92,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
         return {
           groupName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('UserpoolidAvailableImportedUserpoolgroup', 'userPoolId is not available on imported UserPoolGroup.');
+            throw new UnscopedValidationError(lit`UserpoolidAvailableImportedUserpoolgroup`, 'userPoolId is not available on imported UserPoolGroup.');
           },
         };
       }
@@ -119,13 +120,13 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
     if (props.description !== undefined &&
       !Token.isUnresolved(props.description) &&
       (props.description.length > 2048)) {
-      throw new ValidationError('DescriptionLengthInvalid', `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
+      throw new ValidationError(lit`DescriptionLengthInvalid`, `\`description\` must be between 0 and 2048 characters. Received: ${props.description.length} characters`, this);
     }
 
     if (props.precedence !== undefined &&
       !Token.isUnresolved(props.precedence) &&
       (props.precedence < 0 || props.precedence > 2 ** 31 - 1)) {
-      throw new ValidationError('PrecedenceOutOfRange', `\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
+      throw new ValidationError(lit`PrecedenceOutOfRange`, `\`precedence\` must be between 0 and 2^31-1. Received: ${props.precedence}`, this);
     }
 
     if (
@@ -133,7 +134,7 @@ export class UserPoolGroup extends Resource implements IUserPoolGroup {
       !Token.isUnresolved(props.groupName) &&
       !/^[\p{L}\p{M}\p{S}\p{N}\p{P}]{1,128}$/u.test(props.groupName)
     ) {
-      throw new ValidationError('MustBeBetweenCharactersInclude', '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
+      throw new ValidationError(lit`MustBeBetweenCharactersInclude`, '\`groupName\` must be between 1 and 128 characters and can include letters, numbers, and symbols.', this);
     }
 
     const resource = new CfnUserPoolGroup(this, 'Resource', {

@@ -9,6 +9,7 @@ import type { IResource } from '../../core';
 import { Duration, Lazy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { aws_elasticloadbalancing } from '../../interfaces';
 
@@ -310,7 +311,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
   @MethodMetadata()
   public addListener(listener: LoadBalancerListener): ListenerPort {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
-      throw new ValidationError('SslCertificateIdDeprecatedSsl', '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
+      throw new ValidationError(lit`SslCertificateIdDeprecatedSsl`, '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
     }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(this, listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
@@ -483,7 +484,7 @@ export class ListenerPort implements IConnectable {
 function wellKnownProtocol(scope: Construct, port: number): LoadBalancingProtocol {
   const proto = tryWellKnownProtocol(port);
   if (!proto) {
-    throw new ValidationError('SupplyProtocolGoPort', `Please supply protocol to go with port ${port}`, scope);
+    throw new ValidationError(lit`SupplyProtocolGoPort`, `Please supply protocol to go with port ${port}`, scope);
   }
   return proto;
 }

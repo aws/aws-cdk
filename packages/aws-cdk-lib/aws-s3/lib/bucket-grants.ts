@@ -5,6 +5,7 @@ import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../.
 import { AnyPrincipal, EncryptedResources, Grant, ResourceWithPolicies } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
 import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -105,7 +106,7 @@ export class BucketGrants {
    */
   public publicAccess(keyPrefix = '*', ...allowedActions: string[]) {
     if (this.bucket.disallowPublicAccess) {
-      throw new ValidationError('CannotGrantPublicAccessWhenBlockPublicPolicyEnabled', "Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
+      throw new ValidationError(lit`CannotGrantPublicAccessWhenBlockPublicPolicyEnabled`, "Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
@@ -206,7 +207,7 @@ export class BucketGrants {
    */
   public replicationPermission(identity: IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
-      throw new ValidationError('AtLeastOneDestinationBucketRequired', 'At least one destination bucket must be specified in the destinations array', this.bucket);
+      throw new ValidationError(lit`AtLeastOneDestinationBucketRequired`, 'At least one destination bucket must be specified in the destinations array', this.bucket);
     }
 
     // add permissions to the role

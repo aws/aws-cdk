@@ -6,6 +6,7 @@ import type { IPostProcessor, IResolvable, IResolveContext, ITokenResolver, Reso
 import { DefaultTokenResolver, StringConcat } from '../resolvable';
 import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
+import { lit } from './literal-string';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -115,7 +116,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   // protect against cyclic references by limiting depth.
   if (prefix.length > 200) {
-    throw new UnscopedValidationError('CircularReferenceDetected', 'Unable to resolve object tree with circular reference. Path: ' + pathName);
+    throw new UnscopedValidationError(lit`CircularReferenceDetected`, 'Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
 
   // whether to leave the empty elements when resolving - false by default
@@ -142,7 +143,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
 
   if (typeof(obj) === 'function') {
-    throw new UnscopedValidationError('TryingToResolveNonDataObject', `Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`);
+    throw new UnscopedValidationError(lit`TryingToResolveNonDataObject`, `Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`);
   }
 
   //
@@ -151,7 +152,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   if (typeof(obj) === 'string') {
     // If this is a "list element" Token, it should never occur by itself in string context
     if (TokenString.forListToken(obj).test()) {
-      throw new UnscopedValidationError('EncodedListTokenInScalarContext', 'Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
+      throw new UnscopedValidationError(lit`EncodedListTokenInScalarContext`, 'Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
     }
 
     // Otherwise look for a stringified Token in this object
@@ -220,7 +221,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // mistake somewhere and resolve will get into an infinite loop recursing into
   // child.parent <---> parent.children
   if (isConstruct(obj)) {
-    throw new UnscopedValidationError('TryingToResolveConstruct', 'Trying to resolve() a Construct at ' + pathName);
+    throw new UnscopedValidationError(lit`TryingToResolveConstruct`, 'Trying to resolve() a Construct at ' + pathName);
   }
 
   const result: any = { };
@@ -247,7 +248,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
       result[resolvedKey] = value;
     } else {
       if (!options.allowIntrinsicKeys) {
-        throw new UnscopedValidationError('KeyMustResolveToString', `"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
+        throw new UnscopedValidationError(lit`KeyMustResolveToString`, `"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
       }
 
       // Can't represent this object in a JavaScript key position, but we can store it

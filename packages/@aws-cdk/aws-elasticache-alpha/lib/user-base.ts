@@ -2,6 +2,7 @@ import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
 import type { Construct } from 'constructs';
 import type { UserEngine } from './common';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Access control configuration for ElastiCache users.
@@ -158,14 +159,14 @@ export abstract class UserBase extends Resource implements IUser {
     const stack = Stack.of(scope);
 
     if (attrs.userArn && attrs.userId) {
-      throw new ValidationError('ConflictingUserIdentifiers', 'Only one of userArn or userId can be provided.', scope);
+      throw new ValidationError(lit`ConflictingUserIdentifiers`, 'Only one of userArn or userId can be provided.', scope);
     }
 
     if (attrs.userArn) {
       userArn = attrs.userArn;
       const extractedUserId = stack.splitArn(attrs.userArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedUserId) {
-        throw new ValidationError('InvalidUserArn', 'Unable to extract user id from ARN.', scope);
+        throw new ValidationError(lit`InvalidUserArn`, 'Unable to extract user id from ARN.', scope);
       }
       userId = extractedUserId;
     } else if (attrs.userId) {
@@ -176,7 +177,7 @@ export abstract class UserBase extends Resource implements IUser {
         resourceName: attrs.userId,
       });
     } else {
-      throw new ValidationError('MissingUserIdentifier', 'One of userId or userArn is required.', scope);
+      throw new ValidationError(lit`MissingUserIdentifier`, 'One of userId or userArn is required.', scope);
     }
 
     class Import extends Resource implements IUser {

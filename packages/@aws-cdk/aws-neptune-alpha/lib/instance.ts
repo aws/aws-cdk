@@ -3,6 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IDatabaseCluster } from './cluster';
@@ -300,7 +301,7 @@ export class InstanceType {
     if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
       this._instanceType = instanceType;
     } else {
-      throw new cdk.UnscopedValidationError('InstanceTypeMustStartWithDb', `instance type must start with 'db.'; (got ${instanceType})`);
+      throw new cdk.UnscopedValidationError(lit`InstanceTypeMustStartWithDb`, `instance type must start with 'db.'; (got ${instanceType})`);
     }
   }
 }

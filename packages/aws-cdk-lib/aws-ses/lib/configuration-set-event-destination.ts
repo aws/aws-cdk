@@ -7,6 +7,7 @@ import type * as sns from '../../aws-sns';
 import type { IResource } from '../../core';
 import { Aws, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IConfigurationSetRef, IConfigurationSetEventDestinationRef, ConfigurationSetEventDestinationReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
@@ -314,7 +315,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
         resourceName: 'default',
       })
     ) {
-      throw new ValidationError('DefaultBusEventDestination', `Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusRef.eventBusArn}`, this);
+      throw new ValidationError(lit`DefaultBusEventDestination`, `Only the default bus can be used as an event destination. Got ${props.destination.bus.eventBusRef.eventBusArn}`, this);
     }
 
     let firehoseDeliveryStreamIamRoleArn = '';

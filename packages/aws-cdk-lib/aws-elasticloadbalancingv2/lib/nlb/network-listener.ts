@@ -8,6 +8,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -214,15 +215,15 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     validateNetworkProtocol(proto);
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
-      throw new ValidationError('TlsProtocolRequiresCertificates', 'When the protocol is set to TLS, you must specify certificates', scope);
+      throw new ValidationError(lit`TlsProtocolRequiresCertificates`, 'When the protocol is set to TLS, you must specify certificates', scope);
     }
 
     if (proto !== Protocol.TLS && certs.length > 0) {
-      throw new ValidationError('CertificatesRequireTlsProtocol', 'Protocol must be TLS when certificates have been specified', scope);
+      throw new ValidationError(lit`CertificatesRequireTlsProtocol`, 'Protocol must be TLS when certificates have been specified', scope);
     }
 
     if (proto !== Protocol.TLS && props.alpnPolicy) {
-      throw new ValidationError('AlpnPolicyRequiresTlsProtocol', 'Protocol must be TLS when alpnPolicy have been specified', scope);
+      throw new ValidationError(lit`AlpnPolicyRequiresTlsProtocol`, 'Protocol must be TLS when alpnPolicy have been specified', scope);
     }
 
     // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
@@ -251,7 +252,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       this.addCertificates('DefaultCertificates', certs);
     }
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new ValidationError('ConflictingDefaultActions', 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
+      throw new ValidationError(lit`ConflictingDefaultActions`, 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -264,17 +265,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
       if (props.tcpIdleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-        throw new ValidationError('InvalidTcpIdleTimeout', `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError(lit`InvalidTcpIdleTimeout`, `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`, this);
       }
 
       const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
 
       if (proto === Protocol.UDP) {
-        throw new ValidationError('UdpProtocolNoTcpIdleTimeout', '\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.', this);
+        throw new ValidationError(lit`UdpProtocolNoTcpIdleTimeout`, '\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.', this);
       }
 
       if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
-        throw new ValidationError('InvalidTcpIdleTimeoutRange', `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`, this);
+        throw new ValidationError(lit`InvalidTcpIdleTimeoutRange`, `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`, this);
       }
 
       this.setAttribute('tcp.idle_timeout.seconds', tcpIdleTimeoutSeconds.toString());
@@ -345,7 +346,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   @MethodMetadata()
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      throw new ValidationError('VpcRequiredForAddTargets', 'Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
+      throw new ValidationError(lit`VpcRequiredForAddTargets`, 'Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {

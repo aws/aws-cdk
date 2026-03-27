@@ -4,6 +4,7 @@ import { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
 import { UnscopedValidationError } from '../errors';
 import type { Stack } from '../stack';
+import { lit } from './literal-string';
 
 /**
  * Make sure a CfnMapping exists in the given stack with the lookup values for the given fact
@@ -14,7 +15,7 @@ export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Reco
   // If there are no lookups, just return the default
   if (Object.values(lookupMap).length === 0) {
     if (defaultValue === undefined) {
-      throw new UnscopedValidationError('RegionInfoDonTInformation', `region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+      throw new UnscopedValidationError(lit`RegionInfoDonTInformation`, `region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
     }
     return defaultValue;
   }

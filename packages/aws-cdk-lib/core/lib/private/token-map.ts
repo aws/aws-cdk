@@ -6,6 +6,7 @@ import { UnscopedValidationError } from '../errors';
 import type { IResolvable } from '../resolvable';
 import type { TokenizedStringFragments } from '../string-fragments';
 import { isResolvableObject, Token } from '../token';
+import { lit } from './literal-string';
 
 const glob = global as any;
 
@@ -151,7 +152,7 @@ export class TokenMap {
     const tokenIndex = extractTokenDouble(x);
     if (tokenIndex === undefined) { return undefined; }
     const t = this.numberTokenMap.get(tokenIndex);
-    if (t === undefined) { throw new UnscopedValidationError('EncodedRepresentationUnknownNumber', 'Encoded representation of unknown number Token found'); }
+    if (t === undefined) { throw new UnscopedValidationError(lit`EncodedRepresentationUnknownNumber`, 'Encoded representation of unknown number Token found'); }
     return t;
   }
 
@@ -163,7 +164,7 @@ export class TokenMap {
   public lookupToken(key: string): IResolvable {
     const token = this.stringTokenMap.get(key);
     if (!token) {
-      throw new UnscopedValidationError('UnrecognizedTokenKey', `Unrecognized token key: ${key}`);
+      throw new UnscopedValidationError(lit`UnrecognizedTokenKey`, `Unrecognized token key: ${key}`);
     }
     return token;
   }

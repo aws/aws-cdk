@@ -1,6 +1,7 @@
 import * as iam from '../../../../aws-iam';
 import type { IBucket } from '../../../../aws-s3';
 import { Arn, ArnFormat, Aws, UnscopedValidationError } from '../../../../core';
+import { lit } from '../../../../core/lib/private/literal-string';
 import { FieldUtils } from '../../fields';
 import { QueryLanguage } from '../../types';
 
@@ -95,7 +96,7 @@ export class S3ObjectsItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new UnscopedValidationError('BucketUndefined', '`bucket` is undefined');
+      throw new UnscopedValidationError(lit`BucketUndefined`, '`bucket` is undefined');
     }
     return this._bucket;
   }
@@ -211,7 +212,7 @@ abstract class S3FileItemReader implements IItemReader {
    */
   public get bucket(): IBucket {
     if (!this._bucket) {
-      throw new UnscopedValidationError('BucketUndefined', '`bucket` is undefined');
+      throw new UnscopedValidationError(lit`BucketUndefined`, '`bucket` is undefined');
     }
     return this._bucket;
   }

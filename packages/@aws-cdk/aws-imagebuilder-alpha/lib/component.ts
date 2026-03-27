@@ -10,6 +10,7 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import * as yaml from 'yaml';
 import type { OSVersion, Platform } from './os-version';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const COMPONENT_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Component');
 
@@ -956,14 +957,14 @@ export class Component extends ComponentBase {
   public static fromComponentAttributes(scope: Construct, id: string, attrs: ComponentAttributes): IComponent {
     if (attrs.componentArn && (attrs.componentName || attrs.componentVersion)) {
       throw new cdk.ValidationError(
-        'ConflictingComponentAttributes',
+        lit`ConflictingComponentAttributes`,
         'a componentName or componentVersion cannot be provided when a componentArn is provided',
         scope,
       );
     }
 
     if (!attrs.componentArn && !attrs.componentName) {
-      throw new cdk.ValidationError('MissingComponentIdentifier', 'either componentArn or componentName is required', scope);
+      throw new cdk.ValidationError(lit`MissingComponentIdentifier`, 'either componentArn or componentName is required', scope);
     }
 
     const componentArn =
@@ -1040,7 +1041,7 @@ export class Component extends ComponentBase {
     props.supportedOsVersions?.forEach((osVersion) => {
       if (osVersion.platform !== props.platform) {
         throw new cdk.ValidationError(
-          'IncompatibleOsVersion',
+          lit`IncompatibleOsVersion`,
           `os version ${osVersion.osVersion} is not compatible with platform ${props.platform}`,
           this,
         );
@@ -1100,22 +1101,22 @@ export class Component extends ComponentBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
-        'ComponentNameTooLong',
+        lit`ComponentNameTooLong`,
         `the componentName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError('ComponentNameContainsSpaces', `the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameContainsSpaces`, `the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError('ComponentNameContainsUnderscores', `the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameContainsUnderscores`, `the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError('ComponentNameNotLowercase', `the componentName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameNotLowercase`, `the componentName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }
