@@ -287,15 +287,18 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
           },
         },
       });
-      role.addPropertyOverride('RoleName', Names.uniqueResourceName(role, {
+      const roleName = Names.uniqueResourceName(role, {
         maxLength: 64,
-      }));
+      });
+      role.addPropertyOverride('RoleName', roleName);
     }
 
     roleArn = exportingStack.formatArn({
       service: 'iam',
       resource: 'role',
-      resourceName: role.logicalId,
+      resourceName: Names.uniqueResourceName(role, {
+        maxLength: 64,
+      }),
       account: options.producerAccount,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       region: '',
