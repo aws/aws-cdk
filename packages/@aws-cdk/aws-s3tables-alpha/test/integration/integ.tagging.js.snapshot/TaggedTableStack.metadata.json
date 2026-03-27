@@ -1,0 +1,56 @@
+{
+  "/TaggedTableStack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TaggedTableStack/Namespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TaggedTableStack/TaggedTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TaggedTableStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TaggedTableStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TaggedTableStack/Bucket/Bucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketDC7D6F65"
+    }
+  ],
+  "/TaggedTableStack/Namespace/Namespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NamespaceADFEA57E"
+    }
+  ],
+  "/TaggedTableStack/TaggedTable/TaggedTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaggedTable3D43AF0F"
+    }
+  ],
+  "/TaggedTableStack/Exports/Output{\"Fn::GetAtt\":[\"TaggedTable3D43AF0F\",\"TableARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTaggedTable3D43AF0FTableARN75449571"
+    }
+  ]
+}
