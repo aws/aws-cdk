@@ -225,7 +225,7 @@ export abstract class HttpParameter {
   }
 
   /**
-   * Render the paramter value
+   * Render the parameter value
    *
    * @internal
    */
