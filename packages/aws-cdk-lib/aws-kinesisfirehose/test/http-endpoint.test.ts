@@ -85,6 +85,14 @@ describe('HTTP endpoint destination', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 2);
   });
 
+  it('throws when url is not https', () => {
+    expect(() => {
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destination: new firehose.HttpEndpoint({ url: 'http://example.com/' }),
+      });
+    }).toThrow("The url must start with 'https://'");
+  });
+
   describe('logging', () => {
     it('creates resources and configuration by default', () => {
       new firehose.DeliveryStream(stack, 'DeliveryStream', {

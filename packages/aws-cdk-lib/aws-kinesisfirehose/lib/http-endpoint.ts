@@ -177,6 +177,9 @@ export class HttpEndpoint implements IDestination {
       streamId: 'HttpEndpointDestination',
     }) ?? {};
 
+    if (cdk.Token.isResolved(this.props.url) && !this.props.url.startsWith('https://')) {
+      throw new cdk.ValidationError('UrlInvalid', "The url must start with 'https://'.", scope);
+    }
     if (this.props.retryDuration && !this.props.retryDuration.isUnresolved() && this.props.retryDuration.toSeconds() > 7200) {
       throw new cdk.ValidationError('RetryDurationTooLarge', `Retry duration must be less than or equal to 7200 seconds, got ${this.props.retryDuration.toSeconds()} seconds.`, scope);
     }
