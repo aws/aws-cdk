@@ -27,6 +27,7 @@ import {
 } from 'aws-cdk-lib/aws-ec2';
 import type { VPCReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
 import { AccountPrincipal, Effect, PolicyStatement, Role } from 'aws-cdk-lib/aws-iam';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct, IDependable } from 'constructs';
 import { Dependable, DependencyGroup } from 'constructs';
 import type {
@@ -45,7 +46,6 @@ import {
 import type { ISubnetV2 } from './subnet-v2';
 import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from './util';
 import type { IVPCCidrBlock } from './vpc-v2';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Options to define EgressOnlyInternetGateway for VPC

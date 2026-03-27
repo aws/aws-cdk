@@ -3,7 +3,7 @@ import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import type * as logs from 'aws-cdk-lib/aws-logs';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -20,7 +20,6 @@ import {
 import { defaultExecutionRolePolicy, getExecutionRole } from './private/policy-helper';
 import type { IRecipeBase } from './recipe-base';
 import type { WorkflowConfiguration } from './workflow';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const IMAGE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Image');
 

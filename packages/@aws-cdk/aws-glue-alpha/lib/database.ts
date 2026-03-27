@@ -1,11 +1,10 @@
 import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Lazy, Names, Resource, Stack, UnscopedValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export interface IDatabase extends IResource {
   /**

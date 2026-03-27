@@ -1,12 +1,11 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnLifecyclePolicy } from 'aws-cdk-lib/aws-imagebuilder';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IRecipeBase } from './recipe-base';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const LIFECYCLE_POLICY_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.LifecyclePolicy');
 

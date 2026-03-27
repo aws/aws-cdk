@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { LATEST_VERSION } from './private/constants';
 import type { IWorkflow } from './workflow';
 import { Workflow, WorkflowType } from './workflow';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties for an EC2 Image Builder Amazon-managed workflow

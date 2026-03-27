@@ -3,13 +3,13 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
 import type { IConnection } from '../connection';
 import type { MetricType, WorkerType, GlueVersion } from '../constants';
 import { JobState } from '../constants';
 import type { ISecurityConfiguration } from '../security-configuration';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Interface representing a new or an imported Glue Job

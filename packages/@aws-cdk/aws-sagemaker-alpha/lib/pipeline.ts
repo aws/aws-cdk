@@ -3,10 +3,10 @@ import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import type { IPipeline, PipelineReference } from 'aws-cdk-lib/aws-sagemaker';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Validates a SageMaker Pipeline name according to AWS requirements.

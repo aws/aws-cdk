@@ -3,6 +3,7 @@ import type * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IResource, SecretValue } from 'aws-cdk-lib/core';
 import { Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct, IConstruct } from 'constructs';
@@ -12,7 +13,6 @@ import { Branch } from './branch';
 import type { DomainOptions } from './domain';
 import { Domain } from './domain';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * An Amplify Console application

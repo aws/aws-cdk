@@ -15,8 +15,8 @@ import { Token } from 'aws-cdk-lib';
 import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import type { RuntimeCustomClaim } from './custom-claim';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { RuntimeCustomClaim } from './custom-claim';
 
 /**
  * Abstract base class for runtime authorizer configurations.

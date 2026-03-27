@@ -1,8 +1,8 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IGrantable, Grant } from 'aws-cdk-lib/aws-iam';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import type { IAgentAlias } from './agent-alias';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { IAgentAlias } from './agent-alias';
 
 /**
  * Enum for collaborator's relay conversation history types.

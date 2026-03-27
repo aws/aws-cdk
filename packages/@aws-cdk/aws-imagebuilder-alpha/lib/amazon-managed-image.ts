@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IImage } from './image';
 import { Image, ImageArchitecture, ImageType } from './image';
 import { LATEST_VERSION } from './private/constants';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Attributes for importing an Amazon-managed image by name (and optionally a version)

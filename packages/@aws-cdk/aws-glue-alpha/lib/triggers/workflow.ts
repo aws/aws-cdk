@@ -1,6 +1,6 @@
 import { CfnWorkflow, CfnTrigger } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
@@ -20,7 +20,6 @@ import type {
 import {
   TriggerSchedule,
 } from './trigger-options';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The base interface for Glue Workflow

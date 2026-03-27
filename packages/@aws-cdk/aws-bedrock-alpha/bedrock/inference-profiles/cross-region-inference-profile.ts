@@ -2,10 +2,10 @@ import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
 import type { IInferenceProfile } from './inference-profile';
 import { InferenceProfileType } from './inference-profile';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Geographic regions supported for cross-region inference profiles.

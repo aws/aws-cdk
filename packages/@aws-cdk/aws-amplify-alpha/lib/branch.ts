@@ -12,6 +12,7 @@ import {
   Stack,
   ValidationError,
 } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Provider } from 'aws-cdk-lib/custom-resources';
@@ -21,7 +22,6 @@ import { App } from './app';
 import type { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables, isServerSideRendered } from './utils';
 import { AssetDeploymentIsCompleteFunction, AssetDeploymentOnEventFunction } from '../custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-provider.generated';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A branch

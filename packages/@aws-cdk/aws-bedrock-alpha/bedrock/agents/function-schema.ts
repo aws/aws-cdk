@@ -1,8 +1,8 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { ActionGroupSchema } from './schema-base';
 import * as validation from './validation-helpers';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Enum for parameter types in function schemas

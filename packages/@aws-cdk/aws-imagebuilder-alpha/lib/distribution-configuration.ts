@@ -5,11 +5,10 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDistributionConfiguration } from 'aws-cdk-lib/aws-imagebuilder';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type * as ssm from 'aws-cdk-lib/aws-ssm';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const DISTRIBUTION_CONFIGURATION_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.DistributionConfiguration');
 

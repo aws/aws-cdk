@@ -1,9 +1,9 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as validation from './validation-helpers';
 import type { IBedrockInvokable } from '../models';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The step in the agent sequence that this prompt configuration applies to.

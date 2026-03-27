@@ -8,7 +8,7 @@ import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
 import { FeatureFlags } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import * as cr from 'aws-cdk-lib/custom-resources';
@@ -16,7 +16,6 @@ import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
 import type * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import type { KafkaVersion } from './';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Represents a MSK Cluster

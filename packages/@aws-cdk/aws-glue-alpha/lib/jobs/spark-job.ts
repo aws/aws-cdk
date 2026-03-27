@@ -2,12 +2,12 @@ import { EOL } from 'os';
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
 import type { JobProps } from './job';
 import { Job } from './job';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Code props for different {@link Code} assets used by different types of Spark jobs.

@@ -14,12 +14,11 @@ import type * as s3 from 'aws-cdk-lib/aws-s3';
 // for files that are part of this package or part of core, we do import individual classes or functions
 import type { IResource, IWaitConditionHandleRef, WaitConditionHandleReference } from 'aws-cdk-lib/core';
 import { CfnWaitCondition, CfnWaitConditionHandle, Fn, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { exampleResourceArnComponents } from './private/example-resource-common';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The interface that represents the ExampleResource resource.

@@ -12,12 +12,12 @@ import {
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { INamespace } from './namespace';
 import * as perms from './permissions';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Represents an S3 Table.

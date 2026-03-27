@@ -1,5 +1,6 @@
 
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
@@ -10,7 +11,6 @@ import { HandlerName } from './private/database-query-provider/handler-name';
 import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import type { TableHandlerProps } from './private/handler-props';
 import type { IUser } from './user';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.

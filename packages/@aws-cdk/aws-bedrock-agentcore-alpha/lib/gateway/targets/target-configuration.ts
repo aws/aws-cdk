@@ -4,6 +4,7 @@ import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IGateway } from '../gateway-base';
 import { validateOpenApiSchema, validateFieldPattern, validateStringField } from '../validation-helpers';
@@ -11,7 +12,6 @@ import type { ApiSchema } from './schema/api-schema';
 import { AssetApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
 import { McpTargetType } from './target-base';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                          Interface

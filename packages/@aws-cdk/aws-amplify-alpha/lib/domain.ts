@@ -3,12 +3,12 @@ import type * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import type { IResolvable } from 'aws-cdk-lib/core';
 import { Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IApp } from './app';
 import type { IBranch } from './branch';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Options to add a domain to an application

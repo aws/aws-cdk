@@ -5,7 +5,7 @@ import { CfnContainerRecipe } from 'aws-cdk-lib/aws-imagebuilder';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -14,7 +14,6 @@ import type { Repository } from './distribution-configuration';
 import type { IImageRecipe } from './image-recipe';
 import type { OSVersion } from './os-version';
 import type { ComponentConfiguration, IRecipeBase } from './recipe-base';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const CONTAINER_RECIPE_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.ContainerRecipe');
 

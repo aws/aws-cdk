@@ -8,6 +8,7 @@ import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import type { IResource, SecretValue } from 'aws-cdk-lib/core';
 import { ArnFormat, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
@@ -18,7 +19,6 @@ import type { IClusterParameterGroup } from './parameter-group';
 import { ClusterParameterGroup } from './parameter-group';
 import type { IClusterSubnetGroup } from './subnet-group';
 import { ClusterSubnetGroup } from './subnet-group';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Possible Node Types to use in the cluster

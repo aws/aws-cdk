@@ -3,11 +3,11 @@ import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnGeofenceCollection } from 'aws-cdk-lib/aws-location';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Lazy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { generateUniqueId } from './util';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A Geofence Collection

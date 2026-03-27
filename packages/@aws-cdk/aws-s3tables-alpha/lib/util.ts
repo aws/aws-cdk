@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
 import type { TableBucketAttributes } from './table-bucket';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export const S3_TABLES_SERVICE = 's3tables';
 

@@ -3,12 +3,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as customresources from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import type { DatabaseQueryHandlerProps } from './handler-props';
 import { Cluster } from '../cluster';
 import type { DatabaseOptions } from '../database-options';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export interface DatabaseQueryProps<HandlerProps> extends DatabaseOptions {
   readonly handler: string;

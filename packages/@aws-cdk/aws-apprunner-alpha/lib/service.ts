@@ -7,13 +7,13 @@ import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import type * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as cdk from 'aws-cdk-lib/core';
 import { Lazy } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IAutoScalingConfiguration } from './auto-scaling-configuration';
 import type { IObservabilityConfiguration } from './observability-configuration';
 import type { IVpcConnector } from './vpc-connector';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The image repository types

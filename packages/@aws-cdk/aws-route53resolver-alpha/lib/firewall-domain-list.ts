@@ -4,10 +4,10 @@ import type { IBucket } from 'aws-cdk-lib/aws-s3';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A Firewall Domain List

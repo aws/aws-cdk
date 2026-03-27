@@ -8,13 +8,13 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IKey } from 'aws-cdk-lib/aws-kms';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit, type LiteralString } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 // Internal Libs
 import * as filters from './guardrail-filters';
 import { GuardrailVersion } from './guardrail-version';
-import { lit, type LiteralString } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              COMMON

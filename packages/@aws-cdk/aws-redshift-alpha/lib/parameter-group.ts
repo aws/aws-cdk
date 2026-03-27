@@ -1,10 +1,10 @@
 import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * A parameter group

@@ -1,13 +1,13 @@
 import { Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
 import { RuntimeEndpointBase } from './runtime-endpoint-base';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                                Props

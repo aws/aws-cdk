@@ -4,14 +4,13 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
 import { Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import * as perms from './permissions';
 import { TableBucketPolicy } from './table-bucket-policy';
 import { validateTableBucketAttributes } from './util';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Interface definition for S3 Table Buckets

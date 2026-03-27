@@ -2,6 +2,7 @@ import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IResource } from 'aws-cdk-lib/core';
 import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import type { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import type { Construct } from 'constructs';
@@ -10,7 +11,6 @@ import type { IDatabase } from './database';
 import { generatePartitionProjectionParameters, type PartitionProjection } from './partition-projection';
 import type { Column } from './schema';
 import type { StorageParameter } from './storage-parameter';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties of a Partition Index.

@@ -1,7 +1,7 @@
 import type { IUserPoolClient, IUserPool } from 'aws-cdk-lib/aws-cognito';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import type { GatewayCustomClaim } from './custom-claim';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { GatewayCustomClaim } from './custom-claim';
 
 /******************************************************************************
  *                                Authorizer Configuration

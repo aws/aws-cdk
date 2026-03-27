@@ -4,10 +4,10 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
 import * as core from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * The interface that represents the AccessPoint resource.

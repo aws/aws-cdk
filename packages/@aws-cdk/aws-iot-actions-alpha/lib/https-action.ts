@@ -1,7 +1,7 @@
 import type * as iot from '@aws-cdk/aws-iot-alpha';
 import { Duration, Size, UnscopedValidationError } from 'aws-cdk-lib';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as iam from 'aws-cdk-lib/aws-iam';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 

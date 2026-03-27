@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Arn, ArnFormat, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { md5hash, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -12,7 +12,6 @@ import type { Construct } from 'constructs';
 import type { IPromptVariant } from './prompt-variant';
 import { PromptVersion } from './prompt-version';
 import * as validation from '../agents/validation-helpers';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              COMMON

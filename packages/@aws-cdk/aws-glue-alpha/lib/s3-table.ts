@@ -3,14 +3,13 @@ import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { Column } from './schema';
 import type { PartitionIndex, TableBaseProps } from './table-base';
 import { TableBase } from './table-base';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Encryption options for a Table.

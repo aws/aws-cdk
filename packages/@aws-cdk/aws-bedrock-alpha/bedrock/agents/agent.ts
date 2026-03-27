@@ -7,6 +7,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Arn, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct, IConstruct } from 'constructs';
@@ -24,7 +25,6 @@ import type { PromptOverrideConfiguration } from './prompt-override';
 import * as validation from './validation-helpers';
 import type { IBedrockInvokable } from '.././models';
 import type { IGuardrail } from '../guardrails/guardrails';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /******************************************************************************
  *                              CONSTANTS

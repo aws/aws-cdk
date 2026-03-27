@@ -1,7 +1,7 @@
 import { ValidationError } from 'aws-cdk-lib';
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -9,7 +9,6 @@ import type { IConnection } from './connection';
 import type { Column } from './schema';
 import type { PartitionIndex, TableBaseProps } from './table-base';
 import { TableBase } from './table-base';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export interface ExternalTableProps extends TableBaseProps {
   /**

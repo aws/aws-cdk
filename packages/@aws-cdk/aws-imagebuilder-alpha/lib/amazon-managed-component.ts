@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IComponent } from './component';
 import { Component } from './component';
 import { Platform } from './os-version';
 import { LATEST_VERSION } from './private/constants';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Properties for an EC2 Image Builder Amazon-managed component

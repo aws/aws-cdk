@@ -5,6 +5,7 @@ import type * as events from 'aws-cdk-lib/aws-events';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Size } from 'aws-cdk-lib/core';
 import { ArnFormat, Stack, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -12,7 +13,6 @@ import { UserEngine } from './common';
 import type { IServerlessCache } from './serverless-cache-base';
 import { ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
 import type { IUserGroup } from './user-group';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 const ELASTICACHE_SERVERLESSCACHE_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.ServerlessCache');
 
