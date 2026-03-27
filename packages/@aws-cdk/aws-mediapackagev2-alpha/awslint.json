@@ -4,7 +4,6 @@
       "props-physical-name:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointPolicyProps",
       "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.ChannelProps.channelGroup",
       "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointProps.channel",
-      "no-grants:@aws-cdk/aws-mediapackagev2-alpha.Channel.grantIngest",
       "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.OriginEndpointPolicyProps.originEndpoint",
       "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.ChannelPolicyProps.channel",
       "prefer-ref-interface:@aws-cdk/aws-mediapackagev2-alpha.EncryptionConfiguration.spekeRole",

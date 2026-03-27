@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2-endpoint-cdn-auth"
+      ],
+      "assertionStack": "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,194 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CdnSecret32008E6A": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "GenerateStringKey": "MediaPackageV2CDNIdentifier",
+     "SecretStringTemplate": "{\"MediaPackageV2CDNIdentifier\":\"\"}"
+    },
+    "Name": "integ-cdn-auth-secret"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2endpointcdnauthEndpoint99074D39",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointPolicyCdnAuthRole803DA187": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediapackagev2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for MediaPackage V2 CDN authorization to read secrets"
+   }
+  },
+  "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "CdnSecret32008E6A"
+       }
+      },
+      {
+       "Action": "secretsmanager:BatchGetSecretValue",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96",
+    "Roles": [
+     {
+      "Ref": "EndpointPolicyCdnAuthRole803DA187"
+     }
+    ]
+   }
+  },
+  "EndpointPolicyA1BBD448": {
+   "Type": "AWS::MediaPackageV2::OriginEndpointPolicy",
+   "Properties": {
+    "CdnAuthConfiguration": {
+     "CdnIdentifierSecretArns": [
+      {
+       "Ref": "CdnSecret32008E6A"
+      }
+     ],
+     "SecretsRoleArn": {
+      "Fn::GetAtt": [
+       "EndpointPolicyCdnAuthRole803DA187",
+       "Arn"
+      ]
+     }
+    },
+    "ChannelGroupName": "awscdkmediapackagev2endpointcdnauthGroup4C5F5FE1",
+    "ChannelName": "awscdkmediapackagev2endpointcdnauthChannel27B061A3",
+    "OriginEndpointName": "awscdkmediapackagev2endpointcdnauthEndpoint99074D39",
+    "Policy": {
+     "Statement": [
+      {
+       "Action": [
+        "mediapackagev2:GetHeadObject",
+        "mediapackagev2:GetObject"
+       ],
+       "Condition": {
+        "Bool": {
+         "mediapackagev2:RequestHasMatchingCdnAuthHeader": true
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "EndpointEEF1FD8F",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowCloudFront"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "DependsOn": [
+    "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96",
+    "EndpointPolicyCdnAuthRole803DA187"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

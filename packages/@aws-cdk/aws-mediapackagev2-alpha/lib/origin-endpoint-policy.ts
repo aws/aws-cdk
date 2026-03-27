@@ -1,6 +1,6 @@
 import { Resource } from 'aws-cdk-lib';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
-import { PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpointPolicy } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -9,17 +9,24 @@ import type { Construct } from 'constructs';
 import type { IOriginEndpoint } from './endpoint';
 
 /**
- * Options for configuring CDN Authorization Configuration
+ * Options for configuring CDN Authorization Configuration.
+ *
+ * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
  */
 export interface CdnAuthConfiguration {
   /**
-   * Secrets to use for auth
+   * Secrets to use for CDN authorization.
    */
   readonly secrets: ISecret[];
   /**
-   * Role to use for auth
+   * Role to use for reading the secrets.
+   * If not provided, a role will be created automatically with the required permissions
+   * (secretsmanager:GetSecretValue, secretsmanager:DescribeSecret, secretsmanager:BatchGetSecretValue,
+   * and kms:Decrypt if the secret uses a customer-managed KMS key).
+   *
+   * @default - a new role is created
    */
-  readonly role: IRole;
+  readonly role?: IRole;
 }
 
 /**
@@ -84,15 +91,40 @@ export class OriginEndpointPolicy extends Resource {
 
     this.document = props.policyDocument ?? new PolicyDocument();
 
-    new CfnOriginEndpointPolicy(this, 'Resource', {
+    // Auto-create CDN auth role if not provided
+    // @see https://docs.aws.amazon.com/mediapackage/latest/userguide/setting-up-create-trust-rel.html
+    const cdnAuthRole = props.cdnAuth?.role ?? (props.cdnAuth ? new Role(this, 'CdnAuthRole', {
+      assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com'),
+      description: 'Role for MediaPackage V2 CDN authorization to read secrets',
+    }) : undefined);
+
+    // Auto-grant the CDN auth role read access to the secrets (before creating the CFN resource)
+    // @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html#cdn-auth-iam
+    if (props.cdnAuth && cdnAuthRole) {
+      props.cdnAuth.secrets.forEach(secret => {
+        secret.grantRead(cdnAuthRole);
+      });
+      // BatchGetSecretValue is required by MediaPackage V2 for CDN authorization
+      cdnAuthRole.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['secretsmanager:BatchGetSecretValue'],
+        resources: ['*'],
+      }));
+    }
+
+    const cfnResource = new CfnOriginEndpointPolicy(this, 'Resource', {
       channelGroupName: props.originEndpoint.channelGroupName,
       channelName: props.originEndpoint.channelName,
       originEndpointName: props.originEndpoint.originEndpointName,
       policy: this.document,
-      cdnAuthConfiguration: props.cdnAuth ? {
+      cdnAuthConfiguration: props.cdnAuth && cdnAuthRole ? {
         cdnIdentifierSecretArns: props.cdnAuth.secrets.map(secret => secret.secretArn),
-        secretsRoleArn: props.cdnAuth.role.roleArn,
+        secretsRoleArn: cdnAuthRole.roleArn,
       } : undefined,
     });
+
+    // Ensure IAM policies are created before the endpoint policy
+    if (cdnAuthRole) {
+      cfnResource.node.addDependency(cdnAuthRole);
+    }
   }
 }
