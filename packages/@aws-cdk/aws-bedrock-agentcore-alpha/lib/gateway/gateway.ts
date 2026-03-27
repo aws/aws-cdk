@@ -27,14 +27,8 @@ import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import { validateStringField, validateFieldPattern } from './validation-helpers';
 
-/******************************************************************************
- *                         Policy Engine Types
- *****************************************************************************/
-
 /**
  * The enforcement mode for a policy engine associated with a gateway.
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-gateway-gatewaypolicyengineconfiguration.html
  */
 export enum PolicyEngineMode {
   /**
@@ -54,14 +48,11 @@ export enum PolicyEngineMode {
  *
  * When configured, the policy engine intercepts all agent requests through this
  * gateway and evaluates them against the defined Cedar policies.
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-bedrockagentcore-gateway-gatewaypolicyengineconfiguration.html
+ * [disable-awslint:prefer-ref-interface]
  */
 export interface GatewayPolicyEngineConfig {
   /**
    * The policy engine to associate with this gateway.
-   * The policy engine must contain Cedar policies that define the authorization rules.
-   *
    * [disable-awslint:prefer-ref-interface]
    */
   readonly policyEngine: IPolicyEngine;
@@ -349,12 +340,7 @@ export interface GatewayProps {
    * All agent requests through this gateway will be evaluated against the Cedar policies
    * defined in the policy engine.
    *
-   * The gateway's execution role will automatically be granted evaluation permissions
-   * (`bedrock-agentcore:AuthorizeAction` and `bedrock-agentcore:PartiallyAuthorizeActions`)
-   * on the policy engine.
-   *
    * @default - No policy engine (requests are not subject to Cedar policy authorization)
-   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-engine.html
    */
   readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
 }
@@ -657,10 +643,7 @@ export class Gateway extends GatewayBase {
     this.updatedAt = _resource.attrUpdatedAt;
     this.statusReason = _resource.attrStatusReasons;
 
-    // Policy engine IAM grants — must come after L1 instantiation so this.gatewayArn is set
     if (this.policyEngineConfiguration) {
-      // Grant evaluation permissions correctly scoped to both the policy engine ARN
-      // and the gateway ARN (required by AuthorizeAction + PartiallyAuthorizeActions)
       this.policyEngineConfiguration.policyEngine.grantEvaluateForGateway(this.role, this);
     }
   }
