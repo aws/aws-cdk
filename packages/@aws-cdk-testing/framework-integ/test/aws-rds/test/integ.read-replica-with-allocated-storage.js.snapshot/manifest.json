@@ -1,28 +1,28 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
-    "aws-cdk-rds-read-replica-with-allocated-storage.assets": {
+    "cdk-rds-read-replica-with-allocated-storage.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-rds-read-replica-with-allocated-storage.assets.json",
+        "file": "cdk-rds-read-replica-with-allocated-storage.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-rds-read-replica-with-allocated-storage": {
+    "cdk-rds-read-replica-with-allocated-storage": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-rds-read-replica-with-allocated-storage.template.json",
+        "templateFile": "cdk-rds-read-replica-with-allocated-storage.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2de3133e15ae36c38efab7ca59a637776b7d6b9371675da0b73296c8ac2567e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7ac3ce09a9fd8ca84513c17bd7e7d18d55d931c69ab0f0b2178f2f7244fe8256.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-rds-read-replica-with-allocated-storage.assets"
+          "cdk-rds-read-replica-with-allocated-storage.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,22 +31,25 @@
         }
       },
       "dependencies": [
-        "aws-cdk-rds-read-replica-with-allocated-storage.assets"
+        "cdk-rds-read-replica-with-allocated-storage.assets"
       ],
       "metadata": {
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false
+            }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -82,43 +85,43 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/DefaultRoute": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/EIP": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/NATGateway": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -154,43 +157,43 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/DefaultRoute": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/EIP": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/NATGateway": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,31 +221,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -270,94 +273,63 @@
             "data": {}
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/Subnet": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTable": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/IGW": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/VPCGW": [
+        "/cdk-rds-read-replica-with-allocated-storage/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-          }
-        ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "engine": {
                 "engineType": "*",
-                "singleUserRotationApplication": "*",
                 "engineVersion": {
                   "fullVersion": "*",
                   "majorVersion": "*"
                 },
                 "parameterGroupFamily": "*",
+                "singleUserRotationApplication": "*",
                 "engineFamily": "*",
                 "supportsReadReplicaBackups": true
               },
-              "backupRetention": "*",
               "instanceType": "*",
               "vpc": "*"
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/SubnetGroup": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/SubnetGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -368,13 +340,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/SubnetGroup/Default": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSubnetGroup213E979B"
+            "data": "SourceInstanceSubnetGroup6AA2FF07"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/SecurityGroup": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -383,13 +355,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/SecurityGroup/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecurityGroupC691E169"
+            "data": "SourceInstanceSecurityGroupD817A7B8"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/Secret": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -410,13 +382,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/Secret/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecretB727C3F2"
+            "data": "SourceInstanceSecret0218139E"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/Secret/Attachment": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -425,31 +397,30 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/Secret/Attachment/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSourceSecretAttachment5E4EDF73"
+            "data": "SourceInstanceSecretAttachment5BC93495"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlSource/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/SourceInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlSource9A10350C"
+            "data": "SourceInstance6CC35758"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "sourceDatabaseInstance": "*",
-              "backupRetention": "*",
               "instanceType": "*",
               "vpc": "*",
               "allocatedStorage": "*"
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica/SubnetGroup": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica/SubnetGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -460,13 +431,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica/SubnetGroup/Default": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplicaSubnetGroup79E1F72A"
+            "data": "ReadReplicaSubnetGroup680C605C"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica/SecurityGroup": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -475,32 +446,32 @@
             }
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica/SecurityGroup/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplicaSecurityGroup169FAFAA"
+            "data": "ReadReplicaSecurityGroupF624C7FA"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/MysqlReplica/Resource": [
+        "/cdk-rds-read-replica-with-allocated-storage/ReadReplica/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MysqlReplica87D29F78"
+            "data": "ReadReplicaDA01B356"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/BootstrapVersion": [
+        "/cdk-rds-read-replica-with-allocated-storage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-rds-read-replica-with-allocated-storage/CheckBootstrapVersion": [
+        "/cdk-rds-read-replica-with-allocated-storage/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-rds-read-replica-with-allocated-storage"
+      "displayName": "cdk-rds-read-replica-with-allocated-storage"
     },
     "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39.assets": {
       "type": "cdk:asset-manifest",
@@ -562,6 +533,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -580,6 +552,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -691,7 +664,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -845,6 +818,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -876,16 +853,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1030,10 +997,39 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1105.0"
 }

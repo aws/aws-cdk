@@ -1,10 +1,16 @@
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { Template } from '../../assertions';
+import { AssertionError } from '../../assertions/lib/private/error';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
+import { ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
+import { Stage } from '../../core';
 import * as sns from '../lib';
-import { TopicGrants } from '../lib/sns-grants.generated';
+import { TopicGrants } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
@@ -288,7 +294,7 @@ describe('Topic', () => {
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    topic.grantPublish(user);
+    topic.grants.publish(user);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -324,6 +330,112 @@ describe('Topic', () => {
             'Action': 'sns:Publish',
             'Effect': 'Allow',
             'Resource': { Ref: 'Topic' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('give arbitrary set of permissions to CfnTopic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    const topic = new sns.CfnTopic(stack, 'Topic', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).actions(user, ['sns:Foo'], {
+      keyActions: ['kms:Bar', 'kms:Zee'],
+    });
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sns:Foo',
+            Effect: 'Allow',
+            Resource: { Ref: 'Topic' },
+          },
+          {
+            Action: ['kms:Bar', 'kms:Zee'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['Key', 'Arn'],
+            },
+          },
+        ],
+      },
+    });
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [{
+          Action: ['kms:Bar', 'kms:Zee'],
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::GetAtt': ['User00B015A1', 'Arn'] } },
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('give service principal permissions to publish to CfnTopic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.CfnTopic(stack, 'Topic');
+    const principal = new ServicePrincipal('some.service.amazonaws.com');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).publish(principal);
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sns:Publish',
+            Effect: 'Allow',
+            Resource: { Ref: 'Topic' },
+            Principal: { Service: 'some.service.amazonaws.com' },
+          },
+        ],
+      },
+    });
+  });
+
+  test('give service principal permissions to publish to CfnTopic with encryption key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new CfnKey(stack, 'CustomKey', {
+      keyPolicy: { Statement: [] },
+    });
+    const topic = new sns.CfnTopic(stack, 'Topic', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const principal = new ServicePrincipal('some.service.amazonaws.com');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).publish(principal);
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: ['kms:Decrypt', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Resource: '*',
+            Principal: { Service: 'some.service.amazonaws.com' },
           },
         ],
       },
@@ -974,4 +1086,67 @@ describe('Topic', () => {
       ).toThrow('`fifoThroughputScope` can only be set for FIFO SNS topics.');
     });
   });
+
+  /*
+  This is a representative test suite for source tracing.
+  What we are asserting here about CfnTopic applies to all L1 constructs.
+   */
+  describe('Source tracing', () => {
+    test('Metadata contains propertyAssignment and stack trace with CDK_DEBUG=1', () => {
+      try {
+        process.env.CDK_DEBUG = '1';
+        const stack = new cdk.Stack();
+
+        const topic = new sns.CfnTopic(stack, 'MyTopic', {
+          topicName: 'topicName',
+        });
+
+        topic.displayName = 'something';
+        const lineWherePropertyWasSet = getLineNumber() - 1; // the one before this one
+
+        const asm = synth(stack);
+        const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
+        const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
+
+        expect(propertyAssignmentEntry).toBeDefined();
+        expect(propertyAssignmentEntry.data.propertyName).toEqual('DisplayName');
+        expect(propertyAssignmentEntry.data.stackTrace.some(
+          (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
+        ).toBe(true);
+      } finally {
+        delete process.env.CDK_DEBUG;
+      }
+    });
+
+    test('Metadata does not contain propertyAssignment by default', () => {
+      const stack = new cdk.Stack();
+
+      const topic = new sns.CfnTopic(stack, 'MyTopic', {
+        topicName: 'topicName',
+      });
+
+      topic.displayName = 'something';
+
+      const asm = synth(stack);
+      const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
+      const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
+
+      expect(propertyAssignmentEntry).toBeUndefined();
+    });
+  });
 });
+
+function synth(stack: cdk.Stack) {
+  const stage = Stage.of(stack);
+  if (!Stage.isStage(stage)) {
+    throw new AssertionError('unexpected: all stacks must be part of a Stage or an App');
+  }
+
+  return stage.synth();
+}
+
+function getLineNumber(): number {
+  const err = new Error();
+  const line = err.stack?.split('\n')[2]?.match(/:(\d+):\d+\)?$/)?.[1];
+  return Number(line);
+}

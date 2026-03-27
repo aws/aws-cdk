@@ -8,67 +8,79 @@ The purpose of this document is to provide guidelines for designing the APIs in
 the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
-* [Preface](#preface)
-* [What's Included](#whats-included)
-* [API Design](#api-design)
-  * [Modules](#modules)
-  * [Construct Class](#construct-class)
-  * [Construct Interface](#construct-interface)
-    * [Owned vs. Unowned Constructs](#owned-vs-unowned-constructs)
-    * [Abstract Base](#abstract-base)
-  * [Props](#props)
-    * [Types](#types)
-    * [Defaults](#defaults)
-    * [Flat](#flat)
-    * [Concise](#concise)
-    * [Naming](#naming)
-    * [Property Documentation](#property-documentation)
-    * [Enums](#enums)
-    * [Unions](#unions)
-  * [Attributes](#attributes)
-  * [Configuration](#configuration)
-    * [Prefer Additions](#prefer-additions)
-    * [Dropped Mutations](#dropped-mutations)
-  * [Factories](#factories)
-  * [Imports](#imports)
-    * [“from” Methods](#from-methods)
-    * [From-attributes](#from-attributes)
-  * [Roles](#roles)
-  * [Resource Policies](#resource-policies)
-  * [VPC](#vpc)
-  * [Grants](#grants)
-  * [Metrics](#metrics)
-  * [Events](#events)
-  * [Connections](#connections)
-  * [Integrations](#integrations)
-  * [State](#state)
-  * [Physical Names - TODO](#physical-names---todo)
-  * [Tags](#tags)
-  * [Secrets](#secrets)
-* [Project Structure](#project-structure)
-  * [Code Organization](#code-organization)
-* [Implementation](#implementation)
-  * [General Principles](#general-principles)
-  * [Construct IDs](#construct-ids)
-  * [Errors](#errors)
-    * [Avoid Errors If Possible](#avoid-errors-if-possible)
-    * [Error reporting mechanism](#error-reporting-mechanism)
-    * [Throwing exceptions](#throwing-exceptions)
-    * [Never Catch Exceptions](#never-catch-exceptions)
-    * [Attaching (lazy) Validators](#attaching-lazy-validators)
-    * [Attaching Errors/Warnings](#attaching-errorswarnings)
-    * [Error messages](#error-messages)
-  * [Tokens](#tokens)
-* [Documentation](#documentation)
-  * [Inline Documentation](#inline-documentation)
-  * [Readme](#readme)
-* [Testing](#testing)
-  * [Unit tests](#unit-tests)
-  * [Integration tests](#integration-tests)
-  * [Versioning](#versioning)
-* [Naming & Style](#naming--style)
-  * [Naming Conventions](#naming-conventions)
-  * [Coding Style](#coding-style)
+- [AWS Construct Library Design Guidelines](#aws-construct-library-design-guidelines)
+  - [Preface](#preface)
+  - [What's Included](#whats-included)
+  - [Mixins, Facades, and Traits](#mixins-facades-and-traits)
+    - [Mixins](#mixins)
+    - [Facades](#facades)
+    - [Traits](#traits)
+    - [When to use which](#when-to-use-which)
+  - [API Design](#api-design)
+    - [Modules](#modules)
+    - [Construct Class](#construct-class)
+    - [Construct Interface](#construct-interface)
+      - [Defining construct interfaces: interface types](#defining-construct-interfaces-interface-types)
+      - [Defining construct interfaces: what goes onto the resource interface](#defining-construct-interfaces-what-goes-onto-the-resource-interface)
+      - [Consuming construct interfaces: what interface type to choose](#consuming-construct-interfaces-what-interface-type-to-choose)
+      - [What if the entire L2 interface is too large, but the reference interface is too small?](#what-if-the-entire-l2-interface-is-too-large-but-the-reference-interface-is-too-small)
+      - [Abstract Base](#abstract-base)
+    - [Props](#props)
+      - [Types](#types)
+      - [Defaults](#defaults)
+      - [Flat](#flat)
+      - [Concise](#concise)
+      - [Naming](#naming)
+      - [Property Documentation](#property-documentation)
+      - [Enums](#enums)
+      - [Unions](#unions)
+    - [Attributes](#attributes)
+    - [Configuration](#configuration)
+      - [Prefer Additions](#prefer-additions)
+      - [Dropped Mutations](#dropped-mutations)
+    - [Factories](#factories)
+    - [Imports](#imports)
+      - [“from” Methods](#from-methods)
+      - [From-attributes](#from-attributes)
+    - [Roles](#roles)
+    - [Resource Policies](#resource-policies)
+    - [VPC](#vpc)
+    - [Grants](#grants)
+      - [Traits](#traits-1)
+      - [Auto-generation and manual implementation](#auto-generation-and-manual-implementation)
+    - [Metrics](#metrics)
+    - [Events](#events)
+    - [Connections](#connections)
+    - [Integrations](#integrations)
+    - [State](#state)
+    - [Physical Names - TODO](#physical-names---todo)
+    - [Tags](#tags)
+    - [Secrets](#secrets)
+  - [Project Structure](#project-structure)
+    - [Code Organization](#code-organization)
+  - [Implementation](#implementation)
+    - [General Principles](#general-principles)
+    - [Construct IDs](#construct-ids)
+    - [Errors](#errors)
+      - [Avoid Errors If Possible](#avoid-errors-if-possible)
+      - [Error reporting mechanism](#error-reporting-mechanism)
+      - [Throwing exceptions](#throwing-exceptions)
+      - [Never Catch Exceptions](#never-catch-exceptions)
+      - [Attaching (lazy) Validators](#attaching-lazy-validators)
+      - [Attaching Errors/Warnings](#attaching-errorswarnings)
+      - [Error messages](#error-messages)
+    - [Tokens](#tokens)
+    - [Lazys](#lazys)
+  - [Documentation](#documentation)
+    - [Inline Documentation](#inline-documentation)
+    - [Readme](#readme)
+  - [Testing](#testing)
+    - [Unit tests](#unit-tests)
+    - [Integration tests](#integration-tests)
+    - [Versioning](#versioning)
+  - [Naming \& Style](#naming--style)
+    - [Naming Conventions](#naming-conventions)
+    - [Coding Style](#coding-style)
 
 ## Preface
 
@@ -146,13 +158,18 @@ the `s3.Bucket` class represents an Amazon S3 bucket with additional properties
 and methods, such as `bucket.addLifeCycleRule()`, which adds a lifecycle rule to
 the bucket.
 
-Examples of behaviors that an L2 commonly include:
+An L2 is a composition of several building blocks around a CFN Resource
+Construct. These building blocks are Mixins, Facades, and Traits (see
+[Mixins, Facades, and Traits](#mixins-facades-and-traits) below). Examples of
+behaviors that an L2 commonly include:
 
 - Strongly-typed modeling of the underlying L1 properties
-- Methods for integrating other AWS resources (e.g., adding an event notification to
-  an S3 bucket).
-- Modeling of permissions and resource policies
-- Modeling of metrics
+- Mixins that modify the resource's own configuration (e.g., enabling versioning
+  on a bucket, auto-deleting objects on removal).
+- Facades that provide integrations with other resources (e.g., grants,
+  events, metrics).
+- Traits that advertise capabilities to other constructs (e.g., encryptable,
+  has resource policy).
 
 In addition to the above, some L2s may introduce more complex and
 helpful functionality, either part of the original L2 itself, or as part of a
@@ -186,6 +203,150 @@ Application Load Balancer (ALB). These patterns are typically difficult to
 design to be one-size-fits-all and are best suited to be published as separate
 libraries, rather than included directly in the CDK. The patterns that currently
 exist in the CDK will be removed in the next CDK major version (CDKv2).
+
+## Mixins, Facades, and Traits
+
+The AWS Construct Library uses three composable building blocks to provide
+functionality around CFN Resource Constructs. Together with the CFN Resource
+itself, these building blocks form an L2 construct. Each building block has a
+distinct role and can be used independently of an L2.
+
+### Mixins
+
+Mixins are **inward-looking features** that extend a resource's own behavior.
+They are composable abstractions applied to constructs via the `.with()` method.
+
+A Mixin is a feature *of* the target resource. The defining question is: "is
+this feature about the target resource?" If yes, it is a Mixin — regardless of
+whether it sets properties on the L1, creates auxiliary resources (e.g. custom
+resource handlers, delivery sources), or both. Mixins may accept other
+constructs as props (e.g. a destination log group), but the feature remains
+about the target resource.
+
+Mixins usually operate on a single primary resource and can be applied to L1s,
+L2s, or custom constructs alike. They are not designed for features that serve
+an external consumer rather than the target resource — use a
+[Facade](#facades) for that.
+
+Examples: `BucketVersioning`, `BucketAutoDeleteObjects`, `BucketBlockPublicAccess`.
+
+```ts
+// Apply mixins to an L1
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning())
+  .with(new s3.mixins.BucketBlockPublicAccess());
+
+// Apply mixins to an L2 (delegates to the L1 default child)
+new s3.Bucket(this, 'Bucket', { removalPolicy: RemovalPolicy.DESTROY })
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
+When to use a Mixin:
+
+- The feature is *about* the target resource — it extends the resource's own
+  behavior or lifecycle.
+- The feature sets properties on the L1 resource (e.g. enabling versioning).
+- The feature creates auxiliary resources that serve the primary resource (e.g.
+  custom resource handlers, delivery sources, policy resources).
+- The same feature should be applicable to both L1 and L2 constructs.
+- You want to allow users to compose features independently of the L2
+  construct's props.
+
+Mixins are _not_ a replacement for construct properties. They cannot change the
+optionality of properties or change defaults. When an L2 property simply passes
+a value through to the L1 resource without additional logic, use `CfnPropsMixin`
+in the L2 glue code instead of writing a standalone mixin.
+
+For detailed implementation guidelines, see the
+[Mixins Design Guidelines](./MIXINS_DESIGN_GUIDELINES.md).
+
+### Facades
+
+Facades are **resource-specific simplified interfaces that provide
+integrations** for a resource with external consumers. They are standalone
+classes with a static factory method (e.g., `fromBucket()` or `of()`) that
+accepts a resource reference interface. Facades are exposed as properties on the
+construct interface.
+
+The defining characteristic of a Facade is directionality: a Facade serves an
+*external consumer*, not the target resource. For example, `BucketGrants`
+exists to serve the grantee (a role that needs access), not the bucket. Compare
+this to a Mixin like `BucketAutoDeleteObjects`, which is a feature *of* the
+bucket regardless of any external consumer.
+
+Facades are always specific to a particular resource type — that is why it is
+`BucketGrants` and not just `Grants`. While Facades for different resources look
+similar, each contains resource-specific logic. A Facade can also provide a
+[Trait](#traits) implementation for its resource (e.g., `BucketGrants` provides
+the `IResourceWithPolicyV2` trait for buckets).
+
+Some Facades are auto-generated and available for most resources (e.g.,
+`BucketMetrics`, `BucketReflection`). Others are handwritten for resources that
+need custom logic (e.g., `BucketGrants`). Because Facades are standalone classes
+that only depend on the resource reference interface, third-party packages can
+provide their own Facades for any resource without modifying `aws-cdk-lib`.
+
+Examples: `BucketGrants` (handwritten), `BucketMetrics` (generated),
+`BucketReflection` (generated).
+
+```ts
+// Facades are typically accessed through the construct interface
+bucket.grants.read(role);
+
+// Facades can also be used standalone with L1 constructs
+const grants = BucketGrants.fromBucket(cfnBucket);
+grants.read(role);
+```
+
+When to use a Facade:
+
+- The feature serves an external consumer, not the target resource (e.g., IAM
+  permissions serve the grantee, CloudWatch metrics serve the operator).
+- The feature should work with both L1 and L2 constructs.
+- The feature is not *about* the target resource's own behavior.
+
+The [Grants](#grants) section below describes the most common Facade in detail.
+
+### Traits
+
+Traits are **service-agnostic contracts** that describe a capability any
+resource can have. They are factory interfaces that wrap L1 resources into
+objects exposing higher-level interfaces. Unlike Facades which are specific to
+one resource type, Traits are generic — `IResourceWithPolicyV2` can represent
+any resource that has a resource policy, whether it is a bucket, a queue, or a
+topic.
+
+Traits enable Facades to discover capabilities of resources without requiring a
+full L2 implementation. A Facade can provide a Trait implementation for its
+resource type (e.g., registering an `IResourcePolicyFactory` for
+`AWS::S3::Bucket` so that any Grants class can add statements to a bucket's
+resource policy).
+
+Examples: `IEncryptedResource` (via `IEncryptedResourceFactory`),
+`IResourceWithPolicyV2` (via `IResourcePolicyFactory`), `IConnectable`,
+`IGrantable`.
+
+Traits are primarily an implementation detail used by Facades and the grant
+system. They are not typically part of the public-facing API that end users
+interact with directly.
+
+### When to use which
+
+| Question                                         | Mixin                           | Facade           | Trait            |
+| ------------------------------------------------ | ------------------------------- | ---------------- | ---------------- |
+| Is the feature *about* the target resource?      | yes                             | no               |                  |
+| Does it serve an external consumer?              | no                              | yes              | yes              |
+| Does it advertise a service-agnostic capability? | cross-service Mixins            | no               | yes              |
+| Is it specific to one resource type?             | yes                             | yes              | no               |
+| Should it work with L1 constructs?               | yes                             | yes              | yes              |
+| Is it user-facing?                               | yes                             | yes              | rarely           |
+| Primary builder audience                         | construct author & app builders | construct author | construct author |
+| Primary user audience                            | app builder                     | app builder      | construct author |
+
+For new features, prefer Mixins and Facades over adding methods or properties
+directly to L2 constructs. Existing L2 constructs will continue to work and
+may retain their current API for backward compatibility, but new functionality
+should be implemented as one of these building blocks first.
 
 ## API Design
 
@@ -376,7 +537,7 @@ export interface BucketReference {
 Additionally, constructs typically implement a handwritten **resource
 interface** (ex. `IBucket`). This interface extends the reference interface with
 additional L2 API convenience functions _[awslint:construct-interface]_,
-which give access to additional CloudFormation attributes or helper classes:
+which give access to additional CloudFormation attributes or Facade classes:
 
 For example:
 
@@ -404,15 +565,15 @@ interface IBucket extends IResource, IBucketRef {
 
 #### Defining construct interfaces: what goes onto the resource interface
 
-An L2 construct can have a lot of additional features that it provides to its
-consumers. Here is a (non-exhaustive) set:
+An L2 construct should provide additional features to its consumers.
+Here is a (non-exhaustive) set:
 
 - CloudFormation attribute getters (ex: `bucketWebsiteUrl`)
-- Helper functions to calculate something (ex: `arnForObjects`)
-- Helper functions to create new constructs that relate to the given resource
+- Reflections on the state of the construct (ex: `isEncrypted`, `isVersioned`).
+- Functions to calculate something (ex: `arnForObjects`)
+- Functions to create new constructs that relate to the given resource
   (ex: `addEventNotification`)
 - Functions to grant permissions to perform actions on the given resource (ex: `grantRead` or `grant.read`).
-- Functions to build event patterns based on things that happen to the given resource (ex: `onCloudTrailPutObject`).
 - Functions to build metric objects based on metrics of the given resource (ex: `metricBucketSize` or `metrics.bucketSize`).
 
 Traditionally, we used to put all of these features directly on the L2 resource
@@ -420,11 +581,14 @@ interface; that led to huge L2 interfaces and it being impossible to benefit
 from these features with alternative class implementations or L1 resource
 classes.
 
-To make it possible to use those features as widely as possible, we will start
-to move each category off to a separate class, and we will expose that class via
-the resource interface. New resource interfaces will be designed like this,
-and old interfaces will be migrated to the new style over time (When we migrate,
-the old functions will remain in place and forward to the new style implementation).
+We want those features to be used as widely as possible.
+Therefore each feature is implemented in a separate class called a **Facade**
+(see [Mixins, Facades, and Traits](#mixins-facades-and-traits)).
+**They must not be added directly to the resource interface**.
+New resource interfaces are designed like this;
+old interfaces are being migrated to the new style over time (when we
+migrate, the old functions remain in place and forward to the new style
+implementation).
 
 ```ts
 // This shows a hypothetical new design for the IBucket interface
@@ -440,25 +604,25 @@ export interface IBucket extends IResource, IBucketRef {
    */
   readonly bucketWebsiteUrl: string;
 
-  // 👉 Helper functions that only need public information move to a separate class
+  // 👉 Facade: functions that only need public information move to a separate class (planned)
   readonly helpers: BucketHelpers;
 
-  // 👉 Helper functions to create new constructs that relate to this resource
+  // 👉 Facade: create new constructs that relate to this resource (planned)
   readonly create: BucketCreateHelpers;
 
-  // 👉 Helper functions to grant permissions for a Bucket
+  // 👉 Facade: grant permissions for a Bucket
   // The BucketGrants class can be code-generated (see the "Grants" section below).
   readonly grants: BucketGrants;
 
-  // 👉 Helper functions to obtain metrics for a Bucket.
-  // The BucketMetrics class will be automatically generated from an external source, and does not need to be handwritten.
+  // 👉 Facade: obtain metrics for a Bucket (planned)
+  // The BucketMetrics class is automatically generated from an external source and does not need to be handwritten.
   readonly metrics: BucketMetrics;
 
-  // 👉 Helper functions to obtain event patterns for a Bucket.
-  // The BucketEvents class will be automatically generated from an external source, and does not need to be handwritten.
-  readonly events: BucketEvents;
+  // 👉 Facade: derive state from the construct tree instead of storing input values (planned)
+  readonly reflections: BucketReflection;
 }
 
+// This class is handwritten.
 export class BucketHelpers {
   public static of(bucket: IBucketRef) { /* ... */ }
 
@@ -468,17 +632,14 @@ export class BucketHelpers {
   arnForObjects(keyPattern: string): string { /* ... */ }
 }
 
+// This class can be handwritten or generated (planned).
+// Generation should be preferred for simple resources.
 export class BucketCreateHelpers {
   public static of(bucket: IBucketRef) { /* ... */ }
-
-  /**
-   * Adds a bucket notification event destination.
-   */
-  eventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) { /* ... */ }
 }
 
-// This class can be handwritten or generated. Generation should be preferred for
-// simple resources.
+// This class can be handwritten or generated.
+// Generation should be preferred for simple resources.
 export class BucketGrants {
   public static of(bucket: IBucketRef) { /* ... */ }
 
@@ -489,7 +650,7 @@ export class BucketGrants {
   public read(identity: IGrantable, objectsKeyPattern: any = '*') { /* ... */ }
 }
 
-// This class will be generated.
+// This class is generated.
 export class BucketMetrics {
   public static of(bucket: IBucketRef) { /* ... */ }
 
@@ -499,14 +660,20 @@ export class BucketMetrics {
   public bucketSize(options?: MetricsOptions): IMetric { /* ... */ }
 }
 
-// This class will be generated.
-export class BucketEvents {
+// Reflections derive state from the L1 configuration rather than storing input values.
+// This class is handwritten using shared reflection helpers.
+export class BucketReflection {
   public static of(bucket: IBucketRef) { /* ... */ }
 
   /**
-   * An event for whenever an object is added to this bucket
+   * Whether versioning is enabled on this bucket.
    */
-  public onPutObject(options?: PutObjectOptions): EventPattern { /* ... */ }
+  public get isVersioned(): boolean { /* ... */ }
+
+  /**
+   * Whether this bucket is encrypted.
+   */
+  public get isEncrypted(): boolean { /* ... */ }
 }
 ```
 
@@ -536,11 +703,11 @@ according to what plan to do with the input construct.
 
 Here are your choices, from most preferred to least preferred.
 
-| Name | Example | When to use |
-|-----|----------|-----------|
-| Reference interface | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. (**Should be your default choice**) |
-| L2 interface | `IBucket` | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) (**Most likely for legacy code**) |
-| L2 Resource construct | `Bucket` | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. (**Only in exceptional cases**) |
+| Name                  | Example      | When to use                                                                                                                                                                                                             |
+| --------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Reference interface   | `IBucketRef` | A resource of a certain type, that you can only reference. You can get its name or ARN. (**Should be your default choice**)                                                                                             |
+| L2 interface          | `IBucket`    | A resource of a certain type with convenience functions and additional attributes. Usually read-only, sometimes mutable. May or may not be "owned" (part of a Stack we are deploying) (**Most likely for legacy code**) |
+| L2 Resource construct | `Bucket`     | A resource that is part of a Stack we are deploying. Has convenience functions and additional attributes, can be mutated. (**Only in exceptional cases**)                                                               |
 
 Given the examples above, if you write a construct to accept a Bucket source you
 you should prefer to accept `IBucketRef > IBucket > Bucket`, in that order.
@@ -567,12 +734,11 @@ For example, `bucket.arnForObjects('file.zip')` just takes the bucket's name and
 constructs a larger formatted string from it. You can write this as a standalone
 helper function, or as a collection of helper functions on a class.
 
-There should be a helper class with these kinds of functions already for this
-resource (see `BucketHelpers` in the example above). If there isn't, write a
-new one.
+There should be a Facade class with these kinds of functions already for this
+resource. If there isn't, write a new one.
 
 If this applies to your use case, you can accept an `IBucketRef` type and
-construct the helper class yourself.
+instantiate the Facade yourself.
 
 ```ts
 var bucket: IBucket;
@@ -584,7 +750,7 @@ bucket.arnForObjects('file.zip')
 // ✅ Free helper function, just accessible to you, the construct author
 arnForObjects(bucketRef, 'file.zip')
 // ✅ Even better, a collection of helper functions to you and library customers
-new BucketHelpers(bucketRef).arnForObjects('file.zip')
+BucketHelpers.for(bucketRef).arnForObjects('file.zip')
 ```
 
 **If the feature needs the object's cooperation**: if you want to layer on
@@ -1299,7 +1465,8 @@ vpcSubnetSelection?: ec2.SubnetSelection;
 
 Grants are one of the most powerful concepts in the AWS Construct Library. They
 offer a higher level, intent-based, API for managing IAM permissions for AWS
-resources.
+resources. Grants are a type of [Facade](#facades) — they provide integrations
+between a resource and IAM principals.
 
 Grants for a given resource class are implemented in an accompanying class. For
 example, **sns.Topic** has a corresponding **sns.TopicGrants** class. To get an
@@ -1340,6 +1507,48 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
 }
 ```
 
+#### Traits
+
+To enable grant methods to work with L1 constructs, the CDK uses factory
+interfaces called [Traits](#traits) that wrap L1 resources into objects
+exposing higher-level interfaces:
+
+- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy 
+manipulation.
+- `IEncryptedResourceFactory` wraps an L1 into an object implementing `IEncryptedResource`, enabling KMS key grants.
+
+`IResourceWithPolicyV2` and `IEncryptedResource` are collectively called "traits". These are the two
+traits currently in use. More may be added if other common patterns in L1 resources can be
+abstracted through this mechanism.
+
+The CDK provides default implementations for common L1 resources, but it's also possible to register custom factories
+for any CloudFormation resource type:
+
+```ts nofixture
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { Construct, IConstruct } from 'constructs';
+
+declare const scope: Construct;
+class MyFactory implements IResourcePolicyFactory {
+  forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return {
+      env: resource.env,
+      addToResourcePolicy(statement: PolicyStatement) {
+        // custom implementation to add the statement to the resource policy
+        return { statementAdded: true, policyDependable: resource };
+      }
+    }
+  }
+}
+
+// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type', 
+// it will be able to use MyFactory to attempt to add statements to its resource policy.
+ResourceWithPolicies.register(scope, 'AWS::Some::Type', new MyFactory());
+```
+
+#### Auto-generation and manual implementation
+
 The `TopicGrants` class, and many others, are generated automatically from the `grants.json`
 file present at the root of each individual module (`packages/aws-sns` for SNS constructs and
 so on). The `grants.json` file has the following general structure:
@@ -1348,6 +1557,7 @@ so on). The `grants.json` file has the following general structure:
 {
   "resources": {
     "Topic": {
+      "isEncrypted": true,
       "hasResourcePolicy": true,
       "grants": {
         "publish": {
@@ -1368,6 +1578,11 @@ so on). The `grants.json` file has the following general structure:
 where:
 
 * `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `isEncrypted` - indicates whether the resource is encrypted with a KMS key. When true, the `actions()` method will
+have an `options` parameter of type `EncryptedPermissionOptions` that allows users to specify additional KMS permissions
+to be granted on the key. If left undefined, but at least one grant method includes `keyActions`, the CDK will assume 
+that the resource is encrypted and the same behavior will apply. Note that if `isEncrypted` is explicitly set to false, 
+it is an error to specify `keyActions` in any of the grants.
 * `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
 * `publish` - the name of a grant.
 * `actions` - the actions to encompass in the grant.
@@ -1375,10 +1590,16 @@ where:
 * `docSummary` - the public documentation for the method.
 * `arnFormat` - In some cases, the policy applies to a specific ARN patterns, rather than just the ARN of the resource.
 
-In some cases, however, it might not be possible to specify the grant details using the `grants.json`
-file. This is usually the case when grants require additional logic, such as checking whether the
-resource is owned or unowned, or when the grant needs to modify the resource policy of the resource
-(if it has one). In these cases, you can implement the grants class manually.
+Code generated from the `grants.json` file will have a very basic logic: it will try to add the given statement to the
+principal's policy. If `hasResourcePolicy` is true, it will also attempt to add the statement to the resource policy.
+This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if 
+there is a `IResourcePolicyFactory` registered for its type (see previous section). If `keyActions` are specified in the
+JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements 
+the `iam.IEncryptedResource` interface (or, similarly to resource policies, if there is a `IEncryptedResourceFactory`
+registered for it).
+
+If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling 
+additional parameters, you will need to implement the Grants class manually.
 
 Historically, grant methods were implemented directly on the resource construct interface (e.g.
 `sns.ITopic.grantPublish(principal)`). For backward compatibility reasons, these methods are still

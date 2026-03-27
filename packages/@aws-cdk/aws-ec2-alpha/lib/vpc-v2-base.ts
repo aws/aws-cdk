@@ -398,7 +398,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
     const routeTableIds = allRouteTableIds(flatten(vpnRoutePropagation.map(s => this.selectSubnets(s).subnets)));
 
     if (routeTableIds.length === 0) {
-      Annotations.of(this).addError(`enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
+      Annotations.of(this)._addTrackableError('VpnGatewayNoMatchingSubnets', `enableVpnGateway: no subnets matching selection: '${JSON.stringify(vpnRoutePropagation)}'. Select other subnets to add routes to.`);
     }
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
@@ -604,7 +604,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
    */
   public addNatGateway(options: NatGatewayOptions): NatGateway {
     if (options.connectivityType === NatConnectivityType.PUBLIC && !this._internetGatewayId) {
-      throw new ValidationError('Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
+      throw new ValidationError('PublicNatGatewayRequiresInternetGateway', 'Cannot add a Public NAT Gateway without an Internet Gateway enabled on VPC', this);
     }
     return new NatGateway(this, `NATGateway-${options.subnet.node.id}`, {
       vpc: this,

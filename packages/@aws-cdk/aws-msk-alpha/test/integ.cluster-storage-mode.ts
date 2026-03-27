@@ -20,7 +20,7 @@ class KafkaStorageModeTest extends Stack {
       const clusterMode = sMode.toLowerCase();
       new msk.Cluster(this, `storageMode${clusterMode}`, {
         clusterName: `${clusterMode}-cluster`,
-        kafkaVersion: KafkaVersion.V2_8_2_TIERED,
+        kafkaVersion: KafkaVersion.V3_6_0,
         storageMode: sMode,
         vpc,
         removalPolicy: RemovalPolicy.DESTROY,

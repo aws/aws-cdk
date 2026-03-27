@@ -33,13 +33,14 @@
     "pre": [
       "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
-      "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)",
+      "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",
       "./scripts/airlift-custom-resource-handlers.sh"
     ],
     "post": [
       "ts-node ./scripts/verify-imports-resolve-same.ts",
       "ts-node ./scripts/verify-imports-shielded.ts",
       "ts-node ./cx-api/build-tools/flag-report.ts",
+      "ts-node ../../scripts/check-peer-dependencies.ts",
       "env QUIET=1 lazify ."
     ]
   },
@@ -115,25 +116,26 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.0.0",
+    "@aws-cdk/cloud-assembly-api": "^2.2.0",
     "@aws-cdk/asset-awscli-v1": "2.2.263",
-    "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.0",
-    "@aws-cdk/cloud-assembly-schema": "^48.20.0",
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
+    "@aws-cdk/cloud-assembly-schema": "^53.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
-    "minimatch": "^3.1.2",
+    "minimatch": "^10.2.3",
     "punycode": "^2.3.1",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "table": "^6.9.0",
-    "yaml": "1.10.2",
+    "yaml": "1.10.3",
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
-    "@aws-cdk/aws-service-spec": "^0.1.147",
+    "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
+    "@aws-cdk/aws-service-spec": "^0.1.165",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -160,22 +162,22 @@
     "@smithy/util-stream": "3.3.4",
     "@types/aws-lambda": "^8.10.160",
     "@types/jest": "^29.5.14",
-    "@types/lodash": "^4.17.23",
+    "@types/lodash": "^4.17.24",
     "@types/punycode": "^2.1.4",
     "@types/mime-types": "^2.1.4",
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.70.43",
-    "constructs": "^10.0.0",
+    "cdk8s": "2.70.48",
+    "constructs": "^10.5.0",
     "delay": "5.0.0",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.27.3",
     "fast-check": "^3.23.2",
     "jest": "^29.7.0",
     "jest-each": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "lambda-tester": "^4.0.1",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "nock": "^13.5.6",
     "sinon": "^9.2.4",
     "ts-mock-imports": "^1.3.19",
@@ -184,11 +186,11 @@
     "typescript-json-schema": "^0.67.1"
   },
   "peerDependencies": {
-    "constructs": "^10.0.0"
+    "constructs": "^10.5.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "keywords": [
     "aws",
@@ -249,6 +251,7 @@
     "./aws-bcmdataexports": "./aws-bcmdataexports/index.js",
     "./aws-bedrock": "./aws-bedrock/index.js",
     "./aws-bedrockagentcore": "./aws-bedrockagentcore/index.js",
+    "./aws-bedrockmantle": "./aws-bedrockmantle/index.js",
     "./aws-billing": "./aws-billing/index.js",
     "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
@@ -281,6 +284,7 @@
     "./aws-cognito": "./aws-cognito/index.js",
     "./aws-cognito-identitypool": "./aws-cognito-identitypool/index.js",
     "./aws-comprehend": "./aws-comprehend/index.js",
+    "./aws-computeoptimizer": "./aws-computeoptimizer/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
@@ -298,6 +302,7 @@
     "./aws-devicefarm": "./aws-devicefarm/index.js",
     "./aws-devopsagent": "./aws-devopsagent/index.js",
     "./aws-devopsguru": "./aws-devopsguru/index.js",
+    "./aws-directconnect": "./aws-directconnect/index.js",
     "./aws-directoryservice": "./aws-directoryservice/index.js",
     "./aws-dlm": "./aws-dlm/index.js",
     "./aws-dms": "./aws-dms/index.js",
@@ -308,10 +313,13 @@
     "./aws-ec2": "./aws-ec2/index.js",
     "./aws-ecr": "./aws-ecr/index.js",
     "./aws-ecr-assets": "./aws-ecr-assets/index.js",
+    "./aws-ecr/mixins": "./aws-ecr/lib/mixins/index.js",
     "./aws-ecs": "./aws-ecs/index.js",
     "./aws-ecs-patterns": "./aws-ecs-patterns/index.js",
+    "./aws-ecs/mixins": "./aws-ecs/lib/mixins/index.js",
     "./aws-efs": "./aws-efs/index.js",
     "./aws-eks": "./aws-eks/index.js",
+    "./aws-eks-v2": "./aws-eks-v2/index.js",
     "./aws-elasticache": "./aws-elasticache/index.js",
     "./aws-elasticbeanstalk": "./aws-elasticbeanstalk/index.js",
     "./aws-elasticloadbalancing": "./aws-elasticloadbalancing/index.js",
@@ -319,6 +327,7 @@
     "./aws-elasticloadbalancingv2-actions": "./aws-elasticloadbalancingv2-actions/index.js",
     "./aws-elasticloadbalancingv2-targets": "./aws-elasticloadbalancingv2-targets/index.js",
     "./aws-elasticsearch": "./aws-elasticsearch/index.js",
+    "./aws-elementalinference": "./aws-elementalinference/index.js",
     "./aws-emr": "./aws-emr/index.js",
     "./aws-emrcontainers": "./aws-emrcontainers/index.js",
     "./aws-emrserverless": "./aws-emrserverless/index.js",
@@ -451,6 +460,7 @@
     "./aws-route53": "./aws-route53/index.js",
     "./aws-route53-patterns": "./aws-route53-patterns/index.js",
     "./aws-route53-targets": "./aws-route53-targets/index.js",
+    "./aws-route53globalresolver": "./aws-route53globalresolver/index.js",
     "./aws-route53profiles": "./aws-route53profiles/index.js",
     "./aws-route53recoverycontrol": "./aws-route53recoverycontrol/index.js",
     "./aws-route53recoveryreadiness": "./aws-route53recoveryreadiness/index.js",
@@ -461,6 +471,7 @@
     "./aws-s3-assets": "./aws-s3-assets/index.js",
     "./aws-s3-deployment": "./aws-s3-deployment/index.js",
     "./aws-s3-notifications": "./aws-s3-notifications/index.js",
+    "./aws-s3/mixins": "./aws-s3/lib/mixins/index.js",
     "./aws-s3express": "./aws-s3express/index.js",
     "./aws-s3objectlambda": "./aws-s3objectlambda/index.js",
     "./aws-s3outposts": "./aws-s3outposts/index.js",
@@ -542,7 +553,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v34": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v35": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-glue-alpha": "^0.0.0"
     }
