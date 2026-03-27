@@ -2646,53 +2646,41 @@ describe('regionalFact', () => {
     });
   });
 
-  test('git source metadata is included by default', () => {
-    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
-    process.env.CDK_DISABLE_GIT_SOURCE = '';
+  test('git source metadata is not included by default', () => {
     clearGitSourceCache();
-    try {
-      const app = new App();
-      const stack = new Stack(app, 'Stack');
-      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
 
-      const assembly = app.synth();
-      const stackArtifact = assembly.getStackByName(stack.stackName);
-      const template = stackArtifact.template;
-      const source = template?.Metadata?.['AWS::CloudFormation::Source'];
-      expect(source).toBeDefined();
-      expect(typeof source.Repository).toBe('string');
-      expect(typeof source.Commit).toBe('string');
-      expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
-
-      const md = JSON.parse(fs.readFileSync(path.join(assembly.directory, stackArtifact.manifest.additionalMetadataFile!)).toString());
-      expect(md['/Stack']).toMatchObject([{
-        data: expect.objectContaining({
-          commit: expect.stringMatching(/[a-f0-9]+/),
-          repository: expect.stringContaining('github.com'),
-        }),
-      }]);
-    } finally {
-      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
-      clearGitSourceCache();
-    }
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
   });
 
-  test('git source metadata is not included when CDK_DISABLE_GIT_SOURCE is set', () => {
-    const savedEnv = process.env.CDK_DISABLE_GIT_SOURCE;
-    process.env.CDK_DISABLE_GIT_SOURCE = '1';
+  test('git source metadata is included when enableGitSource context is true', () => {
     clearGitSourceCache();
-    try {
-      const app = new App();
-      const stack = new Stack(app, 'Stack');
-      new CfnResource(stack, 'Resource', { type: 'MyResource' });
+    const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
 
-      const assembly = app.synth();
-      const template = assembly.getStackByName(stack.stackName).template;
-      expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
-    } finally {
-      process.env.CDK_DISABLE_GIT_SOURCE = savedEnv;
-      clearGitSourceCache();
-    }
+    const assembly = app.synth();
+    const stackArtifact = assembly.getStackByName(stack.stackName);
+    const template = stackArtifact.template;
+    const source = template?.Metadata?.['AWS::CloudFormation::Source'];
+    const md = JSON.parse(fs.readFileSync(path.join(assembly.directory, stackArtifact.manifest.additionalMetadataFile!)).toString());
+
+    expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
+    expect(md['/Stack']).toMatchObject([{
+      data: expect.objectContaining({
+        commit: expect.stringMatching(/^[a-f0-9]{40}$/),
+        repository: expect.stringContaining('github.com'),
+      }),
+    }]);
+
+    expect(source).toBeDefined();
+    expect(source.Repository).toEqual(md['/Stack'][0].data.repository);
+    expect(source.Commit).toEqual(md['/Stack'][0].data.commit);
+    clearGitSourceCache();
   });
 });
 

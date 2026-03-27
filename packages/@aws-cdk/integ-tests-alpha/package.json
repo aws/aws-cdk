@@ -51,7 +51,7 @@
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "CDK_DISABLE_GIT_SOURCE=1 integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",

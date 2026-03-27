@@ -9,7 +9,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "CDK_DISABLE_GIT_SOURCE=1 integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",

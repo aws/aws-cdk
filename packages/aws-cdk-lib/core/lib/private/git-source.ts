@@ -8,8 +8,7 @@ let cached: { value: GitSource } | undefined;
 /**
  * Retrieves git source information (remote URL and latest commit) for the current repository.
  * Uses the CDK app entry point to determine the correct git repository.
- * Returns undefined if git is not available, the app is not in a git repo,
- * or CDK_DISABLE_GIT_SOURCE is set.
+ * Returns undefined if git is not available or the app is not in a git repo.
  * Results are cached for the lifetime of the process.
  */
 export function getGitSource(): GitSource {
@@ -27,9 +26,6 @@ export function clearGitSourceCache() {
 }
 
 function _getGitSource(): GitSource {
-  if (process.env.CDK_DISABLE_GIT_SOURCE == '1' || process.env.CDK_DISABLE_GIT_SOURCE == 'true') {
-    return undefined;
-  }
   try {
     const appDir = process.argv[1] ? path.dirname(path.resolve(process.argv[1])) : process.cwd();
     const opts: ExecSyncOptionsWithStringEncoding = {

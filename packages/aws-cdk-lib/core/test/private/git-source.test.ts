@@ -10,7 +10,6 @@ const mockExecSync = child_process.execSync as jest.Mock;
 beforeEach(() => {
   clearGitSourceCache();
   mockExecSync.mockReset();
-  delete process.env.CDK_DISABLE_GIT_SOURCE;
 });
 
 test('caches result across multiple calls', () => {

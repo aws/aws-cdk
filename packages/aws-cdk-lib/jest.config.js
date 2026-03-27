@@ -22,7 +22,6 @@ const config = {
   },
 
   testEnvironment: './testhelpers/jest-bufferedconsole.ts',
-  setupFiles: ['./testhelpers/jest-disable-git-source.ts'],
 };
 
 module.exports = config;

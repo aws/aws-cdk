@@ -544,7 +544,7 @@ export class Stack extends Construct implements ITaggable {
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
 
-    const gitSource = getGitSource();
+    const gitSource = this.node.tryGetContext('@aws-cdk/core:enableGitSource') === true ? getGitSource() : undefined;
     if (gitSource) {
       this.addMetadata('AWS::CloudFormation::Source', {
         Repository: gitSource.repository,

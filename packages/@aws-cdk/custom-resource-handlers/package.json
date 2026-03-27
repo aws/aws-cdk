@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b tsconfig.json && node scripts/generate.js && cdk-lint",
-    "integ": "CDK_DISABLE_GIT_SOURCE=1 integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
