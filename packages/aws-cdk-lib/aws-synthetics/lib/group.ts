@@ -74,7 +74,7 @@ export class Group extends cdk.Resource implements IGroup {
     const groupName = arnParts.resourceName;
 
     if (!groupName) {
-      throw new ValidationError('Group ARN must contain a group name', scope);
+      throw new ValidationError('GroupArnMissingName', 'Group ARN must contain a group name', scope);
     }
 
     return Group.fromGroupName(scope, id, groupName);
@@ -98,7 +98,7 @@ export class Group extends cdk.Resource implements IGroup {
       }
 
       public addCanary(_canary: ICanary): void {
-        throw new ValidationError('Cannot add canaries to an imported group', this);
+        throw new ValidationError('CannotAddCanaryToImportedGroup', 'Cannot add canaries to an imported group', this);
       }
     }
 
@@ -144,7 +144,7 @@ export class Group extends cdk.Resource implements IGroup {
     addConstructMetadata(this, props);
 
     if (props.canaries && props.canaries.length > 10) {
-      throw new ValidationError(`A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
+      throw new ValidationError('TooManyCanaries', `A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
     }
 
     props.canaries?.forEach(canary => this._canaries.add(canary));
@@ -161,7 +161,7 @@ export class Group extends cdk.Resource implements IGroup {
     this.groupArn = cdk.Stack.of(this).formatArn({
       service: 'synthetics',
       resource: 'group',
-      resourceName: this.groupId,
+      resourceName: this.groupName,
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
   }
@@ -173,7 +173,7 @@ export class Group extends cdk.Resource implements IGroup {
    */
   public addCanary(canary: ICanary): void {
     if (this._canaries.size >= 10) {
-      throw new ValidationError('A group can contain at most 10 canaries', this);
+      throw new ValidationError('TooManyCanaries', 'A group can contain at most 10 canaries', this);
     }
 
     this._canaries.add(canary);
