@@ -103,7 +103,6 @@ describe('HttpAuthorizer', () => {
       })).toThrow(/role is supported only for Lambda authorizers/);
     });
 
-
     test('should throw error if role is provided for IAM authorizer', () => {
       // GIVEN
       const stack = new Stack();
@@ -117,5 +116,5 @@ describe('HttpAuthorizer', () => {
         role: new Role(stack, 'Role', { assumedBy: new ServicePrincipal('apigateway.amazonaws.com') }),
       })).toThrow(/role is supported only for Lambda authorizers/);
     });
-  })
+  });
 });
