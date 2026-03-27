@@ -19,8 +19,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Construct } from 'constructs';
 // Internal imports
-import type { IGateway } from '../gateway/gateway-base';
 import { PolicyEnginePerms } from './perms';
+import type { IGateway } from '../gateway/gateway-base';
 
 /******************************************************************************
  *                                Interface
@@ -103,7 +103,7 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
    * This follows the same pattern as Lambda's `grantInvokeVersion(grantee, version)`.
    *
    * @param grantee - The IAM principal (gateway execution role) to grant permissions to
-   * @param gateway - The gateway that will use this policy engine
+   * @param gateway - The gateway that will use this policy engine [disable-awslint:prefer-ref-interface]
    */
   grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant;
 
@@ -246,7 +246,7 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal (gateway execution role) to grant permissions to
-   * @param gateway - The gateway that will use this policy engine
+   * @param gateway - The gateway that will use this policy engine [disable-awslint:prefer-ref-interface]
    * @returns A combined IAM Grant representing all granted permissions
    */
   public grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant {

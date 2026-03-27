@@ -10,7 +10,6 @@ import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metad
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 // Internal imports
-import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayBase } from './gateway-base';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
@@ -21,6 +20,7 @@ import type { ICredentialProviderConfig } from './outbound-auth/credential-provi
 import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
 import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
+import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
@@ -61,6 +61,8 @@ export interface GatewayPolicyEngineConfig {
   /**
    * The policy engine to associate with this gateway.
    * The policy engine must contain Cedar policies that define the authorization rules.
+   *
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly policyEngine: IPolicyEngine;
 
