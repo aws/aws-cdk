@@ -241,7 +241,7 @@ export function createSecretsManagerConfiguration(
 ): CfnDeliveryStream.SecretsManagerConfigurationProperty | undefined {
   if (props?.enabled || props?.secret) {
     if (!props.secret) {
-      throw new cdk.ValidationError('The secret is required when enabled', scope);
+      throw new cdk.ValidationError('SecretRequired', 'The secret is required when enabled', scope);
     }
     if (!props.role) {
       props.secret.grantRead(role);

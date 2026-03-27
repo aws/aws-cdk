@@ -393,7 +393,7 @@ describe('HTTP endpoint destination', () => {
           url: 'https://example.com/',
           retryDuration: cdk.Duration.seconds(7201),
         }),
-      })).toThrow('Retry duration must be less than or equal to 7200 seconds, got 7201.');
+      })).toThrow('Retry duration must be less than or equal to 7200 seconds, got 7201 seconds.');
     });
   });
 

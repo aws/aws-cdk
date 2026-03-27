@@ -134,7 +134,7 @@ class HttpEndpointAccessKeyAuthentication extends HttpEndpointAuthentication {
 
   bind(scope: Construct): HttpEndpointAuthenticationOptions {
     if (!cdk.Token.isUnresolved(this.accessKey) && Buffer.from(this.accessKey).byteLength > 4096) {
-      throw new cdk.ValidationError('The maximum length of the access key is 4096 bytes.', scope);
+      throw new cdk.ValidationError('AccessKeyTooLong', 'The maximum length of the access key is 4096 bytes.', scope);
     }
     return { accessKey: this.accessKey };
   }
@@ -178,7 +178,7 @@ export class HttpEndpoint implements IDestination {
     }) ?? {};
 
     if (this.props.retryDuration && !this.props.retryDuration.isUnresolved() && this.props.retryDuration.toSeconds() > 7200) {
-      throw new cdk.ValidationError(`Retry duration must be less than or equal to 7200 seconds, got ${this.props.retryDuration.toSeconds()}.`, scope);
+      throw new cdk.ValidationError('RetryDurationTooLarge', `Retry duration must be less than or equal to 7200 seconds, got ${this.props.retryDuration.toSeconds()} seconds.`, scope);
     }
 
     const s3Backup = { ...this.props.s3Backup, mode: this.props.s3Backup?.mode ?? BackupMode.FAILED };
