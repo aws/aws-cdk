@@ -222,7 +222,7 @@ export interface SecretsManagerProps {
    *
    * @default - the destination specific role will be used
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 
   /**
    * The secret that stores your credentials.

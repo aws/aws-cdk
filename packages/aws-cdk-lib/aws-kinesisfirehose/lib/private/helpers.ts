@@ -248,7 +248,7 @@ export function createSecretsManagerConfiguration(
     }
     return {
       enabled: true,
-      roleArn: props.role?.roleArn,
+      roleArn: props.role?.roleRef.roleArn,
       secretArn: props.secret.secretArn,
     };
   }
