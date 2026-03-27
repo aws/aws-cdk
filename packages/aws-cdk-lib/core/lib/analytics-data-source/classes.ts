@@ -4595,7 +4595,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'requestMetricsStatus': 'RequestMetricsStatus'
     },
     'TablePolicy': {
       'table': {
@@ -4642,10 +4643,32 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'icebergMetadata': {
         'icebergSchema': {
           'schemaFieldList': {
+            'id': '*',
             'name': '*',
             'required': 'boolean',
             'type': '*'
           }
+        },
+        'icebergPartitionSpec': {
+          'fields': {
+            'sourceId': '*',
+            'transform': '*',
+            'name': '*',
+            'fieldId': '*'
+          },
+          'specId': '*'
+        },
+        'icebergSortOrder': {
+          'fields': {
+            'sourceId': '*',
+            'direction': 'SortDirection',
+            'nullOrder': 'NullOrder'
+          },
+          'orderId': '*'
+        },
+        'tableProperties': {
+          'key': '*',
+          'value': '*'
         }
       },
       'snapshotManagement': {
@@ -8252,6 +8275,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ssmSessionPermissions': 'boolean',
       'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
       'deletionProtection': 'DeletionProtection',
+      'instanceLifecyclePolicy': {
+        'retentionTriggers': {
+          'terminateHookAbandon': 'TerminateHookAbandonAction'
+        }
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -13334,7 +13362,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'capacityRebalance': 'boolean',
         'ssmSessionPermissions': 'boolean',
         'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-        'deletionProtection': 'DeletionProtection'
+        'deletionProtection': 'DeletionProtection',
+        'instanceLifecyclePolicy': {
+          'retentionTriggers': {
+            'terminateHookAbandon': 'TerminateHookAbandonAction'
+          }
+        }
       },
       'capacityProviders': '*',
       'enableFargateCapacityProviders': [],
@@ -13504,7 +13537,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addAsgCapacityProvider': [
@@ -14364,7 +14402,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -15479,7 +15522,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -22219,6 +22267,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
+      'blockedEncryptionTypes': '*',
       'enforceSSL': 'boolean',
       'bucketKeyEnabled': 'boolean',
       'bucketName': '*',
