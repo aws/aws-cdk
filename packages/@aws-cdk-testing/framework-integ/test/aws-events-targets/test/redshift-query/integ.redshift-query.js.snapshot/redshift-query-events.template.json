@@ -3,22 +3,14 @@
   "Namespace": {
    "Type": "AWS::RedshiftServerless::Namespace",
    "Properties": {
-    "NamespaceName": "namespace"
+    "NamespaceName": "namespace-redshift-query-events"
    }
   },
   "WorkGroup": {
    "Type": "AWS::RedshiftServerless::Workgroup",
    "Properties": {
-    "NamespaceName": "namespace",
-    "SecurityGroupIds": [
-     "sg-0f3ee03c20cc6056c"
-    ],
-    "SubnetIds": [
-     "subnet-06c91b5d4c16df0ff",
-     "subnet-04b90752f12ed5174",
-     "subnet-0d42bcb68396ffd19"
-    ],
-    "WorkgroupName": "workgroup"
+    "NamespaceName": "namespace-redshift-query-events",
+    "WorkgroupName": "workgroup-redshift-query-events"
    },
    "DependsOn": [
     "Namespace"

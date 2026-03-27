@@ -2328,6 +2328,73 @@ describe('cluster', () => {
       });
     });
 
+    test('throws when kubectl private subnets include isolated subnets', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 0,
+        subnetConfiguration: [
+          { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+        ],
+      });
+
+      // THEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+          prune: false,
+        });
+      }).toThrow(/Isolated subnets cannot be used for kubectl private subnets/);
+    });
+
+    test('does not throw when kubectl private subnets are PRIVATE_WITH_EGRESS', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: ec2.SubnetType.PUBLIC, cidrMask: 24 },
+          { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, cidrMask: 24 },
+        ],
+      });
+
+      // THEN - should not throw
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+    });
+
+    test('does not throw for imported VPC with isolated subnets (may have VPC endpoints)', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+        vpcId: 'vpc-123',
+        availabilityZones: ['us-east-1a', 'us-east-1b'],
+        isolatedSubnetIds: ['subnet-1', 'subnet-2'],
+      });
+
+      // THEN - should not throw because imported VPCs may have VPC endpoints
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnets: vpc.isolatedSubnets }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+    });
+
     test('if openIDConnectProvider a new OpenIDConnectProvider resource is created and exposed', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
@@ -3785,6 +3852,27 @@ describe('cluster', () => {
 
       });
     });
+
+    test('cluster can grantAccess with accessEntryType', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+      const nodeRole = new iam.Role(stack, 'NodeRole', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+      // WHEN
+      cluster.grantAccess('NodeAccess', nodeRole.roleArn, [], { accessEntryType: eks.AccessEntryType.EC2 });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        PrincipalArn: { 'Fn::GetAtt': ['NodeRoleB5643E21', 'Arn'] },
+        Type: 'EC2',
+        AccessPolicies: [],
+      });
+    });
   });
 
   describe('removal policy', () => {
@@ -3830,6 +3918,32 @@ describe('cluster', () => {
         DeletionPolicy: 'Delete',
       });
     });
+    test('user provided removal policy applies to kubectl lambda', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const userVpc = new ec2.Vpc(stack, 'UserVpc');
+      const userRole = new iam.Role(stack, 'UserRole', {
+        assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
+      });
+
+      // WHEN
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc: userVpc,
+        role: userRole,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(cluster._attachKubectlResourceScope(cluster));
+      template.hasResource('AWS::Lambda::Function', {
+        DeletionPolicy: 'Delete',
+      });
+      template.hasResource('AWS::IAM::Role', {
+        DeletionPolicy: 'Delete',
+      });
+    });
   });
 
   describe('RemoteNetworkConfig', () => {
@@ -3846,7 +3960,7 @@ describe('cluster', () => {
             cidrs: remoteNodeNetworkCidrs,
           },
         ],
-        kubectlLayer: undefined as any,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       // THEN
@@ -3882,7 +3996,7 @@ describe('cluster', () => {
             cidrs: remotePodNetworkCidrs,
           },
         ],
-        kubectlLayer: undefined as any,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
       });
 
       // THEN
@@ -3925,7 +4039,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`Remote node network CIDR block ${overlappingCidr} should not overlap with remote pod network CIDR block ${overlappingCidr}`);
     });
@@ -3949,7 +4063,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs2,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote node network #1 should not overlap with CIDR block ${overlappingCidr} in remote node network #2`);
     });
@@ -3979,7 +4093,7 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs2,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR block ${overlappingCidr} in remote pod network #1 should not overlap with CIDR block ${overlappingCidr} in remote pod network #2`);
     });
@@ -3999,7 +4113,7 @@ describe('cluster', () => {
               cidrs: remoteNodeNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
     });
@@ -4025,9 +4139,137 @@ describe('cluster', () => {
               cidrs: remotePodNetworkCidrs,
             },
           ],
-          kubectlLayer: undefined as any,
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
         });
       }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote pod network #1`);
+    });
+
+    test('skips validation for unresolved tokens in remote node networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedCidr, '10.0.0.0/16'],
+          },
+        ],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' }), '10.0.0.0/16'],
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('skips validation for unresolved tokens in remote pod networks', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr = cdk.Fn.importValue('NodeCidr');
+      const unresolvedPodCidr = cdk.Fn.importValue('PodCidr');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr],
+          },
+        ],
+        remotePodNetworks: [
+          {
+            cidrs: [unresolvedPodCidr, '192.168.0.0/16'],
+          },
+        ],
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr' })],
+              },
+            ],
+            remotePodNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'PodCidr' }), '192.168.0.0/16'],
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('validates resolved CIDRs even when tokens are present', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedCidr = cdk.Fn.importValue('NodeCidr');
+      const overlappingCidr = '172.16.0.0/12';
+
+      // WHEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          remoteNodeNetworks: [
+            {
+              cidrs: [unresolvedCidr, overlappingCidr, overlappingCidr],
+            },
+          ],
+          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        });
+      }).toThrow(`CIDR ${overlappingCidr} should not overlap with another CIDR in remote node network #1`);
+    });
+
+    test('skips cross-network validation when all CIDRs are tokens', () => {
+      // GIVEN
+      const { stack } = testFixture();
+      const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
+      const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        remoteNodeNetworks: [
+          {
+            cidrs: [unresolvedNodeCidr1],
+          },
+          {
+            cidrs: [unresolvedNodeCidr2],
+          },
+        ],
+      });
+
+      // THEN - no error thrown
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          remoteNetworkConfig: {
+            remoteNodeNetworks: [
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr1' })],
+              },
+              {
+                cidrs: [Match.objectLike({ 'Fn::ImportValue': 'NodeCidr2' })],
+              },
+            ],
+          },
+        },
+      });
     });
   });
 });

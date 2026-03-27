@@ -132,6 +132,9 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.streamAggregatedResources()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
@@ -263,7 +266,7 @@ export class VirtualNode extends VirtualNodeBase {
   @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new cdk.ValidationError('Service discovery information is required for a VirtualNode with a listener.', this);
+      throw new cdk.ValidationError('ServiceDiscoveryRequired', 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
     this.listeners.push(listener.bind(this));
   }
