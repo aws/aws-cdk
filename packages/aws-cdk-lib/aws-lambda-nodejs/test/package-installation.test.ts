@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
-import { PackageInstallation } from '../lib/package-installation';
-import * as util from '../lib/util';
+import { PackageInstallation } from '../lib/private/package-installation';
+import * as util from '../lib/private/util';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const version = require('esbuild/package.json').version;

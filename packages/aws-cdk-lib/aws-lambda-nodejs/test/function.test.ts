@@ -8,7 +8,7 @@ import { Code, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 import { NodejsFunction } from '../lib';
-import { Bundling } from '../lib/bundling';
+import { Bundling } from '../lib/private/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {

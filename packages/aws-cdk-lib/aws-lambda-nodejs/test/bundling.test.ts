@@ -7,10 +7,10 @@ import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
-import { Bundling } from '../lib/bundling';
-import { PackageInstallation } from '../lib/package-installation';
+import { Bundling } from '../lib/private/bundling';
+import { PackageInstallation } from '../lib/private/package-installation';
+import * as util from '../lib/private/util';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
-import * as util from '../lib/util';
 
 const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
 const STANDARD_TARGET = 'node20';

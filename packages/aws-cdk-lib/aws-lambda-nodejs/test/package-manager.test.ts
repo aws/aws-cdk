@@ -1,6 +1,6 @@
 import * as os from 'os';
 import { LogLevel } from '../lib';
-import { LockFile, PackageManager } from '../lib/package-manager';
+import { LockFile, PackageManager } from '../lib/private/package-manager';
 
 test('from a package-lock.json', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/package-lock.json');
