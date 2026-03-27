@@ -204,7 +204,7 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        Annotations.of(scope).addError(providerError);
+        Annotations.of(scope)._addTrackableError('ContextProviderError', providerError);
       }
 
       return { value: options.dummyValue };

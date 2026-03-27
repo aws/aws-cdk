@@ -887,6 +887,34 @@ new cloudfront.Function(this, 'Function', {
 });
 ```
 
+#### Runtime Version
+
+CloudFront Functions support two runtime versions: `cloudfront-js-1.0` and `cloudfront-js-2.0`.
+By default, new projects use `cloudfront-js-2.0`, which is the recommended runtime version with
+enhanced functionality.
+
+You can explicitly specify the runtime version:
+
+```ts
+// Use v2.0 explicitly (same as default for new projects)
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+});
+
+// Use v1.0 for legacy compatibility
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  runtime: cloudfront.FunctionRuntime.JS_1_0,
+});
+```
+
+**Note:** Functions associated with a Key Value Store always use `cloudfront-js-2.0`, as
+Key Value Store support requires the v2.0 runtime.
+
+When the `@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0` feature flag is disabled,
+the runtime defaults to `cloudfront-js-1.0` for backward compatibility.
+
 ### Key Value Store
 
 A CloudFront Key Value Store can be created and optionally have data imported from a JSON file
