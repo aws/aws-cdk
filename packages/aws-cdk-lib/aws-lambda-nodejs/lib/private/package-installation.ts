@@ -30,6 +30,12 @@ export abstract class PackageInstallation {
     }
   }
 
+  /**
+   * Whether the binary is found in the current project's `package.json`.
+   *
+   * - If `true`, it is in the current project's `package.json`.
+   * - If `false`, it is otherwise found on the $PATH and can be executed directly.
+   */
   public abstract readonly isLocal: boolean;
   public abstract readonly version: string;
 }

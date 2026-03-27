@@ -1,11 +1,14 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { LogLevel } from './types';
+import { AssumptionError } from '../../../core';
+import { LogLevel } from '../types';
 
 interface PackageManagerProps {
   readonly lockFile: string;
   readonly installCommand: string[];
-  readonly runCommand: string[];
+  readonly runCommand?: string[];
+  readonly directFromSubdirectory?: string;
   readonly argsSeparator?: string;
 }
 
@@ -33,6 +36,34 @@ export class PackageManager {
 
     switch (lockFile) {
       case LockFile.YARN:
+        // Either Yarn Classic (1.x) or Yarn Berry (2.x+)
+        //
+        // It is non-trivial to distinguish between Yarn Classic and Yarn Berry;
+        // the easiest way is to check the metadata in the lockfile.
+        //
+        // - Yarn Classic: `yarn run esbuild` adds 150ms. We can try the direct execution trick though
+        //   because binaries are installed to `node_modules/.bin`.
+        //
+        // - Yarn Berry: packages are installed off to the side; `yarn bin` gives a path to the wrapper script
+        //   that won't work without the package resolution handlers being installed so we cannot do direct
+        //   execution. `yarn run esbuild` adds ~500ms which is not skippable.
+        //
+        // In both cases: `esbuild` ships as a dispatch script to the actual runtime binary, and has a `postinstall`
+        // script to swap out the dispatch script for the actual binary at install time. Neither version of yarn seems to
+        // properly execute that postinstall script, which means the dispatch script adds 100ms on every invocation
+        // regardless.
+        const lockFileContents = fs.readFileSync(lockFilePath, 'utf-8');
+        if (lockFileContents.includes('# yarn lockfile v1')) {
+          // Yarn Classic
+          return new PackageManager({
+            lockFile: LockFile.YARN,
+            installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
+            // NPM compatible, save a single yarn dispatch (~150ms)
+            directFromSubdirectory: 'node_modules/.bin',
+          });
+        }
+
+        // Yarn Berry
         return new PackageManager({
           lockFile: LockFile.YARN,
           installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
@@ -61,30 +92,45 @@ export class PackageManager {
         return new PackageManager({
           lockFile: LockFile.NPM,
           installCommand: logLevel ? ['npm', 'ci', '--loglevel', logLevel] : ['npm', 'ci'],
-          runCommand: ['npx', '--no-install'],
+          // We could use `npx` but it adds ~400-500ms on every invocation, so do direct execution instead.
+          directFromSubdirectory: 'node_modules/.bin',
         });
     }
   }
 
   public readonly lockFile: string;
   public readonly installCommand: string[];
-  public readonly runCommand: string[];
+  public readonly runCommand?: string[];
+  public readonly directFromSubdirectory?: string;
   public readonly argsSeparator?: string;
 
   constructor(props: PackageManagerProps) {
     this.lockFile = props.lockFile;
     this.installCommand = props.installCommand;
     this.runCommand = props.runCommand;
+    this.directFromSubdirectory = props.directFromSubdirectory;
     this.argsSeparator = props.argsSeparator;
+
+    if (!!props.runCommand == !!props.directFromSubdirectory) {
+      throw new AssumptionError('MutexArguments', 'Exactly one of runCommand and runFromSubdirectory must be supplied');
+    }
   }
 
   public runBinCommand(bin: string): string[] {
-    const [runCommand, ...runArgs] = this.runCommand;
-    return [
-      os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
-      ...runArgs,
-      ...(this.argsSeparator ? [this.argsSeparator] : []),
-      bin,
-    ];
+    if (this.runCommand) {
+      const [runCommand, ...runArgs] = this.runCommand;
+      return [
+        os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
+        ...runArgs,
+        ...(this.argsSeparator ? [this.argsSeparator] : []),
+        bin,
+      ];
+    } else {
+      if (!this.directFromSubdirectory) {
+        throw new AssumptionError('AlreadyValidated', 'Should have been validated in the constructor');
+      }
+
+      return [`${this.directFromSubdirectory}/${bin}`];
+    }
   }
 }
