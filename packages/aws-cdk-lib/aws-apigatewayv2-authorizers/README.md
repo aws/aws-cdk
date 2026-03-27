@@ -176,8 +176,13 @@ import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
 
+// This role will be used to invoke the Lambda function
+declare const role: iam.Role;
+
 const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
+  role, // Set role if the Lambda function is in another account
+
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');

@@ -238,5 +238,6 @@ describe('HttpLambdaAuthorizer', () => {
         ],
       },
     });
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 0);
   });
 });

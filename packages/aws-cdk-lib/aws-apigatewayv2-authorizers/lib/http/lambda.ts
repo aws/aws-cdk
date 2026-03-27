@@ -134,15 +134,17 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         role: this.props.role,
       });
 
-      this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
-        scope: options.scope,
-        principal: new ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: Stack.of(options.route).formatArn({
-          service: 'execute-api',
-          resource: options.route.httpApi.apiId,
-          resourceName: `authorizers/${this.authorizer.authorizerId}`,
-        }),
-      });
+      if (!this.props.role) {
+        this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
+          scope: options.scope,
+          principal: new ServicePrincipal('apigateway.amazonaws.com'),
+          sourceArn: Stack.of(options.route).formatArn({
+            service: 'execute-api',
+            resource: options.route.httpApi.apiId,
+            resourceName: `authorizers/${this.authorizer.authorizerId}`,
+          }),
+        });
+      }
     }
 
     return {
