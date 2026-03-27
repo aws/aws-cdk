@@ -170,14 +170,6 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
     }
   }
 
-  protected postprocessSubmodule(submodule: MetricsServiceModule, _props?: AddServiceProps): void {
-    // Add private constructors to all namespace classes
-    for (const { metricsClass } of submodule.namespaceMetrics.values()) {
-      const ctor = metricsClass.addInitializer({ visibility: MemberVisibility.Private });
-      ctor.addBody(stmt.sep());
-    }
-  }
-
   private createMetricsModule(submodule: MetricsServiceModule, service: Service): LocatedModule<Module> {
     const module = new Module(`@aws-cdk/mixins-preview/${submodule.submoduleName}/metrics`);
     const filePath = this.pathFor(this.filePattern, submodule.submoduleName, service);
