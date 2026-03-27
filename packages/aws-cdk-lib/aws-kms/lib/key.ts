@@ -24,6 +24,7 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -142,8 +143,6 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
-  public abstract readonly grants: KeyGrants;
-
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -155,6 +154,14 @@ abstract class KeyBase extends Resource implements IKey {
       keyArn: this.keyArn,
       keyId: this.keyId,
     };
+  }
+
+  /**
+   * Collection of grant methods for a Key
+   */
+  @memoizedGetter
+  public get grants(): KeyGrants {
+    return KeyGrants.fromKey(this, this.trustAccountIdentities);
   }
 
   /**
@@ -181,7 +188,7 @@ abstract class KeyBase extends Resource implements IKey {
 
     if (!this.policy) {
       if (allowNoOp) { return { statementAdded: false }; }
-      throw new ValidationError(`Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
+      throw new ValidationError('UnableToAddStatementToResource', `Unable to add statement to IAM resource policy for KMS key: ${JSON.stringify(stack.resolve(this.keyArn))}`, this);
     }
 
     this.policy.addStatements(statement);
@@ -596,30 +603,19 @@ export class Key extends KeyBase {
    * @param keyArn the ARN of an existing KMS key.
    */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
-    class Import extends KeyBase {
-      public readonly keyArn = keyArn;
-      public readonly keyId: string;
-      protected readonly policy?: iam.PolicyDocument | undefined = undefined;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (!keyResourceName) {
+      throw new ValidationError('MustBeFormatArnPartitionKmsRegionAccountKeyKeyid', `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
+    }
+
+    return new ReferencedKey(scope, id, {
+      environmentFromArn: keyArn,
+      keyArn,
+      keyId: keyResourceName,
       // defaulting true: if we are importing the key the key policy is
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
-      protected readonly trustAccountIdentities: boolean = true;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
-
-      constructor(keyId: string, props: ResourceProps = {}) {
-        super(scope, id, props);
-
-        this.keyId = keyId;
-      }
-    }
-
-    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-    if (!keyResourceName) {
-      throw new ValidationError(`KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
-    }
-
-    return new Import(keyResourceName, {
-      environmentFromArn: keyArn,
+      trustAccountIdentities: true,
     });
   }
 
@@ -656,7 +652,7 @@ export class Key extends KeyBase {
       // throw an exception suggesting to use the other importing methods instead.
       // We might make this parsing logic smarter later,
       // but let's start by erroring out.
-      throw new ValidationError('Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
+      throw new ValidationError('PolicyDocumentParsingFailed', 'Could not parse the PolicyDocument of the passed AWS::KMS::Key resource because it contains CloudFormation functions. ' +
         'This makes it impossible to create a mutable IKey from that Policy. ' +
         'You have to use fromKeyArn instead, passing it the ARN attribute property of the low-level CfnKey', cfnKey);
     }
@@ -669,7 +665,6 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
     }(cfnKey, id);
   }
 
@@ -707,7 +702,6 @@ export class Key extends KeyBase {
       // undefined and impossible to change here; this means updating identity
       // policies is really the only option
       protected readonly trustAccountIdentities: boolean = true;
-      public readonly grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
       constructor(keyId: string, keyArn: string) {
         super(scope, id);
@@ -717,7 +711,7 @@ export class Key extends KeyBase {
       }
     }
     if (Token.isUnresolved(options.aliasName)) {
-      throw new ValidationError('All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
+      throw new ValidationError('Arguments', 'All arguments to Key.fromLookup() must be concrete (no Tokens)', scope);
     }
 
     const attributes: cxapi.KeyContextResponse = ContextProvider.getValue(scope, {
@@ -751,11 +745,6 @@ export class Key extends KeyBase {
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
   private readonly enableKeyRotation?: boolean;
-
-  /**
-   * Collection of grant methods for a Key
-   */
-  public readonly grants: KeyGrants;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -815,25 +804,25 @@ export class Key extends KeyBase {
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
-      throw new ValidationError(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
+      throw new ValidationError('SpecValidUsage', `key spec '${keySpec}' is not valid with usage '${keyUsage}'`, this);
     }
 
     if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on HMAC keys', this);
+      throw new ValidationError('RotationCannotBeEnabledOnHmac', 'key rotation cannot be enabled on HMAC keys', this);
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
-      throw new ValidationError('key rotation cannot be enabled on asymmetric keys', this);
+      throw new ValidationError('RotationCannotBeEnabledOnAsymmetric', 'key rotation cannot be enabled on asymmetric keys', this);
     }
 
     this.enableKeyRotation = props.enableKeyRotation;
 
     if (props.rotationPeriod) {
       if (props.enableKeyRotation === false) {
-        throw new ValidationError('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
+        throw new ValidationError('RotationPeriodCannotBeSpecifiedWhenRotationDisabled', '\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled', this);
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
-        throw new ValidationError(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
+        throw new ValidationError('RotationPeriodValueMustBeBetween90And2650Days', `'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`, this);
       }
       // If rotationPeriod is specified, enableKeyRotation is set to true by default
       if (props.enableKeyRotation === undefined) {
@@ -846,7 +835,7 @@ export class Key extends KeyBase {
     this.policy = props.policy ?? new iam.PolicyDocument();
     if (defaultKeyPoliciesFeatureEnabled) {
       if (props.trustAccountIdentities === false) {
-        throw new ValidationError('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
+        throw new ValidationError('TrustAccountIdentitiesCannotBeFalseWithDefaultKeyPolicies', '`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set', this);
       }
 
       this.trustAccountIdentities = true;
@@ -867,7 +856,7 @@ export class Key extends KeyBase {
     if (props.pendingWindow) {
       pendingWindowInDays = props.pendingWindow.toDays();
       if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
-        throw new ValidationError(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
+        throw new ValidationError('PendingWindowValueMustBeBetween7And30Days', `'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`, this);
       }
     }
 
@@ -886,8 +875,6 @@ export class Key extends KeyBase {
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.grants = KeyGrants.fromKey(this, this.trustAccountIdentities);
 
     (props.admins ?? []).forEach((p) => this.grantAdmin(p));
 
@@ -958,5 +945,44 @@ export class Key extends KeyBase {
       actions,
       principals: [new iam.AccountRootPrincipal()],
     }));
+  }
+}
+
+/**
+ * An instance of a referenced Key
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromKeyArn()` etc. used to declare an anonymous subclass of
+ * `KeyBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+@propertyInjectable
+class ReferencedKey extends KeyBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.ReferencedKey';
+  public keyArn: string;
+  public keyId: string;
+  protected policy?: iam.PolicyDocument | undefined;
+  protected trustAccountIdentities: boolean;
+
+  constructor(scope: Construct, id: string, props: {
+    environmentFromArn?: string;
+    keyArn: string;
+    keyId: string;
+    policy?: iam.PolicyDocument | undefined;
+    trustAccountIdentities: boolean;
+  }) {
+    super(scope, id, {
+      environmentFromArn: props.environmentFromArn,
+    });
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.keyArn = props.keyArn;
+    this.keyId = props.keyId;
+    this.policy = props.policy;
+    this.trustAccountIdentities = props.trustAccountIdentities;
   }
 }

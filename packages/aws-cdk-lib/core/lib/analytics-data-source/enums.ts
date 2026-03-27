@@ -248,6 +248,15 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ARM64",
     "Neuron"
   ],
+  "ApiGatewayHttpMethod": [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "PATCH",
+    "HEAD",
+    "OPTIONS"
+  ],
   "ApiKeyCredentialLocationType": [
     "HEADER",
     "QUERY_PARAMETER"
@@ -1117,6 +1126,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Grab",
     "Here"
   ],
+  "DataSourceLevelMetricsBehavior": [
+    "FULL_REQUEST_DATA_SOURCE_METRICS",
+    "PER_DATA_SOURCE_METRICS"
+  ],
+  "DataSourceMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "DataStorageUnit": [
     "GB"
   ],
@@ -1158,7 +1175,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "DefaultCapacityType": [
     0,
-    1
+    1,
+    2
   ],
   "DefaultInstanceClass": [
     "default_x86_64",
@@ -1177,6 +1195,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SAFE_DELETE",
     "FORCE_DELETE",
     "RETAIN"
+  ],
+  "DeletionProtection": [
+    "none",
+    "prevent-force-deletion",
+    "prevent-all-deletion"
   ],
   "DeletionProtectionCheck": [
     "ACCOUNT_DEFAULT",
@@ -1392,6 +1415,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE_S3",
     "SSE_KMS",
     "CSE_KMS"
+  ],
+  "EndpointAccessMode": [
+    "STRICT",
+    "BASIC"
   ],
   "EndpointType": [
     "EDGE",
@@ -1641,6 +1668,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPEN",
     "UPDATED",
     "CLOSED"
+  ],
+  "GlobalTableSettingsReplicationMode": [
+    "ENABLED"
   ],
   "GlueVersion": [
     "0.9",
@@ -2720,7 +2750,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "OPENAPI_SCHEMA",
     "SMITHY_MODEL",
     "LAMBDA",
-    "MCP_SERVER"
+    "MCP_SERVER",
+    "API_GATEWAY"
   ],
   "MemoryStrategyType": [
     "SUMMARIZATION",
@@ -2938,6 +2969,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ExecuteTransaction",
     "BatchExecuteStatement",
     "ExecuteStatement"
+  ],
+  "OperationLevelMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
   "Operator": [
     "AND",
@@ -3266,10 +3301,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
-  "PropertyMergeStrategy": [
-    "override",
-    "merge"
-  ],
   "Protocol": [
     "HTTP",
     "HTTPS",
@@ -3437,6 +3468,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "string",
     "number",
     "string-list"
+  ],
+  "ResolverLevelMetricsBehavior": [
+    "FULL_REQUEST_RESOLVER_METRICS",
+    "PER_RESOLVER_METRICS"
+  ],
+  "ResolverMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
   "ResourceAction": [
     "pause-cluster",
@@ -3885,6 +3924,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "VectorOpenDataStandardDark",
     "VectorOpenDataVisualizationLight",
     "VectorOpenDataVisualizationDark"
+  ],
+  "SubRecordType": [
+    "JSON",
+    "DELIMITED"
   ],
   "SubnetType": [
     "Isolated",

@@ -3,7 +3,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import type {
   IResource,
+  ITaggableV2,
   RemovalPolicy,
+  TagManager,
 } from 'aws-cdk-lib/core';
 import {
   Resource,
@@ -280,6 +282,231 @@ export enum Status {
 }
 
 /**
+ * Iceberg transform values for partition and sort fields.
+ */
+export class IcebergTransform {
+  /**
+   * Use the column value as the transform value without transformation.
+   */
+  public static readonly IDENTITY = new IcebergTransform('identity');
+
+  /**
+   * Transform a timestamp/date field to year.
+   */
+  public static readonly YEAR = new IcebergTransform('year');
+
+  /**
+   * Transform a timestamp/date field to month.
+   */
+  public static readonly MONTH = new IcebergTransform('month');
+
+  /**
+   * Transform a timestamp/date field to day.
+   */
+  public static readonly DAY = new IcebergTransform('day');
+
+  /**
+   * Transform a timestamp field to hour.
+   */
+  public static readonly HOUR = new IcebergTransform('hour');
+
+  /**
+   * Transform values into a fixed number of buckets.
+   *
+   * @param n The number of buckets (must be a positive integer)
+   */
+  public static bucket(n: number): IcebergTransform {
+    if (n <= 0 || !Number.isInteger(n)) {
+      throw new UnscopedValidationError(
+        'InvalidBucketCount',
+        'Bucket count must be a positive integer.',
+      );
+    }
+    return new IcebergTransform(`bucket[${n}]`);
+  }
+
+  /**
+   * Truncate values to a fixed width.
+   *
+   * @param width The truncation width (must be a positive integer)
+   */
+  public static truncate(width: number): IcebergTransform {
+    if (width <= 0 || !Number.isInteger(width)) {
+      throw new UnscopedValidationError(
+        'InvalidTruncateWidth',
+        'Truncate width must be a positive integer.',
+      );
+    }
+    return new IcebergTransform(`truncate[${width}]`);
+  }
+
+  /**
+   * Create a custom transform from a string value.
+   *
+   * @param value The transform string value
+   */
+  public static of(value: string): IcebergTransform {
+    return new IcebergTransform(value);
+  }
+
+  /**
+   * The string value of the transform.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /**
+   * Returns the string representation of the transform.
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+/**
+ * Sort direction values for Iceberg sort fields.
+ */
+export enum SortDirection {
+  /**
+   * Sort values in ascending order.
+   */
+  ASC = 'asc',
+  /**
+   * Sort values in descending order.
+   */
+  DESC = 'desc',
+}
+
+/**
+ * Null ordering values for Iceberg sort fields.
+ */
+export enum NullOrder {
+  /**
+   * Place null values before non-null values.
+   */
+  NULLS_FIRST = 'nulls-first',
+  /**
+   * Place null values after non-null values.
+   */
+  NULLS_LAST = 'nulls-last',
+}
+
+/**
+ * Partition field definition for Iceberg table.
+ *
+ * Defines a single partition column. Multiple partition fields can be combined
+ * in an IcebergPartitionSpec to create multi-level partitioning.
+ */
+export interface IcebergPartitionField {
+  /**
+   * The source field ID from the schema.
+   */
+  readonly sourceId: number;
+
+  /**
+   * The partition transform function.
+   *
+   * Use `IcebergTransform` static properties for common transforms (e.g., `IcebergTransform.IDENTITY`)
+   * or methods for parameterized transforms (e.g., `IcebergTransform.bucket(16)`).
+   */
+  readonly transform: IcebergTransform;
+  /**
+   * The name of the partition field.
+   */
+  readonly name: string;
+
+  /**
+   * The unique identifier for the partition field.
+   *
+   * @default - Auto-assigned starting from 1000
+   */
+  readonly fieldId?: number;
+}
+
+/**
+ * Partition specification for Iceberg table.
+ *
+ * Contains the complete partitioning configuration for a table, including all partition fields.
+ * Use this to define multi-level partitioning (e.g., partition by date, then by region).
+ */
+export interface IcebergPartitionSpec {
+  /**
+   * The list of partition fields.
+   */
+  readonly fields: IcebergPartitionField[];
+
+  /**
+   * The unique identifier for the partition specification.
+   *
+   * @default 0
+   */
+  readonly specId?: number;
+}
+
+/**
+ * Sort field definition for Iceberg table.
+ */
+export interface IcebergSortField {
+  /**
+   * The source field ID from the schema.
+   */
+  readonly sourceId: number;
+
+  /**
+   * The sort transform function.
+   *
+   * Use `IcebergTransform` static properties for common transforms (e.g., `IcebergTransform.IDENTITY`)
+   * or methods for parameterized transforms (e.g., `IcebergTransform.bucket(16)`).
+   */
+  readonly transform: IcebergTransform;
+
+  /**
+   * The sort direction.
+   */
+  readonly direction: SortDirection;
+
+  /**
+   * The null ordering.
+   */
+  readonly nullOrder: NullOrder;
+}
+
+/**
+ * Sort order specification for Iceberg table.
+ */
+export interface IcebergSortOrder {
+  /**
+   * The list of sort fields.
+   */
+  readonly fields: IcebergSortField[];
+
+  /**
+   * The unique identifier for the sort order.
+   *
+   * @default 1
+   */
+  readonly orderId?: number;
+}
+
+/**
+ * A single table property key-value pair for Iceberg table configuration.
+ */
+export interface TablePropertyEntry {
+  /**
+   * The property key.
+   */
+  readonly key: string;
+
+  /**
+   * The property value.
+   */
+  readonly value: string;
+}
+
+/**
  * Contains details about the metadata for an Iceberg table.
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
@@ -290,6 +517,28 @@ export interface IcebergMetadataProperty {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
    */
   readonly icebergSchema: IcebergSchemaProperty;
+
+  /**
+   * The partition specification for the Iceberg table.
+   *
+   * @default - No partition specification
+   */
+  readonly icebergPartitionSpec?: IcebergPartitionSpec;
+
+  /**
+   * The sort order for the Iceberg table.
+   *
+   * @default - No sort order
+   */
+  readonly icebergSortOrder?: IcebergSortOrder;
+
+  /**
+   * Custom properties for the Iceberg table.
+   * Each entry represents a key-value pair for Iceberg table configuration.
+   *
+   * @default - No custom properties
+   */
+  readonly tableProperties?: TablePropertyEntry[];
 }
 
 /**
@@ -306,6 +555,13 @@ export interface IcebergSchemaProperty {
  * Contains details about a schema field.
  */
 export interface SchemaFieldProperty {
+  /**
+   * The unique identifier for the field.
+   *
+   * @default - Auto-assigned by S3 Tables
+   */
+  readonly id?: number;
+
   /**
    * The name of the field.
    */
@@ -380,7 +636,7 @@ export interface TableAttributes {
  * An S3 Table with helpers.
  */
 @propertyInjectable
-export class Table extends TableBase {
+export class Table extends TableBase implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.Table';
 
@@ -467,6 +723,7 @@ export class Table extends TableBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
+        'InvalidTableName',
         `Invalid S3 table name (value: ${tableName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -482,6 +739,11 @@ export class Table extends TableBase {
    * @internal
    */
   private readonly _resource: CfnTable;
+
+  /**
+   * The tag manager for this resource.
+   */
+  public readonly cdkTagManager: TagManager;
 
   /**
    * The name of this table
@@ -506,6 +768,13 @@ export class Table extends TableBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.withoutMetadata && props.icebergMetadata) {
+      throw new UnscopedValidationError(
+        'MutuallyExclusiveProps',
+        "TableProps: 'withoutMetadata' and 'icebergMetadata' are mutually exclusive. Specify only one.",
+      );
+    }
+
     Table.validateTableName(props.tableName);
 
     this._resource = new CfnTable(this, id, {
@@ -514,7 +783,7 @@ export class Table extends TableBase {
       tableBucketArn: props.namespace.tableBucket.tableBucketArn,
       namespace: props.namespace.namespaceName,
       compaction: props.compaction,
-      icebergMetadata: props.icebergMetadata,
+      icebergMetadata: this.buildIcebergMetadata(props.icebergMetadata),
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
     });
@@ -522,7 +791,96 @@ export class Table extends TableBase {
     this.namespace = props.namespace;
     this.tableName = props.tableName;
     this.tableArn = this._resource.attrTableArn;
+    this.cdkTagManager = this._resource.cdkTagManager;
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.node.addDependency(this.namespace);
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg metadata property from the CDK metadata model.
+   */
+  private buildIcebergMetadata(metadata?: IcebergMetadataProperty): CfnTable.IcebergMetadataProperty | undefined {
+    if (!metadata) {
+      return undefined;
+    }
+
+    return {
+      icebergSchema: this.buildIcebergSchema(metadata.icebergSchema),
+      icebergPartitionSpec: metadata.icebergPartitionSpec
+        ? this.buildIcebergPartitionSpec(metadata.icebergPartitionSpec)
+        : undefined,
+      icebergSortOrder: metadata.icebergSortOrder
+        ? this.buildIcebergSortOrder(metadata.icebergSortOrder)
+        : undefined,
+      tableProperties: metadata.tableProperties
+        ? this.buildTableProperties(metadata.tableProperties)
+        : undefined,
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg schema property.
+   */
+  private buildIcebergSchema(schema: IcebergSchemaProperty): CfnTable.IcebergSchemaProperty {
+    return {
+      schemaFieldList: schema.schemaFieldList.map(field => ({
+        name: field.name,
+        type: field.type,
+        ...(field.required !== undefined && { required: field.required }),
+        ...(field.id !== undefined && { id: field.id }),
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg partition specification property.
+   */
+  private buildIcebergPartitionSpec(spec: IcebergPartitionSpec): CfnTable.IcebergPartitionSpecProperty {
+    return {
+      ...(spec.specId !== undefined && { specId: spec.specId }),
+      fields: spec.fields.map(field => ({
+        sourceId: field.sourceId,
+        transform: field.transform.value,
+        name: field.name,
+        ...(field.fieldId !== undefined && { fieldId: field.fieldId }),
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation Iceberg sort order property.
+   */
+  private buildIcebergSortOrder(sortOrder: IcebergSortOrder): CfnTable.IcebergSortOrderProperty {
+    return {
+      ...(sortOrder.orderId !== undefined && { orderId: sortOrder.orderId }),
+      fields: sortOrder.fields.map(field => ({
+        sourceId: field.sourceId,
+        transform: field.transform.value,
+        direction: field.direction,
+        nullOrder: field.nullOrder,
+      })),
+    };
+  }
+
+  /**
+   * Builds the CloudFormation table properties map from key-value entries.
+   */
+  private buildTableProperties(tableProperties: TablePropertyEntry[]): Record<string, string> {
+    const keys = tableProperties.map(entry => entry.key);
+    const duplicateKeys = keys.filter((key, index) => keys.indexOf(key) !== index);
+    if (duplicateKeys.length > 0) {
+      throw new UnscopedValidationError(
+        'DuplicateTablePropertyKey',
+        `Duplicate table property keys are not allowed: ${[...new Set(duplicateKeys)].join(', ')}`,
+      );
+    }
+
+    return tableProperties.reduce(
+      (acc, entry) => ({
+        ...acc,
+        [entry.key]: entry.value,
+      }),
+      {} as Record<string, string>,
+    );
   }
 }

@@ -1523,7 +1523,6 @@ describe('instance', () => {
     replicaInstance.grantConnect(role, 'my-user');
 
     // THEN
-    app.synth();
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
@@ -1746,6 +1745,19 @@ describe('instance', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
         PerformanceInsightsRetentionPeriod: rds.PerformanceInsightRetention[performanceInsightRetentionKey],
+      });
+    });
+
+    test('explicitly disabling performance insights is respected', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        snapshotIdentifier: 'my-snapshot',
+        enablePerformanceInsights: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: false,
       });
     });
 

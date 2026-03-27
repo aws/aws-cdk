@@ -9,13 +9,12 @@ import type {
   IResourceWithPolicyV2,
   PolicyStatement,
 } from '../../../aws-iam';
-import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
-import type { CfnKey } from '../../../aws-kms';
+import { DefaultEncryptedResourceFactories, DefaultPolicyFactories } from '../../../aws-iam';
 import { KeyGrants } from '../../../aws-kms';
 import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { ValidationError } from '../../../core';
-import { findClosestRelatedResource, findL1FromRef } from '../../../core/lib/helpers-internal';
-import type { IBucketRef } from '../s3.generated';
+import { BucketReflection } from '../bucket-reflection';
+import { BucketPolicyStatements } from '../mixins/bucket-policy';
 import { CfnBucket, CfnBucketPolicy } from '../s3.generated';
 
 /**
@@ -35,7 +34,7 @@ class EncryptedCfnBucket implements IEncryptedResource {
   }
 
   public grantOnKey(grantee: IGrantable, ...actions: string[]): GrantOnKeyResult {
-    const key = tryFindKmsKeyforBucket(this.bucket);
+    const key = BucketReflection.of(this.bucket).encryptionKey;
     return {
       grant: key ? KeyGrants.fromKey(key).actions(grantee, ...actions) : undefined,
     };
@@ -54,7 +53,6 @@ class BucketWithPolicyFactory implements IResourcePolicyFactory {
 class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
   public readonly env: ResourceEnvironment;
   private policy?: CfnBucketPolicy;
-  private policyDocument?: PolicyDocument;
 
   constructor(private readonly bucket: CfnBucket) {
     this.env = bucket.env;
@@ -62,18 +60,13 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
   public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.policy) {
-      this.policy = new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
+      this.policy = BucketReflection.of(this.bucket)?.policy ?? new CfnBucketPolicy(this.bucket, 'S3BucketPolicy', {
         bucket: this.bucket.ref,
         policyDocument: { Statement: [] },
       });
     }
 
-    if (!this.policyDocument) {
-      this.policyDocument = PolicyDocument.fromJson(this.policy.policyDocument ?? { Statement: [] });
-    }
-
-    this.policyDocument.addStatements(statement);
-    this.policy.policyDocument = this.policyDocument.toJSON();
+    this.policy.with(new BucketPolicyStatements([statement]));
 
     return { statementAdded: true, policyDependable: this.policy };
   }
@@ -81,36 +74,10 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
   if (!CfnBucket.isCfnBucket(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnBucket`, resource);
+    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnBucket`, resource);
   }
 
   return factory(resource);
-}
-
-function tryFindKmsKeyforBucket(bucket: IBucketRef): CfnKey | undefined {
-  const cfnBucket = tryFindBucketConstruct(bucket);
-  const kmsMasterKeyId = cfnBucket && Array.isArray((cfnBucket.bucketEncryption as
-      CfnBucket.BucketEncryptionProperty)?.serverSideEncryptionConfiguration) ?
-    (((cfnBucket.bucketEncryption as CfnBucket.BucketEncryptionProperty).serverSideEncryptionConfiguration as
-          CfnBucket.ServerSideEncryptionRuleProperty[])[0]?.serverSideEncryptionByDefault as
-          CfnBucket.ServerSideEncryptionByDefaultProperty)?.kmsMasterKeyId
-    : undefined;
-  if (!kmsMasterKeyId) {
-    return undefined;
-  }
-  return findClosestRelatedResource<IConstruct, CfnKey>(
-    bucket,
-    'AWS::KMS::Key',
-    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-  );
-}
-
-function tryFindBucketConstruct(bucket: IBucketRef): CfnBucket | undefined {
-  return findL1FromRef<IBucketRef, CfnBucket>(
-    bucket,
-    'AWS::S3::Bucket',
-    (cfn, ref) => ref.bucketRef == cfn.bucketRef,
-  );
 }
 
 DefaultEncryptedResourceFactories.set('AWS::S3::Bucket', new EncryptedBucketFactory());
