@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'node:path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { toCloudFormation } from './util';
@@ -22,7 +23,6 @@ import { clearGitSourceCache } from '../lib/private/git-source';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
-import * as path from "node:path";
 
 describe('stack', () => {
   test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
