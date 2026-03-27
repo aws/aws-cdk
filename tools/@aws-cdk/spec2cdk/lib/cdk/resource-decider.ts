@@ -104,6 +104,7 @@ export class ResourceDecider {
         immutable: false,
         docs: this.defaultClassPropDocs(cfnName, prop),
       },
+      cfnName,
       initializer: resolverResult.resolver,
       cfnValueToRender: { [resolverResult.name]: $this[resolverResult.name] },
     });
@@ -166,6 +167,7 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
+        cfnName,
         initializer: (props: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
@@ -184,6 +186,7 @@ export class ResourceDecider {
           optional: true, // Tags are never required
           docs: this.defaultClassPropDocs(cfnName, prop),
         },
+        cfnName,
         initializer: (props: Expression) => $E(props)[originalName],
         cfnValueToRender: {}, // Gets rendered as part of the TagManager above
       },
@@ -221,6 +224,7 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
+        cfnName,
         initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
@@ -239,6 +243,7 @@ export class ResourceDecider {
           optional: true, // Tags are never required
           docs: this.defaultClassPropDocs(cfnName, prop),
         },
+        cfnName,
         initializer: (props: Expression) => $E(props)[originalName],
         cfnValueToRender: {}, // Gets rendered as part of the TagManager above
       },
@@ -363,6 +368,9 @@ export interface PropsProperty {
 
 export interface ClassProperty {
   readonly propertySpec: PropertySpec;
+
+  /** The original CloudFormation property name */
+  readonly cfnName: string;
 
   /** Given the name of the props value, produce the member value */
   readonly initializer: (props: Expression) => Expression;

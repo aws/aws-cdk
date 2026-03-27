@@ -3,9 +3,10 @@ import type { Construct } from 'constructs';
 import type { FunctionReference, IFunctionRef, IKeyValueStoreRef } from './cloudfront.generated';
 import { CfnFunction } from './cloudfront.generated';
 import type { IResource } from '../../core';
-import { Lazy, Names, Resource, Stack, ValidationError } from '../../core';
+import { FeatureFlags, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents the function's source code
@@ -207,7 +208,10 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
+    const useV2Runtime = FeatureFlags.of(this).isEnabled(cxapi.CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0);
+    const defaultFunctionRuntime = props.keyValueStore
+      ? FunctionRuntime.JS_2_0.value
+      : (useV2Runtime ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value);
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {

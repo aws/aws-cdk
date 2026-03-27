@@ -2226,6 +2226,104 @@ describe('tests', () => {
       }).toThrow('You cannot set \'advertiseTrustStoreCaNames\' when \'mode\' is \'off\' or \'passthrough\'');
     });
   });
+
+  describe('Post-quantum TLS policy feature flag', () => {
+    test('Does not set explicit SSL policy when feature flag is disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN - no explicit SslPolicy should be set
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: Match.absent(),
+      });
+    });
+
+    test('Uses post-quantum TLS policy when feature flag is enabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+      });
+    });
+
+    test('Explicit SSL policy overrides feature flag', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        sslPolicy: elbv2.SslPolicy.TLS12,
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
+      });
+    });
+
+    test('HTTP listeners are not affected by feature flag', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTP,
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: Match.absent(),
+      });
+    });
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

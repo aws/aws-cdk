@@ -76,6 +76,11 @@
     "BucketEncryption": {
      "ServerSideEncryptionConfiguration": [
       {
+       "BlockedEncryptionTypes": {
+        "EncryptionType": [
+         "NONE"
+        ]
+       },
        "ServerSideEncryptionByDefault": {
         "KMSMasterKeyID": {
          "Fn::GetAtt": [
@@ -84,6 +89,24 @@
          ]
         },
         "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MySSECBlockedBucket184125AB": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "BlockedEncryptionTypes": {
+        "EncryptionType": [
+         "SSE-C"
+        ]
        }
       }
      ]

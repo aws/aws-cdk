@@ -1,7 +1,8 @@
 import { EOL } from 'os';
-import type { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { BucketGrants } from './bucket-grants';
 import { BucketPolicy } from './bucket-policy';
+import { BucketReflection } from './bucket-reflection';
 import type { IBucketNotificationDestination } from './destination';
 import { BucketAutoDeleteObjects } from './mixins';
 import { BucketNotifications } from './notifications-resource';
@@ -1753,6 +1754,17 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Encryption types that should be blocked for this bucket. Use `NONE` to allow all
+   * encryption types.
+   *
+   * At least one `BlockedEncryptionType` must be given. If `NONE` is given, it must be
+   * the only `BlockedEncryptionType` in the list.
+   *
+   * @default - Amazon S3 determines which encryption types to block.
+   */
+  readonly blockedEncryptionTypes?: BlockedEncryptionType[];
+
+  /**
    * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
    *
@@ -2114,7 +2126,6 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new ValidationError('BucketNameRequired', 'Bucket name is required', scope);
     }
-    Bucket.validateBucketName(bucketName, true);
 
     const oldEndpoint = `s3-website-${region}.${urlSuffix}`;
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
@@ -2129,7 +2140,7 @@ export class Bucket extends BucketBase {
 
     const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
-    return new ReferencedBucket(scope, id, {
+    const ret = new ReferencedBucket(scope, id, {
       account: attrs.account,
       region: attrs.region,
       bucketName: bucketName!,
@@ -2145,6 +2156,8 @@ export class Bucket extends BucketBase {
       disallowPublicAccess: false,
       notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
+    Bucket.validateBucketNameScoped(ret, bucketName, true);
+    return ret;
   }
 
   /**
@@ -2188,20 +2201,34 @@ export class Bucket extends BucketBase {
       public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
       public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
       public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = encryptionKey;
-      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
       public replicationRoleArn = undefined;
       protected autoCreatePolicy = true;
-      public disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+
+      private readonly reflection: BucketReflection;
 
       constructor() {
         super(cfnBucket, id);
 
         this.node.defaultChild = cfnBucket;
+        this.reflection = BucketReflection.of(this);
+      }
+
+      public get bucketWebsiteDomainName() {
+        return this.reflection.bucketWebsiteDomainName;
+      }
+
+      public get isWebsite(): boolean | undefined {
+        return this.reflection.isWebsite;
+      }
+
+      public get disallowPublicAccess(): boolean | undefined {
+        return this.reflection.disallowPublicAccess;
+      }
+      public set disallowPublicAccess(_value: boolean | undefined) {
+        // Ignored — value is derived from the CfnBucket resource via reflection
       }
     }();
   }
@@ -2213,11 +2240,22 @@ export class Bucket extends BucketBase {
    * @param allowLegacyBucketNaming allow legacy bucket naming style, default is false.
    */
   public static validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): void {
+    const errors = Bucket._validateBucketName(physicalName, allowLegacyBucketNaming);
+    if (errors.length > 0) {
+      // Since this is public and can be called statically, we have no object instance, so we throw an unscoped error.
+      throw new UnscopedValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${physicalName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
+  /**
+   * Return any errors against the bucket name
+   */
+  private static _validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): string[] {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
       // so skip validation
-      return;
+      return [];
     }
 
     const errors: string[] = [];
@@ -2262,8 +2300,16 @@ export class Bucket extends BucketBase {
       errors.push('Bucket name must not resemble an IP address');
     }
 
+    return errors;
+  }
+
+  /**
+   * Like 'validateBucketName', but has an instance to throw a scoped ValidationError against
+   */
+  private static validateBucketNameScoped(scope: IConstruct, physicalName: string, allowLegacyBucketNaming: boolean = false): void {
+    const errors = Bucket._validateBucketName(physicalName, allowLegacyBucketNaming);
     if (errors.length > 0) {
-      throw new UnscopedValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+      throw new ValidationError('InvalidBucketNameValue', `Invalid S3 bucket name (value: ${physicalName})${EOL}${errors.join(EOL)}`, scope);
     }
   }
 
@@ -2283,17 +2329,26 @@ export class Bucket extends BucketBase {
   }
   public readonly bucketDomainName: string;
   public readonly bucketWebsiteUrl: string;
-  public readonly bucketWebsiteDomainName: string;
+  public get bucketWebsiteDomainName(): string {
+    return this.reflection.bucketWebsiteDomainName;
+  }
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
   public readonly encryptionKey?: kms.IKey;
-  public readonly isWebsite?: boolean;
+  public get isWebsite(): boolean | undefined {
+    return this.reflection.isWebsite;
+  }
   public policy?: BucketPolicy;
 
   public replicationRoleArn?: string;
   protected autoCreatePolicy = true;
-  public disallowPublicAccess?: boolean;
+  public get disallowPublicAccess(): boolean | undefined {
+    return this.reflection.disallowPublicAccess || undefined;
+  }
+  public set disallowPublicAccess(_value: boolean | undefined) {
+    // Ignored — value is derived from the CfnBucket resource via reflection
+  }
   private accessControl?: BucketAccessControl;
   private readonly lifecycleRules: LifecycleRule[] = [];
   private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
@@ -2302,6 +2357,7 @@ export class Bucket extends BucketBase {
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
   private readonly _resource: CfnBucket;
+  private readonly reflection: BucketReflection;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -2316,7 +2372,7 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
-    Bucket.validateBucketName(this.physicalName);
+    Bucket.validateBucketNameScoped(this, this.physicalName);
 
     let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
     if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
@@ -2324,7 +2380,6 @@ export class Bucket extends BucketBase {
     }
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
-    this.isWebsite = (websiteConfiguration !== undefined);
 
     const objectLockConfiguration = this.parseObjectLockConfig(props);
     const replicationConfiguration = this.renderReplicationConfiguration(props);
@@ -2352,6 +2407,7 @@ export class Bucket extends BucketBase {
       abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
     });
     this._resource = resource;
+    this.reflection = BucketReflection.of(this);
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -2359,11 +2415,9 @@ export class Bucket extends BucketBase {
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
-    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
@@ -2544,8 +2598,34 @@ export class Bucket extends BucketBase {
       throw new ValidationError('BucketKeyEnabledSpecifiedEncryption', `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
 
+    let blockedEncryptionTypes: CfnBucket.BlockedEncryptionTypesProperty | undefined;
+    if (props.blockedEncryptionTypes === undefined) {
+      blockedEncryptionTypes = undefined;
+    } else if (props.blockedEncryptionTypes.length === 0) {
+      throw new ValidationError('EmptyBlockedEncryptionTypes', 'At least one blocked encryption type must be specified', this);
+    } else {
+      const typeNames = props.blockedEncryptionTypes.map(type => type.name);
+      if (typeNames.includes(BlockedEncryptionType.NONE.name) && props.blockedEncryptionTypes.length > 1) {
+        throw new ValidationError('ConflictingBlockedEncryptionTypes', 'If NONE is specified as the blocked encryption type, no other encryption types may be specified', this);
+      }
+      blockedEncryptionTypes = {
+        encryptionType: typeNames,
+      };
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
-      return { bucketEncryption: undefined, encryptionKey: undefined };
+      if (blockedEncryptionTypes === undefined) {
+        return { bucketEncryption: undefined, encryptionKey: undefined };
+      } else {
+        return {
+          bucketEncryption: {
+            serverSideEncryptionConfiguration: [{
+              blockedEncryptionTypes,
+            }],
+          },
+          encryptionKey: undefined,
+        };
+      }
     }
 
     if (encryptionType === BucketEncryption.KMS) {
@@ -2562,6 +2642,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2574,6 +2655,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2587,6 +2669,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2606,6 +2689,7 @@ export class Bucket extends BucketBase {
               sseAlgorithm: 'aws:kms:dsse',
               kmsMasterKeyId: encryptionKey.keyArn,
             },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -2618,6 +2702,7 @@ export class Bucket extends BucketBase {
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+            blockedEncryptionTypes,
           },
         ],
       };
@@ -3163,6 +3248,29 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   DSSE = 'DSSE',
+}
+
+/**
+ * Encryption types that can be blocked on an S3 bucket.
+ */
+export class BlockedEncryptionType {
+  /** Special value - all encryption types are allowed */
+  public static readonly NONE = new BlockedEncryptionType('NONE');
+  /** Server-Side Encryption with customer-provided keys (SSE-C) is blocked */
+  public static readonly SSE_C = new BlockedEncryptionType('SSE-C');
+
+  /**
+   * Use this constructor only if S3 releases a new BlockedEncryptionType
+   * that is unknown to CDK. Otherwise, use this class's static constants.
+   */
+  public static custom(name: string) {
+    return new BlockedEncryptionType(name);
+  }
+
+  /**
+   * @param name The name for this blocked encryption type used in the API
+   */
+  private constructor(public readonly name: string) {}
 }
 
 /**

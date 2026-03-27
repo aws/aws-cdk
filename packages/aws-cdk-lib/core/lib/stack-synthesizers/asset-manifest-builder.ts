@@ -72,6 +72,7 @@ export class AssetManifestBuilder {
       executable: asset.executable,
       directory: asset.directoryName,
       dockerBuildArgs: asset.dockerBuildArgs,
+      dockerBuildContexts: asset.dockerBuildContexts,
       dockerBuildSecrets: asset.dockerBuildSecrets,
       dockerBuildSsh: asset.dockerBuildSsh,
       dockerBuildTarget: asset.dockerBuildTarget,
@@ -323,6 +324,7 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   }
 
   check('dockerBuildArgs');
+  check('dockerBuildContexts');
   check('dockerBuildTarget');
   check('dockerOutputs');
   check('dockerFile');

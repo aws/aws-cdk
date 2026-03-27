@@ -715,6 +715,13 @@
       }
     ]
   },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
+      }
+    ]
+  },
   "aws-emr": {
     "scopes": [
       {
@@ -1576,6 +1583,13 @@
     "scopes": [
       {
         "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
       }
     ]
   },

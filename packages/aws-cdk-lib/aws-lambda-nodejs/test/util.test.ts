@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple, getTsconfigCompilerOptions, getTsconfigCompilerOptionsArray } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -260,5 +260,48 @@ describe('getTsconfigCompilerOptions', () => {
       '--stripInternal false',
       '--target ES2022',
     ].join(' '));
+  });
+});
+
+describe('getTsconfigCompilerOptionsArray', () => {
+  test('should produce semantically equivalent output to getTsconfigCompilerOptions', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
+    const stringResult = getTsconfigCompilerOptions(tsconfig);
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    // The array joined with spaces should equal the string result
+    expect(arrayResult.join(' ')).toEqual(stringResult);
+  });
+
+  test('should produce semantically equivalent output with extended config', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig-extended.json');
+    const stringResult = getTsconfigCompilerOptions(tsconfig);
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    expect(arrayResult.join(' ')).toEqual(stringResult);
+  });
+
+  test('should return array elements for each flag and value', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig.json');
+    const arrayResult = getTsconfigCompilerOptionsArray(tsconfig);
+
+    // Boolean true flags are single elements
+    expect(arrayResult).toContain('--alwaysStrict');
+    expect(arrayResult).toContain('--declaration');
+
+    // Boolean false flags have the flag and 'false' as separate elements
+    const declMapIdx = arrayResult.indexOf('--declarationMap');
+    expect(declMapIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[declMapIdx + 1]).toBe('false');
+
+    // String values are separate elements
+    const targetIdx = arrayResult.indexOf('--target');
+    expect(targetIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[targetIdx + 1]).toBe('ES2022');
+
+    // Array values are joined with commas as a single element
+    const libIdx = arrayResult.indexOf('--lib');
+    expect(libIdx).toBeGreaterThanOrEqual(0);
+    expect(arrayResult[libIdx + 1]).toBe('es2022,dom');
   });
 });

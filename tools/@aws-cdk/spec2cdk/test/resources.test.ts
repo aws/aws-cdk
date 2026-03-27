@@ -443,6 +443,43 @@ test('CFN reference identifier of same length as CC-API identifier aliases field
   );
 });
 
+describe('Source tracing', () => {
+  test('generates setter for each property, with a call to traceProperty', () => {
+    givenResource({
+      ...BASE_RESOURCE,
+      attributes: {
+        Arn: {
+          type: { type: 'string' },
+          documentation: 'The ARN of this resource',
+        },
+      },
+      primaryIdentifier: ['Id'],
+      cfnRefIdentifier: ['Arn'],
+      properties: {
+        Id: {
+          type: { type: 'string' },
+        },
+        Foo: {
+          type: { type: 'string' },
+        },
+      },
+    });
+
+    // THEN
+    const rendered = renderResource();
+
+    expect(rendered.resources).toContainCode(`public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }`);
+
+    expect(rendered.resources).toContainCode(`public set foo(value: string | undefined) {
+    cdk.traceProperty(this.node, "Foo");
+    this._foo = value;
+  }`);
+  });
+});
+
 function givenResource(res: Plain<Resource>) {
   db.link('hasResource', service, db.allocate('resource', res));
 }

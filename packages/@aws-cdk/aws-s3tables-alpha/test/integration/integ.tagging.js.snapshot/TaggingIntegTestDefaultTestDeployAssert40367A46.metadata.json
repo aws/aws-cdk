@@ -1,0 +1,78 @@
+{
+  "/TaggingIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand404cbde660d53f4348d2a949b133b9f6/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand404cbde660d53f4348d2a949b133b9f6/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3tablesListTagsForResourceCommand404cbde660d53f4348d2a949b133b9f6"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand949ab9efe288e18985a2afb1bace4717/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand949ab9efe288e18985a2afb1bace4717/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3tablesListTagsForResourceCommand949ab9efe288e18985a2afb1bace4717"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand404cbde660d53f4348d2a949b133b9f6/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesListTagsForResourceCommand404cbde660d53f4348d2a949b133b9f6"
+    }
+  ],
+  "/TaggingIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTagsForResourceCommand949ab9efe288e18985a2afb1bace4717/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesListTagsForResourceCommand949ab9efe288e18985a2afb1bace4717"
+    }
+  ]
+}
