@@ -713,6 +713,81 @@ new ec2.Vpc(this, 'VPC', {
 If you set this property to `true` and then later remove it or set it to `false`
 the default ingress/egress will be restored on the default security group.
 
+### Network ACLs
+
+You can create a custom Network ACL and associate it with specific subnets:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const nacl = new ec2.NetworkAcl(this, 'MyNACL', {
+  vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+});
+
+nacl.addEntry('AllowHTTPSIngress', {
+  cidr: ec2.AclCidr.anyIpv4(),
+  ruleNumber: 100,
+  traffic: ec2.AclTraffic.tcpPort(443),
+  direction: ec2.TrafficDirection.INGRESS,
+  ruleAction: ec2.Action.ALLOW,
+});
+
+nacl.addEntry('AllowAllEgress', {
+  cidr: ec2.AclCidr.anyIpv4(),
+  ruleNumber: 100,
+  traffic: ec2.AclTraffic.allTraffic(),
+  direction: ec2.TrafficDirection.EGRESS,
+  ruleAction: ec2.Action.ALLOW,
+});
+```
+
+When a VPC is created, AWS automatically creates a [default Network ACL](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html#default-network-acl)
+that allows all inbound and outbound traffic (rule 100). CDK does not manage the default Network ACL,
+so its permissive rules cannot be removed or modified through CDK.
+
+To restrict traffic at the Network ACL level, create a custom Network ACL and associate it with
+the desired subnets. When a custom Network ACL is associated with a subnet, it replaces the default
+Network ACL for that subnet. Custom Network ACLs deny all traffic by default, so you must
+explicitly add entries for the traffic you want to allow:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Create a custom NACL that replaces the default permissive NACL
+const restrictiveNacl = new ec2.NetworkAcl(this, 'RestrictiveNACL', {
+  vpc,
+  subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+});
+
+// Only allow HTTPS inbound
+restrictiveNacl.addEntry('AllowHTTPS', {
+  cidr: ec2.AclCidr.anyIpv4(),
+  ruleNumber: 100,
+  traffic: ec2.AclTraffic.tcpPort(443),
+  direction: ec2.TrafficDirection.INGRESS,
+  ruleAction: ec2.Action.ALLOW,
+});
+
+// Allow ephemeral ports for return traffic
+restrictiveNacl.addEntry('AllowEphemeral', {
+  cidr: ec2.AclCidr.anyIpv4(),
+  ruleNumber: 200,
+  traffic: ec2.AclTraffic.tcpPortRange(1024, 65535),
+  direction: ec2.TrafficDirection.INGRESS,
+  ruleAction: ec2.Action.ALLOW,
+});
+
+// Allow all outbound
+restrictiveNacl.addEntry('AllowAllOutbound', {
+  cidr: ec2.AclCidr.anyIpv4(),
+  ruleNumber: 100,
+  traffic: ec2.AclTraffic.allTraffic(),
+  direction: ec2.TrafficDirection.EGRESS,
+  ruleAction: ec2.Action.ALLOW,
+});
+```
+
 ## Allowing Connections
 
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
