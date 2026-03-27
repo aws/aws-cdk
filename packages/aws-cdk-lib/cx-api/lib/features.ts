@@ -150,6 +150,8 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1752,7 +1754,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
@@ -1765,12 +1766,48 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
   },
 
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use cloudfront-js-2.0 as the default runtime for CloudFront Functions',
+    detailsMd: `
+      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+      The runtime can still be configured explicitly using the \`runtime\` property.
+
+      If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
+    detailsMd: `
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
+
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
+
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
+    `,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
+  },
+
   [AUTOMATIC_L1_TRAITS]: {
     type: FlagType.ApiDefault,
     summary: 'Automatically use the default L1 traits for L1 constructs`',
     detailsMd: `
-      When enabled, the construct library will apply default L1 traits for types that 
-      have no traits defined yet. Traits regulate behaviors such as how to create 
+      When enabled, the construct library will apply default L1 traits for types that
+      have no traits defined yet. Traits regulate behaviors such as how to create
       resource policies, or how to find an encryption key for a given L1 construct.
       `,
     introducedIn: { v2: '2.239.0' },
