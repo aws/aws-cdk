@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "aws-cdk-s3-bucket-name-prefix-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-bucket-name-prefix"
+      ],
+      "assertionStack": "aws-cdk-s3-bucket-name-prefix-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdks3bucketnameprefixintegDefaultTestDeployAssertE4CA5D18"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

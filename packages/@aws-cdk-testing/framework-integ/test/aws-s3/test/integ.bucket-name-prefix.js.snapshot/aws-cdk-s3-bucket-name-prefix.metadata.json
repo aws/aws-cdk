@@ -1,0 +1,28 @@
+{
+  "/aws-cdk-s3-bucket-name-prefix/BucketWithNamePrefix": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/BucketWithNamePrefix/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketWithNamePrefix2630E286"
+    }
+  ]
+}
