@@ -1,0 +1,62 @@
+{
+  "/grant-service-principal-test-stack/Table": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/grant-service-principal-test-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/grant-service-principal-test-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/grant-service-principal-test-stack/Table/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableCD117FA1"
+    }
+  ],
+  "/grant-service-principal-test-stack/Table/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
