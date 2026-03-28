@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "integ-eks-pod-identities-v2/DefaultTest": {
+      "stacks": [
+        "eks-pod-identities-v2"
+      ],
+      "assertionStack": "integ-eks-pod-identities-v2/DefaultTest/DeployAssert",
+      "assertionStackName": "integekspodidentitiesv2DefaultTestDeployAssert83452A00"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

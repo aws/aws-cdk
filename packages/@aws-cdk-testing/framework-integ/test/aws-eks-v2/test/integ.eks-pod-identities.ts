@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
-import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -29,8 +29,12 @@ class EksPodIdentitiesStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
+      defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
       defaultCapacity: 1,
-      ...getClusterVersionConfig(this),
+      version: eks.KubernetesVersion.V1_32,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV32Layer(this, 'kubectlLayer'),
+      },
     });
 
     // Case 1: auto-generated IAM role (existing behavior)
