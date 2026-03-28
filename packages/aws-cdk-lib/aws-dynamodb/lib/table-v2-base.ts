@@ -9,6 +9,7 @@ import type { AddToResourcePolicyResult, GrantOnKeyResult, IGrantable, IResource
 import { Grant } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
+import { isUnsupportedServicePrincipal } from './private/principal-utils';
 import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
@@ -101,6 +102,15 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    * @param actions the set of actions to allow (i.e., 'dynamodb:PutItem', 'dynamodb:GetItem', etc.)
    */
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this,
+      );
+    }
     const resourceArns = [this.tableArn];
     this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
     return Grant.addToPrincipalOrResource({
@@ -490,6 +500,16 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     tablePrinicipalExclusiveActions?: string[];
     streamActions?: string[];
   }) {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this,
+      );
+    }
+
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }
