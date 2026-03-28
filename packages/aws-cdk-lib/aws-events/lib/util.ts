@@ -70,6 +70,12 @@ export function renderEventPattern(eventPattern: EventPattern): any {
     if (key === 'detailType') {
       key = 'detail-type';
     }
+
+    // Validate: EventBridge rejects empty arrays in event patterns
+    if (Array.isArray(value) && value.length === 0) {
+      throw new UnscopedValidationError(`Invalid event pattern field '${key}': empty arrays are not allowed`);
+    }
+
     out[key] = value;
   }
 
