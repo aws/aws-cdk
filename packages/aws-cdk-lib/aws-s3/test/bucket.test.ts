@@ -901,6 +901,110 @@ describe('bucket', () => {
     });
   });
 
+  test('bucket with bucketNamePrefix and bucketNamespace', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      bucketNamePrefix: 'my-app',
+      bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketNamePrefix: 'my-app',
+      BucketNamespace: 'account-regional',
+    });
+  });
+
+  test('bucket with bucketNamespace GLOBAL and bucketNamePrefix throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketNamePrefix: 'my-app',
+        bucketNamespace: s3.BucketNamespace.GLOBAL,
+      });
+    }).toThrow(/\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL/);
+  });
+
+  test('bucket with bucketName and bucketNamePrefix throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketName: 'my-bucket',
+        bucketNamePrefix: 'my-app',
+        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+      });
+    }).toThrow(/\'bucketName\' and \'bucketNamePrefix\' cannot be used together/);
+  });
+
+  test('bucket with bucketName and bucketNamespace throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketName: 'my-bucket',
+        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+      });
+    }).toThrow(/\'bucketName\' cannot be used with \'bucketNamespace\'/);
+  });
+
+  test('bucket with bucketNamespace ACCOUNT_REGIONAL but no bucketNamePrefix throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+      });
+    }).toThrow(/\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified/);
+  });
+
+  test('bucket with bucketNamespace GLOBAL without bucketNamePrefix is valid', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      bucketNamespace: s3.BucketNamespace.GLOBAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketNamePrefix: Match.absent(),
+      BucketNamespace: 'global',
+    });
+  });
+
+  test('bucket with bucketNamePrefix only (no namespace) throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketNamePrefix: 'my-app',
+      });
+    }).toThrow(/\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL/);
+  });
+
+  test('bucket with invalid bucketNamePrefix throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketNamePrefix: 'My-App',
+        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+      });
+    }).toThrow(/Invalid S3 bucket name prefix/);
+  });
+
+  test('bucket with bucketNamePrefix too long throws', () => {
+    const stack = new cdk.Stack();
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketNamePrefix: 'a'.repeat(38),
+        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+      });
+    }).toThrow(/Bucket name prefix must be 37 characters or fewer/);
+  });
+
+  test('bucket with neither bucketNamePrefix nor bucketNamespace does not set properties', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketNamePrefix: Match.absent(),
+      BucketNamespace: Match.absent(),
+    });
+  });
+
   test('bucket with object lock enabled but no retention', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'Bucket', {
