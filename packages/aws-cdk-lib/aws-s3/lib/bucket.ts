@@ -2416,10 +2416,10 @@ export class Bucket extends BucketBase {
         scope,
       );
     }
-    if (props.bucketName && props.bucketNamespace) {
+    if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
       throw new ValidationError(
         'BucketNameConflictsWithNamespace',
-        '\'bucketName\' cannot be used with \'bucketNamespace\'. Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
+        '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
         scope,
       );
     }

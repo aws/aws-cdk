@@ -935,14 +935,27 @@ describe('bucket', () => {
     }).toThrow(/\'bucketName\' and \'bucketNamePrefix\' cannot be used together/);
   });
 
-  test('bucket with bucketName and bucketNamespace throws', () => {
+  test('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL throws', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', {
         bucketName: 'my-bucket',
         bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
       });
-    }).toThrow(/\'bucketName\' cannot be used with \'bucketNamespace\'/);
+    }).toThrow(/\'bucketName\' cannot be used with \'bucketNamespace\' \(except GLOBAL\)/);
+  });
+
+  test('bucket with bucketName and bucketNamespace GLOBAL is valid', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      bucketName: 'my-bucket',
+      bucketNamespace: s3.BucketNamespace.GLOBAL,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketName: 'my-bucket',
+      BucketNamespace: 'global',
+    });
   });
 
   test('bucket with bucketNamespace ACCOUNT_REGIONAL but no bucketNamePrefix throws', () => {
