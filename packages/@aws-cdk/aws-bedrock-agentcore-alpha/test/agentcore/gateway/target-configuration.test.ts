@@ -16,7 +16,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Gateway } from '../../../lib';
+import { Gateway, GatewayTarget } from '../../../lib';
 import { ApiSchema } from '../../../lib/gateway/targets/schema/api-schema';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import {
@@ -69,31 +69,6 @@ describe('Target Configuration Tests', () => {
         expect(config.restApiId).toBe(restApi.restApiId); // Should be the token from RestApi
         expect(config.stage).toBe('prod');
         expect(config.apiGatewayToolConfiguration.toolFilters).toHaveLength(1);
-      });
-
-      test('Should create API Gateway target configuration with metadata configuration', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          stage: 'prod',
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/pets',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: {
-            allowedQueryParameters: ['param1', 'param2'],
-            allowedRequestHeaders: ['Authorization', 'Content-Type'],
-            allowedResponseHeaders: ['X-Custom-Header'],
-          },
-        });
-
-        expect(config.metadataConfiguration).toBeDefined();
-        expect(config.metadataConfiguration?.allowedQueryParameters).toEqual(['param1', 'param2']);
-        expect(config.metadataConfiguration?.allowedRequestHeaders).toEqual(['Authorization', 'Content-Type']);
-        expect(config.metadataConfiguration?.allowedResponseHeaders).toEqual(['X-Custom-Header']);
       });
 
       test('Should create API Gateway target configuration with tool overrides', () => {
@@ -383,19 +358,13 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when allowedQueryParameters exceeds 10 items', () => {
         const tooManyParams = Array.from({ length: 11 }, (_, i) => `param${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'TooManyParams', {
+            gateway: gateway,
             restApi: restApi,
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
-            metadataConfiguration: {
-              allowedQueryParameters: tooManyParams,
-            },
+            metadataConfiguration: { allowedQueryParameters: tooManyParams },
           });
         }).toThrow(/allowedQueryParameters cannot exceed 10 items/);
       });
@@ -403,19 +372,13 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when allowedRequestHeaders exceeds 10 items', () => {
         const tooManyHeaders = Array.from({ length: 11 }, (_, i) => `Header${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'TooManyReqHeaders', {
+            gateway: gateway,
             restApi: restApi,
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
-            metadataConfiguration: {
-              allowedRequestHeaders: tooManyHeaders,
-            },
+            metadataConfiguration: { allowedRequestHeaders: tooManyHeaders },
           });
         }).toThrow(/allowedRequestHeaders cannot exceed 10 items/);
       });
@@ -423,19 +386,13 @@ describe('Target Configuration Tests', () => {
       test('Should throw error when allowedResponseHeaders exceeds 10 items', () => {
         const tooManyHeaders = Array.from({ length: 11 }, (_, i) => `ResHeader${i}`);
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'TooManyResHeaders', {
+            gateway: gateway,
             restApi: restApi,
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
-            metadataConfiguration: {
-              allowedResponseHeaders: tooManyHeaders,
-            },
+            metadataConfiguration: { allowedResponseHeaders: tooManyHeaders },
           });
         }).toThrow(/allowedResponseHeaders cannot exceed 10 items/);
       });
@@ -446,16 +403,11 @@ describe('Target Configuration Tests', () => {
         const maxResHeaders = Array.from({ length: 10 }, (_, i) => `ResHeader${i}`);
 
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'MaxItems', {
+            gateway: gateway,
             restApi: restApi,
-            stage: 'prod',
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
             metadataConfiguration: {
               allowedQueryParameters: maxParams,
@@ -464,28 +416,6 @@ describe('Target Configuration Tests', () => {
             },
           });
         }).not.toThrow();
-      });
-
-      test('Should accept metadata configuration with only query parameters', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          stage: 'prod',
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/test',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: {
-            allowedQueryParameters: ['param1'],
-          },
-        });
-
-        expect(config.metadataConfiguration?.allowedQueryParameters).toEqual(['param1']);
-        expect(config.metadataConfiguration?.allowedRequestHeaders).toBeUndefined();
-        expect(config.metadataConfiguration?.allowedResponseHeaders).toBeUndefined();
       });
     });
 
@@ -1270,50 +1200,6 @@ describe('Target Configuration Tests', () => {
         }).toThrow(/Tool override path cannot contain wildcards/);
       });
 
-      test('Should accept metadata configuration with only request headers', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          stage: 'prod',
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/test',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: {
-            allowedRequestHeaders: ['Authorization'],
-          },
-        });
-
-        expect(config.metadataConfiguration?.allowedRequestHeaders).toEqual(['Authorization']);
-        expect(config.metadataConfiguration?.allowedQueryParameters).toBeUndefined();
-        expect(config.metadataConfiguration?.allowedResponseHeaders).toBeUndefined();
-      });
-
-      test('Should accept metadata configuration with only response headers', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          stage: 'prod',
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/test',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: {
-            allowedResponseHeaders: ['X-Custom-Header'],
-          },
-        });
-
-        expect(config.metadataConfiguration?.allowedResponseHeaders).toEqual(['X-Custom-Header']);
-        expect(config.metadataConfiguration?.allowedQueryParameters).toBeUndefined();
-        expect(config.metadataConfiguration?.allowedRequestHeaders).toBeUndefined();
-      });
-
       test('Should render tool filters with multiple methods correctly', () => {
         const config = ApiGatewayTargetConfiguration.create({
           restApi: restApi,
@@ -1454,24 +1340,6 @@ describe('Target Configuration Tests', () => {
             },
           });
         }).not.toThrow();
-      });
-
-      test('Should validate when metadata config undefined but metadataConfiguration property exists', () => {
-        const config = ApiGatewayTargetConfiguration.create({
-          restApi: restApi,
-          stage: 'prod',
-          apiGatewayToolConfiguration: {
-            toolFilters: [
-              {
-                filterPath: '/test',
-                methods: [ApiGatewayHttpMethod.GET],
-              },
-            ],
-          },
-          metadataConfiguration: undefined,
-        });
-
-        expect(config.metadataConfiguration).toBeUndefined();
       });
     });
 
@@ -1707,16 +1575,11 @@ describe('Target Configuration Tests', () => {
     describe('Metadata configuration combinations', () => {
       test('Should accept metadata with query params and request headers only', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'MetaCombo1', {
+            gateway: gateway,
             restApi: restApi,
-            stage: 'prod',
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
             metadataConfiguration: {
               allowedQueryParameters: ['id'],
@@ -1728,16 +1591,11 @@ describe('Target Configuration Tests', () => {
 
       test('Should accept metadata with query params and response headers only', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'MetaCombo2', {
+            gateway: gateway,
             restApi: restApi,
-            stage: 'prod',
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
             metadataConfiguration: {
               allowedQueryParameters: ['id'],
@@ -1749,16 +1607,11 @@ describe('Target Configuration Tests', () => {
 
       test('Should accept metadata with request and response headers only', () => {
         expect(() => {
-          ApiGatewayTargetConfiguration.create({
+          GatewayTarget.forApiGateway(stack, 'MetaCombo3', {
+            gateway: gateway,
             restApi: restApi,
-            stage: 'prod',
             apiGatewayToolConfiguration: {
-              toolFilters: [
-                {
-                  filterPath: '/test',
-                  methods: [ApiGatewayHttpMethod.GET],
-                },
-              ],
+              toolFilters: [{ filterPath: '/test', methods: [ApiGatewayHttpMethod.GET] }],
             },
             metadataConfiguration: {
               allowedRequestHeaders: ['Authorization'],
@@ -1871,8 +1724,8 @@ describe('Target Configuration Tests', () => {
       });
     });
 
-    describe('Render with varying metadata configurations', () => {
-      test('Should render with all three metadata arrays present', () => {
+    describe('Render without metadata configurations', () => {
+      test('Should not render metadata configuration in apiGateway block', () => {
         const config = ApiGatewayTargetConfiguration.create({
           restApi: restApi,
           stage: 'prod',
@@ -1884,15 +1737,11 @@ describe('Target Configuration Tests', () => {
               },
             ],
           },
-          metadataConfiguration: {
-            allowedQueryParameters: ['q1', 'q2'],
-            allowedRequestHeaders: ['h1', 'h2'],
-            allowedResponseHeaders: ['r1', 'r2'],
-          },
         });
 
         const rendered = config._render();
         expect(rendered.mcp.apiGateway.apiGatewayToolConfiguration).toBeDefined();
+        expect(rendered.mcp.apiGateway.metadataConfiguration).toBeUndefined();
       });
     });
   });

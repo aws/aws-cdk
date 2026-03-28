@@ -124,6 +124,53 @@ const constructorTarget = new agentcore.GatewayTarget(stack, 'ConstructorTarget'
 // Ensure Gateway role and its policies are created before the target
 constructorTarget.node.addDependency(gateway.role);
 
+// ===== Test 5: GatewayTarget.forLambda() with MetadataConfiguration =====
+// MetadataConfiguration is a top-level property on GatewayTarget that applies to all target types.
+// This test validates that header and query parameter propagation works with Lambda targets.
+const lambdaFunction3 = new lambda.Function(stack, 'Lambda3', {
+  functionName: 'integ-test-target-lambda3',
+  runtime: lambda.Runtime.NODEJS_22_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => {
+      return { message: 'Lambda with metadata configuration' };
+    };
+  `),
+});
+
+const toolSchema3 = agentcore.ToolSchema.fromInline([
+  {
+    name: 'tool3',
+    description: 'Tool with metadata configuration',
+    inputSchema: {
+      type: agentcore.SchemaDefinitionType.OBJECT,
+      properties: {
+        input: { type: agentcore.SchemaDefinitionType.STRING },
+      },
+    },
+  },
+]);
+
+lambdaFunction3.addPermission('BedrockAgentCoreInvoke', {
+  principal: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  sourceArn: gateway.gatewayArn,
+});
+
+const lambdaTargetWithMetadata = agentcore.GatewayTarget.forLambda(stack, 'LambdaTargetWithMetadata', {
+  gateway: gateway,
+  gatewayTargetName: 'lambda-with-metadata',
+  description: 'Lambda target with metadata configuration for header propagation',
+  lambdaFunction: lambdaFunction3,
+  toolSchema: toolSchema3,
+  metadataConfiguration: {
+    allowedRequestHeaders: ['x-correlation-id', 'x-tenant-id'],
+    allowedResponseHeaders: ['x-rate-limit-remaining'],
+    allowedQueryParameters: ['version'],
+  },
+});
+
+lambdaTargetWithMetadata.node.addDependency(gateway.role);
+
 // ===== Outputs =====
 new cdk.CfnOutput(stack, 'GatewayId', {
   value: gateway.gatewayId,
@@ -139,6 +186,10 @@ new cdk.CfnOutput(stack, 'SmithyTargetId', {
 
 new cdk.CfnOutput(stack, 'ConstructorTargetId', {
   value: constructorTarget.targetId,
+});
+
+new cdk.CfnOutput(stack, 'LambdaTargetWithMetadataId', {
+  value: lambdaTargetWithMetadata.targetId,
 });
 
 // Create the integration test

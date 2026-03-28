@@ -578,12 +578,6 @@ export interface ApiGatewayTargetConfigurationProps {
    */
   readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
 
-  /**
-   * Metadata configuration for passing headers and query parameters
-   * Allows you to pass additional context through headers and query parameters
-   * @default - No metadata configuration
-   */
-  readonly metadataConfiguration?: MetadataConfiguration;
 }
 
 /**
@@ -633,18 +627,12 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
    */
   public readonly apiGatewayToolConfiguration: ApiGatewayToolConfiguration;
 
-  /**
-   * Metadata configuration for the API Gateway target
-   */
-  public readonly metadataConfiguration?: MetadataConfiguration;
-
   constructor(props: ApiGatewayTargetConfigurationProps) {
     super();
     this._restApi = props.restApi;
     this.restApiId = props.restApi.restApiId;
     this.stage = props.stage ?? props.restApi.deploymentStage.stageName;
     this.apiGatewayToolConfiguration = props.apiGatewayToolConfiguration;
-    this.metadataConfiguration = props.metadataConfiguration;
 
     this.validateConfiguration();
   }
@@ -696,19 +684,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
             })),
           }),
         },
-        ...(this.metadataConfiguration && {
-          metadataConfiguration: {
-            ...(this.metadataConfiguration.allowedQueryParameters && {
-              allowedQueryParameters: this.metadataConfiguration.allowedQueryParameters,
-            }),
-            ...(this.metadataConfiguration.allowedRequestHeaders && {
-              allowedRequestHeaders: this.metadataConfiguration.allowedRequestHeaders,
-            }),
-            ...(this.metadataConfiguration.allowedResponseHeaders && {
-              allowedResponseHeaders: this.metadataConfiguration.allowedResponseHeaders,
-            }),
-          },
-        }),
       },
     };
   }
@@ -762,118 +737,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
         this.validateToolOverride(override);
       }
     }
-
-    // Validate metadata configuration if provided
-    if (this.metadataConfiguration) {
-      this.validateMetadataConfiguration(this.metadataConfiguration);
-    }
-  }
-
-  /**
-   * Validates metadata configuration
-   * @internal
-   */
-  private validateMetadataConfiguration(config: MetadataConfiguration): void {
-    // Validate allowedQueryParameters
-    if (config.allowedQueryParameters !== undefined) {
-      this.validateMetadataArray(
-        config.allowedQueryParameters,
-        'allowedQueryParameters',
-        1,
-        10,
-        1,
-        40,
-      );
-    }
-
-    // Validate allowedRequestHeaders
-    if (config.allowedRequestHeaders !== undefined) {
-      this.validateMetadataArray(
-        config.allowedRequestHeaders,
-        'allowedRequestHeaders',
-        1,
-        10,
-        1,
-        100,
-      );
-    }
-
-    // Validate allowedResponseHeaders
-    if (config.allowedResponseHeaders !== undefined) {
-      this.validateMetadataArray(
-        config.allowedResponseHeaders,
-        'allowedResponseHeaders',
-        1,
-        10,
-        1,
-        100,
-      );
-    }
-  }
-
-  /**
-   * Validates a metadata configuration array (query parameters or headers)
-   * @param array The array to validate
-   * @param fieldName The name of the field for error messages
-   * @param minItems Minimum number of items allowed in the array
-   * @param maxItems Maximum number of items allowed in the array
-   * @param minStringLength Minimum length for each string in the array
-   * @param maxStringLength Maximum length for each string in the array
-   * @internal
-   */
-  private validateMetadataArray(
-    array: string[],
-    fieldName: string,
-    minItems: number,
-    maxItems: number,
-    minStringLength: number,
-    maxStringLength: number,
-  ): void {
-    // Skip validation if the entire array is an unresolved token
-    if (Token.isUnresolved(array)) {
-      return;
-    }
-
-    // Check if array is empty
-    if (array.length === 0) {
-      throw new UnscopedValidationError(
-        'MetadataArrayEmpty',
-        `${fieldName} cannot be an empty array. It must contain at least ${minItems} item(s)`,
-      );
-    }
-
-    // Check array size constraints
-    if (array.length < minItems) {
-      throw new UnscopedValidationError(
-        'MetadataArrayTooFew',
-        `${fieldName} must contain at least ${minItems} item(s). Found ${array.length} item(s)`,
-      );
-    }
-
-    if (array.length > maxItems) {
-      throw new UnscopedValidationError(
-        'MetadataArrayTooMany',
-        `${fieldName} cannot exceed ${maxItems} items. Found ${array.length} items`,
-      );
-    }
-
-    // Validate each string in the array
-    array.forEach((item, index) => {
-      if (Token.isUnresolved(item)) {
-        return; // Skip validation for unresolved tokens
-      }
-
-      const errors = validateStringField({
-        value: item,
-        fieldName: `${fieldName}[${index}]`,
-        minLength: minStringLength,
-        maxLength: maxStringLength,
-      });
-
-      if (errors.length > 0) {
-        throw new UnscopedValidationError('MetadataArrayItemInvalid', errors.join('\n'));
-      }
-    });
   }
 
   /**
@@ -963,4 +826,115 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       }
     }
   }
+}
+
+/******************************************************************************
+ *                     Metadata Configuration Validation
+ *****************************************************************************/
+
+/**
+ * Validates metadata configuration
+ * @internal
+ */
+export function validateMetadataConfiguration(config: MetadataConfiguration): void {
+  // Validate allowedQueryParameters
+  if (config.allowedQueryParameters !== undefined) {
+    validateMetadataArray(
+      config.allowedQueryParameters,
+      'allowedQueryParameters',
+      1,
+      10,
+      1,
+      40,
+    );
+  }
+
+  // Validate allowedRequestHeaders
+  if (config.allowedRequestHeaders !== undefined) {
+    validateMetadataArray(
+      config.allowedRequestHeaders,
+      'allowedRequestHeaders',
+      1,
+      10,
+      1,
+      100,
+    );
+  }
+
+  // Validate allowedResponseHeaders
+  if (config.allowedResponseHeaders !== undefined) {
+    validateMetadataArray(
+      config.allowedResponseHeaders,
+      'allowedResponseHeaders',
+      1,
+      10,
+      1,
+      100,
+    );
+  }
+}
+
+/**
+ * Validates a metadata configuration array (query parameters or headers)
+ * @param array The array to validate
+ * @param fieldName The name of the field for error messages
+ * @param minItems Minimum number of items allowed in the array
+ * @param maxItems Maximum number of items allowed in the array
+ * @param minStringLength Minimum length for each string in the array
+ * @param maxStringLength Maximum length for each string in the array
+ * @internal
+ */
+export function validateMetadataArray(
+  array: string[],
+  fieldName: string,
+  minItems: number,
+  maxItems: number,
+  minStringLength: number,
+  maxStringLength: number,
+): void {
+  // Skip validation if the entire array is an unresolved token
+  if (Token.isUnresolved(array)) {
+    return;
+  }
+
+  // Check if array is empty
+  if (array.length === 0) {
+    throw new UnscopedValidationError(
+      'MetadataArrayEmpty',
+      `${fieldName} cannot be an empty array. It must contain at least ${minItems} item(s)`,
+    );
+  }
+
+  // Check array size constraints
+  if (array.length < minItems) {
+    throw new UnscopedValidationError(
+      'MetadataArrayTooFew',
+      `${fieldName} must contain at least ${minItems} item(s). Found ${array.length} item(s)`,
+    );
+  }
+
+  if (array.length > maxItems) {
+    throw new UnscopedValidationError(
+      'MetadataArrayTooMany',
+      `${fieldName} cannot exceed ${maxItems} items. Found ${array.length} items`,
+    );
+  }
+
+  // Validate each string in the array
+  array.forEach((item, index) => {
+    if (Token.isUnresolved(item)) {
+      return; // Skip validation for unresolved tokens
+    }
+
+    const errors = validateStringField({
+      value: item,
+      fieldName: `${fieldName}[${index}]`,
+      minLength: minStringLength,
+      maxLength: maxStringLength,
+    });
+
+    if (errors.length > 0) {
+      throw new UnscopedValidationError('MetadataArrayItemInvalid', errors.join('\n'));
+    }
+  });
 }
