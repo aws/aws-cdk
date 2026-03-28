@@ -1444,6 +1444,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
+      if (this._kubectlProviderOptions?.securityGroup !== undefined &&
+          this._kubectlProviderOptions?.securityGroups !== undefined) {
+        throw new ValidationError(
+          'SecurityGroupConflict',
+          'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+          this,
+        );
+      }
       this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
@@ -1452,8 +1460,10 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
-        securityGroup: this._kubectlProviderOptions?.securityGroup,
-        securityGroups: this._kubectlProviderOptions?.securityGroups,
+        securityGroups: this._kubectlProviderOptions?.securityGroups
+          ?? (this._kubectlProviderOptions?.securityGroup
+            ? [this._kubectlProviderOptions.securityGroup]
+            : undefined),
       });
 
       // give the handler role admin access to the cluster
