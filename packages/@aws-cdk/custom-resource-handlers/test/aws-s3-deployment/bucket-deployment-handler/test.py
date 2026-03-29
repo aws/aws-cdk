@@ -725,6 +725,14 @@ class TestHandler(unittest.TestCase):
                     else:
                         self.assertEqual(content, '{\n    "root": {\n        "key_with_quote": "prefixvalue"with"quotessuffix",\n        "key_without_quote": "prefixboom-marker2-replacedsuffix"\n    }\n}')
 
+    def test_extract_and_replace_markers_skips_sources_without_markers(self):
+        with tempfile.TemporaryDirectory() as outdir:
+            with patch.object(index, 'replace_markers') as replace_markers:
+                index.extract_and_replace_markers(os.path.join(scriptdir, "test.zip"), outdir, {}, {})
+
+            replace_markers.assert_not_called()
+            self.assertTrue(os.path.exists(os.path.join(outdir, "test.txt")))
+
     def test_marker_substitution(self):
         outdir = tempfile.mkdtemp()
 
