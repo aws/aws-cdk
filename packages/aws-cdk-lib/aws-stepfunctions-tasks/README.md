@@ -1759,7 +1759,7 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 ### CreateJob
 
 The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
-For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+For information about jobs and job settings, see the User Guide at https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
 You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
