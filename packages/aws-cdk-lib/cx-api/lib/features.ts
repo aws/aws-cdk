@@ -1775,7 +1775,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       The runtime can still be configured explicitly using the \`runtime\` property.
 
       If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.245.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
   },
@@ -1797,7 +1797,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
       where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.245.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
   },
