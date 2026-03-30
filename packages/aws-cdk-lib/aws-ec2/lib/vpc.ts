@@ -2491,7 +2491,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Creates a new managed NAT gateway attached to this public subnet.
    * Also adds the EIP for the managed NAT.
-   * @returns A ref to the the NAT Gateway ID
+   * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
   public addNatGateway(eipAllocationId?: string) {

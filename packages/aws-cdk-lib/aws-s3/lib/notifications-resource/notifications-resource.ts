@@ -85,7 +85,7 @@ export class BucketNotifications extends Construct {
       resource.node.addDependency(...targetProps.dependencies);
     }
 
-    // based on the target type, add the the correct configurations array
+    // based on the target type, add the correct configurations array
     switch (targetProps.type) {
       case BucketNotificationDestinationType.LAMBDA:
         this.lambdaNotifications.push({ ...commonConfig, LambdaFunctionArn: targetProps.arn });
