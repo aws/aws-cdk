@@ -260,4 +260,12 @@ describe('IAM policy statement', () => {
       expect(mod).toThrow(/can no longer be modified/);
     }
   });
+
+  test('addCondition with __proto__ key does not pollute prototype', () => {
+    const stmt = new PolicyStatement();
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    stmt.addCondition('__proto__', { field: 'value' });
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

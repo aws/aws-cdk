@@ -405,4 +405,19 @@ describe('Test BuildSpec merge', () => {
       },
     });
   });
+
+  test('mergeDeep does not pollute prototype', () => {
+    const lhs = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      env: { variables: { A: '1' } },
+    });
+    const rhs = codebuild.BuildSpec.fromObject({
+      version: '0.2',
+      env: { variables: { B: '2' } },
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    codebuild.mergeBuildSpecs(lhs, rhs);
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

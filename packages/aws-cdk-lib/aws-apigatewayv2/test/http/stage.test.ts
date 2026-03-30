@@ -388,4 +388,14 @@ describe('HttpStage with domain mapping', () => {
       Description: 'My Stage',
     });
   });
+
+  test('addStageVariable with __proto__ does not pollute prototype', () => {
+    const stage = new HttpStage(stack, 'ProtoStage', {
+      httpApi: api,
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    (stage as any).addStageVariable('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

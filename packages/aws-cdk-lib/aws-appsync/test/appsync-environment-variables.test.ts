@@ -274,6 +274,19 @@ describe('environment variables', () => {
       api.addEnvironmentVariable('EnvKey1', 'non-empty-1');
     }).toThrow(/Environment variables are not supported for merged APIs/);
   });
+
+  test('addEnvironmentVariable with __proto__ does not pollute prototype', () => {
+    const api = new appsync.GraphqlApi(stack, 'ProtoApi', {
+      name: 'api',
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    // The key validation will reject __proto__ because it doesn't match /^[A-Za-z]+\w*$/
+    // but even if it did, the underlying object is Object.create(null)
+    expect(() => api.addEnvironmentVariable('__proto__', 'evil')).toThrow();
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });
 
 function validate(construct: IConstruct): string[] {

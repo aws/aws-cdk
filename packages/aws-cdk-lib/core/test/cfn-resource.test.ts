@@ -437,4 +437,15 @@ describe('cfn resource', () => {
     // THEN
     expect(core.CfnResource.isCfnResource(undefined)).toBe(false);
   });
+
+  test('addOverride with __proto__ does not pollute prototype', () => {
+    const stack = new core.Stack();
+    const resource = new core.CfnResource(stack, 'Res', { type: 'AWS::Test::Resource' });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    resource.addOverride('__proto__', 'evil');
+    resource.addOverride('Properties.__proto__.polluted', 'yes');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+    expect((Object.prototype as any).polluted).toBeUndefined();
+  });
 });

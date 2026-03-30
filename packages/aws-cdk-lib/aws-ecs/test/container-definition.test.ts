@@ -3059,4 +3059,42 @@ describe('container definition', () => {
       ],
     });
   });
+
+  describe('prototype pollution', () => {
+    test('addEnvironment with __proto__ does not pollute prototype', () => {
+      const stack = new cdk.Stack();
+      const taskDef = new ecs.FargateTaskDefinition(stack, 'TD');
+      const container = taskDef.addContainer('C', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+      });
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      container.addEnvironment('__proto__', 'evil');
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
+    });
+
+    test('addDockerLabel with __proto__ does not pollute prototype', () => {
+      const stack = new cdk.Stack();
+      const taskDef = new ecs.FargateTaskDefinition(stack, 'TD');
+      const container = taskDef.addContainer('C', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+      });
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      container.addDockerLabel('__proto__', 'evil');
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
+    });
+
+    test('constructor environment with __proto__ does not pollute prototype', () => {
+      const stack = new cdk.Stack();
+      const taskDef = new ecs.FargateTaskDefinition(stack, 'TD');
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      taskDef.addContainer('C', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+        environment: { '__proto__': 'evil' },
+      });
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
+    });
+  });
 });

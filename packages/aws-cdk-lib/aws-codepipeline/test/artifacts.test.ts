@@ -332,6 +332,14 @@ describe('artifacts', () => {
       }).toThrow(/The length of the artifactFiles array must be between 1 and 10, got: 11/);
     });
   });
+
+  test('setMetadata with __proto__ key does not pollute prototype', () => {
+    const artifact = new codepipeline.Artifact('MyArtifact');
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    artifact.setMetadata('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });
 
 function validate(construct: IConstruct): string[] {

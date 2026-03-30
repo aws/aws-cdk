@@ -99,4 +99,15 @@ describe('Adding parameters to an existing group', () => {
       // THEN
       .toThrow('The parameter group already contains the parameter');
   });
+
+  test('constructor parameters with __proto__ does not pollute prototype', () => {
+    const stack = new cdk.Stack();
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    new ClusterParameterGroup(stack, 'ProtoParams', {
+      description: 'desc',
+      parameters: { '__proto__': 'evil' },
+    });
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

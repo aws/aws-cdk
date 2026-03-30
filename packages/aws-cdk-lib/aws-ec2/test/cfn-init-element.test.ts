@@ -800,6 +800,16 @@ describe('InitSource', () => {
   });
 });
 
+describe('InitServiceRestartHandle', () => {
+  test('_addPackage with __proto__ does not pollute prototype', () => {
+    const handle = new ec2.InitServiceRestartHandle();
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    (handle as any)._addPackage('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
+});
+
 function getElementConfig(element: ec2.InitElement, platform: InitPlatform) {
   return element._bind(defaultOptions(platform)).config;
 }

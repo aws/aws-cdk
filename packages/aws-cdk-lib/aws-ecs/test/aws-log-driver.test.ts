@@ -215,4 +215,16 @@ describe('aws log driver', () => {
       ],
     });
   });
+
+  test('stringifyOptions does not pollute prototype', () => {
+    const { stringifyOptions } = require('../lib/log-drivers/utils');
+    const opts = Object.create(null);
+    opts['__proto__'] = 'evil';
+    opts.normal = 'ok';
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    const result = stringifyOptions(opts);
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+    expect(result.normal).toBe('ok');
+  });
 });

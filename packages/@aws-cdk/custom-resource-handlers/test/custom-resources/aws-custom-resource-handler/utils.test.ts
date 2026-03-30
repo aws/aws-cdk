@@ -184,3 +184,12 @@ describe('getCredentials with External ID support', () => {
     expect(result).toBe(mockCredentials);
   });
 });
+
+describe('decodeSpecialValues', () => {
+  test('rejects __proto__ key', () => {
+    const { decodeSpecialValues } = require('../../../lib/custom-resources/aws-custom-resource-handler/utils');
+    const obj = Object.create(null);
+    obj['__proto__'] = 'evil';
+    expect(() => decodeSpecialValues(obj, 'physId')).toThrow(/Unsafe key/);
+  });
+});

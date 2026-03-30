@@ -517,3 +517,22 @@ test('ServicePrinciple construct by default reset the principle name to the defa
     },
   });
 });
+
+test('PrincipalWithConditions.addCondition with __proto__ does not pollute prototype', () => {
+  const principal = new iam.PrincipalWithConditions(
+    new iam.AccountPrincipal('123456789012'),
+    {},
+  );
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  principal.addCondition('__proto__', { field: 'value' });
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});
+
+test('mergePrincipal rejects __proto__ key', () => {
+  const { mergePrincipal } = require('../lib/private/util');
+  const target: Record<string, string[]> = {};
+  const source = Object.create(null);
+  source['__proto__'] = ['evil'];
+  expect(() => mergePrincipal(target, source)).toThrow(/prototype pollution/i);
+});

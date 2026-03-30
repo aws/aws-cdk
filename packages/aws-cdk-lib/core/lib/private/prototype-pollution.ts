@@ -16,7 +16,7 @@ import { AssumptionError } from '../errors';
  */
 export function assertNoProto(x: string) {
   if (x === '__proto__') {
-    throw new AssumptionError('PrototypePollution', '__proto__ leads to prototype pollution and is not allowed');
+    throw new AssumptionError('PrototypePollution', 'Using \'__proto__\' is not allowed here. Use a different key instead.');
   }
 }
 
@@ -25,6 +25,6 @@ export function assertNoProto(x: string) {
  */
 export function assertNoProtoRec(x: string) {
   if (['__proto__', 'constructor', 'prototype'].includes(x)) {
-    throw new AssumptionError('PrototypePollution', `${x} leads to prototype pollution and is not allowed here`);
+    throw new AssumptionError('PrototypePollution', `Using \'${x}\' is not allowed here. Use a different key instead.`);
   }
 }

@@ -1,4 +1,4 @@
-import { mergeEventPattern } from '../lib/util';
+import { mergeEventPattern, renderEventPattern } from '../lib/util';
 
 describe('util', () => {
   describe('mergeEventPattern', () => {
@@ -86,6 +86,27 @@ describe('util', () => {
         'detail-type': ['AWS API Call via CloudTrail'],
         'time': [{ prefix: '2017-10-02' }, { prefix: '2017-10-03' }],
       });
+    });
+  });
+
+  describe('prototype pollution', () => {
+    test('mergeEventPattern rejects __proto__ key', () => {
+      const src = Object.create(null);
+      src['__proto__'] = ['evil'];
+      expect(() => mergeEventPattern({}, src)).toThrow(/prototype pollution/i);
+    });
+
+    test('mergeEventPattern rejects constructor key', () => {
+      const src = Object.create(null);
+      src['constructor'] = ['evil'];
+      expect(() => mergeEventPattern({}, src)).toThrow(/prototype pollution/i);
+    });
+
+    test('renderEventPattern does not pollute prototype', () => {
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      renderEventPattern({ source: ['aws.ec2'] });
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
     });
   });
 });

@@ -1519,4 +1519,14 @@ describe('tests', () => {
       }).toThrow('dual-stack without public IPv4 address can only be used with internet-facing scheme.');
     });
   });
+
+  test('setAttribute with __proto__ does not pollute prototype', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    lb.setAttribute('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

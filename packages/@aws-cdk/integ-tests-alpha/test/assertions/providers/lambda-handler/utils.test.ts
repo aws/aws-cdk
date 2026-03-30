@@ -55,5 +55,11 @@ describe('utils', () => {
         array: [{ foo3: 'bar3' }],
       });
     });
+
+    test('rejects __proto__ key', () => {
+      const obj = Object.create(null);
+      obj['__proto__'] = 'evil';
+      expect(() => deepParseJson(obj)).toThrow(/prototype pollution/i);
+    });
   });
 });

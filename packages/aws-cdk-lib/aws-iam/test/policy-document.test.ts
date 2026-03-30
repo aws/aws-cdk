@@ -865,4 +865,16 @@ describe('IAM policy document', () => {
     const validationErrors: string[] = policyStatement.validateForResourcePolicy();
     expect(validationErrors).toEqual(['A PolicyStatement used in a resource-based policy must specify at least one IAM principal.']);
   });
+
+  test('normalizeStatement does not pollute prototype', () => {
+    const stmt = new PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['*'],
+      principals: [new AccountPrincipal('123456789012')],
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    stmt.toJSON();
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

@@ -526,3 +526,20 @@ test('find task token even if nested in intrinsic functions', () => {
 test('find task token should handle null values', () => {
   expect(FieldUtils.containsTaskToken({ x: JsonPath.array(JsonPath.taskToken), y: null })).toEqual(true);
 });
+
+test('recurseObject with __proto__ key does not pollute prototype', () => {
+  const { recurseObject } = require('../lib/private/json-path');
+  const obj = Object.create(null);
+  obj['__proto__'] = 'evil';
+  obj.normal = 'ok';
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  const handlers = {
+    handleString: (k: string, v: string) => ({ [k]: v }),
+    handleNumber: (k: string, v: number) => ({ [k]: v }),
+    handleBoolean: (k: string, v: boolean) => ({ [k]: v }),
+    handleResolvable: (k: string, v: any) => ({ [k]: v }),
+  };
+  recurseObject(obj, handlers, []);
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});

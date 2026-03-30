@@ -111,4 +111,21 @@ describe('cfn-parse', () => {
     expect(rollingUpdate?.suspendProcesses).toEqual(['HealthCheck', 'ReplaceUnhealthy']);
     expect(rollingUpdate?.waitOnResourceSignals).toBe(true);
   });
+
+  test('parseValue with __proto__ key does not pollute prototype', () => {
+    const stack = new Stack(new App(), 'TestStack');
+    const parser = new CfnParser({
+      finder: {
+        findCondition() { return undefined; },
+        findMapping() { return undefined; },
+        findRefTarget() { return undefined; },
+        findResource() { return undefined; },
+      },
+      parameters: {},
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    parser.parseValue({ '__proto__': 'evil', normal: 'ok' });
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

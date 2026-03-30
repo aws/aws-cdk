@@ -665,3 +665,13 @@ test.each([amplify.BuildComputeType.STANDARD_8GB, amplify.BuildComputeType.LARGE
     },
   });
 });
+
+test('environmentVariables with __proto__ does not pollute prototype', () => {
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  const app = new amplify.App(stack, 'ProtoApp', {
+    environmentVariables: { '__proto__': 'evil' },
+  });
+  app.addEnvironmentVariable('constructor', 'also-evil');
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});

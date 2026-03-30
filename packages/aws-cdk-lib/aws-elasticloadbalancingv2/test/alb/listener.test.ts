@@ -2333,6 +2333,17 @@ class ResourceWithLBDependency extends cdk.CfnResource {
   }
 }
 
+test('Listener setAttribute with __proto__ does not pollute prototype', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+  const listener = lb.addListener('Listener', { port: 80, defaultAction: elbv2.ListenerAction.fixedResponse(200) });
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  listener.setAttribute('__proto__', 'evil');
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});
+
 function importedCertificate(stack: cdk.Stack,
   certificateArn = 'arn:aws:certificatemanager:123456789012:testregion:certificate/fd0b8392-3c0e-4704-81b6-8edf8612c852') {
   return acm.Certificate.fromCertificateArn(stack, certificateArn, certificateArn);

@@ -251,6 +251,17 @@ describe('nested-stack', () => {
     expect(child.bundlingRequired).toBe(false);
     expect(child2.bundlingRequired).toBe(false);
   });
+
+  test('parameters with __proto__ key do not pollute prototype', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    new NestedStack(stack, 'Nested', {
+      parameters: { '__proto__': 'evil' },
+    });
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });
 
 class MyResource extends Resource {

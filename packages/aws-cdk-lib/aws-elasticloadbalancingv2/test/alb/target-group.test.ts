@@ -1097,4 +1097,13 @@ describe('tests', () => {
       }).toThrow(/unhealthy_state_routing.minimum_healthy_targets.percentage must be an integer from 1 to 100 or 'off'/);
     });
   });
+
+  test('setAttribute with __proto__ does not pollute prototype', () => {
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', { vpc });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    tg.setAttribute('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

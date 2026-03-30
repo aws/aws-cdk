@@ -311,4 +311,26 @@ describe('parameter group', () => {
     // THEN - should only have 1 resource, not 2
     Template.fromStack(stack).resourceCountIs('AWS::RDS::DBClusterParameterGroup', 1);
   });
+
+  test('addParameter with __proto__ does not pollute prototype', () => {
+    const stack = new cdk.Stack();
+    const pg = new ParameterGroup(stack, 'PG', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    pg.addParameter('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
+
+  test('constructor parameters with __proto__ does not pollute prototype', () => {
+    const stack = new cdk.Stack();
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    new ParameterGroup(stack, 'PG', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      parameters: { '__proto__': 'evil' },
+    });
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });

@@ -37,3 +37,13 @@ describe('ensureStringOrUndefined', () => {
     );
   });
 });
+
+describe('hashMapper', () => {
+  test('rejects __proto__ key', () => {
+    const { hashMapper } = require('../lib/runtime');
+    const mapper = hashMapper((x: any) => x);
+    const obj = Object.create(null);
+    obj['__proto__'] = 'evil';
+    expect(() => mapper(obj)).toThrow(/prototype pollution/i);
+  });
+});

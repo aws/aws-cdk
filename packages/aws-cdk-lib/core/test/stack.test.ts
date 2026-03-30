@@ -2673,3 +2673,24 @@ class TaggableResource extends CfnResource implements ITaggableV2 {
     });
   }
 }
+
+describe('prototype pollution', () => {
+  test('addMetadata rejects __proto__ key', () => {
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    expect(() => stack.addMetadata('__proto__', 'evil')).toThrow(/prototype pollution/i);
+  });
+
+  test('mergeObjectsWithoutDuplicates does not pollute prototype via template merge', () => {
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    new CfnResource(stack, 'Res', {
+      type: 'AWS::Test::Resource',
+      properties: { '__proto__': 'evil' },
+    });
+    toCloudFormation(stack);
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
+});

@@ -108,4 +108,10 @@ describe('register', () => {
   test('regions does not return duplicate regions', () => {
     expect(new Set(Fact.regions).size == Fact.regions.length).toBeTruthy();
   });
+
+  test('register rejects __proto__ as region name', () => {
+    expect(() => {
+      Fact.register({ region: '__proto__', name: 'test', value: 'evil' });
+    }).toThrow(/__proto__/);
+  });
 });

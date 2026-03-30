@@ -775,3 +775,11 @@ function resolve(x: any) {
   return new Stack().resolve(x);
 }
 
+
+test('resolving object with __proto__ key does not pollute prototype', () => {
+  const stack = new Stack();
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  stack.resolve({ '__proto__': 'evil', normal: 'ok' });
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});

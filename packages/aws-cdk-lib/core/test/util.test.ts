@@ -120,6 +120,26 @@ describe('util', () => {
       return res.node.id;
     }
   });
+
+  describe('prototype pollution', () => {
+    test('capitalizePropertyNames does not pollute prototype', () => {
+      const stack = new Stack();
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      capitalizePropertyNames(stack, { '__proto__': 'evil', normal: 'ok' });
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
+    });
+
+    test('filterUndefined does not pollute prototype', () => {
+      const obj = Object.create(null);
+      obj['__proto__'] = 'evil';
+      obj.normal = 'ok';
+      const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      filterUndefined(obj);
+      const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+      expect(after).toEqual(before);
+    });
+  });
 });
 
 class SomeToken {

@@ -156,3 +156,15 @@ test('fromConnectionArn', () => {
   expect(connection.connectionName).toEqual('name');
   expect(connection.connectionArn).toEqual(connectionArn);
 });
+
+test('connection properties with __proto__ does not pollute prototype', () => {
+  const stack = new cdk.Stack();
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  const connection = new glue.Connection(stack, 'ProtoConnection', {
+    type: glue.ConnectionType.JDBC,
+    properties: { '__proto__': 'evil' },
+  });
+  connection.addProperty('constructor', 'also-evil');
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});

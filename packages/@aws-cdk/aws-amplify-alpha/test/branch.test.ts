@@ -189,3 +189,13 @@ test('throws error when compute role provided for WEB platform', () => {
     webApp.addBranch('main', { computeRole });
   }).toThrow(/`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`./);
 });
+
+test('environmentVariables with __proto__ does not pollute prototype', () => {
+  const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  const branch = app.addBranch('proto', {
+    environmentVariables: { '__proto__': 'evil' },
+  });
+  branch.addEnvironmentVariable('constructor', 'also-evil');
+  const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+  expect(after).toEqual(before);
+});

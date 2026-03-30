@@ -5295,6 +5295,19 @@ describe('L1 Relationships', () => {
       },
     });
   });
+
+  test('addEnvironment with __proto__ does not pollute prototype', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = () => {}'),
+    });
+    const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    fn.addEnvironment('__proto__', 'evil');
+    const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
+    expect(after).toEqual(before);
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
