@@ -645,6 +645,7 @@ export class Gateway extends GatewayBase {
 
     if (this.policyEngineConfiguration) {
       this.policyEngineConfiguration.policyEngine.grantEvaluateForGateway(this.role, this);
+      _resource.node.addDependency(this.role);
     }
   }
 

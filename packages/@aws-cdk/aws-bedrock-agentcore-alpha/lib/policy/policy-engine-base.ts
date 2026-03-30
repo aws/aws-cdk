@@ -12,7 +12,7 @@
  */
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
-import { Resource } from 'aws-cdk-lib';
+import { Resource, Stack, Token } from 'aws-cdk-lib';
 import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -250,17 +250,20 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    * @returns A combined IAM Grant representing all granted permissions
    */
   public grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant {
-    // GetPolicyEngine only needs the policy engine ARN
     const getPolicyEngineGrant = this.grant(grantee, 'bedrock-agentcore:GetPolicyEngine');
-
-    // AuthorizeAction + PartiallyAuthorizeActions require BOTH the policy engine ARN and gateway ARN
+    const gatewayResourceName = Token.isUnresolved(gateway.name) ? '*' : `${gateway.name}-*`;
+    const gatewayArn = Stack.of(this).formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'gateway',
+      resourceName: gatewayResourceName,
+    });
     const authorizationGrant = iam.Grant.addToPrincipal({
       grantee,
       actions: [
         'bedrock-agentcore:AuthorizeAction',
         'bedrock-agentcore:PartiallyAuthorizeActions',
       ],
-      resourceArns: [this.policyEngineArn, gateway.gatewayArn],
+      resourceArns: [this.policyEngineArn, gatewayArn],
       scope: this,
     });
 
