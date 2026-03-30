@@ -205,7 +205,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.FairshareSchedulingPolicy';
 
   /**
-   * Reference an exisiting Scheduling Policy by its ARN
+   * Reference an existing Scheduling Policy by its ARN
    */
   public static fromFairshareSchedulingPolicyArn(scope: Construct, id: string, fairshareSchedulingPolicyArn: string): IFairshareSchedulingPolicy {
     const stack = Stack.of(scope);
