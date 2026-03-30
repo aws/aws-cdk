@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
+import { stringifyOptions } from '../lib/log-drivers/utils';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
@@ -217,9 +218,8 @@ describe('aws log driver', () => {
   });
 
   test('stringifyOptions does not pollute prototype', () => {
-    const { stringifyOptions } = require('../lib/log-drivers/utils');
     const opts = Object.create(null);
-    opts['__proto__'] = 'evil';
+    opts.__proto__ = 'evil';
     opts.normal = 'ok';
     const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     const result = stringifyOptions(opts);

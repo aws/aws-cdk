@@ -1,5 +1,5 @@
 import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
-import { getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
+import { decodeSpecialValues, getCredentials } from '../../../lib/custom-resources/aws-custom-resource-handler/utils';
 
 // Mock the @aws-sdk/credential-providers import
 const mockFromTemporaryCredentials = jest.fn();
@@ -187,9 +187,8 @@ describe('getCredentials with External ID support', () => {
 
 describe('decodeSpecialValues', () => {
   test('rejects __proto__ key', () => {
-    const { decodeSpecialValues } = require('../../../lib/custom-resources/aws-custom-resource-handler/utils');
     const obj = Object.create(null);
-    obj['__proto__'] = 'evil';
+    obj.__proto__ = 'evil';
     expect(() => decodeSpecialValues(obj, 'physId')).toThrow(/Unsafe key/);
   });
 });

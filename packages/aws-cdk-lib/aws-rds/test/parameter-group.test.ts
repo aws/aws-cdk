@@ -328,7 +328,7 @@ describe('parameter group', () => {
     const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     new ParameterGroup(stack, 'PG', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      parameters: { '__proto__': 'evil' },
+      parameters: { __proto__: 'evil' },
     });
     const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     expect(after).toEqual(before);

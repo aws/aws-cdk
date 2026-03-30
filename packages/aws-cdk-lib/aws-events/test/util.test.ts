@@ -92,13 +92,13 @@ describe('util', () => {
   describe('prototype pollution', () => {
     test('mergeEventPattern rejects __proto__ key', () => {
       const src = Object.create(null);
-      src['__proto__'] = ['evil'];
+      src.__proto__ = ['evil'];
       expect(() => mergeEventPattern({}, src)).toThrow(/prototype pollution/i);
     });
 
     test('mergeEventPattern rejects constructor key', () => {
       const src = Object.create(null);
-      src['constructor'] = ['evil'];
+      src.constructor = ['evil'];
       expect(() => mergeEventPattern({}, src)).toThrow(/prototype pollution/i);
     });
 

@@ -193,9 +193,9 @@ test('throws error when compute role provided for WEB platform', () => {
 test('environmentVariables with __proto__ does not pollute prototype', () => {
   const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   const branch = app.addBranch('proto', {
-    environmentVariables: { '__proto__': 'evil' },
+    environmentVariables: { __proto__: 'evil' },
   });
-  branch.addEnvironmentVariable('constructor', 'also-evil');
+  branch.addEnvironment('__proto__', 'also-evil');
   const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   expect(after).toEqual(before);
 });

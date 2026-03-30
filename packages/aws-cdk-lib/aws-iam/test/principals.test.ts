@@ -2,6 +2,7 @@ import { Template } from '../../assertions';
 import { App, CfnOutput, Stack } from '../../core';
 import * as iam from '../lib';
 import { ServicePrincipal } from '../lib';
+import { mergePrincipal } from '../lib/private/util';
 
 test('use of cross-stack role reference does not lead to URLSuffix being exported', () => {
   // GIVEN
@@ -530,9 +531,8 @@ test('PrincipalWithConditions.addCondition with __proto__ does not pollute proto
 });
 
 test('mergePrincipal rejects __proto__ key', () => {
-  const { mergePrincipal } = require('../lib/private/util');
   const target: Record<string, string[]> = {};
   const source = Object.create(null);
-  source['__proto__'] = ['evil'];
+  source.__proto__ = ['evil'];
   expect(() => mergePrincipal(target, source)).toThrow(/prototype pollution/i);
 });

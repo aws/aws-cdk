@@ -2687,7 +2687,7 @@ describe('prototype pollution', () => {
     const stack = new Stack(app, 'TestStack');
     new CfnResource(stack, 'Res', {
       type: 'AWS::Test::Resource',
-      properties: { '__proto__': 'evil' },
+      properties: { __proto__: 'evil' },
     });
     toCloudFormation(stack);
     const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');

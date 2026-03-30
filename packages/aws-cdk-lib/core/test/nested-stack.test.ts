@@ -257,7 +257,7 @@ describe('nested-stack', () => {
     const stack = new Stack(app, 'Stack');
     const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     new NestedStack(stack, 'Nested', {
-      parameters: { '__proto__': 'evil' },
+      parameters: { __proto__: 'evil' },
     });
     const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     expect(after).toEqual(before);

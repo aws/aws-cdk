@@ -113,8 +113,7 @@ describe('cfn-parse', () => {
   });
 
   test('parseValue with __proto__ key does not pollute prototype', () => {
-    const stack = new Stack(new App(), 'TestStack');
-    const parser = new CfnParser({
+    const parser2 = new CfnParser({
       finder: {
         findCondition() { return undefined; },
         findMapping() { return undefined; },
@@ -124,7 +123,7 @@ describe('cfn-parse', () => {
       parameters: {},
     });
     const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
-    parser.parseValue({ '__proto__': 'evil', normal: 'ok' });
+    parser2.parseValue({ __proto__: 'evil', normal: 'ok' });
     const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     expect(after).toEqual(before);
   });

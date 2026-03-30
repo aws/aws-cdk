@@ -105,7 +105,7 @@ describe('Adding parameters to an existing group', () => {
     const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     new ClusterParameterGroup(stack, 'ProtoParams', {
       description: 'desc',
-      parameters: { '__proto__': 'evil' },
+      parameters: { __proto__: 'evil' },
     });
     const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
     expect(after).toEqual(before);

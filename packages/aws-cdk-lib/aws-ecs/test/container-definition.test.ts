@@ -3091,7 +3091,7 @@ describe('container definition', () => {
       const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
       taskDef.addContainer('C', {
         image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
-        environment: { '__proto__': 'evil' },
+        environment: { __proto__: 'evil' },
       });
       const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
       expect(after).toEqual(before);

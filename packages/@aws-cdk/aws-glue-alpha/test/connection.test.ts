@@ -162,9 +162,9 @@ test('connection properties with __proto__ does not pollute prototype', () => {
   const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   const connection = new glue.Connection(stack, 'ProtoConnection', {
     type: glue.ConnectionType.JDBC,
-    properties: { '__proto__': 'evil' },
+    properties: { __proto__: 'evil' },
   });
-  connection.addProperty('constructor', 'also-evil');
+  connection.addProperty('__proto__', 'also-evil');
   const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   expect(after).toEqual(before);
 });

@@ -1,4 +1,5 @@
 import { FieldUtils, JsonPath, TaskInput } from '../lib';
+import { recurseObject } from '../lib/private/json-path';
 
 describe('Fields', () => {
   const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Array, States.ArrayPartition, States.ArrayContains, States.ArrayRange, States.ArrayGetItem, States.ArrayLength, States.ArrayUnique, States.Base64Encode, States.Base64Decode, States.Hash, States.JsonMerge, States.StringToJson, States.JsonToString, States.MathRandom, States.MathAdd, States.StringSplit, States.UUID, or States.Format./;
@@ -528,9 +529,8 @@ test('find task token should handle null values', () => {
 });
 
 test('recurseObject with __proto__ key does not pollute prototype', () => {
-  const { recurseObject } = require('../lib/private/json-path');
   const obj = Object.create(null);
-  obj['__proto__'] = 'evil';
+  obj.__proto__ = 'evil';
   obj.normal = 'ok';
   const before = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   const handlers = {
@@ -539,7 +539,7 @@ test('recurseObject with __proto__ key does not pollute prototype', () => {
     handleBoolean: (k: string, v: boolean) => ({ [k]: v }),
     handleResolvable: (k: string, v: any) => ({ [k]: v }),
   };
-  recurseObject(obj, handlers, []);
+  recurseObject(obj, handlers as any, []);
   const after = Object.getOwnPropertyNames(Object.prototype).sort().join(',');
   expect(after).toEqual(before);
 });
