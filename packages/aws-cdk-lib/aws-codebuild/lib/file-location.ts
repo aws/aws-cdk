@@ -8,7 +8,7 @@ import type { IProject } from './project';
 export interface FileSystemConfig {
   /**
    * File system location wrapper property.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-projectfilesystemlocation.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-projectfilesystemlocation.html
    */
   readonly location: CfnProject.ProjectFileSystemLocationProperty;
 }
