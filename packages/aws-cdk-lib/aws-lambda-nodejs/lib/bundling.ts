@@ -365,10 +365,20 @@ export class Bundling implements cdk.BundlingOptions {
               }
               break;
             case 'spawn':
-              exec(step.command[0], step.command.slice(1), {
-                ...execOptions,
-                cwd: step.cwd ?? cwd,
-              });
+              // On Windows with Node 22+, spawnSync fails with EINVAL when invoking
+              // .cmd shims (e.g. npx.cmd) directly. Route through powershell instead.
+              // See https://github.com/aws/aws-cdk/issues/37387
+              if (osPlatform === 'win32') {
+                exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
+                  ...execOptions,
+                  cwd: step.cwd ?? cwd,
+                });
+              } else {
+                exec(step.command[0], step.command.slice(1), {
+                  ...execOptions,
+                  cwd: step.cwd ?? cwd,
+                });
+              }
               break;
             case 'callback':
               try {
@@ -574,6 +584,10 @@ function preparePosixShellCommand(argv: string[]): string {
  */
 function posixShellEscape(arg: string): string {
   return "'" + arg.replace(/'/g, "'\\''") + "'";
+}
+
+function powershellEscape(arg: string): string {
+  return "'" + arg.replace(/'/g, "''") + "'";
 }
 
 /**
