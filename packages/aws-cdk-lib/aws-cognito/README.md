@@ -823,7 +823,7 @@ about the [OAuth 2.0 authorization framework](https://tools.ietf.org/html/rfc674
 implementation of
 OAuth2.0](https://aws.amazon.com/blogs/mobile/understanding-amazon-cognito-user-pool-oauth-2-0-grants/).
 
-The following code configures an app client with the authorization code grant flow and registers the the app's welcome
+The following code configures an app client with the authorization code grant flow and registers the app's welcome
 page as a callback (or redirect) URL. It also configures the access token scope to 'openid'. All of these concepts can
 be found in the [OAuth 2.0 RFC](https://tools.ietf.org/html/rfc6749).
 
