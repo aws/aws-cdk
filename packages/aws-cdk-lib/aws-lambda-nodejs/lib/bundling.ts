@@ -365,8 +365,11 @@ export class Bundling implements cdk.BundlingOptions {
               }
               break;
             case 'spawn':
+              // On Windows with Node 22+, spawnSync fails with EINVAL when invoking
+              // .cmd shims (e.g. npx.cmd) directly. Route through powershell instead.
+              // See https://github.com/aws/aws-cdk/issues/37387
               if (osPlatform === 'win32') {
-                exec('powershell.exe', ['-NoProfile', '-Command', preparePosixShellCommand(step.command)], {
+                exec('powershell.exe', ['-NoProfile', '-Command', `& ${preparePosixShellCommand(step.command)}`], {
                   ...execOptions,
                   cwd: step.cwd ?? cwd,
                 });
