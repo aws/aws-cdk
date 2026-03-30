@@ -54,8 +54,17 @@ export class PackageManager {
         // regardless.
         const installCommand = logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'];
 
-        const lockFileContents = fs.readFileSync(lockFilePath, 'utf-8');
-        if (lockFileContents.includes('# yarn lockfile v1') && !isWindows()) {
+        let isYarnV1 = false;
+        try {
+          const lockFileContents = fs.readFileSync(lockFilePath, 'utf-8');
+          isYarnV1 = lockFileContents.includes('# yarn lockfile v1');
+        } catch (e: any) {
+          if (e.code !== 'ENOENT') {
+            throw e;
+          }
+        }
+
+        if (isYarnV1 && !isWindows()) {
           // Yarn Classic
           return new PackageManager({
             lockFile: LockFile.YARN,
