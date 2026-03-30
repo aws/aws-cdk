@@ -208,9 +208,9 @@ _cdk.json_
 
 * `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion`
 
-Enable this feature flag to automatically use the latest available NodeJS version in the aws-lambda-nodejse.Function construct.
+Enable this feature flag to automatically use the latest available NodeJS version in the aws-lambda-nodejs.Function construct.
 
-This allows creation of new functions using a version that will automatically stay up to date without breaking bundling of existing functions that externalize packages included in their environemnt such as `aws-sdk`.
+This allows creation of new functions using a version that will automatically stay up to date without breaking bundling of existing functions that externalize packages included in their environment such as `aws-sdk`.
 
 Functions defined previously will continue to function correctly as long as they pass an explicit runtime version, or do not exclude packages during bundling.
 
