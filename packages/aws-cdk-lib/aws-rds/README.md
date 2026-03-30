@@ -367,7 +367,7 @@ There are a couple of high level differences:
 With a provisioned writer and serverless v2 readers, some of the serverless
 readers will need to be configured to scale with the writer so they can act as
 failover targets. You will need to determine the correct capacity based on the
-provisioned instance type and it's utilization.
+provisioned instance type and its utilization.
 
 As an example, if the CPU utilization for a db.r6g.4xlarge (128 GB) instance
 stays at 10% most times, then the minimum ACUs may be set at 6.5 ACUs
