@@ -116,7 +116,7 @@ export interface CsvOptions {
    * List of the headers used to specify a common header for all source CSV files being imported.
    *
    * **NOTE**: If this field is specified then the first line of each CSV file is treated as data instead of the header.
-   * If this field is not specified the the first line of each CSV file is treated as the header.
+   * If this field is not specified the first line of each CSV file is treated as the header.
    *
    * @default - the first line of the CSV file is treated as the header
    */
