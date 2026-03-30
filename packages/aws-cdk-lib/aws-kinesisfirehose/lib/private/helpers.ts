@@ -236,30 +236,22 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
 }
 
 export function createSecretsManagerConfiguration(
-  scope: Construct,
   role: iam.IRole, props?: SecretsManagerProps,
 ): CfnDeliveryStream.SecretsManagerConfigurationProperty | undefined {
-  if (props?.enabled || props?.secret) {
-    if (!props.secret) {
-      throw new cdk.ValidationError('SecretRequired', 'The secret is required when enabled', scope);
-    }
-    if (!props.role) {
-      props.secret.grantRead(role);
-    }
-    return {
-      enabled: true,
-      roleArn: props.role?.roleRef.roleArn,
-      secretArn: props.secret.secretArn,
-    };
-  }
-
-  if (props?.enabled === false) {
+  if (!props) {
     return {
       enabled: false,
     };
   }
 
-  return;
+  if (!props.role) {
+    props.secret.grantRead(role);
+  }
+  return {
+    enabled: true,
+    roleArn: props.role?.roleRef.roleArn,
+    secretArn: props.secret.secretArn,
+  };
 }
 
 export function createDynamicPartitioningConfiguration(

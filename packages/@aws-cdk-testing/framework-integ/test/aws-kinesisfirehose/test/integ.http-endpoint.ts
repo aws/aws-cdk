@@ -9,11 +9,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
-  },
-});
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-http-destination');
 cdk.RemovalPolicies.of(stack).destroy();

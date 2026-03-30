@@ -420,6 +420,9 @@ describe('HTTP endpoint destination', () => {
             Url: 'https://example.com/',
             AccessKey: 'my-access-key',
           },
+          SecretsManagerConfiguration: {
+            Enabled: false,
+          },
         },
       });
     });
@@ -430,12 +433,15 @@ describe('HTTP endpoint destination', () => {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
           authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret }),
-          retryDuration: cdk.Duration.minutes(60),
         }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
         HttpEndpointDestinationConfiguration: {
+          EndpointConfiguration: {
+            Url: 'https://example.com/',
+            AccessKey: Match.absent(),
+          },
           SecretsManagerConfiguration: {
             Enabled: true,
             SecretARN: { Ref: 'SecretA720EF05' },
@@ -450,7 +456,6 @@ describe('HTTP endpoint destination', () => {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
           authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret }),
-          retryDuration: cdk.Duration.minutes(60),
         }),
       });
 
@@ -478,7 +483,6 @@ describe('HTTP endpoint destination', () => {
         destination: new firehose.HttpEndpoint({
           url: 'https://example.com/',
           authentication: firehose.HttpEndpointAuthentication.secretsManager({ secret, role: secretRole }),
-          retryDuration: cdk.Duration.minutes(60),
         }),
       });
 
@@ -493,46 +497,15 @@ describe('HTTP endpoint destination', () => {
       });
     });
 
-    it('creates configuration with secret manager disabled', () => {
-      new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destination: new firehose.HttpEndpoint({
-          url: 'https://example.com/',
-          authentication: firehose.HttpEndpointAuthentication.secretsManager({ enabled: false }),
-          retryDuration: cdk.Duration.minutes(60),
-        }),
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-        HttpEndpointDestinationConfiguration: {
-          SecretsManagerConfiguration: {
-            Enabled: false,
-          },
-        },
-      });
-    });
-
     it('throws when the access key exceeds 4096 bytes', () => {
       expect(() => {
         new firehose.DeliveryStream(stack, 'DeliveryStream', {
           destination: new firehose.HttpEndpoint({
             url: 'https://example.com/',
             authentication: firehose.HttpEndpointAuthentication.accessKey(Array.from({ length: 4097 }, () => '*').join('')),
-            retryDuration: cdk.Duration.minutes(60),
           }),
         });
       }).toThrow('The maximum length of the access key is 4096 bytes.');
-    });
-
-    it('throws when secret not present but enabled', () => {
-      expect(() => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream', {
-          destination: new firehose.HttpEndpoint({
-            url: 'https://example.com/',
-            authentication: firehose.HttpEndpointAuthentication.secretsManager({ enabled: true }),
-            retryDuration: cdk.Duration.minutes(60),
-          }),
-        });
-      }).toThrow('The secret is required when enabled');
     });
   });
 

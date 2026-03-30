@@ -210,7 +210,7 @@ export class HttpEndpoint implements IDestination {
         roleArn: role.roleArn,
         s3BackupMode: s3Backup.mode === BackupMode.ALL ? 'AllData' : 'FailedDataOnly',
         s3Configuration: backupConfig,
-        secretsManagerConfiguration: createSecretsManagerConfiguration(scope, role, authentication?.secretsManager),
+        secretsManagerConfiguration: createSecretsManagerConfiguration(role, authentication?.secretsManager),
       },
       dependables: [...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

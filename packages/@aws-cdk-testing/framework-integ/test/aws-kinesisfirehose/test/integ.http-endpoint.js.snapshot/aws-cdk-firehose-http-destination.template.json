@@ -240,7 +240,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "659f0176022061d98528be35476c0727944be13089c3e8b477dfe3ee62fae8b9.zip"
+     "S3Key": "60f1d00c678ffd4b0895c5b1da4ff862c7343be9c3e07b1f4e88145d2091104f.zip"
     },
     "Environment": {
      "Variables": {
@@ -263,6 +263,25 @@
     "DestinationFunctionServiceRoleDefaultPolicy9D2EB01F",
     "DestinationFunctionServiceRoleFE2C858C"
    ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DestinationFunctionLogGroup06CB1ACD": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "DestinationFunction0A624293"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -527,6 +546,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "DataProcessorFunctionLogGroup81545B5B": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "DataProcessorFunctionAD472B9A"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "DeliveryStreamHttpEndpointDestinationRole6013E317": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -780,6 +818,9 @@
         "Arn"
        ]
       }
+     },
+     "SecretsManagerConfiguration": {
+      "Enabled": false
      }
     }
    },
