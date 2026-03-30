@@ -23,7 +23,7 @@ export interface ApplicationInferenceProfileProps {
    * - Maximum length: 64 characters
    * - Pattern: `^([0-9a-zA-Z:.][ _-]?)+$`
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-inferenceprofilename
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-inferenceprofilename
    */
   readonly applicationInferenceProfileName: string;
 
@@ -34,7 +34,7 @@ export interface ApplicationInferenceProfileProps {
    * - Maximum length: 200 characters when provided
    * - Pattern: `^([0-9a-zA-Z:.][ _-]?)+$`
    * @default - No description is provided
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-description
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-bedrock-applicationinferenceprofile.html#cfn-bedrock-applicationinferenceprofile-description
    */
   readonly description?: string;
 
