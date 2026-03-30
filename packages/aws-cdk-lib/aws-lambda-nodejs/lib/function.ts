@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Construct } from 'constructs';
-import { Bundling } from './bundling';
-import { LockFile } from './package-manager';
+import { Bundling } from './private/bundling';
+import { LockFile } from './private/package-manager';
+import { callsites, findUpMultiple, isSdkV2Runtime } from './private/util';
 import type { BundlingOptions } from './types';
-import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags, ValidationError } from '../../core';

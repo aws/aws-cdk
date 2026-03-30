@@ -8,9 +8,9 @@ import { Code, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 import { NodejsFunction } from '../lib';
-import { Bundling } from '../lib/bundling';
+import { Bundling } from '../lib/private/bundling';
 
-jest.mock('../lib/bundling', () => {
+jest.mock('../lib/private/bundling', () => {
   return {
     Bundling: {
       bundle: jest.fn().mockReturnValue({
@@ -29,8 +29,8 @@ jest.mock('../lib/bundling', () => {
 });
 
 const mockCallsites = jest.fn();
-jest.mock('../lib/util', () => ({
-  ...jest.requireActual('../lib/util'),
+jest.mock('../lib/private/util', () => ({
+  ...jest.requireActual('../lib/private/util'),
   callsites: () => mockCallsites(),
 }));
 
