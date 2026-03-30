@@ -2491,7 +2491,7 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Creates a new managed NAT gateway attached to this public subnet.
    * Also adds the EIP for the managed NAT.
-   * @returns A ref to the the NAT Gateway ID
+   * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
   public addNatGateway(eipAllocationId?: string) {
@@ -2770,7 +2770,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get ipv4CidrBlock(): string {
     if (!this._ipv4CidrBlock) {
-      // tslint:disable-next-line: max-line-length
       throw new ValidationError('CannotReferenceImportedSubnetS', 'You cannot reference an imported Subnet\'s IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()', this);
     }
     return this._ipv4CidrBlock;
