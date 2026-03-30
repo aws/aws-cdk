@@ -1,4 +1,4 @@
-import { Resource } from 'aws-cdk-lib';
+import { Resource, Stack } from 'aws-cdk-lib';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpointPolicy } from 'aws-cdk-lib/aws-mediapackagev2';
@@ -94,7 +94,13 @@ export class OriginEndpointPolicy extends Resource {
     // Auto-create CDN auth role if not provided
     // @see https://docs.aws.amazon.com/mediapackage/latest/userguide/setting-up-create-trust-rel.html
     const cdnAuthRole = props.cdnAuth?.role ?? (props.cdnAuth ? new Role(this, 'CdnAuthRole', {
-      assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com'),
+      assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com', {
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': Stack.of(this).account,
+          },
+        },
+      }),
       description: 'Role for MediaPackage V2 CDN authorization to read secrets',
     }) : undefined);
 
@@ -104,7 +110,10 @@ export class OriginEndpointPolicy extends Resource {
       props.cdnAuth.secrets.forEach(secret => {
         secret.grantRead(cdnAuthRole);
       });
-      // BatchGetSecretValue is required by MediaPackage V2 for CDN authorization
+
+      // BatchGetSecretValue requires Resource: '*' per AWS docs — actual secret access
+      // is gated by GetSecretValue which grantRead() scopes to specific secret ARNs.
+      // See: https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_iam-policies.html
       cdnAuthRole.addToPrincipalPolicy(new PolicyStatement({
         actions: ['secretsmanager:BatchGetSecretValue'],
         resources: ['*'],

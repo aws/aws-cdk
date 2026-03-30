@@ -345,6 +345,16 @@ new OriginEndpoint(this, 'Endpoint', {
 });
 ```
 
+| Segment type | Supported manifests |
+|--------|--------|
+| Segment.cmaf() | HLS, LL-HLS, DASH |
+| Segment.ts() | HLS, LL-HLS |
+| Segment.ism() | MSS |
+
+Each origin endpoint has a single segment configuration. If you need segments with different configurations, use multiple origin endpoints on the same channel.
+
+@see https://docs.aws.amazon.com/mediapackage/latest/userguide/endpoints-create.html
+
 ## Manifest Filtering
 
 Manifest filters control which variants are included in the manifest. Filters are type-safe and validated against the [MediaPackage manifest filtering rules](https://docs.aws.amazon.com/mediapackage/latest/userguide/manifest-filter-query-parameters.html).

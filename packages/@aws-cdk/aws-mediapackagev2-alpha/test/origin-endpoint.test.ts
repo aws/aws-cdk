@@ -1282,3 +1282,98 @@ test('Token origin endpoint name skips validation', () => {
     });
   }).not.toThrow();
 });
+
+test('TS segment with LL-HLS manifest creates endpoint', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.ts(),
+    manifests: [mediapackagev2.Manifest.lowLatencyHLS({ manifestName: 'llhls' })],
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpoint', {
+    ContainerType: 'TS',
+    LowLatencyHlsManifests: [{ ManifestName: 'llhls' }],
+  });
+});
+
+test('ISM segment with MSS manifest creates endpoint', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.ism(),
+    manifests: [mediapackagev2.Manifest.mss({ manifestName: 'mss' })],
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpoint', {
+    ContainerType: 'ISM',
+    MssManifests: [{ ManifestName: 'mss' }],
+  });
+});
+
+test('TS segment with DASH manifest throws', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+      channel,
+      segment: mediapackagev2.Segment.ts(),
+      manifests: [mediapackagev2.Manifest.dash({ manifestName: 'dash' })],
+    });
+  }).toThrow(/DASH manifests require CMAF container type/);
+});
+
+test('ISM segment with HLS manifest throws', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+      channel,
+      segment: mediapackagev2.Segment.ism(),
+      manifests: [mediapackagev2.Manifest.hls({ manifestName: 'hls' })],
+    });
+  }).toThrow(/HLS and Low Latency HLS manifests are not supported with ISM container type/);
+});
+
+test('CMAF segment with MSS manifest throws', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+      channel,
+      segment: mediapackagev2.Segment.cmaf(),
+      manifests: [mediapackagev2.Manifest.mss({ manifestName: 'mss' })],
+    });
+  }).toThrow(/MSS manifests require ISM container type/);
+});
+
+test('multiple origin endpoints on the same channel', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'Group');
+  const channel = new mediapackagev2.Channel(stack, 'Channel', { channelGroup: group });
+  new mediapackagev2.OriginEndpoint(stack, 'HlsEndpoint', {
+    channel,
+    originEndpointName: 'hls-endpoint',
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+  });
+  new mediapackagev2.OriginEndpoint(stack, 'DashEndpoint', {
+    channel,
+    originEndpointName: 'dash-endpoint',
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.dash({ manifestName: 'index' })],
+  });
+  Template.fromStack(stack).resourceCountIs('AWS::MediaPackageV2::OriginEndpoint', 2);
+});
+
+test('SPEKE URL without HTTPS throws', () => {
+  const role = new Role(stack, 'SpekeRole', { assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com') });
+  expect(() => {
+    mediapackagev2.CmafEncryption.speke({
+      method: mediapackagev2.CmafEncryptionMethod.CBCS,
+      drmSystems: [mediapackagev2.CmafDrmSystem.FAIRPLAY],
+      resourceId: 'test',
+      role,
+      url: 'http://example.com/speke',
+    });
+  }).toThrow(/SPEKE key provider URL must use HTTPS/);
+});
