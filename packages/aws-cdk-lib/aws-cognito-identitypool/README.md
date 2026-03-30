@@ -187,7 +187,7 @@ Pools, OpenIdConnect, or SAML. Only one provider per external service can be att
 
 [OpenID Connect](https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html) is an open standard for  
 authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with  
-OpenID Connect providers that are configured through [AWS Identity and Access Management](http://aws.amazon.com/iam/). 
+OpenID Connect providers that are configured through [AWS Identity and Access Management](https://aws.amazon.com/iam/). 
 
 An identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) can be used to provide a simple  
 onboarding flow for users. The SAML-supporting identity provider specifies the IAM roles that can be assumed by users  
