@@ -265,7 +265,7 @@ export class PrincipalWithConditions extends PrincipalAdapter {
 
   constructor(principal: IPrincipal, conditions: Conditions) {
     super(principal);
-    this.additionalConditions = conditions;
+    this.additionalConditions = Object.assign(Object.create(null), conditions); // Prevent prototype pollution
   }
 
   public addToAssumeRolePolicy(doc: PolicyDocument) {

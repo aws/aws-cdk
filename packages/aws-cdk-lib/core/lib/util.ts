@@ -19,7 +19,7 @@ export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
     return obj.map(x => capitalizePropertyNames(construct, x));
   }
 
-  const newObj: any = { };
+  const newObj: any = Object.create(null); // Prevent prototype pollution
   for (const key of Object.keys(obj)) {
     const value = obj[key];
 
@@ -62,7 +62,7 @@ export function filterUndefined(obj: any): any {
   }
 
   if (typeof(obj) === 'object') {
-    const ret: any = { };
+    const ret: any = Object.create(null); // Prevent prototype pollution
     for (const [key, value] of Object.entries(obj)) {
       if (value == null) {
         continue;

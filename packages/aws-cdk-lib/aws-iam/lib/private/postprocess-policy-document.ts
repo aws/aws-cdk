@@ -127,7 +127,7 @@ export function normalizeStatement(s: StatementSchema) {
       return principal[LITERAL_STRING_KEY][0];
     }
 
-    const result: any = {};
+    const result: any = Object.create(null); // Prevent prototype pollution
     for (const key of keys) {
       const normVal = _norm(principal[key]);
       if (normVal) {

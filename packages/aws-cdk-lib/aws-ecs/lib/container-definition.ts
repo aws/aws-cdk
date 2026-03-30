@@ -607,13 +607,11 @@ export class ContainerDefinition extends Construct {
       }
     }
 
-    this.dockerLabels = { ...props.dockerLabels };
+    this.dockerLabels = Object.create(null); // Prevent prototype pollution
+    Object.assign(this.dockerLabels, props.dockerLabels);
 
-    if (props.environment) {
-      this.environment = { ...props.environment };
-    } else {
-      this.environment = {};
-    }
+    this.environment = Object.create(null); // Prevent prototype pollution
+    Object.assign(this.environment, props.environment);
 
     if (props.environmentFiles) {
       this.environmentFiles = [];

@@ -30,7 +30,7 @@ export class InitServiceRestartHandle {
   private readonly commands = new Array<string>();
   private readonly files = new Array<string>();
   private readonly sources = new Array<string>();
-  private readonly packages: Record<string, string[]> = {};
+  private readonly packages: Record<string, string[]> = Object.create(null); // Prevent prototype pollution
 
   /**
    * Add a command key to the restart set

@@ -686,7 +686,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
   private mergedApiExecutionRole?: IRole;
-  private environmentVariables: { [key: string]: string } = {};
+  private environmentVariables: { [key: string]: string } = Object.create(null); // Prevent prototype pollution
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);

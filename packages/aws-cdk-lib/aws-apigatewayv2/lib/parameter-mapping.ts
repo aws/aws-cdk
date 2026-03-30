@@ -86,8 +86,10 @@ export class ParameterMapping {
    * Represents all created parameter mappings.
    */
   public readonly mappings: { [key: string]: string };
+
   constructor() {
-    this.mappings = {};
+    // Prevent prototype pollution
+    this.mappings = Object.create(null);
   }
 
   /**

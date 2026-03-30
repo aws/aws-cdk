@@ -1,5 +1,6 @@
 import type { EventPattern } from './event-pattern';
 import { UnscopedValidationError } from '../../core';
+import { assertNoProtoRec } from '../../core/lib/private/prototype-pollution';
 
 /**
  * Merge the `src` event pattern into the `dest` event pattern by adding all
@@ -20,6 +21,8 @@ export function mergeEventPattern(dest: any, src: any) {
     }
 
     for (const field of Object.keys(srcObj)) {
+      assertNoProtoRec(field);
+
       const srcValue = srcObj[field];
       const destValue = destObj[field];
 
@@ -64,7 +67,7 @@ export function renderEventPattern(eventPattern: EventPattern): any {
   }
 
   // rename 'detailType' to 'detail-type'
-  const out: any = {};
+  const out: any = Object.create(null); // Prevent prototype pollution
   for (let key of Object.keys(eventPattern)) {
     const value = (eventPattern as any)[key];
     if (key === 'detailType') {

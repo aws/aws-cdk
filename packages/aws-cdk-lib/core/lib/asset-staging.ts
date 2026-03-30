@@ -10,6 +10,7 @@ import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
 import { FileSystem } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
+import { assertNoProtoRec } from './helpers-internal';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
 import { Cache } from './private/cache';
@@ -587,6 +588,7 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
   }
   const ret: { [key: string]: any } = {};
   for (const key of Object.keys(object).sort()) {
+    assertNoProtoRec(key);
     ret[key] = sortObject(object[key]);
   }
   return ret;

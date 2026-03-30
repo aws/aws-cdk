@@ -45,7 +45,7 @@ export function filterEmpty(xs: Array<string | undefined>): string[] {
 }
 
 export function mapValues<A, B>(xs: Record<string, A>, fn: (x: A) => B): Record<string, B> {
-  const ret: Record<string, B> = {};
+  const ret: Record<string, B> = Object.create(null);
   for (const [k, v] of Object.entries(xs)) {
     ret[k] = fn(v);
   }

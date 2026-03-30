@@ -318,7 +318,7 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * Attributes set on this load balancer
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: Attributes = Object.create(null);
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {

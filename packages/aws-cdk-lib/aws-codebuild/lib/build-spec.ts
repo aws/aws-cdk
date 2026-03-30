@@ -4,6 +4,7 @@ import type { Project } from './project';
 import * as s3_assets from '../../aws-s3-assets';
 import type { IResolveContext } from '../../core';
 import { Lazy, Stack, UnscopedValidationError } from '../../core';
+import { assertNoProtoRec } from '../../core/lib/private/prototype-pollution';
 
 /**
  * BuildSpec for CodeBuild projects
@@ -251,6 +252,7 @@ function mergeDeep(lhs: any, rhs: any): any {
   if (isObject(lhs) && isObject(rhs)) {
     const ret: any = { ...lhs };
     for (const k of Object.keys(rhs)) {
+      assertNoProtoRec(k);
       ret[k] = k in lhs ? mergeDeep(lhs[k], rhs[k]) : rhs[k];
     }
     return ret;

@@ -526,7 +526,7 @@ export class CfnParser {
       if (cfnIntrinsic !== undefined) {
         return cfnIntrinsic;
       }
-      const ret: any = {};
+      const ret: any = Object.create(null); // Prevent prototype pollution
       for (const [key, val] of Object.entries(cfnValue)) {
         ret[key] = this.parseValue(val);
       }

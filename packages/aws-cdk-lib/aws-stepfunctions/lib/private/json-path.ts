@@ -142,7 +142,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
   // Marking current object as visited for the current recursion path
   visited.push(obj);
 
-  const ret: any = {};
+  const ret: any = Object.create(null); // Prevent prototype pollution
   for (const [key, value] of Object.entries(obj)) {
     if (typeof value === 'string') {
       Object.assign(ret, handlers.handleString(key, value));

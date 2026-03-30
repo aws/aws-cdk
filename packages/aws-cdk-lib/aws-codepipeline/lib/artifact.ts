@@ -23,7 +23,7 @@ export class Artifact {
 
   private _artifactName?: string;
   private _artifactFiles?: string[];
-  private readonly metadata: { [key: string]: any } = {};
+  private readonly metadata: { [key: string]: any } = Object.create(null); // Prevent prototype pollution
 
   /**
    * An output artifact of an action. Artifacts can be used as input by some actions.

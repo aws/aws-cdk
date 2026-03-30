@@ -1,3 +1,5 @@
+import { assertNoProtoRec } from 'aws-cdk-lib/core/lib/helpers-internal';
+
 /**
  * Recurse into the given object, trying to parse any string as JSON
  */
@@ -12,6 +14,7 @@ export function deepParseJson(x: unknown): unknown {
   }
   if (x && typeof x === 'object') {
     for (const [key, value] of Object.entries(x)) {
+      assertNoProtoRec(key);
       (x as any)[key] = deepParseJson(value);
     }
 

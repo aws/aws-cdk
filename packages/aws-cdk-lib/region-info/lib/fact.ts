@@ -83,6 +83,10 @@ export class Fact {
    * @param allowReplacing whether new facts can replace existing facts or not.
    */
   public static register(fact: IFact, allowReplacing = false): void {
+    if (fact.region === '__proto__') {
+      throw new RegionFactError('Using __proto__ as a region name has undesirable effects in JavaScript');
+    }
+
     const regionFacts = this.database[fact.region] || (this.database[fact.region] = {});
     if (fact.name in regionFacts && regionFacts[fact.name] !== fact.value && !allowReplacing) {
       throw new RegionFactError(`Region ${fact.region} already has a fact ${fact.name}, with value ${regionFacts[fact.name]}`);

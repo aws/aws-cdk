@@ -1,7 +1,7 @@
 import type { IConstruct } from 'constructs';
 import type { IPolicy } from './policy';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../core';
-import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../core';
+import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, ValidationError } from '../../core';
 
 const MAX_POLICY_NAME_LEN = 128;
 
@@ -66,35 +66,6 @@ export class AttachedPolicies {
 
     this.policies.push(policy);
   }
-}
-
-/**
- * Merge two dictionaries that represent IAM principals
- *
- * Does an in-place merge.
- */
-export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
-  // If one represents a literal string, the other one must be empty
-  const sourceKeys = Object.keys(source);
-  const targetKeys = Object.keys(target);
-
-  if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
-    (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
-    throw new UnscopedValidationError('CannotMustBeCannotMerge', `Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
-  }
-
-  for (const key of sourceKeys) {
-    target[key] = target[key] ?? [];
-
-    let value = source[key];
-    if (!Array.isArray(value)) {
-      value = [value];
-    }
-
-    target[key].push(...value);
-  }
-
-  return target;
 }
 
 /**

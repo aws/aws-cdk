@@ -25,6 +25,9 @@ export function decodeSpecialValues(object: object, physicalResourceId: string):
     }
     if (x && typeof x === 'object') {
       for (const [key, value] of Object.entries(x)) {
+        if (['__proto__', 'prototype', 'constructor'].includes(key)) {
+          throw new Error(`Unsafe key: ${key}`);
+        }
         x[key] = recurse(value);
       }
       return x;

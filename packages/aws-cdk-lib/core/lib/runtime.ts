@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { ValidationError } from './errors';
+import { assertNoProtoRec } from './helpers-internal';
 import { withResolved } from './token';
 
 // ----------------------------------------------------------------------
@@ -91,6 +92,7 @@ export function hashMapper(elementMapper: Mapper): Mapper {
     const ret: any = {};
 
     Object.keys(x).forEach((key) => {
+      assertNoProtoRec(key);
       ret[key] = elementMapper(x[key]);
     });
 

@@ -5,7 +5,7 @@ export class TreeInspector {
   /**
    * Represents the bag of attributes as key-value pairs.
    */
-  public readonly attributes: { [key: string]: any } = {};
+  public readonly attributes: { [key: string]: any } = Object.create(null); // Prevent prototype pollution
 
   /**
    * Adds attribute to bag. Keys should be added by convention to prevent conflicts

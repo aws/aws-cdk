@@ -34,7 +34,7 @@ export abstract class ApiBase extends Resource implements IApi {
  * @internal
  */
 export abstract class StageBase extends Resource implements IStage {
-  private stageVariables: { [key: string]: string } = {};
+  private stageVariables: { [key: string]: string } = Object.create(null); // Prevent prototype pollution
   public abstract readonly stageName: string;
   protected abstract readonly baseApi: IApi;
 

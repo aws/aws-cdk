@@ -2,6 +2,7 @@ import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { assertNoProto } from 'aws-cdk-lib/core/lib/private/prototype-pollution';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
@@ -106,6 +107,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    */
   @MethodMetadata()
   public addParameter(name: string, value: string): void {
+    assertNoProto(name);
     const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
     if (existingValue === undefined) {
       this.parameters[name] = value;

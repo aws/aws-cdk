@@ -963,8 +963,9 @@ export class Stack extends Construct implements ITaggable {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
    */
   public addMetadata(key: string, value: any) {
+    assertNoProto(key);
     if (!this.templateOptions.metadata) {
-      this.templateOptions.metadata = {};
+      this.templateOptions.metadata = Object.create(null) as {};
     }
     this.templateOptions.metadata[key] = value;
   }
@@ -1708,6 +1709,8 @@ function mergeObjectsWithoutDuplicates(section: string, dest: any, src: any): an
 
   // add all entities from source section to destination section
   for (const id of Object.keys(src)) {
+    assertNoProto(id);
+
     if (id in dest) {
       throw new AssumptionError('SectionAlreadyContains', `section '${section}' already contains '${id}'`);
     }
@@ -1902,4 +1905,5 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
+import { assertNoProto } from './private/prototype-pollution';
 /* eslint-enable import/order */

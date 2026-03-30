@@ -970,7 +970,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private environment: { [key: string]: EnvironmentConfig } = {};
+  private environment: { [key: string]: EnvironmentConfig } = Object.create(null); // Prevent prototype pollution
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;

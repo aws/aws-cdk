@@ -201,7 +201,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.family = family;
     this.description = props.description;
     this.name = props.name;
-    this.parameters = props.parameters ?? {};
+    this.parameters = Object.assign(Object.create(null), props.parameters); // Prevent prototype pollution
     this.removalPolicy = props.removalPolicy;
   }
 

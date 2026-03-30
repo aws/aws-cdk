@@ -1,6 +1,7 @@
 import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
 import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import { assertNoProto } from '../../../core/lib/private/prototype-pollution';
 import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
@@ -84,6 +85,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
   }
 
   for (const key of sourceKeys) {
+    assertNoProto(key);
     target[key] = target[key] ?? [];
 
     let value = source[key];

@@ -144,7 +144,7 @@ export class NestedStack extends Stack {
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.nested.template.json`;
 
-    this.parameters = props.parameters || {};
+    this.parameters = Object.assign(Object.create(null), props.parameters); // Prevent prototype pollution
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       // This value cannot be cached since it changes during the synthesis phase

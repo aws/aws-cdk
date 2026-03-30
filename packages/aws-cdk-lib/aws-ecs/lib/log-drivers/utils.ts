@@ -36,7 +36,7 @@ export function ensureInRange(val: number, start: number, end: number) {
 }
 
 export function stringifyOptions(options: { [key: string]: (SecretValue | Duration | string | string[] | number | boolean | undefined) }) {
-  const _options: { [key: string]: string } = {};
+  const _options: { [key: string]: string } = Object.create(null);
   const filteredOptions = removeEmpty(options);
 
   for (const [key, value] of Object.entries(filteredOptions)) {

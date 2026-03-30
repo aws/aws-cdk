@@ -77,11 +77,11 @@ export class PolicyStatement {
 
   private readonly _action = new OrderedSet<string>();
   private readonly _notAction = new OrderedSet<string>();
-  private readonly _principal: { [key: string]: any[] } = {};
-  private readonly _notPrincipal: { [key: string]: any[] } = {};
+  private readonly _principal: { [key: string]: any[] } = Object.create(null);
+  private readonly _notPrincipal: { [key: string]: any[] } = Object.create(null);
   private readonly _resource = new OrderedSet<string>();
   private readonly _notResource = new OrderedSet<string>();
-  private readonly _condition: { [key: string]: any } = { };
+  private readonly _condition: { [key: string]: any } = Object.create(null); // Prevent prototype pollution
   private _sid?: string;
   private _effect: Effect;
   private principalConditionsJson?: string;

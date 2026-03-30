@@ -309,7 +309,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * Attributes of this target group
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: Attributes = Object.create(null);
 
   /**
    * The JSON objects returned by the directly registered members of this target group

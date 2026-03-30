@@ -129,7 +129,7 @@ export abstract class BaseListener extends Resource implements IListener {
   /**
    * Attributes set on this listener
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: Attributes = Object.create(null); // Prevent prototype pollution
 
   private defaultAction?: IListenerAction;
 

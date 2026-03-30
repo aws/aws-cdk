@@ -223,7 +223,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     throw new UnscopedValidationError('TryingToResolveConstruct', 'Trying to resolve() a Construct at ' + pathName);
   }
 
-  const result: any = { };
+  const result: any = Object.create(null); // Prevent prototype pollution
   let intrinsicKeyCtr = 0;
   for (const key of Object.keys(obj)) {
     const value = makeContext(String(key))[0].resolve(obj[key]);
