@@ -2593,7 +2593,7 @@ export class Bucket extends BucketBase {
       throw new ValidationError('EncryptionkeySpecified', `encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`, this);
     }
 
-    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    // if bucketKeyEnabled is set, encryption cannot be BucketEncryption.UNENCRYPTED
     if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
       throw new ValidationError('BucketKeyEnabledSpecifiedEncryption', `bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`, this);
     }
@@ -3215,7 +3215,7 @@ export class Bucket extends BucketBase {
  */
 export enum BucketEncryption {
   /**
-   * Previous option. Buckets can not be unencrypted now.
+   * Previous option. Buckets cannot be unencrypted now.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
    * @deprecated S3 applies server-side encryption with SSE-S3 for every bucket
    * that default encryption is not configured.

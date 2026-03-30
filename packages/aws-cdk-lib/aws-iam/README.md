@@ -698,7 +698,7 @@ user identities. For more information about this scenario, see [About Web
 Identity Federation] and the relevant documentation in the [Amazon Cognito
 Identity Pools Developer Guide].
 
-[OpenID Connect]: http://openid.net/connect
+[OpenID Connect]: https://openid.net/connect
 [About Web Identity Federation]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
 [Amazon Cognito Identity Pools Developer Guide]: https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html
 

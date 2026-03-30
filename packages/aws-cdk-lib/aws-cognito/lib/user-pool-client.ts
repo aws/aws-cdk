@@ -301,7 +301,7 @@ export interface UserPoolClientOptions {
 
   /**
    * Validity of the ID token.
-   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * Values between 5 minutes and 1 day are valid. The duration cannot be longer than the refresh token validity.
    * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-id-token
    * @default Duration.minutes(60)
    */
@@ -317,7 +317,7 @@ export interface UserPoolClientOptions {
 
   /**
    * Validity of the access token.
-   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * Values between 5 minutes and 1 day are valid. The duration cannot be longer than the refresh token validity.
    * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-access-token
    * @default Duration.minutes(60)
    */
