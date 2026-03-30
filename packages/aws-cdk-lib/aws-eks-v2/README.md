@@ -557,7 +557,7 @@ If you want to use an existing kubectl provider function, for example with tight
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
-// get the serivceToken from the custom resource provider
+// get the serviceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
   serviceToken: functionArn,
