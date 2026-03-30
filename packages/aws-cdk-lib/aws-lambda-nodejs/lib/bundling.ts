@@ -365,10 +365,17 @@ export class Bundling implements cdk.BundlingOptions {
               }
               break;
             case 'spawn':
-              exec(step.command[0], step.command.slice(1), {
-                ...execOptions,
-                cwd: step.cwd ?? cwd,
-              });
+              if (osPlatform === 'win32') {
+                exec('powershell.exe', ['-NoProfile', '-Command', preparePosixShellCommand(step.command)], {
+                  ...execOptions,
+                  cwd: step.cwd ?? cwd,
+                });
+              } else {
+                exec(step.command[0], step.command.slice(1), {
+                  ...execOptions,
+                  cwd: step.cwd ?? cwd,
+                });
+              }
               break;
             case 'callback':
               try {
