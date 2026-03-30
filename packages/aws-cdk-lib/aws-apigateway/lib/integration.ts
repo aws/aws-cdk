@@ -96,7 +96,7 @@ export interface IntegrationOptions {
    *   { "application/json": "{ \"statusCode\": 200 }" }
    * ```
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
 
@@ -415,7 +415,7 @@ export interface IntegrationResponse {
    *   pre-encode these values based on the destination specified in the
    *   request.
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/request-response-data-mappings.html
    */
   readonly responseParameters?: { [destination: string]: string };
 
@@ -424,7 +424,7 @@ export interface IntegrationResponse {
    * Specify templates as key-value pairs, with a content type as the key and
    * a template as the value.
    *
-   * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   readonly responseTemplates?: { [contentType: string]: string };
 }
