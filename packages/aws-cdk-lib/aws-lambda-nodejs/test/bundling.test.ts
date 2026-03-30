@@ -39,6 +39,14 @@ beforeEach(() => {
     run: () => {},
     toJSON: () => 'built-image',
   });
+
+  const origReadFileSync = fs.readFileSync;
+  jest.spyOn(fs, 'readFileSync').mockImplementation((p, options) => {
+    if (p === '/project/yarn.lock') {
+      return 'adsf';
+    }
+    return origReadFileSync(p, options);
+  });
 });
 
 let projectRoot = '/project';

@@ -35,7 +35,7 @@ export class PackageManager {
     const lockFile = path.basename(lockFilePath);
 
     switch (lockFile) {
-      case LockFile.YARN:
+      case LockFile.YARN: {
         // Either Yarn Classic (1.x) or Yarn Berry (2.x+)
         //
         // It is non-trivial to distinguish between Yarn Classic and Yarn Berry;
@@ -52,12 +52,14 @@ export class PackageManager {
         // script to swap out the dispatch script for the actual binary at install time. Neither version of yarn seems to
         // properly execute that postinstall script, which means the dispatch script adds 100ms on every invocation
         // regardless.
+        const installCommand = logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'];
+
         const lockFileContents = fs.readFileSync(lockFilePath, 'utf-8');
-        if (lockFileContents.includes('# yarn lockfile v1')) {
+        if (lockFileContents.includes('# yarn lockfile v1') && !isWindows()) {
           // Yarn Classic
           return new PackageManager({
             lockFile: LockFile.YARN,
-            installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
+            installCommand,
             // NPM compatible, save a single yarn dispatch (~150ms)
             directFromSubdirectory: 'node_modules/.bin',
           });
@@ -66,9 +68,11 @@ export class PackageManager {
         // Yarn Berry
         return new PackageManager({
           lockFile: LockFile.YARN,
-          installCommand: logLevel && logLevel !== LogLevel.INFO ? ['yarn', 'install', '--no-immutable', '--silent'] : ['yarn', 'install', '--no-immutable'],
+          installCommand,
           runCommand: ['yarn', 'run'],
         });
+      }
+
       case LockFile.PNPM:
         return new PackageManager({
           lockFile: LockFile.PNPM,
@@ -88,13 +92,23 @@ export class PackageManager {
           installCommand: logLevel && logLevel !== LogLevel.INFO ? ['bun', 'install', '--backend', 'copyfile', '--silent'] : ['bun', 'install', '--backend', 'copyfile'],
           runCommand: ['bun', 'run'],
         });
-      default:
+      default: {
+        const installCommand = logLevel ? ['npm', 'ci', '--loglevel', logLevel] : ['npm', 'ci'];
+
+        if (!isWindows()) {
+          return new PackageManager({
+            lockFile: LockFile.NPM,
+            installCommand,
+            // We could use `npx` but it adds ~400-500ms on every invocation, so do direct execution instead.
+            directFromSubdirectory: 'node_modules/.bin',
+          });
+        }
         return new PackageManager({
           lockFile: LockFile.NPM,
-          installCommand: logLevel ? ['npm', 'ci', '--loglevel', logLevel] : ['npm', 'ci'],
-          // We could use `npx` but it adds ~400-500ms on every invocation, so do direct execution instead.
-          directFromSubdirectory: 'node_modules/.bin',
+          installCommand,
+          runCommand: ['npx', '--no-install'],
         });
+      }
     }
   }
 
@@ -120,7 +134,7 @@ export class PackageManager {
     if (this.runCommand) {
       const [runCommand, ...runArgs] = this.runCommand;
       return [
-        os.platform() === 'win32' ? `${runCommand}.cmd` : runCommand,
+        isWindows() ? `${runCommand}.cmd` : runCommand,
         ...runArgs,
         ...(this.argsSeparator ? [this.argsSeparator] : []),
         bin,
@@ -133,4 +147,8 @@ export class PackageManager {
       return [`${this.directFromSubdirectory}/${bin}`];
     }
   }
+}
+
+function isWindows() {
+  return os.platform() === 'win32';
 }
