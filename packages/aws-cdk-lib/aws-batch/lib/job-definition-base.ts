@@ -255,6 +255,11 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
+  /**
+   * Specifies whether the previous revision of the job definition is retained in an active status after UPDATE events for the resource.
+   *
+   * @default undefined - AWS Batch default is false
+   */
   public readonly skipDeregisterOnUpdate?: boolean;
 
   public get jobDefinitionRef(): JobDefinitionReference {
