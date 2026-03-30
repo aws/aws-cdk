@@ -114,7 +114,7 @@ export interface InternetGatewayOptions{
 export interface VPNGatewayV2Options {
   /**
    * The type of VPN connection the virtual private gateway supports.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
    */
   readonly type: VpnConnectionType;
 
