@@ -369,7 +369,7 @@ export class Bundling implements cdk.BundlingOptions {
               // .cmd shims (e.g. npx.cmd) directly. Route through powershell instead.
               // See https://github.com/aws/aws-cdk/issues/37387
               if (osPlatform === 'win32') {
-                exec('powershell.exe', ['-NoProfile', '-Command', `& ${preparePosixShellCommand(step.command)}`], {
+                exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
                   ...execOptions,
                   cwd: step.cwd ?? cwd,
                 });
@@ -584,6 +584,10 @@ function preparePosixShellCommand(argv: string[]): string {
  */
 function posixShellEscape(arg: string): string {
   return "'" + arg.replace(/'/g, "'\\''") + "'";
+}
+
+function powershellEscape(arg: string): string {
+  return "'" + arg.replace(/'/g, "''") + "'";
 }
 
 /**
