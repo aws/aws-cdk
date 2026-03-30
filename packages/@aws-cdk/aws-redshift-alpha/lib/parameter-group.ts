@@ -2,7 +2,6 @@ import { CfnClusterParameterGroup } from 'aws-cdk-lib/aws-redshift';
 import type { IResource } from 'aws-cdk-lib/core';
 import { Resource, ValidationError } from 'aws-cdk-lib/core';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
-import { assertNoProto } from 'aws-cdk-lib/core/lib/private/prototype-pollution';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
@@ -84,7 +83,7 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
-    this.parameters = props.parameters;
+    this.parameters = Object.assign(Object.create(null), props.parameters);
     this.resource = new CfnClusterParameterGroup(this, 'Resource', {
       description: props.description || 'Cluster parameter group for family redshift-1.0',
       parameterGroupFamily: 'redshift-1.0',
@@ -107,7 +106,6 @@ export class ClusterParameterGroup extends ClusterParameterGroupBase {
    */
   @MethodMetadata()
   public addParameter(name: string, value: string): void {
-    assertNoProto(name);
     const existingValue = Object.entries(this.parameters).find(([key, _]) => key === name)?.[1];
     if (existingValue === undefined) {
       this.parameters[name] = value;

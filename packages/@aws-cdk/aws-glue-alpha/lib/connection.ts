@@ -1,7 +1,7 @@
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 import * as cdk from 'aws-cdk-lib/core';
-import { assertNoProto, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type * as constructs from 'constructs';
@@ -362,7 +362,7 @@ export class Connection extends cdk.Resource implements IConnection {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.properties = props.properties || {};
+    this.properties = Object.assign(Object.create(null), props.properties || {});
 
     const physicalConnectionRequirements = props.subnet || props.securityGroups ? {
       availabilityZone: props.subnet ? props.subnet.availabilityZone : undefined,
@@ -406,7 +406,6 @@ export class Connection extends cdk.Resource implements IConnection {
    */
   @MethodMetadata()
   public addProperty(key: string, value: string): void {
-    assertNoProto(key);
     this.properties[key] = value;
   }
 }

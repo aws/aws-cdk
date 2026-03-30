@@ -12,7 +12,6 @@ import {
   Stack,
   ValidationError,
 } from 'aws-cdk-lib/core';
-import { assertNoProto } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Provider } from 'aws-cdk-lib/custom-resources';
@@ -205,7 +204,7 @@ export class Branch extends Resource implements IBranch {
       }
     }
 
-    this.environmentVariables = props.environmentVariables || {};
+    this.environmentVariables = Object.assign(Object.create(null), props.environmentVariables || {});
 
     const branchName = props.branchName || id;
     const branch = new CfnBranch(this, 'Resource', {
@@ -249,7 +248,6 @@ export class Branch extends Resource implements IBranch {
    */
   @MethodMetadata()
   public addEnvironment(name: string, value: string) {
-    assertNoProto(name);
     this.environmentVariables[name] = value;
     return this;
   }

@@ -3,7 +3,6 @@ import type * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IResource, SecretValue } from 'aws-cdk-lib/core';
 import { Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
-import { assertNoProto } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct, IConstruct } from 'constructs';
@@ -263,8 +262,9 @@ export class App extends Resource implements IApp, iam.IGrantable {
     addConstructMetadata(this, props);
 
     this.customRules = props.customRules || [];
-    this.environmentVariables = props.environmentVariables || {};
-    this.autoBranchEnvironmentVariables = props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {};
+    this.environmentVariables = Object.assign(Object.create(null), props.environmentVariables); // Prevent prototype pollution
+    this.autoBranchEnvironmentVariables = Object.assign(Object.create(null),
+      props.autoBranchCreation && props.autoBranchCreation.environmentVariables || {}); // Prevent prototype pollution
 
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
@@ -350,7 +350,6 @@ export class App extends Resource implements IApp, iam.IGrantable {
    */
   @MethodMetadata()
   public addEnvironment(name: string, value: string) {
-    assertNoProto(name);
     this.environmentVariables[name] = value;
     return this;
   }
@@ -363,7 +362,6 @@ export class App extends Resource implements IApp, iam.IGrantable {
    */
   @MethodMetadata()
   public addAutoBranchEnvironment(name: string, value: string) {
-    assertNoProto(name);
     this.autoBranchEnvironmentVariables[name] = value;
     return this;
   }
