@@ -103,6 +103,9 @@ export class PackageManager {
             directFromSubdirectory: 'node_modules/.bin',
           });
         }
+        // On WIndows, fall back to using `npx`, otherwise we need to go figure out if the target binary is
+        // a `.cmd` or `.bat` file and run it through the shell if it is. Much easier to leave
+        // all that to `npx`.
         return new PackageManager({
           lockFile: LockFile.NPM,
           installCommand,
