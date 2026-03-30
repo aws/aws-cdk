@@ -22,7 +22,7 @@ export const DEFAULT_REGION_ENV = 'CDK_DEFAULT_REGION';
 /**
  * Version of Cloud Assembly expected by CDK Toolkit.
  *
- * Despite it's name, this value applies to all version of the CDK Toolkit, not just the CLI.
+ * Despite its name, this value applies to all version of the CDK Toolkit, not just the CLI.
  *
  * CLI started emitting this at 1.10.1
  */
