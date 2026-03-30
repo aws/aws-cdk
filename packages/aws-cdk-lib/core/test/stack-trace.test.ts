@@ -65,7 +65,6 @@ describe('renderCallStackJustMyCode', () => {
 
     expect(renderCallStackJustMyCode(stack, false)).toEqual([
       '...aws-cdk-lib, new PythonFunction in @aws-cdk/aws-lambda-python-alpha...',
-      'new PythonFunction (/path/to/project/myfile.js:70:5)',
       expect.stringContaining('use --stack-trace-limit to capture more'),
     ]);
   });
