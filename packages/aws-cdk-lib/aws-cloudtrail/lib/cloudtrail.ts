@@ -120,7 +120,7 @@ export interface TrailProps {
 
   /** The Amazon S3 bucket
    *
-   * @default - if not supplied a bucket will be created with all the correct permisions
+   * @default - if not supplied a bucket will be created with all the correct permissions
    */
   readonly bucket?: s3.IBucket;
 

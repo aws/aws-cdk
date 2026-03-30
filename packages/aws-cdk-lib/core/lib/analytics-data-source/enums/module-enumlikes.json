@@ -472,6 +472,15 @@
       "NEPTUNE_1_4"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts": {
+    "IcebergTransform": [
+      "IDENTITY",
+      "YEAR",
+      "MONTH",
+      "DAY",
+      "HOUR"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/accelerator-type.ts": {
     "AcceleratorType": [
       "EIA1_LARGE",
@@ -3555,6 +3564,10 @@
     ],
     "ReplicationTimeValue": [
       "FIFTEEN_MINUTES"
+    ],
+    "BlockedEncryptionType": [
+      "NONE",
+      "SSE_C"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/rule.ts": {
@@ -3671,6 +3684,7 @@
       "SYNTHETICS_NODEJS_PLAYWRIGHT_4_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_5_0",
       "SYNTHETICS_NODEJS_3_0",
+      "SYNTHETICS_NODEJS_3_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_2",
