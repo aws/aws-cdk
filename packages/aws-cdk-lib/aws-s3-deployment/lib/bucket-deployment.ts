@@ -118,7 +118,7 @@ export interface BucketDeploymentProps {
   readonly distributionPaths?: string[];
 
   /**
-   * In case of using a cloudfront distribtuion, if this property is set to false then the custom resource
+   * In case of using a cloudfront distribution, if this property is set to false then the custom resource
    * will not wait and verify for Cloudfront invalidation to complete. This may speed up deployment and avoid
    * intermittent Cloudfront issues. However, this is risky and not recommended as cache invalidation
    * can silently fail.
