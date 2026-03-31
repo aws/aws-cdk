@@ -3,6 +3,7 @@ import type { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import type { CfnKey } from '../../aws-kms';
 import { Fn, Reference, Tokenization, UnscopedValidationError } from '../../core';
 import { findClosestRelatedResource, findL1FromRef, memoizedGetter, resolvedEquals, resolvedExists, resolvedGet } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IBucketRef } from '../../interfaces/generated/aws-s3-interfaces.generated';
 
 /**
@@ -34,7 +35,7 @@ export class BucketReflection {
    */
   public get bucket(): CfnBucket {
     if (!this._bucket) {
-      throw new UnscopedValidationError('CannotFindUnderlyingResource', `Unable to find underlying resource for ${this.ref.node.path}. Please pass the resource construct directly.`);
+      throw new UnscopedValidationError(lit`CannotFindUnderlyingResource`, `Unable to find underlying resource for ${this.ref.node.path}. Please pass the resource construct directly.`);
     }
     return this._bucket;
   }

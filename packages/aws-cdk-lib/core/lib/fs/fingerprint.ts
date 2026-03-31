@@ -7,6 +7,7 @@ import { IgnoreMode, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { Cache } from '../private/cache';
+import { lit } from '../private/literal-string';
 
 const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
@@ -92,7 +93,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
       }
     } else {
-      throw new UnscopedValidationError('UnableToUnableHashNeither', `Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
+      throw new UnscopedValidationError(lit`UnableToUnableHashNeither`, `Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
     }
   }
 

@@ -15,6 +15,7 @@ import { KeyGrants } from '../../../aws-kms';
 import type { CfnResource } from '../../../core';
 import { ValidationError } from '../../../core';
 import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnTopic, CfnTopicPolicy } from '../sns.generated';
 
@@ -81,7 +82,7 @@ class EncryptedCfnTopic implements IEncryptedResource {
 
 function ifCfnTopic<A>(resource: IConstruct, factory: (r: CfnTopic) => A): A {
   if (!CfnTopic.isCfnTopic(resource)) {
-    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnTopic`, resource);
+    throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnTopic`, resource);
   }
 
   return factory(resource);

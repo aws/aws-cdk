@@ -4,6 +4,7 @@ import type { CfnRestApi, IRestApiRef } from './apigateway.generated';
 import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -138,7 +139,7 @@ export class S3ApiDefinition extends ApiDefinition {
     super();
 
     if (!bucket.bucketRef.bucketName) {
-      throw new ValidationError('BucketNameUndefinedProvidedBucket', 'bucketName is undefined for the provided bucket', bucket);
+      throw new ValidationError(lit`BucketNameUndefinedProvidedBucket`, 'bucketName is undefined for the provided bucket', bucket);
     }
 
     this.bucketName = bucket.bucketRef.bucketName;
@@ -163,11 +164,11 @@ export class InlineApiDefinition extends ApiDefinition {
     super();
 
     if (typeof(definition) !== 'object') {
-      throw new UnscopedValidationError('ShouldBeDefinitionShouldType', 'definition should be of type object');
+      throw new UnscopedValidationError(lit`ShouldBeDefinitionShouldType`, 'definition should be of type object');
     }
 
     if (Object.keys(definition).length === 0) {
-      throw new UnscopedValidationError('JsonDefinitionCannotEmpty', 'JSON definition cannot be empty');
+      throw new UnscopedValidationError(lit`JsonDefinitionCannotEmpty`, 'JSON definition cannot be empty');
     }
   }
 
@@ -198,7 +199,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (this.asset.isZipArchive) {
-      throw new ValidationError('AssetCannotZipFileDirectory', `Asset cannot be a .zip file or a directory (${this.path})`, scope);
+      throw new ValidationError(lit`AssetCannotZipFileDirectory`, `Asset cannot be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -215,7 +216,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (!this.asset) {
-      throw new ValidationError('BindResourceCalledBind', 'bindToResource() must be called after bind()', scope);
+      throw new ValidationError(lit`BindResourceCalledBind`, 'bindToResource() must be called after bind()', scope);
     }
 
     const child = Node.of(restApi).defaultChild as CfnRestApi;

@@ -7,6 +7,7 @@ import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
@@ -166,7 +167,7 @@ export class Asset extends Construct implements cdk.IAsset {
     super(scope, id);
 
     if (!props.path) {
-      throw new ValidationError('AssetPathCannotEmpty', 'Asset path cannot be empty', this);
+      throw new ValidationError(lit`AssetPathCannotEmpty`, 'Asset path cannot be empty', this);
     }
 
     this.isBundled = props.bundling != null;

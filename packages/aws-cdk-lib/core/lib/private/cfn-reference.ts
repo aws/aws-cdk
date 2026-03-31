@@ -156,11 +156,11 @@ export class CfnReference extends Reference {
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
     if (stack === this.targetStack) {
-      throw new UnscopedValidationError('CannotAssignValueStack', 'cannot assign a value for the same stack');
+      throw new UnscopedValidationError(lit`CannotAssignValueStack`, 'cannot assign a value for the same stack');
     }
 
     if (this.hasValueForStack(stack)) {
-      throw new UnscopedValidationError('CannotAssignReferenceValueTwice', 'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
+      throw new UnscopedValidationError(lit`CannotAssignReferenceValueTwice`, 'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -181,4 +181,5 @@ import type { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import type { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
+import { lit } from './literal-string';
 

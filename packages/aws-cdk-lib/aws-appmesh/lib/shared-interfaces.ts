@@ -4,6 +4,7 @@ import { renderTlsClientPolicy } from './private/utils';
 import type { TlsClientPolicy } from './tls-client-policy';
 import type { IVirtualService } from './virtual-service';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Represents timeouts for HTTP protocols.
@@ -199,7 +200,7 @@ export abstract class LoggingFormat {
    */
   public static fromJson(jsonLoggingFormat :{[key:string]: string}): LoggingFormat {
     if (Object.keys(jsonLoggingFormat).length == 0) {
-      throw new cdk.UnscopedValidationError('JsonKeyPairsEmpty', 'Json key pairs cannot be empty.');
+      throw new cdk.UnscopedValidationError(lit`JsonKeyPairsEmpty`, 'Json key pairs cannot be empty.');
     }
 
     return new JsonLoggingFormat(jsonLoggingFormat);

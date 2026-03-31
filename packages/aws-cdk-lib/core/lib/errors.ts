@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
+import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
 import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
@@ -120,7 +121,7 @@ abstract class ConstructError extends Error {
     return this.#constructInfo;
   }
 
-  constructor(msg: string, scope?: IConstruct, name?: string) {
+  constructor(msg: string, scope?: IConstruct, name?: LiteralString) {
     super(msg);
 
     const ctr = this.constructor;
@@ -167,7 +168,7 @@ export class ValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(name: string, msg: string, scope: IConstruct) {
+  constructor(name: LiteralString, msg: string, scope: IConstruct) {
     super(msg, scope, name);
     Object.setPrototypeOf(this, ValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
@@ -189,7 +190,7 @@ export class UnscopedValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
@@ -208,7 +209,7 @@ export class AssumptionError extends ConstructError {
     return 'assumption';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, AssumptionError.prototype);
     Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
@@ -226,7 +227,7 @@ export class ExecutionError extends ConstructError {
     return 'exec';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, ExecutionError.prototype);
     Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });

@@ -1,5 +1,6 @@
 import { Fn } from './cfn-fn';
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import type { Stack } from './stack';
 import { Token } from './token';
 import { filterUndefined } from './util';
@@ -142,7 +143,7 @@ export class Arn {
 
     // Catch both 'null' and 'undefined'
     if (partition == null || region == null || account == null) {
-      throw new UnscopedValidationError('ArnFormatMissingStackInfo', `Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
+      throw new UnscopedValidationError(lit`ArnFormatMissingStackInfo`, `Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
     }
 
     const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
@@ -154,7 +155,7 @@ export class Arn {
     ];
 
     if (sep !== '/' && sep !== ':' && sep !== '') {
-      throw new UnscopedValidationError('InvalidResourcePathSeparator', 'resourcePathSep may only be ":", "/" or an empty string');
+      throw new UnscopedValidationError(lit`InvalidResourcePathSeparator`, 'resourcePathSep may only be ":", "/" or an empty string');
     }
 
     if (components.resourceName != null) {
@@ -325,10 +326,10 @@ export class Arn {
     // resource type (to notify authors of incorrect assumptions right away).
     const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
-      throw new UnscopedValidationError('ExpectedResourceType', `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
+      throw new UnscopedValidationError(lit`ExpectedResourceType`, `Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
     }
     if (!parsed.resourceName) {
-      throw new UnscopedValidationError('ExpectedResourceName', `Expected resource name in ARN, didn't find one: '${arn}'`);
+      throw new UnscopedValidationError(lit`ExpectedResourceName`, `Expected resource name in ARN, didn't find one: '${arn}'`);
     }
     return parsed.resourceName;
   }
@@ -412,7 +413,7 @@ function parseArnShape(arn: string): 'token' | string[] {
     if (Token.isUnresolved(arn)) {
       return 'token';
     } else {
-      throw new UnscopedValidationError('ArnsMustStartWithArn', `ARNs must start with "arn:" and have at least 6 components: ${arn}`);
+      throw new UnscopedValidationError(lit`ArnsMustStartWithArn`, `ARNs must start with "arn:" and have at least 6 components: ${arn}`);
     }
   }
 
@@ -424,17 +425,17 @@ function parseArnShape(arn: string): 'token' | string[] {
 
   const partition = components.length > 1 ? components[1] : undefined;
   if (!partition) {
-    throw new UnscopedValidationError('ArnPartitionRequired', 'The `partition` component (2nd component) of an ARN is required: ' + arn);
+    throw new UnscopedValidationError(lit`ArnPartitionRequired`, 'The `partition` component (2nd component) of an ARN is required: ' + arn);
   }
 
   const service = components.length > 2 ? components[2] : undefined;
   if (!service) {
-    throw new UnscopedValidationError('ArnServiceRequired', 'The `service` component (3rd component) of an ARN is required: ' + arn);
+    throw new UnscopedValidationError(lit`ArnServiceRequired`, 'The `service` component (3rd component) of an ARN is required: ' + arn);
   }
 
   const resource = components.length > 5 ? components[5] : undefined;
   if (!resource) {
-    throw new UnscopedValidationError('ArnResourceRequired', 'The `resource` component (6th component) of an ARN is required: ' + arn);
+    throw new UnscopedValidationError(lit`ArnResourceRequired`, 'The `resource` component (6th component) of an ARN is required: ' + arn);
   }
 
   // Region can be missing in global ARNs (such as used by IAM)

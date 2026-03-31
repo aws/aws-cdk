@@ -13,6 +13,7 @@ import { DefaultEncryptedResourceFactories, DefaultPolicyFactories } from '../..
 import { KeyGrants } from '../../../aws-kms';
 import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { BucketReflection } from '../bucket-reflection';
 import { BucketPolicyStatements } from '../mixins/bucket-policy';
 import { CfnBucket, CfnBucketPolicy } from '../s3.generated';
@@ -74,7 +75,7 @@ class CfnBucketWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnBucket<A>(resource: IConstruct, factory: (r: CfnBucket) => A): A {
   if (!CfnBucket.isCfnBucket(resource)) {
-    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnBucket`, resource);
+    throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnBucket`, resource);
   }
 
   return factory(resource);

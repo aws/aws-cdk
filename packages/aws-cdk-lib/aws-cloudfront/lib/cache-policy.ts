@@ -13,6 +13,7 @@ import {
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -174,15 +175,15 @@ export class CachePolicy extends Resource implements ICachePolicy {
     const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this).slice(0, 110)}-${Stack.of(this).region}`;
 
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
-      throw new ValidationError('CachepolicynameOnlyInclude', `'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`, this);
+      throw new ValidationError(lit`CachepolicynameOnlyInclude`, `'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${cachePolicyName}'`, this);
     }
 
     if (cachePolicyName.length > 128) {
-      throw new ValidationError('CachepolicynameCannotLongerThan', `'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`, this);
+      throw new ValidationError(lit`CachepolicynameCannotLongerThan`, `'cachePolicyName' cannot be longer than 128 characters, got: '${cachePolicyName.length}'`, this);
     }
 
     if (props.comment && !Token.isUnresolved(props.comment) && props.comment.length > 128) {
-      throw new ValidationError('CommentCannotLongerThan', `'comment' cannot be longer than 128 characters, got: ${props.comment.length}`, this);
+      throw new ValidationError(lit`CommentCannotLongerThan`, `'comment' cannot be longer than 128 characters, got: ${props.comment.length}`, this);
     }
 
     const minTtl = (props.minTtl ?? Duration.seconds(0)).toSeconds();
@@ -256,7 +257,7 @@ export class CacheCookieBehavior {
    */
   public static allowList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneCookieToAllowMustBeProvided', 'At least one cookie to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToAllowMustBeProvided`, 'At least one cookie to allow must be provided');
     }
     return new CacheCookieBehavior('whitelist', cookies);
   }
@@ -267,7 +268,7 @@ export class CacheCookieBehavior {
    */
   public static denyList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneCookieToDenyMustBeProvided', 'At least one cookie to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToDenyMustBeProvided`, 'At least one cookie to deny must be provided');
     }
     return new CacheCookieBehavior('allExcept', cookies);
   }
@@ -292,7 +293,7 @@ export class CacheHeaderBehavior {
   /** Listed headers are included in the cache key and are automatically included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneHeaderToAllowMustBeProvided', 'At least one header to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneHeaderToAllowMustBeProvided`, 'At least one header to allow must be provided');
     }
     return new CacheHeaderBehavior('whitelist', headers);
   }
@@ -329,7 +330,7 @@ export class CacheQueryStringBehavior {
    */
   public static allowList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneQueryStringToAllowMustBeProvided', 'At least one query string to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToAllowMustBeProvided`, 'At least one query string to allow must be provided');
     }
     return new CacheQueryStringBehavior('whitelist', queryStrings);
   }
@@ -340,7 +341,7 @@ export class CacheQueryStringBehavior {
    */
   public static denyList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneQueryStringToDenyMustBeProvided', 'At least one query string to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToDenyMustBeProvided`, 'At least one query string to deny must be provided');
     }
     return new CacheQueryStringBehavior('allExcept', queryStrings);
   }

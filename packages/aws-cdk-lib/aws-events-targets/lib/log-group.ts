@@ -8,6 +8,7 @@ import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { ArnFormat, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options used when creating a target input template
@@ -121,12 +122,12 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
-      throw new ValidationError('OnlyOneOfEventOrLogEventCanBeSpecified', 'Only one of "event" or "logEvent" can be specified', rule);
+      throw new ValidationError(lit`OnlyOneOfEventOrLogEventCanBeSpecified`, 'Only one of "event" or "logEvent" can be specified', rule);
     }
 
     this.target = this.props.event?.bind(rule);
     if (this.target?.inputPath || this.target?.input) {
-      throw new ValidationError('CloudWatchLogGroupTargetsDoNotSupportInputOrInputPath', 'CloudWatchLogGroup targets does not support input or inputPath', rule);
+      throw new ValidationError(lit`CloudWatchLogGroupTargetsDoNotSupportInputOrInputPath`, 'CloudWatchLogGroup targets does not support input or inputPath', rule);
     }
 
     rule.node.addValidation({ validate: () => this.validateInputTemplate() });

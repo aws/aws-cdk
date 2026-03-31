@@ -4,6 +4,7 @@ import type { IRole } from 'aws-cdk-lib/aws-iam';
 import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -301,7 +302,7 @@ export class Pipe extends PipeBase {
 
     if (props.kmsKey) {
       if (!props.pipeName) {
-        throw new ValidationError('PipeNameRequiredWithKmsKey', '`pipeName` is required when specifying a `kmsKey` prop.', this);
+        throw new ValidationError(lit`PipeNameRequiredWithKmsKey`, '`pipeName` is required when specifying a `kmsKey` prop.', this);
       }
       // Add permissions to the KMS key
       // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe

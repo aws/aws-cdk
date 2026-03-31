@@ -27,6 +27,7 @@ import {
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 import type { IRepositoryRef, RepositoryReference } from '../../interfaces/generated/aws-ecr-interfaces.generated';
@@ -667,18 +668,18 @@ export class Repository extends RepositoryBase {
    */
   public static fromLookup(scope: Construct, id: string, options: RepositoryLookupOptions): IRepository {
     if (Token.isUnresolved(options.repositoryName) || Token.isUnresolved(options.repositoryArn)) {
-      throw new UnscopedValidationError('CannotLookupRepositoryWithTokenizedValue', 'Cannot look up a repository with a tokenized name or ARN.');
+      throw new UnscopedValidationError(lit`CannotLookupRepositoryWithTokenizedValue`, 'Cannot look up a repository with a tokenized name or ARN.');
     }
 
     if (!options.repositoryArn && !options.repositoryName) {
-      throw new UnscopedValidationError('RepositoryNameOrArnRequired', 'At least one of `repositoryName` or `repositoryArn` must be provided.');
+      throw new UnscopedValidationError(lit`RepositoryNameOrArnRequired`, 'At least one of `repositoryName` or `repositoryArn` must be provided.');
     }
 
     const identifier = options.repositoryName ??
       (options.repositoryArn ? Arn.split(options.repositoryArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName : undefined);
 
     if (!identifier) {
-      throw new UnscopedValidationError('CouldNotDetermineRepositoryIdentifier', 'Could not determine repository identifier from provided options.');
+      throw new UnscopedValidationError(lit`CouldNotDetermineRepositoryIdentifier`, 'Could not determine repository identifier from provided options.');
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -732,7 +733,7 @@ export class Repository extends RepositoryBase {
     // repository names can include "/" (e.g. foo/bar/myrepo) and it is impossible to
     // parse the name from an ARN using CloudFormation's split/select.
     if (Token.isUnresolved(repositoryArn)) {
-      throw new UnscopedValidationError('RepositoryArnIsLateBoundValue', '"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
+      throw new UnscopedValidationError(lit`RepositoryArnIsLateBoundValue`, '"repositoryArn" is a late-bound value, and therefore "repositoryName" is required. Use `fromRepositoryAttributes` instead');
     }
 
     validateRepositoryArn();
@@ -757,7 +758,7 @@ export class Repository extends RepositoryBase {
       const splitArn = repositoryArn.split(':');
 
       if (!splitArn[splitArn.length - 1].startsWith('repository/')) {
-        throw new UnscopedValidationError('InvalidRepositoryArnFormat', `Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
+        throw new UnscopedValidationError(lit`InvalidRepositoryArnFormat`, `Repository arn should be in the format 'arn:<PARTITION>:ecr:<REGION>:<ACCOUNT>:repository/<NAME>', got ${repositoryArn}.`);
       }
     }
   }
@@ -809,7 +810,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError('InvalidRepositoryName', `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+      throw new UnscopedValidationError(lit`InvalidRepositoryName`, `Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
     }
   }
 
@@ -864,10 +865,10 @@ export class Repository extends RepositoryBase {
     }
 
     if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
-      throw new ValidationError('EmptyOnDeleteRequiresDestroyRemovalPolicy', 'Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+      throw new ValidationError(lit`EmptyOnDeleteRequiresDestroyRemovalPolicy`, 'Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.', this);
     } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new ValidationError('AutoDeleteImagesRequiresDestroyRemovalPolicy', 'Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
+        throw new ValidationError(lit`AutoDeleteImagesRequiresDestroyRemovalPolicy`, 'Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.', this);
       }
       this.enableAutoDeleteImages();
     }
@@ -911,28 +912,28 @@ export class Repository extends RepositoryBase {
       && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)
       && (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
     ) {
-      throw new ValidationError('TaggedStatusRequiresTagPrefixOrPatternList', 'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
+      throw new ValidationError(lit`TaggedStatusRequiresTagPrefixOrPatternList`, 'TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', this);
     }
     if (rule.tagStatus !== TagStatus.TAGGED && (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)) {
-      throw new ValidationError('TagPrefixAndPatternListOnlyForTaggedStatus', 'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
+      throw new ValidationError(lit`TagPrefixAndPatternListOnlyForTaggedStatus`, 'tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged', this);
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new ValidationError('CannotSpecifyBothTagPrefixAndPatternList', 'Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
+      throw new ValidationError(lit`CannotSpecifyBothTagPrefixAndPatternList`, 'Both tagPrefixList and tagPatternList cannot be specified together in a rule', this);
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
         const splitPatternLength = pattern.split('*').length;
         if (splitPatternLength > 5) {
-          throw new ValidationError('TagPatternExceedsWildcardLimit', `A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
+          throw new ValidationError(lit`TagPatternExceedsWildcardLimit`, `A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`, this);
         }
       });
     }
     if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
-      throw new ValidationError('LifecycleRuleMustContainExactlyOneAgeOrCountProperty', `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
+      throw new ValidationError(lit`LifecycleRuleMustContainExactlyOneAgeOrCountProperty`, `Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`, this);
     }
 
     if (rule.tagStatus === TagStatus.ANY && this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY).length > 0) {
-      throw new ValidationError('LifecycleCanOnlyHaveOneAnyTagStatusRule', 'Life cycle can only have one TagStatus.Any rule', this);
+      throw new ValidationError(lit`LifecycleCanOnlyHaveOneAnyTagStatusRule`, 'Life cycle can only have one TagStatus.Any rule', this);
     }
 
     this.lifecycleRules.push({ ...rule });
@@ -949,7 +950,7 @@ export class Repository extends RepositoryBase {
 
     if (hasExclusionFilters && !requiresExclusion) {
       throw new ValidationError(
-        'ImageTagMutabilityRequiresExclusionFilters',
+        lit`ImageTagMutabilityRequiresExclusionFilters`,
         `imageTagMutability must be 'IMMUTABLE_WITH_EXCLUSION' or 'MUTABLE_WITH_EXCLUSION' when imageTagMutabilityExclusionFilters is provided, got: ${tagMutability}.`,
         this,
       );
@@ -958,12 +959,12 @@ export class Repository extends RepositoryBase {
     const filterCount = exclusionFilters?.length;
 
     if (filterCount !== undefined && (filterCount < 1 || filterCount > 5)) {
-      throw new ValidationError('ExclusionFiltersCountOutOfRange', `imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
+      throw new ValidationError(lit`ExclusionFiltersCountOutOfRange`, `imageTagMutabilityExclusionFilters must contain between 1 and 5 filters, got ${filterCount}.`, this);
     }
 
     if (requiresExclusion && !hasExclusionFilters) {
       throw new ValidationError(
-        'ExclusionFiltersRequiredForMutabilityWithExclusion',
+        lit`ExclusionFiltersRequiredForMutabilityWithExclusion`,
         `imageTagMutabilityExclusionFilters must be specified when imageTagMutability is '${tagMutability}'.`,
         this,
       );
@@ -1004,7 +1005,7 @@ export class Repository extends RepositoryBase {
     const anyRules = this.lifecycleRules.filter(r => r.tagStatus === TagStatus.ANY);
     if (anyRules.length > 0 && anyRules[0].rulePriority !== undefined && autoPrioritizedRules.length > 0) {
       // Supporting this is too complex for very little value. We just prohibit it.
-      throw new ValidationError('CannotCombinePrioritizedAnyRuleWithUnprioritizedRules', "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
+      throw new ValidationError(lit`CannotCombinePrioritizedAnyRuleWithUnprioritizedRules`, "Cannot combine prioritized TagStatus.Any rule with unprioritized rules. Remove rulePriority from the 'Any' rule.", this);
     }
 
     const prios = prioritizedRules.map(r => r.rulePriority!);
@@ -1033,7 +1034,7 @@ export class Repository extends RepositoryBase {
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
-      throw new ValidationError('EncryptionKeyRequiresKmsEncryption', `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
+      throw new ValidationError(lit`EncryptionKeyRequiresKmsEncryption`, `encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType.value})`, this);
     }
 
     if (encryptionType === RepositoryEncryption.AES_256) {
@@ -1047,7 +1048,7 @@ export class Repository extends RepositoryBase {
       };
     }
 
-    throw new ValidationError('UnexpectedEncryptionType', `Unexpected 'encryptionType': ${encryptionType}`, this);
+    throw new ValidationError(lit`UnexpectedEncryptionType`, `Unexpected 'encryptionType': ${encryptionType}`, this);
   }
 
   private enableAutoDeleteImages() {
@@ -1100,7 +1101,7 @@ function validateAnyRuleLast(rules: LifecycleRule[]) {
   if (anyRules.length === 1) {
     const maxPrio = Math.max(...rules.map(r => r.rulePriority!));
     if (anyRules[0].rulePriority !== maxPrio) {
-      throw new UnscopedValidationError('AnyTagStatusRuleMustHaveHighestPriority', `TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
+      throw new UnscopedValidationError(lit`AnyTagStatusRuleMustHaveHighestPriority`, `TagStatus.Any rule must have highest priority, has ${anyRules[0].rulePriority} which is smaller than ${maxPrio}`);
     }
   }
 }
@@ -1184,13 +1185,13 @@ export class ImageTagMutabilityExclusionFilter {
     private readonly filterValue: string,
   ) {
     if (!filterValue) {
-      throw new UnscopedValidationError('FilterPatternCannotBeEmpty', 'Pattern cannot be empty');
+      throw new UnscopedValidationError(lit`FilterPatternCannotBeEmpty`, 'Pattern cannot be empty');
     }
     if (filterValue.length > 128) {
-      throw new UnscopedValidationError('FilterPatternExceedsMaxLength', `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
+      throw new UnscopedValidationError(lit`FilterPatternExceedsMaxLength`, `Pattern cannot exceed 128 characters, got: ${filterValue.length} characters.`);
     }
     if (!/^[0-9a-zA-Z._*-]+$/.test(filterValue)) {
-      throw new UnscopedValidationError('FilterPatternContainsInvalidCharacters', `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
+      throw new UnscopedValidationError(lit`FilterPatternContainsInvalidCharacters`, `Pattern '${filterValue}' contains invalid characters. Only alphanumeric characters, dots, underscores, asterisks, and hyphens are allowed.`);
     }
   }
 
