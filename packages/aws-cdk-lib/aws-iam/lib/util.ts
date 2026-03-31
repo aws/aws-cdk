@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { IPolicy } from './policy';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../core';
 import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 const MAX_POLICY_NAME_LEN = 128;
 
@@ -61,7 +62,7 @@ export class AttachedPolicies {
     }
 
     if (this.policies.find(p => p.policyName === policy.policyName)) {
-      throw new ValidationError('PolicyNamedAlreadyAttached', `A policy named "${policy.policyName}" is already attached`, policy);
+      throw new ValidationError(lit`PolicyNamedAlreadyAttached`, `A policy named "${policy.policyName}" is already attached`, policy);
     }
 
     this.policies.push(policy);

@@ -1,5 +1,6 @@
 import type { EventPattern } from './event-pattern';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { assertNoProtoRec } from '../../core/lib/private/prototype-pollution';
 
 /**
@@ -17,7 +18,7 @@ export function mergeEventPattern(dest: any, src: any) {
 
   function mergeObject(destObj: any, srcObj: any) {
     if (typeof(srcObj) !== 'object') {
-      throw new UnscopedValidationError('InvalidEventPattern', `Invalid event pattern '${JSON.stringify(srcObj)}', expecting an object or an array`);
+      throw new UnscopedValidationError(lit`InvalidEventPattern`, `Invalid event pattern '${JSON.stringify(srcObj)}', expecting an object or an array`);
     }
 
     for (const field of Object.keys(srcObj)) {
@@ -29,7 +30,7 @@ export function mergeEventPattern(dest: any, src: any) {
       if (srcValue === undefined) { continue; }
 
       if (typeof(srcValue) !== 'object') {
-        throw new UnscopedValidationError('EventPatternFieldsMustBeArrays', `Invalid event pattern field { ${field}: ${JSON.stringify(srcValue)} }. All fields must be arrays`);
+        throw new UnscopedValidationError(lit`EventPatternFieldsMustBeArrays`, `Invalid event pattern field { ${field}: ${JSON.stringify(srcValue)} }. All fields must be arrays`);
       }
 
       // dest doesn't have this field
@@ -39,7 +40,7 @@ export function mergeEventPattern(dest: any, src: any) {
       }
 
       if (Array.isArray(srcValue) !== Array.isArray(destValue)) {
-        throw new UnscopedValidationError('EventPatternTypeMismatch', `Invalid event pattern field ${field}. ` +
+        throw new UnscopedValidationError(lit`EventPatternTypeMismatch`, `Invalid event pattern field ${field}. ` +
           `Type mismatch between existing pattern ${JSON.stringify(destValue)} and added pattern ${JSON.stringify(srcValue)}`);
       }
 

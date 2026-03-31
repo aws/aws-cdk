@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import { ValidationError } from './errors';
 import { assertNoProtoRec } from './helpers-internal';
+import { lit } from './private/literal-string';
 import { withResolved } from './token';
 
 // ----------------------------------------------------------------------
@@ -359,7 +360,7 @@ export function requiredValidator(x: any) {
 export function requireProperty(props: { [name: string]: any }, name: string, context: Construct): any {
   const value = props[name];
   if (value == null) {
-    throw new ValidationError('MissingRequiredProperty', `${context.toString()} is missing required property: ${name}`, context);
+    throw new ValidationError(lit`MissingRequiredProperty`, `${context.toString()} is missing required property: ${name}`, context);
   }
   // Possibly add type-checking here...
   return value;

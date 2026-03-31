@@ -12,3 +12,4 @@ export * from './reflections';
 export * from './traits';
 export { CfnPropsMixin, type CfnPropsMixinOptions } from './cfn-props-mixin';
 export { assertNoProto, assertNoProtoRec } from '../private/prototype-pollution';
+export * from '../private/literal-string';

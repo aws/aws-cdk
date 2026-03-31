@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { CfnVirtualNode } from './appmesh.generated';
 import type * as acmpca from '../../aws-acmpca';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Represents the properties needed to define TLS Validation context
@@ -101,7 +102,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
    */
   public get certificateAuthorities(): acmpca.ICertificateAuthority[] {
     if (this._certificateAuthorities.some((x) => !('certificateAuthorityArn' in x))) {
-      throw new UnscopedValidationError('CertificateAuthoritiesNotImplemented', 'Not all elements of \'certificateAuthorities\' parameter implement ICertificateAuthority');
+      throw new UnscopedValidationError(lit`CertificateAuthoritiesNotImplemented`, 'Not all elements of \'certificateAuthorities\' parameter implement ICertificateAuthority');
     }
 
     return this._certificateAuthorities as acmpca.ICertificateAuthority[] ;
@@ -109,7 +110,7 @@ class TlsValidationAcmTrust extends TlsValidationTrust {
 
   public bind(scope: Construct): TlsValidationTrustConfig {
     if (this.certificateAuthorities.length === 0) {
-      throw new ValidationError('CertificateAuthorityRequired', 'you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy', scope);
+      throw new ValidationError(lit`CertificateAuthorityRequired`, 'you must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy', scope);
     } else {
       return {
         tlsValidationTrust: {

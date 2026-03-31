@@ -4,6 +4,7 @@ import type { Project } from './project';
 import * as s3_assets from '../../aws-s3-assets';
 import type { IResolveContext } from '../../core';
 import { Lazy, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * BuildSpec for CodeBuild projects
@@ -67,7 +68,7 @@ class AssetBuildSpec extends BuildSpec {
 
   public toBuildSpec(scope?: Project): string {
     if (!scope) {
-      throw new UnscopedValidationError('AssetBuildSpecRequiresScopeArgument', '`AssetBuildSpec` requires a `scope` argument');
+      throw new UnscopedValidationError(lit`AssetBuildSpecRequiresScopeArgument`, '`AssetBuildSpec` requires a `scope` argument');
     }
 
     // If the same AssetCode is used multiple times, retain only the first instantiation.
@@ -77,7 +78,7 @@ class AssetBuildSpec extends BuildSpec {
         ...this.options,
       });
     } else if (Stack.of(this.asset) !== Stack.of(scope)) {
-      throw new UnscopedValidationError('AssetAlreadyAssociatedWithAnotherStack', `Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
+      throw new UnscopedValidationError(lit`AssetAlreadyAssociatedWithAnotherStack`, `Asset is already associated with another stack '${Stack.of(this.asset).stackName}'. ` +
         'Create a new BuildSpec instance for every stack.');
     }
 
@@ -156,18 +157,18 @@ class YamlBuildSpec extends BuildSpec {
  */
 export function mergeBuildSpecs(lhs: BuildSpec, rhs: BuildSpec): BuildSpec {
   if (!(lhs instanceof ObjectBuildSpec) || !(rhs instanceof ObjectBuildSpec)) {
-    throw new UnscopedValidationError('CanOnlyMergeBuildSpecsFromObject', 'Can only merge buildspecs created using BuildSpec.fromObject()');
+    throw new UnscopedValidationError(lit`CanOnlyMergeBuildSpecsFromObject`, 'Can only merge buildspecs created using BuildSpec.fromObject()');
   }
 
   if (lhs.spec.version === '0.1') {
-    throw new UnscopedValidationError('CannotExtendBuildSpecVersionZeroOne', 'Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
+    throw new UnscopedValidationError(lit`CannotExtendBuildSpecVersionZeroOne`, 'Cannot extend buildspec at version "0.1". Set the version to "0.2" or higher instead.');
   }
   if (lhs.spec.artifacts && rhs.spec.artifacts) {
     // We decided to disallow merging of artifact specs, which is
     // actually impossible since we can't merge two buildspecs with a
     // single primary output into a buildspec with multiple outputs.
     // In case of multiple outputs they must have identifiers but we won't have that information.
-    throw new UnscopedValidationError('OnlyOneBuildSpecCanSpecifyArtifacts', 'Only one build spec is allowed to specify artifacts.');
+    throw new UnscopedValidationError(lit`OnlyOneBuildSpecCanSpecifyArtifacts`, 'Only one build spec is allowed to specify artifacts.');
   }
 
   const lhsSpec = JSON.parse(JSON.stringify(lhs.spec));
