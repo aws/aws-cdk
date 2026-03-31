@@ -4,6 +4,7 @@ import type { IEnvironmentAware } from '../../../interfaces';
 import type { CfnResource } from '../cfn-resource';
 import { ValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
+import { lit } from '../private/literal-string';
 
 interface ITraitFactory<T> {
   forResource(resource: CfnResource): T;
@@ -30,7 +31,7 @@ export class Traits<
     if (factory == null) {
       if (!FeatureFlags.of(resource).isEnabled(cxapi.AUTOMATIC_L1_TRAITS)) {
         const msg = `Couldn't find trait for ${resource}, install one explicitly or enable the feature flag '${cxapi.AUTOMATIC_L1_TRAITS}'`;
-        throw new ValidationError('TraitNotFound', msg, resource);
+        throw new ValidationError(lit`TraitNotFound`, msg, resource);
       }
       factory = this.defaultFactoryFor(resource.cfnResourceType);
     }

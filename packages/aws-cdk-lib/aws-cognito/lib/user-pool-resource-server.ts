@@ -4,6 +4,7 @@ import type { IResource } from '../../core';
 import { Resource } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IUserPoolRef, IUserPoolResourceServerRef, UserPoolResourceServerReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
@@ -104,7 +105,7 @@ export class UserPoolResourceServer extends Resource implements IUserPoolResourc
         return {
           identifier: userPoolResourceServerId,
           get userPoolId(): string {
-            throw new UnscopedValidationError('UserPoolIdAvailableUser', 'userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
+            throw new UnscopedValidationError(lit`UserPoolIdAvailableUser`, 'userPoolId is not available on UserPoolResourceServer.fromUserPoolResourceServiceId().');
           },
         };
       }
