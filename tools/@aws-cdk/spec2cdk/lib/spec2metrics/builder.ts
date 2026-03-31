@@ -319,7 +319,12 @@ class ResourceFactoryGenerator {
 
     const { nsMetrics, dimensionSetClass } = found;
     const factoryKey = `${nsMetrics.namespace}::from${this.resource.name}`;
-    if (this.generatedFactories.has(factoryKey)) return;
+    if (this.generatedFactories.has(factoryKey)) {
+      throw Error(
+        `${this.resource.name}, factory:${factoryKey} already exists, trying to generate ${dimSet}` +
+        ' This is a sign that this dim-set should be associated with another resource',
+      );
+    }
 
     if (dimSet.dimensions.some(d => d.value)) return;
 
