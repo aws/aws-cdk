@@ -114,7 +114,7 @@ export interface InternetGatewayOptions{
 export interface VPNGatewayV2Options {
   /**
    * The type of VPN connection the virtual private gateway supports.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html#cfn-ec2-vpngateway-type
    */
   readonly type: VpnConnectionType;
 
@@ -135,7 +135,7 @@ export interface VPNGatewayV2Options {
   /**
    * Subnets where the route propagation should be added.
    *
-   * @default - no propogation for routes
+   * @default - no propagation for routes
    */
   readonly vpnRoutePropagation?: SubnetSelection[];
 }
@@ -203,10 +203,10 @@ export interface IVpcV2 extends IVpc {
   addInternetGateway(options?: InternetGatewayOptions): InternetGateway;
 
   /**
-   * Adds VPN Gateway to VPC and set route propogation.
+   * Adds VPN Gateway to VPC and set route propagation.
    * For more information, see the {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpngateway.html}.
    *
-   * @default - no route propogation
+   * @default - no route propagation
    */
   enableVpnGatewayV2(options: VPNGatewayV2Options): VPNGatewayV2;
 
