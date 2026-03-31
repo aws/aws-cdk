@@ -1,10 +1,10 @@
-import * as cdk from 'aws-cdk-lib/core';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib/core';
 import type { Construct } from 'constructs';
-import { LambdaMetrics } from '../../lib/services/aws-lambda/metrics.generated';
+import { LambdaMetrics } from '../lib/services/aws-lambda/metrics.generated';
 
 class MetricsDashboard extends cdk.Stack {
   public constructor(scope: Construct, id: string, props?: cdk.StackProps) {

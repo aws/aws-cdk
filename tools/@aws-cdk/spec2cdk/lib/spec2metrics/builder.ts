@@ -69,14 +69,17 @@ class MetricsServiceModule extends BaseServiceSubmodule {
 
 export interface MetricsBuilderProps extends LibraryBuilderProps {
   filePattern?: string;
+  moduleNamePrefix?: string;
 }
 
 export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
   private readonly filePattern: string;
+  private readonly moduleNamePrefix: string;
 
   public constructor(props: MetricsBuilderProps) {
     super(props);
     this.filePattern = props.filePattern ?? '%moduleName%/metrics.generated.ts';
+    this.moduleNamePrefix = props.moduleNamePrefix ?? '@aws-cdk/metrics-facade-alpha';
   }
 
   protected createServiceSubmodule(service: Service, submoduleName: string): MetricsServiceModule {
@@ -171,7 +174,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
   }
 
   private createMetricsModule(submodule: MetricsServiceModule, service: Service): LocatedModule<Module> {
-    const module = new Module(`@aws-cdk/mixins-preview/${submodule.submoduleName}/metrics`);
+    const module = new Module(`${this.moduleNamePrefix}/${submodule.submoduleName}/metrics`);
     const filePath = this.pathFor(this.filePattern, submodule.submoduleName, service);
     submodule.registerModule({ module, filePath });
     this.rememberModule({ module, filePath });

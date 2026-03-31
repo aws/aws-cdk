@@ -6,6 +6,7 @@ import type { PackageBaseNames } from '../util/jsii';
 
 export interface MetricsGenerateOptions extends Pick<Spec2CdkOptions<typeof MetricsBuilder>, 'outputPath' | 'clearOutput' | 'debug'> {
   readonly packageBases: PackageBaseNames;
+  readonly moduleNamePrefix?: string;
 }
 
 export async function generateAll(options: MetricsGenerateOptions): Promise<GeneratorResult> {
