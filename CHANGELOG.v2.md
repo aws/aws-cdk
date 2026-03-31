@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.246.0](https://github.com/aws/aws-cdk/compare/v2.245.0...v2.246.0) (2026-03-31)
+
+
+### Features
+
+* **bedrock:** add MiniMax and GLM foundation model identifiers ([#37348](https://github.com/aws/aws-cdk/issues/37348)) ([2015344](https://github.com/aws/aws-cdk/commit/201534444ac183959119c1849f34931fa8f3d18d)), closes [#37347](https://github.com/aws/aws-cdk/issues/37347)
+
+
+### Bug Fixes
+
+* **dynamodb:** throw error when grantee is an unsupported ServicePrincipal ([#37335](https://github.com/aws/aws-cdk/issues/37335)) ([d12754f](https://github.com/aws/aws-cdk/commit/d12754fdeda48181b235cbf563358ffeaa1e4c2f)), closes [#35817](https://github.com/aws/aws-cdk/issues/35817) [/github.com/aws/aws-cdk/issues/37273#issuecomment-4099645443](https://github.com/aws//github.com/aws/aws-cdk/issues/37273/issues/issuecomment-4099645443)
+* **lambda-nodejs:** use powershell for spawn steps on Windows ([#37412](https://github.com/aws/aws-cdk/issues/37412)) ([a92105c](https://github.com/aws/aws-cdk/commit/a92105c64c4ff30bd85f506ef4f7dec39a923871)), closes [#37387](https://github.com/aws/aws-cdk/issues/37387)
+
+
+### Reverts
+
+* **core:** add source tracing for L1 construct property mutations ([#37415](https://github.com/aws/aws-cdk/issues/37415)) ([4fd0002](https://github.com/aws/aws-cdk/commit/4fd000271d26a3dd9f1617800d07e02b40af7db1)), closes [aws/aws-cdk#37285](https://github.com/aws/aws-cdk/issues/37285)
+
 ## [2.245.0](https://github.com/aws/aws-cdk/compare/v2.244.0...v2.245.0) (2026-03-27)
 
 
