@@ -4,7 +4,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3tables from 'aws-cdk-lib/aws-s3tables';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
 import { Resource, UnscopedValidationError, Token } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -570,7 +570,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidTableBucketName',
+        lit`InvalidTableBucketName`,
         `Invalid S3 table bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -617,7 +617,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidUnreferencedFileRemovalProperty',
+        lit`InvalidUnreferencedFileRemovalProperty`,
         `Invalid UnreferencedFileRemovalProperty})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -747,10 +747,10 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
           },
         };
       } else {
-        throw new UnscopedValidationError('InvalidEncryptionConfiguration', 'Expected encryption = `KMS` with user provided encryption key');
+        throw new UnscopedValidationError(lit`InvalidEncryptionConfiguration`, 'Expected encryption = `KMS` with user provided encryption key');
       }
     }
-    throw new UnscopedValidationError('UnknownEncryptionConfiguration', `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
+    throw new UnscopedValidationError(lit`UnknownEncryptionConfiguration`, `Unknown encryption configuration detected: ${props.encryption} with key ${props.encryptionKey}`);
   }
 
   /**

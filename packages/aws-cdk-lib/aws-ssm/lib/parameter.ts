@@ -15,6 +15,7 @@ import {
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -520,7 +521,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterArn(scope: Construct, id: string, stringParameterArn: string): IStringParameter {
     if (Token.isUnresolved(stringParameterArn)) {
-      throw new ValidationError('StringParameterArnCannotBeUnresolvedToken', 'stringParameterArn cannot be an unresolved token', scope);
+      throw new ValidationError(lit`StringParameterArnCannotBeUnresolvedToken`, 'stringParameterArn cannot be an unresolved token', scope);
     }
 
     // has to be the same region
@@ -529,13 +530,13 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const arnParts = stringParameterArn.split(':');
     const stackRegion = Stack.of(scope).region;
     if (arnParts.length !== 6) {
-      throw new ValidationError('UnexpectedStringParameterArnFormat', 'unexpected StringParameterArn format', scope);
+      throw new ValidationError(lit`UnexpectedStringParameterArnFormat`, 'unexpected StringParameterArn format', scope);
     } else if (Token.isUnresolved(stackRegion)) {
       // Region is unknown during synthesis, emit a warning for visibility
       Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-ssm:crossAccountReferenceSameRegion', 'Cross-account references will only work within the same region');
     } else if (!Token.isUnresolved(stackRegion) && arnParts[3] !== stackRegion) {
       // If the region is known, it must match the region specified in the ARN string
-      throw new ValidationError('StringParameterArnMustBeSameRegion', 'stringParameterArn must be in the same region as the stack', scope);
+      throw new ValidationError(lit`StringParameterArnMustBeSameRegion`, 'stringParameterArn must be in the same region as the stack', scope);
     }
 
     const parameterType = ParameterValueType.STRING;
@@ -557,10 +558,10 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static fromStringParameterAttributes(scope: Construct, id: string, attrs: StringParameterAttributes): IStringParameter {
     if (!attrs.parameterName) {
-      throw new ValidationError('ParameterNameCannotBeEmpty', 'parameterName cannot be an empty string', scope);
+      throw new ValidationError(lit`ParameterNameCannotBeEmpty`, 'parameterName cannot be an empty string', scope);
     }
     if (attrs.type && ![ParameterType.STRING, ParameterType.AWS_EC2_IMAGE_ID].includes(attrs.type)) {
-      throw new ValidationError('FromStringParameterAttributesUnsupportedType', `fromStringParameterAttributes does not support ${attrs.type}. Please use ParameterType.STRING or ParameterType.AWS_EC2_IMAGE_ID`, scope);
+      throw new ValidationError(lit`FromStringParameterAttributesUnsupportedType`, `fromStringParameterAttributes does not support ${attrs.type}. Please use ParameterType.STRING or ParameterType.AWS_EC2_IMAGE_ID`, scope);
     }
 
     const type = attrs.type ?? attrs.valueType ?? ParameterValueType.STRING;
@@ -672,7 +673,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    */
   public static valueForTypedStringParameter(scope: Construct, parameterName: string, type = ParameterType.STRING, version?: number): string {
     if (type === ParameterType.STRING_LIST) {
-      throw new ValidationError('ValueForTypedStringParameterDoesNotSupportStringList', 'valueForTypedStringParameter does not support STRING_LIST, '
+      throw new ValidationError(lit`ValueForTypedStringParameterDoesNotSupportStringList`, 'valueForTypedStringParameter does not support STRING_LIST, '
         +'use valueForTypedListParameter instead', scope);
     }
     const stack = Stack.of(scope);
@@ -719,11 +720,11 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     validateParameterName(this, this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
-      throw new ValidationError('DescriptionTooLong', 'Description cannot be longer than 1024 characters.', this);
+      throw new ValidationError(lit`DescriptionTooLong`, 'Description cannot be longer than 1024 characters.', this);
     }
 
     if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
-      throw new ValidationError('InvalidParameterType', 'The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?', this);
+      throw new ValidationError(lit`InvalidParameterType`, 'The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?', this);
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -778,7 +779,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
    */
   public static fromListParameterAttributes(scope: Construct, id: string, attrs: ListParameterAttributes): IStringListParameter {
     if (!attrs.parameterName) {
-      throw new ValidationError('ParameterNameCannotBeEmpty', 'parameterName cannot be an empty string', scope);
+      throw new ValidationError(lit`ParameterNameCannotBeEmpty`, 'parameterName cannot be an empty string', scope);
     }
 
     const type = attrs.elementType ?? ParameterValueType.STRING;
@@ -828,7 +829,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     addConstructMetadata(this, props);
 
     if (props.stringListValue.find(str => !Token.isUnresolved(str) && str.indexOf(',') !== -1)) {
-      throw new ValidationError('StringListParameterCannotContainCommas', 'Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.', this);
+      throw new ValidationError(lit`StringListParameterCannotContainCommas`, 'Values of a StringList SSM Parameter cannot contain the \',\' character. Use a string parameter instead.', this);
     }
 
     if (props.allowedPattern && !Token.isUnresolved(props.stringListValue)) {
@@ -838,7 +839,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
     validateParameterName(this, this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
-      throw new ValidationError('DescriptionTooLong', 'Description cannot be longer than 1024 characters.', this);
+      throw new ValidationError(lit`DescriptionTooLong`, 'Description cannot be longer than 1024 characters.', this);
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -878,7 +879,7 @@ function _assertValidValue(scope: Construct, value: string, allowedPattern: stri
     return;
   }
   if (!new RegExp(allowedPattern).test(value)) {
-    throw new ValidationError('SuppliedValueDoesNotMatchPattern', `The supplied value (${value}) does not match the specified allowedPattern (${allowedPattern})`, scope);
+    throw new ValidationError(lit`SuppliedValueDoesNotMatchPattern`, `The supplied value (${value}) does not match the specified allowedPattern (${allowedPattern})`, scope);
   }
 }
 
@@ -889,9 +890,9 @@ function makeIdentityForImportedValue(parameterName: string) {
 function validateParameterName(scope: Construct, parameterName: string) {
   if (Token.isUnresolved(parameterName)) { return; }
   if (parameterName.length > 2048) {
-    throw new ValidationError('ParameterNameTooLong', 'name cannot be longer than 2048 characters.', scope);
+    throw new ValidationError(lit`ParameterNameTooLong`, 'name cannot be longer than 2048 characters.', scope);
   }
   if (!parameterName.match(/^[\/\w.-]+$/)) {
-    throw new ValidationError('ParameterNameInvalidCharacters', `name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`, scope);
+    throw new ValidationError(lit`ParameterNameInvalidCharacters`, `name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`, scope);
   }
 }
