@@ -36,28 +36,28 @@ interface EksCallOptions {
 }
 
 /**
- * Properties for calling a EKS endpoint with EksCall using JSONPath
+ * Properties for calling an EKS endpoint with EksCall using JSONPath
  */
 export interface EksCallJsonPathProps extends sfn.TaskStateJsonPathBaseProps, EksCallOptions { }
 
 /**
- * Properties for calling a EKS endpoint with EksCall using JSONata
+ * Properties for calling an EKS endpoint with EksCall using JSONata
  */
 export interface EksCallJsonataProps extends sfn.TaskStateJsonataBaseProps, EksCallOptions { }
 
 /**
- * Properties for calling a EKS endpoint with EksCall
+ * Properties for calling an EKS endpoint with EksCall
  */
 export interface EksCallProps extends sfn.TaskStateBaseProps, EksCallOptions { }
 
 /**
- * Call a EKS endpoint as a Task
+ * Call an EKS endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
  */
 export class EksCall extends sfn.TaskStateBase {
   /**
-   * Call a EKS endpoint as a Task that using JSONPath
+   * Call an EKS endpoint as a Task that using JSONPath
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
    */
@@ -66,7 +66,7 @@ export class EksCall extends sfn.TaskStateBase {
   }
 
   /**
-   * Call a EKS endpoint as a Task that using JSONata
+   * Call an EKS endpoint as a Task that using JSONata
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
    */
@@ -133,7 +133,7 @@ export class EksCall extends sfn.TaskStateBase {
 }
 
 /**
- * Method type of a EKS call
+ * Method type of an EKS call
  */
 export enum HttpMethods {
   /**

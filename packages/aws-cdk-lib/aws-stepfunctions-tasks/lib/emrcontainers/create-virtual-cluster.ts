@@ -11,7 +11,7 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 enum ContainerProviderTypes {
 
   /**
-   * Supported container provider type for a EKS Cluster
+   * Supported container provider type for an EKS Cluster
    */
   EKS = 'EKS',
 }
