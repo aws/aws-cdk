@@ -267,7 +267,7 @@ export class Source {
    * Process objects such that it escapes token output suitable for JSON output.
    *
    * @param scope Parent construct scope
-   * @returns Object with with tokens escaped for JSON output.
+   * @returns Object with tokens escaped for JSON output.
    */
   private static escapeTokens(scope: Construct, obj: any): any {
     if (Token.isUnresolved(obj)) {
