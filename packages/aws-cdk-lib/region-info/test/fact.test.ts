@@ -1,3 +1,4 @@
+import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
 import { Fact, FactName } from '../lib';
 import { AWS_REGIONS } from '../lib/aws-entities';
 
@@ -107,5 +108,12 @@ describe('register', () => {
 
   test('regions does not return duplicate regions', () => {
     expect(new Set(Fact.regions).size == Fact.regions.length).toBeTruthy();
+  });
+
+  test('Fact.register() does not allow prototype pollution', () => {
+    assertNoPrototypePollution(() => {
+      // WHEN
+      Fact.register({ region: '__proto__', name: 'evil', value: 'evil' });
+    });
   });
 });
