@@ -933,7 +933,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = this.attachedSecret.encryptionKey;
     this.secretName = this.attachedSecret.secretName;
 
-    // This allows to reference the secret after attachment (dependency).
+    // This allows you to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
   }
