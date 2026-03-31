@@ -18,7 +18,7 @@ export class CredentialSpec {
   }
 
   /**
-   * Helper method to generate the ARN for a SSM parameter. Used to avoid duplication of logic in derived classes.
+   * Helper method to generate the ARN for an SSM parameter. Used to avoid duplication of logic in derived classes.
    */
   protected static arnForSsmParameter(parameter: IParameter) {
     return parameter.parameterArn;
@@ -70,7 +70,7 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
   }
 
   /**
-   * Loads the CredSpec from a SSM parameter.
+   * Loads the CredSpec from an SSM parameter.
    *
    * @param parameter The SSM parameter
    * @returns CredSpec with it's locations set to the SSM parameter's ARN.
@@ -100,7 +100,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
   }
 
   /**
-   * Loads the CredSpec from a SSM parameter.
+   * Loads the CredSpec from an SSM parameter.
    *
    * @param parameter The SSM parameter
    * @returns CredSpec with it's locations set to the SSM parameter's ARN.

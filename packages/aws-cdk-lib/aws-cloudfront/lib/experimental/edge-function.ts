@@ -225,7 +225,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn };
   }
 
-  /** Create a support stack and function in us-east-1, and a SSM reader in-region */
+  /** Create a support stack and function in us-east-1, and an SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
