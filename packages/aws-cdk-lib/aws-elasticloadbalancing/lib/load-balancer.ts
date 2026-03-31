@@ -244,7 +244,7 @@ export enum LoadBalancingProtocol {
 /**
  * A load balancer with a single listener
  *
- * Routes to a fleet of of instances in a VPC.
+ * Routes to a fleet of instances in a VPC.
  */
 @propertyInjectable
 export class LoadBalancer extends Resource implements ILoadBalancer, IConnectable {

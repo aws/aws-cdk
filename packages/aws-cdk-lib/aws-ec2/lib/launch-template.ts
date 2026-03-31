@@ -234,7 +234,7 @@ export interface LaunchTemplateProps {
    *
    * The version description must be maximum 255 characters long.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#cfn-ec2-launchtemplate-versiondescription
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#cfn-ec2-launchtemplate-versiondescription
    *
    * @default - No description
    */
@@ -846,7 +846,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // tagSpecification: undefined
 
         // CDK only has placement groups, not placement.
-        // Specifiying options other than placementGroup is not supported yet.
+        // Specifying options other than placementGroup is not supported yet.
         // placement: undefined,
 
       },
