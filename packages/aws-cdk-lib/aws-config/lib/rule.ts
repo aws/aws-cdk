@@ -818,7 +818,7 @@ export class ManagedRuleIdentifiers {
   public static readonly CLB_MULTIPLE_AZ = 'CLB_MULTIPLE_AZ';
   /**
    * Checks whether an AWS CloudFormation stack's actual configuration differs, or has drifted,
-   * from it's expected configuration.
+   * from its expected configuration.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/cloudformation-stack-drift-detection-check.html
    */
   public static readonly CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK = 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK';
