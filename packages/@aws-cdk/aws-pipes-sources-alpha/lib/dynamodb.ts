@@ -18,7 +18,7 @@ export interface DynamoDBSourceParameters extends StreamSourceParameters {
 }
 
 /**
- * A source that reads from an DynamoDB stream.
+ * A source that reads from a DynamoDB stream.
  */
 export class DynamoDBSource extends StreamSource {
   private readonly table: ITableV2;

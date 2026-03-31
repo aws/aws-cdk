@@ -56,7 +56,7 @@ export interface IWorkflow extends cdk.IResource {
   addWeeklyScheduledTrigger(id: string, options: WeeklyScheduleTriggerOptions): CfnTrigger;
 
   /**
-   * Add an custom-scheduled trigger to the workflow
+   * Add a custom-scheduled trigger to the workflow
    */
   addCustomScheduledTrigger(id: string, options: CustomScheduledTriggerOptions): CfnTrigger;
 }

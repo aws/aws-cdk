@@ -141,7 +141,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.LambdaDeploymentGroup';
 
   /**
-   * Import an Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
+   * Import a Lambda Deployment Group defined either outside the CDK app, or in a different AWS region.
    *
    * Account and region for the DeploymentGroup are taken from the application.
    *
