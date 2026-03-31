@@ -155,7 +155,7 @@ describe('security group', () => {
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
     expect(() => {
       sg.addEgressRule(Peer.anyIpv4(), Port.allTraffic(), 'All traffic');
-    }).toThrow(/Cannot add/);
+    }).toThrow(/allowAllOutbound=true \(for ipv4\).*allowAllIpv6Outbound=true \(for ipv6\)/);
   });
 
   test('all ipv6 outbound rule cannot be added after creation', () => {
@@ -167,7 +167,7 @@ describe('security group', () => {
     const sg = new SecurityGroup(stack, 'SG1', { vpc, allowAllOutbound: false });
     expect(() => {
       sg.addEgressRule(Peer.anyIpv6(), Port.allTraffic(), 'All traffic');
-    }).toThrow(/Cannot add/);
+    }).toThrow(/allowAllOutbound=true \(for ipv4\).*allowAllIpv6Outbound=true \(for ipv6\)/);
   });
 
   test('immutable imports do not add rules', () => {
