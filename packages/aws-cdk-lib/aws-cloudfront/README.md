@@ -1377,7 +1377,7 @@ You can customize the default certificate aliases. This is intended to be used i
 
 Example:
 
-[create a distribution with an default certificate example](test/example.default-cert-alias.lit.ts)
+[create a distribution with a default certificate example](test/example.default-cert-alias.lit.ts)
 
 #### ACM certificate
 

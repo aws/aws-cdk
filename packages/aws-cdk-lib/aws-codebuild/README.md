@@ -1003,7 +1003,7 @@ const project = new codebuild.Project(this, 'MyProject', {
 
 ### Definition of VPC configuration in CodeBuild Project
 
-Typically, resources in an VPC are not accessible by AWS CodeBuild. To enable
+Typically, resources in a VPC are not accessible by AWS CodeBuild. To enable
 access, you must provide additional VPC-specific configuration information as
 part of your CodeBuild project configuration. This includes the VPC ID, the
 VPC subnet IDs, and the VPC security group IDs. VPC-enabled builds are then

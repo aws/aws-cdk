@@ -1745,7 +1745,7 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
-It is also possible to encrypt the block devices. In this example we will create an customer managed key encrypted EBS-backed root device:
+It is also possible to encrypt the block devices. In this example we will create a customer managed key encrypted EBS-backed root device:
 
 ```ts
 import { Key } from 'aws-cdk-lib/aws-kms';
