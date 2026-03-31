@@ -135,7 +135,7 @@ export class HttpsRedirect extends Construct {
    * _any_ region. So I could create a CloudFront distribution in `us-east-2` if I wanted
    * to (maybe the rest of my application lives there). The problem is that some supporting resources
    * that CloudFront uses (i.e. ACM Certificates) are required to exist in `us-east-1`. This means
-   * that if I want to create a CloudFront distribution in `us-east-2` I still need to create a ACM certificate in
+   * that if I want to create a CloudFront distribution in `us-east-2` I still need to create an ACM certificate in
    * `us-east-1`.
    *
    * In order to do this correctly we need to know which region the CloudFront distribution is being created in.
