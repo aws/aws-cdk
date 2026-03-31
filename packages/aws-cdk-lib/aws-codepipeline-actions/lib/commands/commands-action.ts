@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Action } from '../action';
 
 /**
@@ -71,11 +72,11 @@ export class CommandsAction extends Action {
     });
 
     if (props.commands.length < 1 || props.commands.length > 50) {
-      throw new cdk.UnscopedValidationError('InvalidCommandsLength', `The length of the commands array must be between 1 and 50, got: ${props.commands.length}`);
+      throw new cdk.UnscopedValidationError(lit`InvalidCommandsLength`, `The length of the commands array must be between 1 and 50, got: ${props.commands.length}`);
     }
 
     if (props.outputVariables !== undefined && (props.outputVariables.length < 1 || props.outputVariables.length > 15)) {
-      throw new cdk.UnscopedValidationError('InvalidOutputVariablesLength', `The length of the outputVariables array must be between 1 and 15, got: ${props.outputVariables.length}`);
+      throw new cdk.UnscopedValidationError(lit`InvalidOutputVariablesLength`, `The length of the outputVariables array must be between 1 and 15, got: ${props.outputVariables.length}`);
     }
 
     this.outputVariables = props.outputVariables || [];
@@ -89,7 +90,7 @@ export class CommandsAction extends Action {
    */
   public variable(variableName: string): string {
     if (!this.outputVariables.includes(variableName)) {
-      throw new cdk.UnscopedValidationError('VariableNotExported', `Variable '${variableName}' is not exported by \`outputVariables\`, exported variables: ${this.outputVariables.join(', ')}`);
+      throw new cdk.UnscopedValidationError(lit`VariableNotExported`, `Variable '${variableName}' is not exported by \`outputVariables\`, exported variables: ${this.outputVariables.join(', ')}`);
     }
     return this.variableExpression(variableName);
   }
