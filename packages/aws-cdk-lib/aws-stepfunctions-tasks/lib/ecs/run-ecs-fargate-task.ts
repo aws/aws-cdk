@@ -3,6 +3,7 @@ import { EcsRunTaskBase } from './run-ecs-task-base';
 import type * as ec2 from '../../../aws-ec2';
 import type * as ecs from '../../../aws-ecs';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Properties to define an ECS service
@@ -49,11 +50,11 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
 export class RunEcsFargateTask extends EcsRunTaskBase {
   constructor(props: RunEcsFargateTaskProps) {
     if (!props.taskDefinition.isFargateCompatible) {
-      throw new UnscopedValidationError('SuppliedTaskdefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with Fargate');
+      throw new UnscopedValidationError(lit`SuppliedTaskdefinitionConfiguredCompatibility`, 'Supplied TaskDefinition is not configured for compatibility with Fargate');
     }
 
     if (!props.taskDefinition.defaultContainer) {
-      throw new UnscopedValidationError('TaskdefinitionLeastEssentialContainer', 'A TaskDefinition must have at least one essential container');
+      throw new UnscopedValidationError(lit`TaskdefinitionLeastEssentialContainer`, 'A TaskDefinition must have at least one essential container');
     }
 
     super({
