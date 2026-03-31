@@ -1376,9 +1376,8 @@ function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?
 }
 
 function validateMinScaleDownDelay(scope: Construct, minScaleDownDelay?: Duration): void {
-  if (minScaleDownDelay === undefined) return;
-  const minutes = minScaleDownDelay.toMinutes();
-  if (Token.isUnresolved(minutes)) return;
+  if (minScaleDownDelay === undefined || minScaleDownDelay.isUnresolved()) return;
+  const minutes = minScaleDownDelay.toMinutes({ integral: false });
   if (minutes === 0) return;
   if (minutes < 20 || minutes > 10080) {
     throw new ValidationError(
