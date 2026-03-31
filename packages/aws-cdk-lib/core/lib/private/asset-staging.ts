@@ -159,7 +159,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   }
 
   /**
-   * copy files from the the output volume to the host where this is executed
+   * copy files from the output volume to the host where this is executed
    * @param outputPath - path to folder where files should be copied to - without trailing slash
    */
   private copyOutputTo(outputPath: string) {
