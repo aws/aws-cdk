@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **dynamodb:** throw error when grantee is an unsupported ServicePrincipal ([#37335](https://github.com/aws/aws-cdk/issues/37335)) ([d12754f](https://github.com/aws/aws-cdk/commit/d12754fdeda48181b235cbf563358ffeaa1e4c2f)), closes [#35817](https://github.com/aws/aws-cdk/issues/35817) [/github.com/aws/aws-cdk/issues/37273#issuecomment-4099645443](https://github.com/aws//github.com/aws/aws-cdk/issues/37273/issues/issuecomment-4099645443)
 * **lambda-nodejs:** use powershell for spawn steps on Windows ([#37412](https://github.com/aws/aws-cdk/issues/37412)) ([a92105c](https://github.com/aws/aws-cdk/commit/a92105c64c4ff30bd85f506ef4f7dec39a923871)), closes [#37387](https://github.com/aws/aws-cdk/issues/37387)
+* **core:** noisy property deprecation warnings ([#37415](https://github.com/aws/aws-cdk/pull/37415)) ([4fd0002](https://github.com/aws/aws-cdk/commit/4fd000271d26a3dd9f1617800d07e02b40af7db1)), closes [#37407](https://github.com/aws/aws-cdk/issues/37407)
 
 
 ### Reverts
