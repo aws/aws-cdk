@@ -17,7 +17,7 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   /**
    * The default State Machine that handles all requests from this API.
    *
-   * This stateMachine will be used as a the default integration for all methods in
+   * This stateMachine will be used as the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
   readonly stateMachine: sfn.IStateMachine;
