@@ -976,9 +976,10 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     this.enableIamAuthentication = props.iamAuthentication;
 
     const enablePerformanceInsights = props.enablePerformanceInsights
-      || props.performanceInsightRetention !== undefined
-      || props.performanceInsightEncryptionKey !== undefined
-      || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED;
+      ?? (props.performanceInsightRetention !== undefined
+        || props.performanceInsightEncryptionKey !== undefined
+        || props.databaseInsightsMode === DatabaseInsightsMode.ADVANCED
+        || undefined);
 
     if (props.domain) {
       this.domainId = props.domain;
@@ -1018,7 +1019,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
       enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
-      enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
+      enablePerformanceInsights: enablePerformanceInsights,
       iops,
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleRef.roleArn,

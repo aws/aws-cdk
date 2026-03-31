@@ -779,7 +779,7 @@ export class EndpointAccess {
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.
    *
-   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
+   * By default, the endpoint is exposed to all addresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
    * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
    * specify include the addresses that worker nodes and Fargate pods (if you use them)
    * access the public endpoint from.
@@ -798,7 +798,7 @@ export class EndpointAccess {
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic to the endpoint will stay within your VPC.
    *
-   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
+   * By default, the endpoint is exposed to all addresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
    * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
    * specify include the addresses that worker nodes and Fargate pods (if you use them)
    * access the public endpoint from.
@@ -1868,6 +1868,28 @@ export class Cluster extends ClusterBase {
         throw new ValidationError('RequiresPrivateEndpointAccess', 'Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.', this);
       }
 
+      // Validate that kubectl subnets are not isolated. Isolated subnets have no
+      // internet access by definition, so the kubectl Lambda will not be able to
+      // reach the EKS API, STS, or other AWS service endpoints required for
+      // kubectl operations (including the CoreDNS compute type patch).
+      // Only check for CDK-created VPCs where we know isolated subnets have no egress.
+      // Imported VPCs may have VPC endpoints configured that we can't detect.
+      // See https://github.com/aws/aws-cdk/issues/26613
+      if (this.vpc instanceof ec2.Vpc) {
+        const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
+        const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
+        if (hasIsolatedSubnets) {
+          throw new ValidationError(
+            'IsolatedKubectlSubnet',
+            'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
+            + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
+            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
+            + 'and other AWS services detailed here https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
+            this,
+          );
+        }
+      }
+
       this.kubectlPrivateSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
@@ -2650,7 +2672,7 @@ export interface RemoteNodeNetwork {
   /**
    * Specifies the list of remote node CIDRs.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotenodenetwork.html#cfn-eks-cluster-remotenodenetwork-cidrs
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotenodenetwork.html#cfn-eks-cluster-remotenodenetwork-cidrs
    */
   readonly cidrs: string[];
 }
@@ -2662,7 +2684,7 @@ export interface RemotePodNetwork {
   /**
    * Specifies the list of remote pod CIDRs.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotepodnetwork.html#cfn-eks-cluster-remotepodnetwork-cidrs
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotepodnetwork.html#cfn-eks-cluster-remotepodnetwork-cidrs
    */
   readonly cidrs: string[];
 }

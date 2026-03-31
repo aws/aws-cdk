@@ -2,16 +2,16 @@ import type { IEventSourceMapping } from './event-source-mapping';
 import type { IFunction } from './function-base';
 
 /**
- * The format target function should recieve record in.
+ * The format target function should receive record in.
  */
 export class EventRecordFormat {
   /**
-   * The target function will recieve records as json objects.
+   * The target function will receive records as json objects.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will recieve records in same format as the schema source.
+   * The target function will receive records in same format as the schema source.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 

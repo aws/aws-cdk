@@ -439,6 +439,27 @@ Size.mebibytes(2).toKibibytes()                                             // y
 Size.kibibytes(2050).toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })  // yields 2
 ```
 
+## Bitrate
+
+To make specification of bitrate values unambiguous, a class called
+`Bitrate` is available.
+
+An instance of `Bitrate` is initialized through one of its static factory methods:
+
+```ts
+Bitrate.bps(5000)   // 5,000 bits per second
+Bitrate.kbps(500)   // 500 kilobits per second
+Bitrate.mbps(10)    // 10 megabits per second
+Bitrate.gbps(1)     // 1 gigabit per second
+```
+
+Instances of `Bitrate` created with one of the units can be converted into others:
+
+```ts
+Bitrate.mbps(10).toBps()    // yields 10000000
+Bitrate.mbps(10).toKbps()  // yields 10000
+```
+
 ## Secrets
 
 To help avoid accidental storage of secrets as plain text, we use the `SecretValue` type to

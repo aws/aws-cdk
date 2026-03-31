@@ -2,6 +2,50 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.245.0](https://github.com/aws/aws-cdk/compare/v2.244.0...v2.245.0) (2026-03-27)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37332](https://github.com/aws/aws-cdk/issues/37332)) ([6cdf84a](https://github.com/aws/aws-cdk/commit/6cdf84aa9a50ef41dae54f14c2bcf4f48d46dbd1))
+* **autoscaling:** add instanceLifecyclePolicy support to AutoScalingGroup Property ([#36434](https://github.com/aws/aws-cdk/issues/36434)) ([b72ffcc](https://github.com/aws/aws-cdk/commit/b72ffcc343a7bff1745dfea4d1e8de4a0d6b998e))
+* **cloudfront:** use JavaScript runtime 2.0 as the default for CloudFront Functions (under feature flag) ([#35941](https://github.com/aws/aws-cdk/issues/35941)) ([cd0df14](https://github.com/aws/aws-cdk/commit/cd0df148fdb0d48b14d7d161641519942083b879))
+* **core:** add source tracing for L1 construct property mutations ([#37285](https://github.com/aws/aws-cdk/issues/37285)) ([f0b6da8](https://github.com/aws/aws-cdk/commit/f0b6da82b49da6611f871b67497db8d5004738a2))
+* **ecr-assets:** add support for docker build context ([#36930](https://github.com/aws/aws-cdk/issues/36930)) ([c0849ea](https://github.com/aws/aws-cdk/commit/c0849ea241c8f8707b26f07239aa1078b196bf1c)), closes [#31598](https://github.com/aws/aws-cdk/issues/31598)
+* **s3:** add blockedEncryptionTypes field to s3.Bucket ([#37047](https://github.com/aws/aws-cdk/issues/37047)) ([262e8a7](https://github.com/aws/aws-cdk/commit/262e8a76e7f50cefeceff265c7d135f35c0d520f)), closes [#36988](https://github.com/aws/aws-cdk/issues/36988)
+* **synthetics:** add enum value for Synthetics Canary NodeJS 3.1 runtime ([#37282](https://github.com/aws/aws-cdk/issues/37282)) ([af1e89c](https://github.com/aws/aws-cdk/commit/af1e89cbf7d9d96f0c23f05fb8bdca0e9d442b7d)), closes [/docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-3](https://github.com/aws//docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html/issues/CloudWatch_Synthetics_runtimeversion-syn-nodejs-3)
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** toolkit is unaware of CDK app errors ([#37294](https://github.com/aws/aws-cdk/issues/37294)) ([093de92](https://github.com/aws/aws-cdk/commit/093de927b4b5d0d0ad5c68580af1c7e7f56e12c6))
+* **eks:** throw error when kubectl subnets are isolated ([#37217](https://github.com/aws/aws-cdk/issues/37217)) ([73e5006](https://github.com/aws/aws-cdk/commit/73e50061168fc147d6af5fb60917ef003d385fd2)), closes [#26613](https://github.com/aws/aws-cdk/issues/26613)
+* **lambda:** fix typo in addPermission() warning message ([#37365](https://github.com/aws/aws-cdk/issues/37365)) ([fa21e62](https://github.com/aws/aws-cdk/commit/fa21e623484ad1ed191e542e93b16811a8ef08b6))
+* **lambda-nodejs:** use direct spawn for local bundling ([#37292](https://github.com/aws/aws-cdk/issues/37292)) ([9bf4263](https://github.com/aws/aws-cdk/commit/9bf4263ea631cae7c0cfff8872ec4fb3a3164cc1))
+* **mixin:** use withMixin in Stack to set mixin metadata in its constructs ([#37269](https://github.com/aws/aws-cdk/issues/37269)) ([293ce90](https://github.com/aws/aws-cdk/commit/293ce907d6c01e91e7f78bf9590e05aef4ae89a7)), closes [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.ts#L30](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.ts/issues/L30)
+* **rds:** enablePerformanceInsights false is ignored when other performance insight properties are set ([#37287](https://github.com/aws/aws-cdk/issues/37287)) ([b4bca75](https://github.com/aws/aws-cdk/commit/b4bca75d23832576840e6780bf5a62c260761cd7)), closes [#37051](https://github.com/aws/aws-cdk/issues/37051)
+* construct errors are rendered in a messy way ([#37290](https://github.com/aws/aws-cdk/issues/37290)) ([5104256](https://github.com/aws/aws-cdk/commit/5104256853a1cede1494ff065e9ce7abbce69e58))
+* **spec2cdk:** throw on unrecognized uppercase prefix in event pattern ([#37283](https://github.com/aws/aws-cdk/issues/37283)) ([c68f2f5](https://github.com/aws/aws-cdk/commit/c68f2f5961b24fba3f4a4b769e355b00d91fd6a1))
+
+## [2.244.0](https://github.com/aws/aws-cdk/compare/v2.243.0...v2.244.0) (2026-03-19)
+
+
+### Features
+
+* **codebuild:** add support for macOS 26 runners ([#37240](https://github.com/aws/aws-cdk/issues/37240)) ([1b7b292](https://github.com/aws/aws-cdk/commit/1b7b2929fccd786c0bd38ea735b90aef9e470106)), closes [#37241](https://github.com/aws/aws-cdk/issues/37241) [#35836](https://github.com/aws/aws-cdk/issues/35836)
+* update L1 CloudFormation resource definitions ([#37260](https://github.com/aws/aws-cdk/issues/37260)) ([40a5142](https://github.com/aws/aws-cdk/commit/40a5142771b1ea450a2f7c684e102548a626ddba))
+* **rds:** add standalone resource creation for ParameterGroup ([#37165](https://github.com/aws/aws-cdk/issues/37165)) ([5441a51](https://github.com/aws/aws-cdk/commit/5441a515b6aab9e091c7a09f96663c723b122bcf)), closes [#9741](https://github.com/aws/aws-cdk/issues/9741)
+* **ecs:** add forceNewDeployment feature for ecs service ([#35726](https://github.com/aws/aws-cdk/issues/35726)) ([d16dc7e](https://github.com/aws/aws-cdk/commit/d16dc7e433c4986f3473b2992ba36bee9fb64f1e)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
+* **mixins:** helpers to convert between Aspects and Mixins ([#37235](https://github.com/aws/aws-cdk/issues/37235)) ([4537f69](https://github.com/aws/aws-cdk/commit/4537f694f7b8da5fa038b994031998c85bfbe3c8))
+* **spec2cdk:** add `actions()` method to Grants classes ([#36987](https://github.com/aws/aws-cdk/issues/36987)) ([bbeaf5d](https://github.com/aws/aws-cdk/commit/bbeaf5df5aef3f926586b4fe94fbcb6f903da8ce))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** error annotations now have error codes ([#37270](https://github.com/aws/aws-cdk/issues/37270)) ([0b9629e](https://github.com/aws/aws-cdk/commit/0b9629e421a2edc41d749af13ba058eba14342fa))
+* **eks:** clear OCI repo/version after local pull for Helm v4 compatibility ([#37142](https://github.com/aws/aws-cdk/issues/37142)) ([e6a8804](https://github.com/aws/aws-cdk/commit/e6a88047b5776a69156ef5116930e5788ee550b7)), closes [/github.com/helm/helm/blob/v3.19.0/pkg/action/install.go#L753-L769](https://github.com/aws//github.com/helm/helm/blob/v3.19.0/pkg/action/install.go/issues/L753-L769) [/github.com/helm/helm/blob/main/pkg/action/install.go#L893-L909](https://github.com/aws//github.com/helm/helm/blob/main/pkg/action/install.go/issues/L893-L909)
+* all errors now have error codes ([#36934](https://github.com/aws/aws-cdk/issues/36934)) ([408c12f](https://github.com/aws/aws-cdk/commit/408c12f0b00fede5c3a8b1d43024e961087adcfa))
+
 ## [2.243.0](https://github.com/aws/aws-cdk/compare/v2.242.0...v2.243.0) (2026-03-11)
 
 

@@ -842,7 +842,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
-      Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+      Annotations.of(this)._addTrackableError('InsufficientSubnets', `Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
     this.subnetGroupRef = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {

@@ -51,7 +51,7 @@ export interface ApiKeyOptions extends ResourceOptions {
 
   /**
    * A description of the purpose of the API key.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
    * @default none
    */
   readonly description?: string;
@@ -77,21 +77,21 @@ export interface ApiKeyProps extends ApiKeyOptions {
 
   /**
    * An AWS Marketplace customer identifier to use when integrating with the AWS SaaS Marketplace.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-customerid
    * @default none
    */
   readonly customerId?: string;
 
   /**
    * Indicates whether the API key can be used by clients.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-enabled
    * @default true
    */
   readonly enabled?: boolean;
 
   /**
    * Specifies whether the key identifier is distinct from the created API key value.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-generatedistinctid
    * @default false
    */
   readonly generateDistinctId?: boolean;
