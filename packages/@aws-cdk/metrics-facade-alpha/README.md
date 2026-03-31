@@ -26,11 +26,12 @@ Resource-scoped metrics are created from a resource reference (e.g. a Lambda fun
 #### Metrics Basic Usage
 
 ```typescript
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
 
 // Works with L2 constructs
-const fn = new lambda.Function(scope, 'Function', { /* ... */ });
+declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 new cloudwatch.Alarm(scope, 'ErrorAlarm', {
@@ -41,21 +42,17 @@ new cloudwatch.Alarm(scope, 'ErrorAlarm', {
 });
 
 // Also works with L1 constructs
-const cfnFunction = new lambda.CfnFunction(scope, 'CfnFunction', { /* ... */ });
+declare const cfnFunction: lambda.CfnFunction;
 const cfnMetrics = LambdaMetrics.fromFunction(cfnFunction);
-
-new cloudwatch.CfnAlarm(scope, 'CfnAlarm', {
-  metricName: 'Errors',
-  namespace: 'AWS/Lambda',
-  // ...
-});
 ```
 
 #### Metric Features
 
 ```typescript
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
 
+declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 // FunctionName dimension is automatically injected from the function reference
@@ -65,8 +62,10 @@ const metric = fnMetrics.metricInvocations();
 **Statistic Override**: Override default statistics via `MetricOptions`
 
 ```typescript
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
 
+declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 // Default statistic for Duration is Average
