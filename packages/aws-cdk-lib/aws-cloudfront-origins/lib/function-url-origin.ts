@@ -42,7 +42,7 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
 }
 
 /**
- * Properties for configuring a origin using a standard Lambda Functions URLs.
+ * Properties for configuring an origin using a standard Lambda Functions URLs.
  */
 export interface FunctionUrlOriginBaseProps extends cloudfront.OriginProps { }
 

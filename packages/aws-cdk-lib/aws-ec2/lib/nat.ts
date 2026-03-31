@@ -84,7 +84,7 @@ export abstract class NatProvider {
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
    *
    * @deprecated use instanceV2. 'instance' is deprecated since NatInstanceProvider
-   * uses a instance image that has reached EOL on Dec 31 2023
+   * uses an instance image that has reached EOL on Dec 31 2023
    */
   public static instance(props: NatInstanceProps): NatInstanceProvider {
     return new NatInstanceProvider(props);

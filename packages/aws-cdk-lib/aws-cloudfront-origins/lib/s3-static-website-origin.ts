@@ -4,7 +4,7 @@ import * as cloudfront from '../../aws-cloudfront';
 import type { IBucket } from '../../aws-s3';
 
 /**
- * Properties for configuring a origin using a S3 bucket configured as a website endpoint
+ * Properties for configuring an origin using a S3 bucket configured as a website endpoint
  */
 export interface S3StaticWebsiteOriginProps extends HttpOriginProps { }
 

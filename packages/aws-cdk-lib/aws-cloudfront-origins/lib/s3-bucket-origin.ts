@@ -26,7 +26,7 @@ const KEY_ACTIONS: Record<string, string[]> = {
 };
 
 /**
- * Properties for configuring a origin using a standard S3 bucket
+ * Properties for configuring an origin using a standard S3 bucket
  */
 export interface S3BucketOriginBaseProps extends cloudfront.OriginProps { }
 
