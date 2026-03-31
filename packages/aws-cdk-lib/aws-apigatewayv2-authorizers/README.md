@@ -182,7 +182,6 @@ declare const role: iam.Role;
 const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
   role, // Set role if the Lambda function is in another account
-
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
