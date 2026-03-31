@@ -157,7 +157,7 @@ export class TopicRule extends Resource implements ITopicRule {
   }
 
   /**
-   * Add a action to the topic rule.
+   * Add an action to the topic rule.
    *
    * @param action the action to associate with the topic rule.
    */
