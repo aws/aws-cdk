@@ -11,6 +11,7 @@ import type * as sns from '../../aws-sns';
 import { Annotations, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -354,7 +355,7 @@ export class Trail extends Resource {
     this.node.addValidation({ validate: () => this.validateEventSelectors() });
 
     if (props.kmsKey && props.encryptionKey) {
-      throw new ValidationError('KmsKeyEncryptionKeySpecified', 'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
+      throw new ValidationError(lit`KmsKeyEncryptionKeySpecified`, 'Both kmsKey and encryptionKey must not be specified. Use only encryptionKey', this);
     }
 
     if (props.insightTypes) {
@@ -412,11 +413,11 @@ export class Trail extends Resource {
   @MethodMetadata()
   public addEventSelector(dataResourceType: DataResourceType, dataResourceValues: string[], options: AddEventSelectorOptions = {}) {
     if (dataResourceValues.length > 250) {
-      throw new ValidationError('MaximumDataElementsOneEvent', 'A maximum of 250 data elements can be in one event selector', this);
+      throw new ValidationError(lit`MaximumDataElementsOneEvent`, 'A maximum of 250 data elements can be in one event selector', this);
     }
 
     if (this.eventSelectors.length > 5) {
-      throw new ValidationError('MaximumEventSelectorsSupportedPer', 'A maximum of 5 event selectors are supported per trail.', this);
+      throw new ValidationError(lit`MaximumEventSelectorsSupportedPer`, 'A maximum of 5 event selectors are supported per trail.', this);
     }
 
     let includeAllManagementEvents;

@@ -22,6 +22,7 @@ import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import type { CfnResource, IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
@@ -76,7 +77,7 @@ export class IamResource {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastCustomProvided', 'At least 1 custom ARN must be provided.');
+      throw new UnscopedValidationError(lit`MustBeLeastCustomProvided`, 'At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }

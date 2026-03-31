@@ -9,6 +9,7 @@ import type { IResource, SecretValue } from '../../core';
 import { ArnFormat, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
@@ -427,7 +428,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new ValidationError('InvalidEmailIdentity', `Invalid email identity ARN: ${emailIdentityArn}`, scope);
+      throw new ValidationError(lit`InvalidEmailIdentity`, `Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;

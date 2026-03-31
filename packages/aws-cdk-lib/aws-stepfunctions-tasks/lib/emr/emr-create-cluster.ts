@@ -13,6 +13,7 @@ import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { Aws, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -277,7 +278,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       this._autoScalingRole = this._autoScalingRole || this.createAutoScalingRole();
       // If InstanceFleets are used and an AutoScaling Role is specified, throw an error
     } else if (this._autoScalingRole !== undefined) {
-      throw new ValidationError('AutoScalingRolesCannotBeSpecifiedWithInstanceFleets', 'Auto Scaling roles can not be specified with instance fleets.', this);
+      throw new ValidationError(lit`AutoScalingRolesCannotBeSpecifiedWithInstanceFleets`, 'Auto Scaling roles can not be specified with instance fleets.', this);
     }
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
@@ -286,7 +287,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       const idletimeOutSeconds = this.props.autoTerminationPolicyIdleTimeout.toSeconds();
 
       if (idletimeOutSeconds < 60 || idletimeOutSeconds > 604800) {
-        throw new ValidationError('AutoTerminationPolicyIdleTimeoutOutOfRange', `\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`, this);
+        throw new ValidationError(lit`AutoTerminationPolicyIdleTimeoutOutOfRange`, `\`autoTerminationPolicyIdleTimeout\` must be between 60 and 604800 seconds, got ${idletimeOutSeconds} seconds.`, this);
       }
     }
 
@@ -300,7 +301,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get serviceRole(): iam.IRole {
     if (this._serviceRole === undefined) {
-      throw new ValidationError('RoleNotAvailableYet', 'role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._serviceRole;
   }
@@ -312,7 +313,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get clusterRole(): iam.IRole {
     if (this._clusterRole === undefined) {
-      throw new ValidationError('RoleNotAvailableYet', 'role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._clusterRole;
   }
@@ -324,7 +325,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    */
   public get autoScalingRole(): iam.IRole {
     if (this._autoScalingRole === undefined) {
-      throw new ValidationError('RoleNotAvailableYet', 'role not available yet--use the object in a Task first', this);
+      throw new ValidationError(lit`RoleNotAvailableYet`, 'role not available yet--use the object in a Task first', this);
     }
     return this._autoScalingRole;
   }
@@ -522,7 +523,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     const prefix = releaseLabel.slice(0, 4);
     const versions = releaseLabel.slice(4).split('.');
     if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
-      throw new ValidationError('ReleaseLabelMustBeInCorrectFormat', `The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`, this);
+      throw new ValidationError(lit`ReleaseLabelMustBeInCorrectFormat`, `The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`, this);
     }
     return releaseLabel;
 
@@ -538,12 +539,12 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     if (this.props.stepConcurrencyLevel !== undefined && !cdk.Token.isUnresolved(this.props.stepConcurrencyLevel)) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
-        throw new ValidationError('StepConcurrencyLevelOutOfRange', `Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
+        throw new ValidationError(lit`StepConcurrencyLevelOutOfRange`, `Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`, this);
       }
       if (this.props.releaseLabel && this.props.stepConcurrencyLevel !== 1) {
         const [major, minor] = this.props.releaseLabel.slice(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new ValidationError('StepConcurrencyNotSupportedInOlderVersions', `Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
+          throw new ValidationError(lit`StepConcurrencyNotSupportedInOlderVersions`, `Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`, this);
         }
       }
     }
@@ -551,7 +552,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     // EMR EBS limitations https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
     if (this.props.ebsRootVolumeSize !== undefined &&
       (this.props.ebsRootVolumeSize.toGibibytes() < 15 || this.props.ebsRootVolumeSize.toGibibytes() > 100)) {
-      throw new ValidationError('EbsRootVolumeSizeOutOfRange',
+      throw new ValidationError(lit`EbsRootVolumeSizeOutOfRange`,
         `ebsRootVolumeSize must be between 15 and 100 GiB, but got ${this.props.ebsRootVolumeSize.toGibibytes()} GiB.`, this);
     }
 
@@ -559,17 +560,17 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       (this.props.ebsRootVolumeThroughput !== undefined || this.props.ebsRootVolumeIops !== undefined)) {
       const minVersion = '6.15.0';
       if (semver.lt(this.props.releaseLabel.slice(4), minVersion)) {
-        throw new ValidationError('EbsRootVolumeThroughputAndIopsNotSupportedInOlderVersions', `ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version ${minVersion} and above but got ${this.props.releaseLabel}.`, this);
+        throw new ValidationError(lit`EbsRootVolumeThroughputAndIopsNotSupportedInOlderVersions`, `ebsRootVolumeThroughput and ebsRootVolumeIops are only supported in EMR release version ${minVersion} and above but got ${this.props.releaseLabel}.`, this);
       }
     }
 
     if (this.props.ebsRootVolumeThroughput !== undefined && (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
-      throw new ValidationError('EbsRootVolumeThroughputOutOfRange',
+      throw new ValidationError(lit`EbsRootVolumeThroughputOutOfRange`,
         `ebsRootVolumeThroughput must be between 125 and 1000 MiB/s, but got ${this.props.ebsRootVolumeThroughput} MiB/s.`, this);
     }
 
     if (this.props.ebsRootVolumeIops !== undefined && (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
-      throw new ValidationError('EbsRootVolumeIopsOutOfRange',
+      throw new ValidationError(lit`EbsRootVolumeIopsOutOfRange`,
         `ebsRootVolumeIops must be between 3000 and 16000, but got ${this.props.ebsRootVolumeIops}.`, this);
     }
   }

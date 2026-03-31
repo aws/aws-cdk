@@ -5,6 +5,7 @@ import { CfnFunction } from './cloudfront.generated';
 import type { IResource } from '../../core';
 import { FeatureFlags, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -215,7 +216,7 @@ export class Function extends Resource implements IFunction {
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
     if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
-      throw new ValidationError('KeyValueStoresCannotBeAssociatedWithRuntime', `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
+      throw new ValidationError(lit`KeyValueStoresCannotBeAssociatedWithRuntime`, `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`, this);
     }
 
     const resource = new CfnFunction(this, 'Resource', {

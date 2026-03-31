@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { Stack, IEnvironmentAware } from '../../../core';
 import { Token, ArnFormat, Arn, Fn, Aws, ValidationError } from '../../../core';
 import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import type { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
 import type { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
@@ -122,7 +123,7 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
       events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_ALARM);
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new ValidationError(
-        'DeploymentInAlarmRequiresCloudWatchAlarms',
+        lit`DeploymentInAlarmRequiresCloudWatchAlarms`,
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
         'at least one CloudWatch alarm with the Deployment Group', scope);
     }

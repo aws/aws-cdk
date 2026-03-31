@@ -10,6 +10,7 @@ import { BackupVault } from './vault';
 import type { IResource } from '../../core';
 import { ArnFormat, Lazy, Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
@@ -248,7 +249,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public get backupVault(): IBackupVault {
     if (!this._backupVault) {
       // This cannot happen but is here to make TypeScript happy
-      throw new ValidationError('BackupVault', 'No backup vault!', this);
+      throw new ValidationError(lit`BackupVault`, 'No backup vault!', this);
     }
 
     return toIBackupVault(this._backupVault);

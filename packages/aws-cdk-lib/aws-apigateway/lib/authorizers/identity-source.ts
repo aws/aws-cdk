@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Represents an identity source.
@@ -49,7 +50,7 @@ export class IdentitySource {
 
   private static toString(source: string, type: string) {
     if (!source.trim()) {
-      throw new UnscopedValidationError('MustBeIdentitysourcesNonEmptyString', 'IdentitySources must be a non-empty string.');
+      throw new UnscopedValidationError(lit`MustBeIdentitysourcesNonEmptyString`, 'IdentitySources must be a non-empty string.');
     }
 
     return `${type}.${source}`;

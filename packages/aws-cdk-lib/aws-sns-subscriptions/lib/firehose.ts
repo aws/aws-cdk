@@ -5,6 +5,7 @@ import type * as firehose from '../../aws-kinesisfirehose';
 import * as sns from '../../aws-sns';
 import { Names, ValidationError } from '../../core';
 import { regionFromArn } from './private/util';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an Amazon Data Firehose subscription
@@ -42,7 +43,7 @@ export class FirehoseSubscription implements sns.ITopicSubscription {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.deliveryStream)) {
-      throw new ValidationError('SuppliedDeliveryStreamObjectInstance', 'The supplied delivery stream object must be an instance of Construct', topic);
+      throw new ValidationError(lit`SuppliedDeliveryStreamObjectInstance`, 'The supplied delivery stream object must be an instance of Construct', topic);
     }
 
     // Permissions based on SNS documentation:

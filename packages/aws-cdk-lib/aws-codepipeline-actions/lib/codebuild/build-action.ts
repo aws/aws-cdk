@@ -4,6 +4,7 @@ import * as codebuild from '../../../aws-codebuild';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Action } from '../action';
 import { CodeCommitSourceAction } from '../codecommit/source-action';
 
@@ -154,7 +155,7 @@ export class CodeBuildAction extends Action {
       const projectStack = cdk.Stack.of(this.props.project);
       if (pipelineStack.account !== projectStack.account) {
         throw new cdk.ValidationError(
-          'CrossAccountActionCannotHaveOutputs',
+          lit`CrossAccountActionCannotHaveOutputs`,
           'A cross-account CodeBuild action cannot have outputs. ' +
           'This is a known CodeBuild limitation. ' +
           'See https://github.com/aws/aws-cdk/issues/4169 for details',

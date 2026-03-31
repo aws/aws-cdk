@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { IResource } from '../../core';
 import { Resource } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IUserPoolIdentityProviderRef, UserPoolIdentityProviderReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
 
 /**
@@ -30,7 +31,7 @@ export class UserPoolIdentityProvider {
         return {
           providerName: providerName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('UserPoolIdAvailableImported', 'userPoolId is not available on imported UserPoolIdentityProvider.');
+            throw new UnscopedValidationError(lit`UserPoolIdAvailableImported`, 'userPoolId is not available on imported UserPoolIdentityProvider.');
           },
         };
       }

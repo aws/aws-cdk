@@ -8,6 +8,7 @@ import type { IBucket } from '../../aws-s3';
 import type { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Product stack props.
@@ -170,6 +171,6 @@ function findParentStack(scope: Construct): cdk.Stack {
     const parentStack = cdk.Stack.of(scope);
     return parentStack as cdk.Stack;
   } catch {
-    throw new ValidationError('ProductStackMustBeDefinedWithinStack', 'Product stacks must be defined within scope of another non-product stack', scope);
+    throw new ValidationError(lit`ProductStackMustBeDefinedWithinStack`, 'Product stacks must be defined within scope of another non-product stack', scope);
   }
 }

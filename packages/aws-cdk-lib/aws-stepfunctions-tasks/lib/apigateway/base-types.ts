@@ -60,7 +60,7 @@ export interface CallApiGatewayEndpointBaseOptions {
   readonly apiPath?: string;
 
   /**
-   * Query strings attatched to end of request
+   * Query strings attached to end of request
    * @default - No query parameters
    */
   readonly queryParameters?: sfn.TaskInput;
