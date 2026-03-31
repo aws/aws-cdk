@@ -76,7 +76,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * An object to be merged on top of the entire resource definition.
    */
-  private readonly rawOverrides: any = {};
+  private readonly rawOverrides: any = Object.create(null); // Prevent prototype pollution
 
   /**
    * Logical IDs of dependencies.
@@ -258,7 +258,7 @@ export class CfnResource extends CfnRefElement {
       // object overwrite it with an object.
       const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
-        curr[key] = {};
+        curr[key] = Object.create(null); // Prevent prototype pollution
       }
 
       curr = curr[key];
