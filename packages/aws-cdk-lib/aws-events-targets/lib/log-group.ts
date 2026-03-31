@@ -55,7 +55,7 @@ export abstract class LogGroupTargetInput {
   }
 
   /**
-   * Pass a JSON object to the the log group event target
+   * Pass a JSON object to the log group event target
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.

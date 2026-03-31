@@ -187,7 +187,7 @@ export interface IBucket extends IResource, IBucketRef {
   arnForObjects(keyPattern: string): string;
 
   /**
-   * Grant read permissions for this bucket and it's contents to an IAM
+   * Grant read permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -250,7 +250,7 @@ export interface IBucket extends IResource, IBucketRef {
   grantDelete(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
-   * Grants read/write permissions for this bucket and it's contents to an IAM
+   * Grants read/write permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If an encryption key is used, permission to use the key for
@@ -858,7 +858,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
-   * Grant read permissions for this bucket and it's contents to an IAM
+   * Grant read permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents

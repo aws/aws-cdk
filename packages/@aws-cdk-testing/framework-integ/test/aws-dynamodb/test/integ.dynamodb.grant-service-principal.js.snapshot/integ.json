@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "grant-service-principal-integ-test/DefaultTest": {
+      "stacks": [
+        "grant-service-principal-test-stack"
+      ],
+      "assertionStack": "grant-service-principal-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "grantserviceprincipalintegtestDefaultTestDeployAssert56CD1E2E"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

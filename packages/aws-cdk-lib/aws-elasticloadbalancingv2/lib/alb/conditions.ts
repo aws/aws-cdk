@@ -121,7 +121,7 @@ class HttpHeaderListenerCondition extends ListenerCondition {
 }
 
 /**
- * HTTP reqeust method config of the listener rule condition
+ * HTTP request method config of the listener rule condition
  */
 class HttpRequestMethodListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {

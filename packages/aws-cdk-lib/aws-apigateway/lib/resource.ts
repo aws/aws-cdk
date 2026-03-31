@@ -32,7 +32,7 @@ export interface IResource extends IResourceBase, IResourceRef {
    * The rest API that this resource is part of.
    *
    * The reason we need the RestApi object itself and not just the ID is because the model
-   * is being tracked by the top-level RestApi object for the purpose of calculating it's
+   * is being tracked by the top-level RestApi object for the purpose of calculating its
    * hash to determine the ID of the deployment. This allows us to automatically update
    * the deployment when the model of the REST API changes.
    */

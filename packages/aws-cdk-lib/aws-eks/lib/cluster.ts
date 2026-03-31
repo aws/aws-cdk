@@ -780,7 +780,7 @@ export class EndpointAccess {
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic will leave your VPC to connect to the endpoint.
    *
-   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
+   * By default, the endpoint is exposed to all addresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC.onlyFrom` method.
    * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
    * specify include the addresses that worker nodes and Fargate pods (if you use them)
    * access the public endpoint from.
@@ -799,7 +799,7 @@ export class EndpointAccess {
    * The cluster endpoint is accessible from outside of your VPC.
    * Worker node traffic to the endpoint will stay within your VPC.
    *
-   * By default, the endpoint is exposed to all adresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
+   * By default, the endpoint is exposed to all addresses. You can optionally limit the CIDR blocks that can access the public endpoint using the `PUBLIC_AND_PRIVATE.onlyFrom` method.
    * If you limit access to specific CIDR blocks, you must ensure that the CIDR blocks that you
    * specify include the addresses that worker nodes and Fargate pods (if you use them)
    * access the public endpoint from.
@@ -2673,7 +2673,7 @@ export interface RemoteNodeNetwork {
   /**
    * Specifies the list of remote node CIDRs.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotenodenetwork.html#cfn-eks-cluster-remotenodenetwork-cidrs
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotenodenetwork.html#cfn-eks-cluster-remotenodenetwork-cidrs
    */
   readonly cidrs: string[];
 }
@@ -2685,7 +2685,7 @@ export interface RemotePodNetwork {
   /**
    * Specifies the list of remote pod CIDRs.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotepodnetwork.html#cfn-eks-cluster-remotepodnetwork-cidrs
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-cluster-remotepodnetwork.html#cfn-eks-cluster-remotepodnetwork-cidrs
    */
   readonly cidrs: string[];
 }

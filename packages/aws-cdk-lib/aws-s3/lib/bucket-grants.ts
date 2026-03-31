@@ -40,7 +40,7 @@ export class BucketGrants {
   }
 
   /**
-   * Grant read permissions for this bucket and it's contents to an IAM
+   * Grant read permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -54,7 +54,7 @@ export class BucketGrants {
   }
 
   /**
-   * Grant write permissions for this bucket and it's contents to an IAM
+   * Grant write permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -165,7 +165,7 @@ export class BucketGrants {
   }
 
   /**
-   * Grant read and write permissions for this bucket and it's contents to an IAM
+   * Grant read and write permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents

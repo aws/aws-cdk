@@ -775,7 +775,7 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Indicates if this is a nested stack, in which case `parentStack` will include a reference to it's parent.
+   * Indicates if this is a nested stack, in which case `parentStack` will include a reference to its parent.
    */
   public get nested(): boolean {
     return this.nestedStackResource !== undefined;

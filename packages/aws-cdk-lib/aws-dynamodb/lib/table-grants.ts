@@ -2,6 +2,7 @@ import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import { isUnsupportedServicePrincipal } from './private/principal-utils';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -109,6 +110,16 @@ export class TableGrants {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
+      throw new ValidationError(
+        lit`ServicePrincipalGrantNotSupported`,
+        'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
+        'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
+        'with required service principal, actions, and conditions',
+        this.table,
+      );
+    }
+
     return this.policyResource ? iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,

@@ -40,7 +40,7 @@ export interface DashboardProps {
 
   /**
    * Interval duration for metrics.
-   * You can specify defaultInterval with the relative time(eg. cdk.Duration.days(7)).
+   * You can specify defaultInterval with the relative time (e.g. cdk.Duration.days(7)).
    *
    * Both properties `defaultInterval` and `start` cannot be set at once.
    *

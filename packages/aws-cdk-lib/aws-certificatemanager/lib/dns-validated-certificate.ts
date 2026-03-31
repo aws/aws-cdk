@@ -158,7 +158,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
         RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
-        // Custom resources properties are always converted to strings; might as well be explict here.
+        // Custom resources properties are always converted to strings; might as well be explicit here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
       },
