@@ -7,6 +7,16 @@ import * as cdk from '../../../core';
 import * as targets from '../../lib';
 import { LogGroupTargetInput } from '../../lib';
 
+test('fromObjectV2 returns instanceof LogGroupTargetInput', () => {
+  const input = LogGroupTargetInput.fromObjectV2();
+  expect(input).toBeInstanceOf(LogGroupTargetInput);
+});
+
+test('fromObjectV2 returns instanceof RuleTargetInput', () => {
+  const input = LogGroupTargetInput.fromObjectV2();
+  expect(input).toBeInstanceOf(events.RuleTargetInput);
+});
+
 test('use log group as an event rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
