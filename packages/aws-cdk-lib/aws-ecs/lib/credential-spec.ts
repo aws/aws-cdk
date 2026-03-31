@@ -8,7 +8,7 @@ import { lit } from '../../core/lib/private/literal-string';
  */
 export class CredentialSpec {
   /**
-   * Helper method to generate the ARN for a S3 object. Used to avoid duplication of logic in derived classes.
+   * Helper method to generate the ARN for an S3 object. Used to avoid duplication of logic in derived classes.
    */
   protected static arnForS3Object(bucket: IBucket, key: string) {
     if (!key) {
@@ -60,7 +60,7 @@ export class CredentialSpec {
  */
 export class DomainJoinedCredentialSpec extends CredentialSpec {
   /**
-   * Loads the CredSpec from a S3 bucket object.
+   * Loads the CredSpec from an S3 bucket object.
    *
    * @param bucket The S3 bucket
    * @param key The object key
@@ -90,7 +90,7 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
  */
 export class DomainlessCredentialSpec extends CredentialSpec {
   /**
-   * Loads the CredSpec from a S3 bucket object.
+   * Loads the CredSpec from an S3 bucket object.
    *
    * @param bucket The S3 bucket
    * @param key The object key
@@ -116,7 +116,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
 }
 
 /**
- * Configuration for a credential specification (CredSpec) used for a ECS container.
+ * Configuration for a credential specification (CredSpec) used for an ECS container.
  */
 export interface CredentialSpecConfig {
   /**

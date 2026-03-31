@@ -572,7 +572,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Restrict KMS key policy for encrypted Queues a bit more',
     detailsMd: `
-      Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+      Enable this feature flag to restrict the decryption of an SQS queue, which is subscribed to an SNS topic, to
       only the topic which it is subscribed to and not the whole SNS service of an account.
 
       Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
@@ -1185,7 +1185,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, remove default deployment alarm settings',
     detailsMd: `
-      When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+      When this feature flag is enabled, remove the default deployment alarm settings when creating an AWS ECS service.
     `,
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
@@ -1638,7 +1638,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.BugFix,
     summary: 'Add an S3 trust policy to a KMS key resource policy for SNS subscriptions.',
     detailsMd: `
-      When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+      When this feature flag is enabled, an S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
           `,
     introducedIn: { v2: '2.195.0' },
     recommendedValue: true,

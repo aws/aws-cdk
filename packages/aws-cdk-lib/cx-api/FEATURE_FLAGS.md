@@ -754,7 +754,7 @@ remain in control of it.
 
 Flag type: Backwards incompatible bugfix
 
-Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+Enable this feature flag to restrict the decryption of an SQS queue, which is subscribed to an SNS topic, to
 only the topic which it is subscribed to and not the whole SNS service of an account.
 
 Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
@@ -1510,7 +1510,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 Flag type: New default behavior
 
-When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating an AWS ECS service.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -2060,7 +2060,7 @@ be added with a priority of MUTATING, independent of this feature flag.
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, a S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
+When this feature flag is enabled, an S3 trust policy will be added to the KMS key resource policy for encrypted SNS subscriptions.
 
 
 | Since | Unset behaves like | Recommended value |

@@ -70,7 +70,7 @@ export enum AccessLevel {
 }
 
 /**
- * Properties for creating a S3 Origin Access Control resource.
+ * Properties for creating an S3 Origin Access Control resource.
  */
 export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps { }
 
