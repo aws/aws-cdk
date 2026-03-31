@@ -86,7 +86,7 @@ export interface EmrContainersStartJobRunJsonPathProps extends sfn.TaskStateJson
 export interface EmrContainersStartJobRunJsonataProps extends sfn.TaskStateJsonataBaseProps, EmrContainersStartJobRunOptions {}
 
 /**
- * The props for a EMR Containers StartJobRun Task.
+ * The props for an EMR Containers StartJobRun Task.
  */
 export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps, EmrContainersStartJobRunOptions {}
 
@@ -522,7 +522,7 @@ export interface JobDriver {
 }
 
 /**
- * The classification within a EMR Containers application configuration.
+ * The classification within an EMR Containers application configuration.
  * Class can be extended to add other classifications.
  * For example, new Classification('xxx-yyy');
  */
