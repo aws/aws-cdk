@@ -846,7 +846,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // tagSpecification: undefined
 
         // CDK only has placement groups, not placement.
-        // Specifiying options other than placementGroup is not supported yet.
+        // Specifying options other than placementGroup is not supported yet.
         // placement: undefined,
 
       },
