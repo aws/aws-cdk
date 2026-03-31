@@ -4,6 +4,7 @@ import type { IWebSocketRoute } from './route';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { IAuthorizer } from '../common';
 import type { AuthorizerReference } from '../index';
@@ -118,7 +119,7 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     addConstructMetadata(this, props);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('AuthorizerUriMandatoryLambdaAuthorizers', 'authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError(lit`AuthorizerUriMandatoryLambdaAuthorizers`, 'authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
     this.apiId = props.webSocketApi.apiId;
