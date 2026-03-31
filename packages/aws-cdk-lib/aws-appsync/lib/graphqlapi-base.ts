@@ -171,7 +171,7 @@ export enum AuthorizationType {
 export interface IGraphqlApi extends IResource, IGraphQLApiRef {
 
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    *
    * @attribute
@@ -352,7 +352,7 @@ export interface IGraphqlApi extends IResource, IGraphQLApiRef {
  */
 export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public abstract readonly apiId: string;

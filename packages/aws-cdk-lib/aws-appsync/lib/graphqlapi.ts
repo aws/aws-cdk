@@ -531,7 +531,7 @@ export interface GraphqlApiProps {
  */
 export interface GraphqlApiAttributes {
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   readonly graphqlApiId: string;
@@ -621,7 +621,7 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * an unique AWS AppSync GraphQL API identifier
+   * a unique AWS AppSync GraphQL API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;
