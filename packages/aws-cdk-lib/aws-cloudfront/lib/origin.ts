@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { CfnDistribution } from './cloudfront.generated';
 import type { Duration } from '../../core';
 import { Token, UnscopedValidationError, ValidationError, withResolved } from '../../core';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * The selection criteria for the origin group.
@@ -39,6 +40,20 @@ export enum OriginIpAddressType {
    * Use both IPv4 and IPv6 addresses
    */
   DUALSTACK = 'dualstack',
+}
+
+/**
+ * Configuration for mutual TLS (mTLS) authentication between CloudFront and your origin server.
+ *
+ * When configured, CloudFront uses the specified client certificate from ACM
+ * to authenticate with the origin using mutual TLS.
+ */
+export interface OriginMtlsConfig {
+  /**
+   * The client certificate stored in AWS Certificate Manager (ACM)
+   * that CloudFront uses to authenticate with your origin using mutual TLS.
+   */
+  readonly clientCertificate: ICertificateRef;
 }
 
 /**

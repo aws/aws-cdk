@@ -39,6 +39,16 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    * @default OriginIpAddressType.IPV4
    */
   readonly ipAddressType?: OriginIpAddressType;
+
+  /**
+   * Configures mutual TLS (mTLS) authentication between CloudFront and your origin server.
+   *
+   * When specified, CloudFront uses the provided client certificate from ACM
+   * to authenticate with the origin using mutual TLS.
+   *
+   * @default - no mutual TLS authentication
+   */
+  readonly originMtlsConfig?: cloudfront.OriginMtlsConfig;
 }
 
 /**
@@ -88,6 +98,10 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
+      // certificateRef.certificateId returns the certificate ARN via CertificateBase
+      originMtlsConfig: this.props.originMtlsConfig
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        : undefined,
     };
   }
 }
@@ -119,6 +133,10 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
+      // certificateRef.certificateId returns the certificate ARN via CertificateBase
+      originMtlsConfig: this.props.originMtlsConfig
+        ? { clientCertificateArn: this.props.originMtlsConfig.clientCertificate.certificateRef.certificateId }
+        : undefined,
     };
   }
 
