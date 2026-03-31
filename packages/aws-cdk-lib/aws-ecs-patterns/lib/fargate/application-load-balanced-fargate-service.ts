@@ -3,6 +3,7 @@ import type { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import type { HealthCheck } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
 import type { ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
@@ -91,7 +92,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('SpecifyTaskDefinitionImage', 'You must specify either a taskDefinition or an image, not both.', this);
+      throw new ValidationError(lit`SpecifyTaskDefinitionImage`, 'You must specify either a taskDefinition or an image, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -132,7 +133,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     this.validateHealthyPercentage('minHealthyPercent', props.minHealthyPercent);
@@ -145,7 +146,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       !Token.isUnresolved(props.maxHealthyPercent) &&
       props.minHealthyPercent >= props.maxHealthyPercent
     ) {
-      throw new ValidationError('MinimumHealthyPercentLessMaximum', 'Minimum healthy percent must be less than maximum healthy percent.', this);
+      throw new ValidationError(lit`MinimumHealthyPercentLessMaximum`, 'Minimum healthy percent must be less than maximum healthy percent.', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
@@ -179,7 +180,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
   private validateHealthyPercentage(name: string, value?: number) {
     if (value === undefined || Token.isUnresolved(value)) { return; }
     if (!Number.isInteger(value) || value < 0) {
-      throw new ValidationError('MustBeNonNegativeInteger', `${name}: Must be a non-negative integer; received ${value}`, this);
+      throw new ValidationError(lit`MustBeNonNegativeInteger`, `${name}: Must be a non-negative integer; received ${value}`, this);
     }
   }
 
@@ -188,11 +189,11 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerCpu > cpu) {
-      throw new ValidationError('ContainerCpuLessCpuReceived', `containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`, this);
+      throw new ValidationError(lit`ContainerCpuLessCpuReceived`, `containerCpu must be less than to cpu; received containerCpu: ${containerCpu}, cpu: ${cpu}`, this);
     }
     // If containerCPU is 0, it is not an error.
     if (containerCpu < 0 || !Number.isInteger(containerCpu)) {
-      throw new ValidationError('ContainerCpuNonNegativeInteger', `containerCpu must be a non-negative integer; received ${containerCpu}`, this);
+      throw new ValidationError(lit`ContainerCpuNonNegativeInteger`, `containerCpu must be a non-negative integer; received ${containerCpu}`, this);
     }
   }
 
@@ -201,10 +202,10 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       return;
     }
     if (containerMemoryLimitMiB > memoryLimitMiB) {
-      throw new ValidationError('ContainerMemoryLimitMiLess', `containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`, this);
+      throw new ValidationError(lit`ContainerMemoryLimitMiLess`, `containerMemoryLimitMiB must be less than to memoryLimitMiB; received containerMemoryLimitMiB: ${containerMemoryLimitMiB}, memoryLimitMiB: ${memoryLimitMiB}`, this);
     }
     if (containerMemoryLimitMiB <= 0 || !Number.isInteger(containerMemoryLimitMiB)) {
-      throw new ValidationError('ContainerMemoryLimitMiPositive', `containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`, this);
+      throw new ValidationError(lit`ContainerMemoryLimitMiPositive`, `containerMemoryLimitMiB must be a positive integer; received ${containerMemoryLimitMiB}`, this);
     }
   }
 }

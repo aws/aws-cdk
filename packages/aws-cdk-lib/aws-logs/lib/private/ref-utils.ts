@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
 import type { ILogGroup } from '../log-group';
 
@@ -12,7 +13,7 @@ export function toILogGroup(logGroup: ILogGroupRef): ILogGroup {
     typeof (logGroup as any).addStream !== 'function' ||
     typeof (logGroup as any).grant !== 'function'
   ) {
-    throw new UnscopedValidationError('LoggroupInstanceShouldImplement', `'logGroup' instance should implement ILogGroup, but doesn't: ${logGroup.constructor.name}`);
+    throw new UnscopedValidationError(lit`LoggroupInstanceShouldImplement`, `'logGroup' instance should implement ILogGroup, but doesn't: ${logGroup.constructor.name}`);
   }
   return logGroup as ILogGroup;
 }

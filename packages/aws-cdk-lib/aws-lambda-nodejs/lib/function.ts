@@ -9,6 +9,7 @@ import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -113,14 +114,14 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 export class NodejsFunction extends lambda.Function {
   constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
-      throw new ValidationError('OnlyRuntimesSupported', 'Only `NODEJS` runtimes are supported.', scope);
+      throw new ValidationError(lit`OnlyRuntimesSupported`, 'Only `NODEJS` runtimes are supported.', scope);
     }
 
     const runtime = getRuntime(scope, props);
 
     if (props.code !== undefined) {
       if (props.handler === undefined) {
-        throw new ValidationError('HandlerRequiredWhenCodeSpecified',
+        throw new ValidationError(lit`HandlerRequiredWhenCodeSpecified`,
           'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
           + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
           + 'For example, handler should be specified in the form `myFile.myFunction`', scope,
@@ -189,11 +190,11 @@ function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtim
 function findLockFile(scope: Construct, depsLockFilePath?: string): string {
   if (depsLockFilePath) {
     if (!fs.existsSync(depsLockFilePath)) {
-      throw new ValidationError('LockFileDoesnTExist', `Lock file at ${depsLockFilePath} doesn't exist`, scope);
+      throw new ValidationError(lit`LockFileDoesnTExist`, `Lock file at ${depsLockFilePath} doesn't exist`, scope);
     }
 
     if (!fs.statSync(depsLockFilePath).isFile()) {
-      throw new ValidationError('ShouldPointFile', '`depsLockFilePath` should point to a file', scope);
+      throw new ValidationError(lit`ShouldPointFile`, '`depsLockFilePath` should point to a file', scope);
     }
 
     return path.resolve(depsLockFilePath);
@@ -208,10 +209,10 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
   ]);
 
   if (lockFiles.length === 0) {
-    throw new ValidationError('CannotFindPackageLockFile', 'Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock` or `package-lock.json`). Please specify it with `depsLockFilePath`.', scope);
+    throw new ValidationError(lit`CannotFindPackageLockFile`, 'Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock`, `bun.lockb`, `bun.lock` or `package-lock.json`). Please specify it with `depsLockFilePath`.', scope);
   }
   if (lockFiles.length > 1) {
-    throw new ValidationError('MultipleLockFilesFound', `Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`, scope);
+    throw new ValidationError(lit`MultipleLockFilesFound`, `Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsLockFilePath\`.`, scope);
   }
 
   return lockFiles[0];
@@ -230,10 +231,10 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
 function findEntry(scope: Construct, id: string, entry?: string): string {
   if (entry) {
     if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
-      throw new ValidationError('OnlyJavaScriptTypeScriptEntrySupported', 'Only JavaScript or TypeScript entry files are supported.', scope);
+      throw new ValidationError(lit`OnlyJavaScriptTypeScriptEntrySupported`, 'Only JavaScript or TypeScript entry files are supported.', scope);
     }
     if (!fs.existsSync(entry)) {
-      throw new ValidationError('CannotFindEntryFile', `Cannot find entry file at ${entry}`, scope);
+      throw new ValidationError(lit`CannotFindEntryFile`, `Cannot find entry file at ${entry}`, scope);
     }
     return entry;
   }
@@ -271,7 +272,7 @@ function findEntry(scope: Construct, id: string, entry?: string): string {
     return cjsHandlerFile;
   }
 
-  throw new ValidationError('CannotFindHandlerFile', `Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`, scope);
+  throw new ValidationError(lit`CannotFindHandlerFile`, `Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`, scope);
 }
 
 /**
@@ -289,7 +290,7 @@ function findDefiningFile(scope: Construct): string {
   }
 
   if (!definingIndex || !sites[definingIndex]) {
-    throw new ValidationError('CannotFindDefiningFile', 'Cannot find defining file.', scope);
+    throw new ValidationError(lit`CannotFindDefiningFile`, 'Cannot find defining file.', scope);
   }
 
   // Fixes issue #21630.
