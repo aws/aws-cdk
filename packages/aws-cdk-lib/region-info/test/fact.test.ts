@@ -116,4 +116,11 @@ describe('register', () => {
       Fact.register({ region: '__proto__', name: 'evil', value: 'evil' });
     });
   });
+
+  test('Fact.unregister() does not allow prototype pollution', () => {
+    assertNoPrototypePollution(() => {
+      // Not able to remove 'toString' from Object.prototype
+      Fact.unregister('__proto__', 'toString');
+    });
+  });
 });
