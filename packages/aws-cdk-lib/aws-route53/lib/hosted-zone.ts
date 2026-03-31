@@ -70,7 +70,7 @@ export interface HostedZoneProps extends CommonHostedZoneProps {
  */
 export interface ZoneSigningOptions {
   /**
-   * The customer-managed KMS key that that will be used to sign the records.
+   * The customer-managed KMS key that will be used to sign the records.
    *
    * The KMS Key must be unique for each KSK within a hosted zone. Additionally, the
    * KMS key must be an asymetric customer-managed key using the ECC_NIST_P256 algorithm.
