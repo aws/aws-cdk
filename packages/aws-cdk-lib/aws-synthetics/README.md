@@ -254,7 +254,7 @@ new synthetics.Canary(this, 'Asset Canary', {
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
 });
 
-// To supply the code from a S3 bucket:
+// To supply the code from an S3 bucket:
 import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Code Bucket');
 new synthetics.Canary(this, 'Bucket Canary', {

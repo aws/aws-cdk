@@ -76,7 +76,7 @@ const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parame
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
 (`dummy-value-for-/My/Public/Parameter` in the above example)
 is returned prior to the lookup being performed. This can lead to errors if you are using this
-value in places that require a certain format. For example if you have stored the ARN for a SNS
+value in places that require a certain format. For example if you have stored the ARN for an SNS
 topic in a SSM Parameter which you want to lookup and provide to `Topic.fromTopicArn()`
 
 ```ts

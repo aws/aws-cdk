@@ -78,7 +78,7 @@ new config.CloudFormationStackDriftDetectionCheck(this, 'Drift', {
 
 #### CloudFormation Stack notifications
 
-Checks whether your CloudFormation stacks are sending event notifications to a SNS topic.
+Checks whether your CloudFormation stacks are sending event notifications to an SNS topic.
 
 ```ts
 // topics to which CloudFormation stacks may send event notifications

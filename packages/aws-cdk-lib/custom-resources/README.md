@@ -450,7 +450,7 @@ const myProvider = new cr.Provider(this, 'MyProvider', {
 
 ### Customizing Provider Function environment encryption key
 
-Sometimes it may be useful to manually set a AWS KMS key for the Provider Function Lambda and therefore
+Sometimes it may be useful to manually set an AWS KMS key for the Provider Function Lambda and therefore
 be able to view, manage and audit the key usage.
 
 ```ts
@@ -983,7 +983,7 @@ new s3deploy.BucketDeployment(nestedStackB, "s3deployB", {
 
 ### Setting Log Group Removal Policy
 
-The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with a AWS-vended custom resource lambda.
+The `addLogRetentionLifetime` method of `CustomResourceConfig` will associate a log group with an AWS-vended custom resource lambda.
 The `addRemovalPolicy` method will configure the custom resource lambda log group removal policy to `DESTROY`.
 ```ts
 import * as cdk from 'aws-cdk-lib';
