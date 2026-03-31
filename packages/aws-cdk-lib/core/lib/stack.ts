@@ -543,6 +543,15 @@ export class Stack extends Construct implements ITaggable {
 
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
+
+    const gitSource = this.node.tryGetContext('@aws-cdk/core:enableGitSource') === true ? getGitSource() : undefined;
+    if (gitSource) {
+      this.addMetadata('AWS::CloudFormation::Source', {
+        Repository: gitSource.repository,
+        Commit: gitSource.commit,
+      });
+      this.node.addMetadata('aws:cdk:source', gitSource);
+    }
   }
 
   /**
@@ -1902,4 +1911,5 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
+import { getGitSource } from './private/git-source';
 /* eslint-enable import/order */
