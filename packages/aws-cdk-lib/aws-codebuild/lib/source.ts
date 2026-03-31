@@ -23,7 +23,7 @@ export interface SourceConfig {
 
   /**
    * `AWS::CodeBuild::Project.SourceVersion`
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codebuild-project.html#cfn-codebuild-project-sourceversion
    * @default the latest version
    */
   readonly sourceVersion?: string;

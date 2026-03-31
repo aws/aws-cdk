@@ -356,7 +356,7 @@ export interface EventPattern {
    * AWS Service Namespaces. For example, the source value for Amazon
    * CloudFront is aws.cloudfront.
    *
-   * @see http://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
+   * @see https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html#genref-aws-service-namespaces
    * @default - No filtering on source
    */
   readonly source?: string[];

@@ -116,7 +116,7 @@ export interface CsvOptions {
    * List of the headers used to specify a common header for all source CSV files being imported.
    *
    * **NOTE**: If this field is specified then the first line of each CSV file is treated as data instead of the header.
-   * If this field is not specified the the first line of each CSV file is treated as the header.
+   * If this field is not specified the first line of each CSV file is treated as the header.
    *
    * @default - the first line of the CSV file is treated as the header
    */
@@ -324,7 +324,7 @@ export interface TableOptions extends SchemaOptions {
   /**
    * Specify values to pre-warm you DynamoDB Table
    * Warm Throughput feature is not available for Global Table replicas using the `Table` construct. To enable Warm Throughput, use the `TableV2` construct instead.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-warmthroughput
    * @default - warm throughput is not configured
    */
   readonly warmThroughput?: WarmThroughput;

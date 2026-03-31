@@ -104,7 +104,7 @@ export interface PolicyProps {
 /**
  * The AWS::IAM::Policy resource associates an [inline](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#inline)
  * IAM policy with IAM users, roles, or groups. For more information about IAM policies, see
- * [Overview of IAM Policies](http://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
+ * [Overview of IAM Policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/policies_overview.html)
  * in the IAM User Guide guide.
  */
 @propertyInjectable

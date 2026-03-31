@@ -959,7 +959,7 @@ You can add a widget after object instantiation with the method
 ### Interval duration for dashboard
 
 Interval duration for metrics in dashboard. You can specify `defaultInterval` with
-the relative time(eg. 7 days) as `Duration.days(7)`.
+the relative time (e.g. 7 days) as `Duration.days(7)`.
 
 ```ts
 import * as cw from 'aws-cdk-lib/aws-cloudwatch';
