@@ -7,6 +7,7 @@ import type { IRole, PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-
 import { CfnOriginEndpoint } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IOriginEndpointRef, OriginEndpointReference } from 'aws-cdk-lib/aws-mediapackagev2';
 import { ValidationError, UnscopedValidationError, CfnResource } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -482,10 +483,10 @@ export abstract class Manifest {
  */
 function validateIntegerFilterValue(value: number, key: NumericFilterKey, min: number, max: number): void {
   if (!Number.isInteger(value)) {
-    throw new UnscopedValidationError('NumericFilterMustBeInteger', `Numeric filter value for '${key}' must be an integer, got ${value}`);
+    throw new UnscopedValidationError(lit`NumericFilterMustBeInteger`, `Numeric filter value for '${key}' must be an integer, got ${value}`);
   }
   if (value < min || value > max) {
-    throw new UnscopedValidationError('NumericFilterOutOfRange', `Numeric filter value for '${key}' must be between ${min} and ${max}, got ${value}`);
+    throw new UnscopedValidationError(lit`NumericFilterOutOfRange`, `Numeric filter value for '${key}' must be between ${min} and ${max}, got ${value}`);
   }
 }
 
@@ -495,11 +496,11 @@ function validateIntegerFilterValue(value: number, key: NumericFilterKey, min: n
  */
 function validateFramerateValue(value: number): void {
   if (value < 1 || value > 999.999) {
-    throw new UnscopedValidationError('NumericFilterOutOfRange', `Numeric filter value for 'video_framerate' must be between 1 and 999.999, got ${value}`);
+    throw new UnscopedValidationError(lit`NumericFilterOutOfRange`, `Numeric filter value for 'video_framerate' must be between 1 and 999.999, got ${value}`);
   }
   const decimalPart = value.toString().split('.')[1];
   if (decimalPart && decimalPart.length > 3) {
-    throw new UnscopedValidationError('NumericFilterMaxDecimalPlaces', `Numeric filter value for 'video_framerate' allows up to 3 decimal places, got ${value}`);
+    throw new UnscopedValidationError(lit`NumericFilterMaxDecimalPlaces`, `Numeric filter value for 'video_framerate' allows up to 3 decimal places, got ${value}`);
   }
 }
 
@@ -528,10 +529,10 @@ function validateNumericFilterValue(value: number, key: NumericFilterKey): void 
  */
 function validateBitrateFilterValue(bps: number, key: BitrateFilterKey): void {
   if (!Number.isInteger(bps)) {
-    throw new UnscopedValidationError('BitrateFilterMustBeInteger', `Bitrate filter value for '${key}' must resolve to a whole number of bits per second, got ${bps}`);
+    throw new UnscopedValidationError(lit`BitrateFilterMustBeInteger`, `Bitrate filter value for '${key}' must resolve to a whole number of bits per second, got ${bps}`);
   }
   if (bps < 0 || bps > 2_147_483_647) {
-    throw new UnscopedValidationError('BitrateFilterOutOfRange', `Bitrate filter value for '${key}' must be between 0 and 2147483647, got ${bps}`);
+    throw new UnscopedValidationError(lit`BitrateFilterOutOfRange`, `Bitrate filter value for '${key}' must be between 0 and 2147483647, got ${bps}`);
   }
 }
 
@@ -540,7 +541,7 @@ function validateBitrateFilterValue(bps: number, key: BitrateFilterKey): void {
  */
 function validateManifestConfiguration(config: ManifestConfigurationBase): void {
   if (config.manifestWindow && config.manifestWindow.toSeconds() < 30) {
-    throw new UnscopedValidationError('ManifestWindowMinimum', 'Manifest Window has a minimum value of 30 seconds');
+    throw new UnscopedValidationError(lit`ManifestWindowMinimum`, 'Manifest Window has a minimum value of 30 seconds');
   }
 }
 
@@ -552,27 +553,27 @@ function validateFilterConfiguration(filterConfig?: FilterConfiguration): CfnOri
   if (!filterConfig) return undefined;
 
   if (filterConfig.clipStartTime && (filterConfig.start || filterConfig.end)) {
-    throw new UnscopedValidationError('ClipStartTimeConflict', 'You cannot specify both ClipStartTime with Start or End in a FilterConfiguration.');
+    throw new UnscopedValidationError(lit`ClipStartTimeConflict`, 'You cannot specify both ClipStartTime with Start or End in a FilterConfiguration.');
   }
 
   if (filterConfig.timeDelay && (filterConfig.timeDelay.toSeconds() < 0 || filterConfig.timeDelay.toSeconds() > 1209600)) {
-    throw new UnscopedValidationError('TimeDelayRange', 'Time Delay setting should be defined between 0-1209600 seconds.');
+    throw new UnscopedValidationError(lit`TimeDelayRange`, 'Time Delay setting should be defined between 0-1209600 seconds.');
   }
 
   if (filterConfig.start && filterConfig.end && (filterConfig.end <= filterConfig.start)) {
-    throw new UnscopedValidationError('EndBeforeStart', 'The End parameter needs to be after the Start parameter in a FilterConfiguration.');
+    throw new UnscopedValidationError(lit`EndBeforeStart`, 'The End parameter needs to be after the Start parameter in a FilterConfiguration.');
   }
 
   const manifestFilter = filterConfig.manifestFilter ? filterConfig.manifestFilter.map(filter => filter.filterString).join(';') : undefined;
   if (manifestFilter != undefined && (manifestFilter.length < 1 || manifestFilter.length > 1024)) {
-    throw new UnscopedValidationError('ManifestFilterLength', 'Manifest filter needs to be between 1-1024 characters in length.');
+    throw new UnscopedValidationError(lit`ManifestFilterLength`, 'Manifest filter needs to be between 1-1024 characters in length.');
   }
 
   if (filterConfig.manifestFilter && filterConfig.manifestFilter.length > 1) {
     const keys = filterConfig.manifestFilter.map(f => f.filterString.split(':')[0]);
     keys.forEach((key, i) => {
       if (keys.indexOf(key) !== i) {
-        throw new UnscopedValidationError('DuplicateManifestFilterKey', `Duplicate manifest filter key '${key}'. Use a single filter with comma-separated values instead (e.g. ManifestFilter.numericList() or ManifestFilter.custom()).`);
+        throw new UnscopedValidationError(lit`DuplicateManifestFilterKey`, `Duplicate manifest filter key '${key}'. Use a single filter with comma-separated values instead (e.g. ManifestFilter.numericList() or ManifestFilter.custom()).`);
       }
     });
   }
@@ -604,7 +605,7 @@ function validateStartTag(startTag: StartTag, manifestWindow?: Duration, segment
   if (timeOffset > 0) {
     const maxPositiveOffset = manifestDurationSec - (3 * segmentDurationSec);
     if (timeOffset >= maxPositiveOffset) {
-      throw new UnscopedValidationError('StartTagPositiveOffsetExceeded', `StartTag timeOffset (${timeOffset}s) must be less than manifest duration (${manifestDurationSec}s) minus 3 times segment duration (${segmentDurationSec}s). Maximum allowed: ${maxPositiveOffset}s`);
+      throw new UnscopedValidationError(lit`StartTagPositiveOffsetExceeded`, `StartTag timeOffset (${timeOffset}s) must be less than manifest duration (${manifestDurationSec}s) minus 3 times segment duration (${segmentDurationSec}s). Maximum allowed: ${maxPositiveOffset}s`);
     }
   }
 
@@ -614,11 +615,11 @@ function validateStartTag(startTag: StartTag, manifestWindow?: Duration, segment
     const minNegativeOffset = 3 * segmentDurationSec;
 
     if (absOffset <= minNegativeOffset) {
-      throw new UnscopedValidationError('StartTagNegativeOffsetTooSmall', `StartTag timeOffset (${timeOffset}s) absolute value must be greater than 3 times segment duration (${segmentDurationSec}s). Minimum allowed: -${minNegativeOffset + 0.01}s`);
+      throw new UnscopedValidationError(lit`StartTagNegativeOffsetTooSmall`, `StartTag timeOffset (${timeOffset}s) absolute value must be greater than 3 times segment duration (${segmentDurationSec}s). Minimum allowed: -${minNegativeOffset + 0.01}s`);
     }
 
     if (absOffset >= manifestDurationSec) {
-      throw new UnscopedValidationError('StartTagNegativeOffsetExceedsManifest', `StartTag timeOffset (${timeOffset}s) absolute value must be less than manifest duration (${manifestDurationSec}s)`);
+      throw new UnscopedValidationError(lit`StartTagNegativeOffsetExceedsManifest`, `StartTag timeOffset (${timeOffset}s) absolute value must be less than manifest duration (${manifestDurationSec}s)`);
     }
   }
 }
@@ -656,13 +657,13 @@ function buildDashManifestConfiguration(
   segment?: SegmentConfiguration,
 ): CfnOriginEndpoint.DashManifestConfigurationProperty {
   if (config.minBufferTime && (config.minBufferTime.toSeconds() < 1 || config.minBufferTime.toSeconds() > 3600)) {
-    throw new UnscopedValidationError('MinBufferTimeRange', 'Min buffer time has a range from 1 sec. to 3600 sec.');
+    throw new UnscopedValidationError(lit`MinBufferTimeRange`, 'Min buffer time has a range from 1 sec. to 3600 sec.');
   }
   if (config.minUpdatePeriod && (config.minUpdatePeriod.toSeconds() < 1 || config.minUpdatePeriod.toSeconds() > 3600)) {
-    throw new UnscopedValidationError('MinUpdatePeriodRange', 'Min update period option has a range from 1 sec. to 3600 sec.');
+    throw new UnscopedValidationError(lit`MinUpdatePeriodRange`, 'Min update period option has a range from 1 sec. to 3600 sec.');
   }
   if (config.scteDashAdMarker && (!segment?.scteFilter || segment.scteFilter?.length === 0)) {
-    throw new UnscopedValidationError('ScteFilterRequired', 'SCTE Filter must be configured with DashAdMarker Configuration');
+    throw new UnscopedValidationError(lit`ScteFilterRequired`, 'SCTE Filter must be configured with DashAdMarker Configuration');
   }
 
   return {
@@ -744,7 +745,7 @@ class DashManifest extends Manifest {
     validateManifestConfiguration(this.config);
 
     if (this.config.utcTimingMode === DashUtcTimingMode.UTC_DIRECT && this.config.utcTimingSource) {
-      throw new UnscopedValidationError('UtcDirectTimingSource', 'UTC Direct configured with a timing source, ensure timing source is undefined to use UTC Direct.');
+      throw new UnscopedValidationError(lit`UtcDirectTimingSource`, 'UTC Direct configured with a timing source, ensure timing source is undefined to use UTC Direct.');
     }
 
     context.dashManifests.push(buildDashManifestConfiguration(this.config, context.segment));
@@ -2148,13 +2149,13 @@ export class CmafEncryption extends EncryptionConfiguration {
    */
   public static speke(props: CmafSpekeEncryptionProps): CmafEncryption {
     if (!props.url.startsWith('https://')) {
-      throw new UnscopedValidationError('SpekeUrlHttpsRequired', 'SPEKE key provider URL must use HTTPS.');
+      throw new UnscopedValidationError(lit`SpekeUrlHttpsRequired`, 'SPEKE key provider URL must use HTTPS.');
     }
     if (props.method === CmafEncryptionMethod.CENC && props.drmSystems.includes(CmafDrmSystem.FAIRPLAY)) {
-      throw new UnscopedValidationError('CencFairPlayIncompatible', 'CENC encryption method does not support FairPlay. Use CBCS for FairPlay.');
+      throw new UnscopedValidationError(lit`CencFairPlayIncompatible`, 'CENC encryption method does not support FairPlay. Use CBCS for FairPlay.');
     }
     if (props.method === CmafEncryptionMethod.CBCS && props.drmSystems.includes(CmafDrmSystem.IRDETO)) {
-      throw new UnscopedValidationError('CbcsIrdetoIncompatible', 'CBCS encryption method does not support Irdeto. Use CENC for Irdeto.');
+      throw new UnscopedValidationError(lit`CbcsIrdetoIncompatible`, 'CBCS encryption method does not support Irdeto. Use CENC for Irdeto.');
     }
     return new CmafEncryption(props);
   }
@@ -2169,10 +2170,10 @@ export class CmafEncryption extends EncryptionConfiguration {
   public _bind(scope: Construct): CfnOriginEndpoint.EncryptionProperty {
     const p = this.config;
     if (p.constantInitializationVector && p.constantInitializationVector.length !== 32) {
-      throw new ValidationError('ConstantInitVectorLength', 'Constant Initialization Vector needs to be 32 characters in length.', scope);
+      throw new ValidationError(lit`ConstantInitVectorLength`, 'Constant Initialization Vector needs to be 32 characters in length.', scope);
     }
     if (p.keyRotationInterval && (p.keyRotationInterval.toSeconds() < 300 || p.keyRotationInterval.toSeconds() > 31536000)) {
-      throw new ValidationError('KeyRotationIntervalRange', 'Key Rotation Interval needs to be between 300-31536000 seconds.', scope);
+      throw new ValidationError(lit`KeyRotationIntervalRange`, 'Key Rotation Interval needs to be between 300-31536000 seconds.', scope);
     }
     return {
       cmafExcludeSegmentDrmMetadata: p.excludeSegmentDrmMetadata,
@@ -2211,7 +2212,7 @@ export class TsEncryption extends EncryptionConfiguration {
    */
   public static speke(props: TsSpekeEncryptionProps): TsEncryption {
     if (!props.url.startsWith('https://')) {
-      throw new UnscopedValidationError('SpekeUrlHttpsRequired', 'SPEKE key provider URL must use HTTPS.');
+      throw new UnscopedValidationError(lit`SpekeUrlHttpsRequired`, 'SPEKE key provider URL must use HTTPS.');
     }
     return new TsEncryption(props);
   }
@@ -2228,10 +2229,10 @@ export class TsEncryption extends EncryptionConfiguration {
     const defaultDrm: TsDrmSystem[] = p.method === TsEncryptionMethod.SAMPLE_AES
       ? [TsDrmSystem.FAIRPLAY] : [TsDrmSystem.CLEAR_KEY_AES_128];
     if (p.constantInitializationVector && p.constantInitializationVector.length !== 32) {
-      throw new ValidationError('ConstantInitVectorLength', 'Constant Initialization Vector needs to be 32 characters in length.', scope);
+      throw new ValidationError(lit`ConstantInitVectorLength`, 'Constant Initialization Vector needs to be 32 characters in length.', scope);
     }
     if (p.keyRotationInterval && (p.keyRotationInterval.toSeconds() < 300 || p.keyRotationInterval.toSeconds() > 31536000)) {
-      throw new ValidationError('KeyRotationIntervalRange', 'Key Rotation Interval needs to be between 300-31536000 seconds.', scope);
+      throw new ValidationError(lit`KeyRotationIntervalRange`, 'Key Rotation Interval needs to be between 300-31536000 seconds.', scope);
     }
     return {
       constantInitializationVector: p.constantInitializationVector,
@@ -2272,7 +2273,7 @@ export class IsmEncryption extends EncryptionConfiguration {
    */
   public static speke(props: IsmSpekeEncryptionProps): IsmEncryption {
     if (!props.url.startsWith('https://')) {
-      throw new UnscopedValidationError('SpekeUrlHttpsRequired', 'SPEKE key provider URL must use HTTPS.');
+      throw new UnscopedValidationError(lit`SpekeUrlHttpsRequired`, 'SPEKE key provider URL must use HTTPS.');
     }
     return new IsmEncryption(props);
   }
@@ -2660,11 +2661,11 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
    */
   protected segmentValidation(segmentContainerType: ContainerType, segment?: SegmentConfiguration): CfnOriginEndpoint.SegmentProperty | undefined {
     if (segment?.segmentDuration && (segment.segmentDuration?.toSeconds() < 1 || segment.segmentDuration?.toSeconds() > 30)) {
-      throw new ValidationError('SegmentDurationRange', 'Segment Duration needs to be between 1-30 seconds.', this);
+      throw new ValidationError(lit`SegmentDurationRange`, 'Segment Duration needs to be between 1-30 seconds.', this);
     }
 
     if (segmentContainerType != ContainerType.TS && (segment?.tsIncludeDvbSubtitles || segment?.tsUseAudioRenditionGroup)) {
-      throw new ValidationError('TsOptionsIncompatible', 'Disable TS Segment options for DvbSubtitles and AudioRenditionGroups when using CMAF.', this);
+      throw new ValidationError(lit`TsOptionsIncompatible`, 'Disable TS Segment options for DvbSubtitles and AudioRenditionGroups when using CMAF.', this);
     }
 
     return {
@@ -2855,16 +2856,16 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     // Validate originEndpointName if provided
     if (props.originEndpointName != null && !Token.isUnresolved(props.originEndpointName)) {
       if (props.originEndpointName.length < 1 || props.originEndpointName.length > 256) {
-        throw new ValidationError('OriginEndpointNameLength', 'Origin endpoint name must be between 1 and 256 characters in length.', this);
+        throw new ValidationError(lit`OriginEndpointNameLength`, 'Origin endpoint name must be between 1 and 256 characters in length.', this);
       }
       if (!props.originEndpointName.match(/^[a-zA-Z0-9_-]+$/)) {
-        throw new ValidationError('OriginEndpointNamePattern', 'Origin endpoint name must only contain alphanumeric characters, hyphens, and underscores.', this);
+        throw new ValidationError(lit`OriginEndpointNamePattern`, 'Origin endpoint name must only contain alphanumeric characters, hyphens, and underscores.', this);
       }
     }
 
     // Validate description if provided
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
-      throw new ValidationError('OriginEndpointDescriptionLength', 'Origin endpoint description must not exceed 1024 characters.', this);
+      throw new ValidationError(lit`OriginEndpointDescriptionLength`, 'Origin endpoint description must not exceed 1024 characters.', this);
     }
 
     this.segment = props.segment;
@@ -2873,7 +2874,7 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     const containerType = props.segment.containerType;
 
     if (props?.startoverWindow && (props.startoverWindow.toSeconds() < 60 || props.startoverWindow.toSeconds() > 1209600)) {
-      throw new ValidationError('StartoverWindowRange', 'Startover Window needs to be between 60-1209600 seconds.', this);
+      throw new ValidationError(lit`StartoverWindowRange`, 'Startover Window needs to be between 60-1209600 seconds.', this);
     }
 
     props.manifests.forEach(manifest => {
@@ -2888,20 +2889,20 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
 
     // Validate manifest and container type compatibility
     if (this.mssManifests.length > 0 && containerType !== ContainerType.ISM) {
-      throw new ValidationError('MssRequiresIsm', 'MSS manifests require ISM container type. Use Segment.ism() for MSS manifests.', this);
+      throw new ValidationError(lit`MssRequiresIsm`, 'MSS manifests require ISM container type. Use Segment.ism() for MSS manifests.', this);
     }
 
     if (this.dashManifests.length > 0 && containerType !== ContainerType.CMAF) {
-      throw new ValidationError('DashRequiresCmaf', 'DASH manifests require CMAF container type. Use Segment.cmaf() for DASH manifests.', this);
+      throw new ValidationError(lit`DashRequiresCmaf`, 'DASH manifests require CMAF container type. Use Segment.cmaf() for DASH manifests.', this);
     }
 
     if ((this.hlsManifests.length > 0 || this.llHlsManifests.length > 0) && containerType === ContainerType.ISM) {
-      throw new ValidationError('HlsIncompatibleWithIsm', 'HLS and Low Latency HLS manifests are not supported with ISM container type. Use Segment.cmaf() or Segment.ts() for HLS manifests.', this);
+      throw new ValidationError(lit`HlsIncompatibleWithIsm`, 'HLS and Low Latency HLS manifests are not supported with ISM container type. Use Segment.cmaf() or Segment.ts() for HLS manifests.', this);
     }
 
     // Validate DRM signalling requires encryption
     if (this.dashManifests.some(m => m.drmSignaling) && !props.segment.encryption) {
-      throw new ValidationError('DrmSignallingRequiresEncryption', 'DRM signalling requires encryption to be configured on the endpoint.', this);
+      throw new ValidationError(lit`DrmSignallingRequiresEncryption`, 'DRM signalling requires encryption to be configured on the endpoint.', this);
     }
 
     const origin = new CfnOriginEndpoint(this, 'Resource', {

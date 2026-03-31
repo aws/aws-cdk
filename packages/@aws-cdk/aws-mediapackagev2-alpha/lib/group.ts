@@ -4,6 +4,7 @@ import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnChannelGroup } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IChannelGroupRef, ChannelGroupReference } from 'aws-cdk-lib/aws-mediapackagev2';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -173,7 +174,7 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
   public static fromChannelGroupAttributes(scope: Construct, id: string, attrs: ChannelGroupAttributes): IChannelGroup {
     if (attrs.egressDomain && !Token.isUnresolved(attrs.egressDomain) && attrs.egressDomain.startsWith('https://')) {
       throw new ValidationError(
-        'EgressDomainNotUrl',
+        lit`EgressDomainNotUrl`,
         'egressDomain should be a domain name (e.g. abcd1234.egress.mediapackagev2.<region>.amazonaws.com), not a URL. Remove the https:// prefix.',
         scope,
       );
@@ -193,7 +194,7 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
       public get egressDomain(): string {
         if (attrs.egressDomain) return attrs.egressDomain;
         throw new ValidationError(
-          'EgressDomainNotProvided',
+          lit`EgressDomainNotProvided`,
           `'egressDomain' was not provided when importing Channel Group ${this.node.path}. Provide it in fromChannelGroupAttributes() to use this channel group as a CloudFront origin.`,
           this,
         );
@@ -397,16 +398,16 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
     // Validate channelGroupName if provided
     if (props?.channelGroupName != null && !Token.isUnresolved(props.channelGroupName)) {
       if (props.channelGroupName.length < 1 || props.channelGroupName.length > 256) {
-        throw new ValidationError('ChannelGroupNameLength', 'Channel group name must be between 1 and 256 characters in length.', this);
+        throw new ValidationError(lit`ChannelGroupNameLength`, 'Channel group name must be between 1 and 256 characters in length.', this);
       }
       if (!props.channelGroupName.match(/^[a-zA-Z0-9_-]+$/)) {
-        throw new ValidationError('ChannelGroupNamePattern', 'Channel group name must only contain alphanumeric characters, hyphens, and underscores.', this);
+        throw new ValidationError(lit`ChannelGroupNamePattern`, 'Channel group name must only contain alphanumeric characters, hyphens, and underscores.', this);
       }
     }
 
     // Validate description if provided
     if (props?.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
-      throw new ValidationError('ChannelGroupDescriptionLength', 'Channel group description must not exceed 1024 characters.', this);
+      throw new ValidationError(lit`ChannelGroupDescriptionLength`, 'Channel group description must not exceed 1024 characters.', this);
     }
 
     const channelGroup = new CfnChannelGroup(this, 'Resource', {

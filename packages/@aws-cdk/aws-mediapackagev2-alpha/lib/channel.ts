@@ -5,6 +5,7 @@ import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import type { PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
 import { CfnChannel } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IChannelRef, ChannelReference } from 'aws-cdk-lib/aws-mediapackagev2';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -370,7 +371,7 @@ abstract class ChannelBase extends Resource implements IChannel {
 
       public get ingestEndpointUrls(): string[] {
         throw new ValidationError(
-          'IngestEndpointUrlsNotProvided',
+          lit`IngestEndpointUrlsNotProvided`,
           `'ingestEndpointUrls' is not available on imported Channel ${this.node.path}. Use a created Channel or pass the URLs directly.`,
           this,
         );
@@ -600,16 +601,16 @@ export class Channel extends ChannelBase implements IChannel {
     // Validate channelName if provided
     if (props.channelName != null && !Token.isUnresolved(props.channelName)) {
       if (props.channelName.length < 1 || props.channelName.length > 256) {
-        throw new ValidationError('ChannelNameLength', 'Channel name must be between 1 and 256 characters in length.', this);
+        throw new ValidationError(lit`ChannelNameLength`, 'Channel name must be between 1 and 256 characters in length.', this);
       }
       if (!props.channelName.match(/^[a-zA-Z0-9_-]+$/)) {
-        throw new ValidationError('ChannelNamePattern', 'Channel name must only contain alphanumeric characters, hyphens, and underscores.', this);
+        throw new ValidationError(lit`ChannelNamePattern`, 'Channel name must only contain alphanumeric characters, hyphens, and underscores.', this);
       }
     }
 
     // Validate description if provided
     if (props.description && !Token.isUnresolved(props.description) && props.description.length > 1024) {
-      throw new ValidationError('ChannelDescriptionLength', 'Channel description must not exceed 1024 characters.', this);
+      throw new ValidationError(lit`ChannelDescriptionLength`, 'Channel description must not exceed 1024 characters.', this);
     }
 
     // Default to CMAF if no input configuration provided
