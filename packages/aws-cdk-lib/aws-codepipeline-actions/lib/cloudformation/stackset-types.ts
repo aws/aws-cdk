@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Options in common between both StackSet actions
@@ -132,7 +133,7 @@ export abstract class StackInstances {
    */
   public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath, regions: string[]): StackInstances {
     if (regions.length === 0) {
-      throw new cdk.UnscopedValidationError('RegionsCannotBeEmpty', "'regions' may not be an empty list");
+      throw new cdk.UnscopedValidationError(lit`RegionsCannotBeEmpty`, "'regions' may not be an empty list");
     }
 
     return new class extends StackInstances {
@@ -159,11 +160,11 @@ export abstract class StackInstances {
    */
   private static fromList(targets: string[], regions: string[]): StackInstances {
     if (targets.length === 0) {
-      throw new cdk.UnscopedValidationError('TargetsCannotBeEmpty', "'targets' may not be an empty list");
+      throw new cdk.UnscopedValidationError(lit`TargetsCannotBeEmpty`, "'targets' may not be an empty list");
     }
 
     if (regions.length === 0) {
-      throw new cdk.UnscopedValidationError('RegionsCannotBeEmptyInTargets', "'regions' may not be an empty list");
+      throw new cdk.UnscopedValidationError(lit`RegionsCannotBeEmptyInTargets`, "'regions' may not be an empty list");
     }
 
     return new class extends StackInstances {

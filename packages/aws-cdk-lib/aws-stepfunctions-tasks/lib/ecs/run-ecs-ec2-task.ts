@@ -3,6 +3,7 @@ import { EcsRunTaskBase } from './run-ecs-task-base';
 import type * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
@@ -50,15 +51,15 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
 export class RunEcsEc2Task extends EcsRunTaskBase {
   constructor(props: RunEcsEc2TaskProps) {
     if (!props.taskDefinition.isEc2Compatible) {
-      throw new UnscopedValidationError('SuppliedTaskdefinitionConfiguredCompatibility', 'Supplied TaskDefinition is not configured for compatibility with EC2');
+      throw new UnscopedValidationError(lit`SuppliedTaskdefinitionConfiguredCompatibility`, 'Supplied TaskDefinition is not configured for compatibility with EC2');
     }
 
     if (!props.cluster.hasEc2Capacity) {
-      throw new UnscopedValidationError('ClusterServiceNeedsCapacity', 'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+      throw new UnscopedValidationError(lit`ClusterServiceNeedsCapacity`, 'Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }
 
     if (!props.taskDefinition.defaultContainer) {
-      throw new UnscopedValidationError('TaskdefinitionLeastEssentialContainer', 'A TaskDefinition must have at least one essential container');
+      throw new UnscopedValidationError(lit`TaskdefinitionLeastEssentialContainer`, 'A TaskDefinition must have at least one essential container');
     }
 
     super({
@@ -85,7 +86,7 @@ export class RunEcsEc2Task extends EcsRunTaskBase {
  */
 function validateNoNetworkingProps(props: RunEcsEc2TaskProps) {
   if (props.subnets !== undefined || props.securityGroup !== undefined) {
-    throw new UnscopedValidationError('VpcplacementSecuritygroupOnlyUsed', 'vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
+    throw new UnscopedValidationError(lit`VpcplacementSecuritygroupOnlyUsed`, 'vpcPlacement and securityGroup can only be used in AwsVpc networking mode');
   }
 }
 
