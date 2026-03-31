@@ -16,8 +16,8 @@
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.mediapackagev2.Alpha",
-        "packageId": "Amazon.CDK.AWS.mediapackagev2.Alpha",
+        "namespace": "Amazon.CDK.AWS.MediaPackageV2.Alpha",
+        "packageId": "Amazon.CDK.AWS.MediaPackageV2.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {

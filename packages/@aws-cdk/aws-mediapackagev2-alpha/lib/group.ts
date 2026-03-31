@@ -30,6 +30,28 @@ export interface IChannelGroup extends IResource, IChannelGroupRef {
   readonly channelGroupArn: string;
 
   /**
+   * The egress domain where packaged content is available.
+   * Use this as the origin domain when configuring a CDN such as Amazon CloudFront.
+   *
+   * @attribute
+   */
+  readonly egressDomain: string;
+
+  /**
+   * The date and time the channel group was created.
+   *
+   * @attribute
+   */
+  readonly createdAt?: string;
+
+  /**
+   * The date and time the channel group was modified.
+   *
+   * @attribute
+   */
+  readonly modifiedAt?: string;
+
+  /**
    * Create a CloudWatch metric.
    *
    * @param metricName name of the metric.
@@ -131,6 +153,14 @@ export interface ChannelGroupAttributes {
    * Channel Group Name
    */
   readonly channelGroupName: string;
+
+  /**
+   * The egress domain where packaged content is available.
+   * Use this as the origin domain when configuring a CDN such as Amazon CloudFront.
+   *
+   * @default - not available on imported channel groups
+   */
+  readonly egressDomain?: string;
 }
 
 /**
@@ -141,14 +171,33 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
    * Creates a Channel Group construct that represents an external (imported) Channel Group.
    */
   public static fromChannelGroupAttributes(scope: Construct, id: string, attrs: ChannelGroupAttributes): IChannelGroup {
+    if (attrs.egressDomain && !Token.isUnresolved(attrs.egressDomain) && attrs.egressDomain.startsWith('https://')) {
+      throw new ValidationError(
+        'EgressDomainNotUrl',
+        'egressDomain should be a domain name (e.g. abcd1234.egress.mediapackagev2.<region>.amazonaws.com), not a URL. Remove the https:// prefix.',
+        scope,
+      );
+    }
+
     class Import extends ChannelGroupBase implements IChannelGroup {
       public readonly channelGroupName = attrs.channelGroupName;
+      public readonly createdAt = undefined;
+      public readonly modifiedAt = undefined;
       public readonly channelGroupArn = Stack.of(this).formatArn({
         service: 'mediapackagev2',
         resource: 'channelGroup',
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: attrs.channelGroupName,
       });
+
+      public get egressDomain(): string {
+        if (attrs.egressDomain) return attrs.egressDomain;
+        throw new ValidationError(
+          'EgressDomainNotProvided',
+          `'egressDomain' was not provided when importing Channel Group ${this.node.path}. Provide it in fromChannelGroupAttributes() to use this channel group as a CloudFront origin.`,
+          this,
+        );
+      }
     }
 
     return new Import(scope, id);
@@ -163,6 +212,21 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
    * The Amazon Resource Name (ARN) associated with the resource.
    */
   public abstract readonly channelGroupArn: string;
+
+  /**
+   * The egress domain where packaged content is available.
+   */
+  public abstract readonly egressDomain: string;
+
+  /**
+   * The date and time the channel group was created.
+   */
+  public abstract readonly createdAt?: string;
+
+  /**
+   * The date and time the channel group was modified.
+   */
+  public abstract readonly modifiedAt?: string;
 
   /**
    * A reference to this Channel Group resource.
@@ -297,10 +361,15 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
   /**
    * The date and time the channel group was created.
    */
-  public readonly createdAt: string;
+  public readonly createdAt?: string;
 
   /**
-   * The output domain where the source stream should be sent. Integrate the egress domain with a downstream CDN (such as Amazon CloudFront) or playback device.
+   * The date and time the channel group was modified.
+   */
+  public readonly modifiedAt?: string;
+
+  /**
+   * The egress domain where packaged content is available. Use this as the origin domain when configuring a CDN such as Amazon CloudFront.
    */
   public readonly egressDomain: string;
 
@@ -346,6 +415,7 @@ export class ChannelGroup extends ChannelGroupBase implements IChannelGroup {
       tags: props?.tags ? renderTags(props.tags) : undefined,
     });
     this.createdAt = channelGroup.attrCreatedAt;
+    this.modifiedAt = channelGroup.attrModifiedAt;
     this.egressDomain = channelGroup.attrEgressDomain;
     this.channelGroupName = channelGroup.channelGroupName;
     this.channelGroupArn = channelGroup.attrArn;

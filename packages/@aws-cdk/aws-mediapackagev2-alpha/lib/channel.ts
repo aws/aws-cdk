@@ -55,6 +55,27 @@ export interface IChannel extends IResource, IChannelRef {
   readonly channelArn: string;
 
   /**
+   * The date and time the channel was created.
+   *
+   * @attribute
+   */
+  readonly createdAt?: string;
+
+  /**
+   * The date and time the channel was modified.
+   *
+   * @attribute
+   */
+  readonly modifiedAt?: string;
+
+  /**
+   * The ingest endpoint URLs for the channel.
+   *
+   * @attribute
+   */
+  readonly ingestEndpointUrls: string[];
+
+  /**
    * The channel group this channel belongs to.
    * Only available when the channel was created in the same stack.
    * Undefined for imported channels.
@@ -343,7 +364,17 @@ abstract class ChannelBase extends Resource implements IChannel {
       public policy?: ChannelPolicy = undefined;
       public readonly channelGroupName = attrs.channelGroupName;
       public readonly channelName = attrs.channelName;
+      public readonly createdAt = undefined;
+      public readonly modifiedAt = undefined;
       protected autoCreatePolicy = false;
+
+      public get ingestEndpointUrls(): string[] {
+        throw new ValidationError(
+          'IngestEndpointUrlsNotProvided',
+          `'ingestEndpointUrls' is not available on imported Channel ${this.node.path}. Use a created Channel or pass the URLs directly.`,
+          this,
+        );
+      }
       public readonly channelArn = Stack.of(this).formatArn({
         service: 'mediapackagev2',
         resource: `channelGroup/${attrs.channelGroupName}/channel`,
@@ -358,6 +389,9 @@ abstract class ChannelBase extends Resource implements IChannel {
   public abstract readonly channelGroupName: string;
   public abstract readonly channelName: string;
   public abstract readonly channelArn: string;
+  public abstract readonly createdAt?: string;
+  public abstract readonly modifiedAt?: string;
+  public abstract readonly ingestEndpointUrls: string[];
 
   /**
    * A reference to this Channel resource
@@ -537,12 +571,12 @@ export class Channel extends ChannelBase implements IChannel {
   /**
    * The date and time the channel was created.
    */
-  public readonly createdAt: string;
+  public readonly createdAt?: string;
 
   /**
    * The date and time the channel was modified.
    */
-  public readonly modifiedAt: string;
+  public readonly modifiedAt?: string;
 
   /**
    * The list of ingest endpoints.

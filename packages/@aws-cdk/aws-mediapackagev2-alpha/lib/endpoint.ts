@@ -1,5 +1,5 @@
 import type { Bitrate, IResource } from 'aws-cdk-lib';
-import { RemovalPolicy, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
+import { RemovalPolicy, ArnFormat, Duration, Fn, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
@@ -1003,6 +1003,48 @@ export interface IOriginEndpoint extends IResource, IOriginEndpointRef {
    * @attribute
    */
   readonly originEndpointArn: string;
+
+  /**
+   * The date and time the origin endpoint was created.
+   *
+   * @attribute
+   */
+  readonly createdAt?: string;
+
+  /**
+   * The date and time the origin endpoint was modified.
+   *
+   * @attribute
+   */
+  readonly modifiedAt?: string;
+
+  /**
+   * The HLS manifest URLs for the origin endpoint.
+   *
+   * @attribute
+   */
+  readonly hlsManifestUrls?: string[];
+
+  /**
+   * The Low Latency HLS manifest URLs for the origin endpoint.
+   *
+   * @attribute
+   */
+  readonly lowLatencyHlsManifestUrls?: string[];
+
+  /**
+   * The DASH manifest URLs for the origin endpoint.
+   *
+   * @attribute
+   */
+  readonly dashManifestUrls?: string[];
+
+  /**
+   * The MSS manifest URLs for the origin endpoint.
+   *
+   * @attribute
+   */
+  readonly mssManifestUrls?: string[];
 
   /**
    * Configure origin endpoint policy.
@@ -2508,6 +2550,12 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
       public readonly channelGroupName = attrs.channelGroupName;
       public readonly channelName = attrs.channelName;
       public readonly originEndpointName = attrs.originEndpointName;
+      public readonly createdAt = undefined;
+      public readonly modifiedAt = undefined;
+      public readonly hlsManifestUrls = undefined;
+      public readonly lowLatencyHlsManifestUrls = undefined;
+      public readonly dashManifestUrls = undefined;
+      public readonly mssManifestUrls = undefined;
       protected autoCreatePolicy = false;
       public readonly originEndpointArn = Stack.of(this).formatArn({
         service: 'mediapackagev2',
@@ -2524,6 +2572,12 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
   public abstract readonly channelName: string;
   public abstract readonly originEndpointName: string;
   public abstract readonly originEndpointArn: string;
+  public abstract readonly createdAt?: string;
+  public abstract readonly modifiedAt?: string;
+  public abstract readonly hlsManifestUrls?: string[];
+  public abstract readonly lowLatencyHlsManifestUrls?: string[];
+  public abstract readonly dashManifestUrls?: string[];
+  public abstract readonly mssManifestUrls?: string[];
 
   /**
    * A reference to this Origin Endpoint resource.
@@ -2747,31 +2801,31 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
   /**
    * The timestamp of the creation of the origin endpoint.
    */
-  public readonly createdAt: string;
+  public readonly createdAt?: string;
 
   /**
    * The timestamp of the modification of the origin endpoint.
    */
-  public readonly modifiedAt: string;
+  public readonly modifiedAt?: string;
 
   /**
    * Array containing Low Latency HLS Manifests created by the OriginEndpoint.
    */
-  public readonly lowLatencyHlsManifestUrls: string[];
+  public readonly lowLatencyHlsManifestUrls?: string[];
 
   /**
    * Array containing HLS Manifests created by the OriginEndpoint.
    */
-  public readonly hlsManifestUrls: string[];
+  public readonly hlsManifestUrls?: string[];
 
   /**
    * Array containing DASH Manifests created by the OriginEndpoint.
    */
-  public readonly dashManifestUrls: string[];
+  public readonly dashManifestUrls?: string[];
   /**
    * Array containing MSS Manifests created by the OriginEndpoint.
    */
-  public readonly mssManifestUrls: string[];
+  public readonly mssManifestUrls?: string[];
   /**
    * The resource policy associated with this origin endpoint.
    *
@@ -2885,10 +2939,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       origin.addDependency(groupCfn);
     }
 
-    this.lowLatencyHlsManifestUrls = origin.attrLowLatencyHlsManifestUrls;
-    this.hlsManifestUrls = origin.attrHlsManifestUrls;
-    this.dashManifestUrls = origin.attrDashManifestUrls;
-    this.mssManifestUrls = origin.attrMssManifestUrls;
+    this.lowLatencyHlsManifestUrls = this.llHlsManifests.map((_, i) => Fn.select(i, origin.attrLowLatencyHlsManifestUrls));
+    this.hlsManifestUrls = this.hlsManifests.map((_, i) => Fn.select(i, origin.attrHlsManifestUrls));
+    this.dashManifestUrls = this.dashManifests.map((_, i) => Fn.select(i, origin.attrDashManifestUrls));
+    this.mssManifestUrls = this.mssManifests.map((_, i) => Fn.select(i, origin.attrMssManifestUrls));
     this.createdAt = origin.attrCreatedAt;
     this.modifiedAt = origin.attrModifiedAt;
     this.channelGroupName = origin.channelGroupName;

@@ -1377,3 +1377,17 @@ test('SPEKE URL without HTTPS throws', () => {
     });
   }).toThrow(/SPEKE key provider URL must use HTTPS/);
 });
+
+test('imported origin endpoint has undefined for timestamps and manifest URLs', () => {
+  const imported = mediapackagev2.OriginEndpoint.fromOriginEndpointAttributes(stack, 'ImportedEndpoint2', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'test',
+    originEndpointName: 'test-endpoint',
+  });
+  expect(imported.createdAt).toBeUndefined();
+  expect(imported.modifiedAt).toBeUndefined();
+  expect(imported.hlsManifestUrls).toBeUndefined();
+  expect(imported.lowLatencyHlsManifestUrls).toBeUndefined();
+  expect(imported.dashManifestUrls).toBeUndefined();
+  expect(imported.mssManifestUrls).toBeUndefined();
+});

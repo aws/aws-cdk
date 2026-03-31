@@ -351,3 +351,13 @@ test('grants.ingest() adds correct IAM policy', () => {
     },
   });
 });
+
+test('imported channel has undefined for createdAt and modifiedAt, throws for ingestEndpointUrls', () => {
+  const imported = mediapackagev2.Channel.fromChannelAttributes(stack, 'ImportedChannel2', {
+    channelName: 'test',
+    channelGroupName: 'MyChannelGroup',
+  });
+  expect(imported.createdAt).toBeUndefined();
+  expect(imported.modifiedAt).toBeUndefined();
+  expect(() => imported.ingestEndpointUrls).toThrow(/ingestEndpointUrls.*is not available/);
+});

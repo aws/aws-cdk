@@ -41,6 +41,7 @@ test('MediaPackagev2 Channel Group Configuration - no name', () => {
 test('existing Channel Group can be imported', () => {
   const importedChannelGroup = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
     channelGroupName: 'MyChannelGroup',
+    egressDomain: 'abcd.egress.mediapackagev2.us-east-1.amazonaws.com',
   });
 
   expect(importedChannelGroup.channelGroupArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup$/);
@@ -49,6 +50,7 @@ test('existing Channel Group can be imported', () => {
 test('existing Channel Group can be imported and used by a Channel', () => {
   const importedChannelGroup = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
     channelGroupName: 'MyChannelGroup',
+    egressDomain: 'abcd.egress.mediapackagev2.us-east-1.amazonaws.com',
   });
   new mediapackagev2.Channel(stack, 'MyTest', {
     channelGroup: importedChannelGroup,
@@ -157,4 +159,38 @@ test('Token channel group name skips validation', () => {
       channelGroupName: Lazy.string({ produce: () => 'resolved-later' }),
     });
   }).not.toThrow();
+});
+
+test('imported channel group exposes egressDomain', () => {
+  const imported = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'Imported', {
+    channelGroupName: 'my-group',
+    egressDomain: 'abcd1234.egress.mediapackagev2.us-east-1.amazonaws.com',
+  });
+  expect(imported.egressDomain).toBe('abcd1234.egress.mediapackagev2.us-east-1.amazonaws.com');
+  expect(imported.channelGroupName).toBe('my-group');
+});
+
+test('imported channel group has undefined createdAt and modifiedAt', () => {
+  const imported = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'Imported', {
+    channelGroupName: 'my-group',
+  });
+  expect(imported.createdAt).toBeUndefined();
+  expect(imported.modifiedAt).toBeUndefined();
+});
+
+test('imported channel group rejects https:// prefix on egressDomain', () => {
+  expect(() => {
+    mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'Imported', {
+      channelGroupName: 'my-group',
+      egressDomain: 'https://abcd1234.egress.mediapackagev2.us-east-1.amazonaws.com',
+    });
+  }).toThrow(/Remove the https:\/\/ prefix/);
+});
+
+test('imported channel group without egressDomain throws on access', () => {
+  const imported = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedNoEgress', {
+    channelGroupName: 'my-group',
+  });
+  expect(imported.channelGroupName).toBe('my-group');
+  expect(() => imported.egressDomain).toThrow(/egressDomain.*was not provided/);
 });
