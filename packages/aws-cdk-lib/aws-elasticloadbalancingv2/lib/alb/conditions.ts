@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * ListenerCondition providers definition.
@@ -144,7 +145,7 @@ class PathPatternListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
     if (values && values.length > 5) {
-      throw new UnscopedValidationError('RuleOnlyConditionValues', "A rule can only have '5' condition values");
+      throw new UnscopedValidationError(lit`RuleOnlyConditionValues`, "A rule can only have '5' condition values");
     }
   }
 

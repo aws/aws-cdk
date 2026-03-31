@@ -1,5 +1,6 @@
 import type { IResolvable, IResolveContext } from '../../core';
 import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
 
@@ -95,7 +96,7 @@ export class Match implements IResolvable {
     const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/igm;
 
     if (!ipv4Regex.test(range) && !ipv6Regex.test(range)) {
-      throw new UnscopedValidationError('InvalidIpAddressRange', `Invalid IP address range: ${range}`);
+      throw new UnscopedValidationError(lit`InvalidIpAddressRange`, `Invalid IP address range: ${range}`);
     }
 
     return [Token.asString({ cidr: range })];
@@ -115,14 +116,14 @@ export class Match implements IResolvable {
    */
   public static anythingBut(...values: any[]): string[] {
     if (values.length === 0) {
-      throw new UnscopedValidationError('AnythingButMatchersMustBeNonEmpty', 'anythingBut matchers must be non-empty lists');
+      throw new UnscopedValidationError(lit`AnythingButMatchersMustBeNonEmpty`, 'anythingBut matchers must be non-empty lists');
     }
 
     const allNumbers = values.every(v => typeof (v) === 'number');
     const allStrings = values.every(v => typeof (v) === 'string');
 
     if (!(allNumbers || allStrings)) {
-      throw new UnscopedValidationError('AnythingButMatchersMustBeHomogeneous', 'anythingBut matchers must be lists that contain only strings or only numbers.');
+      throw new UnscopedValidationError(lit`AnythingButMatchersMustBeHomogeneous`, 'anythingBut matchers must be lists that contain only strings or only numbers.');
     }
 
     return [Token.asString({ 'anything-but': values })];
@@ -201,7 +202,7 @@ export class Match implements IResolvable {
    */
   public static interval(lower: number, upper: number): string[] {
     if (lower > upper) {
-      throw new UnscopedValidationError('InvalidInterval', `Invalid interval: [${lower}, ${upper}]`);
+      throw new UnscopedValidationError(lit`InvalidInterval`, `Invalid interval: [${lower}, ${upper}]`);
     }
 
     return Match.allOf(Match.greaterThanOrEqual(lower), Match.lessThanOrEqual(upper));
@@ -212,7 +213,7 @@ export class Match implements IResolvable {
    */
   public static allOf(...matchers: any[]): string[] {
     if (matchers.length === 0) {
-      throw new UnscopedValidationError('MatcherListMustContainAtLeastOneElement', 'A list of matchers must contain at least one element.');
+      throw new UnscopedValidationError(lit`MatcherListMustContainAtLeastOneElement`, 'A list of matchers must contain at least one element.');
     }
 
     return this.fromMergedObjects(matchers);
@@ -223,7 +224,7 @@ export class Match implements IResolvable {
    */
   public static anyOf(...matchers: any[]): string[] {
     if (matchers.length === 0) {
-      throw new UnscopedValidationError('MatcherListMustContainAtLeastOneElement', 'A list of matchers must contain at least one element.');
+      throw new UnscopedValidationError(lit`MatcherListMustContainAtLeastOneElement`, 'A list of matchers must contain at least one element.');
     }
 
     return matchers.flatMap(match => {
@@ -238,7 +239,7 @@ export class Match implements IResolvable {
 
   private static anythingButConjunction(filterKey: string, values: string[]): string[] {
     if (values.length === 0) {
-      throw new UnscopedValidationError('AnythingButMatchersMustBeNonEmptyConjunction', 'anythingBut matchers must be non-empty lists');
+      throw new UnscopedValidationError(lit`AnythingButMatchersMustBeNonEmptyConjunction`, 'anythingBut matchers must be non-empty lists');
     }
 
     // When there is a single value return it, otherwise return the array
@@ -271,7 +272,7 @@ export class Match implements IResolvable {
     // This is the only supported case for merging at the moment.
     // We can generalize this logic if EventBridge starts supporting more cases in the future.
     if (!matchers.every(matcher => matcher?.numeric)) {
-      throw new UnscopedValidationError('OnlyNumericMatchersCanBeMerged', 'Only numeric matchers can be merged into a single matcher.');
+      throw new UnscopedValidationError(lit`OnlyNumericMatchersCanBeMerged`, 'Only numeric matchers can be merged into a single matcher.');
     }
 
     return [{ numeric: matchers.flatMap(matcher => matcher.numeric) }];

@@ -7,6 +7,7 @@ import type { Duration } from '../../core';
 import { Lazy, Resource, Stack, Token, Annotations, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -137,7 +138,7 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new ValidationError('InvalidDashboardName', [
+        throw new ValidationError(lit`InvalidDashboardName`, [
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '), this);
@@ -145,11 +146,11 @@ export class Dashboard extends Resource {
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new ValidationError('BothPropertiesDefaultIntervalStart', 'both properties defaultInterval and start cannot be set at once', this);
+      throw new ValidationError(lit`BothPropertiesDefaultIntervalStart`, 'both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new ValidationError('SpecifyValue', 'If you specify a value for end, you must also specify a value for start.', this);
+      throw new ValidationError(lit`SpecifyValue`, 'If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {

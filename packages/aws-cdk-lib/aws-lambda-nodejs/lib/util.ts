@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Runtime } from '../../aws-lambda';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface CallSite {
   getThis(): any;
@@ -81,9 +82,9 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 
   if (proc.status !== 0) {
     if (proc.stdout || proc.stderr) {
-      throw new UnscopedValidationError('ProcessExitedWithNonZeroStatus', `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+      throw new UnscopedValidationError(lit`ProcessExitedWithNonZeroStatus`, `[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
-    throw new UnscopedValidationError('CommandExitedWithNonZeroStatus', `${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
+    throw new UnscopedValidationError(lit`CommandExitedWithNonZeroStatus`, `${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
   }
 
   return proc;
@@ -141,7 +142,7 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
     const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
       ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
-      throw new UnscopedValidationError('CannotExtractModuleVersion', `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+      throw new UnscopedValidationError(lit`CannotExtractModuleVersion`, `Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
     dependencies[mod] = version;
   }
@@ -190,7 +191,7 @@ export function getTsconfigCompilerOptions(tsconfigPath: string): string {
         compilerOptionsString += option + ' ' + value.join(',') + ' ';
       }
     } else {
-      throw new UnscopedValidationError('UnsupportedCompilerOption', `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+      throw new UnscopedValidationError(lit`UnsupportedCompilerOption`, `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
     }
   });
 
@@ -238,7 +239,7 @@ export function getTsconfigCompilerOptionsArray(tsconfigPath: string): string[] 
         args.push(option, value.join(','));
       }
     } else {
-      throw new UnscopedValidationError('UnsupportedCompilerOption', `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
+      throw new UnscopedValidationError(lit`UnsupportedCompilerOption`, `Missing support for compilerOption: [${key}]: { ${type}, ${value}} \n`);
     }
   });
 
