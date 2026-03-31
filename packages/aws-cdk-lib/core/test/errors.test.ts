@@ -87,7 +87,7 @@ Relates to construct:
     }
   });
 
-  test('writing error codes to disk', async () => {
+  test('most recent error codes is written to disk', async () => {
     const file = path.join(os.tmpdir(), 'errors.txt');
     await rm(file, { force: true });
     try {
@@ -103,7 +103,7 @@ Relates to construct:
         throw new UnscopedValidationError('Error2', 'bla');
       } catch { }
       const contents2 = await readFile(file, 'utf-8');
-      expect(contents2).toEqual('Error1\nError2');
+      expect(contents2).toEqual('Error2');
     } finally {
       delete process.env.CDK_ERROR_FILE;
       await rm(file, { force: true });
