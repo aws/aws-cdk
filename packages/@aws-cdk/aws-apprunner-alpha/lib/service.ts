@@ -1130,7 +1130,7 @@ export abstract class Secret {
   }
 
   /**
-   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Creates an environment variable value from a secret stored in AWS Secrets
    * Manager.
    *
    * @param secret the secret stored in AWS Secrets Manager
@@ -1148,7 +1148,7 @@ export abstract class Secret {
   }
 
   /**
-   * Creates a environment variable value from a secret stored in AWS Secrets
+   * Creates an environment variable value from a secret stored in AWS Secrets
    * Manager.
    *
    * @param secret the secret stored in AWS Secrets Manager
