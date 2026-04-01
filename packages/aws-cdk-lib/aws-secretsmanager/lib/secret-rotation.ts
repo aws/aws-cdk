@@ -5,6 +5,7 @@ import * as lambda from '../../aws-lambda';
 import * as serverless from '../../aws-sam';
 import type { Duration } from '../../core';
 import { Names, Stack, CfnMapping, Aws, RemovalPolicy, ValidationError, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for a SecretRotationApplication
@@ -151,7 +152,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
-      throw new UnscopedValidationError('UnsupportedPartition', `unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(lit`UnsupportedPartition`, `unsupported partition: ${partition}`);
     }
   }
 
@@ -167,7 +168,7 @@ export class SecretRotationApplication {
     } else if (partition === 'aws-us-gov') {
       return '1.1.213';
     } else {
-      throw new UnscopedValidationError('UnsupportedPartition', `unsupported partition: ${partition}`);
+      throw new UnscopedValidationError(lit`UnsupportedPartition`, `unsupported partition: ${partition}`);
     }
   }
 }
@@ -278,11 +279,11 @@ export class SecretRotation extends Construct {
     super(scope, id);
 
     if (!props.target.connections.defaultPort) {
-      throw new ValidationError('ConnectionsDefaultPortRange', 'The `target` connections must have a default port range.', this);
+      throw new ValidationError(lit`ConnectionsDefaultPortRange`, 'The `target` connections must have a default port range.', this);
     }
 
     if (props.application.isMultiUser && !props.masterSecret) {
-      throw new ValidationError('MustBeSpecifiedApplicationUsing', 'The `masterSecret` must be specified for application using the multi user scheme.', this);
+      throw new ValidationError(lit`MustBeSpecifiedApplicationUsing`, 'The `masterSecret` must be specified for application using the multi user scheme.', this);
     }
 
     // Max length of 64 chars, get the last 64 chars

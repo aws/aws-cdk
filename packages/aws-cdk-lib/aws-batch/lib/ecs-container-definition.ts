@@ -10,6 +10,7 @@ import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as ssm from '../../aws-ssm';
 import type { Size } from '../../core';
 import { Lazy, PhysicalName, UnscopedValidationError, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
@@ -734,7 +735,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
               };
             }
 
-            throw new ValidationError('UnsupportedVolumeEncountered', 'unsupported Volume encountered', this);
+            throw new ValidationError(lit`UnsupportedVolumeEncountered`, 'unsupported Volume encountered', this);
           });
         },
       }),
@@ -1162,15 +1163,15 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
 
     if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
-      throw new ValidationError('ReadonlyRootFilesystemPossibleWindows', 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
+      throw new ValidationError(lit`ReadonlyRootFilesystemPossibleWindows`, 'Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container', this);
     }
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
-        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
+        throw new ValidationError(lit`FargateContainer`, `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} > 200 GB`, this);
       } else if (props.ephemeralStorageSize.toGibibytes() < 21) {
-        throw new ValidationError('FargateContainer', `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
+        throw new ValidationError(lit`FargateContainer`, `ECS Fargate container '${id}' specifies 'ephemeralStorageSize' at ${props.ephemeralStorageSize.toGibibytes()} < 21 GB`, this);
       }
     }
   }
@@ -1222,7 +1223,7 @@ function createExecutionRole(scope: Construct, id: string, logging: boolean): ia
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new UnscopedValidationError('FilesystemInstanceShouldImplement', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+    throw new UnscopedValidationError(lit`FilesystemInstanceShouldImplement`, `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
   }
   return fileSystem as IFileSystem;
 }

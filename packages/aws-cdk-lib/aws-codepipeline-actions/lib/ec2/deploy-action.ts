@@ -3,6 +3,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import { ArnFormat, Stack, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
 
@@ -128,7 +129,7 @@ class Ec2DeploySpecificationsInline extends Ec2DeploySpecifications {
 
   bind(scope: Construct) {
     if (!Token.isUnresolved(this.props.targetDirectory) && !this.props.targetDirectory.startsWith('/')) {
-      throw new ValidationError('TargetDirectoryAbsolutePath', 'The targetDirectory must be an absolute path.', scope);
+      throw new ValidationError(lit`TargetDirectoryAbsolutePath`, 'The targetDirectory must be an absolute path.', scope);
     }
 
     return {
@@ -150,7 +151,7 @@ export abstract class Ec2MaxInstances {
    */
   public static targets(targets: number): Ec2MaxInstances {
     if (!Token.isUnresolved(targets) && !(targets >= 1 && Number.isInteger(targets))) {
-      throw new UnscopedValidationError('MustBeTargetsPositiveInteger', `targets must be a positive integer. got ${targets}`);
+      throw new UnscopedValidationError(lit`MustBeTargetsPositiveInteger`, `targets must be a positive integer. got ${targets}`);
     }
     return { value: Tokenization.stringifyNumber(targets) };
   }
@@ -162,7 +163,7 @@ export abstract class Ec2MaxInstances {
    */
   public static percentage(percentage: number): Ec2MaxInstances {
     if (!Token.isUnresolved(percentage) && !(percentage >= 1 && percentage <= 100 && Number.isInteger(percentage))) {
-      throw new UnscopedValidationError('MustBePercentagePositiveInteger', `percentage must be a positive integer between 1 and 100. got ${percentage}`);
+      throw new UnscopedValidationError(lit`MustBePercentagePositiveInteger`, `percentage must be a positive integer between 1 and 100. got ${percentage}`);
     }
     return { value: `${Tokenization.stringifyNumber(percentage)}%` };
   }
@@ -187,7 +188,7 @@ export class Ec2DeployAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     if (Token.isUnresolved(this.props.instanceTagKey)) {
-      throw new ValidationError('InstanceTagKeyNonEmpty', 'The instanceTagKey must be a non-empty concrete value.', scope);
+      throw new ValidationError(lit`InstanceTagKeyNonEmpty`, 'The instanceTagKey must be a non-empty concrete value.', scope);
     }
 
     // Permissions based on CodePipeline documentation:
