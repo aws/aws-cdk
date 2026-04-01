@@ -13,7 +13,7 @@ import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -126,6 +126,10 @@ export interface StateMachineProps {
 
   /**
    * Maximum run time for this state machine
+   *
+   * This property is only applied when the definition is provided via `DefinitionBody.fromChainable()`.
+   * If you provide a definition via `DefinitionBody.fromString()` or `DefinitionBody.fromFile()`,
+   * set the timeout directly in your ASL definition using `TimeoutSeconds`.
    *
    * @default No timeout
    */
@@ -488,6 +492,8 @@ export class StateMachine extends StateMachineBase {
       for (const statement of graph.policyStatements) {
         this.addToRolePolicy(statement);
       }
+    } else if (props.timeout) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:timeoutIgnored', 'The \'timeout\' property is only applied when using DefinitionBody.fromChainable(). Set \'TimeoutSeconds\' directly in your ASL definition instead.');
     }
 
     if (props.encryptionConfiguration instanceof CustomerManagedEncryptionConfiguration) {
