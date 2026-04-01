@@ -1,5 +1,6 @@
 import type { IConstruct } from 'constructs';
 import { ValidationError } from './errors';
+import { lit } from './private/literal-string';
 
 const ASPECTS_SYMBOL = Symbol.for('cdk-aspects');
 
@@ -179,7 +180,7 @@ export class AspectApplication {
    */
   public set priority(priority: number) {
     if (priority < 0) {
-      throw new ValidationError('PriorityNonNegativeNumber', 'Priority must be a non-negative number', this.construct);
+      throw new ValidationError(lit`PriorityNonNegativeNumber`, 'Priority must be a non-negative number', this.construct);
     }
     this._priority = priority;
 

@@ -3,6 +3,7 @@ import type { ILambdaDeploymentConfig } from './deployment-config';
 import type { Duration } from '../../../core';
 import { Names, Resource, ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import type { IBindableDeploymentConfig } from '../base-deployment-config';
@@ -185,13 +186,13 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
   private validateParameters(props: CustomLambdaDeploymentConfigProps): void {
     if ( !(1 <= props.percentage && props.percentage <= 99) ) {
       throw new ValidationError(
-        'InvalidDeploymentConfigPercentage',
+        lit`InvalidDeploymentConfigPercentage`,
         `Invalid deployment config percentage "${props.percentage.toString()}". \
         Step percentage must be an integer between 1 and 99.`, this);
     }
     if (props.interval.toMinutes() > 2880) {
       throw new ValidationError(
-        'InvalidDeploymentConfigInterval',
+        lit`InvalidDeploymentConfigInterval`,
         `Invalid deployment config interval "${props.interval.toString()}". \
         Traffic shifting intervals must be positive integers up to 2880 (2 days).`, this);
     }

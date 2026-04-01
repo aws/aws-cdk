@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export enum VariableInputType {
   /**
@@ -87,10 +88,10 @@ export abstract class Values {
    */
   public static fromSearchComponents(components: SearchComponents): Values {
     if (components.dimensions.length === 0) {
-      throw new UnscopedValidationError('EmptyDimensionsNotAllowed', 'Empty dimensions provided. Please specify one dimension at least');
+      throw new UnscopedValidationError(lit`EmptyDimensionsNotAllowed`, 'Empty dimensions provided. Please specify one dimension at least');
     }
     if (!components.dimensions.includes(components.populateFrom)) {
-      throw new UnscopedValidationError('PopulateFromNotInDimensions', `populateFrom (${components.populateFrom}) is not present in dimensions`);
+      throw new UnscopedValidationError(lit`PopulateFromNotInDimensions`, `populateFrom (${components.populateFrom}) is not present in dimensions`);
     }
     const metricSchema = [components.namespace, ...components.dimensions];
     return Values.fromSearch(`{${metricSchema.join(',')}} MetricName=\"${components.metricName}\"`, components.populateFrom);
@@ -111,7 +112,7 @@ export abstract class Values {
    */
   public static fromValues(...values: VariableValue[]): Values {
     if (values.length == 0) {
-      throw new UnscopedValidationError('EmptyValuesNotAllowed', 'Empty values is not allowed');
+      throw new UnscopedValidationError(lit`EmptyValuesNotAllowed`, 'Empty values is not allowed');
     }
     return new StaticValues(values);
   }
@@ -229,10 +230,10 @@ export interface DashboardVariableOptions {
 export class DashboardVariable implements IVariable {
   public constructor(private readonly options: DashboardVariableOptions) {
     if (options.inputType !== VariableInputType.INPUT && !options.values) {
-      throw new UnscopedValidationError('InputTypeRequiresValues', `Variable with inputType (${options.inputType}) requires values to be set`);
+      throw new UnscopedValidationError(lit`InputTypeRequiresValues`, `Variable with inputType (${options.inputType}) requires values to be set`);
     }
     if (options.inputType == VariableInputType.INPUT && options.values) {
-      throw new UnscopedValidationError('InputTypeInputCannotHaveValues', 'inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove \'values\' from options.');
+      throw new UnscopedValidationError(lit`InputTypeInputCannotHaveValues`, 'inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove \'values\' from options.');
     }
   }
 

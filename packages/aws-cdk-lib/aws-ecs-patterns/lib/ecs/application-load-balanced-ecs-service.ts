@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 import { ApplicationLoadBalancedServiceBase } from '../base/application-load-balanced-service-base';
@@ -104,7 +105,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('SpecifyTaskDefinitionTaskImage', 'You must specify either a taskDefinition or taskImageOptions, not both.', this);
+      throw new ValidationError(lit`SpecifyTaskDefinitionTaskImage`, 'You must specify either a taskDefinition or taskImageOptions, not both.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -136,7 +137,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         containerPort: taskImageOptions.containerPort || 80,
       });
     } else {
-      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
