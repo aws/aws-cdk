@@ -1,4 +1,5 @@
-import { IConstruct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Node } from 'constructs';
 import { unresolved } from './private/encoding';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { makeUniqueId } from './private/uniqueid';

@@ -1,11 +1,13 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 import { CfnGuardrailVersion } from 'aws-cdk-lib/aws-bedrock';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 // Internal Libs
-import { Guardrail, IGuardrail } from './guardrails';
+import type { IGuardrail } from './guardrails';
+import { Guardrail } from './guardrails';
 
 /******************************************************************************
  *                              COMMON

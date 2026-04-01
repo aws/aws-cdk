@@ -13,7 +13,7 @@
     "api": "listWorkGroups",
     "expected": "{\"$ObjectLike\":{\"WorkGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"TestWG\"}}]}}}",
     "flattenResponse": "false",
-    "salt": "1760824164041"
+    "salt": "1771146552909"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,7 +76,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -104,7 +104,7 @@
      "WorkGroup": "\"TestWG\""
     },
     "flattenResponse": "false",
-    "salt": "1760824164041"
+    "salt": "1771146552909"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

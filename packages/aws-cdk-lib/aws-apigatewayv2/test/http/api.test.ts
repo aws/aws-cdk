@@ -1,12 +1,15 @@
 import { Match, Template } from '../../../assertions';
 import { Certificate } from '../../../aws-certificatemanager';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import { Duration, Stack } from '../../../core';
+import type {
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer,
+} from '../../lib';
 import {
   CorsHttpMethod, DomainName,
-  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
   IpAddressType,
 } from '../../lib';
 

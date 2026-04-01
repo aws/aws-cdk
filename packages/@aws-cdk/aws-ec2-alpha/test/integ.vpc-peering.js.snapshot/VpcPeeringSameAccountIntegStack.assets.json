@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
     "765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d": {
       "displayName": "VpcPeeringSameAccountIntegStack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-4beb6cba": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "765be6b1dc796d080ff0e4a58844a77656cb8d4141c141eb55fa9f251c5f641d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

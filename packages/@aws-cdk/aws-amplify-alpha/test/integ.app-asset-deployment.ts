@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {

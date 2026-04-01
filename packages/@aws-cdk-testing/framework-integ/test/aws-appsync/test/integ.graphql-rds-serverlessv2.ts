@@ -2,11 +2,12 @@
 
 import * as path from 'path';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from '../../aws-rds/test/db-versions';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as secretmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
@@ -29,7 +30,7 @@ class TestStack extends cdk.Stack {
     };
 
     const cluster = new rds.DatabaseCluster(this, 'Integ-Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_5 }),
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
       writer: rds.ClusterInstance.serverlessV2('writer'),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       vpc,

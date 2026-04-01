@@ -1,11 +1,12 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { DatabaseOptions } from '../database-options';
-import { ITable, TableAction } from '../table';
-import { IUser } from '../user';
+import type { DatabaseOptions } from '../database-options';
+import type { ITable } from '../table';
+import { TableAction } from '../table';
+import type { IUser } from '../user';
 import { DatabaseQuery } from './database-query';
 import { HandlerName } from './database-query-provider/handler-name';
-import { UserTablePrivilegesHandlerProps } from './handler-props';
+import type { UserTablePrivilegesHandlerProps } from './handler-props';
 
 /**
  * The Redshift table and action that make up a privilege that can be granted to a Redshift user.

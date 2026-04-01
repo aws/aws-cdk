@@ -1,6 +1,6 @@
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 
 export class LambdaTarget implements elbv2.IApplicationLoadBalancerTarget {
   /**

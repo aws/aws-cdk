@@ -3,8 +3,9 @@
  *                                 IAM Role
  *****************************************************************************/
 
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { CredentialProviderType, ICredentialProviderConfig } from './credential-provider';
+import type { Grant, IRole } from 'aws-cdk-lib/aws-iam';
+import type { ICredentialProviderConfig } from './credential-provider';
+import { CredentialProviderType } from './credential-provider';
 
 /**
  * Gateway IAM Role credential provider configuration implementation

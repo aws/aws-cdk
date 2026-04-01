@@ -1,10 +1,11 @@
 
 import * as path from 'path';
-import { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { Module } from '@cdklabs/typewriter';
-import { IWriter, substituteFilePattern } from '../util';
-import { GrantsProps } from './aws-cdk-lib';
-import { BaseServiceSubmodule, LocatedModule } from './service-submodule';
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { Module } from '@cdklabs/typewriter';
+import type { IWriter } from '../util';
+import { substituteFilePattern } from '../util';
+import type { GrantsProps } from './aws-cdk-lib';
+import type { BaseServiceSubmodule, LocatedModule } from './service-submodule';
 
 export interface AddServiceProps {
   /**

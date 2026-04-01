@@ -1,5 +1,5 @@
-import { IStage } from './stage';
-import { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
+import type { IStage } from './stage';
+import type { ILogGroupRef } from '../../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a HttpApi Stage.

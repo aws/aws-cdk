@@ -1,6 +1,7 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as amplify from '../lib';
 
 class TestStack extends Stack {

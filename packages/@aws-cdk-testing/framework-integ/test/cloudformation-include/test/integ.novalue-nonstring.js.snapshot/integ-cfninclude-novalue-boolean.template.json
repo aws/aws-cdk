@@ -4,7 +4,6 @@
   "TestBucket": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "test-novalue-boolean-bucket",
     "ObjectLockEnabled": {
      "Ref": "AWS::NoValue"
     }

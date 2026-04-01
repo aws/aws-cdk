@@ -1,30 +1,30 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "files": {
-    "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c": {
+    "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
       "source": {
-        "path": "asset.a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c",
+        "path": "asset.55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-4416417b": {
+        "current_account-current_region-65a3ca72": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip",
+          "objectKey": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "cf11dc7c23ba5f1a238b79f98cbbb974c6c10011bd6fa23e1f27f2672ab8d537": {
+    "cb885dfda9efe47ee77042a2a705d4a17e4b050ffb8df44e4e34cdfb4927d690": {
       "displayName": "integRdsInstanceIo2 Template",
       "source": {
         "path": "integRdsInstanceIo2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-73a6d146": {
+        "current_account-current_region-ff28f394": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cf11dc7c23ba5f1a238b79f98cbbb974c6c10011bd6fa23e1f27f2672ab8d537.json",
+          "objectKey": "cb885dfda9efe47ee77042a2a705d4a17e4b050ffb8df44e4e34cdfb4927d690.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,10 +1,12 @@
-import { App, Stack, NestedStack, StackProps, NestedStackProps } from 'aws-cdk-lib';
-import { UserPool, IUserPool } from 'aws-cdk-lib/aws-cognito';
+import type { StackProps, NestedStackProps } from 'aws-cdk-lib';
+import { App, Stack, NestedStack } from 'aws-cdk-lib';
+import type { IUserPool } from 'aws-cdk-lib/aws-cognito';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Integration test for bucket deployment with cross-nested-stack references:

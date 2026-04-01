@@ -1,5 +1,6 @@
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import { EbsDeviceVolumeType, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';

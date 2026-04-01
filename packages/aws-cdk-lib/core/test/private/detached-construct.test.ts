@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { ENABLE_ADDITIONAL_METADATA_COLLECTION } from '../../../cx-api/lib/features';
 import { JSII_RUNTIME_SYMBOL } from '../../lib/constants';
 import { UnscopedValidationError } from '../../lib/errors';
-import { addMetadata, MetadataType } from '../../lib/metadata-resource';
+import { addMetadata } from '../../lib/metadata-resource';
+import { MetadataType } from '../../lib/metadata-type';
 import { DetachedConstruct } from '../../lib/private/detached-construct';
 
 class TestDetachedConstruct extends DetachedConstruct {

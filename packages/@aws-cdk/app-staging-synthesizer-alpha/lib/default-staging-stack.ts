@@ -4,24 +4,26 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import type {
+  DockerImageAssetSource,
+  FileAssetSource,
+  ISynthesisSession,
+  StackProps,
+} from 'aws-cdk-lib/core';
 import {
   App,
   ArnFormat,
   BootstraplessSynthesizer,
-  DockerImageAssetSource,
   Duration,
-  FileAssetSource,
-  ISynthesisSession,
   RemovalPolicy,
   Stack,
-  StackProps,
   INLINE_CUSTOM_RESOURCE_CONTEXT,
 } from 'aws-cdk-lib/core';
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { Construct } from 'constructs';
-import { BootstrapRole } from './bootstrap-roles';
-import { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
+import type { BootstrapRole } from './bootstrap-roles';
+import type { FileStagingLocation, IStagingResources, IStagingResourcesFactory, ImageStagingLocation } from './staging-stack';
 
 export const DEPLOY_TIME_PREFIX = 'deploy-time/';
 

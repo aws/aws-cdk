@@ -1,12 +1,15 @@
-import { IResource, Resource } from 'aws-cdk-lib';
-import { DimensionsMap, Metric, MetricOptions, MetricProps, Stats } from 'aws-cdk-lib/aws-cloudwatch';
+import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { GatewayReference, IGatewayRef } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Construct } from 'constructs';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type { Construct } from 'constructs';
 // Internal imports
-import { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
+import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
 import { GATEWAY_GET_PERMS, GATEWAY_LIST_PERMS, GATEWAY_MANAGE_PERMS, GATEWAY_INVOKE_PERMS } from './perms';
-import { IGatewayProtocolConfig } from './protocol';
+import type { IGatewayProtocolConfig } from './protocol';
 
 /******************************************************************************
  *                                 Enums
@@ -29,7 +32,7 @@ export enum GatewayExceptionLevel {
 /**
  * Interface for Gateway resources
  */
-export interface IGateway extends IResource {
+export interface IGateway extends IResource, IGatewayRef {
   /**
    * The ARN of the gateway resource
    * @attribute
@@ -242,8 +245,18 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  /**
+   * A reference to a Gateway resource.
+   */
+  public get gatewayRef(): GatewayReference {
+    return {
+      gatewayIdentifier: this.gatewayId,
+      gatewayArn: this.gatewayArn,
+    };
+  }
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
   }
 
   // ------------------------------------------------------
@@ -260,7 +273,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: grantee,
-      resourceArns: [this.gatewayArn],
+      resourceArns: [this.gatewayRef.gatewayArn],
       actions: actions,
     });
   }
@@ -323,7 +336,7 @@ export abstract class GatewayBase extends Resource implements IGateway {
     const metricProps: MetricProps = {
       namespace: 'AWS/Bedrock-AgentCore',
       metricName,
-      dimensionsMap: { ...dimensions, Resource: this.gatewayArn },
+      dimensionsMap: { ...dimensions, Resource: this.gatewayRef.gatewayArn },
       ...props,
     };
     return this.configureMetric(metricProps);

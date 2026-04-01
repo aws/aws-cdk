@@ -1,5 +1,5 @@
-import { CfnPipeline } from './codepipeline.generated';
-import * as iam from '../../aws-iam';
+import type { CfnPipeline } from './codepipeline.generated';
+import type * as iam from '../../aws-iam';
 import { validateRuleName } from './private/validation';
 
 /**

@@ -1,8 +1,12 @@
-import { Construct } from 'constructs';
-import { CfnInstanceProfile, IInstanceProfileRef, InstanceProfileReference } from './iam.generated';
+import type { Construct } from 'constructs';
+import type { IInstanceProfileRef, InstanceProfileReference } from './iam.generated';
+import { CfnInstanceProfile } from './iam.generated';
 import { ServicePrincipal } from './principals';
-import { IRole, Role } from './role';
-import { Arn, IResource, PhysicalName, Resource, Stack } from '../../core';
+import type { IRole } from './role';
+import { Role } from './role';
+import type { IResource } from '../../core';
+import { Arn, PhysicalName, Resource, Stack } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -171,14 +175,32 @@ export class InstanceProfile extends InstanceProfileBase {
   }
 
   /**
+   * The CfnInstanceProfile resource
+   */
+  private readonly _resource: CfnInstanceProfile;
+
+  /**
    * Returns the name of this InstanceProfile.
    */
-  public readonly instanceProfileName: string;
+  @memoizedGetter
+  public get instanceProfileName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * Returns the ARN of this InstanceProfile.
    */
-  public readonly instanceProfileArn: string;
+  @memoizedGetter
+  public get instanceProfileArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '',
+      service: 'iam',
+      resource: 'instance-profile',
+      resourceName: `${this._path ? this._path.substring(this._path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+    });
+  }
+
+  private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: InstanceProfileProps = {}) {
     super(scope, id, { physicalName: props.instanceProfileName });
@@ -190,18 +212,12 @@ export class InstanceProfile extends InstanceProfileBase {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    const instanceProfile = new CfnInstanceProfile(this, 'Resource', {
+    this._path = props.path;
+
+    this._resource = new CfnInstanceProfile(this, 'Resource', {
       roles: [this._role.roleName],
       instanceProfileName: this.physicalName,
       path: props.path,
-    });
-
-    this.instanceProfileName = this.getResourceNameAttribute(instanceProfile.ref);
-    this.instanceProfileArn = this.getResourceArnAttribute(instanceProfile.attrArn, {
-      region: '',
-      service: 'iam',
-      resource: 'instance-profile',
-      resourceName: `${props.path ? props.path.substring(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
   }
 }

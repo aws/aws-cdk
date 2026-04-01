@@ -1,6 +1,6 @@
 import { AwsOwnedEncryptionConfiguration } from '../aws-owned-key-encryption-configuration';
 import { CustomerManagedEncryptionConfiguration } from '../customer-managed-key-encryption-configuration';
-import { EncryptionConfiguration } from '../encryption-configuration';
+import type { EncryptionConfiguration } from '../encryption-configuration';
 
 export function noEmptyObject<A>(o: Record<string, A>): Record<string, A> | undefined {
   if (Object.keys(o).length === 0) { return undefined; }

@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Action } from './action';
 import * as codepipeline from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
-import { Duration, UnscopedValidationError } from '../../core';
+import type { Duration } from '../../core';
+import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Construction properties of the `ManualApprovalAction`.
@@ -67,7 +69,7 @@ export class ManualApprovalAction extends Action {
     });
 
     if (props.timeout && (props.timeout.toMinutes() < 5 || props.timeout.toMinutes() > 86400)) {
-      throw new UnscopedValidationError(`timeout must be between 5 minutes and 86400 minutes (60 days), got ${props.timeout.toMinutes()} minutes`);
+      throw new UnscopedValidationError(lit`InvalidTimeout`, `timeout must be between 5 minutes and 86400 minutes (60 days), got ${props.timeout.toMinutes()} minutes`);
     }
 
     this.props = props;
@@ -89,7 +91,7 @@ export class ManualApprovalAction extends Action {
    */
   public grantManualApproval(grantable: iam.IGrantable): void {
     if (!this.stage) {
-      throw new UnscopedValidationError('Cannot grant permissions before binding action to a stage');
+      throw new UnscopedValidationError(lit`ActionNotBound`, 'Cannot grant permissions before binding action to a stage');
     }
     grantable.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['codepipeline:ListPipelines'],

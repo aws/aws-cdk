@@ -1,14 +1,16 @@
 import { Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import {
-  AgentStepType,
-  PromptOverrideConfiguration,
+import type {
   PromptRoutingClassifierConfigCustomParser,
   PromptPreProcessingConfigCustomParser,
   PromptOrchestrationConfigCustomParser,
   PromptPostProcessingConfigCustomParser,
 } from '../../../bedrock/agents/prompt-override';
-import { IBedrockInvokable } from '../../../bedrock/models';
+import {
+  AgentStepType,
+  PromptOverrideConfiguration,
+} from '../../../bedrock/agents/prompt-override';
+import type { IBedrockInvokable } from '../../../bedrock/models';
 
 describe('PromptOverrideConfiguration', () => {
   let stack: Stack;

@@ -1,4 +1,5 @@
-import { Matcher, Match } from '../lib';
+import type { Matcher } from '../lib';
+import { Match } from '../lib';
 
 describe('Matchers', () => {
   describe('exactly()', () => {

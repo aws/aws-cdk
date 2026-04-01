@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "integ.instance-s3": {
+    "integ.instance-s3/DefaultTest": {
       "stacks": [
         "aws-cdk-rds-instance-s3-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ.instance-s3/DefaultTest/DeployAssert",
+      "assertionStackName": "integinstances3DefaultTestDeployAssertDA798662"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1107.0"
 }

@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomResourceProviderBase } from './custom-resource-provider-base';
-import { CustomResourceProviderOptions } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
 import { FactName } from '../../../region-info';
 import { Stack } from '../stack';
 
@@ -52,6 +52,7 @@ export enum CustomResourceProviderRuntime {
 
   /**
    * Node.js 18.x
+   * @deprecated Use latest version
    */
   NODEJS_18_X = 'nodejs18.x',
 
@@ -155,5 +156,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
  * The name of the latest Lambda node runtime available by AWS region.
  */
 export function determineLatestNodeRuntimeName(scope: Construct): string {
-  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs18.x');
+  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs22.x');
 }

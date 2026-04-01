@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import * as logs from '../../aws-logs';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import type * as kinesis from '../../aws-kinesis';
+import type * as logs from '../../aws-logs';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Customize the Kinesis Logs Destination

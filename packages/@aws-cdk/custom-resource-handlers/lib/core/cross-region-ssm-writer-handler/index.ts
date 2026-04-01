@@ -1,7 +1,7 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
-import { CrossRegionExports, ExportWriterCRProps } from '../types';
+import type { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props: ExportWriterCRProps = event.ResourceProperties.WriterProps;
@@ -157,7 +157,7 @@ function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRe
 }
 
 /**
- * Return items that exist in both the the old parameters and the new parameters,
+ * Return items that exist in both the old parameters and the new parameters,
  * but have different values
  *
  * @param oldParams the exports that existed previous to this execution

@@ -1,5 +1,5 @@
 import * as fetch from 'node-fetch';
-import { HttpRequest } from '../../../../lib';
+import type { HttpRequest } from '../../../../lib';
 import { HttpHandler } from '../../../../lib/assertions/providers/lambda-handler/http';
 
 let fetchMock = jest.fn();

@@ -1,7 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ComponentProps, ComponentType, Runtime } from '../../lib/custom-resources-framework/config';
+import type { ComponentProps } from '../../lib/custom-resources-framework/config';
+import { ComponentType, Runtime } from '../../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../../lib/custom-resources-framework/framework';
 import { calculateOutfile } from '../../scripts/generate';
 

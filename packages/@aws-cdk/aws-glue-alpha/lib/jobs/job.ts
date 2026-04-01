@@ -1,13 +1,15 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as logs from 'aws-cdk-lib/aws-logs';
+import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
-import { Code } from '../code';
-import { IConnection } from '../connection';
-import { MetricType, JobState, WorkerType, GlueVersion } from '../constants';
-import { ISecurityConfiguration } from '../security-configuration';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type * as constructs from 'constructs';
+import type { Code } from '../code';
+import type { IConnection } from '../connection';
+import type { MetricType, WorkerType, GlueVersion } from '../constants';
+import { JobState } from '../constants';
+import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
  * Interface representing a new or an imported Glue Job
@@ -488,7 +490,7 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError(`The ${arg} argument is reserved by Glue. Don't set it`, this);
+          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }

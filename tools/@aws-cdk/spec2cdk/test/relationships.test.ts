@@ -1,4 +1,5 @@
-import { Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
+import type { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 
@@ -321,6 +322,6 @@ test('relationship have arns appear first in the constructor chain', () => {
 
   const rendered = renderer.render(module);
 
-  const chain = 'this.roleArn = (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleArn ?? (props.roleArn as iamRefs.IRoleRef)?.roleRef?.roleName ?? (props.roleArn as iamRefs.IRoleRef)?.roleRef?.otherPrimaryId ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")';
+  const chain = 'this.roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, \'roleArn\') ?? cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, \'roleName\') ?? cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, \'otherPrimaryId\') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string")';
   expect(rendered).toContain(chain);
 });

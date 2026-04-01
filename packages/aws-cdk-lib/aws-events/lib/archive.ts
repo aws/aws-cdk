@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { EventPattern } from './event-pattern';
-import { CfnArchive, IEventBusRef } from './events.generated';
+import type { Construct } from 'constructs';
+import type { EventPattern } from './event-pattern';
+import type { IEventBusRef } from './events.generated';
+import { CfnArchive } from './events.generated';
 import { renderEventPattern } from './util';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { Duration, Resource } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { Duration } from '../../core';
+import { Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

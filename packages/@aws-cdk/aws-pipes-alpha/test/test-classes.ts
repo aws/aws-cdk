@@ -1,8 +1,10 @@
-import { Role } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
-import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
-import {
+import type { Role } from 'aws-cdk-lib/aws-iam';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { ITopic } from 'aws-cdk-lib/aws-sns';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import type {
   EnrichmentParametersConfig,
   IEnrichment,
   IPipe,
@@ -10,6 +12,8 @@ import {
   ITarget,
   SourceConfig,
   SourceParameters,
+} from '../lib';
+import {
   SourceWithDeadLetterTarget,
 } from '../lib';
 

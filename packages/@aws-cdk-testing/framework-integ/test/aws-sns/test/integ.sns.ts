@@ -1,5 +1,6 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import { LoggingProtocol, Topic, TracingConfig } from 'aws-cdk-lib/aws-sns';
 import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';

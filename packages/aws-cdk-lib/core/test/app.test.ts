@@ -4,9 +4,11 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { CfnResource, DefaultStackSynthesizer, Stack, StackProps, Stage } from '../lib';
+import type { StackProps } from '../lib';
+import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
 import { Annotations } from '../lib/annotations';
-import { App, AppProps } from '../lib/app';
+import type { AppProps } from '../lib/app';
+import { App } from '../lib/app';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -73,7 +75,7 @@ describe('app', () => {
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
       },
     });
-    expect(stack1.manifest.metadata).toEqual({
+    expect(stack1.metadata).toEqual({
       '/stack1': [{ type: 'meta', data: 111 }],
       '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
       '/stack1/s1c2':
@@ -94,7 +96,7 @@ describe('app', () => {
         s1c2r25F685FFF: { Type: 'ResourceType2' },
       },
     });
-    expect(stack2.manifest.metadata).toEqual({
+    expect(stack2.metadata).toEqual({
       '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
       '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
       '/stack2/s1c2/r1':

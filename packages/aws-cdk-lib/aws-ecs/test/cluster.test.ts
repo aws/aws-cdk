@@ -2620,10 +2620,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       // THEN
@@ -2678,11 +2684,17 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         capacityProviderName: 'my-managed-instances-cp',
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       // THEN
@@ -2805,10 +2817,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         taskVolumeStorage: cdk.Size.gibibytes(100),
       });
 
@@ -2867,10 +2885,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         monitoring: ecs.InstanceMonitoring.DETAILED,
       });
 
@@ -2902,7 +2926,139 @@ describe('cluster', () => {
       });
     });
 
-    test('with capacity option type', () => {
+    test('with capacity option type ON_DEMAND', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        capacityOptionType: ecs.CapacityOptionType.ON_DEMAND,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            CapacityOptionType: 'ON_DEMAND',
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('with capacity option type SPOT', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
+      // WHEN
+      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+        infrastructureRole,
+        ec2InstanceProfile: instanceProfile,
+        subnets: vpc.privateSubnets,
+        capacityOptionType: ecs.CapacityOptionType.SPOT,
+        securityGroups: [securityGroup],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+        ManagedInstancesProvider: {
+          InfrastructureRoleArn: {
+            'Fn::GetAtt': [
+              Match.stringLikeRegexp('InfrastructureRole'),
+              'Arn',
+            ],
+          },
+          InstanceLaunchTemplate: {
+            CapacityOptionType: 'SPOT',
+            Ec2InstanceProfileArn: {
+              'Fn::GetAtt': [
+                Match.stringLikeRegexp('InstanceProfile'),
+                'Arn',
+              ],
+            },
+            NetworkConfiguration: {
+              Subnets: [
+                { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+              ],
+            },
+          },
+        },
+      });
+    });
+
+    test('without capacity option type does not include property in template', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
@@ -2927,10 +3083,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       // THEN
@@ -2955,6 +3117,7 @@ describe('cluster', () => {
                 { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
               ],
             },
+            CapacityOptionType: Match.absent(),
           },
         },
       });
@@ -2985,10 +3148,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         instanceRequirements: {
           vCpuCountMin: 2,
           vCpuCountMax: 8,
@@ -3061,10 +3230,16 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         propagateTags: ecs.PropagateManagedInstancesTags.CAPACITY_PROVIDER,
       });
 
@@ -3100,6 +3275,7 @@ describe('cluster', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
 
       const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
         assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
@@ -3119,17 +3295,23 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // THEN
       expect(() => {
         new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: [],
+          securityGroups: [securityGroup],
         });
       }).toThrow('Subnets are required and should be non-empty.');
     });
 
-    test('throws when both allowedInstanceTypes and excludedInstanceTypes are specified in instanceRequirements', () => {
+    test('throws when securityGroups is an empty array', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
@@ -3159,6 +3341,47 @@ describe('cluster', () => {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [],
+        });
+      }).toThrow('Security groups cannot be an empty array. Provide at least one security group.');
+    });
+
+    test('throws when both allowedInstanceTypes and excludedInstanceTypes are specified in instanceRequirements', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'test');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceRole = new iam.Role(stack, 'InstanceRole', {
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+        ],
+      });
+
+      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
+        role: instanceRole,
+      });
+
+      // THEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+      expect(() => {
+        new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
+          infrastructureRole,
+          ec2InstanceProfile: instanceProfile,
+          subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
           instanceRequirements: {
             vCpuCountMin: 2,
             memoryMin: cdk.Size.gibibytes(4),
@@ -3194,11 +3417,17 @@ describe('cluster', () => {
       });
 
       // THEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       expect(() => {
         new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
           instanceRequirements: {
             vCpuCountMin: 2,
             memoryMin: cdk.Size.gibibytes(4),
@@ -3233,6 +3462,11 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       // THEN
       expect(() => {
         new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
@@ -3240,6 +3474,7 @@ describe('cluster', () => {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
         });
       }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 
@@ -3249,6 +3484,7 @@ describe('cluster', () => {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
         });
       }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 
@@ -3258,6 +3494,7 @@ describe('cluster', () => {
           infrastructureRole,
           ec2InstanceProfile: instanceProfile,
           subnets: vpc.privateSubnets,
+          securityGroups: [securityGroup],
         });
       }).toThrow(/Invalid Capacity Provider Name: fargatecp, If a name is specified, it cannot start with aws, ecs, or fargate./);
     });
@@ -3323,8 +3560,14 @@ describe('cluster', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3507,9 +3750,15 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       // THEN
@@ -3538,8 +3787,14 @@ describe('cluster', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3592,9 +3847,15 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole: customInfrastructureRole,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3623,8 +3884,14 @@ describe('cluster', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3644,8 +3911,14 @@ describe('cluster', () => {
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3688,9 +3961,15 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.enableFargateCapacityProviders();
@@ -3745,9 +4024,15 @@ describe('cluster', () => {
       });
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       const capacityProvider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
       });
 
       cluster.addManagedInstancesCapacityProvider(capacityProvider);
@@ -3786,10 +4071,16 @@ describe('cluster', () => {
       };
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         instanceRequirements: config,
       });
 
@@ -3864,10 +4155,16 @@ describe('cluster', () => {
       };
 
       // WHEN
+
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
       new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         instanceRequirements: config,
       });
 
@@ -3936,6 +4233,11 @@ describe('cluster', () => {
         role: instanceRole,
       });
 
+      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+        vpc,
+        description: 'Test security group',
+      });
+
       const config: ec2.InstanceRequirementsConfig = {
         acceleratorCountMin: 1,
         acceleratorCountMax: 4,
@@ -3975,6 +4277,7 @@ describe('cluster', () => {
         infrastructureRole,
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
         instanceRequirements: config,
       });
 

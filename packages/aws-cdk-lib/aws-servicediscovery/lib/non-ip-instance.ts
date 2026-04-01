@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import { BaseInstanceProps, InstanceBase } from './instance';
+import type { Construct } from 'constructs';
+import type { BaseInstanceProps } from './instance';
+import { InstanceBase } from './instance';
 import { defaultDiscoveryType } from './private/utils';
-import { IService, DiscoveryType } from './service';
+import type { IService } from './service';
+import { DiscoveryType } from './service';
 import { CfnInstance } from './servicediscovery.generated';
 import { ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface NonIpInstanceBaseProps extends BaseInstanceProps {
@@ -47,11 +50,11 @@ export class NonIpInstance extends InstanceBase {
 
     const discoveryType = props.service.discoveryType || defaultDiscoveryType(props.service.namespace);
     if (discoveryType !== DiscoveryType.API) {
-      throw new ValidationError('This type of instance can only be registered for HTTP namespaces.', this);
+      throw new ValidationError(lit`TypeInstanceRegisteredNamespaces`, 'This type of instance can only be registered for HTTP namespaces.', this);
     }
 
     if (props.customAttributes === undefined || Object.keys(props.customAttributes).length === 0) {
-      throw new ValidationError('You must specify at least one custom attribute for this instance type.', this);
+      throw new ValidationError(lit`SpecifyLeastOneCustomAttribute`, 'You must specify at least one custom attribute for this instance type.', this);
     }
 
     const resource = new CfnInstance(this, 'Resource', {

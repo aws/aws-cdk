@@ -1,6 +1,7 @@
 import { Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
-import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate, IAssessmentTemplate } from '../../aws-inspector';
+import type { IAssessmentTemplate } from '../../aws-inspector';
+import { AssessmentTemplate, CfnAssessmentTarget, CfnAssessmentTemplate } from '../../aws-inspector';
 import { ScheduleExpression, Schedule, ScheduleGroup } from '../../aws-scheduler';
 import * as sqs from '../../aws-sqs';
 import { App, Duration, Stack } from '../../core';

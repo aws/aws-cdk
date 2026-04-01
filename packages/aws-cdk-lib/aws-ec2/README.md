@@ -245,7 +245,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
 for (const gateway of provider.gatewayInstances) {
-  bucket.grantWrite(gateway);
+  bucket.grants.write(gateway);
   gateway.addSecurityGroup(securityGroup);
 }
 ```
@@ -415,7 +415,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // group of the same type.
       name: 'Ingress',
 
-      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // 'cidrMask' specifies the IP addresses in the range of individual
       // subnets in the group. Each of the subnets in this group will contain
       // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
       // usable IP addresses.
@@ -619,7 +619,7 @@ instance around:
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack's region and
+The CDK CLI will search for the specified VPC in the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
@@ -2397,10 +2397,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.IDeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 
@@ -2638,7 +2638,7 @@ Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](https://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
 declare const vpc: ec2.Vpc;

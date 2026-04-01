@@ -1,5 +1,5 @@
 import { Names } from 'aws-cdk-lib/core';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 
 export function generateUniqueId(context: IConstruct): string {
   const name = Names.uniqueId(context);

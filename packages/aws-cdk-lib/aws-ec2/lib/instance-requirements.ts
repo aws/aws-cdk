@@ -1,4 +1,4 @@
-import { Size } from '../../core';
+import type { Size } from '../../core';
 
 /**
  * Hardware accelerator categories available for EC2 instances.
@@ -27,6 +27,11 @@ export enum AcceleratorType {
    * Purpose-built for efficient machine learning inference.
    */
   INFERENCE = 'inference',
+
+  /**
+   * Media accelerators for video transcoding and processing workloads.
+   */
+  MEDIA = 'media',
 }
 
 /**
@@ -94,6 +99,27 @@ export enum AcceleratorName {
 
   /** NVIDIA T4G GPUs. */
   T4G = 't4g',
+
+  /** NVIDIA L40S GPU for AI inference and graphics workloads. */
+  L40S = 'l40s',
+
+  /** NVIDIA L4 GPU for AI inference and graphics workloads. */
+  L4 = 'l4',
+
+  /** Habana Gaudi HL-205 accelerator for deep learning training. */
+  GAUDI_HL_205 = 'gaudi-hl-205',
+
+  /** AWS Inferentia2 chips for high-performance ML inference. */
+  INFERENTIA2 = 'inferentia2',
+
+  /** AWS Trainium chips for high-performance ML training. */
+  TRAINIUM = 'trainium',
+
+  /** AWS Trainium2 chips for high-performance ML training. */
+  TRAINIUM2 = 'trainium2',
+
+  /** Xilinx U30 media transcoding accelerator for video processing. */
+  U30 = 'u30',
 }
 
 /**

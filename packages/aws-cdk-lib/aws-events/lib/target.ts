@@ -1,8 +1,8 @@
-import { IConstruct } from 'constructs';
-import { CfnRule } from './events.generated';
-import { RuleTargetInput } from './input';
-import * as iam from '../../aws-iam';
-import { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import type { IConstruct } from 'constructs';
+import type { CfnRule } from './events.generated';
+import type { RuleTargetInput } from './input';
+import type * as iam from '../../aws-iam';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * An abstract target for EventRules.

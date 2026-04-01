@@ -1,0 +1,101 @@
+#
+#####################################
+##           AWS CDK               ##
+#####################################
+# Rule: IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS
+# Service: AWS Identity and Access Management (IAM)
+# Coverage: IAM Role Trust Policies with :root principals
+#
+# This rule ensures that IAM roles using :root principals (account-level trust)
+# have STRICT conditions to scope down who can actually assume the role.
+#
+# :root principals are commonly used for:
+# - Cross-account access patterns (e.g., CodePipeline cross-account actions)
+# - Delegating trust to another account's IAM policies
+#
+# Without conditions, ANY principal in the trusted account can assume the role.
+#
+# REQUIRED: ArnEquals or StringEquals conditions (exact match, no wildcards)
+# These operators require exact ARN/string matching and don't support wildcards.
+#
+# NOT ACCEPTED: ArnLike or StringLike conditions
+# These operators support wildcards (* and ?) which can be overly permissive.
+# Example of insecure pattern that would bypass weaker checks:
+#   "Condition": { "ArnLike": { "aws:PrincipalArn": "arn:aws:iam::*:role/*" } }
+#
+# Example of secure pattern:
+#   "Principal": { "AWS": "arn:aws:iam::123456789012:root" },
+#   "Condition": {
+#     "ArnEquals": { "aws:PrincipalArn": "arn:aws:iam::123456789012:role/SpecificRole" }
+#   }
+#
+# AWS Documentation References:
+# - Condition Operators: https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition_operators.html
+# - IAM Role Resource: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+#
+# Why only AssumeRolePolicyDocument?
+# IAM Roles have two policy-related properties:
+# - AssumeRolePolicyDocument (trust policy): Defines WHO can assume the role. Contains Principal element.
+# - Policies (identity-based policies): Defines WHAT the role can do. Does NOT contain Principal element.
+#
+# The Principal element only exists in trust policies (AssumeRolePolicyDocument), not in identity-based
+# policies attached via the Policies property. Therefore, we only check AssumeRolePolicyDocument.
+#
+# Condition Operator Comparison:
+# +----------------+----------------------------------------------------------+
+# | Operator       | Description                                              |
+# +----------------+----------------------------------------------------------+
+# | ArnEquals      | Case-sensitive matching of the ARN. Each of the six      |
+# |                | colon-delimited components of the ARN is checked         |
+# |                | separately. NO WILDCARDS SUPPORTED.                      |
+# +----------------+----------------------------------------------------------+
+# | StringEquals   | Exact matching, case sensitive. NO WILDCARDS SUPPORTED.  |
+# +----------------+----------------------------------------------------------+
+# | ArnLike        | Same as ArnEquals but supports wildcards (* and ?)       |
+# |                | within each ARN component. NOT ACCEPTED by this rule.    |
+# +----------------+----------------------------------------------------------+
+# | StringLike     | Case-sensitive matching with multi-character (*) and     |
+# |                | single-character (?) wildcards. NOT ACCEPTED by this     |
+# |                | rule as wildcards can make conditions overly permissive. |
+# +----------------+----------------------------------------------------------+
+
+let iam_roles_with_root_principals = Resources.*[
+  Type == 'AWS::IAM::Role'
+  Properties.AssumeRolePolicyDocument.Statement[*].Principal.AWS exists
+  Metadata.guard.SuppressedRules not exists or
+  Metadata.guard.SuppressedRules.* != "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+]
+
+rule IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %iam_roles_with_root_principals !empty {
+    %iam_roles_with_root_principals.Properties.AssumeRolePolicyDocument.Statement[*] {
+        when Effect == "Allow" {
+            when Principal.AWS exists {
+                # Handle string principal
+                when Principal.AWS is_string {
+                    when Principal.AWS == /(?i):root$/ {
+                        # If using root principal, must have strict condition (no wildcard operators)
+                        Condition exists
+                        <<Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.>>
+                        Condition.ArnEquals exists or
+                        Condition.StringEquals exists
+                    }
+                }
+                # Handle array of principals - iterate each item and check only strings
+                # This handles mixed arrays with strings and intrinsic functions (objects)
+                when Principal.AWS is_list {
+                    Principal.AWS[*] {
+                        when this is_string {
+                            when this == /(?i):root$/ {
+                                # If using root principal, must have strict condition (no wildcard operators)
+                                Condition exists
+                                <<Root principal requires a strict condition (ArnEquals or StringEquals) to scope down who can assume this role. ArnLike/StringLike are not accepted as they allow wildcards.>>
+                                Condition.ArnEquals exists or
+                                Condition.StringEquals exists
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

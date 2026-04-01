@@ -1,9 +1,9 @@
 import * as events from 'aws-cdk-lib/aws-events';
-import { CfnCrawler } from 'aws-cdk-lib/aws-glue';
-import * as cdk from 'aws-cdk-lib/core';
-import { JobState, CrawlerState, ConditionLogicalOperator, PredicateLogical } from '../constants';
-import { IJob } from '../jobs/job'; // Use IJob interface instead of concrete class
-import { ISecurityConfiguration } from '../security-configuration';
+import type { CfnCrawler } from 'aws-cdk-lib/aws-glue';
+import type * as cdk from 'aws-cdk-lib/core';
+import type { JobState, CrawlerState, ConditionLogicalOperator, PredicateLogical } from '../constants';
+import type { IJob } from '../jobs/job'; // Use IJob interface instead of concrete class
+import type { ISecurityConfiguration } from '../security-configuration';
 
 /**
  * Represents a trigger action.

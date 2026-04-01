@@ -1,7 +1,7 @@
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import { IKeyRef } from '../../../aws-kms';
+import type { IKeyRef } from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import { CustomerManagedEncryptionConfiguration } from '../../../aws-stepfunctions/lib/customer-managed-key-encryption-configuration';
 

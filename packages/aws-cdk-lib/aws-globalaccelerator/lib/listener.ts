@@ -1,10 +1,11 @@
-import { Construct } from 'constructs';
-import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
+import type { Construct } from 'constructs';
+import type { EndpointGroupOptions } from './endpoint-group';
+import { EndpointGroup } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IAcceleratorRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
+import type { IAcceleratorRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
 /**
  * Interface of the Listener

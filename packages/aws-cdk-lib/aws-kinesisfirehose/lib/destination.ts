@@ -1,5 +1,5 @@
-import { Construct, IDependable } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type { Construct, IDependable } from 'constructs';
+import type { CfnDeliveryStream } from './kinesisfirehose.generated';
 
 /**
  * An Amazon Data Firehose delivery stream destination configuration.

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as iam from '../../../aws-iam';
+import type { Construct } from 'constructs';
+import type * as iam from '../../../aws-iam';
 
 /**
  * The type of the init element.

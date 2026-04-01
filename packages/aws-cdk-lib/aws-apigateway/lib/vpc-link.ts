@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { CfnVpcLink, IVpcLinkRef, VpcLinkReference } from './apigateway.generated';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import { IResource, Lazy, Names, Resource } from '../../core';
+import type { Construct } from 'constructs';
+import type { IVpcLinkRef, VpcLinkReference } from './apigateway.generated';
+import { CfnVpcLink } from './apigateway.generated';
+import type * as elbv2 from '../../aws-elasticloadbalancingv2';
+import type { IResource } from '../../core';
+import { Lazy, Names, Resource } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 

@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import { AwsLogDriver, AwsLogDriverProps } from './aws-log-driver';
-import { ContainerDefinition } from '../container-definition';
-import { CfnTaskDefinition } from '../ecs.generated';
+import type { Construct } from 'constructs';
+import type { AwsLogDriverProps } from './aws-log-driver';
+import { AwsLogDriver } from './aws-log-driver';
+import type { ContainerDefinition } from '../container-definition';
+import type { CfnTaskDefinition } from '../ecs.generated';
 
 /**
  * The base class for log drivers.

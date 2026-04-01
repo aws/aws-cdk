@@ -6,17 +6,18 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
+import type { Stack } from '../../core';
 import * as cdk from '../../core';
-import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
+import { RemovalPolicy, Annotations as CoreAnnotations } from '../../core';
 import {
   RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
 } from '../../cx-api';
+import type { IClusterEngine } from '../lib';
 import {
   AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
-  IClusterEngine,
   ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
@@ -1080,7 +1081,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1128,7 +1129,7 @@ describe('cluster new api', () => {
 
       // THEN
       expect(cluster.instanceEndpoints).toHaveLength(2);
-      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+      expect(stack.resolve(cluster.instanceEndpoints.map(e => ({ hostname: e.hostname, port: e.port, socketAddress: e.socketAddress })))).toEqual([{
         hostname: {
           'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
         },
@@ -1818,7 +1819,8 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(1);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+    const ep = cluster.instanceEndpoints[0];
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },
@@ -3007,6 +3009,58 @@ describe('cluster', () => {
       dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+  test('cluster supports VolumeReadIOPs metric', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricVolumeReadIOPs())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'VolumeReadIOPs',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+      account: '12345',
+      region: 'us-test-1',
+    });
+  });
+
+  test('cluster supports VolumeWriteIOPs metric', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_07_1 }),
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    expect(stack.resolve(cluster.metricVolumeWriteIOPs())).toEqual({
+      dimensions: { DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' } },
+      namespace: 'AWS/RDS',
+      metricName: 'VolumeWriteIOPs',
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
       account: '12345',
@@ -4665,7 +4719,10 @@ describe('cluster', () => {
     });
 
     expect(cluster.instanceEndpoints).toHaveLength(2);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+
+    const ep = cluster.instanceEndpoints[0];
+
+    expect(stack.resolve({ hostname: ep.hostname, port: ep.port, socketAddress: ep.socketAddress })).toEqual({
       hostname: {
         'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
       },

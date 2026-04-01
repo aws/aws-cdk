@@ -5,6 +5,14 @@
 # Rule: IAM_ROLE_NO_BROAD_PRINCIPALS
 # Service: AWS Identity and Access Management (IAM)
 # Coverage: IAM Role Trust Policies
+#
+# This rule checks for overly broad principals in IAM role trust policies:
+# - Wildcard principal: "*"
+# - Wildcard account principal: "arn:aws:iam::*:root" or "arn:aws:iam::*:role/*"
+#
+# NOTE: :root principals (e.g., "arn:aws:iam::123456789012:root") are checked
+# by the separate IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS rule, which allows
+# them if they have restrictive conditions (legitimate cross-account pattern).
 
 let iam_roles_no_broad_principals = Resources.*[ Type == 'AWS::IAM::Role'
   Metadata.guard.SuppressedRules not exists or
@@ -25,16 +33,18 @@ rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
                     # Check if AWS is a string
                     when Principal.AWS is_string {
                       Principal.AWS != "*"
-                      Principal.AWS != /(?i):root/
+                      # Wildcard account - matches any AWS account
                       Principal.AWS != /arn:aws:iam::\*:/
                     }
-                    # Check if AWS is an array - only check string items
+                    # Check if AWS is an array - iterate each item and check only string items
+                    # This handles mixed arrays with strings and intrinsic functions (objects)
                     when Principal.AWS is_list {
-                      when Principal.AWS[*] is_string {
-                          Principal.AWS[*] != "*"
-                          Principal.AWS[*] != /(?i):root/
-                          Principal.AWS[*] != /arn:aws:iam::\*:/
-                      } 
+                      Principal.AWS[*] {
+                          when this is_string {
+                              this != "*"
+                              this != /arn:aws:iam::\*:/
+                          }
+                      }
                     }
                 }
             }

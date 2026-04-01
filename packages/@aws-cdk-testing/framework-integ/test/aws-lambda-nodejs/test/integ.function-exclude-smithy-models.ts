@@ -1,9 +1,11 @@
 import * as path from 'path';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {

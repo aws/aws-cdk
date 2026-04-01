@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
@@ -72,7 +72,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05": {
+  "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -89,7 +89,7 @@
     "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
     "Type": "String",
     "Value": {
-     "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+     "Ref": "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360"
     }
    }
   },
@@ -101,7 +101,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05",
+      "LambdaCurrentVersionDF706F6A8bda0c75557a0044859c49794eea3360",
       "Version"
      ]
     },

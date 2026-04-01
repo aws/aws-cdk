@@ -3,7 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { Role, ManagedPolicy, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appsignals from '../lib';
 
 const app = new cdk.App();

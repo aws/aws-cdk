@@ -1,8 +1,9 @@
-import { Construct, IConstruct, Node } from 'constructs';
+import type { IConstruct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import * as _ from 'lodash';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as notifications from '../../../aws-codestarnotifications';
-import * as events from '../../../aws-events';
+import type * as notifications from '../../../aws-codestarnotifications';
+import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
@@ -383,6 +384,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   ): notifications.NotificationRuleSourceConfig {
     throw new Error('Method not implemented.');
   }
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   public get pipelineRef(): import('../../../interfaces/generated/aws-codepipeline-interfaces.generated').PipelineReference {
     return {
       pipelineName: this.pipelineName,

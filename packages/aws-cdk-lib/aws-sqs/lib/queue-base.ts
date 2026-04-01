@@ -1,11 +1,12 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
 import { QueueGrants } from './sqs-grants.generated';
-import { IQueueRef, QueueReference } from './sqs.generated';
+import type { IQueueRef, QueueReference } from './sqs.generated';
 import * as iam from '../../aws-iam';
-import { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { IResource, Resource, ResourceProps } from '../../core';
+import type { GrantOnKeyResult, IEncryptedResource, IGrantable } from '../../aws-iam';
+import type * as kms from '../../aws-kms';
+import type { IResource, ResourceProps } from '../../core';
+import { Resource } from '../../core';
 
 /**
  * Represents an SQS queue
@@ -209,6 +210,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *
    *   - kms:Decrypt
    *
+   *
+   * The use of this method is discouraged. Please use `grants.consumeMessages()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant consume rights to
@@ -235,6 +239,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - kms:ReEncrypt*
    *  - kms:GenerateDataKey*
    *
+   *
+   * The use of this method is discouraged. Please use `grants.sendMessages()` instead.
+   *
    * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant send rights to
@@ -251,6 +258,9 @@ export abstract class QueueBase extends Resource implements IQueue, IEncryptedRe
    *  - sqs:PurgeQueue
    *  - sqs:GetQueueAttributes
    *  - sqs:GetQueueUrl
+   *
+   *
+   * The use of this method is discouraged. Please use `grants.purge()` instead.
    *
    * [disable-awslint:no-grants]
    *

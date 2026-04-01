@@ -1,7 +1,7 @@
 import { addLambdaPermission } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Annotations, Duration } from '../../core';
 import { AwsApiSingletonFunction } from '../../custom-resource-handlers/dist/aws-events-targets/aws-api-provider.generated';
 import * as metadata from '../../custom-resources/lib/helpers-internal/sdk-v3-metadata.json';

@@ -1,6 +1,7 @@
-import { bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
-import * as events from '../../aws-events';
-import * as kinesis from '../../aws-kinesis';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig, singletonEventRole } from './util';
+import type * as events from '../../aws-events';
+import type * as kinesis from '../../aws-kinesis';
 
 /**
  * Customize the Kinesis Stream Event Target

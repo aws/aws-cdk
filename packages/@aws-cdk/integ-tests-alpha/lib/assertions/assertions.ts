@@ -1,8 +1,9 @@
 import { CustomResource, CfnOutput } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { ExpectedResult, ActualResult } from './common';
+import type { ExpectedResult, ActualResult } from './common';
 import { md5hash } from './private/hash';
-import { AssertionRequest, AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
+import type { AssertionRequest } from './providers';
+import { AssertionsProvider, ASSERT_RESOURCE_TYPE } from './providers';
 
 /**
  * Options for an EqualsAssertion

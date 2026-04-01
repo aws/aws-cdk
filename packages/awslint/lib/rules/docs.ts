@@ -1,5 +1,5 @@
 import { Stability } from '@jsii/spec';
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { Linter } from '../linter';
 

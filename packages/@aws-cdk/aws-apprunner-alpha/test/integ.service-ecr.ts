@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import { Service, Source } from '../lib';
 
 const app = new cdk.App();
@@ -33,4 +34,5 @@ new cdk.CfnOutput(stack, 'URL2', { value: `https://${service2.serviceUrl}` });
 
 new integ.IntegTest(app, 'AppRunnerEcr', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });

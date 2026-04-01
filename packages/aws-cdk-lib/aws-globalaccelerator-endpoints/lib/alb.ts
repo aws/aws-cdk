@@ -1,6 +1,6 @@
 import { validateWeight } from './_util';
-import * as elbv2 from '../../aws-elasticloadbalancingv2';
-import * as ga from '../../aws-globalaccelerator';
+import type * as elbv2 from '../../aws-elasticloadbalancingv2';
+import type * as ga from '../../aws-globalaccelerator';
 
 /**
  * Properties for a ApplicationLoadBalancerEndpoint

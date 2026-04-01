@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
 import { pascalize } from '../case';

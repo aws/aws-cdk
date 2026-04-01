@@ -1,8 +1,8 @@
 import { singletonEventRole } from './util';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as firehose from '../../aws-kinesisfirehose';
-import { IResource } from '../../core';
+import type * as firehose from '../../aws-kinesisfirehose';
+import type { IResource } from '../../core';
 
 /**
  * Customize the Amazon Data Firehose Stream Event Target

@@ -1,11 +1,12 @@
 import { CfnScript } from 'aws-cdk-lib/aws-gamelift';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Content } from './content';
 
 /**
@@ -173,15 +174,7 @@ export class Script extends ScriptBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The Identifier of the realtime server script.
-   */
-  public readonly scriptId: string;
-
-  /**
-   * The ARN of the realtime server script.
-   */
-  public readonly scriptArn: string;
+  private resource: CfnScript;
 
   /**
    * The IAM role GameLift assumes to acccess server script content.
@@ -211,7 +204,7 @@ export class Script extends ScriptBase {
     this.grantPrincipal = this.role;
     const content = props.content.bind(this, this.role);
 
-    const resource = new CfnScript(this, 'Resource', {
+    this.resource = new CfnScript(this, 'Resource', {
       name: props.scriptName,
       version: props.scriptVersion,
       storageLocation: {
@@ -222,8 +215,17 @@ export class Script extends ScriptBase {
       },
     });
 
-    this.scriptId = this.getResourceNameAttribute(resource.ref);
-    this.scriptArn = this.getResourceArnAttribute(resource.attrArn, {
+    this.resource.node.addDependency(this.role);
+  }
+
+  @memoizedGetter
+  public get scriptId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get scriptArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'gamelift',
       resource: `script/${this.physicalName}`,
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,

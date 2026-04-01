@@ -156,7 +156,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4c0f7bf9173df1c120604820692548150b09e29f6fba95f38b11caa17c9696bb.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -364,10 +364,31 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
-    ],
-    "RoleName": "codepipeline-elasticbeanstalk-action-test-serivce-role"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+       ]
+      ]
+     }
+    ]
    }
   },
   "instanceprofilerole786BCBC7": {
@@ -386,11 +407,43 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
-    ],
-    "RoleName": "codepipeline-elasticbeanstalk-action-test-instance-profile-role"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWebTier"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+       ]
+      ]
+     }
+    ]
    }
   },
   "instanceprofile": {
@@ -407,16 +460,14 @@
    }
   },
   "beastalkapp": {
-   "Type": "AWS::ElasticBeanstalk::Application",
-   "Properties": {
-    "ApplicationName": "codepipeline-test-app"
-   }
+   "Type": "AWS::ElasticBeanstalk::Application"
   },
   "beanstlkenv": {
    "Type": "AWS::ElasticBeanstalk::Environment",
    "Properties": {
-    "ApplicationName": "codepipeline-test-app",
-    "EnvironmentName": "codepipeline-test-env",
+    "ApplicationName": {
+     "Ref": "beastalkapp"
+    },
     "OptionSettings": [
      {
       "Namespace": "aws:autoscaling:launchconfiguration",
@@ -443,7 +494,7 @@
       "Value": "AWSServiceRoleForElasticBeanstalkManagedUpdates"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.1 running Node.js 20"
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.3 running Node.js 20"
    },
    "DependsOn": [
     "beastalkapp",
@@ -606,8 +657,12 @@
          "Version": "1"
         },
         "Configuration": {
-         "ApplicationName": "codepipeline-test-app",
-         "EnvironmentName": "codepipeline-test-env"
+         "ApplicationName": {
+          "Ref": "beastalkapp"
+         },
+         "EnvironmentName": {
+          "Ref": "beanstlkenv"
+         }
         },
         "InputArtifacts": [
          {
@@ -643,19 +698,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }
@@ -766,19 +811,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "PipelineRoleD68726F7",
+          "Arn"
          ]
         }
        }

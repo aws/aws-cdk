@@ -1,9 +1,11 @@
 /* eslint-disable object-curly-newline */
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { CfnRule, EventBus, EventField, EventPattern, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule, Match as m } from '../lib';
+import type { EventPattern, IRule, IRuleTarget, RuleTargetConfig } from '../lib';
+import { CfnRule, EventBus, EventField, RuleTargetInput, Schedule, Match as m } from '../lib';
 import { Rule } from '../lib/rule';
 
 /* eslint-disable @stylistic/quote-props */

@@ -20,7 +20,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'SubnetTest', {
 
 const subnet = new SubnetV2(stack, 'testSubnet1', {
   vpc,
-  availabilityZone: 'us-east-1a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.0.0/20'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });

@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CfnResourceReflection } from './cfn-resource';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';

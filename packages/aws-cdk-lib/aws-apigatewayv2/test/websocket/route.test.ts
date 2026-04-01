@@ -1,13 +1,13 @@
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import { Duration, Stack } from '../../../core';
+import type { WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig } from '../../lib';
 import {
   ContentHandling,
   PassthroughBehavior,
   WebSocketApi, WebSocketIntegrationType,
   WebSocketRoute,
   WebSocketRouteIntegration,
-  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketRoute', () => {

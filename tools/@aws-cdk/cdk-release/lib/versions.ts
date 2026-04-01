@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Versions } from './types';
+import type { Versions } from './types';
 
 export function readVersion(versionFile: string): Versions {
   const versionPath = path.resolve(process.cwd(), versionFile);

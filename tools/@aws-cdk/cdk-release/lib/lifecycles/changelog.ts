@@ -1,9 +1,11 @@
 import * as stream from 'stream';
 import * as fs from 'fs-extra';
-import { ConventionalCommit, filterCommits } from '../conventional-commits';
+import type { ConventionalCommit } from '../conventional-commits';
+import { filterCommits } from '../conventional-commits';
 import { writeFile } from '../private/files';
 import { notify, debug } from '../private/print';
-import { ExperimentalChangesTreatment, LifecyclesSkip, PackageInfo, Versions } from '../types';
+import type { LifecyclesSkip, PackageInfo, Versions } from '../types';
+import { ExperimentalChangesTreatment } from '../types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalChangelogPresetLoader = require('conventional-changelog-preset-loader');
 // eslint-disable-next-line @typescript-eslint/no-require-imports

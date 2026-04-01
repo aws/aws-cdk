@@ -2,7 +2,8 @@ import * as yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, CompilerOverrides, currentPackageJson, genScript } from '../lib/package-info';
+import type { CompilerOverrides } from '../lib/package-info';
+import { cdkBuildOptions, currentPackageJson, genScript } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {

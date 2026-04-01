@@ -1,9 +1,10 @@
 
-import { Construct } from 'constructs';
-import { ContainerDefinition } from './container-definition';
-import { CfnTaskDefinition } from './ecs.generated';
-import * as ecr from '../../aws-ecr';
-import { DockerImageAsset, TarballImageAsset } from '../../aws-ecr-assets';
+import type { Construct } from 'constructs';
+import type { ContainerDefinition } from './container-definition';
+import type { CfnTaskDefinition } from './ecs.generated';
+import type * as ecr from '../../aws-ecr';
+import type { DockerImageAsset } from '../../aws-ecr-assets';
+import { TarballImageAsset } from '../../aws-ecr-assets';
 
 /**
  * Constructs for types of container images
@@ -98,6 +99,8 @@ export interface ContainerImageConfig {
 }
 
 // These imports have to be at the end to prevent circular imports
-import { AssetImage, AssetImageProps } from './images/asset-image';
+import type { AssetImageProps } from './images/asset-image';
+import { AssetImage } from './images/asset-image';
 import { EcrImage } from './images/ecr';
-import { RepositoryImage, RepositoryImageProps } from './images/repository';
+import type { RepositoryImageProps } from './images/repository';
+import { RepositoryImage } from './images/repository';

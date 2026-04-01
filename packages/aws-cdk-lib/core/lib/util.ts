@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
-import { IPostProcessor, IResolveContext } from './resolvable';
+import type { IPostProcessor, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 
 /**

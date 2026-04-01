@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { ArnFormat, IResource, Resource, Stack, Arn } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IResource } from '../../../core';
+import { ArnFormat, Resource, Stack, Arn } from '../../../core';
+import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ApplicationReference, IApplicationRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { ApplicationReference, IApplicationRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication, validateName } from '../private/utils';
 
@@ -91,8 +93,22 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     }(scope, id, { environmentFromArn: lambdaApplicationArn });
   }
 
-  public readonly applicationArn: string;
-  public readonly applicationName: string;
+  private readonly resource: CfnApplication;
+
+  @memoizedGetter
+  public get applicationArn(): string {
+    return this.getResourceArnAttribute(arnForApplication(Stack.of(this), this.resource.ref), {
+      service: 'codedeploy',
+      resource: 'application',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  @memoizedGetter
+  public get applicationName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   public get applicationRef(): ApplicationReference {
     return {
@@ -107,17 +123,9 @@ export class LambdaApplication extends Resource implements ILambdaApplication {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const resource = new CfnApplication(this, 'Resource', {
+    this.resource = new CfnApplication(this, 'Resource', {
       applicationName: this.physicalName,
       computePlatform: 'Lambda',
-    });
-
-    this.applicationName = this.getResourceNameAttribute(resource.ref);
-    this.applicationArn = this.getResourceArnAttribute(arnForApplication(Stack.of(this), resource.ref), {
-      service: 'codedeploy',
-      resource: 'application',
-      resourceName: this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.node.addValidation({ validate: () => validateName('Application', this.physicalName) });

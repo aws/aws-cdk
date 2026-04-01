@@ -1,11 +1,13 @@
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
+import type { CfnStack } from '../lib';
 import {
-  Stack, NestedStack, CfnStack, Resource, CfnResource, App, CfnOutput,
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
 } from '../lib';
+import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -34,6 +36,62 @@ describe('nested-stack', () => {
     });
 
     expect(nestedStack.templateOptions.description).toEqual(description);
+  });
+
+  test('indent templates when suppressTemplateIndentation is not set', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('indent templates when @aws-cdk/core:suppressTemplateIndentation is true but is overriden by suppressTemplateIndentation', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: false });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('do not indent templates when suppressTemplateIndentation is true', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1', { suppressTemplateIndentation: true });
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('do not indent templates when @aws-cdk/core:suppressTemplateIndentation is true', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    const nestedStack = new NestedStack(stack, 'Nested1');
+    new CfnResource(nestedStack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const nestedTemplate = readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8');
+    expect(nestedTemplate).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
   });
 
   test('can create cross region references when crossRegionReferences=true', () => {
@@ -196,21 +254,27 @@ describe('nested-stack', () => {
 });
 
 class MyResource extends Resource {
-  public readonly arn: string;
-  public readonly name: string;
+  private readonly res: CfnResource;
 
   constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, { physicalName });
 
-    const res = new CfnResource(this, 'Resource', {
+    this.res = new CfnResource(this, 'Resource', {
       type: 'My::Resource',
       properties: {
         resourceName: this.physicalName,
       },
     });
+  }
 
-    this.name = this.getResourceNameAttribute(res.ref.toString());
-    this.arn = this.getResourceArnAttribute(res.getAtt('Arn').toString(), {
+  @memoizedGetter
+  public get name(): string {
+    return this.getResourceNameAttribute(this.res.ref.toString());
+  }
+
+  @memoizedGetter
+  public get arn(): string {
+    return this.getResourceArnAttribute(this.res.getAtt('Arn').toString(), {
       region: '',
       account: '',
       resource: 'my-resource',

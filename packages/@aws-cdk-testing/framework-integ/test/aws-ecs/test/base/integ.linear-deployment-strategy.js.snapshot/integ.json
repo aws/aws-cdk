@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-ecs-linear/DefaultTest": {
+      "stacks": [
+        "aws-ecs-linear-deployment"
+      ],
+      "assertionStack": "aws-ecs-linear/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecslinearDefaultTestDeployAssert6603377B"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

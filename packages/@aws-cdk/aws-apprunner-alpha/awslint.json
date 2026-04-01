@@ -7,6 +7,26 @@
     "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.timeout",
     "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.unhealthyThreshold",
     "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.path",
-    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.bind"
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.bind",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.ServiceProps.accessRole",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.ServiceProps.autoScalingConfiguration",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.ServiceProps.instanceRole",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.ServiceProps.observabilityConfiguration",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.ServiceProps.vpcConnector",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcConnectorAttributes.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcConnectorProps.vpc",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ClientVpnEndpointOptions.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.SubnetSelection.subnets",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
+    "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcConnectorProps.securityGroups",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.interfaceVpcEndpoint",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.service",
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.vpc",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IAutoScalingConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IObservabilityConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IService",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IVpcConnector",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IVpcIngressConnection"
   ]
 }

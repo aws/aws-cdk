@@ -63,7 +63,7 @@
   "pooldomain430FA744": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "nija-test-pool",
+    "Domain": "nija-test-pool-google",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
     }
@@ -89,8 +89,7 @@
      "family_name": "family_name",
      "email": "email",
      "email_verified": "email_verified",
-     "gender": "gender",
-     "names": "names"
+     "gender": "gender"
     },
     "ProviderDetails": {
      "client_id": "google-client-id",

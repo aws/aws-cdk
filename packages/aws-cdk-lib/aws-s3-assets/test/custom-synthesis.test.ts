@@ -6,9 +6,11 @@
 
 import * as path from 'path';
 import { Template } from '../../assertions';
-import { StackSynthesizer, FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
+import type { FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession } from '../../core';
+import { StackSynthesizer, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
-import { AssetManifestArtifact } from '../../cx-api';
+import { lit } from '../../core/lib/private/literal-string';
+import type { AssetManifestArtifact } from '../../cx-api';
 import { Asset } from '../lib';
 
 test('use custom synthesizer', () => {
@@ -110,7 +112,7 @@ class CustomSynthesizer extends StackSynthesizer {
 
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     void(asset);
-    throw new UnscopedValidationError('Docker images are not supported here');
+    throw new UnscopedValidationError(lit`DockerImagesSupportedHere`, 'Docker images are not supported here');
   }
 
   synthesize(session: ISynthesisSession): void {

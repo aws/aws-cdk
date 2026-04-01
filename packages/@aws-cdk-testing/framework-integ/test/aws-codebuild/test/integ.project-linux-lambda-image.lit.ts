@@ -1,5 +1,5 @@
 import { App, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { LinuxLambdaBuildImage, Project, BuildSpec, ComputeType } from 'aws-cdk-lib/aws-codebuild';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -33,6 +33,8 @@ const codebuildLinuxLambda = new LinuxLambdaImageTestStack(app, 'codebuild-proje
 const integ = new IntegTest(app, 'linux-lambda-codebuild', {
   testCases: [codebuildLinuxLambda],
   stackUpdateWorkflow: true,
+  // Lambda compute (LINUX_LAMBDA_CONTAINER) is not available in all regions
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
 });
 
 // Execute the `startBuild` API to confirm that the build can be done correctly using Lambda compute.

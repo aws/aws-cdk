@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
-import * as iam from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
+import type { Construct } from 'constructs';
+import type { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type * as iam from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
 
 /**
  * An Amazon Data Firehose delivery stream source configuration.

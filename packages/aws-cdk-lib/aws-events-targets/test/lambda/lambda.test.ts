@@ -1,4 +1,4 @@
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Annotations, Template, Match } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as lambda from '../../../aws-lambda';

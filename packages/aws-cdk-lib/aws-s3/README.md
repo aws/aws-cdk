@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -158,12 +174,57 @@ from the bucket.
 
 ### Understanding "grant" Methods
 
-The S3 construct library provides several grant methods for the `Bucket` resource, but two of them have a special behavior. This two accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
-- `grantRead`
-- `grantReadWrite`
+The S3 construct library provides several grant methods for `IBucketRef` instances, which can
+be accessed via the `BucketGrants` class:
 
-When examining the synthesized policy, you'll notice it includes both your specified object key patterns and the bucket itself.
-This is by design. Some permissions (like `s3:ListBucket`) apply at the bucket level, while others (like `s3:GetObject`) apply to specific objects.
+```ts
+declare const principal: iam.IPrincipal;
+declare const bucket: s3.IBucketRef;
+
+s3.BucketGrants.fromBucket(bucket).delete(principal);
+```
+
+If `bucket` is an instance of `CfnBucket`, and the grants process involves adding statements
+to the bucket policy, then the `BucketGrants` class will, by default, do the same thing it
+would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one) 
+and add the necessary statements to it.
+
+But if you want to customize this behavior, you can register an instance of `IResourcePolicyFactory`
+for the `AWS::S3::Bucket` CloudFormation type:
+
+```ts nofixture
+import { CfnResource } from 'aws-cdk-lib';
+import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { Construct, IConstruct } from 'constructs';
+
+declare const scope: Construct;
+class MyFactory implements IResourcePolicyFactory {
+  forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return {
+      env: resource.env,
+      addToResourcePolicy(statement: PolicyStatement) {
+        // custom implementation to add the statement to the resource policy
+        return { statementAdded: true, policyDependable: resource };
+      }
+    }
+  }
+}
+
+ResourceWithPolicies.register(scope, 'AWS::S3::Bucket', new MyFactory());
+```
+
+`IResourcePolicyFactory` is responsible for converting a construct into a `IResourceWithPolicyV2`,
+effectively providing an ad-hoc way to extend the behavior of L1s to support grants the same way
+as L2s do.
+
+The `BucketGrants` class has many methods, but two of them have a special behavior. These two 
+accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
+- `read`
+- `readWrite`
+
+When examining the synthesized policy, you'll notice it includes both your specified object key
+patterns and the bucket itself. This is by design. Some permissions (like `s3:ListBucket`) apply
+at the bucket level, while others (like `s3:GetObject`) apply to specific objects.
 
 Specifically, the [`s3:ListBucket` action operates on bucket resources](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazons3.html#amazons3-bucket)
 and requires the bucket ARN to work properly. This might be seen as a bug, giving the impression that more permissions were granted than the ones you intended, but the reality is that the policy does not ignore your `objectsKeyPattern` - object-specific actions like `s3:GetObject`
@@ -171,6 +232,23 @@ will still be limited to the resources defined in your pattern.
 
 If you need to restrict the `s3:ListBucket` action to specific paths, you can add a `Condition` to your policy that limits the `objectsKeyPattern` to specific folders. For more details and examples, see the [AWS documentation on bucket policies](https://docs.aws.amazon.com/AmazonS3/latest/userguide/example-bucket-policies.html#example-bucket-policies-folders).
 
+## Attribute-Based Access Control (ABAC)
+
+You can enable ABAC (Attribute-Based Access Control) for an S3 general purpose bucket.
+When ABAC is enabled for the general purpose bucket, you can use tags to manage access to the general purpose buckets as well as for cost tracking purposes.
+When ABAC is disabled for the general purpose buckets, you can only use tags for cost tracking purposes.
+
+To enable ABAC on a bucket:
+
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  abacStatus: true,
+});
+```
+
+By default, if `abacStatus` is not specified, ABAC will not be enabled for the bucket.
+
+For more information about ABAC and how to use it with S3, see the [AWS documentation on ABAC](https://docs.aws.amazon.com/AmazonS3/latest/userguide/buckets-tagging.html).
 
 ## AWS Foundational Security Best Practices
 
@@ -252,9 +330,8 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 });
 
 // now you can just call methods on the bucket
-bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {
-  prefix: 'home/myusername/*',
-});
+const filter: s3.NotificationKeyFilter = { prefix: 'home/myusername/*' };
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), filter);
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -1071,4 +1148,52 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 if (sourceBucket.replicationRoleArn) {
   destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
+```
+
+## Mixins
+
+S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### BucketAutoDeleteObjects
+
+Automatically deletes all objects from a bucket when the bucket is removed from the stack or when the stack is deleted. Requires the bucket's removal policy to be set to `DESTROY`:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
+### BucketVersioning
+
+Enables or suspends versioning on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketBlockPublicAccess
+
+Blocks public access on an S3 bucket. Defaults to blocking all public access:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketBlockPublicAccess());
+```
+
+### BucketPolicyStatements
+
+Adds IAM policy statements to a bucket policy:
+
+```ts
+new s3.CfnBucketPolicy(this, 'Policy', {
+  bucket: new s3.CfnBucket(this, 'Bucket').ref,
+  policyDocument: new iam.PolicyDocument(),
+}).with(new s3.mixins.BucketPolicyStatements([
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
 ```

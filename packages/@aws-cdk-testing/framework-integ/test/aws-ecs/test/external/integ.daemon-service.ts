@@ -20,7 +20,7 @@ const service = new ecs.ExternalService(stack, 'service', {
   daemon: true,
 });
 
-const integTest = new IntegTest(stack, 'ecs-external-service-daemon-test', {
+const integTest = new IntegTest(app, 'ecs-external-service-daemon-test', {
   testCases: [stack],
 });
 
