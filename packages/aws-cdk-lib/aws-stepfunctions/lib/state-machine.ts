@@ -473,7 +473,7 @@ export class StateMachine extends StateMachineBase {
       this.validateLogOptions(props.logs);
     }
     if (props.timeout !== undefined && props.timeout.toSeconds() <= 0) {
-      throw new ValidationError('Timeout must be positive', this);
+      throw new ValidationError(lit`TimeoutMustBePositive`, 'Timeout must be positive', this);
     }
 
     this.role = props.role || new iam.Role(this, 'Role', {
