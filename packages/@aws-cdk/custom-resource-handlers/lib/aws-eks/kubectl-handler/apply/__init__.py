@@ -88,8 +88,16 @@ def kubectl(verb, file, *opts):
                 retry = retry - 1
                 logger.info("kubectl timed out, retries left: %s" % retry)
             else:
-                raise Exception(output)
+                raise Exception(_truncate_output(output))
         else:
             logger.info(output)
             return
-    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {_truncate_output(output)}')
+
+
+def _truncate_output(output, max_len=3000):
+    """Truncate output to fit within CloudFormation's 4KB response limit."""
+    s = output.decode('utf-8', errors='replace') if isinstance(output, bytes) else str(output)
+    if len(s) <= max_len:
+        return s
+    return s[:max_len] + f'\n... truncated ({len(s)} chars total). See CloudWatch logs for full output.'
