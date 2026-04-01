@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BucketEncryptionMixin 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as service from "aws-cdk-lib/aws-s3";
+import * as constructs from "constructs";
+import * as internal from "../../../core/lib/helpers-internal";
+
+/**
+ * Mixin for configuring server-side encryption on S3 buckets.
+ *
+ * @stability external
+ */
+export class BucketEncryption extends cdk.Mixin {
+  protected readonly rule: BucketEncryption.ServerSideEncryptionRule;
+
+  public constructor(rule: BucketEncryption.ServerSideEncryptionRule) {
+    super();
+    this.rule = rule;
+  }
+
+  public supports(construct: constructs.IConstruct): construct is service.CfnBucket {
+    return service.CfnBucket.isCfnBucket(construct);
+  }
+
+  public applyTo(construct: constructs.IConstruct): void {
+    new internal.CfnPropsMixin(service.CfnBucket, { bucketEncryption: { serverSideEncryptionConfiguration: [flattenBucketEncryptionServerSideEncryptionRule(this.rule)] } }, { strategy: cdk.PropertyMergeStrategy.override() }).applyTo(construct);
+  }
+}
+
+export namespace BucketEncryption {
+  /**
+   * @struct
+   * @stability external
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionrule.html
+   */
+  export interface ServerSideEncryptionRule {
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionrule.html#cfn-s3-bucket-serversideencryptionrule-bucketkeyenabled
+     */
+    readonly bucketKeyEnabled?: boolean | cdk.IResolvable;
+
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionrule.html#cfn-s3-bucket-serversideencryptionrule-serversideencryptionbydefault
+     */
+    readonly serverSideEncryptionByDefault?: cdk.IResolvable | BucketEncryption.ServerSideEncryptionByDefault;
+  }
+
+  /**
+   * @struct
+   * @stability external
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionbydefault.html
+   */
+  export interface ServerSideEncryptionByDefault {
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionbydefault.html#cfn-s3-bucket-serversideencryptionbydefault-kmsmasterkeyid
+     */
+    readonly kmsMasterKeyId?: string;
+
+    /**
+     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-serversideencryptionbydefault.html#cfn-s3-bucket-serversideencryptionbydefault-ssealgorithm
+     */
+    readonly sseAlgorithm?: cdk.IResolvable | BucketEncryption.SSEAlgorithm | string;
+  }
+
+  /**
+   * Allowed values for \`SSEAlgorithm\`.
+   */
+  export enum SSEAlgorithm {
+    /** aws:kms */
+    AWS_KMS = "aws:kms",
+    /** AES256 */
+    AES256 = "AES256",
+    /** aws:kms:dsse */
+    AWS_KMS_DSSE = "aws:kms:dsse",
+  }
+}"
+`;

@@ -9,7 +9,7 @@ import type {
 import {
   RichProperty,
 } from '@aws-cdk/service-spec-types';
-import type { ClassType, StructType, TypeDeclaration } from '@cdklabs/typewriter';
+import type { ClassType, IScope, StructType, TypeDeclaration } from '@cdklabs/typewriter';
 import { Module, PrimitiveType, RichScope, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import type { RelationshipDecider } from './relationship-decider';
@@ -26,6 +26,14 @@ export interface TypeConverterOptions {
    * @default false
    * */
   readonly isEventBridgeType?: boolean;
+  /**
+   * Callback to convert a string type with allowedValues into an enum type.
+   * When set, string properties with allowedValues will use the returned type
+   * as a union with string (e.g. `MyEnum | string`).
+   *
+   * @default - allowedValues are ignored, string type is used
+   */
+  readonly enumConverter?: (allowedValues: string[]) => Type | undefined;
 }
 
 /**
@@ -42,6 +50,19 @@ export interface TypeConverterForResourceOptions extends Omit<TypeConverterOptio
   readonly resource: Resource;
   readonly resourceClass: ClassType;
   readonly relationshipDecider: RelationshipDecider;
+}
+
+export interface TypeConverterForSingleTypeOptions extends TypeConverterForResourceOptions {
+  /**
+   * Custom naming function for generated struct types.
+   * @default structNameFromTypeDefinition (appends 'Property' suffix)
+   */
+  readonly structNamer?: (typeDef: TypeDefinition) => string;
+  /**
+   * Scope to place generated types in.
+   * @default resourceClass
+   */
+  readonly scope?: IScope;
 }
 
 /**
@@ -124,11 +145,60 @@ export class TypeConverter {
     });
   }
 
+  /**
+   * Make a type converter that generates a single type definition and its transitive dependencies.
+   *
+   * Generated structs have all properties optional, no CFN producer/parser, and use a custom naming function.
+   *
+   * Usage:
+   * ```
+   * const converter = TypeConverter.forSingleType({ ...opts, structNamer: (td) => td.name });
+   * const typeDef = db.follow('usesType', resource).map(x => x.entity).find(td => td.name === 'MyType');
+   * converter.convertTypeDefinitionType(typeDef); // generates MyType and all transitive deps
+   * ```
+   */
+  public static forSingleType(opts: TypeConverterForSingleTypeOptions) {
+    const namer = opts.structNamer ?? structNameFromTypeDefinition;
+    const scope = opts.scope ?? opts.resourceClass;
+    return new TypeConverter({
+      ...opts,
+      typeDefinitionConverter: (typeDefinition, converter) => {
+        const existing = new RichScope(scope).tryFindTypeByName(
+          namer(typeDefinition),
+        );
+        if (existing) {
+          return {
+            structType: existing as StructType,
+            build: () => {},
+          };
+        }
+
+        const structType = new PartialTypeDefinitionStruct({
+          resource: opts.resource,
+          resourceClass: opts.resourceClass,
+          converter,
+          typeDefinition,
+          relationshipDecider: opts.relationshipDecider,
+          cfnProducer: false,
+          cfnParser: false,
+          structNamer: namer,
+          scope,
+        });
+
+        return {
+          structType: structType,
+          build: () => structType.build(),
+        };
+      },
+    });
+  }
+
   public readonly db: SpecDatabase;
   public readonly module: Module;
   private readonly typeDefinitionConverter: TypeDefinitionConverter;
   private readonly typeDefCache = new Map<TypeDefinition, StructType>();
   private readonly isEventBridgeType;
+  private readonly enumConverter?: (allowedValues: string[]) => Type | undefined;
 
   /** Reverse mapping so we can find the original type back for every generated Type */
   private readonly originalTypes = new WeakMap<Type, PropertyType>();
@@ -138,6 +208,7 @@ export class TypeConverter {
     this.typeDefinitionConverter = options.typeDefinitionConverter;
     this.module = Module.of(options.resourceClass);
     this.isEventBridgeType = options.isEventBridgeType;
+    this.enumConverter = options.enumConverter;
   }
 
   /**
@@ -173,6 +244,12 @@ export class TypeConverter {
     const converted = ((): Type => {
       switch (type?.type) {
         case 'string':
+          if (type.allowedValues?.length && this.enumConverter) {
+            const enumType = this.enumConverter(type.allowedValues);
+            if (enumType) {
+              return enumType;
+            }
+          }
           return Type.STRING;
         case 'number':
         case 'integer':

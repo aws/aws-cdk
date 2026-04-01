@@ -99,6 +99,18 @@ export class CoreTypes {
   }
 
   /**
+   * Return true if the type lives inside a generated mixin.
+   * Checks the jsii namespace, source file location, and stability.
+   */
+  public static isGeneratedMixinType(interfaceType: reflect.Type) {
+    const loc = interfaceType.locationInModule;
+    return interfaceType.namespace?.split('.').at(1) === 'mixins' &&
+      loc != null &&
+      loc.filename.endsWith('.generated.ts') &&
+      interfaceType.docs.docs.stability === 'external';
+  }
+
+  /**
    * Return true if the given interface type is a CFN class, prop type or interface
    */
   public static isCfnType(interfaceType: reflect.Type): boolean {

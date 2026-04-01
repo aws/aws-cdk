@@ -56,6 +56,10 @@ docsLinter.add({
     if (CoreTypes.isCfnType(e.ctx.containingType) || CoreTypes.isCfnNestedType(e.ctx.containingType)) {
       return;
     }
+    // this rule does not apply to generated mixin types
+    if (CoreTypes.isGeneratedMixinType(e.ctx.containingType)) {
+      return;
+    }
 
     const property = e.ctx.documentable;
     e.assert(!property.optional || property.docs.docs.default !== undefined, e.ctx.errorKey);
