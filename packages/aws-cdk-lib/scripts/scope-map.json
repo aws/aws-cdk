@@ -255,6 +255,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -705,6 +712,13 @@
     "scopes": [
       {
         "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
       }
     ]
   },
@@ -1569,6 +1583,13 @@
     "scopes": [
       {
         "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
       }
     ]
   },

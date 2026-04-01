@@ -4595,7 +4595,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'requestMetricsStatus': 'RequestMetricsStatus'
     },
     'TablePolicy': {
       'table': {
@@ -4642,10 +4643,32 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'icebergMetadata': {
         'icebergSchema': {
           'schemaFieldList': {
+            'id': '*',
             'name': '*',
             'required': 'boolean',
             'type': '*'
           }
+        },
+        'icebergPartitionSpec': {
+          'fields': {
+            'sourceId': '*',
+            'transform': '*',
+            'name': '*',
+            'fieldId': '*'
+          },
+          'specId': '*'
+        },
+        'icebergSortOrder': {
+          'fields': {
+            'sourceId': '*',
+            'direction': 'SortDirection',
+            'nullOrder': 'NullOrder'
+          },
+          'orderId': '*'
+        },
+        'tableProperties': {
+          'key': '*',
+          'value': '*'
         }
       },
       'snapshotManagement': {
@@ -5549,6 +5572,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'certificate': '*',
       'endpointType': 'EndpointType',
       'securityPolicy': 'SecurityPolicy',
+      'endpointAccessMode': 'EndpointAccessMode',
       'mtls': {
         'bucket': {
           'bucketArn': '*',
@@ -5819,6 +5843,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'certificate': '*',
           'endpointType': 'EndpointType',
           'securityPolicy': 'SecurityPolicy',
+          'endpointAccessMode': 'EndpointAccessMode',
           'mtls': {
             'bucket': {
               'bucketArn': '*',
@@ -5945,6 +5970,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -6704,6 +6730,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -6846,6 +6873,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7162,6 +7190,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'certificate': '*',
         'endpointType': 'EndpointType',
         'securityPolicy': 'SecurityPolicy',
+        'endpointAccessMode': 'EndpointAccessMode',
         'mtls': {
           'bucket': {
             'bucketArn': '*',
@@ -7968,6 +7997,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'resolverCountLimit': '*',
       'environmentVariables': '*',
       'ownerContact': '*',
+      'enhancedMetricsConfig': {
+        'dataSourceLevelMetricsBehavior': 'DataSourceLevelMetricsBehavior',
+        'operationLevelMetricsConfig': 'OperationLevelMetricsConfig',
+        'resolverLevelMetricsBehavior': 'ResolverLevelMetricsBehavior'
+      },
       'addSchemaDependency': [
         '*'
       ],
@@ -8241,6 +8275,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ssmSessionPermissions': 'boolean',
       'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
       'deletionProtection': 'DeletionProtection',
+      'instanceLifecyclePolicy': {
+        'retentionTriggers': {
+          'terminateHookAbandon': 'TerminateHookAbandonAction'
+        }
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -13323,7 +13362,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'capacityRebalance': 'boolean',
         'ssmSessionPermissions': 'boolean',
         'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-        'deletionProtection': 'DeletionProtection'
+        'deletionProtection': 'DeletionProtection',
+        'instanceLifecyclePolicy': {
+          'retentionTriggers': {
+            'terminateHookAbandon': 'TerminateHookAbandonAction'
+          }
+        }
       },
       'capacityProviders': '*',
       'enableFargateCapacityProviders': [],
@@ -13493,7 +13537,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addAsgCapacityProvider': [
@@ -14353,7 +14402,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -15468,7 +15522,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -17225,6 +17284,13 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           }
         }
       ]
+    },
+    'ReferencedKey': {
+      'environmentFromArn': '*',
+      'keyArn': '*',
+      'keyId': '*',
+      'policy': '*',
+      'trustAccountIdentities': 'boolean'
     }
   },
   'aws-cdk-lib.aws-lambda': {
@@ -19125,6 +19191,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ipAddressType': 'IpAddressType',
       'suppressLogsResourcePolicy': 'boolean',
       'coldStorageEnabled': 'boolean',
+      's3VectorsEngineEnabled': 'boolean',
       'addAccessPolicies': [
         '*'
       ]
@@ -22200,6 +22267,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
+      'blockedEncryptionTypes': '*',
       'enforceSSL': 'boolean',
       'bucketKeyEnabled': 'boolean',
       'bucketName': '*',
@@ -22478,6 +22546,49 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'optionalFields': '*'
         }
       ]
+    },
+    'ReferencedBucket': {
+      'account': '*',
+      'region': '*',
+      'bucketArn': '*',
+      'bucketName': '*',
+      'bucketDomainName': '*',
+      'bucketWebsiteUrl': '*',
+      'bucketWebsiteDomainName': '*',
+      'bucketRegionalDomainName': '*',
+      'bucketDualStackDomainName': '*',
+      'encryptionKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'isWebsite': 'boolean',
+      'policy': '*',
+      'replicationRoleArn': '*',
+      'autoCreatePolicy': 'boolean',
+      'disallowPublicAccess': 'boolean',
+      'notificationsHandlerRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      }
     }
   },
   'aws-cdk-lib.aws-scheduler': {

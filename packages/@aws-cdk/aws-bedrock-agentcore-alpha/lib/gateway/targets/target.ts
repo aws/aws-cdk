@@ -4,6 +4,7 @@ import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -678,7 +679,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'), this);
+      throw new ValidationError(lit`GatewayTargetNameInvalid`, allErrors.join('\n'), this);
     }
   }
 
@@ -701,7 +702,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'), this);
+      throw new ValidationError(lit`GatewayTargetDescriptionInvalid`, errors.join('\n'), this);
     }
   }
 }

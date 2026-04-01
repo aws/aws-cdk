@@ -332,6 +332,55 @@ describe('Topic', () => {
     });
   });
 
+  test('give arbitrary set of permissions to CfnTopic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    const topic = new sns.CfnTopic(stack, 'Topic', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    TopicGrants.fromTopic(topic).actions(user, ['sns:Foo'], {
+      keyActions: ['kms:Bar', 'kms:Zee'],
+    });
+
+    // THEN
+    let template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 'sns:Foo',
+            Effect: 'Allow',
+            Resource: { Ref: 'Topic' },
+          },
+          {
+            Action: ['kms:Bar', 'kms:Zee'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': ['Key', 'Arn'],
+            },
+          },
+        ],
+      },
+    });
+
+    template.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [{
+          Action: ['kms:Bar', 'kms:Zee'],
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::GetAtt': ['User00B015A1', 'Arn'] } },
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('give service principal permissions to publish to CfnTopic', () => {
     // GIVEN
     const stack = new cdk.Stack();

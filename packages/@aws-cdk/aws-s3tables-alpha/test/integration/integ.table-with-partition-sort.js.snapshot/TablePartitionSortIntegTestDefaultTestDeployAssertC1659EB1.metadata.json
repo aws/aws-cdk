@@ -1,0 +1,78 @@
+{
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesListTablesCommand8dae7e84ff49aa1ab6055d4ffa15f036"
+    }
+  ],
+  "/TablePartitionSortIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableMetadataLocationCommand350ee7b3832e137bca95dbf41260ecfa"
+    }
+  ]
+}

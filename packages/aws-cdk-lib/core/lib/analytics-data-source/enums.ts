@@ -1126,6 +1126,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "Grab",
     "Here"
   ],
+  "DataSourceLevelMetricsBehavior": [
+    "FULL_REQUEST_DATA_SOURCE_METRICS",
+    "PER_DATA_SOURCE_METRICS"
+  ],
+  "DataSourceMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
+  ],
   "DataStorageUnit": [
     "GB"
   ],
@@ -1407,6 +1415,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SSE_S3",
     "SSE_KMS",
     "CSE_KMS"
+  ],
+  "EndpointAccessMode": [
+    "STRICT",
+    "BASIC"
   ],
   "EndpointType": [
     "EDGE",
@@ -2891,6 +2903,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AL2023_ARM_64_NVIDIA",
     "AL2023_ARM_64_STANDARD"
   ],
+  "NullOrder": [
+    "nulls-first",
+    "nulls-last"
+  ],
   "NumericOverflowHandlingAction": [
     "DISABLED",
     "FAIL",
@@ -2957,6 +2973,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ExecuteTransaction",
     "BatchExecuteStatement",
     "ExecuteStatement"
+  ],
+  "OperationLevelMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
   "Operator": [
     "AND",
@@ -3285,10 +3305,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "TASK_DEFINITION",
     "NONE"
   ],
-  "PropertyMergeStrategy": [
-    "override",
-    "merge"
-  ],
   "Protocol": [
     "HTTP",
     "HTTPS",
@@ -3442,6 +3458,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  "RequestMetricsStatus": [
+    "Enabled",
+    "Disabled"
+  ],
   "RequireConfirmation": [
     "ENABLED",
     "DISABLED"
@@ -3456,6 +3476,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "string",
     "number",
     "string-list"
+  ],
+  "ResolverLevelMetricsBehavior": [
+    "FULL_REQUEST_RESOLVER_METRICS",
+    "PER_RESOLVER_METRICS"
+  ],
+  "ResolverMetricsConfig": [
+    "ENABLED",
+    "DISABLED"
   ],
   "ResourceAction": [
     "pause-cluster",
@@ -3709,6 +3737,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "RAW",
     "JSON"
   ],
+  "SortDirection": [
+    "asc",
+    "desc"
+  ],
   "SourceMapMode": [
     "default",
     "external",
@@ -3749,6 +3781,7 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "SslPolicy": [
     "ELBSecurityPolicy-TLS13-1-2-2021-06",
+    "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
     "ELBSecurityPolicy-2016-08",
     "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
     "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -3756,6 +3789,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ELBSecurityPolicy-TLS13-1-0-2021-06",
     "ELBSecurityPolicy-TLS13-1-1-2021-06",
     "ELBSecurityPolicy-TLS13-1-3-2021-06",
+    "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
     "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -3764,6 +3802,13 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
     "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+    "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+    "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
     "ELBSecurityPolicy-FS-1-2-Res-2020-10",
     "ELBSecurityPolicy-FS-1-2-Res-2019-08",
     "ELBSecurityPolicy-FS-1-2-2019-08",
@@ -4064,6 +4109,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "default",
     "dedicated",
     "host"
+  ],
+  "TerminateHookAbandonAction": [
+    "retain",
+    "terminate"
   ],
   "TerminationPolicy": [
     "AllocationStrategy",
