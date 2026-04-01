@@ -938,6 +938,7 @@ export class SingleValueWidget extends ConcreteWidget {
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
         singleValueFullPrecision: this.props.fullPrecision,
+        liveData: this.props.liveData,
         period: this.props.period?.toSeconds(),
         start: this.props.start,
         end: this.props.end,
