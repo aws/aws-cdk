@@ -125,12 +125,6 @@ test('factory method generation from resource', () => {
 });
 
 test('throws when a resource has dim-sets across namespaces that both produce a factory with the same name', () => {
-  // An Alias-like resource whose primaryIdentifier covers both FunctionName and Resource.
-  // It is linked to two dim-sets with different names (different dim-set classes) that
-  // both live under the same namespace. The first tryAddFactory call succeeds and adds
-  // fromAlias to the metricsClass. The second dim-set resolves to a different class but
-  // the same namespace, so its factoryKey differs — but the method already exists on the
-  // metricsClass, triggering the duplicate factory guard.
   const alias = db.allocate('resource', {
     name: 'Alias',
     cloudFormationType: 'AWS::Lambda::Alias',
@@ -175,7 +169,7 @@ test('throws when a resource has dim-sets across namespaces that both produce a 
   db.link('resourceHasDimensionSet', alias, dsFnRes);
 
   const builder = new MetricsBuilder({ db });
-  expect(() => builder.addService(service)).toThrow(/Alias, factory:AWS\/Lambda::fromAlias already exists/);
+  expect(() => builder.addService(service)).toThrow(/Alias, factory:.*fromAlias already exists/);
 });
 
 test('service with no metrics produces empty submodule', () => {

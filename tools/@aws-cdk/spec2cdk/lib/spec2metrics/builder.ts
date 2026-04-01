@@ -165,6 +165,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
 
     const factoryGen = new ResourceFactoryGenerator(context, submodule, resource);
     for (const dimSet of resourceDimSets) {
+      log.info(JSON.stringify(dimSet));
       factoryGen.tryAddFactory(dimSet);
     }
 
@@ -316,21 +317,23 @@ class ResourceFactoryGenerator {
     if (!found) {
       throw new Error(`Could not find dimension set class '${className}' for resource ${this.resource.name}.`);
     }
-
     const { nsMetrics, dimensionSetClass } = found;
-    const factoryKey = `${nsMetrics.namespace}::from${this.resource.name}`;
-    if (this.generatedFactories.has(factoryKey)) {
-      throw Error(
-        `${this.resource.name}, factory:${factoryKey} already exists, trying to generate ${dimSet}` +
-        ' This is a sign that this dim-set should be associated with another resource',
-      );
-    }
 
+    if (this.generatedFactories.has(dimSet.dedupKey)) return;
+    // Skip if the dim-set contains an enum value
     if (dimSet.dimensions.some(d => d.value)) return;
 
     // Check if all dimensions can be filled from the reference interface
     const dimMappings = this.resolveDimensionMappings(dimSet);
     if (!dimMappings) return;
+
+    const factoryName = `from${this.resource.name}`;
+    if (nsMetrics.metricsClass.methods.find(m => m.name === factoryName)) {
+      throw Error(
+        `${this.resource.name}, factory:${factoryName} already exists, trying to generate ${JSON.stringify(dimSet)}` +
+        ' This is a sign that this dim-set should be associated with another resource',
+      );
+    }
 
     const refInterfaceName = naming.referenceInterfaceName(this.resource.name);
     const serviceModule = new ExternalModule(`aws-cdk-lib/${this.submodule.submoduleName}`);
@@ -340,7 +343,7 @@ class ResourceFactoryGenerator {
     const refAttrName = naming.referenceInterfaceAttributeName(this.resource.name);
 
     const factory = nsMetrics.metricsClass.addMethod({
-      name: `from${this.resource.name}`,
+      name: factoryName,
       static: true,
       returnType: dimensionSetClass.type,
       docs: { summary: `Create ${dimensionSetClass.name} from a ${this.resource.name} reference` },
@@ -356,7 +359,7 @@ class ResourceFactoryGenerator {
       stmt.ret(dimensionSetClass.newInstance(expr.object(propEntries))),
     );
 
-    this.generatedFactories.add(factoryKey);
+    this.generatedFactories.add(dimSet.dedupKey);
   }
 
   /**
