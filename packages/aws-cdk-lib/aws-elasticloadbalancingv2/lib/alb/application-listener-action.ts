@@ -3,7 +3,7 @@ import { ApplicationListener, type IApplicationListener } from './application-li
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
-import { Token, Tokenization } from '../../../core';
+import { Annotations, Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
@@ -589,6 +589,8 @@ class AuthenticateJwtAction extends ListenerAction {
     if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
       throw new UnscopedValidationError(lit`JwtRequiresHttps`, 'JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
     }
+
+    Annotations.of(listener).addInfo('JWT validation requires the ALB to access the JWKS endpoint. Ensure the ALB security group allows outbound HTTPS (port 443) to the JWKS endpoint, either via an internet gateway or a VPC interface endpoint.');
   }
 }
 
