@@ -16,6 +16,7 @@ import type { IPrincipal, IRole } from '../../aws-iam';
 import { PolicyStatement } from '../../aws-iam';
 import { CfnOutput, FeatureFlags, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
@@ -260,7 +261,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       return AmazonLinuxCpuType.X86_64;
     }
 
-    throw new UnscopedValidationError('UnsupportedInstanceArchitecture', `Unsupported instance architecture '${architecture}'`);
+    throw new UnscopedValidationError(lit`UnsupportedInstanceArchitecture`, `Unsupported instance architecture '${architecture}'`);
   }
 
   /**
