@@ -3,6 +3,7 @@ import * as apigwv2 from '../../../aws-apigatewayv2';
 import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Properties to initialize `HttpEventBridgeIntegration`.
@@ -57,7 +58,7 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('EventBridge-')) {
-      throw new ValidationError('SubtypeStart', 'Subtype must start with `EventBridge-`', options.scope);
+      throw new ValidationError(lit`SubtypeStart`, 'Subtype must start with `EventBridge-`', options.scope);
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {
@@ -94,7 +95,7 @@ export class HttpEventBridgeIntegration extends apigwv2.HttpRouteIntegration {
           .custom('DetailType', '$request.body.DetailType')
           .custom('Source', '$request.body.Source');
       default:
-        throw new ValidationError('UnsupportedSubtype', `Unsupported subtype: ${this.subtype}`, scope);
+        throw new ValidationError(lit`UnsupportedSubtype`, `Unsupported subtype: ${this.subtype}`, scope);
     }
   }
 }

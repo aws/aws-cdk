@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IDBSubnetGroupRef } from '../rds.generated';
 import type { ISubnetGroup } from '../subnet-group';
 
@@ -8,7 +9,7 @@ import type { ISubnetGroup } from '../subnet-group';
  */
 export function toISubnetGroup(group: IDBSubnetGroupRef): ISubnetGroup {
   if (!('subnetGroupName' in group)) {
-    throw new UnscopedValidationError('GroupInstanceShouldImplement', `'group' instance should implement ISubnetGroup, but doesn't: ${group.constructor.name}`);
+    throw new UnscopedValidationError(lit`GroupInstanceShouldImplement`, `'group' instance should implement ISubnetGroup, but doesn't: ${group.constructor.name}`);
   }
   return group as ISubnetGroup;
 }
