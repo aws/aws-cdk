@@ -9,5 +9,5 @@
       "assertionStackName": "IntegTestEcsImportedTaskDefinitionDefaultTestDeployAssert69FA1335"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

@@ -4,7 +4,7 @@
    "Type": "AWS::Location::APIKey",
    "Properties": {
     "Description": "my api key for test",
-    "ExpireTime": "2026-01-01T00:00:00.000Z",
+    "ExpireTime": "2036-01-01T00:00:00.000Z",
     "KeyName": "my-api-key",
     "NoExpiry": false,
     "Restrictions": {

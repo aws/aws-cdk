@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
     "cluster-replication-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cluster-replication-integ/DefaultTest/DeployAssert",
       "assertionStackName": "clusterreplicationintegDefaultTestDeployAssert7E5188AB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

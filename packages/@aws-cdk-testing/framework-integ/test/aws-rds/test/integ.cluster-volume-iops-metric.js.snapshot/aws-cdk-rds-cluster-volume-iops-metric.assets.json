@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "f39d672f487451987d4e48a1e0330973e78cd8fce3699bc8fd4c123ec466b6fd": {
+    "9be532e5fbaa463acb4b160f3377d7ed6e578f21b0dc9e690422bf5cb9e686e0": {
       "displayName": "aws-cdk-rds-cluster-volume-iops-metric Template",
       "source": {
         "path": "aws-cdk-rds-cluster-volume-iops-metric.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2d834d03": {
+        "current_account-current_region-d795f4c4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f39d672f487451987d4e48a1e0330973e78cd8fce3699bc8fd4c123ec466b6fd.json",
+          "objectKey": "9be532e5fbaa463acb4b160f3377d7ed6e578f21b0dc9e690422bf5cb9e686e0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

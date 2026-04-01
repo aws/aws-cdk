@@ -1,15 +1,16 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "files": {
-    "86789aa603c935d2419fcd3cb52ac6fd49778a57bddb556d387bfd1d6bbdc71a": {
+    "0c0ed6871b272a71c1f0c40ab6c5a6b512b0985625e0c6726435a0b10014b219": {
+      "displayName": "BulkUpdate Template",
       "source": {
         "path": "BulkUpdate.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9bf0814f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "86789aa603c935d2419fcd3cb52ac6fd49778a57bddb556d387bfd1d6bbdc71a.json",
+          "objectKey": "0c0ed6871b272a71c1f0c40ab6c5a6b512b0985625e0c6726435a0b10014b219.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

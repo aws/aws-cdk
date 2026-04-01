@@ -1,28 +1,28 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
-    "aws-cdk-rds-integ-instance-create-grant.assets": {
+    "aws-cdk-rds-instance-create-grant.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-rds-integ-instance-create-grant.assets.json",
+        "file": "aws-cdk-rds-instance-create-grant.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-rds-integ-instance-create-grant": {
+    "aws-cdk-rds-instance-create-grant": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-rds-integ-instance-create-grant.template.json",
+        "templateFile": "aws-cdk-rds-instance-create-grant.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/85e5b911e9e757fba496af7baf2dede3ddb3189f875bd1415d10aa12e5160e7a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/27d1e4e4d7d07ce2b533cade321bb269731c2537d65cc4bde6e3041b6d37dbc0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-rds-integ-instance-create-grant.assets"
+          "aws-cdk-rds-instance-create-grant.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,22 +31,26 @@
         }
       },
       "dependencies": [
-        "aws-cdk-rds-integ-instance-create-grant.assets"
+        "aws-cdk-rds-instance-create-grant.assets"
       ],
       "metadata": {
-        "/aws-cdk-rds-integ-instance-create-grant/VPC": [
+        "/aws-cdk-rds-instance-create-grant/VPC": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "maxAzs": "*",
+              "restrictDefaultSecurityGroup": false,
+              "natGateways": "*"
+            }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/Resource": [
+        "/aws-cdk-rds-instance-create-grant/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -82,43 +86,43 @@
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -144,53 +148,33 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2EIP4947BC00"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2NATGateway3C070193"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet1": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet1": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -218,31 +202,31 @@
             "data": {}
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet2": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet2": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -270,120 +254,81 @@
             "data": {}
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-rds-instance-create-grant/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/IGW": [
+        "/aws-cdk-rds-instance-create-grant/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/VPCGW": [
+        "/aws-cdk-rds-instance-create-grant/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance": [
+        "/aws-cdk-rds-instance-create-grant/Instance": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
-              "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Public"
-              },
               "engine": {
                 "engineType": "*",
-                "singleUserRotationApplication": "*",
                 "engineVersion": {
                   "fullVersion": "*",
                   "majorVersion": "*"
                 },
                 "parameterGroupFamily": "*",
+                "singleUserRotationApplication": "*",
                 "engineFamily": "*",
+                "supportsReadReplicaBackups": "*",
                 "defaultUsername": "*"
               },
-              "instanceType": "*",
-              "credentials": "*",
-              "multiAz": false,
-              "deletionProtection": false,
-              "publiclyAccessible": false,
-              "backupRetention": "*"
+              "vpc": "*",
+              "credentials": "*"
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/SubnetGroup": [
+        "/aws-cdk-rds-instance-create-grant/Instance/SubnetGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "description": "*",
               "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Public"
-              },
+              "vpcSubnets": "*",
               "removalPolicy": "*"
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/SubnetGroup/Default": [
+        "/aws-cdk-rds-instance-create-grant/Instance/SubnetGroup/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceSubnetGroupF2CBA54F"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/SecurityGroup": [
+        "/aws-cdk-rds-instance-create-grant/Instance/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -392,13 +337,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/SecurityGroup/Resource": [
+        "/aws-cdk-rds-instance-create-grant/Instance/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceSecurityGroupB4E5FA83"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/Secret": [
+        "/aws-cdk-rds-instance-create-grant/Instance/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -414,18 +359,18 @@
               "secretName": "*",
               "encryptionKey": "*",
               "excludeCharacters": "*",
-              "replaceOnPasswordCriteriaChanges": true,
+              "replaceOnPasswordCriteriaChanges": "*",
               "replicaRegions": "*"
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/Secret/Resource": [
+        "/aws-cdk-rds-instance-create-grant/Instance/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "awscdkrdsinteginstancecreategrantInstanceSecret88B5032B3fdaad7efa858a3daf9490cf0a702aeb"
+            "data": "InstanceSecret478E0A47"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/Secret/Attachment": [
+        "/aws-cdk-rds-instance-create-grant/Instance/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -434,19 +379,19 @@
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/Secret/Attachment/Resource": [
+        "/aws-cdk-rds-instance-create-grant/Instance/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceSecretAttachment83BEE581"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/Instance/Resource": [
+        "/aws-cdk-rds-instance-create-grant/Instance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "InstanceC1063A87"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/DBRole": [
+        "/aws-cdk-rds-instance-create-grant/DBRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -481,19 +426,13 @@
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/DBRole/ImportDBRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-rds-integ-instance-create-grant/DBRole/Resource": [
+        "/aws-cdk-rds-instance-create-grant/DBRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DBRole890CB76D"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/DBRole/DefaultPolicy": [
+        "/aws-cdk-rds-instance-create-grant/DBRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -523,40 +462,40 @@
             }
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/DBRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-instance-create-grant/DBRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DBRoleDefaultPolicyDBB64848"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/BootstrapVersion": [
+        "/aws-cdk-rds-instance-create-grant/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-rds-integ-instance-create-grant/CheckBootstrapVersion": [
+        "/aws-cdk-rds-instance-create-grant/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-rds-integ-instance-create-grant"
+      "displayName": "aws-cdk-rds-instance-create-grant"
     },
-    "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52.assets": {
+    "instancecreategrantintegtestDefaultTestDeployAssert884F02C0.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52.assets.json",
+        "file": "instancecreategrantintegtestDefaultTestDeployAssert884F02C0.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52": {
+    "instancecreategrantintegtestDefaultTestDeployAssert884F02C0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52.template.json",
+        "templateFile": "instancecreategrantintegtestDefaultTestDeployAssert884F02C0.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -565,7 +504,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52.assets"
+          "instancecreategrantintegtestDefaultTestDeployAssert884F02C0.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -574,23 +513,23 @@
         }
       },
       "dependencies": [
-        "rdsinteginstancecreategrantDefaultTestDeployAssertFEE03C52.assets"
+        "instancecreategrantintegtestDefaultTestDeployAssert884F02C0.assets"
       ],
       "metadata": {
-        "/rds-integ-instance-create-grant/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/instance-create-grant-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/rds-integ-instance-create-grant/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/instance-create-grant-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "rds-integ-instance-create-grant/DefaultTest/DeployAssert"
+      "displayName": "instance-create-grant-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -604,6 +543,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -622,6 +562,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -733,7 +674,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -887,6 +828,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -918,16 +863,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1072,10 +1007,39 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1106.1"
 }

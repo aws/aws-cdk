@@ -44,7 +44,9 @@
      "Version": "2012-10-17"
     },
     "Description": "Role for accessing the RDS instance via IAM authentication"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DbAccessRoleDefaultPolicy8020DC70": {
    "Type": "AWS::IAM::Policy",
@@ -76,7 +78,9 @@
       "Ref": "DbAccessRole408BD73D"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "HighCPUAlarm56BE6E7D": {
    "Type": "AWS::CloudWatch::Alarm",
@@ -95,7 +99,9 @@
     "Period": 300,
     "Statistic": "Average",
     "Threshold": 90
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "LowMemoryAlarmD9E02E14": {
    "Type": "AWS::CloudWatch::Alarm",
@@ -114,7 +120,9 @@
     "Period": 300,
     "Statistic": "Average",
     "Threshold": 104857600
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

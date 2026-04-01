@@ -75,7 +75,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "FServiceRoleDefaultPolicy17A19BFA",
@@ -264,7 +264,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "F2ServiceRoleDefaultPolicy999D30A8",
@@ -398,7 +398,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "F3ServiceRoleDefaultPolicy1C0463D1",
@@ -530,7 +530,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "F4ServiceRoleDefaultPolicy1E98EC08",

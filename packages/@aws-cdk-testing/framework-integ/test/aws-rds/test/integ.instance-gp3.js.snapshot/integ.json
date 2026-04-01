@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "50.0.0",
   "testCases": {
     "InstanceGp3Test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "InstanceGp3Test/DefaultTest/DeployAssert",
       "assertionStackName": "InstanceGp3TestDefaultTestDeployAssert21C147A7"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

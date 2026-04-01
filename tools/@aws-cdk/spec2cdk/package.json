@@ -32,11 +32,11 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.151",
-    "@aws-cdk/service-spec-importers": "^0.0.109",
-    "@aws-cdk/service-spec-types": "^0.0.217",
+    "@aws-cdk/aws-service-spec": "^0.1.165",
+    "@aws-cdk/service-spec-importers": "^0.0.117",
+    "@aws-cdk/service-spec-types": "^0.0.231",
     "@cdklabs/tskb": "^0.0.4",
-    "@cdklabs/typewriter": "^0.0.15",
+    "@cdklabs/typewriter": "^0.0.16",
     "camelcase": "^6",
     "fs-extra": "^9",
     "p-limit": "^3.1.0",
@@ -56,7 +56,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "ubergen": {
     "exclude": true

@@ -61,7 +61,7 @@
            "Fn::Join": [
             "",
             [
-             "AllowMultiAccountReplicaAssociation-",
+             "AllowMultiAccountReplicaAssociation",
              {
               "Fn::Select": [
                4,
@@ -110,7 +110,7 @@
            "Fn::Join": [
             "",
             [
-             "AllowReplicationServiceReadWrite-",
+             "AllowReplicationServiceReadWrite",
              {
               "Fn::Select": [
                4,

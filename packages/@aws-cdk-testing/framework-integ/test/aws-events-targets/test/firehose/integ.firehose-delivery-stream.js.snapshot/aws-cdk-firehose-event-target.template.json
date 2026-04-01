@@ -470,6 +470,14 @@
    "Export": {
     "Name": "aws-cdk-firehose-event-target:ExportsOutputReffirehosebucket84C8AE0B4E51AAAE"
    }
+  },
+  "ExportsOutputRefEveryMinute2BBCEA8F6E6E8AA0": {
+   "Value": {
+    "Ref": "EveryMinute2BBCEA8F"
+   },
+   "Export": {
+    "Name": "aws-cdk-firehose-event-target:ExportsOutputRefEveryMinute2BBCEA8F6E6E8AA0"
+   }
   }
  },
  "Parameters": {

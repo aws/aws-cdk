@@ -1,13 +1,14 @@
 {
-  "version": "30.1.0",
+  "version": "52.0.0",
   "files": {
     "379c030c914943b66d3323572f1c454b9868c7d89ff12a9dbc092112c6580e80": {
+      "displayName": "ProfilingGroupTestStack Template",
       "source": {
         "path": "ProfilingGroupTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-9db0824c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "379c030c914943b66d3323572f1c454b9868c7d89ff12a9dbc092112c6580e80.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

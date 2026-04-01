@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "files": {
-    "f0fff306f7e137bbf1a002fa55210d252f5846dc8e753143422b180e68469441": {
+    "6ecb12d6ae13b8c0a3877bfd7c3e18e1a3c2882e84c2ef269af8ea41627a390c": {
+      "displayName": "aws-cdk-rds-proxy-mariadb Template",
       "source": {
         "path": "aws-cdk-rds-proxy-mariadb.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-a813e1f4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f0fff306f7e137bbf1a002fa55210d252f5846dc8e753143422b180e68469441.json",
+          "objectKey": "6ecb12d6ae13b8c0a3877bfd7c3e18e1a3c2882e84c2ef269af8ea41627a390c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

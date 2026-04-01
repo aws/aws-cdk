@@ -13,7 +13,9 @@
       "Value": "instance-kerberos/VPC"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
@@ -45,7 +47,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
@@ -59,7 +63,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -70,7 +76,9 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet1SubnetB4246D30"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
@@ -85,7 +93,9 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1EIP6AD938E8": {
    "Type": "AWS::EC2::EIP",
@@ -97,7 +107,9 @@
       "Value": "instance-kerberos/VPC/PublicSubnet1"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
@@ -121,7 +133,9 @@
    "DependsOn": [
     "VPCPublicSubnet1DefaultRoute91CEF279",
     "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
@@ -153,7 +167,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
@@ -167,7 +183,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -178,7 +196,9 @@
     "SubnetId": {
      "Ref": "VPCPublicSubnet2Subnet74179F39"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
@@ -193,7 +213,9 @@
    },
    "DependsOn": [
     "VPCVPCGW99B986DC"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2EIP4947BC00": {
    "Type": "AWS::EC2::EIP",
@@ -205,7 +227,9 @@
       "Value": "instance-kerberos/VPC/PublicSubnet2"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
@@ -229,7 +253,9 @@
    "DependsOn": [
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
@@ -261,7 +287,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
@@ -275,7 +303,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -286,7 +316,9 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
@@ -298,7 +330,9 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
@@ -330,7 +364,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
@@ -344,7 +380,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -355,7 +393,9 @@
     "SubnetId": {
      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
@@ -367,7 +407,9 @@
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCIGWB7E252D3": {
    "Type": "AWS::EC2::InternetGateway",
@@ -378,7 +420,9 @@
       "Value": "instance-kerberos/VPC"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
@@ -389,7 +433,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VPCRestrictDefaultSecurityGroupCustomResource59474679": {
    "Type": "Custom::VpcRestrictDefaultSG",
@@ -480,7 +526,9 @@
       }
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
    "Type": "AWS::Lambda::Function",
@@ -489,7 +537,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -505,7 +553,9 @@
    },
    "DependsOn": [
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "Role1ABCC5F0": {
    "Type": "AWS::IAM::Role",
@@ -528,7 +578,9 @@
     "ManagedPolicyArns": [
      "arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AD": {
    "Type": "AWS::DirectoryService::MicrosoftAD",
@@ -548,7 +600,9 @@
       "Ref": "VPCB9E5F0B4"
      }
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DatabaseSubnetGroup7D60F180": {
    "Type": "AWS::RDS::DBSubnetGroup",
@@ -562,7 +616,9 @@
       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DatabaseSecurityGroup5C91FDCB": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -578,7 +634,9 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DatabaseSecret3B817195": {
    "Type": "AWS::SecretsManager::Secret",
@@ -614,7 +672,9 @@
      "Ref": "DatabaseB269D8BB"
     },
     "TargetType": "AWS::RDS::DBInstance"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "DatabaseB269D8BB": {
    "Type": "AWS::RDS::DBInstance",
@@ -632,7 +692,7 @@
      "Ref": "Role1ABCC5F0"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.0.35",
+    "EngineVersion": "8.4.8",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -667,8 +727,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Snapshot",
-   "DeletionPolicy": "Snapshot"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
