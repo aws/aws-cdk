@@ -10,6 +10,7 @@ import * as iam from '../../aws-iam';
 import type { IResource } from '../../core';
 import { Resource, Stack, ArnFormat, PhysicalName, Names, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IEnvironmentRef, EnvironmentReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -67,7 +68,7 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
 
   public addDeployment(configuration: IConfiguration): void {
     if (this.name === undefined) {
-      throw new ValidationError('EnvironmentNameRequired', 'Environment name must be known to add a Deployment', this);
+      throw new ValidationError(lit`EnvironmentNameRequired`, 'Environment name must be known to add a Deployment', this);
     }
 
     const queueSize = this.deploymentQueue.push(
@@ -225,12 +226,12 @@ export class Environment extends EnvironmentBase {
   public static fromEnvironmentArn(scope: Construct, id: string, environmentArn: string): IEnvironment {
     const parsedArn = Stack.of(scope).splitArn(environmentArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new ValidationError('InvalidEnvironmentArnFormat', `Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`, scope);
+      throw new ValidationError(lit`InvalidEnvironmentArnFormat`, `Missing required /$/{applicationId}/environment//$/{environmentId} from environment ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 3 || !resourceName[0] || !resourceName[2]) {
-      throw new ValidationError('MissingEnvironmentArnParameters', 'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}', scope);
+      throw new ValidationError(lit`MissingEnvironmentArnParameters`, 'Missing required parameters for environment ARN: format should be /$/{applicationId}/environment//$/{environmentId}', scope);
     }
 
     const applicationId = resourceName[0];
@@ -435,7 +436,7 @@ export abstract class Monitor {
    */
   public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
     if (monitorsProperty.alarmArn === undefined) {
-      throw new UnscopedValidationError('AlarmArnRequired', 'You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
+      throw new UnscopedValidationError(lit`AlarmArnRequired`, 'You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
     }
     return {
       alarmArn: monitorsProperty.alarmArn,

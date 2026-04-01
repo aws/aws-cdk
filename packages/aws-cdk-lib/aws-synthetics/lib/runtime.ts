@@ -400,6 +400,18 @@ export class Runtime {
   public static readonly SYNTHETICS_NODEJS_3_0 = new Runtime('syn-nodejs-3.0', RuntimeFamily.NODEJS);
 
   /**
+   * `syn-nodejs-3.1` includes the following:
+   * - Lambda runtime Node.js 20.x
+   *
+   * New Features:
+   * - **Synthetics runtime namespace migration**: Canary runtime namespace has been migrated from `@amzn/synthetics-core` to `@aws/synthetics-core`.
+   * - **Type definitions on npm**: Type definitions for the synthetics library are now published on npm. Ensure that the package version you install matches your canary's runtime version.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_Nodejs.html#CloudWatch_Synthetics_runtimeversion-syn-nodejs-3.1
+   */
+  public static readonly SYNTHETICS_NODEJS_3_1 = new Runtime('syn-nodejs-3.1', RuntimeFamily.NODEJS);
+
+  /**
    * `syn-python-selenium-1.0` includes the following:
    * - Lambda runtime Python 3.8
    * - Selenium version 3.141.0

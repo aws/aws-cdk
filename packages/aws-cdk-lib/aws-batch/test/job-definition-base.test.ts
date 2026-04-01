@@ -223,4 +223,20 @@ describe.each([batch.EcsJobDefinition, batch.EksJobDefinition, batch.MultiNodeJo
       },
     });
   });
+
+  test.each([true, false])('set skipDeregisterOnUpdate %s', (skipDeregisterOnUpdate) => {
+    // WHEN
+    new JobDefinition(stack, 'JobDefn', {
+      ...defaultProps,
+      skipDeregisterOnUpdate,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...expectedProps,
+      ResourceRetentionPolicy: {
+        SkipDeregisterOnUpdate: skipDeregisterOnUpdate,
+      },
+    });
+  });
 });
