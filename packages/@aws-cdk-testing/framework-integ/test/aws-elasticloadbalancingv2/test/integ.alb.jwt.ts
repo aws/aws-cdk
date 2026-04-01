@@ -4,7 +4,8 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import { App, Stack, RemovalPolicy, UnscopedValidationError, lit } from 'aws-cdk-lib/core';
+import { App, Stack, RemovalPolicy, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { StackProps } from 'aws-cdk-lib/core';
 import type { Construct } from 'constructs';
 
