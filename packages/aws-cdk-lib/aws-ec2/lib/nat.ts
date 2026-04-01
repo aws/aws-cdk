@@ -484,7 +484,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   public static readonly DEFAULT_USER_DATA_COMMANDS = [
-    'yum install iptables-services -y',
+    'for attempt in 1 2 3; do yum install iptables-services -y && break || sleep 5; done',
     'systemctl enable iptables',
     'systemctl start iptables',
     'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',

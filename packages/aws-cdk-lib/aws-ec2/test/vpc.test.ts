@@ -18,6 +18,7 @@ import {
   NatProvider,
   NatGatewayProvider,
   NatInstanceProvider,
+  NatInstanceProviderV2,
   NatTrafficDirection,
   NetworkAcl,
   NetworkAclEntry,
@@ -1739,6 +1740,11 @@ describe('vpc', () => {
           }],
         },
       }));
+    });
+
+    test('NatInstanceProviderV2 default user data includes retry logic for iptables install', () => {
+      expect(NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS[0]).toContain('for attempt in 1 2 3');
+      expect(NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS[0]).toContain('yum install iptables-services -y');
     });
 
     test('Can instantiate NatInstanceProvider directly with new', () => {
