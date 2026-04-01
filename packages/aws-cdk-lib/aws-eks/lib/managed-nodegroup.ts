@@ -605,12 +605,16 @@ export class Nodegroup extends Resource implements INodegroup {
       // only when ConfigMap is supported
       const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
       if (supportConfigMap) {
+        const groups = [
+          'system:bootstrappers',
+          'system:nodes',
+        ];
+        if (props.amiType && windowsAmiTypes.includes(props.amiType)) {
+          groups.push('eks:kube-proxy-windows');
+        }
         this.cluster.awsAuth.addRoleMapping(this.role, {
           username: 'system:node:{{EC2PrivateDNSName}}',
-          groups: [
-            'system:bootstrappers',
-            'system:nodes',
-          ],
+          groups,
         });
       }
       // the controller runs on the worker nodes so they cannot
