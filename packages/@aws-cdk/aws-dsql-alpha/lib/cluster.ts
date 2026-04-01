@@ -1,7 +1,7 @@
 import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { Aws, IResource, RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
+import { IResource, RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { Construct } from 'constructs';
 
@@ -37,7 +37,7 @@ export interface ClusterProps {
 }
 
 /**
- * Create an Aurora DSQL cluster
+ * Represents an Aurora DSQL cluster
  */
 export interface ICluster extends IResource {
   /**
@@ -96,24 +96,7 @@ export interface ClusterAttributes {
 /**
  * A new or imported Aurora DSQL cluster
  */
-export abstract class ClusterBase extends Resource implements ICluster {
-  /**
-   * Import an existing Cluster from attributes
-   */
-  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
-    class Import extends ClusterBase implements ICluster {
-      public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly vpcEndpointServiceName = attrs.vpcEndpointServiceName;
-      public readonly clusterArn = cdk.Stack.of(this).formatArn({
-        service: 'dsql',
-        resource: 'cluster',
-        resourceName: this.clusterIdentifier,
-      });
-    }
-
-    return new Import(scope, id);
-  }
-
+abstract class ClusterBase extends Resource implements ICluster {
   /**
    * Identifier of the cluster
    */
@@ -130,20 +113,7 @@ export abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly vpcEndpointServiceName: string;
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [
-        [
-          'arn',
-          Aws.PARTITION,
-          'dsql',
-          Aws.REGION,
-          Aws.ACCOUNT_ID,
-          `cluster/${this.clusterIdentifier}`,
-        ].join(':'),
-      ],
-    });
+    return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [this.clusterArn] });
   }
 
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
@@ -161,6 +131,23 @@ export abstract class ClusterBase extends Resource implements ICluster {
  * @resource AWS::DSQL::Cluster
  */
 export class Cluster extends ClusterBase {
+  /**
+   * Import an existing Cluster from attributes
+   */
+  public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    class Import extends ClusterBase implements ICluster {
+      public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly vpcEndpointServiceName = attrs.vpcEndpointServiceName;
+      public readonly clusterArn = cdk.Stack.of(this).formatArn({
+        service: 'dsql',
+        resource: 'cluster',
+        resourceName: this.clusterIdentifier,
+      });
+    }
+
+    return new Import(scope, id);
+  }
+
   private readonly cluster: CfnCluster;
 
   /**

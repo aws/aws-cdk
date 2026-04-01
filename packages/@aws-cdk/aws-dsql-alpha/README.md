@@ -45,5 +45,5 @@ const cluster = new dsql.Cluster(this, 'Cluster');
 // Use one of the following statements to grant the role the necessary permissions
 cluster.grantConnect(role); // Grant the role dsql:DbConnect
 cluster.grantConnectAdmin(role); // Grant the role dsql:DbConnectAdmin
-cluster.grant(role, 'dqsl:DbConnect'); // Grant the role the specified actions to the cluster
+cluster.grant(role, 'dsql:DbConnect'); // Grant the role the specified actions to the cluster
 ```
