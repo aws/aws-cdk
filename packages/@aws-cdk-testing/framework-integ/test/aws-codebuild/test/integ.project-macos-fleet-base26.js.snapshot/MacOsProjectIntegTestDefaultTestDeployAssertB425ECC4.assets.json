@@ -1,0 +1,33 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "bb53f01495ae32257e19d365048b3328df6f5a714f8d3c0ed1ef3170dd17855b": {
+      "source": {
+        "path": "asset.bb53f01495ae32257e19d365048b3328df6f5a714f8d3c0ed1ef3170dd17855b.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-0d576f71": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bb53f01495ae32257e19d365048b3328df6f5a714f8d3c0ed1ef3170dd17855b.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3b5f977a750ec07a9bb75fd359422bd58b8468d9bbbeca484739772f2fe9a5e2": {
+      "displayName": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4 Template",
+      "source": {
+        "path": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c5065158": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3b5f977a750ec07a9bb75fd359422bd58b8468d9bbbeca484739772f2fe9a5e2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -8,6 +8,7 @@ import type { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../
 import type * as iam from '../../../aws-iam';
 import type { IBucket } from '../../../aws-s3';
 import { Fn, SecretValue, Token, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
 import { FileSet, Step } from '../blueprint';
 
@@ -256,7 +257,7 @@ class GitHubSource extends CodePipelineSource {
 
     const parts = repoString.split('/');
     if (Token.isUnresolved(repoString) || parts.length !== 2) {
-      throw new UnscopedValidationError('ShouldBeGithubRepositoryName', `GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
+      throw new UnscopedValidationError(lit`ShouldBeGithubRepositoryName`, `GitHub repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
     }
     this.owner = parts[0];
     this.repo = parts[1];
@@ -424,7 +425,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     super(repoString);
 
     if (!this.isValidRepoString(repoString)) {
-      throw new UnscopedValidationError('ShouldBeCodestarRepositoryName', `CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
+      throw new UnscopedValidationError(lit`ShouldBeCodestarRepositoryName`, `CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
     }
 
     const parts = repoString.split('/');

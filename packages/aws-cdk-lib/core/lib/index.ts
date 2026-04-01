@@ -35,6 +35,7 @@ export * from './removal-policy';
 export * from './removal-policies';
 export * from './arn';
 export * from './duration';
+export * from './bitrate';
 export * from './expiration';
 export * from './size';
 export * from './stack-trace';

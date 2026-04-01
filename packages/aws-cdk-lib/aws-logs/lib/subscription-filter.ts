@@ -5,6 +5,7 @@ import type * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
@@ -73,7 +74,7 @@ export class SubscriptionFilter extends Resource {
       !Token.isUnresolved(props.destination) &&
       !(props.destination instanceof KinesisDestination)
     ) {
-      throw new ValidationError('DistributionPropertyKinesisDestination', 'distribution property can only be used with KinesisDestination.', this);
+      throw new ValidationError(lit`DistributionPropertyKinesisDestination`, 'distribution property can only be used with KinesisDestination.', this);
     }
 
     const destProps = props.destination.bind(this, props.logGroup);

@@ -7,6 +7,7 @@ import type { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IDBClusterRef, IDBInstanceRef, DBInstanceReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
@@ -273,7 +274,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
 function toIDatabaseCluster(cluster: IDBClusterRef): IDatabaseCluster {
   if (!('clusterIdentifier' in cluster) || !('connections' in cluster)) {
-    throw new cdk.UnscopedValidationError('ClusterMustImplementIDatabaseCluster', `'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
+    throw new cdk.UnscopedValidationError(lit`ClusterMustImplementIDatabaseCluster`, `'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
   }
   return cluster as IDatabaseCluster;
 }

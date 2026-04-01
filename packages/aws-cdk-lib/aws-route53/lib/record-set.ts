@@ -11,6 +11,7 @@ import type { IResource, RemovalPolicy } from '../../core';
 import { Annotations, CustomResource, Duration, Names, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
@@ -401,20 +402,20 @@ export class RecordSet extends Resource implements IRecordSet {
     addConstructMetadata(this, props);
 
     if (props.weight && !Token.isUnresolved(props.weight) && (props.weight < 0 || props.weight > 255)) {
-      throw new ValidationError('WeightInclusive', `weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
+      throw new ValidationError(lit`WeightInclusive`, `weight must be between 0 and 255 inclusive, got: ${props.weight}`, this);
     }
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
-      throw new ValidationError('SetIdentifierCharactersLong', `setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
+      throw new ValidationError(lit`SetIdentifierCharactersLong`, `setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`, this);
     }
     if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer
       && !props.cidrRoutingConfig && !props.failover) {
-      throw new ValidationError('SetIdentifierSpecifiedNonSimple', 'setIdentifier can only be specified for non-simple routing policies', this);
+      throw new ValidationError(lit`SetIdentifierSpecifiedNonSimple`, 'setIdentifier can only be specified for non-simple routing policies', this);
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
-      throw new ValidationError('MultiValueAnswerCannotSpecified', 'multiValueAnswer cannot be specified for alias record', this);
+      throw new ValidationError(lit`MultiValueAnswerCannotSpecified`, 'multiValueAnswer cannot be specified for alias record', this);
     }
     if (props.failover && props.multiValueAnswer) {
-      throw new ValidationError('CannotFailoverMultiValueAnswer', 'Cannot use both failover and multiValueAnswer routing policies', this);
+      throw new ValidationError(lit`CannotFailoverMultiValueAnswer`, 'Cannot use both failover and multiValueAnswer routing policies', this);
     }
 
     const nonSimpleRoutingPolicies = [
@@ -426,16 +427,16 @@ export class RecordSet extends Resource implements IRecordSet {
       props.failover,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new ValidationError('Onlyregion', 'Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined', this);
+      throw new ValidationError(lit`Onlyregion`, 'Only one of region, weight, multiValueAnswer, geoLocation, cidrRoutingConfig, or failover can be defined', this);
     }
 
     if (props.failover === Failover.PRIMARY && !props.healthCheck && !props.target.aliasTarget) {
-      throw new ValidationError('FailoverRecordSetsIncludeHealth', 'PRIMARY failover record sets must include a health check', this);
+      throw new ValidationError(lit`FailoverRecordSetsIncludeHealth`, 'PRIMARY failover record sets must include a health check', this);
     }
     if (props.failover && props.target.aliasTarget) {
       const aliasTargetConfig = props.target.aliasTarget.bind(this, props.zone);
       if (aliasTargetConfig && !Token.isUnresolved(aliasTargetConfig.evaluateTargetHealth) && aliasTargetConfig.evaluateTargetHealth !== true) {
-        throw new ValidationError('FailoverAliasRecordSetsSet', 'Failover alias record sets must set EvaluateTargetHealth to true', this);
+        throw new ValidationError(lit`FailoverAliasRecordSetsSet`, 'Failover alias record sets must set EvaluateTargetHealth to true', this);
       }
     }
 
@@ -643,7 +644,7 @@ class ARecordAsAliasTarget implements IAliasRecordTarget {
 
   public bind(record: IRecordSet, zone?: IHostedZone | undefined): AliasRecordTargetConfig {
     if (!zone) {
-      throw new ValidationError('CannotBindRecordWithoutZone', 'Cannot bind to record without a zone', record);
+      throw new ValidationError(lit`CannotBindRecordWithoutZone`, 'Cannot bind to record without a zone', record);
     }
     return {
       dnsName: this.aRrecordAttrs.targetDNS,
@@ -1302,7 +1303,7 @@ export class HttpsRecord extends RecordSet {
     addConstructMetadata(this, props);
 
     if (!!props.values === !!props.target) {
-      throw new ValidationError('SpecifyExactlyOneValuesTarget', 'Specify exactly one of either values or target.', this);
+      throw new ValidationError(lit`SpecifyExactlyOneValuesTarget`, 'Specify exactly one of either values or target.', this);
     }
   }
 }
