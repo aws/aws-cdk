@@ -666,7 +666,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     });
 
     if (this.imageConfig.repositoryCredentials && !this.imageConfig.repositoryCredentials.credentialsParameter) {
-      throw new ValidationError('credentialsParameter is required when repositoryCredentials is set', this);
+      throw new ValidationError(lit`CredentialsParameterRequired`, 'credentialsParameter is required when repositoryCredentials is set', this);
     }
   }
 
