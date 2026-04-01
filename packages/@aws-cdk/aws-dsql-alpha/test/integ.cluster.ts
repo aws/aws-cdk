@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Cluster } from '../lib';
 
 class TestStack extends cdk.Stack {
