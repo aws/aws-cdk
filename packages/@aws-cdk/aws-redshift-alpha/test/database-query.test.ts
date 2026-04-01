@@ -251,4 +251,18 @@ describe('database query', () => {
 
     expect(iamRoles.length === 1);
   });
+
+  it('does not use deprecated Provider role property', () => {
+    new DatabaseQuery(stack, 'Query', {
+      ...minimalProps,
+    });
+
+    // The framework onEvent Lambda should use the invoker role
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Description: Match.stringLikeRegexp('framework-onEvent'),
+      Role: Match.objectLike({
+        'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('InvokerRole')]),
+      }),
+    });
+  });
 });
