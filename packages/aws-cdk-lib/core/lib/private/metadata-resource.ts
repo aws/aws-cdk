@@ -122,12 +122,12 @@ export function formatAnalytics(infos: ConstructAnalytics[]) {
   setGzipOperatingSystemToUnknown(compressedConstructsBuffer);
 
   const compressedConstructs = compressedConstructsBuffer.toString('base64');
-  const analyticsString = `v2:deflate64:${compressedConstructs}`;
+  let analyticsString = `v2:deflate64:${compressedConstructs}`;
 
   if (process.env.CDK_CONTEXT_JSON && JSON.parse(process.env.CDK_CONTEXT_JSON)['cdk-migrate']) {
     const compressedAppInfoBuffer = zlib.gzipSync(Buffer.from('cdk-migrate'));
     const compressedAppInfo = compressedAppInfoBuffer.toString('base64');
-    analyticsString.concat(':', compressedAppInfo);
+    analyticsString = analyticsString.concat(':', compressedAppInfo);
   }
 
   return analyticsString;
