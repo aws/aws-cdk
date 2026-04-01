@@ -225,7 +225,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This grants the `sns:Publish` action on this topic's ARN.
    *
    * The use of this method is discouraged. Please use `grants.publish()` instead.
    *
@@ -236,7 +238,9 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This grants the `sns:Subscribe` action on this topic's ARN.
    *
    * The use of this method is discouraged. Please use `grants.subscribe()` instead.
    *
