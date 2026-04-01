@@ -932,6 +932,13 @@
       }
     ]
   },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
+      }
+    ]
+  },
   "aws-internetmonitor": {
     "scopes": [
       {
@@ -1892,6 +1899,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },
