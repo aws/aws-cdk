@@ -1,0 +1,14 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "aws-cdk-eks-default-capacity/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-default-capacity-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-default-capacity/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksdefaultcapacityDefaultTestDeployAssert509E99AD"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

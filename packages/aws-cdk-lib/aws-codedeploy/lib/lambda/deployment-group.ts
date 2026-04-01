@@ -7,6 +7,7 @@ import * as iam from '../../../aws-iam';
 import type * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -243,7 +244,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPreHook(preHook: lambda.IFunction): void {
     if (this.preHook !== undefined) {
-      throw new cdk.ValidationError('PreHookFunctionAlreadyDefined', 'A pre-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError(lit`PreHookFunctionAlreadyDefined`, 'A pre-hook function is already defined for this deployment group', this);
     }
     this.preHook = preHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.preHook);
@@ -258,7 +259,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   @MethodMetadata()
   public addPostHook(postHook: lambda.IFunction): void {
     if (this.postHook !== undefined) {
-      throw new cdk.ValidationError('PostHookFunctionAlreadyDefined', 'A post-hook function is already defined for this deployment group', this);
+      throw new cdk.ValidationError(lit`PostHookFunctionAlreadyDefined`, 'A post-hook function is already defined for this deployment group', this);
     }
     this.postHook = postHook;
     this.grantPutLifecycleEventHookExecutionStatus(this.postHook);
