@@ -15,6 +15,7 @@ import {
   ValidationError,
 } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
@@ -125,10 +126,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
    * Not supported. Connections are only applicable to VPC-enabled functions.
    */
   public get connections(): ec2.Connections {
-    throw new ValidationError('LambdaEdgeDoesNotSupportConnections', 'Lambda@Edge does not support connections', this);
+    throw new ValidationError(lit`LambdaEdgeDoesNotSupportConnections`, 'Lambda@Edge does not support connections', this);
   }
   public get latestVersion(): lambda.IVersion {
-    throw new ValidationError('LatestFunctionVersionCannotBeUsedForLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
+    throw new ValidationError(lit`LatestFunctionVersionCannotBeUsedForLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
   }
 
   @MethodMetadata()
@@ -229,7 +230,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
-      throw new ValidationError('StacksWithEdgeFunctionsMustHaveExplicitRegion', 'stacks which use EdgeFunctions must have an explicitly set region', this);
+      throw new ValidationError(lit`StacksWithEdgeFunctionsMustHaveExplicitRegion`, 'stacks which use EdgeFunctions must have an explicitly set region', this);
     }
     // SSM parameter names must only contain letters, numbers, ., _, -, or /.
     const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
@@ -295,7 +296,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private edgeStack(stackId?: string): Stack {
     const stage = Stage.of(this);
     if (!stage) {
-      throw new ValidationError('StacksWithEdgeFunctionsMustBePartOfCdkApp', 'stacks which use EdgeFunctions must be part of a CDK app or stage', this);
+      throw new ValidationError(lit`StacksWithEdgeFunctionsMustBePartOfCdkApp`, 'stacks which use EdgeFunctions must be part of a CDK app or stage', this);
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;

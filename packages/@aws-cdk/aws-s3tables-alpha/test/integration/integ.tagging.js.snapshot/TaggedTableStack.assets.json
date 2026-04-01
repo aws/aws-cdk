@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "d3eff3406794dd7353edf5f9b5c34303d2c14d61951585850571320fd3262bd7": {
+      "displayName": "TaggedTableStack Template",
+      "source": {
+        "path": "TaggedTableStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-cb6c5c1d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d3eff3406794dd7353edf5f9b5c34303d2c14d61951585850571320fd3262bd7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
