@@ -6,6 +6,7 @@ import type { Duration, SecretValue } from '../../../core';
 import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
+import type { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { ApplicationProtocol } from '../shared/enums';
 import type { IListenerAction } from '../shared/listener-action';
@@ -50,6 +51,25 @@ export class ListenerAction implements IListenerAction {
    */
   public static authenticateJwt(options: AuthenticateJwtOptions): ListenerAction {
     return new AuthenticateJwtAction(options);
+  }
+
+  /**
+   * Authenticate using JWT validation with Amazon Cognito User Pool
+   *
+   * This is a convenience method that automatically constructs the issuer and JWKS endpoint
+   * URLs from a Cognito User Pool.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-verify-jwt.html
+   */
+  public static authenticateJwtWithCognito(options: AuthenticateJwtWithCognitoOptions): ListenerAction {
+    const region = options.userPool.env.region;
+    const userPoolId = options.userPool.userPoolRef.userPoolId;
+    const baseUrl = `https://cognito-idp.${region}.amazonaws.com/${userPoolId}`;
+    return new AuthenticateJwtAction({
+      issuer: baseUrl,
+      jwksEndpoint: `${baseUrl}/.well-known/jwks.json`,
+      next: options.next,
+    });
   }
 
   /**
@@ -481,6 +501,24 @@ export interface AuthenticateJwtOptions {
    * @example 'https://issuer.example.com/jwks'
    */
   readonly jwksEndpoint: string;
+}
+
+/**
+ * Options for `ListenerAction.authenticateJwtWithCognito()`
+ */
+export interface AuthenticateJwtWithCognitoOptions {
+  /**
+   * The Cognito User Pool to use for JWT validation
+   */
+  readonly userPool: IUserPoolRef;
+
+  /**
+   * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
+   */
+  readonly next: ListenerAction;
 }
 
 /**
