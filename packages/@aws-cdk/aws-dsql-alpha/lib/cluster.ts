@@ -1,8 +1,8 @@
 import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import type { IResource } from 'aws-cdk-lib/core';
 import { RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import type { Construct } from 'constructs';
 
