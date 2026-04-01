@@ -394,6 +394,10 @@ export class Distribution extends Resource implements IDistribution {
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
 
+    if (props.minimumProtocolVersion && !this.certificate) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudfront:minProtocolVersionIgnored', 'The \'minimumProtocolVersion\' property is only applicable when a custom SSL/TLS certificate is configured. Without a certificate, CloudFront uses its default security policy.');
+    }
+
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
     if (props.additionalBehaviors) {
