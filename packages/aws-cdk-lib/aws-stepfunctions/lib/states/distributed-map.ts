@@ -3,13 +3,12 @@ import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
 import { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
 import { MapBase, MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
-import { Annotations, FeatureFlags } from '../../../core';
+import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
 import { StateBaseProps } from './state';
-import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -205,15 +204,13 @@ export class DistributedMap extends MapBase implements INextable {
   }
 
   /**
-   * Returns the appropriate ResultWriter configuration based on feature flag state.
+   * Returns the appropriate ResultWriter configuration.
    *
-   * When the V2 feature flag is enabled, uses resultWriterV2. Otherwise, uses the
-   * deprecated resultWriter property (which will produce a validation error if set).
+   * Prefers resultWriterV2 if provided, otherwise falls back to the
+   * deprecated resultWriter property for backward compatibility.
    */
   private getResultWriter(): ResultWriterV2 | ResultWriter | undefined {
-    return FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2)
-      ? this.resultWriterV2
-      : this.resultWriter;
+    return this.resultWriterV2 ?? this.resultWriter;
   }
 
   /**
@@ -251,7 +248,7 @@ export class DistributedMap extends MapBase implements INextable {
     }
 
     if (this.resultWriter) {
-      errors.push('The `resultWriter` property is deprecated and does not function correctly. Use `resultWriterV2` instead.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:deprecatedResultWriter', 'The `resultWriter` property is deprecated. Use `resultWriterV2` instead.');
     }
 
     if (this.resultWriterV2) {
