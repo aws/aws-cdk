@@ -597,6 +597,10 @@ export interface TableAttributesV2 {
 
 /**
  * A DynamoDB Table.
+ *
+ * This L2 construct synthesizes to an `AWS::DynamoDB::GlobalTable` CloudFormation resource,
+ * even when used without replicas. This is the recommended resource type for all new DynamoDB
+ * tables, as it supports all features of `AWS::DynamoDB::Table` plus global tables.
  */
 @propertyInjectable
 export class TableV2 extends TableBaseV2 {
