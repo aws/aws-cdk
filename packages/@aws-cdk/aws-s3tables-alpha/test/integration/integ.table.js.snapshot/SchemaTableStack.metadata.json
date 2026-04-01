@@ -1,0 +1,56 @@
+{
+  "/SchemaTableStack/SchemaBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SchemaTableStack/SchemaNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SchemaTableStack/SchemaTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SchemaTableStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/SchemaTableStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/SchemaTableStack/SchemaBucket/SchemaBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchemaBucketC512BB1A"
+    }
+  ],
+  "/SchemaTableStack/SchemaNamespace/SchemaNamespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchemaNamespaceFDE8AD2E"
+    }
+  ],
+  "/SchemaTableStack/SchemaTable/SchemaTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchemaTableA786F6CA"
+    }
+  ],
+  "/SchemaTableStack/Exports/Output{\"Fn::GetAtt\":[\"SchemaBucketC512BB1A\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttSchemaBucketC512BB1ATableBucketARN7B7B66CF"
+    }
+  ]
+}

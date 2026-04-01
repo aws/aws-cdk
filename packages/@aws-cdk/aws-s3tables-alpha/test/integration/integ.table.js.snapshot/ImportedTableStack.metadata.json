@@ -1,0 +1,50 @@
+{
+  "/ImportedTableStack/ImportBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/ImportNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/CreatedTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ImportedTableStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ImportedTableStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ImportedTableStack/ImportBucket/ImportBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportBucket84ED9370"
+    }
+  ],
+  "/ImportedTableStack/ImportNamespace/ImportNamespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportNamespace1D04D30B"
+    }
+  ],
+  "/ImportedTableStack/CreatedTable/CreatedTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CreatedTableC1AB30DA"
+    }
+  ]
+}

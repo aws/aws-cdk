@@ -592,4 +592,74 @@ describe('Table', () => {
       }).not.toThrow();
     });
   });
+
+  describe('compaction strategy', () => {
+    test('creates table with compaction strategy', () => {
+      new s3tables.Table(stack, 'TestTable', {
+        tableName: 'test_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+        compaction: {
+          status: s3tables.Status.ENABLED,
+          targetFileSizeMb: 128,
+          strategy: s3tables.CompactionStrategy.BINPACK,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'Compaction': {
+          'Status': 'enabled',
+          'TargetFileSizeMB': 128,
+          'Strategy': 'binpack',
+        },
+      });
+    });
+
+    test.each([
+      [s3tables.CompactionStrategy.AUTO, 'auto'],
+      [s3tables.CompactionStrategy.BINPACK, 'binpack'],
+      [s3tables.CompactionStrategy.SORT, 'sort'],
+      [s3tables.CompactionStrategy.Z_ORDER, 'z-order'],
+    ])('supports %s strategy', (strategy, expected) => {
+      new s3tables.Table(stack, 'TestTable', {
+        tableName: 'test_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+        compaction: {
+          status: s3tables.Status.ENABLED,
+          targetFileSizeMb: 128,
+          strategy,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'Compaction': {
+          'Strategy': expected,
+        },
+      });
+    });
+
+    test('strategy is optional', () => {
+      new s3tables.Table(stack, 'TestTable', {
+        tableName: 'test_table',
+        namespace,
+        openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+        withoutMetadata: true,
+        compaction: {
+          status: s3tables.Status.ENABLED,
+          targetFileSizeMb: 128,
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_CFN_RESOURCE, {
+        'Compaction': {
+          'Status': 'enabled',
+          'TargetFileSizeMB': 128,
+          'Strategy': Match.absent(),
+        },
+      });
+    });
+  });
 });
