@@ -98,6 +98,9 @@ export class FoundationModelIdentifier {
   /** amazon.nova-2-multimodal-embeddings-v1:0 */
   public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
 
+  /** Base model "amazon.nova-2-lite-v1:0". */
+  public static readonly AMAZON_NOVA_2_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-2-lite-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
