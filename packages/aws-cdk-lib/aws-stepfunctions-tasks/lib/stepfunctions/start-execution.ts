@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { ArnFormat, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IStateMachineRef } from '../../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -102,11 +103,11 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new ValidationError('IsRequiredTaskTokenRequired', 'Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
+      throw new ValidationError(lit`IsRequiredTaskTokenRequired`, 'Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
     }
 
     if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
-      throw new ValidationError('CouldEnableBecauseTaken', 'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
+      throw new ValidationError(lit`CouldEnableBecauseTaken`, 'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();

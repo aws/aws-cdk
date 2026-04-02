@@ -184,7 +184,7 @@ CloudFormation.
 
 The input event to `isComplete` includes all request fields, combined with all
 fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
-returned from `onEvent`, it's value will be calculated based on the heuristics
+returned from `onEvent`, its value will be calculated based on the heuristics
 described above.
 
 The return value must be a JSON object with the following fields:
@@ -273,7 +273,7 @@ resource operation fails even though the operation technically succeeded (i.e.
 isComplete throws an error).
 
 When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
-back the stack to it's last state. This has different meanings for different
+back the stack to its last state. This has different meanings for different
 lifecycle events:
 
 * If a `Create` event fails, the resource provider framework will automatically

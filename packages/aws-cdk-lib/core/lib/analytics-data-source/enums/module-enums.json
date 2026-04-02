@@ -1112,6 +1112,10 @@
       "Enabled",
       "Disabled"
     ],
+    "RequestMetricsStatus": [
+      "Enabled",
+      "Disabled"
+    ],
     "TableBucketEncryption": [
       "aws:kms",
       "AES256"
@@ -1124,6 +1128,14 @@
     "Status": [
       "enabled",
       "disabled"
+    ],
+    "SortDirection": [
+      "asc",
+      "desc"
+    ],
+    "NullOrder": [
+      "nulls-first",
+      "nulls-last"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1734,6 +1746,10 @@
     "CapacityDistributionStrategy": [
       "balanced-only",
       "balanced-best-effort"
+    ],
+    "TerminateHookAbandonAction": [
+      "retain",
+      "terminate"
     ],
     "UpdateType": [
       "None",
@@ -4718,6 +4734,7 @@
     ],
     "SslPolicy": [
       "ELBSecurityPolicy-TLS13-1-2-2021-06",
+      "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
       "ELBSecurityPolicy-2016-08",
       "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
       "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -4725,6 +4742,11 @@
       "ELBSecurityPolicy-TLS13-1-0-2021-06",
       "ELBSecurityPolicy-TLS13-1-1-2021-06",
       "ELBSecurityPolicy-TLS13-1-3-2021-06",
+      "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
       "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -4733,6 +4755,13 @@
       "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+      "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
       "ELBSecurityPolicy-FS-1-2-Res-2020-10",
       "ELBSecurityPolicy-FS-1-2-Res-2019-08",
       "ELBSecurityPolicy-FS-1-2-2019-08",
