@@ -3,6 +3,7 @@ import type * as ec2 from '../../../aws-ec2';
 import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
 import { ConnectionType, Integration, IntegrationType } from '../integration';
 import type { Method } from '../method';
@@ -86,7 +87,7 @@ export class AlbIntegration extends Integration {
     const vpc = this.albProps.vpcLink?.vpc ?? this.alb.vpc;
     if (!vpc) {
       throw new ValidationError(
-        'CannotDetermineVpc',
+        lit`CannotDetermineVpc`,
         'Cannot determine VPC from the imported Application Load Balancer. Specify the vpc property when importing the ALB, or provide a vpcLink to AlbIntegration.',
         method,
       );
