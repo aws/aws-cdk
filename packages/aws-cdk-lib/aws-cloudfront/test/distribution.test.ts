@@ -1702,3 +1702,15 @@ describe('gRPC', () => {
     }).toThrow(msg);
   });
 });
+
+test('warns when minimumProtocolVersion is set without custom certificate', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  new Distribution(stack, 'Dist', {
+    defaultBehavior: { origin: defaultOrigin() },
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+  });
+
+  const warnings = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('minimumProtocolVersion'));
+  expect(warnings.length).toBeGreaterThanOrEqual(1);
+});
