@@ -2164,6 +2164,82 @@ describe('Runtime grantInvokeRuntime permission tests', () => {
     expect(grant.success).toBe(true);
     expect(grant.principalStatement).toBeDefined();
   });
+
+  test('Should grant InvokeAgentRuntimeWithWebSocketStreamForUser permission with grantInvokeWithWebSocketStreamForUser', () => {
+    runtime.grantInvokeWithWebSocketStreamForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  Match.stringLikeRegexp('testruntime.*'),
+                  'AgentRuntimeArn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        Match.stringLikeRegexp('testruntime.*'),
+                        'AgentRuntimeArn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant WebSocket stream for user permission on imported runtime', () => {
+    const importedRuntime = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntimeWsUser', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+      agentRuntimeId: 'test-runtime-id',
+      agentRuntimeName: 'test-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+      agentRuntimeVersion: '1',
+    });
+
+    importedRuntime.grantInvokeWithWebSocketStreamForUser(granteeRole);
+
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser',
+            Effect: 'Allow',
+            Resource: [
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id',
+              'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/test-runtime-id/*',
+            ],
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should return Grant object with success for grantInvokeWithWebSocketStreamForUser', () => {
+    const grant = runtime.grantInvokeWithWebSocketStreamForUser(granteeRole);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+    expect(grant.principalStatement).toBeDefined();
+  });
 });
 
 describe('Runtime role validation tests', () => {
