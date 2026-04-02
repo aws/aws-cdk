@@ -5,6 +5,7 @@ import type { EventPattern, IRuleTarget } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { FeatureFlags, Names, Stack, Token, TokenComparison, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
@@ -169,7 +170,7 @@ export class CodeCommitSourceAction extends Action {
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch ?? CodeCommitSourceAction.OLD_DEFAULT_BRANCH_NAME;
     if (!branch) {
-      throw new UnscopedValidationError('BranchParameterCannotEmpty', "'branch' parameter cannot be an empty string");
+      throw new UnscopedValidationError(lit`BranchParameterCannotEmpty`, "'branch' parameter cannot be an empty string");
     }
 
     if (props.codeBuildCloneOutput === true) {

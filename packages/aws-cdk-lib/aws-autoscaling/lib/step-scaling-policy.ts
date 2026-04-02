@@ -4,6 +4,7 @@ import { findAlarmThresholds, normalizeIntervals } from '../../aws-autoscaling-c
 import * as cloudwatch from '../../aws-cloudwatch';
 import type { Duration } from '../../core';
 import { Token, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 export interface BasicStepScalingPolicyProps {
@@ -113,28 +114,28 @@ export class StepScalingPolicy extends Construct {
     super(scope, id);
 
     if (props.scalingSteps.length < 2) {
-      throw new ValidationError('SupplyLeastIntervalsAutoscaling', 'You must supply at least 2 intervals for autoscaling', this);
+      throw new ValidationError(lit`SupplyLeastIntervalsAutoscaling`, 'You must supply at least 2 intervals for autoscaling', this);
     }
 
     if (props.scalingSteps.length > 40) {
-      throw new ValidationError('ScalingstepsMostSteps', `'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`, this);
+      throw new ValidationError(lit`ScalingstepsMostSteps`, `'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`, this);
     }
 
     if (props.evaluationPeriods !== undefined && !Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < 1) {
-      throw new ValidationError('EvaluationPeriodsCannotLess', `evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`, this);
+      throw new ValidationError(lit`EvaluationPeriodsCannotLess`, `evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`, this);
     }
     if (props.datapointsToAlarm !== undefined) {
       if (props.evaluationPeriods === undefined) {
-        throw new ValidationError('EvaluationPeriodsSetDatapointsAlarm', 'evaluationPeriods must be set if datapointsToAlarm is set', this);
+        throw new ValidationError(lit`EvaluationPeriodsSetDatapointsAlarm`, 'evaluationPeriods must be set if datapointsToAlarm is set', this);
       }
       if (!Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
-        throw new ValidationError('DatapointsAlarmCannotLess', `datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`, this);
+        throw new ValidationError(lit`DatapointsAlarmCannotLess`, `datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`, this);
       }
       if (!Token.isUnresolved(props.datapointsToAlarm)
         && !Token.isUnresolved(props.evaluationPeriods)
         && props.evaluationPeriods < props.datapointsToAlarm
       ) {
-        throw new ValidationError('DatapointsAlarmLessEqualEvaluation', `datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`, this);
+        throw new ValidationError(lit`DatapointsAlarmLessEqualEvaluation`, `datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`, this);
       }
     }
 

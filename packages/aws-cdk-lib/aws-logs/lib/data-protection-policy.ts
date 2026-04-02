@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import type { IBucketRef } from '../../aws-s3';
 import { Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
@@ -11,7 +12,7 @@ export class DataProtectionPolicy {
 
   constructor(props: DataProtectionPolicyProps) {
     if (props.identifiers.length == 0) {
-      throw new UnscopedValidationError('DataidentifierCannotEmpty', 'DataIdentifier cannot be empty');
+      throw new UnscopedValidationError(lit`DataidentifierCannotEmpty`, 'DataIdentifier cannot be empty');
     }
     this.dataProtectionPolicyProps = props;
   }
