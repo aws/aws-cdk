@@ -47,6 +47,22 @@ test('existing Channel Group can be imported', () => {
   expect(importedChannelGroup.channelGroupArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup$/);
 });
 
+test('imported Channel Group with cross-region override', () => {
+  const importedChannelGroup = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
+    channelGroupName: 'MyChannelGroup',
+    region: 'eu-west-1',
+  });
+
+  expect(importedChannelGroup.channelGroupArn).toMatch(/^arn:.*:mediapackagev2:eu-west-1:123456789012:channelGroup\/MyChannelGroup$/);
+});
+
+test('Channel Group can be imported from ARN', () => {
+  const imported = mediapackagev2.ChannelGroup.fromChannelGroupArn(stack, 'ImportedChannelGroup', 'arn:aws:mediapackagev2:eu-west-1:123456789012:channelGroup/MyGroup');
+
+  expect(imported.channelGroupName).toBe('MyGroup');
+  expect(imported.channelGroupArn).toMatch(/mediapackagev2:eu-west-1:123456789012/);
+});
+
 test('existing Channel Group can be imported and used by a Channel', () => {
   const importedChannelGroup = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
     channelGroupName: 'MyChannelGroup',

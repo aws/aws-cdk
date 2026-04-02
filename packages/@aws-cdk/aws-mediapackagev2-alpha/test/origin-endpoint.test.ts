@@ -64,10 +64,10 @@ test('MediaPackagev2 Channel Configuration - no names', () => {
     segment: mediapackagev2.Segment.cmaf(),
     manifests: [
       mediapackagev2.Manifest.lowLatencyHLS({
-        manifestName: 'index',
+        manifestName: 'llhls-index',
       }),
       mediapackagev2.Manifest.hls({
-        manifestName: 'index',
+        manifestName: 'hls-index',
       }),
     ],
     startoverWindow: Duration.seconds(100),
@@ -76,8 +76,8 @@ test('MediaPackagev2 Channel Configuration - no names', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpoint', {
     OriginEndpointName: 'origin',
-    HlsManifests: [{ ManifestName: 'index' }],
-    LowLatencyHlsManifests: [{ ManifestName: 'index' }],
+    HlsManifests: [{ ManifestName: 'hls-index' }],
+    LowLatencyHlsManifests: [{ ManifestName: 'llhls-index' }],
     ContainerType: 'CMAF',
     StartoverWindowSeconds: 100,
   });
@@ -91,6 +91,32 @@ test('MediaPackagev2 Channel Configuration - no names imported', () => {
   });
 
   expect(originEndpoint.originEndpointArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test\/originEndpoint\/endpoint$/);
+});
+
+test('imported OriginEndpoint with cross-region override', () => {
+  const originEndpoint = mediapackagev2.OriginEndpoint.fromOriginEndpointAttributes(stack, 'ImportedEndpoint', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'test',
+    originEndpointName: 'endpoint',
+    region: 'eu-west-1',
+  });
+
+  expect(originEndpoint.originEndpointArn).toMatch(/^arn:.*:mediapackagev2:eu-west-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test\/originEndpoint\/endpoint$/);
+});
+
+test('OriginEndpoint can be imported from ARN', () => {
+  const imported = mediapackagev2.OriginEndpoint.fromOriginEndpointArn(stack, 'ImportedEndpoint', 'arn:aws:mediapackagev2:eu-west-1:123456789012:channelGroup/MyGroup/channel/MyChannel/originEndpoint/MyEndpoint');
+
+  expect(imported.channelGroupName).toBe('MyGroup');
+  expect(imported.channelName).toBe('MyChannel');
+  expect(imported.originEndpointName).toBe('MyEndpoint');
+  expect(imported.originEndpointArn).toMatch(/mediapackagev2:eu-west-1:123456789012/);
+});
+
+test('OriginEndpoint.fromOriginEndpointArn throws on invalid ARN', () => {
+  expect(() => {
+    mediapackagev2.OriginEndpoint.fromOriginEndpointArn(stack, 'Bad', 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/MyGroup/channel/MyChannel');
+  }).toThrow(/Could not parse origin endpoint ARN/);
 });
 
 test('MediaPackagev2 Channel Configuration - encryption configuration', () => {

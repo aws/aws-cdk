@@ -86,6 +86,11 @@ export interface IChannel extends IResource, IChannelRef {
   readonly channelGroup?: IChannelGroup;
 
   /**
+   * The AWS region where this channel lives.
+   */
+  readonly region: string;
+
+  /**
    * Grants IAM resource policy to the role used to write to MediaPackage V2 Channel.
    */
   readonly grants: ChannelGrants;
@@ -351,12 +356,45 @@ export interface ChannelAttributes {
    * @attribute
    */
   readonly channelGroupName: string;
+
+  /**
+   * The AWS region where the channel lives.
+   *
+   * Required for cross-region imports to construct the correct ARN.
+   *
+   * @default - the importing stack's region
+   */
+  readonly region?: string;
 }
 
 /**
  * A new or imported Channel.
  */
 abstract class ChannelBase extends Resource implements IChannel {
+  /**
+   * Creates a Channel construct that represents an external (imported) Channel from its ARN.
+   *
+   * The ARN is expected to be in the format:
+   * `arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>`
+   */
+  public static fromChannelArn(scope: Construct, id: string, channelArn: string): IChannel {
+    const parsedArn = Stack.of(scope).splitArn(channelArn, ArnFormat.SLASH_RESOURCE_NAME);
+    // resourceName is "<groupName>/channel/<channelName>"
+    const [channelGroupName, , channelName] = parsedArn.resourceName?.split('/') ?? [];
+    if (!channelGroupName || !channelName) {
+      throw new ValidationError(
+        lit`InvalidChannelArn`,
+        `Could not parse channel ARN: ${channelArn}. Expected format: arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>`,
+        scope,
+      );
+    }
+    return ChannelBase.fromChannelAttributes(scope, id, {
+      channelGroupName,
+      channelName,
+      region: parsedArn.region,
+    });
+  }
+
   /**
    * Creates a Channel construct that represents an external (imported) Channel.
    */
@@ -367,6 +405,7 @@ abstract class ChannelBase extends Resource implements IChannel {
       public readonly channelName = attrs.channelName;
       public readonly createdAt = undefined;
       public readonly modifiedAt = undefined;
+      public readonly region = attrs.region ?? Stack.of(this).region;
       protected autoCreatePolicy = false;
 
       public get ingestEndpointUrls(): string[] {
@@ -381,6 +420,7 @@ abstract class ChannelBase extends Resource implements IChannel {
         resource: `channelGroup/${attrs.channelGroupName}/channel`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: this.channelName,
+        region: attrs.region,
       });
     }
 
@@ -393,6 +433,7 @@ abstract class ChannelBase extends Resource implements IChannel {
   public abstract readonly createdAt?: string;
   public abstract readonly modifiedAt?: string;
   public abstract readonly ingestEndpointUrls: string[];
+  public abstract readonly region: string;
 
   /**
    * A reference to this Channel resource
@@ -568,6 +609,7 @@ export class Channel extends ChannelBase implements IChannel {
   public readonly channelName: string;
   public readonly channelArn: string;
   public readonly channelGroup?: IChannelGroup;
+  public readonly region: string;
 
   /**
    * The date and time the channel was created.
@@ -634,6 +676,7 @@ export class Channel extends ChannelBase implements IChannel {
     this.channelArn = channel.attrArn;
     this.createdAt = channel.attrCreatedAt;
     this.modifiedAt = channel.attrModifiedAt;
+    this.region = Stack.of(this).region;
     this.ingestEndpointUrls = [Fn.select(0, channel.attrIngestEndpointUrls), Fn.select(1, channel.attrIngestEndpointUrls)];
 
     channel.applyRemovalPolicy(props?.removalPolicy ?? RemovalPolicy.DESTROY);
