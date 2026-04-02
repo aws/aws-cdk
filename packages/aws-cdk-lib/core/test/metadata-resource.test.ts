@@ -344,3 +344,20 @@ class ValidationPlugin implements IPolicyValidationPluginBeta1 {
     };
   }
 }
+
+test('formatAnalytics appends cdk-migrate info when CDK_CONTEXT_JSON is set', () => {
+  const original = process.env.CDK_CONTEXT_JSON;
+  try {
+    process.env.CDK_CONTEXT_JSON = JSON.stringify({ 'cdk-migrate': true });
+    const constructInfo: ConstructAnalytics[] = [{ fqn: 'aws-cdk-lib.Stack', version: '0.0.0', count: 1 }];
+    const result = formatAnalytics(constructInfo);
+    // Should have 3 colon-separated parts: v2:deflate64:<constructs>:<migrate-info>
+    expect(result.split(':').length).toBe(4);
+  } finally {
+    if (original === undefined) {
+      delete process.env.CDK_CONTEXT_JSON;
+    } else {
+      process.env.CDK_CONTEXT_JSON = original;
+    }
+  }
+});
