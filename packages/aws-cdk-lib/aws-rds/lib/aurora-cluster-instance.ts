@@ -15,6 +15,7 @@ import { Resource, ArnFormat, FeatureFlags } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 import type { aws_rds } from '../../interfaces';
@@ -518,7 +519,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     addConstructMetadata(this, props);
     this.tier = props.promotionTier ?? 2;
     if (this.tier > 15) {
-      throw new ValidationError('PromotionTier', 'promotionTier must be between 0-15', this);
+      throw new ValidationError(lit`PromotionTier`, 'promotionTier must be between 0-15', this);
     }
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);
@@ -541,7 +542,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     const enablePerformanceInsights = props.enablePerformanceInsights
       || props.performanceInsightRetention !== undefined || props.performanceInsightEncryptionKey !== undefined;
     if (enablePerformanceInsights && props.enablePerformanceInsights === false) {
-      throw new ValidationError('Disabled', '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
+      throw new ValidationError(lit`Disabled`, '`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set', this);
     }
 
     this.performanceInsightsEnabled = enablePerformanceInsights;
