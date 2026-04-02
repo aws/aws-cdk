@@ -7,7 +7,7 @@ import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials } from './private/util';
 import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1365,22 +1365,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
 
     // Validate manageMasterUserPassword conflicts with unsupported credential properties
     if (props.manageMasterUserPassword) {
-      const unsupportedProps = [
-        props.credentials?.excludeCharacters && 'excludeCharacters',
-        props.credentials?.password && 'password',
-        props.credentials?.replicaRegions && 'replicaRegions',
-        props.credentials?.secret && 'secret',
-        props.credentials?.secretName && 'secretName',
-        props.credentials?.usernameAsString && 'usernameAsString',
-      ].filter(Boolean);
-
-      if (unsupportedProps.length > 0) {
-        throw new ValidationError(
-          'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
-          `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
-          this,
-        );
-      }
+      validateManagedPasswordCredentials(this, props.credentials);
     }
 
     // Prepare credential-specific configuration

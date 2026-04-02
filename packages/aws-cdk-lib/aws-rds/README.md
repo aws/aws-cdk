@@ -867,10 +867,9 @@ new rds.DatabaseCluster(this, 'Cluster', {
   writer: rds.ClusterInstance.serverlessV2('writer'),
   vpc,
   manageMasterUserPassword: true,
-  credentials: {
-    username: 'admin', // Optional - defaults to engine's default username
+  credentials: rds.Credentials.fromUsername('admin', {
     encryptionKey: kmsKey, // Optional - uses default KMS key if not specified
-  },
+  }),
 });
 
 // Database instance with RDS-managed password
@@ -878,9 +877,7 @@ new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   vpc,
   manageMasterUserPassword: true,
-  credentials: {
-    username: 'postgres',
-  },
+  credentials: rds.Credentials.fromUsername('postgres'),
 });
 ```
 

@@ -1758,6 +1758,38 @@ describe('cluster new api', () => {
       template.resourceCountIs('AWS::SecretsManager::Secret', 0);
     });
 
+    test('with Credentials.fromUsername()', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+        credentials: Credentials.fromUsername('testuser', {
+          encryptionKey: kmsKey,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        MasterUsername: 'testuser',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyId),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
     test('without username (uses engine default)', () => {
       // GIVEN
       const stack = testStack();
@@ -1783,9 +1815,64 @@ describe('cluster new api', () => {
 
       template.resourceCountIs('AWS::SecretsManager::Secret', 0);
     });
+
+    test('with DatabaseClusterFromSnapshot', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        SnapshotIdentifier: 'my-snapshot',
+        ManageMasterUserPassword: true,
+        MasterUserPassword: Match.absent(),
+      });
+    });
+
+    test('with DatabaseClusterFromSnapshot and encryption key', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const kmsKey = new kms.Key(stack, 'Key');
+
+      // WHEN
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+        snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin', {
+          encryptionKey: kmsKey,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        Engine: 'aurora-mysql',
+        SnapshotIdentifier: 'my-snapshot',
+        ManageMasterUserPassword: true,
+        MasterUserSecret: {
+          KmsKeyId: stack.resolve(kmsKey.keyId),
+        },
+        MasterUserPassword: Match.absent(),
+      });
+    });
   });
 
-  describe('manageMasterUserPassword validation errors', () => {
+  describe('manageMasterUserPassword validation errors for DatabaseCluster', () => {
     test('should reject all unsupported credential properties', () => {
       // GIVEN
       const stack = testStack();

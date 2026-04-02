@@ -84,6 +84,29 @@ export function defaultDeletionProtection(deletionProtection?: boolean, removalP
 }
 
 /**
+ * Validates that credentials used with manageMasterUserPassword don't include unsupported properties.
+ * When RDS manages the master password, only 'username' and 'encryptionKey' are allowed.
+ */
+export function validateManagedPasswordCredentials(scope: Construct, credentials?: Credentials): void {
+  const unsupportedProps = [
+    credentials?.excludeCharacters && 'excludeCharacters',
+    credentials?.password && 'password',
+    credentials?.replicaRegions && 'replicaRegions',
+    credentials?.secret && 'secret',
+    credentials?.secretName && 'secretName',
+    credentials?.usernameAsString && 'usernameAsString',
+  ].filter(Boolean);
+
+  if (unsupportedProps.length > 0) {
+    throw new ValidationError(
+      'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
+      `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
+      scope,
+    );
+  }
+}
+
+/**
  * Renders the credentials for an instance or cluster
  */
 export function renderCredentials(scope: Construct, engine: IEngine, credentials?: Credentials): Credentials {

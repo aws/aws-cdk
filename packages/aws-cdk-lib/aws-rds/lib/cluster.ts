@@ -9,7 +9,7 @@ import type { NetworkType } from './instance';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateManagedPasswordCredentials } from './private/util';
 import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1495,22 +1495,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     // Validate manageMasterUserPassword conflicts with unsupported credential properties
     if (props.manageMasterUserPassword) {
-      const unsupportedProps = [
-        props.credentials?.excludeCharacters && 'excludeCharacters',
-        props.credentials?.password && 'password',
-        props.credentials?.replicaRegions && 'replicaRegions',
-        props.credentials?.secret && 'secret',
-        props.credentials?.secretName && 'secretName',
-        props.credentials?.usernameAsString && 'usernameAsString',
-      ].filter(Boolean);
-
-      if (unsupportedProps.length > 0) {
-        throw new ValidationError(
-          'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
-          `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
-          this,
-        );
-      }
+      validateManagedPasswordCredentials(this, props.credentials);
     }
 
     const canHaveCredentials = props.replicationSourceIdentifier === undefined;
@@ -1704,6 +1689,17 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    * @default - The existing username and password from the snapshot will be used.
    */
   readonly snapshotCredentials?: SnapshotCredentials;
+
+  /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * This is supported when restoring from snapshots, allowing migration to RDS-managed passwords.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -1752,13 +1748,25 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword: props.manageMasterUserPassword
+        ? undefined
+        : credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      manageMasterUserPassword: props.manageMasterUserPassword || undefined,
+      masterUserSecret: props.manageMasterUserPassword && props.snapshotCredentials?.encryptionKey
+        ? { kmsKeyId: props.snapshotCredentials.encryptionKey.keyId }
+        : undefined,
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (credentials?.secret) {
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
+        this,
+        'ManagedSecret',
+        cluster.attrMasterUserSecretSecretArn,
+      );
+    } else if (credentials?.secret) {
       this.secret = credentials.secret.attach(this);
     }
 
