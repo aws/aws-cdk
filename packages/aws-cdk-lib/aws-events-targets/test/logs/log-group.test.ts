@@ -106,7 +106,7 @@ testDeprecated('cannot use both logEvent and event', () => {
       event: events.RuleTargetInput.fromObject({
         message: events.EventField.fromPath('$'),
       }),
-      logEvent: LogGroupTargetInput.fromObject(),
+      logEvent: LogGroupTargetInput.fromObject({}),
     }));
   }).toThrow(/Only one of "event" or "logEvent" can be specified/);
 });
@@ -145,7 +145,7 @@ test('logEvent with defaults', () => {
 
   // WHEN
   rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    logEvent: LogGroupTargetInput.fromObject(),
+    logEvent: LogGroupTargetInput.fromObject({}),
   }));
 
   // THEN
