@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -180,10 +181,10 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     if (this.props.workerConfiguration) {
       const workerConfiguration = this.props.workerConfiguration;
       if (workerConfiguration?.workerTypeV2 && workerConfiguration.workerType) {
-        throw new ValidationError('CannotSetBothWorkerTypeAndWorkerTypeV2', 'You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.', this);
+        throw new ValidationError(lit`CannotSetBothWorkerTypeAndWorkerTypeV2`, 'You cannot set both \'workerType\' and \'workerTypeV2\' properties in \'workerConfiguration\'.', this);
       }
       if (!workerConfiguration.workerTypeV2 && !workerConfiguration.workerType) {
-        throw new ValidationError('EitherWorkerTypeOrWorkerTypeV2Required', 'You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.', this);
+        throw new ValidationError(lit`EitherWorkerTypeOrWorkerTypeV2Required`, 'You must set either \'workerType\' or \'workerTypeV2\' property in \'workerConfiguration\'.', this);
       }
     }
     const workerType = this.props.workerConfiguration?.workerType ?? this.props.workerConfiguration?.workerTypeV2?.name;

@@ -6,6 +6,8 @@
     "jest.runMode": {
       "type": "on-demand"
     },
+    "eslint.useFlatConfig": true,
+    "eslint.format.enable": true,
     "jest.virtualFolders": [
       {
         "name": "aws-cdk-lib",

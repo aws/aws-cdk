@@ -6,6 +6,7 @@ import { Stack } from './stack';
 import { Token } from './token';
 import type * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { lit } from './private/literal-string';
 
 /**
  */
@@ -144,7 +145,7 @@ export class ContextProvider {
     };
 
     if (Object.values(props).find(x => Token.isUnresolved(x))) {
-      throw new ValidationError('ContextProviderPropsContainTokens',
+      throw new ValidationError(lit`ContextProviderPropsContainTokens`,
         `Cannot determine scope for context provider ${options.provider}.\n` +
         'This usually happens when one or more of the provider props have unresolved tokens', scope);
     }
@@ -158,13 +159,13 @@ export class ContextProvider {
 
   public static getValue(scope: Construct, options: GetContextValueOptions): GetContextValueResult {
     if ((options.mustExist !== undefined) && (options.ignoreErrorOnMissingContext !== undefined)) {
-      throw new ValidationError('ConflictingMustExistOptions', 'Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
+      throw new ValidationError(lit`ConflictingMustExistOptions`, 'Only supply one of \'mustExist\' and \'ignoreErrorOnMissingContext\'', scope);
     }
 
     const stack = Stack.of(scope);
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
-      throw new ValidationError('StackAccountRegionNotSpecified', `Cannot retrieve value from context provider ${options.provider} since account/region ` +
+      throw new ValidationError(lit`StackAccountRegionNotSpecified`, `Cannot retrieve value from context provider ${options.provider} since account/region ` +
                       'are not specified at the stack level. Configure "env" with an account and region when ' +
                       'you define your stack.' +
                       'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.', scope);
@@ -204,7 +205,7 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        Annotations.of(scope)._addTrackableError('ContextProviderError', providerError);
+        Annotations.of(scope)._addTrackableError(lit`ContextProviderError`, providerError);
       }
 
       return { value: options.dummyValue };

@@ -235,6 +235,20 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Enabling CloudWatch Request Metrics
+
+You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
+
+For more information about S3 Tables CloudWatch metrics, see the [S3 Tables CloudWatch Metrics documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-cloudwatch-metrics.html).
+
+```ts
+// Enable CloudWatch request metrics for the table bucket
+const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', {
+    tableBucketName: 'metrics-enabled-bucket',
+    requestMetricsStatus: RequestMetricsStatus.ENABLED,
+});
+```
+
 ### Controlling Table Permissions
 
 ```ts
@@ -261,6 +275,18 @@ const permissions = new iam.PolicyStatement({
 });
 
 table.addToResourcePolicy(permissions);
+```
+
+### Tagging
+
+Both `TableBucket` and `Table` support tagging through CDK's standard tagging mechanism:
+
+```ts
+Tags.of(tableBucket).add('Environment', 'Production');
+Tags.of(table).add('Team', 'DataEngineering');
+
+// Stack-level tags propagate to all resources
+Tags.of(stack).add('Project', 'DataLake');
 ```
 
 ## Coming Soon
