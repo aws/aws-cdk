@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.248.0](https://github.com/aws/aws-cdk/compare/v2.247.0...v2.248.0) (2026-04-02)
+
+
+### Bug Fixes
+
+* **eks:** downgrade isolated subnet validation from error to warning ([#37500](https://github.com/aws/aws-cdk/issues/37500)) ([470856c](https://github.com/aws/aws-cdk/commit/470856cadcee34b2ec5e0620fab63838c223fd97)), closes [#37491](https://github.com/aws/aws-cdk/issues/37491)
+
 ## [2.247.0](https://github.com/aws/aws-cdk/compare/v2.246.0...v2.247.0) (2026-04-02)
 
 
