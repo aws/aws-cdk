@@ -125,8 +125,6 @@ class AlbJwtCognitoStack extends Stack {
       vpc,
       internetFacing: true,
     });
-    // Allow outbound HTTPS for JWKS endpoint access
-    lb.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow to JWKS endpoint');
 
     // Default action: authenticateJwtWithCognito (testable with real Cognito tokens)
     lb.addListener('Listener', {

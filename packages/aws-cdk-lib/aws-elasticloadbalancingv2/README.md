@@ -204,6 +204,47 @@ const listener = lb.addListener('Listener', {
 });
 ```
 
+If you are using Amazon Cognito as the IdP, you can use `ListenerAction.authenticateJwtWithCognito()` which automatically constructs the issuer and JWKS endpoint URLs from the User Pool:
+
+```ts
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const userPool: cognito.UserPool;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwtWithCognito({
+    userPool,
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+The JWKS endpoint must be publicly accessible. The ALB security group is automatically configured to allow outbound HTTPS (port 443) for JWKS endpoint access. If you manage security group rules yourself, you can disable this by setting `allowHttpsOutbound` to `false`:
+
+```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwt({
+    issuer: 'https://issuer.example.com',
+    jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+    allowHttpsOutbound: false,
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
 If you just want to redirect all incoming traffic on one port to another port, you can use the following code:
 
 ```ts

@@ -3,7 +3,7 @@ import { ApplicationListener, type IApplicationListener } from './application-li
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
-import { Annotations, Token, Tokenization } from '../../../core';
+import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
@@ -501,6 +501,18 @@ export interface AuthenticateJwtOptions {
    * @example 'https://issuer.example.com/jwks'
    */
   readonly jwksEndpoint: string;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the JWKS endpoint.
+   *
+   * Set this property to false if the IP address used for the JWKS endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the JWKS endpoint's IP address using the listener's `connections` property.
+   *
+   * @default true
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**
@@ -560,6 +572,8 @@ class TargetGroupListenerAction extends ListenerAction {
  * A Listener Action to authenticate with JWT
  */
 class AuthenticateJwtAction extends ListenerAction {
+  private readonly allowHttpsOutbound: boolean;
+
   constructor(options: AuthenticateJwtOptions) {
     if (!Token.isUnresolved(options.jwksEndpoint)) {
       if (!options.jwksEndpoint.startsWith('https://')) {
@@ -580,6 +594,8 @@ class AuthenticateJwtAction extends ListenerAction {
         jwksEndpoint: options.jwksEndpoint,
       },
     }, options.next);
+
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
   }
 
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
@@ -590,7 +606,9 @@ class AuthenticateJwtAction extends ListenerAction {
       throw new UnscopedValidationError(lit`JwtRequiresHttps`, 'JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
     }
 
-    Annotations.of(listener).addInfo('JWT validation requires the ALB to access the JWKS endpoint. Ensure the ALB security group allows outbound HTTPS (port 443) to the JWKS endpoint, either via an internet gateway or a VPC interface endpoint.');
+    if (this.allowHttpsOutbound) {
+      listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to JWKS endpoint');
+    }
   }
 }
 

@@ -412,6 +412,17 @@ describe('tests', () => {
         },
       ],
     });
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow to JWKS endpoint',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        },
+      ],
+    });
   });
 
   test('JWT authentication requires HTTPS listener', () => {
