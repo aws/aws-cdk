@@ -1,0 +1,5 @@
+{
+  "exclude": [
+    "interface-extends-ref:@aws-cdk/aws-dsql-alpha.ICluster"
+  ]
+}

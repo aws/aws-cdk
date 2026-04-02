@@ -65,16 +65,22 @@ export interface ICluster extends IResource {
    * @param actions the data-access actions
    *
    * @see https://docs.aws.amazon.com/aurora-dsql/latest/userguide/authentication-authorization.html
+   *
+   * [disable-awslint:no-grants]
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
    * Grant the given identity permission to connect to the database
+   *
+   * [disable-awslint:no-grants]
    */
   grantConnect(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permission to connect to the database with admin role
+   *
+   * [disable-awslint:no-grants]
    */
   grantConnectAdmin(grantee: iam.IGrantable): iam.Grant;
 }
@@ -113,14 +119,17 @@ abstract class ClusterBase extends Resource implements ICluster {
    */
   public abstract readonly vpcEndpointServiceName: string;
 
+  // [disable-awslint:no-grants]
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({ grantee, actions, resourceArns: [this.clusterArn] });
   }
 
+  // [disable-awslint:no-grants]
   public grantConnect(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'dsql:DbConnect');
   }
 
+  // [disable-awslint:no-grants]
   public grantConnectAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, 'dsql:DbConnectAdmin');
   }
