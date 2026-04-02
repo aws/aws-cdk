@@ -9,7 +9,6 @@ import { DatabaseSecret } from '../database-secret';
 import type { IEngine } from '../engine';
 import type { CommonRotationUserOptions } from '../props';
 import { Credentials, SnapshotCredentials } from '../props';
-
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './constants';
 
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */

@@ -6,7 +6,7 @@ import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023Kernel } from './amazo
 import type { AmazonLinux2ImageSsmParameterProps } from './amazon-linux2';
 import { AmazonLinux2ImageSsmParameter, AmazonLinux2Kernel } from './amazon-linux2';
 import type { IMachineImage, MachineImageConfig } from './common';
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, OperatingSystemType } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
 import * as cxschema from '../../../cloud-assembly-schema';
@@ -15,6 +15,7 @@ import { lit } from '../../../core/lib/private/literal-string';
 import type * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
 import { WindowsVersion } from '../windows-versions';
+import { OperatingSystemType } from './os-type';
 
 /**
  * Factory functions for standard Amazon Machine Image objects.

@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import type { CfnResource } from '../../core';
 import { Stack } from '../../core';
 import { DatabaseSecret } from '../lib';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/constants';
 
 describe('database secret', () => {
   test('create a database secret', () => {
