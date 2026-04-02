@@ -1,5 +1,6 @@
 import type { IAlarmRule } from './alarm-base';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
@@ -114,7 +115,7 @@ export class AlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
         if (operands.length === 0) {
-          throw new UnscopedValidationError('NoOperandsDetectedForAlarmRule', `Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
+          throw new UnscopedValidationError(lit`NoOperandsDetectedForAlarmRule`, `Did not detect any operands for AlarmRule.${operator === Operator.AND ? 'allOf' : 'anyOf'}()`);
         }
 
         const expression = operands

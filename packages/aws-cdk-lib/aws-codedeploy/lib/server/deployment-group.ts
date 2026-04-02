@@ -11,6 +11,7 @@ import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -117,7 +118,7 @@ export class InstanceTagSet {
 
   constructor(...instanceTagGroups: InstanceTagGroup[]) {
     if (instanceTagGroups.length > 3) {
-      throw new cdk.UnscopedValidationError('InstanceTagSetMaximumThreeGroups', `An instance tag set can have a maximum of 3 instance tag groups, but ${instanceTagGroups.length} were provided`);
+      throw new cdk.UnscopedValidationError(lit`InstanceTagSetMaximumThreeGroups`, `An instance tag set can have a maximum of 3 instance tag groups, but ${instanceTagGroups.length} were provided`);
     }
     this._instanceTagGroups = instanceTagGroups;
   }
@@ -317,7 +318,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
 
     if (this.loadBalancers && this.loadBalancers.length === 0) {
-      throw new cdk.ValidationError('LoadBalancersMustBeNonEmptyArray', 'loadBalancers must be a non-empty array', this);
+      throw new cdk.ValidationError(lit`LoadBalancersMustBeNonEmptyArray`, 'loadBalancers must be a non-empty array', this);
     }
 
     for (const asg of this._autoScalingGroups) {
@@ -524,7 +525,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
               });
             }
           } else {
-            throw new cdk.ValidationError('CannotSpecifyEmptyKeyAndNoValues', 'Cannot specify both an empty key and no values for an instance tag filter', this);
+            throw new cdk.ValidationError(lit`CannotSpecifyEmptyKeyAndNoValues`, 'Cannot specify both an empty key and no values for an instance tag filter', this);
           }
         }
       }

@@ -1,18 +1,19 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
+import { getClusterVersionConfig, getLatestVersions } from './integ-tests-kubernetes-version';
 
 class EksClusterStack extends Stack {
   private cluster: eks.Cluster;
   private vpc: ec2.IVpc;
 
-  constructor(scope: App, id: string) {
+  constructor(scope: App, id: string, version?: eks.KubernetesVersion) {
     super(scope, id);
 
     // just need one nat gateway to simplify the test
@@ -21,10 +22,7 @@ class EksClusterStack extends Stack {
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
-      version: eks.KubernetesVersion.V1_33,
-      kubectlProviderOptions: {
-        kubectlLayer: new KubectlV33Layer(this, 'kubectlLayer'),
-      },
+      ...getClusterVersionConfig(this, version),
     });
 
     this.assertHelmChartAsset();
@@ -119,19 +117,32 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    // non-OCI chart from a standard HTTPS Helm repository
+    // https://kubernetes-sigs.github.io/headlamp/
+    this.cluster.addHelmChart('test-non-oci-chart', {
+      chart: 'headlamp',
+      release: 'headlamp',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
+      version: '0.39.0',
+    });
   }
 }
 
 const app = new App({
   postCliContext: {
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
 
-const stack = new EksClusterStack(app, 'aws-cdk-eks-helm-test');
+const [previousVersion, latestVersion] = getLatestVersions(2);
+
+const stackLatest = new EksClusterStack(app, 'aws-cdk-eks-helm-test', eks.KubernetesVersion.of(latestVersion));
+const stackPrevious = new EksClusterStack(app, 'aws-cdk-eks-helm-test-prev', eks.KubernetesVersion.of(previousVersion));
 new integ.IntegTest(app, 'aws-cdk-eks-helm', {
-  testCases: [stack],
+  testCases: [stackLatest, stackPrevious],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
