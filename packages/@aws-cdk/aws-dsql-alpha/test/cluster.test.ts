@@ -136,25 +136,7 @@ describe('Aurora DSQL Cluster - Grants', () => {
           Effect: 'Allow',
           Action: 'dsql:DbConnect',
           Resource: {
-            'Fn::Join': [
-              '', [
-                'arn:', {
-                  Ref: 'AWS::Partition',
-                },
-                ':dsql:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':cluster/',
-                {
-                  Ref: 'ClusterEB0386A7',
-                },
-              ],
-            ],
+            'Fn::GetAtt': ['ClusterEB0386A7', 'ResourceArn'],
           },
         }],
         Version: '2012-10-17',
@@ -184,25 +166,7 @@ describe('Aurora DSQL Cluster - Grants', () => {
           Effect: 'Allow',
           Action: 'dsql:DbConnect',
           Resource: {
-            'Fn::Join': [
-              '', [
-                'arn:', {
-                  Ref: 'AWS::Partition',
-                },
-                ':dsql:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':cluster/',
-                {
-                  Ref: 'ClusterEB0386A7',
-                },
-              ],
-            ],
+            'Fn::GetAtt': ['ClusterEB0386A7', 'ResourceArn'],
           },
         }],
         Version: '2012-10-17',
@@ -232,25 +196,7 @@ describe('Aurora DSQL Cluster - Grants', () => {
           Effect: 'Allow',
           Action: 'dsql:DbConnectAdmin',
           Resource: {
-            'Fn::Join': [
-              '', [
-                'arn:', {
-                  Ref: 'AWS::Partition',
-                },
-                ':dsql:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':cluster/',
-                {
-                  Ref: 'ClusterEB0386A7',
-                },
-              ],
-            ],
+            'Fn::GetAtt': ['ClusterEB0386A7', 'ResourceArn'],
           },
         }],
         Version: '2012-10-17',
