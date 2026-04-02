@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import type { IBaseService } from '../base/base-service';
 import type { ICluster } from '../cluster';
@@ -31,7 +32,7 @@ export interface ServiceAttributes {
 
 export function fromServiceAttributes(scope: Construct, id: string, attrs: ServiceAttributes): IBaseService {
   if ((attrs.serviceArn && attrs.serviceName) || (!attrs.serviceArn && !attrs.serviceName)) {
-    throw new ValidationError('OnlySpecifyEitherServiceArn', 'You can only specify either serviceArn or serviceName.', scope);
+    throw new ValidationError(lit`OnlySpecifyEitherServiceArn`, 'You can only specify either serviceArn or serviceName.', scope);
   }
 
   const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);

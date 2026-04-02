@@ -5,6 +5,7 @@ import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
 import type { BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
+import { lit } from './literal-string';
 
 /**
  * Options for Docker based bundling of assets
@@ -230,7 +231,7 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
       return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
-    throw new ExecutionError('CommandExecutionFailed', [
+    throw new ExecutionError(lit`CommandExecutionFailed`, [
       `${prog} exited with ${reason}`,
       ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
       ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],

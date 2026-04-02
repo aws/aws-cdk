@@ -7,6 +7,7 @@ import type * as route53 from '../../aws-route53';
 import type { IResource } from '../../core';
 import { Token, Tags, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
@@ -326,7 +327,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new ValidationError('DomainNameCharactersLess', 'Domain name must be 64 characters or less', this);
+      throw new ValidationError(lit`DomainNameCharactersLess`, 'Domain name must be 64 characters or less', this);
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
@@ -390,13 +391,13 @@ function renderDomainValidation(scope: Construct, validation: CertificateValidat
       for (const domainName of domainNames) {
         const validationDomain = validation.props.validationDomains?.[domainName];
         if (!validationDomain && Token.isUnresolved(domainName)) {
-          throw new ValidationError('UsingTokensDomainNames', 'When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
+          throw new ValidationError(lit`UsingTokensDomainNames`, 'When using Tokens for domain names, \'validationDomains\' needs to be supplied', scope);
         }
         domainValidation.push({ domainName, validationDomain: validationDomain ?? apexDomain(domainName) });
       }
       break;
     default:
-      throw new ValidationError('UnknownValidationMethod', `Unknown validation method ${validation.method}`, scope);
+      throw new ValidationError(lit`UnknownValidationMethod`, `Unknown validation method ${validation.method}`, scope);
   }
 
   return domainValidation.length !== 0 ? domainValidation : undefined;

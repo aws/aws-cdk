@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { assertNoPrototypePollution } from './prototype-pollution';
 import { getWarnings } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
 import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
@@ -436,5 +437,15 @@ describe('cfn resource', () => {
   test('isCfnResource returns false with undefined', () => {
     // THEN
     expect(core.CfnResource.isCfnResource(undefined)).toBe(false);
+  });
+
+  test('no prototype pollution in addoverride', () => {
+    assertNoPrototypePollution(() => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'Stack');
+      const res = new core.CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
+
+      res.addOverride('__proto__.evil', 'true');
+    });
   });
 });

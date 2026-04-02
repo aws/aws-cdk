@@ -3,6 +3,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
 import type { IConnection } from '../connection';
@@ -489,7 +490,7 @@ export abstract class Job extends JobBase {
       const reservedArgs = new Set(['--debug', '--mode', '--JOB_NAME']);
       Object.keys(defaultArguments).forEach((arg) => {
         if (reservedArgs.has(arg)) {
-          throw new cdk.ValidationError('ReservedArgumentUsed', `The ${arg} argument is reserved by Glue. Don't set it`, this);
+          throw new cdk.ValidationError(lit`ReservedArgumentUsed`, `The ${arg} argument is reserved by Glue. Don't set it`, this);
         }
       });
     }

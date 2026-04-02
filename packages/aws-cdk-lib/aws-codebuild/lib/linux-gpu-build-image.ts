@@ -10,6 +10,7 @@ import type {
 } from './project';
 import * as ecr from '../../aws-ecr';
 import * as core from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { FactName } from '../../region-info';
 
 /**
@@ -115,7 +116,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     const imageAccount = account ?? core.Lazy.string({
       produce: () => {
         if (this._imageAccount === undefined) {
-          throw new core.UnscopedValidationError('LinuxGpuBuildImageNotUsedInProject', 'Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
+          throw new core.UnscopedValidationError(lit`LinuxGpuBuildImageNotUsedInProject`, 'Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
         }
         return this._imageAccount;
       },

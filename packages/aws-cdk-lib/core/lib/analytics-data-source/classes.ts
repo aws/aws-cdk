@@ -3623,6 +3623,175 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  '@aws-cdk.aws-mediapackagev2-alpha': {
+    'ChannelPolicy': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grants': '*'
+      },
+      'policyDocument': '*'
+    },
+    'Channel': {
+      'channelGroup': {
+        'channelGroupName': '*',
+        'channelGroupArn': '*',
+        'egressDomain': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'channelName': '*',
+      'input': '*',
+      'description': '*',
+      'tags': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OriginEndpoint': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grants': '*'
+      },
+      'originEndpointName': '*',
+      'description': '*',
+      'tags': '*',
+      'manifests': '*',
+      'startoverWindow': '*',
+      'segment': {
+        'containerType': 'ContainerType',
+        'includeIframeOnlyStreams': 'boolean',
+        'scteFilter': 'ScteMessageType',
+        'scteInSegments': 'ScteInSegments',
+        'segmentDuration': '*',
+        'segmentName': '*',
+        'tsIncludeDvbSubtitles': 'boolean',
+        'tsUseAudioRenditionGroup': 'boolean',
+        'encryption': '*'
+      },
+      'forceEndpointConfigurationConditions': 'EndpointErrorConfiguration',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'ChannelGroup': {},
+    'OriginEndpointPolicy': {
+      'originEndpoint': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'originEndpointName': '*',
+        'originEndpointArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'hlsManifestUrls': '*',
+        'lowLatencyHlsManifestUrls': '*',
+        'dashManifestUrls': '*',
+        'mssManifestUrls': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'policyDocument': '*',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      }
+    }
+  },
   '@aws-cdk.aws-msk-alpha': {
     'Cluster': {
       'clusterName': '*',
@@ -8518,6 +8687,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryStrategies': '*',
       'schedulingPriority': '*',
       'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean',
       'grantSubmitJob': [
         {
           'grantPrincipal': {
@@ -8539,7 +8709,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryAttempts': '*',
       'retryStrategies': '*',
       'schedulingPriority': '*',
-      'timeout': '*'
+      'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean'
     },
     'JobQueue': {},
     'ManagedEc2EcsComputeEnvironment': {
@@ -25796,7 +25967,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableSimpleResponses': 'boolean',
       'payloadFormatVersion': 'AuthorizerPayloadVersion',
       'authorizerUri': '*',
-      'resultsCacheTtl': '*'
+      'resultsCacheTtl': '*',
+      'role': '*'
     },
     'HttpIntegration': {
       'httpApi': {

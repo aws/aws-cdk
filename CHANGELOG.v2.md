@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.247.0](https://github.com/aws/aws-cdk/compare/v2.246.0...v2.247.0) (2026-04-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-bedrockagentcore: AWS::BedrockAgentCore::OnlineEvaluationConfig: ExecutionStatus attribute removed.
+aws-appstream: AWS::AppStream::ImageBuilder: Name property is now immutable.
+aws-eks: AWS::EKS::Capability: EKS_CAPABILITY_ACK_S3_LOGS vended log type removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37410](https://github.com/aws/aws-cdk/issues/37410)) ([bd2c318](https://github.com/aws/aws-cdk/commit/bd2c3187323c7bcf8a19943f86682c14c601d1a9))
+* **apigatewayv2:** add role support for lambda authorizers ([#35706](https://github.com/aws/aws-cdk/issues/35706)) ([2fb2f16](https://github.com/aws/aws-cdk/commit/2fb2f1650e957979e5ebf8292df3a95d41baa4ff)), closes [#35696](https://github.com/aws/aws-cdk/issues/35696)
+* **batch:** skip unregister job definition on update ([#36011](https://github.com/aws/aws-cdk/issues/36011)) ([2fb2240](https://github.com/aws/aws-cdk/commit/2fb2240d2b2ca922e0603c3e341bb61ce9131155))
+* **elasticloadbalancingv2:** jwt verification for application load balancer ([#36099](https://github.com/aws/aws-cdk/issues/36099)) ([aacd28a](https://github.com/aws/aws-cdk/commit/aacd28aac59dbf42973302e3165140d944356b32)), closes [#36096](https://github.com/aws/aws-cdk/issues/36096)
+
+
+### Bug Fixes
+
+* bump brace-expansion from 5.0.3 to 5.0.5 to address CVE-2026-33750 ([#37379](https://github.com/aws/aws-cdk/issues/37379)) ([69cf4c9](https://github.com/aws/aws-cdk/commit/69cf4c9c44c610eb029d92e355efcf6e7f931ed2))
+* prevent prototype pollution in 2 APIs ([#37453](https://github.com/aws/aws-cdk/issues/37453)) ([1016537](https://github.com/aws/aws-cdk/commit/101653766cab8a8112608e170f5e07f5b962ba49))
+* **aws-cdk-lib:** condensed stack trace hides namespaced package name ([#37413](https://github.com/aws/aws-cdk/issues/37413)) ([cb8e7fb](https://github.com/aws/aws-cdk/commit/cb8e7fbc9fc10682d505b2cdba1a7ce173b0dfd3))
+
 ## [2.246.0](https://github.com/aws/aws-cdk/compare/v2.245.0...v2.246.0) (2026-03-31)
 
 

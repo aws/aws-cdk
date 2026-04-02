@@ -5,6 +5,7 @@ import type * as iam from '../../aws-iam';
 import type { Duration } from '../../core';
 import { Lazy } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The response transfer mode of the integration
@@ -228,30 +229,30 @@ export class Integration {
   constructor(private readonly props: IntegrationProps) {
     const options = this.props.options || { };
     if (options.credentialsPassthrough !== undefined && options.credentialsRole !== undefined) {
-      throw new UnscopedValidationError('CredentialsPassthroughCredentialsRoleMutually', '\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
+      throw new UnscopedValidationError(lit`CredentialsPassthroughCredentialsRoleMutually`, '\'credentialsPassthrough\' and \'credentialsRole\' are mutually exclusive');
     }
 
     if (options.connectionType === ConnectionType.VPC_LINK && options.vpcLink === undefined) {
-      throw new UnscopedValidationError('RequiresConnectiontypeVpcLinkRequires', '\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
+      throw new UnscopedValidationError(lit`RequiresConnectiontypeVpcLinkRequires`, '\'connectionType\' of VPC_LINK requires \'vpcLink\' prop to be set');
     }
 
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
-      throw new UnscopedValidationError('CannotSetVpcLinkConnection', 'cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
+      throw new UnscopedValidationError(lit`CannotSetVpcLinkConnection`, 'cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
     if (options.timeout && !options.timeout.isUnresolved() && options.timeout.toMilliseconds() < 50) {
-      throw new UnscopedValidationError('MustBeIntegrationTimeoutGreater', 'Integration timeout must be greater than 50 milliseconds.');
+      throw new UnscopedValidationError(lit`MustBeIntegrationTimeoutGreater`, 'Integration timeout must be greater than 50 milliseconds.');
     }
 
     if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
-      throw new UnscopedValidationError('IntegrationHttpMethodRequiredNon', 'integrationHttpMethod is required for non-mock integration types.');
+      throw new UnscopedValidationError(lit`IntegrationHttpMethodRequiredNon`, 'integrationHttpMethod is required for non-mock integration types.');
     }
 
     if (
       options.responseTransferMode === ResponseTransferMode.STREAM &&
       ![IntegrationType.AWS_PROXY, IntegrationType.HTTP_PROXY].includes(props.type)
     ) {
-      throw new UnscopedValidationError('ResponseTransferModeSupportedInteg', `ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
+      throw new UnscopedValidationError(lit`ResponseTransferModeSupportedInteg`, `ResponseTransferMode STREAM is only supported for AWS_PROXY and HTTP_PROXY integration types, got: ${props.type}`);
     }
   }
 
@@ -271,12 +272,12 @@ export class Integration {
           if (vpcLink instanceof VpcLink) {
             const targets = vpcLink._targetDnsNames;
             if (targets.length > 1) {
-              throw new ValidationError('IsRequiredUriRequiredThere', "'uri' is required when there are more than one NLBs in the VPC Link", method);
+              throw new ValidationError(lit`IsRequiredUriRequiredThere`, "'uri' is required when there are more than one NLBs in the VPC Link", method);
             } else {
               return `http://${targets[0]}`;
             }
           } else {
-            throw new ValidationError('IsRequiredUriRequiredConnectiontype', "'uri' is required when the 'connectionType' is VPC_LINK", method);
+            throw new ValidationError(lit`IsRequiredUriRequiredConnectiontype`, "'uri' is required when the 'connectionType' is VPC_LINK", method);
           }
         },
       });

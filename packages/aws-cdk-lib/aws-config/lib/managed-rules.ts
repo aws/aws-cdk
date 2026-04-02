@@ -6,6 +6,7 @@ import type * as sns from '../../aws-sns';
 import type { Duration } from '../../core';
 import { Lazy, Stack, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -135,7 +136,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
 
   constructor(scope: Construct, id: string, props: CloudFormationStackNotificationCheckProps = {}) {
     if (props.topics && props.topics.length > 5) {
-      throw new ValidationError('TopicsSpecified', 'At most 5 topics can be specified.', scope);
+      throw new ValidationError(lit`TopicsSpecified`, 'At most 5 topics can be specified.', scope);
     }
 
     super(scope, id, {

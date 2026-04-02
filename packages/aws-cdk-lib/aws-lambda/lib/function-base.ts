@@ -22,6 +22,7 @@ import type { IResource } from '../../core';
 import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, IFunctionRef {
@@ -474,7 +475,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('OnlyVpcAssociatedLambdaFunctionsHaveSecurityGroups', 'Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
+      throw new ValidationError(lit`OnlyVpcAssociatedLambdaFunctionsHaveSecurityGroups`, 'Only VPC-associated Lambda Functions have security groups to manage. Supply the "vpc" parameter when creating the Lambda, or "securityGroupId" when importing it.', this);
     }
     return this._connections;
   }
@@ -628,14 +629,14 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   public addEventSource(source: IEventSource) {
     if (this.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined && source.constructor.name !== 'ApiEventSource') {
-      throw new ValidationError('EventSourceNotSupportedForTenantIsolation', `Event source ${source.constructor.name} is not supported for functions with tenant isolation mode`, this);
+      throw new ValidationError(lit`EventSourceNotSupportedForTenantIsolation`, `Event source ${source.constructor.name} is not supported for functions with tenant isolation mode`, this);
     }
     source.bind(this);
   }
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new ValidationError('EventInvokeConfigAlreadyConfigured', `An EventInvokeConfig has already been configured for the function at ${this.node.path}`, this);
+      throw new ValidationError(lit`EventInvokeConfigAlreadyConfigured`, `An EventInvokeConfig has already been configured for the function at ${this.node.path}`, this);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -708,7 +709,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
           const permissionNode = this._functionNode().tryFindChild(identifier);
           if (!permissionNode && !this._skipPermissions) {
-            throw new ValidationError('CannotModifyLambdaPermission', 'Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
+            throw new ValidationError(lit`CannotModifyLambdaPermission`, 'Cannot modify permission to lambda function. Function is either imported or $LATEST version.\n'
               + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
               + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.', this);
           }
@@ -773,7 +774,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       }
     }
 
-    throw new ValidationError('InvalidPrincipalTypeForLambdaPermission', `Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
+    throw new ValidationError(lit`InvalidPrincipalTypeForLambdaPermission`, `Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal, OrganizationPrincipal', this);
 
     /**
@@ -802,7 +803,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     // PrincipalOrgID cannot be combined with any other conditions
     if (principalOrgID && (sourceArn || sourceAccount)) {
-      throw new ValidationError('PrincipalOrgIdCannotBeCombinedWithOtherConditions', 'PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.', this);
+      throw new ValidationError(lit`PrincipalOrgIdCannotBeCombinedWithOtherConditions`, 'PrincipalWithConditions had unsupported condition combinations for Lambda permission statement: principalOrgID cannot be set with other conditions.', this);
     }
 
     return {
@@ -843,7 +844,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       if (unsupportedConditions.length == 0) {
         return conditions;
       } else {
-        throw new ValidationError('UnsupportedConditionsForLambdaPermission', `PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
+        throw new ValidationError(lit`UnsupportedConditionsForLambdaPermission`, `PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
           `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`, this);
       }
     }
@@ -906,7 +907,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
 
   public configureAsyncInvoke(options: EventInvokeConfigOptions): void {
     if (this.node.tryFindChild('EventInvokeConfig') !== undefined) {
-      throw new ValidationError('EventInvokeConfigAlreadyConfiguredForQualifiedFunction', `An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`, this);
+      throw new ValidationError(lit`EventInvokeConfigAlreadyConfiguredForQualifiedFunction`, `An EventInvokeConfig has already been configured for the qualified function at ${this.node.path}`, this);
     }
 
     new EventInvokeConfig(this, 'EventInvokeConfig', {
@@ -979,7 +980,7 @@ class LatestVersion extends FunctionBase implements IVersion {
   }
 
   public get edgeArn(): never {
-    throw new ValidationError('LatestVersionCannotBeUsedForLambdaEdge', '$LATEST function version cannot be used for Lambda@Edge', this);
+    throw new ValidationError(lit`LatestVersionCannotBeUsedForLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
   }
 
   public get resourceArnsForGrantInvoke() {

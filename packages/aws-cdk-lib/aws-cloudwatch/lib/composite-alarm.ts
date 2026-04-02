@@ -5,6 +5,7 @@ import { CfnCompositeAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Names, Stack, Duration, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
@@ -140,14 +141,14 @@ export class CompositeAlarm extends AlarmBase {
     addConstructMetadata(this, props);
 
     if (props.alarmRule.renderAlarmRule().length > 10240) {
-      throw new ValidationError('AlarmRuleExpressionCannotGreater', 'Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
+      throw new ValidationError(lit`AlarmRuleExpressionCannotGreater`, 'Alarm Rule expression cannot be greater than 10240 characters, please reduce the conditions in the Alarm Rule', this);
     }
 
     let extensionPeriod = props.actionsSuppressorExtensionPeriod;
     let waitPeriod = props.actionsSuppressorWaitPeriod;
     if (props.actionsSuppressor === undefined) {
       if (extensionPeriod !== undefined || waitPeriod !== undefined) {
-        throw new ValidationError('ActionsSuppressorExtensionWaitPeriods', 'ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
+        throw new ValidationError(lit`ActionsSuppressorExtensionWaitPeriods`, 'ActionsSuppressor Extension/Wait Periods require an ActionsSuppressor to be set.', this);
       }
     } else {
       extensionPeriod = extensionPeriod ?? Duration.minutes(1);

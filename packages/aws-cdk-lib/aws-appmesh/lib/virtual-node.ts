@@ -12,6 +12,7 @@ import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -266,7 +267,7 @@ export class VirtualNode extends VirtualNodeBase {
   @MethodMetadata()
   public addListener(listener: VirtualNodeListener) {
     if (!this.serviceDiscoveryConfig) {
-      throw new cdk.ValidationError('ServiceDiscoveryRequired', 'Service discovery information is required for a VirtualNode with a listener.', this);
+      throw new cdk.ValidationError(lit`ServiceDiscoveryRequired`, 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
     this.listeners.push(listener.bind(this));
   }

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "IntegTestAlbJwt/DefaultTest": {
+      "stacks": [
+        "AlbJwtStack"
+      ],
+      "assertionStack": "IntegTestAlbJwt/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestAlbJwtDefaultTestDeployAssert8E3F0252"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

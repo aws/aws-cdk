@@ -135,11 +135,15 @@ export function parseErrorStack(stack: string): CallSite[] {
  * - If there is 'node:' in the file path, we assume it is NodeJS internals and we skip it.
  */
 export function renderCallStackJustMyCode(stack: CallSite[], indent = true): string[] {
-  const moduleRe = /(\/|\\)node_modules(\/|\\)([^/\\]+)/;
+  // Look for `/node_modules/` followed by either
+  // - An @ sign, and 2 path segments
+  // - No @ sign, and 1 path segment
+  const moduleRe = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
 
   const lines = [];
   let skipped = new Array<{ functionName?: string; fileName: string }>();
 
+  let sawMyCode = false;
   let i = 0;
   while (i < stack.length) {
     const frame = stack[i++];
@@ -160,9 +164,15 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
       reportSkipped(true);
       const prefix = indent ? '    at ' : '';
       lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
+      sawMyCode = true;
     }
   }
   reportSkipped(false);
+
+  if (!sawMyCode) {
+    lines.push(`${indent ? '    ' : ''}(no user code in ${Error.stackTraceLimit} frames, use --stack-trace-limit to capture more)`);
+  }
+
   return lines;
 
   function skip(what: typeof skipped[number]) {

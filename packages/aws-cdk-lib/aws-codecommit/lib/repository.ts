@@ -11,6 +11,7 @@ import type { IResource } from '../../core';
 import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -656,7 +657,7 @@ export class Repository extends RepositoryBase {
     }
 
     if (this.triggers.find(prop => prop.name === name)) {
-      throw new ValidationError('UnableSetRepositoryTriggerNamed', `Unable to set repository trigger named ${name} because trigger names must be unique`, this);
+      throw new ValidationError(lit`UnableSetRepositoryTriggerNamed`, `Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
     this.triggers.push({

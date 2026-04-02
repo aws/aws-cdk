@@ -1,0 +1,122 @@
+{
+  "/DynamoStack/DynamoDBJsonTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/IonTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/CsvTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DynamoStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/DynamoStack/DynamoDBJsonTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DynamoDBJsonTable73E42181"
+    }
+  ],
+  "/DynamoStack/DynamoDBJsonTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/IonTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IonTableD6B7D52B"
+    }
+  ],
+  "/DynamoStack/IonTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/CsvTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CsvTableF720A0A1"
+    }
+  ],
+  "/DynamoStack/CsvTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"DynamoDBJsonTable73E42181\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDynamoDBJsonTable73E42181AA2EAFDC"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"IonTableD6B7D52B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefIonTableD6B7D52BC6D72761"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"CsvTableF720A0A1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCsvTableF720A0A12DCFE97C"
+    }
+  ]
+}

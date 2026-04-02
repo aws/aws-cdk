@@ -1,4 +1,5 @@
 import { Duration, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { MathExpression, SearchExpression } from '../metric';
 import type { IMetric, MetricConfig, MetricExpressionConfig, MetricStatConfig } from '../metric-types';
 
@@ -144,7 +145,7 @@ export function dispatchMetric<A, B, C>(metric: IMetric, fns: { withStat: (x: Me
   const typeCount = [conf.metricStat, conf.mathExpression, conf.searchExpression].map(Boolean).filter(Boolean).length;
 
   if (typeCount > 1) {
-    throw new UnscopedValidationError('MetricObjectCannotProduceMultipleTypes', 'Metric object must not produce more than one of \'metricStat\', \'mathExpression\', or \'searchExpression\'');
+    throw new UnscopedValidationError(lit`MetricObjectCannotProduceMultipleTypes`, 'Metric object must not produce more than one of \'metricStat\', \'mathExpression\', or \'searchExpression\'');
   }
   if (conf.metricStat) {
     return fns.withStat(conf.metricStat, conf);
@@ -153,6 +154,6 @@ export function dispatchMetric<A, B, C>(metric: IMetric, fns: { withStat: (x: Me
   } else if (conf.searchExpression) {
     return fns.withSearchExpression(conf.searchExpression, conf);
   } else {
-    throw new UnscopedValidationError('MetricObjectMustHaveOneType', 'Metric object must have either \'metricStat\', \'mathExpression\', or \'searchExpression\'');
+    throw new UnscopedValidationError(lit`MetricObjectMustHaveOneType`, 'Metric object must have either \'metricStat\', \'mathExpression\', or \'searchExpression\'');
   }
 }

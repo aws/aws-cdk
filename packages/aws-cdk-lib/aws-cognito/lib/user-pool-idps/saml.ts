@@ -4,6 +4,7 @@ import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 import { Names, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
@@ -175,7 +176,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
 
   private validateName(name?: string) {
     if (name && !Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
-      throw new ValidationError('ExpectedProviderNameCharactersReceived', `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
+      throw new ValidationError(lit`ExpectedProviderNameCharactersReceived`, `Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`, this);
     }
   }
 }
