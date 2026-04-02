@@ -7,6 +7,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import type { IResource } from '../../core';
 import { ContextProvider, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -182,7 +183,7 @@ export class PrefixList extends PrefixListBase {
    */
   public static fromLookup(scope: Construct, id: string, options: PrefixListLookupOptions): IPrefixList {
     if (Token.isUnresolved(options.prefixListName)) {
-      throw new ValidationError('ArgumentsLookUpManagedPrefix', 'All arguments to look up a managed prefix list must be concrete (no Tokens)', scope);
+      throw new ValidationError(lit`ArgumentsLookUpManagedPrefix`, 'All arguments to look up a managed prefix list must be concrete (no Tokens)', scope);
     }
 
     const dummyResponse = { PrefixListId: 'pl-xxxxxxxx' };
@@ -203,7 +204,7 @@ export class PrefixList extends PrefixListBase {
 
     // getValue returns a list of result objects. We are expecting 1 result or Error.
     if (response.length !== 1) {
-      throw new ValidationError('UnexpectedResponseReceivedContextProvider', 'Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
+      throw new ValidationError(lit`UnexpectedResponseReceivedContextProvider`, 'Unexpected response received from the context provider. Please clear out the context key using `cdk context --remove` and try again.', scope);
     }
 
     const prefixList = response[0];
@@ -260,10 +261,10 @@ export class PrefixList extends PrefixListBase {
 
     if (props?.prefixListName) {
       if ( props.prefixListName.startsWith('com.amazonaws')) {
-        throw new ValidationError('NameCannotStartCom', 'The name cannot start with \'com.amazonaws.\'', this);
+        throw new ValidationError(lit`NameCannotStartCom`, 'The name cannot start with \'com.amazonaws.\'', this);
       }
       if (props.prefixListName.length > 255 ) {
-        throw new ValidationError('LengthsExceedingCharactersCannotSet', 'Lengths exceeding 255 characters cannot be set.', this);
+        throw new ValidationError(lit`LengthsExceedingCharactersCannotSet`, 'Lengths exceeding 255 characters cannot be set.', this);
       }
     }
 
@@ -277,7 +278,7 @@ export class PrefixList extends PrefixListBase {
         const ipv6Regex = /^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?$/i;
         for (const entry of entries) {
           if (!ipv6Regex.test(entry.cidr)) {
-            throw new ValidationError('InvalidPvAddressRange', `Invalid IPv6 address range: ${entry.cidr}`, this);
+            throw new ValidationError(lit`InvalidPvAddressRange`, `Invalid IPv6 address range: ${entry.cidr}`, this);
           }
         }
       // Regular expressions for validating IPv4 addresses
@@ -285,7 +286,7 @@ export class PrefixList extends PrefixListBase {
         const ipv4Regex = /^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))?$/i;
         for (const entry of entries) {
           if (!ipv4Regex.test(entry.cidr)) {
-            throw new ValidationError('InvalidPvAddressRange', `Invalid IPv4 address range: ${entry.cidr}`, this);
+            throw new ValidationError(lit`InvalidPvAddressRange`, `Invalid IPv4 address range: ${entry.cidr}`, this);
           }
         }
       }

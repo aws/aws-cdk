@@ -1,4 +1,5 @@
 import { Duration, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Schedule for EventBridge Scheduler
@@ -27,7 +28,7 @@ export class Schedule {
    */
   public static rate(duration: Duration): Schedule {
     if (duration.toMilliseconds() < Duration.minutes(1).toMilliseconds()) {
-      throw new UnscopedValidationError('DurationCannotLessThan', 'Duration cannot be less than 1 minute');
+      throw new UnscopedValidationError(lit`DurationCannotLessThan`, 'Duration cannot be less than 1 minute');
     }
 
     // maybeRate method returns the rate if the rate is whole number
@@ -45,7 +46,7 @@ export class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('CannotSupplyDayWeekDay', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError(lit`CannotSupplyDayWeekDay`, 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = options.minute ?? '*';

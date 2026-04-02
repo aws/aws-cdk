@@ -17,6 +17,7 @@ import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
 import type { Duration } from '../../core';
 import { Annotations, Fn, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
 /**
@@ -403,7 +404,7 @@ export class NatGatewayProvider extends NatProvider {
       const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
       if (seconds < 1 || seconds > 4000) {
         throw new UnscopedValidationError(
-          'InvalidMaxDrainDuration', `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+          lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
         );
       }
     }
@@ -415,7 +416,7 @@ export class NatGatewayProvider extends NatProvider {
       && !Token.isUnresolved(this.props.eipAllocationIds)
       && this.props.eipAllocationIds.length < options.natSubnets.length
     ) {
-      throw new UnscopedValidationError('EnoughGatewayAllocationProvided', `Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+      throw new UnscopedValidationError(lit`EnoughGatewayAllocationProvided`, `Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
     }
 
     // Create the NAT gateways
@@ -467,24 +468,24 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
     if (this.props.allocationId && this.props.eip) {
       throw new UnscopedValidationError(
-        'CannotSpecifyBothAllocationIdAndEip', 'Cannot specify both `allocationId` and `eip`. Use one or the other.',
+        lit`CannotSpecifyBothAllocationIdAndEip`, 'Cannot specify both `allocationId` and `eip`. Use one or the other.',
       );
     }
 
     if (this.props.availabilityZoneAddresses) {
       if (this.props.availabilityZoneAddresses.length === 0) {
         throw new UnscopedValidationError(
-          'EmptyAvailabilityZoneAddresses', '`availabilityZoneAddresses` cannot be an empty array.',
+          lit`EmptyAvailabilityZoneAddresses`, '`availabilityZoneAddresses` cannot be an empty array.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => !az.availabilityZone && !az.availabilityZoneId)) {
         throw new UnscopedValidationError(
-          'MissingAvailabilityZoneOrId', 'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
+          lit`MissingAvailabilityZoneOrId`, 'Either `availabilityZone` or `availabilityZoneId` must be specified in `AvailabilityZoneAddress`.',
         );
       }
       if (this.props.availabilityZoneAddresses.some(az => az.allocationIds.length === 0)) {
         throw new UnscopedValidationError(
-          'EmptyAllocationIds', '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
+          lit`EmptyAllocationIds`, '`allocationIds` cannot be an empty array in `AvailabilityZoneAddress`.',
         );
       }
     }
@@ -493,7 +494,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
       const seconds = this.props.maxDrainDuration.toSeconds({ integral: false });
       if (seconds < 1 || seconds > 4000) {
         throw new UnscopedValidationError(
-          'InvalidMaxDrainDuration', `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
+          lit`InvalidMaxDrainDuration`, `\`maxDrainDuration\` must be between 1 and 4000 seconds, got ${seconds} seconds.`,
         );
       }
     }
@@ -534,7 +535,7 @@ export class RegionalNatGatewayProvider extends NatProvider {
 
   public configureSubnet(subnet: PrivateSubnet) {
     if (!this.natGateway) {
-      throw new UnscopedValidationError('CannotConfigureSubnetBeforeNat', 'Cannot configure subnet before configuring NAT gateway');
+      throw new UnscopedValidationError(lit`CannotConfigureSubnetBeforeNat`, 'Cannot configure subnet before configuring NAT gateway');
     }
     // All private subnets use the same regional NAT gateway ID
     subnet.addRoute('DefaultRoute', {
@@ -567,11 +568,11 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new UnscopedValidationError('SpecifyDefaultAllowedTrafficDefault', 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new UnscopedValidationError(lit`SpecifyDefaultAllowedTrafficDefault`, 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
 
     if (props.keyName && props.keyPair) {
-      throw new UnscopedValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new UnscopedValidationError(lit`CannotSpecifyKeyNameKey`, 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
   }
 
@@ -626,7 +627,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new UnscopedValidationError('PassNatInstanceProviderVpc', 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new UnscopedValidationError(lit`PassNatInstanceProviderVpc`, 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
     }
     return this._securityGroup;
   }
@@ -636,7 +637,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new UnscopedValidationError('PassNatInstanceProviderVpc', 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new UnscopedValidationError(lit`PassNatInstanceProviderVpc`, 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
     }
     return this._connections;
   }
@@ -674,7 +675,7 @@ class PrefSet<A> {
 
   public pick(pref: string): A {
     if (this.vals.length === 0) {
-      throw new UnscopedValidationError('CannotPickSetEmpty', 'Cannot pick, set is empty');
+      throw new UnscopedValidationError(lit`CannotPickSetEmpty`, 'Cannot pick, set is empty');
     }
 
     if (pref in this.map) { return this.map[pref]; }
@@ -722,11 +723,11 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     super();
 
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
-      throw new UnscopedValidationError('SpecifyDefaultAllowedTrafficDefault', 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+      throw new UnscopedValidationError(lit`SpecifyDefaultAllowedTrafficDefault`, 'Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
 
     if (props.keyName && props.keyPair) {
-      throw new UnscopedValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      throw new UnscopedValidationError(lit`CannotSpecifyKeyNameKey`, 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
   }
 
@@ -787,7 +788,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get securityGroup(): ISecurityGroup {
     if (!this._securityGroup) {
-      throw new UnscopedValidationError('PassNatInstanceProviderVpc', 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+      throw new UnscopedValidationError(lit`PassNatInstanceProviderVpc`, 'Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
     }
     return this._securityGroup;
   }
@@ -797,7 +798,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new UnscopedValidationError('PassNatInstanceProviderVpc', 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+      throw new UnscopedValidationError(lit`PassNatInstanceProviderVpc`, 'Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
     }
     return this._connections;
   }
@@ -847,7 +848,7 @@ function pickN(i: number, xs: string[]) {
   if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
 
   if (i >= xs.length) {
-    throw new UnscopedValidationError('CannotElement', `Cannot get element ${i} from ${xs}`);
+    throw new UnscopedValidationError(lit`CannotElement`, `Cannot get element ${i} from ${xs}`);
   }
 
   return xs[i];

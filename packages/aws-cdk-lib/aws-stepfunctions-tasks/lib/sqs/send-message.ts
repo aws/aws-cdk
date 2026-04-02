@@ -3,6 +3,7 @@ import * as iam from '../../../aws-iam';
 import type * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface SqsSendMessageOptions {
@@ -100,7 +101,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
 
     if (props.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new cdk.ValidationError('TaskTokenRequired', 'Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.', this);
+        throw new cdk.ValidationError(lit`TaskTokenRequired`, 'Task Token is required in `messageBody` Use JsonPath.taskToken to set the token.', this);
       }
     }
 
