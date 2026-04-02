@@ -984,7 +984,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "'</powershell>",
+              "' -EnableTaskIAMRole</powershell>",
             ],
           ],
         },
