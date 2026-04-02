@@ -590,3 +590,29 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
     },
   });
 });
+
+test('scopes down permissions to specific job definition and queue ARNs', () => {
+  const task = new BatchSubmitJob(stack, 'ScopedTask', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'MyJob',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'SM2', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: Match.arrayWith([
+            { Ref: 'JobDefinition24FFE3ED' },
+          ]),
+        }),
+      ]),
+    },
+  });
+});
