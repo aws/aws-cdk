@@ -1899,3 +1899,29 @@ describe('isGpuInstanceType', () => {
     });
   });
 });
+
+test('Windows node group includes eks:kube-proxy-windows group in aws-auth', () => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new eks.Cluster(stack, 'Cluster', {
+    defaultCapacity: 0,
+    version: CLUSTER_VERSION,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  // WHEN
+  new eks.Nodegroup(stack, 'Nodegroup', {
+    cluster,
+    amiType: NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  });
+
+  // THEN - the aws-auth ConfigMap should contain eks:kube-proxy-windows group
+  const template = Template.fromStack(stack);
+  const manifest = template.findResources('Custom::AWSCDK-EKS-KubernetesResource');
+  const manifestValues = Object.values(manifest);
+  const awsAuthManifest = manifestValues.find((m: any) =>
+    JSON.stringify(m.Properties?.Manifest ?? '').includes('aws-auth'),
+  );
+  expect(awsAuthManifest).toBeDefined();
+  expect(JSON.stringify(awsAuthManifest)).toContain('eks:kube-proxy-windows');
+});
