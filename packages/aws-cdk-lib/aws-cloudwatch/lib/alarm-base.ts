@@ -1,4 +1,6 @@
 import type { IAlarmAction } from './alarm-action';
+import type { AlarmMuteRuleOptions } from './alarm-mute-rule';
+import { AlarmMuteRule } from './alarm-mute-rule';
 import type { IResource } from '../../core';
 import { Resource } from '../../core';
 import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -99,5 +101,12 @@ export abstract class AlarmBase extends Resource implements IAlarm {
     }
 
     this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+  }
+
+  /**
+   * Create
+   */
+  public addAlarmMuteRule(id: string, options: AlarmMuteRuleOptions) {
+    return new AlarmMuteRule(this, id, { ...options, alarms: [this] });
   }
 }
