@@ -1,0 +1,21 @@
+name: "Ensure triage label"
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  ensure-triage-label:
+    if: join(github.event.issue.labels.*.name, '') == ''
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['needs-triage']
+            });
