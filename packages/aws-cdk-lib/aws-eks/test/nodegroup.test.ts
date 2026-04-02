@@ -1899,3 +1899,23 @@ describe('isGpuInstanceType', () => {
     });
   });
 });
+
+test('default node group role uses AmazonEC2ContainerRegistryPullOnly policy', () => {
+  // GIVEN
+  const { stack } = testFixture();
+  const cluster = new eks.Cluster(stack, 'Cluster', {
+    defaultCapacity: 0,
+    version: CLUSTER_VERSION,
+    kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+  });
+
+  // WHEN
+  new eks.Nodegroup(stack, 'Nodegroup', { cluster });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: Match.arrayWith([
+      { 'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('AmazonEC2ContainerRegistryPullOnly')])] },
+    ]),
+  });
+});
