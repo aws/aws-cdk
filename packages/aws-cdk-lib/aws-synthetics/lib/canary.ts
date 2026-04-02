@@ -400,6 +400,10 @@ export enum ArtifactsEncryptionMode {
 export interface ICanary extends cdk.IResource, ICanaryRef {
   /**
    * The ID of the canary
+   *
+   * For imported canaries, this may be the canary name as a fallback,
+   * since the actual ID (a UUID) is not available when importing by name.
+   *
    * @attribute
    */
   readonly canaryId: string;

@@ -123,6 +123,20 @@ describe('Group', () => {
     expect(() => new synthetics.Group(stack, 'Group', { canaries })).toThrow('A group can contain at most 10 canaries, got: 11');
   });
 
+  test('throws error when group name is too long', () => {
+    // WHEN / THEN
+    expect(() => new synthetics.Group(stack, 'Group', {
+      groupName: 'a'.repeat(65),
+    })).toThrow('Group name must be between 1 and 64 characters, got: 65');
+  });
+
+  test('throws error when group name has invalid characters', () => {
+    // WHEN / THEN
+    expect(() => new synthetics.Group(stack, 'Group', {
+      groupName: 'Invalid Name!',
+    })).toThrow(/Group name must match the pattern/);
+  });
+
   test('can import group by ARN', () => {
     // GIVEN
     const importStack = new Stack(undefined, 'ImportStack', {

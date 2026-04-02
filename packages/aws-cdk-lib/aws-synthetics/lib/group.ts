@@ -6,6 +6,7 @@ import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a CloudWatch Synthetics Group
@@ -67,7 +68,13 @@ export interface GroupProps {
  * Using groups can help you with managing and automating your canaries, and you can also
  * view aggregated run results and statistics for all canaries in a group.
  */
+@propertyInjectable
 export class Group extends cdk.Resource implements IGroup {
+  /**
+   * Uniquely identifies this class.
+   */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-synthetics.Group';
+
   /**
    * Import an existing group by ARN
    */
@@ -147,6 +154,15 @@ export class Group extends cdk.Resource implements IGroup {
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.groupName && !cdk.Token.isUnresolved(props.groupName)) {
+      if (props.groupName.length < 1 || props.groupName.length > 64) {
+        throw new ValidationError('InvalidGroupName', `Group name must be between 1 and 64 characters, got: ${props.groupName.length}`, this);
+      }
+      if (!/^[0-9a-z_\-]+$/.test(props.groupName)) {
+        throw new ValidationError('InvalidGroupName', `Group name must match the pattern ^[0-9a-z_\\-]+$, got: ${props.groupName}`, this);
+      }
+    }
 
     if (props.canaries && props.canaries.length > 10) {
       throw new ValidationError('TooManyCanaries', `A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
