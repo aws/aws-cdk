@@ -1520,3 +1520,25 @@ describe('tests', () => {
     });
   });
 });
+
+test('boolean ALB attributes set to false are reflected in CloudFormation', () => {
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Stack');
+
+  new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+    vpc,
+    preserveHostHeader: false,
+    xAmznTlsVersionAndCipherSuiteHeaders: false,
+    preserveXffClientPort: false,
+    wafFailOpen: false,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    LoadBalancerAttributes: Match.arrayWith([
+      { Key: 'routing.http.preserve_host_header.enabled', Value: 'false' },
+      { Key: 'routing.http.x_amzn_tls_version_and_cipher_suite.enabled', Value: 'false' },
+      { Key: 'routing.http.xff_client_port.enabled', Value: 'false' },
+      { Key: 'waf.fail_open.enabled', Value: 'false' },
+    ]),
+  });
+});
