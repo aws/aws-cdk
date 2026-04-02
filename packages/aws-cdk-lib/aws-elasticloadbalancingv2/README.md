@@ -137,9 +137,11 @@ Balancer that the other two convenience methods don't:
 * **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
 * **Authentication**: use `ListenerAction.authenticateOidc()` to
-  perform OpenID authentication before serving a request, or
+  perform OpenID authentication before serving a request,
   `ListenerAction.authenticateJwt()` to verify JSON Web Tokens (JWT)
-  for secure service-to-service communications (see the
+  for secure service-to-service communications, or
+  `ListenerAction.authenticateJwtWithCognito()` to verify JWTs using
+  Amazon Cognito User Pool (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
