@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as sqs from '../../aws-sqs';
+import type * as sqs from '../../aws-sqs';
 import { FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 
@@ -51,13 +52,13 @@ export class SqsQueue implements events.IRuleTarget {
    *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
-  public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
+  public bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const restrictToSameAccount = FeatureFlags.of(rule).isEnabled(cxapi.EVENTS_TARGET_QUEUE_SAME_ACCOUNT);
 
     let conditions: any = {};
     if (!this.queue.encryptionMasterKey) {
       conditions = {
-        ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+        ArnEquals: { 'aws:SourceArn': events.CfnRule.arnForRule(rule) },
       };
     } else if (restrictToSameAccount) {
       // Add only the account id as a condition, to avoid circular dependency. See issue #11158.

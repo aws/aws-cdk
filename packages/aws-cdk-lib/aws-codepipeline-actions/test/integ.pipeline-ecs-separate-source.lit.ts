@@ -1,6 +1,6 @@
 /// !cdk-integ *
 
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codebuild from '../../aws-codebuild';
 import * as codecommit from '../../aws-codecommit';
 import * as codepipeline from '../../aws-codepipeline';

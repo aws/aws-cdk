@@ -1,5 +1,5 @@
-import { ICertificate } from './certificate';
-import { DnsValidatedCertificate } from './dns-validated-certificate';
+import type { ICertificate } from './certificate';
+import type { DnsValidatedCertificate } from './dns-validated-certificate';
 import { publicSuffixes } from './public-suffixes';
 import { Arn, ArnFormat, Stack, Token } from '../../core';
 

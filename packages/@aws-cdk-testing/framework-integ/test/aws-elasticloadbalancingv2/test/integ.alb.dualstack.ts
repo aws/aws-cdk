@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 /* IPv6 workaround found here: https://github.com/aws/aws-cdk/issues/894 */

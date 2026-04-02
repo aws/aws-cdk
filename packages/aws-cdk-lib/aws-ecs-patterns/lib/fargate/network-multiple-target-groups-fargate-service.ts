@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import type { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
-import { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { FargateServiceBaseProps } from '../base/fargate-service-base';
+import type { NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
 import {
   NetworkMultipleTargetGroupsServiceBase,
-  NetworkMultipleTargetGroupsServiceBaseProps,
 } from '../base/network-multiple-target-groups-service-base';
 
 /**
@@ -81,7 +82,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
     this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionTask`, 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -112,10 +113,10 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         }
       }
     } else {
-      throw new ValidationError('You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('At least one essential container must be specified', this);
+      throw new ValidationError(lit`LeastOneEssentialContainerSpecified`, 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
@@ -131,7 +132,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new ValidationError('The first port mapping added to the default container must expose a single port', this);
+        throw new ValidationError(lit`FirstPortMappingAddedDefault`, 'The first port mapping added to the default container must expose a single port', this);
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {

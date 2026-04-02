@@ -1,5 +1,6 @@
-import { Resource } from '@aws-cdk/service-spec-types';
-import { $this, expr, Expression, PropertySpec, Type } from '@cdklabs/typewriter';
+import type { Resource } from '@aws-cdk/service-spec-types';
+import type { Expression, PropertySpec } from '@cdklabs/typewriter';
+import { $this, expr, Type } from '@cdklabs/typewriter';
 import { attributePropertyName, propertyNameFromCloudFormation, referencePropertyName } from '../naming';
 import { extractResourceVariablesFromArnFormat, findArnProperty, findNonIdentifierArnProperty } from './arn';
 import { CDK_CORE } from './cdk';

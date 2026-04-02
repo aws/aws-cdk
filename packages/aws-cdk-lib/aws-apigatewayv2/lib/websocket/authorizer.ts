@@ -1,12 +1,14 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IWebSocketRoute } from './route';
-import { CfnAuthorizer } from '.././index';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketRoute } from './route';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IAuthorizer } from '../common';
+import type { IAuthorizer } from '../common';
+import type { AuthorizerReference } from '../index';
+import { CfnAuthorizer } from '../index';
 
 /**
  * Supported Authorizer types
@@ -109,6 +111,7 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
   }
 
   public readonly authorizerId: string;
+  private readonly apiId: string;
 
   constructor(scope: Construct, id: string, props: WebSocketAuthorizerProps) {
     super(scope, id);
@@ -116,9 +119,10 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     addConstructMetadata(this, props);
 
     if (props.type === WebSocketAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError(lit`AuthorizerUriMandatoryLambdaAuthorizers`, 'authorizerUri is mandatory for Lambda authorizers', scope);
     }
 
+    this.apiId = props.webSocketApi.apiId;
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? id,
       apiId: props.webSocketApi.apiId,
@@ -128,6 +132,13 @@ export class WebSocketAuthorizer extends Resource implements IWebSocketAuthorize
     });
 
     this.authorizerId = resource.ref;
+  }
+
+  public get authorizerRef(): AuthorizerReference {
+    return {
+      authorizerId: this.authorizerId,
+      apiId: this.apiId,
+    };
   }
 }
 

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IContainerDefinition } from './base-types';
+import type { Construct } from 'constructs';
+import type { IContainerDefinition } from './base-types';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';

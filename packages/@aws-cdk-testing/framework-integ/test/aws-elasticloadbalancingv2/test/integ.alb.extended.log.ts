@@ -5,7 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class ExtendedLB extends elbv2.ApplicationLoadBalancer {
   constructor(scope: Construct, id: string, props: elbv2.BaseLoadBalancerProps) {

@@ -1,12 +1,13 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "instance-dual-test/DefaultTest": {
+    "read-replica-integ-test/DefaultTest": {
       "stacks": [
         "cdk-rds-read-replica"
       ],
-      "assertionStack": "instance-dual-test/DefaultTest/DeployAssert",
-      "assertionStackName": "instancedualtestDefaultTestDeployAssertD87FA35D"
+      "assertionStack": "read-replica-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "readreplicaintegtestDefaultTestDeployAssert4DA59FD1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

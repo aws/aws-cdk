@@ -2,12 +2,13 @@ import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IDatabaseCluster } from './cluster';
+import type { Construct } from 'constructs';
+import type { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';
-import { IParameterGroup } from './parameter-group';
+import type { IParameterGroup } from './parameter-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -300,7 +301,7 @@ export class InstanceType {
     if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
       this._instanceType = instanceType;
     } else {
-      throw new cdk.UnscopedValidationError(`instance type must start with 'db.'; (got ${instanceType})`);
+      throw new cdk.UnscopedValidationError(lit`InstanceTypeMustStartWithDb`, `instance type must start with 'db.'; (got ${instanceType})`);
     }
   }
 }

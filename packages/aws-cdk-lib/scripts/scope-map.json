@@ -255,6 +255,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -456,6 +463,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -575,6 +589,13 @@
       }
     ]
   },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
+      }
+    ]
+  },
   "aws-directoryservice": {
     "scopes": [
       {
@@ -691,6 +712,13 @@
     "scopes": [
       {
         "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
       }
     ]
   },
@@ -901,6 +929,13 @@
     "scopes": [
       {
         "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
       }
     ]
   },
@@ -1250,6 +1285,13 @@
       }
     ]
   },
+  "aws-mwaaserverless": {
+    "scopes": [
+      {
+        "namespace": "AWS::MWAAServerless"
+      }
+    ]
+  },
   "aws-neptune": {
     "scopes": [
       {
@@ -1548,6 +1590,13 @@
     "scopes": [
       {
         "namespace": "AWS::Route53"
+      }
+    ]
+  },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
       }
     ]
   },
@@ -1850,6 +1899,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },

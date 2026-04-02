@@ -1,8 +1,9 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AttributeType, Billing, TableV2, TableClass, TableEncryptionV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Stream } from 'aws-cdk-lib/aws-kinesis';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   public constructor(scope: Construct, id: string, props: StackProps) {
@@ -11,7 +12,6 @@ class TestStack extends Stack {
     const stream = new Stream(this, 'Stream');
 
     new TableV2(this, 'GlobalTable', {
-      tableName: 'my-global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.onDemand(),
@@ -53,8 +53,9 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new IntegTest(app, 'aws-cdk-global-table-integ', {
-  testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
+new IntegTest(app, 'aws-cdk-global-table-ondemand-integ', {
+  // Global tables with replicas require a region-aware stack
+  testCases: [new TestStack(app, 'aws-cdk-global-table-ondemand', { env: { region: 'us-east-1' } })],
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,
 });

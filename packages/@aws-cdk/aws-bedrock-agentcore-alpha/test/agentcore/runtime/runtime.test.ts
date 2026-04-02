@@ -9,10 +9,12 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { CustomClaimOperator } from '../../../lib/common/types';
 import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
+import { RuntimeCustomClaim } from '../../../lib/runtime/inbound-auth/custom-claim';
+import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-auth/runtime-authorizer-configuration';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
-import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/runtime-authorizer-configuration';
 import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
@@ -278,6 +280,7 @@ describe('Runtime with authorizer configuration tests', () => {
         'https://auth.example.com/.well-known/openid-configuration',
         ['client1', 'client2'],
         ['audience1'],
+        ['scope1', 'scope2'],
       ),
     });
 
@@ -317,11 +320,13 @@ describe('Runtime with authorizer configuration tests', () => {
       expect(jwtConfig).toHaveProperty('DiscoveryUrl');
       expect(jwtConfig).toHaveProperty('AllowedClients');
       expect(jwtConfig).toHaveProperty('AllowedAudience');
+      expect(jwtConfig).toHaveProperty('AllowedScopes');
 
       // Verify the values
       expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
       expect(jwtConfig.AllowedClients).toEqual(['client1', 'client2']);
       expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      expect(jwtConfig.AllowedScopes).toEqual(['scope1', 'scope2']);
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -367,6 +372,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       authorizerConfiguration: RuntimeAuthorizerConfiguration.usingCognito(
         userPool,
         [userPoolClient, anotherUserPoolClient],
+        ['cognito-audience'],
+        ['read', 'write'],
       ),
     });
 
@@ -396,6 +403,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       const jwtConfig = authConfig.CustomJWTAuthorizer;
       expect(jwtConfig).toHaveProperty('DiscoveryUrl');
       expect(jwtConfig).toHaveProperty('AllowedClients');
+      expect(jwtConfig).toHaveProperty('AllowedAudience');
+      expect(jwtConfig).toHaveProperty('AllowedScopes');
 
       // Verify the Cognito discovery URL is correctly formatted
       // The URL now uses a token for the region (Ref: AWS::Region)
@@ -411,6 +420,8 @@ describe('Runtime with Cognito authorizer configuration tests', () => {
       });
       expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyUserPoolClient01266CD6' });
       expect(jwtConfig.AllowedClients).toContainEqual({ Ref: 'MyUserPoolMyAnotherUserPoolClient4444CD16' });
+      expect(jwtConfig.AllowedAudience).toEqual(['cognito-audience']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write']);
     } else {
       // L1 construct might not be handling the authorizer configuration properly
       // This is acceptable as the configuration is still passed to the construct
@@ -879,6 +890,7 @@ describe('Runtime with OAuth authorizer tests', () => {
         'https://oauth.provider.com/.well-known/openid-configuration',
         'oauth-client-456',
         ['aud1', 'aud2'],
+        ['openid', 'profile'],
       ),
     });
 
@@ -898,6 +910,7 @@ describe('Runtime with OAuth authorizer tests', () => {
       expect(jwtConfig.DiscoveryUrl).toBe('https://oauth.provider.com/.well-known/openid-configuration');
       expect(jwtConfig.AllowedClients).toEqual(['oauth-client-456']);
       expect(jwtConfig.AllowedAudience).toEqual(['aud1', 'aud2']);
+      expect(jwtConfig.AllowedScopes).toEqual(['openid', 'profile']);
     }
   });
 
@@ -957,6 +970,294 @@ describe('Runtime with JWT authorizer tests', () => {
 
     // Verify the runtime was created
     expect(runtime.agentRuntimeName).toBe('test_runtime_jwt');
+  });
+
+  test('Should create runtime with JWT authorizer including allowedScopes', () => {
+    new Runtime(stack, 'test-runtime-scopes', {
+      runtimeName: 'test_runtime_jwt_scopes',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        ['read', 'write', 'admin'],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Verify the JWT configuration with scopes is properly rendered
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedClients).toEqual(['client1']);
+      expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      expect(jwtConfig.AllowedScopes).toEqual(['read', 'write', 'admin']);
+    }
+  });
+
+  test('Should create runtime with JWT authorizer without allowedScopes (optional parameter)', () => {
+    new Runtime(stack, 'test-runtime-no-scopes', {
+      runtimeName: 'test_runtime_jwt_no_scopes',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        // allowedScopes not provided - should work fine
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    // Verify the JWT configuration without scopes is properly rendered
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig.DiscoveryUrl).toBe('https://auth.example.com/.well-known/openid-configuration');
+      expect(jwtConfig.AllowedClients).toEqual(['client1']);
+      expect(jwtConfig.AllowedAudience).toEqual(['audience1']);
+      // AllowedScopes should be undefined when not provided
+      expect(jwtConfig.AllowedScopes).toBeUndefined();
+      expect(jwtConfig.CustomClaims).toBeUndefined();
+    }
+  });
+});
+
+describe('Runtime with Custom Claims tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let repository: ecr.Repository;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should render authorizer configuration with custom claims', () => {
+    const stringClaim = RuntimeCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
+
+    new Runtime(stack, 'test-runtime-render-custom-claims', {
+      runtimeName: 'test_runtime_render_custom_claims',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: RuntimeAuthorizerConfiguration.usingJWT (
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        ['read'],
+        [stringClaim, arrayClaim],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(2);
+
+      // Check first claim (string)
+      const stringClaimConfig = jwtConfig.CustomClaims[0];
+      expect(stringClaimConfig.InboundTokenClaimName).toBe('department');
+      expect(stringClaimConfig.InboundTokenClaimValueType).toBe('STRING');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('EQUALS');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('engineering');
+
+      // Check second claim (string array)
+      const arrayClaimConfig = jwtConfig.CustomClaims[1];
+      expect(arrayClaimConfig.InboundTokenClaimName).toBe('roles');
+      expect(arrayClaimConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('admin');
+    }
+  });
+
+  test('Should create RuntimeCustomClaim with string array value (default CONTAINS)', () => {
+    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
+    const rendered = claim._render();
+
+    expect(rendered.inboundTokenClaimName).toBe('roles');
+    expect(rendered.inboundTokenClaimValueType).toBe('STRING_ARRAY');
+    const matchValue = rendered.authorizingClaimMatchValue as any;
+    expect(matchValue.claimMatchOperator).toBe('CONTAINS');
+    expect(matchValue.claimMatchValue.matchValueString).toBe('admin');
+    expect(matchValue.claimMatchValue.matchValueStringList).toBeUndefined();
+  });
+
+  test('Should create RuntimeCustomClaim with string array value (CONTAINS_ANY)', () => {
+    const claim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+    const rendered = claim._render();
+
+    expect(rendered.inboundTokenClaimName).toBe('permissions');
+    expect(rendered.inboundTokenClaimValueType).toBe('STRING_ARRAY');
+    const matchValue = rendered.authorizingClaimMatchValue as any;
+    expect(matchValue.claimMatchOperator).toBe('CONTAINS_ANY');
+    expect(matchValue.claimMatchValue.matchValueStringList).toEqual(['read', 'write']);
+  });
+
+  test('Should throw error for invalid operator with string array', () => {
+    expect(() => {
+      RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], CustomClaimOperator.EQUALS);
+    }).toThrow('STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators');
+  });
+
+  test('Should throw error when CONTAINS operator is used with multiple values', () => {
+    const claim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS);
+    expect(() => {
+      claim._render();
+    }).toThrow('CONTAINS operator requires exactly one value, got 2 values');
+  });
+
+  test('Should create runtime with JWT authorizer and custom claims', () => {
+    const stringClaim = RuntimeCustomClaim.withStringValue('department', 'engineering');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('roles', ['admin', 'user'], CustomClaimOperator.CONTAINS_ANY);
+
+    new Runtime(stack, 'test-runtime-custom-claims', {
+      runtimeName: 'test_runtime_custom_claims',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: (RuntimeAuthorizerConfiguration.usingJWT as any)(
+        'https://auth.example.com/.well-known/openid-configuration',
+        ['client1'],
+        ['audience1'],
+        ['read'],
+        [stringClaim, arrayClaim],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(2);
+
+      // Check first claim (string)
+      const stringClaimConfig = jwtConfig.CustomClaims[0];
+      expect(stringClaimConfig.InboundTokenClaimName).toBe('department');
+      expect(stringClaimConfig.InboundTokenClaimValueType).toBe('STRING');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('EQUALS');
+      expect(stringClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueString).toBe('engineering');
+
+      // Check second claim (string array)
+      const arrayClaimConfig = jwtConfig.CustomClaims[1];
+      expect(arrayClaimConfig.InboundTokenClaimName).toBe('roles');
+      expect(arrayClaimConfig.InboundTokenClaimValueType).toBe('STRING_ARRAY');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchOperator).toBe('CONTAINS_ANY');
+      expect(arrayClaimConfig.AuthorizingClaimMatchValue.ClaimMatchValue.MatchValueStringList).toEqual(['admin', 'user']);
+    }
+  });
+
+  test('Should create runtime with Cognito authorizer and custom claims', () => {
+    const userPool = new cognito.UserPool(stack, 'TestUserPool', {
+      userPoolName: 'test-pool',
+    });
+    const userPoolClient = userPool.addClient('TestClient');
+
+    const stringClaim = RuntimeCustomClaim.withStringValue('team', 'backend');
+    const arrayClaim = RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY);
+
+    new Runtime(stack, 'test-runtime-cognito-claims', {
+      runtimeName: 'test_runtime_cognito_claims',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: (RuntimeAuthorizerConfiguration.usingCognito as any)(
+        userPool,
+        [userPoolClient],
+        ['audience1'],
+        ['read'],
+        [stringClaim, arrayClaim],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(2);
+    }
+  });
+
+  test('Should create runtime with OAuth authorizer and custom claims', () => {
+    const stringClaim = RuntimeCustomClaim.withStringValue('org', 'acme');
+
+    new Runtime(stack, 'test-runtime-oauth-claims', {
+      runtimeName: 'test_runtime_oauth_claims',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      authorizerConfiguration: (RuntimeAuthorizerConfiguration.usingOAuth as any)(
+        'https://oauth.example.com/.well-known/openid-configuration',
+        'oauth-client-123',
+        ['audience1'],
+        ['read'],
+        [stringClaim],
+      ),
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const resources = template.findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0];
+
+    expect(runtimeResource.Properties).toHaveProperty('AuthorizerConfiguration');
+    const authConfig = runtimeResource.Properties.AuthorizerConfiguration;
+
+    if (Object.keys(authConfig).length > 0) {
+      expect(authConfig).toHaveProperty('CustomJWTAuthorizer');
+      const jwtConfig = authConfig.CustomJWTAuthorizer;
+      expect(jwtConfig).toHaveProperty('CustomClaims');
+      expect(jwtConfig.CustomClaims).toHaveLength(1);
+    }
   });
 });
 
@@ -2673,3 +2974,30 @@ const expectedExecutionRolePolicy = {
     ],
   },
 };
+
+describe('Runtime Optional Physical Names', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should create Runtime without runtimeName (auto-generated)', () => {
+    const runtime = new Runtime(stack, 'TestRuntime', {
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    expect(runtime.agentRuntimeName).toBeDefined();
+    expect(runtime.agentRuntimeName).not.toBe('');
+  });
+});

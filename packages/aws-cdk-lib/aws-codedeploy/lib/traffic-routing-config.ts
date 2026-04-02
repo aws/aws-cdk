@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { Duration } from '../../core';
+import type { Construct } from 'constructs';
+import type { Duration } from '../../core';
 
 /**
  * Represents the structure to pass into the underlying CfnDeploymentConfig class.

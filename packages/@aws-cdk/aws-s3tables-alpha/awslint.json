@@ -7,6 +7,16 @@
     "duration-prop-name:@aws-cdk/aws-s3tables-alpha.UnreferencedFileRemoval.unreferencedDays",
     "attribute-tag:@aws-cdk/aws-s3tables-alpha.TableBucket.tableBucketPolicy",
     "attribute-tag:@aws-cdk/aws-s3tables-alpha.Table.tablePolicy",
-    "props-physical-name:@aws-cdk/aws-s3tables-alpha.TablePolicyProps"
+    "props-physical-name:@aws-cdk/aws-s3tables-alpha.TablePolicyProps",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.NamespaceAttributes.tableBucket",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.NamespaceProps.tableBucket",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableProps.namespace",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketAttributes.encryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketProps.encryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TableBucketPolicyProps.tableBucket",
+    "prefer-ref-interface:@aws-cdk/aws-s3tables-alpha.TablePolicyProps.table",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.INamespace",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.ITable",
+    "interface-extends-ref:@aws-cdk/aws-s3tables-alpha.ITableBucket"
   ]
 }

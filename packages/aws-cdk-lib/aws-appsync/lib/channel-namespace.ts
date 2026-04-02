@@ -1,19 +1,21 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AppSyncEventResource } from './appsync-common';
 import { CfnChannelNamespace } from './appsync.generated';
-import { AppSyncAuthorizationType } from './auth-config';
-import { Code } from './code';
+import type { AppSyncAuthorizationType } from './auth-config';
+import type { Code } from './code';
+import type { AppSyncBackedDataSource } from './data-source-common';
 import {
-  AppSyncBackedDataSource,
   AppSyncDataSourceType,
   LambdaInvokeType,
 } from './data-source-common';
-import { IEventApi } from './eventapi';
-import { IGrantable } from '../../aws-iam';
-import { IResource, Resource, Token, ValidationError } from '../../core';
+import type { IEventApi } from './eventapi';
+import type { IGrantable } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
+import type { IChannelNamespaceRef, ChannelNamespaceReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * An AppSync channel namespace
@@ -209,7 +211,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   constructor(scope: Construct, id: string, props: ChannelNamespaceProps) {
     if (props.channelNamespaceName !== undefined && !Token.isUnresolved(props.channelNamespaceName)) {
       if (props.channelNamespaceName.length < 1 || props.channelNamespaceName.length > 50) {
-        throw new ValidationError(`\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
+        throw new ValidationError(lit`ChannelNamespaceLengthInvalid`, `\`channelNamespaceName\` must be between 1 and 50 characters, got: ${props.channelNamespaceName.length} characters.`, scope);
       }
     }
 
@@ -289,6 +291,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -300,6 +303,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -311,6 +315,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   /**
    * Adds an IAM policy statement for EventPublish and EventSubscribe access to this channel namespace to an IAM
    * principal's policy.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The principal
    */
@@ -322,7 +327,7 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
   private validateAuthorizationConfig(apiAuthProviders: AppSyncAuthorizationType[], channelAuthModeTypes: AppSyncAuthorizationType[]) {
     for (const mode of channelAuthModeTypes) {
       if (!apiAuthProviders.find((authProvider) => authProvider === mode)) {
-        throw new ValidationError(`API is missing authorization configuration for ${mode}`, this);
+        throw new ValidationError(lit`AuthorizationConfigurationMissing`, `API is missing authorization configuration for ${mode}`, this);
       }
     }
   }
@@ -334,35 +339,35 @@ export class ChannelNamespace extends Resource implements IChannelNamespace {
     // Handle the case where behavior is direct but Lambda is not the data source
     if (props.publishHandlerConfig?.direct) {
       if (!props.publishHandlerConfig.dataSource) {
-        throw new ValidationError('No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+        throw new ValidationError(lit`DataSourceRequired`, 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
       }
       if (props.publishHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
-        throw new ValidationError('Direct integration is only supported for AWS_LAMBDA data sources.', this);
+        throw new ValidationError(lit`DirectIntegrationLambdaOnly`, 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
       }
     }
 
     if (props.subscribeHandlerConfig?.direct) {
       if (!props.subscribeHandlerConfig.dataSource) {
-        throw new ValidationError('No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
+        throw new ValidationError(lit`DataSourceRequired`, 'No data source provided. AWS_LAMBDA data source is required for Direct handler behavior type', this);
       }
       if (props.subscribeHandlerConfig.dataSource.resource.type !== AppSyncDataSourceType.LAMBDA) {
-        throw new ValidationError('Direct integration is only supported for AWS_LAMBDA data sources.', this);
+        throw new ValidationError(lit`DirectIntegrationLambdaOnly`, 'Direct integration is only supported for AWS_LAMBDA data sources.', this);
       }
     }
 
     // Handle the case where behavior is direct for both publish and subscribe, but code handler is provided
     if (props.publishHandlerConfig?.direct && props.subscribeHandlerConfig?.direct && props.code) {
-      throw new ValidationError('Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
+      throw new ValidationError(lit`CodeHandlersNotSupportedWithDirectBehavior`, 'Code handlers are not supported when both publish and subscribe use the Direct data source behavior', this);
     }
 
     // Handle the case where behavior is code and Lambda invoke type is specified
     if (!props.publishHandlerConfig?.direct && props.publishHandlerConfig?.lambdaInvokeType) {
-      throw new ValidationError('LambdaInvokeType is only supported for Direct handler behavior type', this);
+      throw new ValidationError(lit`LambdaInvokeTypeDirectOnly`, 'LambdaInvokeType is only supported for Direct handler behavior type', this);
     }
 
     // Handle the case where behavior is code and Lambda invoke type is specified
     if (!props.subscribeHandlerConfig?.direct && props.subscribeHandlerConfig?.lambdaInvokeType) {
-      throw new ValidationError('LambdaInvokeType is only supported for Direct handler behavior type', this);
+      throw new ValidationError(lit`LambdaInvokeTypeDirectOnly`, 'LambdaInvokeType is only supported for Direct handler behavior type', this);
     }
   }
 

@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "9d422604544e4e54e51bbf961f6d7cd8a934a02e7188c048af47b3fb251e5c39": {
+      "displayName": "eventbridge-integration Template",
+      "source": {
+        "path": "eventbridge-integration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-dc8081d1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9d422604544e4e54e51bbf961f6d7cd8a934a02e7188c048af47b3fb251e5c39.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,6 +1,6 @@
-import { IDependable } from 'constructs';
-import { Connections } from '../../aws-ec2';
-import * as efs from '../../aws-efs';
+import type { IDependable } from 'constructs';
+import type { Connections } from '../../aws-ec2';
+import type * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
 

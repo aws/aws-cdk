@@ -1,16 +1,18 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigw from 'aws-cdk-lib/aws-apigateway';
-import {
-  SecurityGroup,
+import type {
   SecurityGroupProps,
-  Vpc,
   VpcProps,
 } from 'aws-cdk-lib/aws-ec2';
+import {
+  SecurityGroup,
+  Vpc,
+} from 'aws-cdk-lib/aws-ec2';
+import type { FunctionProps } from 'aws-cdk-lib/aws-lambda';
 import {
   ApplicationLogLevel,
   Code,
   Function,
-  FunctionProps,
   LoggingFormat,
   Runtime,
 } from 'aws-cdk-lib/aws-lambda';
@@ -19,11 +21,11 @@ import {
   LogRetention,
   RetentionDays,
 } from 'aws-cdk-lib/aws-logs';
+import type { IBucket } from 'aws-cdk-lib/aws-s3';
 import {
   BlockPublicAccess,
   Bucket,
   BucketEncryption,
-  IBucket,
 } from 'aws-cdk-lib/aws-s3';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';

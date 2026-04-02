@@ -1,0 +1,106 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "Test template with resource policies containing root principals",
+	"Resources": {
+		"TestBucket": {
+			"Type": "AWS::S3::Bucket",
+			"Properties": {
+				"BucketName": "test-bucket"
+			}
+		},
+		"TestBucketPolicyWithRootNoCondition": {
+			"Type": "AWS::S3::BucketPolicy",
+			"Properties": {
+				"Bucket": {
+					"Ref": "TestBucket"
+				},
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"AWS": "arn:aws:iam::123456789012:root"
+							},
+							"Action": [
+								"s3:GetObject",
+								"s3:PutObject"
+							],
+							"Resource": {
+								"Fn::Sub": "arn:aws:s3:::${TestBucket}/*"
+							}
+						}
+					]
+				}
+			}
+		},
+		"TestQueue": {
+			"Type": "AWS::SQS::Queue",
+			"Properties": {
+				"QueueName": "test-queue"
+			}
+		},
+		"TestQueuePolicyWithRootNoCondition": {
+			"Type": "AWS::SQS::QueuePolicy",
+			"Properties": {
+				"Queues": [
+					{
+						"Ref": "TestQueue"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"AWS": [
+									"arn:aws:iam::111122223333:root",
+									"arn:aws:iam::444455556666:root"
+								]
+							},
+							"Action": "sqs:SendMessage",
+							"Resource": {
+								"Fn::GetAtt": [
+									"TestQueue",
+									"Arn"
+								]
+							}
+						}
+					]
+				}
+			}
+		},
+		"TestTopic": {
+			"Type": "AWS::SNS::Topic",
+			"Properties": {
+				"TopicName": "test-topic"
+			}
+		},
+		"TestTopicPolicyWithRootNoCondition": {
+			"Type": "AWS::SNS::TopicPolicy",
+			"Properties": {
+				"Topics": [
+					{
+						"Ref": "TestTopic"
+					}
+				],
+				"PolicyDocument": {
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Effect": "Allow",
+							"Principal": {
+								"AWS": "arn:aws:iam::123456789012:root"
+							},
+							"Action": "sns:Publish",
+							"Resource": {
+								"Ref": "TestTopic"
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}

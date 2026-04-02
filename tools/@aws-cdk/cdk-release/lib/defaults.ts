@@ -1,4 +1,4 @@
-import { ReleaseOptions } from './types';
+import type { ReleaseOptions } from './types';
 
 export const defaults: Partial<ReleaseOptions> = {
   changelogFile: 'CHANGELOG.md',

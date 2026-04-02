@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Annotations } from '../../assertions';
 import * as cdk from '../../core';
 import * as s3 from '../lib';

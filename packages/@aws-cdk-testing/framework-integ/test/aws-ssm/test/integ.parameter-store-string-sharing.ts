@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
 import {
   aws_ssm as ssm,
   aws_ram as ram,
-  StackProps,
 } from 'aws-cdk-lib';
 
 /**

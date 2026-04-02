@@ -1,8 +1,9 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as events from 'aws-cdk-lib/aws-events';
-import { App, Duration, RemovalPolicy, Stack, StackProps, CfnParameter, TimeZone } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack, CfnParameter, TimeZone } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as backup from 'aws-cdk-lib/aws-backup';
 
 class TestStack extends Stack {

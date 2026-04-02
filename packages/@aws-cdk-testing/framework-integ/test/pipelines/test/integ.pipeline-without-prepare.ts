@@ -1,9 +1,10 @@
 
 /// !cdk-integ VarablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { App, Stack, StackProps, RemovalPolicy, Stage, StageProps, DefaultStackSynthesizer } from 'aws-cdk-lib';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy, Stage, DefaultStackSynthesizer } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 /**

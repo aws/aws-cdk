@@ -1,12 +1,14 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import {
-  ContainerRecipe,
+import type {
   IContainerRecipe,
   IImageRecipe,
-  ImageRecipe,
   IRecipeBase,
+} from '../lib';
+import {
+  ContainerRecipe,
+  ImageRecipe,
   LifecyclePolicy,
   LifecyclePolicyActionType,
   LifecyclePolicyResourceType,

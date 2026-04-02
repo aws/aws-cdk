@@ -1,20 +1,24 @@
 import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Annotations, ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource, SecretValue } from 'aws-cdk-lib/core';
+import { Annotations, ArnFormat, CustomResource, Duration, Lazy, RemovalPolicy, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
-import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
-import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
+import type { IClusterParameterGroup } from './parameter-group';
+import { ClusterParameterGroup } from './parameter-group';
+import type { IClusterSubnetGroup } from './subnet-group';
+import { ClusterSubnetGroup } from './subnet-group';
 
 /**
  * Possible Node Types to use in the cluster
@@ -224,7 +228,7 @@ class CloudWatchClusterLogging extends ClusterLogging {
   constructor(private readonly options: CloudWatchLoggingOptions) {
     super();
     if (options.logExports && options.logExports.length !== new Set(options.logExports).size) {
-      throw new UnscopedValidationError('DuplicateLogExports', 'logExports must not contain duplicate values.');
+      throw new UnscopedValidationError(lit`DuplicateLogExports`, 'logExports must not contain duplicate values.');
     }
   }
 
@@ -412,7 +416,7 @@ export interface ClusterProps {
   /**
    * The node type to be provisioned for the cluster.
    *
-   * @default `NodeType.DC2_LARGE`
+   * @default `NodeType.RA3_LARGE`
    */
   readonly nodeType?: NodeType;
 
@@ -756,14 +760,14 @@ export class Cluster extends ClusterBase {
     const nodeCount = this.validateNodeCount(clusterType, props.numberOfNodes);
 
     if (props.encrypted === false && props.encryptionKey !== undefined) {
-      throw new ValidationError('Cannot set property encryptionKey without enabling encryption!', this);
+      throw new ValidationError(lit`EncryptionKeyWithoutEncryption`, 'Cannot set property encryptionKey without enabling encryption!', this);
     }
 
     this.singleUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_SINGLE_USER;
     this.multiUserRotationApplication = secretsmanager.SecretRotationApplication.REDSHIFT_ROTATION_MULTI_USER;
 
     if (props.logging && props.loggingProperties) {
-      throw new ValidationError('BothLoggingSpecified', 'Cannot specify both "logging" and "loggingProperties". Use "logging" instead.', this);
+      throw new ValidationError(lit`BothLoggingSpecified`, 'Cannot specify both "logging" and "loggingProperties". Use "logging" instead.', this);
     }
 
     let loggingProperties;
@@ -824,22 +828,22 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+    const nodeType = props.nodeType || NodeType.RA3_LARGE;
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
-        throw new ValidationError(`Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`, this);
+        throw new ValidationError(lit`MultiAzUnsupportedNodeType`, `Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`, this);
       }
       if (clusterType === ClusterType.SINGLE_NODE) {
-        throw new ValidationError('Multi-AZ cluster is not supported for `clusterType` single-node', this);
+        throw new ValidationError(lit`MultiAzUnsupportedClusterType`, 'Multi-AZ cluster is not supported for `clusterType` single-node', this);
       }
     }
 
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
-      throw new ValidationError('ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.', this);
+      throw new ValidationError(lit`FailoverRequiresMultiAz`, 'ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.', this);
     }
     if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
-      throw new ValidationError(`Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`, this);
+      throw new ValidationError(lit`AvailabilityZoneRelocationUnsupportedNodeType`, `Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`, this);
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
@@ -900,7 +904,7 @@ export class Cluster extends ClusterBase {
       if (props.roles?.some(x => x === props.defaultRole)) {
         this.addDefaultIamRole(props.defaultRole);
       } else {
-        throw new ValidationError('Default role must be included in role list.', this);
+        throw new ValidationError(lit`DefaultRoleNotInRolesList`, 'Default role must be included in role list.', this);
       }
     }
   }
@@ -914,13 +918,13 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add single user rotation for a cluster without secret.', this);
+      throw new ValidationError(lit`NoSecretForRotation`, 'Cannot add single user rotation for a cluster without secret.', this);
     }
 
     const id = 'RotationSingleUser';
     const existing = this.node.tryFindChild(id);
     if (existing) {
-      throw new ValidationError('A single user rotation was already added to this cluster.', this);
+      throw new ValidationError(lit`SingleUserRotationAlreadyExists`, 'A single user rotation was already added to this cluster.', this);
     }
 
     return new secretsmanager.SecretRotation(this, id, {
@@ -939,7 +943,7 @@ export class Cluster extends ClusterBase {
   @MethodMetadata()
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new ValidationError('Cannot add multi user rotation for a cluster without secret.', this);
+      throw new ValidationError(lit`NoSecretForMultiUserRotation`, 'Cannot add multi user rotation for a cluster without secret.', this);
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,
@@ -956,7 +960,7 @@ export class Cluster extends ClusterBase {
     if (clusterType === ClusterType.SINGLE_NODE) {
       // This property must not be set for single-node clusters; be generous and treat a value of 1 node as undefined.
       if (numberOfNodes !== undefined && numberOfNodes !== 1) {
-        throw new ValidationError('Number of nodes must be not be supplied or be 1 for cluster type single-node', this);
+        throw new ValidationError(lit`InvalidNodeCountForSingleNode`, 'Number of nodes must be not be supplied or be 1 for cluster type single-node', this);
       }
       return undefined;
     } else {
@@ -965,7 +969,7 @@ export class Cluster extends ClusterBase {
       }
       const nodeCount = numberOfNodes ?? 2;
       if (nodeCount < 2 || nodeCount > 100) {
-        throw new ValidationError('Number of nodes for cluster type multi-node must be at least 2 and no more than 100', this);
+        throw new ValidationError(lit`InvalidNodeCountForMultiNode`, 'Number of nodes for cluster type multi-node must be at least 2 and no more than 100', this);
       }
       return nodeCount;
     }
@@ -990,7 +994,7 @@ export class Cluster extends ClusterBase {
     } else if (this.parameterGroup instanceof ClusterParameterGroup) {
       this.parameterGroup.addParameter(name, value);
     } else {
-      throw new ValidationError('Cannot add a parameter to an imported parameter group.', this);
+      throw new ValidationError(lit`CannotAddParameterToImportedGroup`, 'Cannot add a parameter to an imported parameter group.', this);
     }
   }
 
@@ -1035,7 +1039,7 @@ export class Cluster extends ClusterBase {
         ParameterGroupName: Lazy.string({
           produce: () => {
             if (!this.parameterGroup) {
-              throw new ValidationError('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
+              throw new ValidationError(lit`NoParameterGroupForReboot`, 'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
             }
             return this.parameterGroup.clusterParameterGroupName;
           },
@@ -1043,7 +1047,7 @@ export class Cluster extends ClusterBase {
         ParametersString: Lazy.string({
           produce: () => {
             if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
-              throw new ValidationError('Cannot enable reboot for parameter changes when using an imported parameter group.', this);
+              throw new ValidationError(lit`ImportedParameterGroupForReboot`, 'Cannot enable reboot for parameter changes when using an imported parameter group.', this);
             }
             return JSON.stringify(this.parameterGroup.parameters);
           },
@@ -1053,7 +1057,7 @@ export class Cluster extends ClusterBase {
     Lazy.any({
       produce: () => {
         if (!this.parameterGroup) {
-          throw new ValidationError('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
+          throw new ValidationError(lit`NoParameterGroupForRebootDependency`, 'Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.', this);
         }
         customResource.node.addDependency(this, this.parameterGroup);
       },
@@ -1079,7 +1083,7 @@ export class Cluster extends ClusterBase {
       }
     }
     if (!roleAlreadyOnCluster) {
-      throw new ValidationError('Default role must be associated to the Redshift cluster to be set as the default role.', this);
+      throw new ValidationError(lit`DefaultRoleNotAssociated`, 'Default role must be associated to the Redshift cluster to be set as the default role.', this);
     }
 
     // On UPDATE or CREATE define the default IAM role. On DELETE, remove the default IAM role
@@ -1125,7 +1129,7 @@ export class Cluster extends ClusterBase {
     const clusterRoleList = this.roles;
 
     if (clusterRoleList.includes(role)) {
-      throw new ValidationError(`Role '${role.roleArn}' is already attached to the cluster`, this);
+      throw new ValidationError(lit`RoleAlreadyAttached`, `Role '${role.roleArn}' is already attached to the cluster`, this);
     }
 
     clusterRoleList.push(role);

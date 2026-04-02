@@ -1,5 +1,6 @@
-import { App, Stack, NestedStack, StackProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, NestedStack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as sc from 'aws-cdk-lib/aws-servicecatalog';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';

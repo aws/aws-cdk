@@ -1,7 +1,8 @@
 import { Template } from '../../assertions';
 import { User } from '../../aws-iam';
 import * as cdk from '../../core';
-import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
+import type { IRuleTarget } from '../lib';
+import { EventField, RuleTargetInput, Schedule } from '../lib';
 import { Rule } from '../lib/rule';
 
 describe('input', () => {

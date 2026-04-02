@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from './default-codebuild-image';
 import * as codebuild from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
+import type * as cp from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
+import type * as lambda from '../../../aws-lambda';
 import { Duration, Tags } from '../../../core';
 import { ApproveLambdaFunction } from '../../../custom-resource-handlers/dist/pipelines/approve-lambda.generated';
 

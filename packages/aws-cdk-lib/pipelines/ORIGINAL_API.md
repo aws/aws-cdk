@@ -628,7 +628,7 @@ The Action can also be used as a Grantable after having been added to a Pipeline
 const action = new pipelines.ShellScriptAction({ /* ... */ });
 pipeline.addStage('Test').addActions(action);
 
-bucket.grantRead(action);
+bucket.grants.read(action);
 ```
 
 #### Additional files from the source repository

@@ -1,0 +1,85 @@
+{
+ "Resources": {
+  "EventBus7B8748AA": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "LogConfig": {
+     "IncludeDetail": "NONE",
+     "Level": "ERROR"
+    },
+    "Name": "vended-logs-mixin-event-bus"
+   }
+  },
+  "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940": {
+   "Type": "AWS::Logs::DeliverySource",
+   "Properties": {
+    "LogType": "ERROR_LOGS",
+    "Name": "cdk-errorlogs-source-sourcestackEventBus5CCE9092",
+    "ResourceArn": {
+     "Fn::GetAtt": [
+      "EventBus7B8748AA",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "EventBusCdkDestsourcestacks3DestF499B7A7ErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery40A06194": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": "arn:aws:logs:us-east-1:12345678:delivery-destination:cdk-s3-S3DeliveryDestination-dest-destinationstack",
+    "DeliverySourceName": {
+     "Ref": "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+    }
+   },
+   "DependsOn": [
+    "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+   ]
+  },
+  "EventBusCdkDestsourcestackFhDest056D7D0DErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery05D12C1A": {
+   "Type": "AWS::Logs::Delivery",
+   "Properties": {
+    "DeliveryDestinationArn": "arn:aws:logs:us-east-1:12345678:delivery-destination:cdk-fh-FHDeliveryDestination-dest-destinationstack",
+    "DeliverySourceName": {
+     "Ref": "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+    }
+   },
+   "DependsOn": [
+    "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

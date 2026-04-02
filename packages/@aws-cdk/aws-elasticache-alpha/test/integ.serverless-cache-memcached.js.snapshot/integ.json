@@ -1,0 +1,17 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-serverless-cache-memcached-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-serverless-cache-memcached"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-serverless-cache-memcached-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

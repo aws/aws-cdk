@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
+import type { IResource } from '../lib';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
-  Fn, IResource, RemovalPolicy, Resource, Stack,
+  Fn, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 

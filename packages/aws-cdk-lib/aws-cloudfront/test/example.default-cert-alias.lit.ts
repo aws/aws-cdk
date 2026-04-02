@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3 from '../../aws-s3';
 import { App, Stack } from '../../core';
 import * as cloudfront from '../lib';

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "48.0.0",
   "testCases": {
     "ServerDeploymentGroupMultipleLB/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert",
       "assertionStackName": "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

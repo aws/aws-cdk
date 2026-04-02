@@ -13,46 +13,76 @@ working with you to improve the AWS CDK for everyone. ❤️
 The AWS CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/).
 Any code that you submit will be released under that license.
 
-- [What are contributions?](#what-are-contributions)
-- [How contributions work](#how-contributions-work)
-- [Where To Contribute](#where-to-contribute)
-  - [Demonstrating Value](#demonstrating-value)
-  - [Publishing Your Own Package](#publishing-your-own-package)
-    - [Trust and Third Party Packages](#trust-and-third-party-packages)
-    - [Third Party Package Administration](#third-party-package-administration)
-- [Quick Start](#quick-start)
-- [Getting Started](#getting-started)
-  - [Local setup](#setup)
-  - [Dev Container](#dev-container)
-- [Pull Requests](#pull-requests)
-  - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
-  - [Step 2: Design (optional)](#step-2-design)
-  - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Pull Request](#step-4-pull-request)
-  - [Step 5: Merge](#step-5-merge)
-- [Breaking Changes](#breaking-changes)
-- [Documentation](#documentation)
-  - [Rosetta](#rosetta)
-- [Tools](#tools-advanced)
-  - [Linters](#linters)
-  - [scripts/foreach.sh](#scriptsforeachsh)
-  - [JetBrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
-  - [Linking against this repository](#linking-against-this-repository)
-  - [Running integration tests in parallel](#running-integration-tests-in-parallel)
-  - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
-  - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
-- [Running CLI integration tests](#running-cli-integration-tests)
-- [Building aws-cdk-lib](#building-aws-cdk-lib)
-- [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
-- [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
-- [Feature Flags](#feature-flags)
-- [Versioning and Release](#versioning-and-release)
-- [Common Issues](#common-issues)
-- [Debugging](#debugging)
-  - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
-  - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
-- [Badges (Pilot Program)](#badges-pilot-program)
-- [Related Repositories](#related-repositories)
+- [Contributing to the AWS Cloud Development Kit](#contributing-to-the-aws-cloud-development-kit)
+  - [What are contributions?](#what-are-contributions)
+  - [How contributions work](#how-contributions-work)
+  - [Where to Contribute](#where-to-contribute)
+    - [Demonstrating Value](#demonstrating-value)
+    - [Publishing Your Own Package](#publishing-your-own-package)
+      - [Trust and Third Party Packages](#trust-and-third-party-packages)
+      - [Third Party Package Administration](#third-party-package-administration)
+  - [Quick Start](#quick-start)
+    - [Setup](#setup)
+    - [Testing](#testing)
+    - [Linking](#linking)
+  - [Getting Started](#getting-started)
+    - [Setup](#setup-1)
+    - [Repo Layout](#repo-layout)
+    - [Building aws-cdk-lib](#building-aws-cdk-lib)
+    - [Pack](#pack)
+    - [Dev Container](#dev-container)
+    - [Gitpod](#gitpod)
+    - [Amazon CodeCatalyst Dev Environments](#amazon-codecatalyst-dev-environments)
+  - [Pull Requests](#pull-requests)
+    - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
+    - [Step 2: Design](#step-2-design)
+    - [Step 3: Work your Magic](#step-3-work-your-magic)
+      - [Integration Tests](#integration-tests)
+      - [yarn watch (Optional)](#yarn-watch-optional)
+      - [Verify your fix by deployment](#verify-your-fix-by-deployment)
+    - [Step 4: Pull Request](#step-4-pull-request)
+      - [Getting a review from a maintainer](#getting-a-review-from-a-maintainer)
+      - [Adding construct runtime dependencies](#adding-construct-runtime-dependencies)
+      - [Adding new unconventional dependencies](#adding-new-unconventional-dependencies)
+    - [Addressing Code Coverage Gaps](#addressing-code-coverage-gaps)
+    - [Step 5: Merge](#step-5-merge)
+  - [Breaking Changes](#breaking-changes)
+    - [API surface changes](#api-surface-changes)
+      - [Dealing with breaking API surface changes](#dealing-with-breaking-api-surface-changes)
+    - [Behavior changes](#behavior-changes)
+      - [Dealing with breaking behavior changes](#dealing-with-breaking-behavior-changes)
+    - [Adding new experimental ("preview") APIs](#adding-new-experimental-preview-apis)
+  - [Documentation](#documentation)
+    - [Rosetta](#rosetta)
+      - [Recommendations](#recommendations)
+  - [Tools (Advanced)](#tools-advanced)
+    - [scripts/foreach.sh](#scriptsforeachsh)
+    - [Linters](#linters)
+      - [ESLint](#eslint)
+      - [pkglint](#pkglint)
+      - [awslint](#awslint)
+    - [JetBrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+    - [Linking against this repository](#linking-against-this-repository)
+    - [Running integration tests in parallel](#running-integration-tests-in-parallel)
+    - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
+    - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
+  - [Building and testing v2 -alpha packages](#building-and-testing-v2--alpha-packages)
+  - [Changing Cloud Assembly Schema](#changing-cloud-assembly-schema)
+  - [Feature Flags](#feature-flags)
+  - [Versioning and Release](#versioning-and-release)
+  - [Common Issues](#common-issues)
+    - [Import errors](#import-errors)
+      - [The compiler is throwing errors on files that I renamed/it's running old tests that I meant to remove/code coverage is low and I didn't change anything.](#the-compiler-is-throwing-errors-on-files-that-i-renamedits-running-old-tests-that-i-meant-to-removecode-coverage-is-low-and-i-didnt-change-anything)
+      - [I added a dependency but it's not being picked up by the build](#i-added-a-dependency-but-its-not-being-picked-up-by-the-build)
+      - [I added a dependency but it's not being picked up by a `watch` background compilation run.](#i-added-a-dependency-but-its-not-being-picked-up-by-a-watch-background-compilation-run)
+      - [I added a dependency but it's not being picked up by Visual Studio Code (I still get red underlines).](#i-added-a-dependency-but-its-not-being-picked-up-by-visual-studio-code-i-still-get-red-underlines)
+      - [I'm doing refactorings between packages and compile times are killing me/I need to switch between differently-versioned branches a lot and rebuilds because of version errors are taking too long.](#im-doing-refactorings-between-packages-and-compile-times-are-killing-mei-need-to-switch-between-differently-versioned-branches-a-lot-and-rebuilds-because-of-version-errors-are-taking-too-long)
+      - [The check-lfs Github action fails on my PR](#the-check-lfs-github-action-fails-on-my-pr)
+  - [Debugging](#debugging)
+    - [Connecting the VS Code Debugger](#connecting-the-vs-code-debugger)
+    - [Run a CDK unit test in the debugger](#run-a-cdk-unit-test-in-the-debugger)
+  - [Badges (Pilot Program)](#badges-pilot-program)
+  - [Related Repositories](#related-repositories)
 
 ## What are contributions?
 
@@ -222,6 +252,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - Either [Docker >= 19.03](https://docs.docker.com/get-docker/), [Finch >= 0.3.0](https://runfinch.com/), or another Docker replacement
   - If using a Docker replacement, the `CDK_DOCKER` environment variable must be set to the replacement command's name (e.g. `export CDK_DOCKER=finch`)
+  - For some Docker replacements like Podman, you may also need to set the `DOCKER_HOST` environment variable to specify the socket path
+    - For Podman: `export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')`
   - The Docker or replacement daemon must be running
 - [git-lfs](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage)
   - Without this, you'll get the message that the clone succeeded but the checkout failed when you initially clone the repo.
@@ -442,6 +474,8 @@ In some cases, it is useful to seek feedback by iterating on a design document. 
 
 In many cases, the comments section of the relevant GitHub issue is sufficient for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
+When designing new features, consider whether the functionality is best implemented as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits) rather than as a traditional L2 property or method. New features must prefer these composable building blocks, which work across L1 and L2 constructs. See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for implementation details.
+
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](https://github.com/aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
@@ -459,6 +493,9 @@ Work your magic. Here are some guidelines:
     construct library with a single construct.
   * We have a number of linters that run during standard build that will enforce coding consistency and correctness.
     Watch out for their error messages and adjust your code accordingly.
+* For new features, prefer implementing as a [Mixin, Facade, or Trait](./docs/DESIGN_GUIDELINES.md#mixins-facades-and-traits)
+  over adding properties or methods directly to L2 constructs. This makes the feature available to both L1 and L2 users.
+  See the [Mixins Design Guidelines](./docs/MIXINS_DESIGN_GUIDELINES.md) for how to implement Mixins.
 * Every change requires a unit test
 * If you change APIs, make sure to update the module's README file
   * When you add new examples to the module's README file, you must also ensure they compile - the PR build will fail
@@ -986,37 +1023,37 @@ finalized, will be added to the AWS CDK with a specific suffix: `BetaX`. APIs
 with the preview suffix will never be removed, instead they will be deprecated
 and replaced by either the stable version (without the suffix), or by a newer
 preview version. For example, assume we add the method
-`grantAwesomePowerBeta1`:
+`addSecondaryResourceBeta1()` to a class:
 
 ```ts
 /**
- * This method grants awesome powers
+ * This method adds a secondary resource to the main one
  */
-grantAwesomePowerBeta1();
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 Times goes by, we get feedback that this method will actually be much better
-if it accepts a `Principal`. Since adding a required property is a breaking
-change, we will add `grantAwesomePowerBeta2()` and deprecate
-`grantAwesomePowerBeta1`:
+if it accepts an additional required `options` parameter. Since adding a required 
+parameter to a method is a breaking change, we will add `addSecondaryResourceBeta2()`
+and deprecate `addSecondaryResourceBeta1`:
 
 ```ts
 /**
-* This method grants awesome powers to the given principal
+* This method adds a secondary resource, with more options
 *
 * @param grantee The principal to grant powers to
 */
-grantAwesomePowerBeta2(grantee: iam.IGrantable)
+addSecondaryResourceBeta2(res: SomeResource, options: SecondaryResourceOptions);
 
 /**
-* This method grants awesome powers
-* @deprecated use grantAwesomePowerBeta2
+ * This method adds a secondary resource to the main one
+* @deprecated use addSecondaryResourceBeta1
 */
-grantAwesomePowerBeta1()
+addSecondaryResourceBeta1(res: SomeResource);
 ```
 
 When we decide it's time to graduate the API, the latest preview version will
-be deprecated and the final version - `grantAwesomePower` will be added.
+be deprecated and the final version - `addSecondaryResource` will be added.
 
 ## Documentation
 

@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as sagemaker from '../lib';
 
 describe('When synthesizing a stack containing an EndpointConfig', () => {
@@ -585,5 +586,107 @@ describe('When sharing a model from an origin stack with a destination stack', (
         expect(when).toThrow(/Cannot use model in region us-west-2 for endpoint configuration in region us-east-1/);
       });
     });
+  });
+});
+
+describe('When containerStartupHealthCheckTimeoutInSeconds is set', () => {
+  test('should be included in CloudFormation template when provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    // WHEN
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        variantName: 'variant',
+        model,
+        containerStartupHealthCheckTimeout: cdk.Duration.minutes(5), // 300 seconds
+      }],
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::EndpointConfig', {
+      ProductionVariants: [{
+        ModelName: 'model',
+        VariantName: 'variant',
+        ContainerStartupHealthCheckTimeoutInSeconds: 300,
+      }],
+    });
+  });
+  test('should not be included when not provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    // WHEN
+    new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+      instanceProductionVariants: [{
+        variantName: 'variant',
+        model,
+      }],
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SageMaker::EndpointConfig', {
+      ProductionVariants: [{
+        ModelName: 'model',
+        VariantName: 'variant',
+        ContainerStartupHealthCheckTimeoutInSeconds: Match.absent(),
+      }],
+    });
+  });
+
+  test('should throw error when timeout is less than 60 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    // WHEN & THEN
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+        instanceProductionVariants: [{
+          variantName: 'variant',
+          model,
+          containerStartupHealthCheckTimeout: cdk.Duration.seconds(30),
+        }],
+      });
+    }).toThrow('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+  });
+
+  test('should throw error when timeout is greater than 3600 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    // WHEN & THEN
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
+        instanceProductionVariants: [{
+          variantName: 'variant',
+          model,
+          containerStartupHealthCheckTimeout: cdk.Duration.hours(2), // 7200 seconds
+        }],
+      });
+    }).toThrow('containerStartupHealthCheckTimeout must be between 60 and 3600 seconds');
+  });
+
+  test('should accept valid timeout values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = sagemaker.Model.fromModelName(stack, 'Model', 'model');
+    // WHEN & THEN - should not throw
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig1', {
+        instanceProductionVariants: [{
+          variantName: 'variant',
+          model,
+          containerStartupHealthCheckTimeout: cdk.Duration.seconds(60), // minimum
+        }],
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      new sagemaker.EndpointConfig(stack, 'EndpointConfig2', {
+        instanceProductionVariants: [{
+          variantName: 'variant',
+          model,
+          containerStartupHealthCheckTimeout: cdk.Duration.seconds(3600), // maximum
+        }],
+      });
+    }).not.toThrow();
   });
 });

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { IModel } from './model-base';
+import type { Construct } from 'constructs';
+import type { IModel } from './model-base';
 import { ArnFormat, Stack } from '../../core';
 
 /**
@@ -269,6 +269,12 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-5-20251101-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0 = new FoundationModelIdentifier('anthropic.claude-opus-4-5-20251101-v1:0');
 
+  /** Base model "anthropic.claude-opus-4-6-v1". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_6_V1 = new FoundationModelIdentifier('anthropic.claude-opus-4-6-v1');
+
+  /** Base model "anthropic.claude-sonnet-4-6". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
+
   /**
    * Base model "anthropic.claude-instant-v1".
    * @deprecated use latest version of the model
@@ -422,6 +428,15 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama4-scout-17b-instruct-v1:0". */
   public static readonly META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0 = new FoundationModelIdentifier('meta.llama4-scout-17b-instruct-v1:0');
 
+  /** Base model "minimax.minimax-m2". */
+  public static readonly MINIMAX_MINIMAX_M2 = new FoundationModelIdentifier('minimax.minimax-m2');
+
+  /** Base model "minimax.minimax-m2.1". */
+  public static readonly MINIMAX_MINIMAX_M2_1 = new FoundationModelIdentifier('minimax.minimax-m2.1');
+
+  /** Base model "minimax.minimax-m2.5". */
+  public static readonly MINIMAX_MINIMAX_M2_5 = new FoundationModelIdentifier('minimax.minimax-m2.5');
+
   /** Base model "mistral.mistral-7b-instruct-v0:2". */
   public static readonly MISTRAL_MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
 
@@ -508,6 +523,15 @@ export class FoundationModelIdentifier {
 
   /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
   public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "zai.glm-4.7". */
+  public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');
+
+  /** Base model "zai.glm-4.7-flash". */
+  public static readonly ZAI_GLM_4_7_FLASH = new FoundationModelIdentifier('zai.glm-4.7-flash');
+
+  /** Base model "zai.glm-5". */
+  public static readonly ZAI_GLM_5 = new FoundationModelIdentifier('zai.glm-5');
 
   /**
    * Constructor for foundation model identifier

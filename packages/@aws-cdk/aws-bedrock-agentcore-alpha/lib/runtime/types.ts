@@ -3,7 +3,7 @@
  *                                 Enums
  *****************************************************************************/
 
-import { Duration } from 'aws-cdk-lib';
+import type { Duration } from 'aws-cdk-lib';
 
 /**
  * Protocol configuration for Agent Runtime

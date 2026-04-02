@@ -1,9 +1,9 @@
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { ILogGroup } from 'aws-cdk-lib/aws-logs';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
-import { IPipe } from './pipe';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+import type { ILogGroup } from 'aws-cdk-lib/aws-logs';
+import type { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import type { IBucket } from 'aws-cdk-lib/aws-s3';
+import type { IPipe } from './pipe';
 
 /**
  * Log data configuration for a pipe.
@@ -104,7 +104,7 @@ export interface LogDestinationParameters {
   /**
    * The logging configuration settings for the pipe.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-cloudwatchlogslogdestination
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-cloudwatchlogslogdestination
    *
    * @default - none
    */
@@ -113,7 +113,7 @@ export interface LogDestinationParameters {
   /**
    * The Amazon Data Firehose logging configuration settings for the pipe.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-firehoselogdestination
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-firehoselogdestination
    *
    * @default - none
    */
@@ -122,7 +122,7 @@ export interface LogDestinationParameters {
   /**
    * The Amazon S3 logging configuration settings for the pipe.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-s3logdestination
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-s3logdestination
    *
    * @default - none
    */

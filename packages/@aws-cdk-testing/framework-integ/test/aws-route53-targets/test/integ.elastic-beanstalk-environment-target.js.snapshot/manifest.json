@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "aws-cdk-elasticbeanstalk-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77fd66b620ecc9e9384fb9bbe900d10d297b96073d567d3c082c067b19a92541.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd7e3341e1ebe3a6e7528cd6e95f069a6f534b0daaca13a42d00919ad5820ac4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "aws-cdk-elasticbeanstalk-integ.assets"
       ],
       "metadata": {
+        "/aws-cdk-elasticbeanstalk-integ/EbsHostedZoneMapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EbsHostedZoneMapping"
+          }
+        ],
         "/aws-cdk-elasticbeanstalk-integ/Bucket": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -51,16 +57,22 @@
         "/aws-cdk-elasticbeanstalk-integ/Application": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Application"
+            "data": "Application",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-elasticbeanstalk-integ/ApplicationVersion": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApplicationVersion"
+            "data": "ApplicationVersion",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role": [
+        "/aws-cdk-elasticbeanstalk-integ/EbsEc2Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -71,26 +83,26 @@
             }
           },
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add method metadata for node [MyApplication-aws-elasticbeanstalk-ec2-role], method name addManagedPolicy. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addMethodMetadataFailed]"
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addManagedPolicy": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
-        "/aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role/ImportMyApplication-aws-elasticbeanstalk-ec2-role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyApplicationawselasticbeanstalkec2roleA466279A"
-          }
-        ],
-        "/aws-cdk-elasticbeanstalk-integ/MyApplication-aws-elasticbeanstalk-ec2-instance-profile": [
+        "/aws-cdk-elasticbeanstalk-integ/EbsEc2Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApplicationawselasticbeanstalkec2instanceprofile"
+            "data": "EbsEc2Role8269CA5F"
+          }
+        ],
+        "/aws-cdk-elasticbeanstalk-integ/EbsInstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EbsInstanceProfile"
           }
         ],
         "/aws-cdk-elasticbeanstalk-integ/Environment": [
@@ -232,8 +244,18 @@
         ],
         "/aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
@@ -242,12 +264,6 @@
                 "*"
               ]
             }
-          }
-        ],
-        "/aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/aws-cdk-elasticbeanstalk-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -340,6 +356,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyApplicationawselasticbeanstalkec2roleA466279A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationawselasticbeanstalkec2roleA466279A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyApplicationawselasticbeanstalkec2instanceprofile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationawselasticbeanstalkec2instanceprofile",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -690,6 +724,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -867,6 +905,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -878,6 +917,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -889,5 +929,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

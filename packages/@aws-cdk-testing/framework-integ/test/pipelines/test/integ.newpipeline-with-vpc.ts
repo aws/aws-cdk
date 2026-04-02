@@ -4,8 +4,9 @@ import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps, StageProps } from 'aws-cdk-lib';
+import { App, Stack, Stage } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE } from 'aws-cdk-lib/cx-api';
 

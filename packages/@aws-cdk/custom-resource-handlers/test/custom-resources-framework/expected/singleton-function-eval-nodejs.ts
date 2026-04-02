@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier, @stylistic/max-len */
 import * as path from "path";
-import * as lambda from "../../../aws-lambda";
 import { Construct } from "constructs";
+import * as lambda from "../../../aws-lambda";
 
 export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
   public constructor(scope: Construct, id: string, props: EvalNodejsSingletonFunctionProps) {

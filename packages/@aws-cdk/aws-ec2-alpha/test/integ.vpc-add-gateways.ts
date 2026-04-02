@@ -32,7 +32,7 @@ const routeTable1 = new RouteTable(stack, 'TestRouteTable', {
 
 const subnet1 = new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.1.0/28'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
@@ -46,7 +46,7 @@ const routeTable2 = new RouteTable(stack, 'TestRouteTable2', {
 
 const subnet2 = new SubnetV2(stack, 'testsubnet2', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.2.0/28'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet2',
@@ -69,7 +69,7 @@ vpc.addEgressOnlyInternetGateway({
 
 const subnet3 = new SubnetV2(stack, 'testsubnet3', {
   vpc,
-  availabilityZone: 'us-west-2c',
+  availabilityZone: stack.availabilityZones[1],
   ipv4CidrBlock: new IpCidr('10.1.3.0/28'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'CDKIntegTestSubnet3',
@@ -93,7 +93,7 @@ const integ = new IntegTest(app, 'VpcSameAccountInteg', {
 
 // Verify that IGW is attached to VPC
 const igwassertion = integ.assertions.awsApiCall('ec2', 'DescribeInternetGatewaysCommand', {
-  InternetGatewayId: [vpc.internetGatewayId],
+  InternetGatewayIds: [vpc.internetGatewayId],
 });
 
 igwassertion.expect(ExpectedResult.objectLike({
@@ -112,7 +112,7 @@ igwassertion.expect(ExpectedResult.objectLike({
 
 // Verify that EIGW is attached to VPC
 const eigwassertion = integ.assertions.awsApiCall('ec2', 'DescribeEgressOnlyInternetGatewaysCommand', {
-  EgressOnlyInternetGatewayId: [vpc.egressOnlyInternetGatewayId],
+  EgressOnlyInternetGatewayIds: [vpc.egressOnlyInternetGatewayId],
 });
 
 eigwassertion.expect(ExpectedResult.objectLike({
@@ -130,37 +130,34 @@ eigwassertion.expect(ExpectedResult.objectLike({
 }));
 
 // Verify that the Gateways route is restricted to destination and given subnet's route table.
-const rtbassertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
-  RouteTableIds: [routeTable1.routeTableId, routeTable2.routeTableId],
-});
+// Split into separate assertions per route table to avoid order-dependent arrayWith matching.
+const expectedRoutes = [
+  Match.objectLike({
+    DestinationCidrBlock: '192.168.0.0/16',
+    GatewayId: vpc.internetGatewayId,
+  }),
+  Match.objectLike({
+    DestinationIpv6CidrBlock: '2600:1f00::/24',
+    EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
+  }),
+];
 
-rtbassertion.expect(ExpectedResult.objectLike({
-  RouteTables: [
-    Match.objectLike({
-      RouteTableId: routeTable2.routeTableId,
-      Routes: Match.arrayWith([
-        Match.objectLike({
-          DestinationCidrBlock: '192.168.0.0/16',
-          GatewayId: vpc.internetGatewayId,
-        }),
-        Match.objectLike({
-          DestinationIpv6CidrBlock: '2600:1f00::/24',
-          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
-        }),
-      ]),
-    }),
-    Match.objectLike({
-      RouteTableId: routeTable1.routeTableId,
-      Routes: Match.arrayWith([
-        Match.objectLike({
-          DestinationCidrBlock: '192.168.0.0/16',
-          GatewayId: vpc.internetGatewayId,
-        }),
-        Match.objectLike({
-          DestinationIpv6CidrBlock: '2600:1f00::/24',
-          EgressOnlyInternetGatewayId: vpc.egressOnlyInternetGatewayId,
-        }),
-      ]),
-    }),
-  ],
+const rt1assertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
+  RouteTableIds: [routeTable1.routeTableId],
+});
+rt1assertion.expect(ExpectedResult.objectLike({
+  RouteTables: [Match.objectLike({
+    RouteTableId: routeTable1.routeTableId,
+    Routes: Match.arrayWith(expectedRoutes),
+  })],
+}));
+
+const rt2assertion = integ.assertions.awsApiCall('ec2', 'DescribeRouteTablesCommand', {
+  RouteTableIds: [routeTable2.routeTableId],
+});
+rt2assertion.expect(ExpectedResult.objectLike({
+  RouteTables: [Match.objectLike({
+    RouteTableId: routeTable2.routeTableId,
+    Routes: Match.arrayWith(expectedRoutes),
+  })],
 }));

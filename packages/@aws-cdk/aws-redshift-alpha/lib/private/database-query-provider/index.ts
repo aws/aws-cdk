@@ -1,5 +1,5 @@
-/* eslint-disable-next-line import/no-unresolved */
-import * as AWSLambda from 'aws-lambda';
+
+import type * as AWSLambda from 'aws-lambda';
 import { HandlerName } from './handler-name';
 import { handler as managePrivileges } from './privileges';
 import { handler as manageTable } from './table';

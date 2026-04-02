@@ -1,6 +1,6 @@
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import { RedshiftData } from '@aws-sdk/client-redshift-data';
-import { ClusterProps } from './types';
+import type { ClusterProps } from './types';
 
 const redshiftData = new RedshiftData({});
 

@@ -148,7 +148,6 @@
   "S3486F821D": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "s3sourcekmskeyarnbucket",
     "Tags": [
      {
       "Key": "aws-cdk:auto-delete-objects",
@@ -299,7 +298,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }

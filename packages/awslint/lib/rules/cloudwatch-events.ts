@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
 import { Linter } from '../linter';

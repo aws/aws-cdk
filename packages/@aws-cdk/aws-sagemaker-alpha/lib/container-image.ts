@@ -2,8 +2,8 @@ import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import { Stack } from 'aws-cdk-lib/core';
 import { FactName } from 'aws-cdk-lib/region-info';
-import { Construct } from 'constructs';
-import { Model } from './model';
+import type { Construct } from 'constructs';
+import type { Model } from './model';
 import { hashcode } from './private/util';
 
 /**

@@ -1,7 +1,8 @@
 import { Construct, Node } from 'constructs';
 import { AlbScheme } from './alb-controller';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
+import type { RemovalPolicy } from '../../core';
 import { CustomResource, Stack } from '../../core';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -58,6 +59,20 @@ export interface KubernetesManifestOptions {
    * @default AlbScheme.INTERNAL
    */
   readonly ingressAlbScheme?: AlbScheme;
+
+  /**
+   * The removal policy applied to the custom resource that manages the Kubernetes manifest.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 
 }
 
@@ -145,6 +160,7 @@ export class KubernetesManifest extends Construct {
     const customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
+      removalPolicy: props.removalPolicy,
       properties: {
         // `toJsonString` enables embedding CDK tokens in the manifest and will
         // render a CloudFormation-compatible JSON string (similar to

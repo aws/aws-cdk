@@ -2,7 +2,7 @@ import * as path from 'path';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
-import { App, Duration, Stack } from '../../core';
+import { App, Duration, RemovalPolicy, Stack } from '../../core';
 import * as eks from '../lib';
 import { Cluster, KubernetesVersion } from '../lib';
 
@@ -229,6 +229,20 @@ describe('helm chart', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Repository: 'oci://012345678.dkr.ecr.us-east-1.amazonaws.com/private-repo' });
+    });
+
+    test('should support custom removal policy', () => {
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', {
+        cluster,
+        chart: 'chart',
+        removalPolicy: RemovalPolicy.RETAIN,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResource(eks.HelmChart.RESOURCE_TYPE, {
+        DeletionPolicy: 'Retain',
+      });
     });
   });
 });

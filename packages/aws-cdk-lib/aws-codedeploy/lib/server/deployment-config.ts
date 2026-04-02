@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { BaseDeploymentConfig, BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
-import { MinimumHealthyHosts } from '../host-health-config';
+import type { BaseDeploymentConfigOptions, IBaseDeploymentConfig, ZonalConfig } from '../base-deployment-config';
+import { BaseDeploymentConfig } from '../base-deployment-config';
+import type { MinimumHealthyHosts } from '../host-health-config';
 import { deploymentConfig } from '../private/utils';
 
 /**

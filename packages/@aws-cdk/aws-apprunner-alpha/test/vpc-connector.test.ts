@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { VpcConnector } from '../lib';
+import { Service, Source, VpcConnector } from '../lib';
 
 test('create a vpcConnector with all properties', () => {
   // GIVEN
@@ -191,4 +191,48 @@ test.each([
       vpcConnectorName,
     });
   }).toThrow(`\`vpcConnectorName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${vpcConnectorName}.`);
+});
+
+test('import an existing VPC Connector', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+
+  const vpc = new ec2.Vpc(stack, 'Vpc', {
+    ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+  });
+
+  const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // WHEN
+  const importedConnector = VpcConnector.fromVpcConnectorAttributes(stack, 'ImportedVpcConnector', {
+    vpcConnectorArn: 'arn:aws:apprunner:us-east-1:123456789012:vpcconnector/my-connector/1/1234567890abcdef',
+    vpcConnectorName: 'my-connector',
+    vpcConnectorRevision: 1,
+    securityGroups: [securityGroup],
+  });
+
+  new Service(stack, 'Service', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: {
+        port: 8000,
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    vpcConnector: importedConnector,
+  });
+
+  // THEN
+  expect(importedConnector.vpcConnectorArn).toBe('arn:aws:apprunner:us-east-1:123456789012:vpcconnector/my-connector/1/1234567890abcdef');
+  expect(importedConnector.vpcConnectorName).toBe('my-connector');
+  expect(importedConnector.vpcConnectorRevision).toBe(1);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    NetworkConfiguration: {
+      EgressConfiguration: {
+        EgressType: 'VPC',
+        VpcConnectorArn: 'arn:aws:apprunner:us-east-1:123456789012:vpcconnector/my-connector/1/1234567890abcdef',
+      },
+    },
+  });
 });

@@ -1,0 +1,56 @@
+{
+  "/TableWithPartitionSortStack/PartitionSortBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableWithPartitionSortStack/PartitionSortNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableWithPartitionSortStack/PartitionSortTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableWithPartitionSortStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TableWithPartitionSortStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TableWithPartitionSortStack/PartitionSortBucket/PartitionSortBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PartitionSortBucket153171A7"
+    }
+  ],
+  "/TableWithPartitionSortStack/PartitionSortNamespace/PartitionSortNamespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PartitionSortNamespace4C784AE5"
+    }
+  ],
+  "/TableWithPartitionSortStack/PartitionSortTable/PartitionSortTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PartitionSortTable417E5D04"
+    }
+  ],
+  "/TableWithPartitionSortStack/Exports/Output{\"Fn::GetAtt\":[\"PartitionSortBucket153171A7\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttPartitionSortBucket153171A7TableBucketARND5608456"
+    }
+  ]
+}

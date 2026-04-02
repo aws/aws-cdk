@@ -1,6 +1,6 @@
 import { CloudFrontTarget } from './cloudfront-target';
-import { UserPoolDomain } from '../../aws-cognito';
-import { AliasRecordTargetConfig, IAliasRecordTarget, IHostedZone, IRecordSet } from '../../aws-route53';
+import type { UserPoolDomain } from '../../aws-cognito';
+import type { AliasRecordTargetConfig, IAliasRecordTarget, IHostedZone, IRecordSet } from '../../aws-route53';
 import { FeatureFlags } from '../../core';
 import { USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE } from '../../cx-api';
 

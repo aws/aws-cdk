@@ -1,6 +1,7 @@
-import { Construct, Node } from 'constructs';
-import { IIdentityPool } from './identitypool';
-import { IUserPool, IUserPoolClient } from '../../aws-cognito';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { IIdentityPool } from './identitypool';
+import type { IUserPool, IUserPoolClientRef } from '../../aws-cognito';
 import { Stack } from '../../core';
 
 /**
@@ -33,7 +34,7 @@ export interface UserPoolAuthenticationProviderProps {
    * The User Pool Client for the provided User Pool
    * @default - A default user pool client will be added to User Pool
    */
-  readonly userPoolClient?: IUserPoolClient;
+  readonly userPoolClient?: IUserPoolClientRef;
 
   /**
    * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
@@ -81,12 +82,13 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   /**
    * The User Pool Client for the provided User Pool
    */
-  private userPoolClient: IUserPoolClient;
+  private userPoolClient: IUserPoolClientRef;
 
   /**
    * Whether to disable the pool's default server side token check
    */
   private disableServerSideTokenCheck: boolean;
+
   constructor(props: UserPoolAuthenticationProviderProps) {
     this.userPool = props.userPool;
     this.userPoolClient = props.userPoolClient || this.userPool.addClient('UserPoolAuthenticationProviderClient');
@@ -104,7 +106,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     const urlSuffix = Stack.of(scope).urlSuffix;
 
     return {
-      clientId: this.userPoolClient.userPoolClientId,
+      clientId: this.userPoolClient.userPoolClientRef.clientId,
       providerName: `cognito-idp.${region}.${urlSuffix}/${this.userPool.userPoolId}`,
       serverSideTokenCheck: !this.disableServerSideTokenCheck,
     };

@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildOptions, CodePipeline } from './codepipeline';
-import { StackOutputsMap } from './stack-outputs-map';
-import * as cb from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
+import type { Construct } from 'constructs';
+import type { ArtifactMap } from './artifact-map';
+import type { CodeBuildOptions, CodePipeline } from './codepipeline';
+import type { StackOutputsMap } from './stack-outputs-map';
+import type * as cb from '../../../aws-codebuild';
+import type * as cp from '../../../aws-codepipeline';
 
 /**
  * Options for the `CodePipelineActionFactory.produce()` method.

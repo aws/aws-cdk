@@ -1,9 +1,10 @@
 import * as iot from 'aws-cdk-lib/aws-iot';
-import { Resource, Stack, IResource, Token, ArnFormat } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, Stack, Token, ArnFormat } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IAccountAuditConfiguration } from './audit-configuration';
+import type { Construct } from 'constructs';
+import type { IAccountAuditConfiguration } from './audit-configuration';
 
 /**
  * Represents AWS IoT Scheduled Audit

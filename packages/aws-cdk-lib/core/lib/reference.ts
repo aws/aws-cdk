@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Intrinsic } from './private/intrinsic';
-import { ResolutionTypeHint } from './type-hints';
+import type { ResolutionTypeHint } from './type-hints';
 
 const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
 

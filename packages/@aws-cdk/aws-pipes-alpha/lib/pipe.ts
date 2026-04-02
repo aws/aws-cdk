@@ -1,15 +1,20 @@
-import { IResource, Resource, Stack, ValidationError } from 'aws-cdk-lib';
-import { ArnPrincipal, IRole, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import type { IResource } from 'aws-cdk-lib';
+import { Resource, Stack, ValidationError } from 'aws-cdk-lib';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { ArnPrincipal, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import type * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IEnrichment } from './enrichment';
-import { IFilter } from './filter';
-import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource, SourceWithDeadLetterTarget } from './source';
-import { ITarget } from './target';
+import type { Construct } from 'constructs';
+import type { IEnrichment } from './enrichment';
+import type { IFilter } from './filter';
+import type { ILogDestination, IncludeExecutionData } from './logs';
+import { LogLevel } from './logs';
+import type { ISource } from './source';
+import { SourceWithDeadLetterTarget } from './source';
+import type { ITarget } from './target';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -93,7 +98,7 @@ export interface PipeProps {
   /**
    * Name of the pipe in the AWS console
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
    *
    * @default - automatically generated name
    */
@@ -134,7 +139,7 @@ export interface PipeProps {
    *
    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
    * @default - none
    */
   readonly logIncludeExecutionData?: IncludeExecutionData[];
@@ -142,7 +147,7 @@ export interface PipeProps {
   /**
    * A description of the pipe displayed in the AWS console
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
    *
    * @default - no description
    */
@@ -160,7 +165,7 @@ export interface PipeProps {
   /**
    * The list of key-value pairs to associate with the pipe.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
    *
    * @default - no tags
    */
@@ -297,7 +302,7 @@ export class Pipe extends PipeBase {
 
     if (props.kmsKey) {
       if (!props.pipeName) {
-        throw new ValidationError('`pipeName` is required when specifying a `kmsKey` prop.', this);
+        throw new ValidationError(lit`PipeNameRequiredWithKmsKey`, '`pipeName` is required when specifying a `kmsKey` prop.', this);
       }
       // Add permissions to the KMS key
       // see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-pipes-cmkey.html#eb-encryption-key-policy-pipe

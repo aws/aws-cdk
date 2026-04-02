@@ -1,10 +1,11 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Stack verification steps:
@@ -25,13 +26,13 @@ class TestStack extends Stack {
     const multiply = new tasks.EvaluateExpression(this, 'Multiply', {
       expression: '$.c * 2',
       resultPath: '$.d',
-      runtime: STANDARD_NODEJS_RUNTIME,
+      runtime: Runtime.NODEJS_22_X,
     });
 
     const now = new tasks.EvaluateExpression(this, 'Now', {
       expression: '(new Date()).toUTCString()',
       resultPath: '$.now',
-      runtime: STANDARD_NODEJS_RUNTIME,
+      runtime: Runtime.NODEJS_22_X,
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {

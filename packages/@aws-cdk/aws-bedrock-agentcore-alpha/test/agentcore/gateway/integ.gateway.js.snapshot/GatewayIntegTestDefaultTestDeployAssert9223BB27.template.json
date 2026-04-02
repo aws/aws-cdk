@@ -16,7 +16,7 @@
      "FunctionName": "\"integ-test-gateway-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1765252315889"
+    "salt": "1770656654974"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -55,6 +55,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "lambda:GetFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:GetFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -70,7 +88,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ca235e6258b11c240506ff06f79037eca461b8d0d9464a947a386d38d8163515.zip"
+     "S3Key": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -81,6 +99,48 @@
      ]
     }
    }
+  },
+  "AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetFunction",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getFunction",
+    "expected": "{\"$ObjectLike\":{\"Configuration\":{\"FunctionName\":\"integ-test-gateway-request-interceptor\",\"Runtime\":\"python3.12\"}}}",
+    "parameters": {
+     "FunctionName": "\"integ-test-gateway-request-interceptor\""
+    },
+    "flattenResponse": "false",
+    "salt": "1770656654975"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetFunction",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getFunction",
+    "expected": "{\"$ObjectLike\":{\"Configuration\":{\"FunctionName\":\"integ-test-gateway-response-interceptor\",\"Runtime\":\"python3.12\"}}}",
+    "parameters": {
+     "FunctionName": "\"integ-test-gateway-response-interceptor\""
+    },
+    "flattenResponse": "false",
+    "salt": "1770656654976"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -88,6 +148,22 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallLambdagetFunction7a567ed03bb6f9bfe8aa853222f63fa0",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce",
      "assertion"
     ]
    }

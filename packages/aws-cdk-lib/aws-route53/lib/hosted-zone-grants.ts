@@ -1,7 +1,7 @@
-import { GrantDelegationOptions, INamedHostedZoneRef } from './hosted-zone-ref';
+import type { GrantDelegationOptions, INamedHostedZoneRef } from './hosted-zone-ref';
 import { makeGrantDelegation } from './util';
-import { IGrantable } from '../../aws-iam';
-import { Grant } from '../../aws-iam/lib/grant';
+import type { IGrantable } from '../../aws-iam';
+import type { Grant } from '../../aws-iam/lib/grant';
 
 /**
  * Collection of grant methods for a INamedHostedZoneRef

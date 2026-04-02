@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "49.0.0",
   "artifacts": {
     "aws-ecs-integ-nlb-healthchecks.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c7ef0d85ae2099f19b48c5ca9e4e3e1d6d595e850e2340584faaec83a89664f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2742edf6875e60b98914d444e74f6c229370bcd90e0604726e16594148b03fe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -593,6 +593,22 @@
             "data": "myServicelb1FA8CBE12"
           }
         ],
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb1/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb1SecurityGroup342C51EA"
+          }
+        ],
         "/aws-ecs-integ-nlb-healthchecks/myService/lb1/listener1": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -639,6 +655,22 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myServicelb2C84C7BCB"
+          }
+        ],
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/SecurityGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "vpc": "*",
+              "description": "*",
+              "allowAllOutbound": false
+            }
+          }
+        ],
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myServicelb2SecurityGroupEB00B5B9"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2": [
@@ -1379,6 +1411,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1390,6 +1423,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -1401,5 +1435,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1100.3"
 }

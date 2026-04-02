@@ -1,7 +1,7 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { Token } from 'aws-cdk-lib';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IStream } from 'aws-cdk-lib/aws-kinesis';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IStream } from 'aws-cdk-lib/aws-kinesis';
 
 /**
  * Kinesis target properties.
