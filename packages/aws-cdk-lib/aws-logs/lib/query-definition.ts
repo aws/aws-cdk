@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { CfnQueryDefinition } from '.';
+import { CfnQueryDefinition } from './logs.generated';
 import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';

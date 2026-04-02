@@ -1,4 +1,4 @@
-import { Match } from '.';
+import { Match } from './match';
 import { Matcher, MatchResult } from './matcher';
 import { AssertionError } from './private/error';
 import type { Type } from './private/type';

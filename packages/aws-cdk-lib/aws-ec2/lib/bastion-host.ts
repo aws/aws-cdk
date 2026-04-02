@@ -1,10 +1,10 @@
 import type { Construct } from 'constructs';
-import type { InstanceReference } from '.';
-import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
 import type { CloudFormationInit } from './cfn-init';
 import type { Connections } from './connections';
+import type { InstanceReference } from './ec2.generated';
 import type { ApplyCloudFormationInitOptions, IInstance } from './instance';
 import { Instance } from './instance';
+import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from './instance-types';
 import type { IMachineImage } from './machine-image';
 import { AmazonLinuxCpuType, MachineImage } from './machine-image';
 import type { IPeer } from './peer';

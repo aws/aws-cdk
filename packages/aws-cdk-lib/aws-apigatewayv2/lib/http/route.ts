@@ -3,14 +3,14 @@ import type { IHttpApi, IHttpApiRef } from './api';
 import { toIHttpApi } from './api';
 import type { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import type { HttpRouteIntegration } from './integration';
-import type { CfnRouteProps, RouteReference } from '.././index';
-import { CfnRoute } from '.././index';
 import * as iam from '../../../aws-iam';
 import { Aws, Resource } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnRoute } from '../apigatewayv2.generated';
+import type { CfnRouteProps, RouteReference } from '../apigatewayv2.generated';
 import type { IRoute } from '../common';
 
 /**

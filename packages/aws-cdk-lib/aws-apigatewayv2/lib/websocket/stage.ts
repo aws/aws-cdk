@@ -1,6 +1,5 @@
 import type { Construct } from 'constructs';
 import type { IWebSocketApi } from './api';
-import { CfnStage } from '.././index';
 import { AccessLogField, AccessLogFormat } from '../../../aws-apigateway';
 import type { IGrantable } from '../../../aws-iam';
 import { Grant } from '../../../aws-iam';
@@ -9,6 +8,7 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnStage } from '../apigatewayv2.generated';
 import type { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 

@@ -12,11 +12,12 @@ import { FileSystem } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
+import { BUNDLING_INPUT_DIR, BUNDLING_OUTPUT_DIR } from './private/bundling-constants';
 import { Cache } from './private/cache';
-import { Stack } from './stack';
 import { Stage } from './stage';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
+import { Stack } from './stack';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -79,12 +80,12 @@ export class AssetStaging extends Construct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    */
-  public static readonly BUNDLING_INPUT_DIR = '/asset-input';
+  public static readonly BUNDLING_INPUT_DIR = BUNDLING_INPUT_DIR;
 
   /**
    * The directory inside the bundling container into which the bundled output should be written.
    */
-  public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
+  public static readonly BUNDLING_OUTPUT_DIR = BUNDLING_OUTPUT_DIR;
 
   /**
    * Clears the asset hash cache

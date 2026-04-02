@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
+import type { IPublicHostedZone } from './hosted-zone';
+import { TxtRecord } from './record-set';
 import type { IVPCEndpointServiceRef } from '../../aws-ec2';
 import { Fn, Names, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
-import type { IPublicHostedZone } from '../lib';
-import { TxtRecord } from '../lib';
 
 /**
  * Properties to configure a VPC Endpoint Service domain name

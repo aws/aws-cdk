@@ -4,8 +4,8 @@ import type { IResource } from '../../../core';
 import { Lazy, Names, Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import type { IVpcLinkRef, VpcLinkReference } from '../index';
-import { CfnVpcLink } from '../index';
+import type { IVpcLinkRef, VpcLinkReference } from '../apigatewayv2.generated';
+import { CfnVpcLink } from '../apigatewayv2.generated';
 
 /**
  * Represents an API Gateway VpcLink

@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
 import type { WebSocketRouteOptions } from './route';
 import { WebSocketRoute } from './route';
-import { CfnApi } from '.././index';
 import type { IGrantable } from '../../../aws-iam';
 import { Grant } from '../../../aws-iam';
 import { ArnFormat, Stack, Token } from '../../../core';
@@ -9,6 +8,7 @@ import { UnscopedValidationError, ValidationError } from '../../../core/lib/erro
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnApi } from '../apigatewayv2.generated';
 import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
 import type { IApi, IpAddressType } from '../common/api';
 import { ApiBase } from '../common/base';

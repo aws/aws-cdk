@@ -1,7 +1,7 @@
 import * as cdk from '../../../../core';
 import { UnscopedValidationError } from '../../../../core';
 import { lit } from '../../../../core/lib/private/literal-string';
-import { EmrCreateCluster } from '../emr-create-cluster';
+import type { EmrCreateCluster } from '../emr-create-cluster';
 import type { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-name';
 
 /**
@@ -160,7 +160,7 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
   if (!property.targetSpotCapacity && !property.targetOnDemandCapacity) {
     throw new UnscopedValidationError(lit`AtLeastOneTargetCapacityRequired`, 'At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0');
   }
-  if (property.instanceFleetType === EmrCreateCluster.InstanceRoleType.MASTER) {
+  if (property.instanceFleetType === 'MASTER') {
     if (property.targetSpotCapacity && property.targetOnDemandCapacity) {
       throw new UnscopedValidationError(lit`MasterInstanceFleetOnlyOneCapacityType`, 'For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified');
     }

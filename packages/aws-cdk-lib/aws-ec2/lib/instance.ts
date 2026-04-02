@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { InstanceRequireImdsv2Aspect } from './aspects';
+import { InstanceRequireImdsv2Aspect } from './aspects/require-imdsv2-aspect';
 import type { CloudFormationInit } from './cfn-init';
 import type { IConnectable } from './connections';
 import { Connections } from './connections';

@@ -1,8 +1,6 @@
 import type { Construct } from 'constructs';
 import type { IDomainName } from './domain-name';
 import type { IStage } from './stage';
-import type { CfnApiMappingProps } from '.././index';
-import { CfnApiMapping } from '.././index';
 import type { IResource } from '../../../core';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -10,6 +8,8 @@ import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { ApiMappingReference, IApiMappingRef, IApiRef, IDomainNameRef } from '../../../interfaces/generated/aws-apigatewayv2-interfaces.generated';
+import { CfnApiMapping } from '../apigatewayv2.generated';
+import type { CfnApiMappingProps } from '../apigatewayv2.generated';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource

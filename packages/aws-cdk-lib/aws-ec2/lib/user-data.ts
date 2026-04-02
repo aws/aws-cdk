@@ -1,4 +1,4 @@
-import { OperatingSystemType } from './machine-image';
+import { OperatingSystemType } from './machine-image/os-type';
 import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
 import { Fn, Stack, UnscopedValidationError } from '../../core';

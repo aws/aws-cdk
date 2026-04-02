@@ -1,6 +1,7 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import type { Construct } from 'constructs';
 import type { Alias, AliasOptions } from './alias';
+import { addAlias } from './alias';
 import type { Architecture } from './architecture';
 import type { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
@@ -8,7 +9,6 @@ import type { IFunction } from './function-base';
 import { QualifiedFunctionBase } from './function-base';
 import type { IVersionRef, VersionReference } from './lambda.generated';
 import { CfnVersion } from './lambda.generated';
-import { addAlias } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';

@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
-import type { ITrigger, TriggerOptions } from '.';
-import { Trigger } from '.';
+import type { ITrigger, TriggerOptions } from './trigger';
+import { Trigger } from './trigger';
 import * as lambda from '../../aws-lambda';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

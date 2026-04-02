@@ -8,11 +8,11 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { IStageRef } from '../apigatewayv2.generated';
+import { CfnStage } from '../apigatewayv2.generated';
 import type { StageOptions, IStage, StageAttributes } from '../common';
 import type { IApi } from '../common/api';
 import { StageBase } from '../common/base';
-import type { IStageRef } from '../index';
-import { CfnStage } from '../index';
 
 const DEFAULT_STAGE_NAME = '$default';
 

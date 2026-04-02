@@ -10,15 +10,7 @@ import type { IEngine } from '../engine';
 import type { CommonRotationUserOptions } from '../props';
 import { Credentials, SnapshotCredentials } from '../props';
 
-/**
- * The default set of characters we exclude from generated passwords for database users.
- * It's a combination of characters that have a tendency to cause problems in shell scripts,
- * some engine-specific characters (for example, Oracle doesn't like '@' in its passwords),
- * and some that trip up other services, like DMS.
- *
- * This constant is private to the RDS module.
- */
-export const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './constants';
 
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */
 export interface DatabaseS3ImportExportProps {

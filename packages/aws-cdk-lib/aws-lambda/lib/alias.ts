@@ -340,3 +340,14 @@ export interface VersionWeight {
    */
   readonly weight: number;
 }
+
+/**
+ * @internal
+ */
+export function addAlias(scope: Construct, version: IVersion, aliasName: string, options: AliasOptions = {}) {
+  return new Alias(scope, `Alias${aliasName}`, {
+    aliasName,
+    version,
+    ...options,
+  });
+}

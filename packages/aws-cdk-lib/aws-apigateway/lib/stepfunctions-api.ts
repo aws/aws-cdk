@@ -1,8 +1,8 @@
 import type { Construct } from 'constructs';
-import type { RestApiProps } from '.';
-import { RestApi } from '.';
 import type { RequestContext } from './integrations';
 import { StepFunctionsIntegration } from './integrations/stepfunctions';
+import type { RestApiProps } from './restapi';
+import { RestApi } from './restapi';
 import type * as iam from '../../aws-iam';
 import * as sfn from '../../aws-stepfunctions';
 import { ValidationError } from '../../core/lib/errors';

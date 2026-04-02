@@ -1,8 +1,8 @@
 import type { Construct } from 'constructs';
 import type { IVpcOriginRef, VpcOriginReference } from './cloudfront.generated';
 import { CfnVpcOrigin } from './cloudfront.generated';
-import type { OriginProtocolPolicy } from '../';
-import { OriginSslPolicy } from '../';
+import type { OriginProtocolPolicy } from './distribution';
+import { OriginSslPolicy } from './web-distribution';
 import type { IInstance } from '../../aws-ec2';
 import type { IApplicationLoadBalancer, INetworkLoadBalancer } from '../../aws-elasticloadbalancingv2';
 import type {

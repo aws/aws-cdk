@@ -1,16 +1,3 @@
-import type { Construct } from 'constructs';
-import type { AliasOptions } from './alias';
-import { Alias } from './alias';
-import type { IVersion } from './lambda-version';
-
-export function addAlias(scope: Construct, version: IVersion, aliasName: string, options: AliasOptions = {}) {
-  return new Alias(scope, `Alias${aliasName}`, {
-    aliasName,
-    version,
-    ...options,
-  });
-}
-
 /**
  * Map a function over an array and concatenate the results
  */

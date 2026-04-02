@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 import type { Construct, Node } from 'constructs';
 import type { AliasOptions } from './alias';
+import { addAlias } from './alias';
 import type { Architecture } from './architecture';
 import type { EventInvokeConfigOptions } from './event-invoke-config';
 import { EventInvokeConfig } from './event-invoke-config';
@@ -14,7 +15,7 @@ import type { FunctionReference, IFunctionRef, VersionReference } from './lambda
 import { CfnPermission } from './lambda.generated';
 import type { Permission } from './permission';
 import type { TenancyConfig } from './tenancy-config';
-import { addAlias, flatMap } from './util';
+import { flatMap } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';

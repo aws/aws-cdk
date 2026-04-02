@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import { lookupImage } from './utils';
 import { UserData } from '../user-data';
+import { OperatingSystemType } from './os-type';
 
 /**
  * Common options across all generations.
@@ -142,19 +143,6 @@ export interface MachineImageConfig {
    * Initial UserData for this image
    */
   readonly userData: UserData;
-}
-
-/**
- * The OS type of a particular image
- */
-export enum OperatingSystemType {
-  LINUX,
-  WINDOWS,
-  /**
-   * Used when the type of the operating system is not known
-   * (for example, for imported Auto-Scaling Groups).
-   */
-  UNKNOWN,
 }
 
 /**

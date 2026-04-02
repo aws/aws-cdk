@@ -6,9 +6,9 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import type { AuthorizerReference } from '../apigatewayv2.generated';
+import { CfnAuthorizer } from '../apigatewayv2.generated';
 import type { IAuthorizer } from '../common';
-import type { AuthorizerReference } from '../index';
-import { CfnAuthorizer } from '../index';
 
 /**
  * Supported Authorizer types

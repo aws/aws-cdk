@@ -1,8 +1,6 @@
 import type { Construct } from 'constructs';
 import type { IWebSocketApi, IWebSocketApiRef } from './api';
 import type { IWebSocketRoute } from './route';
-import type { IntegrationReference } from '.././index';
-import { CfnIntegration } from '.././index';
 import type { IRole } from '../../../aws-iam';
 import type { Duration } from '../../../core';
 import { Resource } from '../../../core';
@@ -10,6 +8,8 @@ import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnIntegration } from '../apigatewayv2.generated';
+import type { IntegrationReference } from '../apigatewayv2.generated';
 import type { IIntegration } from '../common';
 
 /**

@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from './private/constants';
 import type * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { Aws, Names } from '../../core';

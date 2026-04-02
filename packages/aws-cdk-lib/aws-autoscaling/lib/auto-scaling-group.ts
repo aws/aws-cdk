@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
+import { AutoScalingGroupRequireImdsv2Aspect } from './aspects/require-imdsv2-aspect';
 import type { CfnAutoScalingGroupProps } from './autoscaling.generated';
 import { CfnAutoScalingGroup, CfnLaunchConfiguration } from './autoscaling.generated';
 import type { BasicLifecycleHookProps } from './lifecycle-hook';

@@ -3,13 +3,13 @@ import type { IWebSocketApi } from './api';
 import type { IWebSocketRouteAuthorizer } from './authorizer';
 import { WebSocketNoneAuthorizer } from './authorizer';
 import type { WebSocketRouteIntegration } from './integration';
-import type { RouteReference } from '.././index';
-import { CfnRoute, CfnRouteResponse } from '.././index';
 import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import { CfnRoute, CfnRouteResponse } from '../apigatewayv2.generated';
+import type { RouteReference } from '../apigatewayv2.generated';
 import type { IRoute } from '../common';
 
 /**

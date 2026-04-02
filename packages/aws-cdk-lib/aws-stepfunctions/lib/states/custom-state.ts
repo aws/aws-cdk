@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Chain } from '..';
+import { Chain } from '../chain';
 import { State } from './state';
 import { Annotations } from '../../../core/';
 import type { CatchProps, IChainable, INextable, QueryLanguage, RetryProps } from '../types';

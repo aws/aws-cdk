@@ -1,4 +1,5 @@
-import { Match, Matcher } from '..';
+import { Match } from '../match';
+import { Matcher } from '../matcher';
 import { AbsentMatch } from './matchers/absent';
 import { formatAllMismatches, matchSection, formatSectionMatchFailure, formatAllMatches } from './section';
 import type { Resource, Template } from './template';

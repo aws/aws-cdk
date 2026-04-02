@@ -17,7 +17,7 @@
  */
 
 import type { Construct } from 'constructs';
-import { CfnTransformer } from '.';
+import { CfnTransformer } from './logs.generated';
 import { Resource, Token, ValidationError, UnscopedValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
