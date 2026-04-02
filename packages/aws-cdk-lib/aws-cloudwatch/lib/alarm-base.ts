@@ -104,7 +104,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   }
 
   /**
-   * Create
+   * Add an alarm mute rule.
    */
   public addAlarmMuteRule(id: string, options: AlarmMuteRuleOptions) {
     return new AlarmMuteRule(this, id, { ...options, alarms: [this] });

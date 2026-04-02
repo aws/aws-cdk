@@ -23,7 +23,7 @@ describe('Alarm mute rule', () => {
   test('full configurations', () => {
     // WHEN
     new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
-      name: 'RuleName',
+      alarmMuteRuleName: 'RuleName',
       description: 'RuleDescription',
       alarms: [alarm],
       schedule: cloudwatch.ScheduleExpression.cron({ minute: '0', timeZone: cdk.TimeZone.ASIA_TOKYO }),
