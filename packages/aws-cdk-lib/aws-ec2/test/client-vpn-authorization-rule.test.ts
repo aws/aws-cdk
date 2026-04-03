@@ -25,6 +25,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
       clientVpnEndpointRef: {
         clientVpnEndpointId: 'myClientVpnEndpoint',
       },
@@ -56,6 +57,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
       clientVpnEndpointRef: {
         clientVpnEndpointId: 'typoTypo',
       },
@@ -68,6 +70,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndpoint,
       clientVpnEndpointRef: {
         clientVpnEndpointId: 'myClientVpnEndpoint',
       },
@@ -102,6 +105,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       connections: new Connections(),
       node: stack.node,
       applyRemovalPolicy: () => { },
+      with: () => clientVpnEndoint,
       clientVpnEndpointRef: {
         clientVpnEndpointId: 'myClientVpnEndpoint',
       },

@@ -3,6 +3,7 @@ import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { unresolved } from './private/encoding';
 import { Intrinsic } from './private/intrinsic';
+import { lit } from './private/literal-string';
 import { resolve } from './private/resolve';
 import { TokenMap } from './private/token-map';
 import type { IResolvable, ITokenResolver, IResolveContext } from './resolvable';
@@ -62,6 +63,15 @@ export class Token {
    */
   public static isUnresolved(this: void, obj: any): boolean {
     return unresolved(obj);
+  }
+
+  /**
+   * The negation of `Token.isUnresolved()`. In TypeScript, narrows the type
+   * to exclude `IResolvable`.
+   * @param obj The object to test.
+   */
+  public static isResolved<A>(obj: A): obj is Exclude<A, IResolvable> {
+    return !Token.isUnresolved(obj);
   }
 
   /**
@@ -145,7 +155,7 @@ export class Tokenization {
   public static reverseCompleteString(s: string): IResolvable | undefined {
     const fragments = Tokenization.reverseString(s);
     if (fragments.length !== 1) {
-      throw new UnscopedValidationError(`Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
+      throw new UnscopedValidationError(lit`TokenzationReverseCompleteStringArgument`, `Tokenzation.reverseCompleteString: argument must not be a concatenation, got '${s}'`);
     }
     return fragments.firstToken;
   }

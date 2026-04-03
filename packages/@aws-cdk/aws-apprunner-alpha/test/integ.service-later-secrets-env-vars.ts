@@ -1,6 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import * as apprunner from '../lib';
 
 const app = new cdk.App();
@@ -31,6 +32,7 @@ new cdk.CfnOutput(stack, 'URL9', { value: `https://${service9.serviceUrl}` });
 
 new integ.IntegTest(app, 'AppRunnerLaterSecretsEnvVars', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });
 
 app.synth();

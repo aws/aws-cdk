@@ -830,6 +830,68 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Deletion Protection
+
+You can enable deletion protection to prevent your Auto Scaling group from being accidentally deleted. Deletion protection blocks the DeleteAutoScalingGroup API operation, requiring you to first update the deletion protection setting before you can delete the Auto Scaling group.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  deletionProtection: autoscaling.DeletionProtection.PREVENT_ALL_DELETION,
+});
+```
+
+The following deletion protection levels are available:
+
+* `DeletionProtection.NONE` (default) - No deletion protection. The Auto Scaling group can be deleted with or without the force delete option.
+* `DeletionProtection.PREVENT_FORCE_DELETION` - Prevents force deletion operations. This allows deletion of empty Auto Scaling groups but blocks force deletion that would terminate all instances.
+* `DeletionProtection.PREVENT_ALL_DELETION` - Prevents all deletion operations. This provides the strongest protection and requires explicitly disabling deletion protection before the Auto Scaling group can be deleted.
+
+**Note:** When using `PREVENT_ALL_DELETION`, you must first update the deletion protection setting before deleting the CloudFormation stack containing the Auto Scaling group.
+
+## Instance Lifecycle Policy
+
+You can configure an instance lifecycle policy to control how instances are handled during lifecycle events, particularly when lifecycle hooks are abandoned or fail. This allows fine-grained control over when to preserve instances for manual intervention.
+
+The instance lifecycle policy defines retention triggers that specify when instances should be moved to a Retained state rather than terminated. Retained instances don't count toward desired capacity and remain until you manually terminate them.
+
+**Important:** To use instance lifecycle policies in your Auto Scaling group, you must also configure a termination lifecycle hook. If you configure an instance lifecycle policy but don't have any termination lifecycle hooks, the policy has no effect. Instance lifecycle policies will only apply when termination lifecycle actions are abandoned, not when they complete successfully with the CONTINUE result.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // Configure instance lifecycle policy
+  instanceLifecyclePolicy: {
+    retentionTriggers: {
+      terminateHookAbandon: autoscaling.TerminateHookAbandonAction.RETAIN,
+    },
+  },
+});
+
+// Add termination lifecycle hook (required for the policy to take effect)
+asg.addLifecycleHook('TerminationHook', {
+  lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_TERMINATING,
+});
+```
+
+The `terminateHookAbandon` trigger specifies the action when a termination lifecycle hook is abandoned due to failure, timeout, or explicit abandonment. You can set it to:
+
+* `RETAIN` - Move instances to a Retained state for manual investigation
+* `TERMINATE` - Use default termination behavior (instances are terminated normally)
+
+This feature is particularly useful for debugging failed instances or preserving instances that contain important data during lifecycle hook failures.
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is

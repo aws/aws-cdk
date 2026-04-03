@@ -125,7 +125,7 @@
     },
     "MaxSize": 1,
     "MinSize": 0,
-    "Name": "test-fleet",
+    "Name": "test-fleet-alias",
     "NewGameSessionProtectionPolicy": "NoProtection",
     "RuntimeConfiguration": {
      "GameSessionActivationTimeoutSeconds": 300,

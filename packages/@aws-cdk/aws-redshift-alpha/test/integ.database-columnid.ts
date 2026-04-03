@@ -20,11 +20,7 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    region: 'us-east-1',
-  },
-});
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {

@@ -1,0 +1,56 @@
+{
+  "/source-stack/EventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/source-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/source-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/source-stack/EventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus7B8748AA"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/mixins-preview.aws_events.mixins.CfnEventBusLogsMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/mixins-preview.aws_events.mixins.CfnEventBusLogsMixin"
+      }
+    }
+  ],
+  "/source-stack/EventBus/Resource/CDKSourceERROR_LOGSsourcestackEventBus5CCE9092": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+    }
+  ],
+  "/source-stack/EventBus/Resource/CdkDestsourcestacks3DestF499B7A7ErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkDestsourcestacks3DestF499B7A7ErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery40A06194"
+    }
+  ],
+  "/source-stack/EventBus/Resource/CdkDestsourcestackFhDest056D7D0DErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkDestsourcestackFhDest056D7D0DErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery05D12C1A"
+    }
+  ]
+}

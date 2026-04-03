@@ -28,6 +28,8 @@ export enum McpTargetType {
   LAMBDA = 'LAMBDA',
   /** MCP server target type */
   MCP_SERVER = 'MCP_SERVER',
+  /** API Gateway target type */
+  API_GATEWAY = 'API_GATEWAY',
 }
 
 /******************************************************************************

@@ -78,7 +78,6 @@ class TestStack extends Stack {
     const bucket = new s3.Bucket(this, 'S3', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
-      bucketName: 's3sourcekmskeyarnbucket',
     });
     const deployment = new s3deploy.BucketDeployment(this, 'DeployLambdaCode', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'lambda-zip'))],

@@ -1,31 +1,32 @@
 {
   "version": "48.0.0",
   "files": {
-    "138be1da40402620a60edd51f91247edd9eccf3130fc4733ffde8f9e61f8ecf9": {
+    "eb5fc1a5332633342c6ca77d8060e7da070bf2994d5eb0b518b14df7b9906574": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8a6f3410": {
+        "current_account-current_region-0336bbc2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "138be1da40402620a60edd51f91247edd9eccf3130fc4733ffde8f9e61f8ecf9.json",
+          "objectKey": "eb5fc1a5332633342c6ca77d8060e7da070bf2994d5eb0b518b14df7b9906574.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }
   },
   "dockerImages": {
-    "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240": {
+    "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925": {
       "displayName": "TestRuntime/AgentRuntimeArtifact",
       "source": {
-        "directory": "asset.f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+        "directory": "asset.b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
+        "platform": "linux/arm64"
       },
       "destinations": {
-        "current_account-current_region-1d39c940": {
+        "current_account-current_region-922b1212": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
-          "imageTag": "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240",
+          "imageTag": "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

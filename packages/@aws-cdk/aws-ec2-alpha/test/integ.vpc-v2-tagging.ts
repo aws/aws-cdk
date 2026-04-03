@@ -30,7 +30,7 @@ const routeTable = new RouteTable(stack, 'TestRouteTable', {
 
 const subnet = new SubnetV2(stack, 'testsubnet', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.0.0/24'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
   subnetName: 'CDKIntegTestSubnet',
@@ -53,7 +53,7 @@ const natgw = vpc.addNatGateway({
 natgw.node.addDependency(vpnGateway);
 
 const ipam = new Ipam(stack, 'IpamIntegTest', {
-  operatingRegions: ['us-west-2'],
+  operatingRegions: [stack.region],
   ipamName: 'CDKIpamTestTag',
 });
 
@@ -93,7 +93,7 @@ igw_assertion.expect(ExpectedResult.objectLike({
       Tags: Match.arrayWith([
         Match.objectLike({
           Key: 'Name',
-          Value: 'CDKIntegTestTagIGW',
+          Value: 'CDKintegTestVPC',
         }),
       ]),
     }),

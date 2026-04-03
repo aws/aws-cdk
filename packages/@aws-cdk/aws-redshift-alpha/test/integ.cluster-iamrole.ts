@@ -74,17 +74,9 @@ const app = new App({
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
-const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
 
 const singleProviderRoleTestStack = new SingleProviderRoleStack(stack, 'single-provider-role-integ');
 

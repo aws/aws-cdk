@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "50.0.0",
   "testCases": {
     "IntegClusterIO/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "IntegClusterIO/DefaultTest/DeployAssert",
       "assertionStackName": "IntegClusterIODefaultTestDeployAssertFEBBB413"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "0 0 * * *"
 
+permissions:
+  contents: read
+
 jobs:
   update-regions:
     name: Update Regions
@@ -16,7 +19,7 @@ jobs:
         run: |
           response=$(curl $URL)
           echo "REGIONS=${response}" >> "$GITHUB_OUTPUT"
-          
+
           status=$(curl -s -o /dev/null -w "%{http_code}" $URL)
           echo "STATUS=${status}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v6
@@ -33,7 +36,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -45,12 +48,13 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Check Out
         uses: actions/checkout@v6
 
       - name: Download patch
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}

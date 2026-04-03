@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "BedrockAgentCoreMultipleSchemasIntegTest.assets": {
       "type": "cdk:asset-manifest",
@@ -114,12 +114,6 @@
                 {}
               ]
             }
-          }
-        ],
-        "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/ServiceRole/Resource": [
@@ -252,10 +246,7 @@
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/DefaultClient/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestGatewayUserPoolDefaultClient3AC9C728",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TestGatewayUserPoolDefaultClient3AC9C728"
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/TestGateway/UserPool/Domain": [
@@ -318,14 +309,18 @@
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda1/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda1/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda1/ServiceRole/Resource": [
@@ -367,14 +362,18 @@
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda2/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda2/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreMultipleSchemasIntegTest/Lambda2/ServiceRole/Resource": [
@@ -787,6 +786,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -964,6 +967,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -975,6 +979,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
@@ -986,5 +991,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

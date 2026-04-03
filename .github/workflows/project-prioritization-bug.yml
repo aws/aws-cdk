@@ -4,10 +4,14 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   prioritize:
     if: github.repository == 'aws/aws-cdk' && contains(github.event.issue.labels.*.name, 'bug') && contains(github.event.issue.labels.*.name, 'p1')
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - uses: actions/checkout@v6
       - name: Add P1 Bug to project

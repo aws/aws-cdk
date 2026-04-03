@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "52.0.0",
   "testCases": {
     "integ-instance-database-insights/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "integinstancedatabaseinsightsDefaultTestDeployAssertC69F68F1"
     }
   },
-  "minimumCliVersion": "2.1019.2"
+  "minimumCliVersion": "2.1107.0"
 }

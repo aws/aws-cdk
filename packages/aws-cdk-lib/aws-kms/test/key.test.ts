@@ -1,6 +1,7 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { ServicePrincipal } from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as kms from '../lib';
@@ -261,7 +262,6 @@ describe('key policies', () => {
     KeyGrants.fromKey(key).decrypt(user);
 
     // THEN
-    // Key policy should be unmodified by the grant.
     let template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::KMS::Key', {
       KeyPolicy: {
@@ -270,6 +270,19 @@ describe('key policies', () => {
             Action: 'kms:*',
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::GetAtt': [
+                  'User00B015A1',
+                  'Arn',
+                ],
+              },
+            },
             Resource: '*',
           },
         ],
@@ -323,6 +336,210 @@ describe('key policies', () => {
             Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
             Effect: 'Allow',
             Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant encrypt permission to service principal (L2)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN
+    KeyGrants.fromKey(key).encrypt(principal);
+
+    // THEN
+    // Key policy should be unmodified by the grant.
+    let template1 = Template.fromStack(stack);
+    template1.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // This is the pre-existing statement
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          // and this is the new statement added by the grant, to the resource policy
+          // instead of the principal policy, because the principal is a service principal.
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant encrypt permission to service principal (L1)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN
+    KeyGrants.fromKey(key).encrypt(principal);
+
+    // THEN
+    let template2 = Template.fromStack(stack);
+    template2.hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // This is the pre-existing statement
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          // and this is the new statement added by the grant, to the resource policy
+          // instead of the principal policy, because the principal is a service principal.
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant encrypt permission to service principal (L1) without policy decorator', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN
+    KeyGrants.fromKey(key).encrypt(principal);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          // Add this statement even if there is no policy decorator explicitly registered,
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant encrypt permission to service principal (L1) without policy decorator throws when feature flag disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { [cxapi.AUTOMATIC_L1_TRAITS]: false } });
+    const stack = new cdk.Stack(app, 'Stack');
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN / THEN
+    expect(() => KeyGrants.fromKey(key).encrypt(principal)).toThrow();
+  });
+
+  test('grant multiple permissions to an L1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key', {
+      keyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    const principal = new ServicePrincipal('ec2.amazonaws.com');
+
+    // WHEN
+    let keyGrants = KeyGrants.fromKey(key);
+    keyGrants.encrypt(principal);
+    keyGrants.decrypt(principal);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          // This is the pre-existing statement
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+          // and these are the new statement added by the grants, to the resource policy
+          // instead of the principal policy, because the principal is a service principal.
+          {
+            Action: ['kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Principal: { Service: 'ec2.amazonaws.com' },
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',
