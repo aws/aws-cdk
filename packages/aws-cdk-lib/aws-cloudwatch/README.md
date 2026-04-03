@@ -521,7 +521,7 @@ declare const alarm2: cloudwatch.Alarm;
 const alarmMuteRule = new cloudwatch.AlarmMuteRule(this, 'AlarmMuteRule', {
   alarms: [alarm1],
   // Defines the mute period begins at 0:00 everyday in UTC
-  schedule: cloudwarch.ScheduleExpression.cron({ minute: '0', hour: '0' }),
+  schedule: cloudwatch.ScheduleExpression.cron({ minute: '0', hour: '0' }),
   // Specifies the mute rule lasts 1 hour.
   duration: Duration.hours(1),
 })
