@@ -941,6 +941,38 @@ class MyLambdaStep
 }
 ```
 
+### Controlling the artifact bucket lifecycle
+
+By default, `CodePipeline` creates an S3 bucket to store pipeline artifacts. When
+the pipeline stack is deleted, that bucket (and its contents) is retained. To have
+the bucket removed on stack deletion, set `artifactBucketRemovalPolicy`:
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
+  artifactBucketRemovalPolicy: RemovalPolicy.DESTROY,
+});
+```
+
+To also empty the bucket before deleting it (required if the bucket is non-empty),
+enable `artifactBucketAutoDeleteObjects`. This requires the removal policy to be
+set to `RemovalPolicy.DESTROY`:
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
+  artifactBucketRemovalPolicy: RemovalPolicy.DESTROY,
+  artifactBucketAutoDeleteObjects: true,
+});
+```
+
+Both props are only valid when no explicit `artifactBucket` is provided. If you
+supply your own bucket, manage its lifecycle directly on that bucket.
+
 ### Using an existing AWS Codepipeline
 
 If you wish to use an existing `CodePipeline.Pipeline` while using the modern API's

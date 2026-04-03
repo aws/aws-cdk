@@ -765,6 +765,60 @@ test('artifactBucket can be overridden', () => {
   });
 });
 
+test('artifactBucketRemovalPolicy creates a managed bucket with the given removal policy', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResource('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+  });
+});
+
+test('artifactBucketAutoDeleteObjects creates a managed bucket with autoDeleteObjects enabled', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+    artifactBucketAutoDeleteObjects: true,
+  });
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResource('AWS::S3::Bucket', {
+    DeletionPolicy: 'Delete',
+    UpdateReplacePolicy: 'Delete',
+  });
+  // autoDeleteObjects sets up a custom resource
+  template.resourceCountIs('Custom::S3AutoDeleteObjects', 1);
+});
+
+test('throws when artifactBucketRemovalPolicy is set alongside existing artifactBucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact'),
+    artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  });
+  expect(() => pipeline.buildPipeline()).toThrow(/Cannot set 'artifactBucketRemovalPolicy' or 'artifactBucketAutoDeleteObjects' when 'artifactBucket' is provided/);
+});
+
+test('throws when artifactBucketAutoDeleteObjects is set alongside existing artifactBucket', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucket: new s3.Bucket(pipelineStack, 'CustomArtifact'),
+    artifactBucketAutoDeleteObjects: true,
+  });
+  expect(() => pipeline.buildPipeline()).toThrow(/Cannot set 'artifactBucketRemovalPolicy' or 'artifactBucketAutoDeleteObjects' when 'artifactBucket' is provided/);
+});
+
+test('throws when artifactBucketAutoDeleteObjects is true but removalPolicy is not DESTROY', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    artifactBucketAutoDeleteObjects: true,
+  });
+  expect(() => pipeline.buildPipeline()).toThrow(/'artifactBucketAutoDeleteObjects' requires 'artifactBucketRemovalPolicy' to be set to RemovalPolicy.DESTROY/);
+});
+
 test('throws when deploy role session tags are used', () => {
   const synthesizer = new cdk.DefaultStackSynthesizer({
     deployRoleAdditionalOptions: {
