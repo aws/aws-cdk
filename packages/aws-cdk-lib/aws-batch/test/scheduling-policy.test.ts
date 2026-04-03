@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { FairshareSchedulingPolicy } from '../lib';
+import { FairshareSchedulingPolicy, IdleResourceAssignmentStrategy } from '../lib';
 
 test('empty fairshare policy', () => {
   // GIVEN
@@ -149,4 +149,43 @@ test('can be imported from ARN', () => {
 
   // THEN
   expect(policy.schedulingPolicyArn).toEqual('arn:aws:batch:us-east-1:123456789012:scheduling-policy/policyImport');
+});
+
+test('fairshare policy respects quotaSharePolicy', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new FairshareSchedulingPolicy(stack, 'schedulingPolicy', {
+    quotaSharePolicy: {
+      idleResourceAssignmentStrategy: IdleResourceAssignmentStrategy.FIFO,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::SchedulingPolicy', {
+    QuotaSharePolicy: {
+      IdleResourceAssignmentStrategy: 'FIFO',
+    },
+  });
+});
+
+test('fairshare policy without quotaSharePolicy does not render QuotaSharePolicy', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new FairshareSchedulingPolicy(stack, 'schedulingPolicy');
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Batch::SchedulingPolicy', {
+    FairsharePolicy: {
+      ShareDistribution: [],
+    },
+  });
+  // QuotaSharePolicy should not be present
+  const resources = template.findResources('AWS::Batch::SchedulingPolicy');
+  const [resource] = Object.values(resources);
+  expect(resource.Properties.QuotaSharePolicy).toBeUndefined();
 });

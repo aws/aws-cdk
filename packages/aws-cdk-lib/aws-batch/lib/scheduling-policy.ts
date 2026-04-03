@@ -60,6 +60,30 @@ export abstract class SchedulingPolicyBase extends Resource implements IScheduli
 }
 
 /**
+ * The strategy for assigning idle resources when using a Quota Share scheduling policy.
+ */
+export enum IdleResourceAssignmentStrategy {
+  /**
+   * Idle resources are assigned to jobs in the order they were submitted (first in, first out).
+   */
+  FIFO = 'FIFO',
+}
+
+/**
+ * Configuration for the Quota Share Policy on a Scheduling Policy.
+ *
+ * A Quota Share Policy controls how idle resources are assigned to jobs in the queue.
+ */
+export interface QuotaSharePolicy {
+  /**
+   * The strategy for assigning idle resources.
+   *
+   * @default - no idle resource assignment strategy
+   */
+  readonly idleResourceAssignmentStrategy?: IdleResourceAssignmentStrategy;
+}
+
+/**
  * Represents a group of Job Definitions. All Job Definitions that
  * declare a share identifier will be considered members of the Share
  * defined by that share identifier.
@@ -185,6 +209,15 @@ export interface FairshareSchedulingPolicyProps extends SchedulingPolicyProps {
    * @default - no shares
    */
   readonly shares?: Share[];
+
+  /**
+   * The Quota Share Policy for this Scheduling Policy.
+   *
+   * A Quota Share Policy controls how idle resources are assigned to jobs in the queue.
+   *
+   * @default - no quota share policy
+   */
+  readonly quotaSharePolicy?: QuotaSharePolicy;
 }
 
 /**
@@ -257,6 +290,9 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
         }),
       },
       name: props?.schedulingPolicyName,
+      quotaSharePolicy: props?.quotaSharePolicy ? {
+        idleResourceAssignmentStrategy: props.quotaSharePolicy.idleResourceAssignmentStrategy,
+      } : undefined,
     });
   }
 
