@@ -164,7 +164,7 @@ httpApi.addRoutes({
 SQS integrations enable integrating an HTTP API route with AWS SQS.
 This allows the HTTP API to send, receive and delete messages from an SQS queue.
 
-The following code configures a SQS integrations:
+The following code configures an SQS integrations:
 
 ```ts
 import * as sqs from 'aws-cdk-lib/aws-sqs';
@@ -453,7 +453,7 @@ webSocketApi.addRoute('sendMessage', {
 AWS type integrations enable integrating with any supported AWS service. This is only supported for WebSocket APIs. When a client 
 connects/disconnects or sends a message specific to a route, the API Gateway service forwards the request to the specified AWS service.
 
-The following code configures a `$connect` route with a AWS integration that integrates with a dynamodb table. On websocket api connect,
+The following code configures a `$connect` route with an AWS integration that integrates with a dynamodb table. On websocket api connect,
 it will write new entry to the dynamodb table. 
 
 ```ts

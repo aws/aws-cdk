@@ -14,7 +14,7 @@ The following destinations are supported
 * EventBridge event bus
 * S3 bucket
 
-Example with a SNS topic for successful invocations:
+Example with an SNS topic for successful invocations:
 
 ```ts
 // An sns topic for successful invocations of a lambda function
@@ -31,7 +31,7 @@ const myFn = new lambda.Function(this, 'Fn', {
 })
 ```
 
-Example with a SQS queue for unsuccessful invocations:
+Example with an SQS queue for unsuccessful invocations:
 
 ```ts
 // An sqs queue for unsuccessful invocations of a lambda function

@@ -322,7 +322,7 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-The code snippet below creates an event rule with a EC2 task definition and cluster as the target which is called every hour by EventBridge Scheduler.
+The code snippet below creates an event rule with an EC2 task definition and cluster as the target which is called every hour by EventBridge Scheduler.
 
 ```ts
 import * as ecs from 'aws-cdk-lib/aws-ecs';
