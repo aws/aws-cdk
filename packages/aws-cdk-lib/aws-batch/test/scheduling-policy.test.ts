@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { FairshareSchedulingPolicy, IdleResourceAssignmentStrategy } from '../lib';
+import { FairshareSchedulingPolicy, IdleResourceAssignmentStrategy, QuotaShareSchedulingPolicy } from '../lib';
 
 test('empty fairshare policy', () => {
   // GIVEN
@@ -156,10 +156,8 @@ test('fairshare policy respects quotaSharePolicy', () => {
   const stack = new Stack();
 
   // WHEN
-  new FairshareSchedulingPolicy(stack, 'schedulingPolicy', {
-    quotaSharePolicy: {
-      idleResourceAssignmentStrategy: IdleResourceAssignmentStrategy.FIFO,
-    },
+  new QuotaShareSchedulingPolicy(stack, 'schedulingPolicy', {
+    idleResourceAssignmentStrategy: IdleResourceAssignmentStrategy.FIFO,
   });
 
   // THEN
@@ -188,4 +186,63 @@ test('fairshare policy without quotaSharePolicy does not render QuotaSharePolicy
   const resources = template.findResources('AWS::Batch::SchedulingPolicy');
   const [resource] = Object.values(resources);
   expect(resource.Properties.QuotaSharePolicy).toBeUndefined();
+});
+
+test('quota share policy respects name', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new QuotaShareSchedulingPolicy(stack, 'schedulingPolicy', {
+    schedulingPolicyName: 'QuotaSharePolicyName',
+    idleResourceAssignmentStrategy: IdleResourceAssignmentStrategy.FIFO,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::SchedulingPolicy', {
+    Name: 'QuotaSharePolicyName',
+    QuotaSharePolicy: {
+      IdleResourceAssignmentStrategy: 'FIFO',
+    },
+  });
+});
+
+test('quota share policy without idleResourceAssignmentStrategy', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new QuotaShareSchedulingPolicy(stack, 'schedulingPolicy');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::SchedulingPolicy', {
+    QuotaSharePolicy: {},
+  });
+});
+
+test('quota share policy can be imported from ARN', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const policy = QuotaShareSchedulingPolicy.fromQuotaShareSchedulingPolicyArn(stack, 'policyImport',
+    'arn:aws:batch:us-east-1:123456789012:scheduling-policy/quotaSharePolicy');
+
+  // THEN
+  expect(policy.schedulingPolicyArn).toEqual('arn:aws:batch:us-east-1:123456789012:scheduling-policy/quotaSharePolicy');
+});
+
+test('quota share policy does not render FairsharePolicy', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new QuotaShareSchedulingPolicy(stack, 'schedulingPolicy', {
+    idleResourceAssignmentStrategy: IdleResourceAssignmentStrategy.FIFO,
+  });
+
+  // THEN
+  const resources = Template.fromStack(stack).findResources('AWS::Batch::SchedulingPolicy');
+  const [resource] = Object.values(resources);
+  expect(resource.Properties.FairsharePolicy).toBeUndefined();
 });
