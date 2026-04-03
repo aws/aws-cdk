@@ -46,8 +46,8 @@ describe('Alarm mute rule', () => {
           Timezone: 'Asia/Tokyo',
         },
       },
-      StartDate: '2026-01-01T00:00:00',
-      ExpireDate: '2026-12-31T23:59:59',
+      StartDate: '2026-01-01T00:00',
+      ExpireDate: '2026-12-31T23:59',
     });
   });
 
@@ -166,7 +166,7 @@ describe('Alarm mute rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::AlarmMuteRule', {
       Rule: {
         Schedule: {
-          Expression: 'at(2026-01-02T03:04:00)',
+          Expression: 'at(2026-01-02T03:04)',
           Timezone: Match.absent(),
         },
       },
@@ -185,7 +185,7 @@ describe('Alarm mute rule', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::AlarmMuteRule', {
       Rule: {
         Schedule: {
-          Expression: 'at(2026-01-02T03:04:00)',
+          Expression: 'at(2026-01-02T03:04)',
           Timezone: 'Asia/Tokyo',
         },
       },

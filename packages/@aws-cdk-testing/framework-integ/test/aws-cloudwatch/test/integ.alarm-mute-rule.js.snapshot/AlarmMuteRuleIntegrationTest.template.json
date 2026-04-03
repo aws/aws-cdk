@@ -16,7 +16,7 @@
    "Type": "AWS::CloudWatch::AlarmMuteRule",
    "Properties": {
     "Description": "Alarm mute rule integration test",
-    "ExpireDate": "2031-01-30T15:00",
+    "ExpireDate": "2031-01-31T00:00",
     "MuteTargets": {
      "AlarmNames": [
       {
@@ -34,7 +34,7 @@
       "Expression": "cron(0 0 * * *)"
      }
     },
-    "StartDate": "2030-01-31T15:00"
+    "StartDate": "2030-02-01T00:00"
    }
   },
   "Alarm2A7122E13": {
@@ -65,7 +65,7 @@
     "Rule": {
      "Schedule": {
       "Duration": "P15D",
-      "Expression": "at(2030-01-31T15:00)",
+      "Expression": "at(2030-02-01T00:00)",
       "Timezone": "Asia/Tokyo"
      }
     }

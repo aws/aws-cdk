@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "2609457193699a85af76ff1eb6dd045d162f1783e7c256bf535e4fb5558287f3": {
+    "66fe93b623330bed70bc6a6a2fa3a7982a3c7732b35a720414e52fc21f5b5abd": {
       "displayName": "AlarmMuteRuleIntegrationTest Template",
       "source": {
         "path": "AlarmMuteRuleIntegrationTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8e53b196": {
+        "current_account-current_region-4e9814ce": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2609457193699a85af76ff1eb6dd045d162f1783e7c256bf535e4fb5558287f3.json",
+          "objectKey": "66fe93b623330bed70bc6a6a2fa3a7982a3c7732b35a720414e52fc21f5b5abd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
