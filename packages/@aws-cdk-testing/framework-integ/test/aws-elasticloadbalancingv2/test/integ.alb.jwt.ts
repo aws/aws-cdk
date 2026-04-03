@@ -101,3 +101,4 @@ const testCase = new AlbJwtStack(app, 'AlbJwtStack', {
 new integ.IntegTest(app, 'IntegTestAlbJwt', {
   testCases: [testCase],
 });
+
