@@ -100,6 +100,7 @@ export function validateManagedPasswordCredentials(scope: Construct, credentials
 
   if (unsupportedProps.length > 0) {
     throw new ValidationError(
+      lit`ManagedPasswordUnsupportedCredentialProperties`,
       'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in credentials. ' +
       `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
       scope,
