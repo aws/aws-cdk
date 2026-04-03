@@ -645,7 +645,7 @@ interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
   readonly instanceTypes: ec2.InstanceType[];
 
   /**
-   * The instance types that this Compute Environment can launch.
+   * The instance classes that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
    */
   readonly instanceClasses: ec2.InstanceClass[];
