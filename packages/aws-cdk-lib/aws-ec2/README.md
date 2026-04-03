@@ -1362,6 +1362,13 @@ new ec2.Instance(this, 'Instance5', {
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
+
+// Compute optimized instances with 5th generation AMD EPYC processors
+new ec2.Instance(this, 'Instance6', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.C8A, ec2.InstanceSize.LARGE),
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+});
 ```
 
 ### Latest Amazon Linux Images
