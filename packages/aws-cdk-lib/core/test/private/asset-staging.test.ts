@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
-import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
+import { AssetBundlingBindMount, AssetBundlingVolumeCopy, dockerExec } from '../../lib/private/asset-staging';
 
 const DOCKER_CMD = process.env.CDK_DOCKER ?? 'docker';
 
@@ -83,6 +83,28 @@ describe('bundling', () => {
       '--volumes-from', helper.copyContainerName,
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('dockerExec throws a helpful error when docker is not found (ENOENT)', () => {
+    const enoentError = new Error('spawnSync docker ENOENT') as NodeJS.ErrnoException;
+    enoentError.code = 'ENOENT';
+
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: null,
+      stderr: Buffer.from(''),
+      stdout: Buffer.from(''),
+      pid: 0,
+      output: [],
+      signal: null,
+      error: enoentError,
+    });
+
+    expect(() => dockerExec(['run', 'hello'])).toThrow(
+      /docker is not installed or not in PATH/,
+    );
+    expect(() => dockerExec(['run', 'hello'])).toThrow(
+      /consider installing esbuild/,
+    );
   });
 
   test('AssetBundlingBindMount bundles with bind mount ', () => {

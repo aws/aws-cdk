@@ -214,6 +214,15 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   });
 
   if (proc.error) {
+    if ((proc.error as NodeJS.ErrnoException).code === 'ENOENT') {
+      throw new ExecutionError(
+        lit`DockerNotFound`,
+        `Failed to run bundling with Docker: ${prog} is not installed or not in PATH. ` +
+        'If you are bundling a Lambda function, consider installing esbuild locally ' +
+        '(npm install --save-dev esbuild) to avoid Docker entirely. ' +
+        `Otherwise, install Docker and make sure "${prog}" is available on your PATH.`,
+      );
+    }
     throw proc.error;
   }
 
