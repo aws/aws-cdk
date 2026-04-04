@@ -2,6 +2,7 @@ import { ApplicationProtocol, Protocol } from './enums';
 import type * as cxschema from '../../../cloud-assembly-schema';
 import { Arn, ArnFormat, Fn, Token } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 
 export type Attributes = { [key: string]: string | undefined };
 
@@ -26,7 +27,7 @@ export function defaultPortForProtocol(proto: ApplicationProtocol): number {
     case ApplicationProtocol.HTTP: return 80;
     case ApplicationProtocol.HTTPS: return 443;
     default:
-      throw new UnscopedValidationError('UnrecognizedProtocol', `Unrecognized protocol: ${proto}`);
+      throw new UnscopedValidationError(lit`UnrecognizedProtocol`, `Unrecognized protocol: ${proto}`);
   }
 }
 
@@ -46,7 +47,7 @@ export function defaultProtocolForPort(port: number): ApplicationProtocol {
       return ApplicationProtocol.HTTPS;
 
     default:
-      throw new UnscopedValidationError('DonTKnowDefaultProtocol', `Don't know default protocol for port: ${port}; please supply a protocol`);
+      throw new UnscopedValidationError(lit`DonTKnowDefaultProtocol`, `Don't know default protocol for port: ${port}; please supply a protocol`);
   }
 }
 
@@ -80,7 +81,7 @@ export function validateNetworkProtocol(protocol: Protocol) {
   const NLB_PROTOCOLS = [Protocol.TCP, Protocol.TLS, Protocol.UDP, Protocol.TCP_UDP];
 
   if (NLB_PROTOCOLS.indexOf(protocol) === -1) {
-    throw new UnscopedValidationError('MustBeProtocol', `The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
+    throw new UnscopedValidationError(lit`MustBeProtocol`, `The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
   }
 }
 
@@ -106,7 +107,7 @@ export function parseLoadBalancerFullName(arn: string): string {
     const arnComponents = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = arnComponents.resourceName;
     if (!resourceName) {
-      throw new UnscopedValidationError('ProvidedDoesBelongLoad', `Provided ARN does not belong to a load balancer: ${arn}`);
+      throw new UnscopedValidationError(lit`ProvidedDoesBelongLoad`, `Provided ARN does not belong to a load balancer: ${arn}`);
     }
     return resourceName;
   }
@@ -125,7 +126,7 @@ export function parseTargetGroupFullName(arn: string): string {
   const arnComponents = Arn.split(arn, ArnFormat.NO_RESOURCE_NAME);
   const resource = arnComponents.resource;
   if (!resource) {
-    throw new UnscopedValidationError('ProvidedDoesBelongTarget', `Provided ARN does not belong to a target group: ${arn}`);
+    throw new UnscopedValidationError(lit`ProvidedDoesBelongTarget`, `Provided ARN does not belong to a target group: ${arn}`);
   }
   return resource;
 }

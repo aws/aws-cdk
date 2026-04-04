@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import type { IEventSourceMapping, IFunction } from '../../aws-lambda/lib';
 import type { ISchemaRegistry, KafkaSchemaRegistryConfig, SchemaRegistryProps } from '../../aws-lambda/lib/schema-registry';
 import { Fn, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 const GLUE_SCHEMA_REGISTRY_ARN_REGEX = /^arn:[^:]+:glue:[^:]+:[^:]+:registry\/([^\/]+)$/;
 
@@ -58,14 +59,14 @@ export class GlueSchemaRegistry implements ISchemaRegistry {
     if (props.schemaRegistryArn) {
       const glueRegistryMatch = props.schemaRegistryArn?.match(GLUE_SCHEMA_REGISTRY_ARN_REGEX);
       if (!glueRegistryMatch) {
-        throw new ValidationError('SchemaRegistryArn', `schemaRegistryArn ${this.props.schemaRegistryArn} must match ${GLUE_SCHEMA_REGISTRY_ARN_REGEX}`, _target);
+        throw new ValidationError(lit`SchemaRegistryArn`, `schemaRegistryArn ${this.props.schemaRegistryArn} must match ${GLUE_SCHEMA_REGISTRY_ARN_REGEX}`, _target);
       }
       return {
         arn: props.schemaRegistryArn,
         name: glueRegistryMatch[1],
       };
     }
-    throw new ValidationError('OneSchemaRegistryArnSchema', 'one of schemaRegistryArn or schemaRegistry must be passed', _target);
+    throw new ValidationError(lit`OneSchemaRegistryArnSchema`, 'one of schemaRegistryArn or schemaRegistry must be passed', _target);
   }
 
   private getSchemaRegistryPolicies(glueRegistryArn: string, glueRegistryName: string) {

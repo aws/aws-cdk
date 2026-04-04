@@ -3,13 +3,16 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnTable, CfnTablePolicy } from 'aws-cdk-lib/aws-s3tables';
 import type {
   IResource,
+  ITaggableV2,
   RemovalPolicy,
+  TagManager,
 } from 'aws-cdk-lib/core';
 import {
   Resource,
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -316,7 +319,7 @@ export class IcebergTransform {
   public static bucket(n: number): IcebergTransform {
     if (n <= 0 || !Number.isInteger(n)) {
       throw new UnscopedValidationError(
-        'InvalidBucketCount',
+        lit`InvalidBucketCount`,
         'Bucket count must be a positive integer.',
       );
     }
@@ -331,7 +334,7 @@ export class IcebergTransform {
   public static truncate(width: number): IcebergTransform {
     if (width <= 0 || !Number.isInteger(width)) {
       throw new UnscopedValidationError(
-        'InvalidTruncateWidth',
+        lit`InvalidTruncateWidth`,
         'Truncate width must be a positive integer.',
       );
     }
@@ -506,13 +509,13 @@ export interface TablePropertyEntry {
 
 /**
  * Contains details about the metadata for an Iceberg table.
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
 export interface IcebergMetadataProperty {
   /**
    * Contains details about the schema for an Iceberg table.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
    */
   readonly icebergSchema: IcebergSchemaProperty;
 
@@ -634,7 +637,7 @@ export interface TableAttributes {
  * An S3 Table with helpers.
  */
 @propertyInjectable
-export class Table extends TableBase {
+export class Table extends TableBase implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-s3tables-alpha.Table';
 
@@ -721,7 +724,7 @@ export class Table extends TableBase {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidTableName',
+        lit`InvalidTableName`,
         `Invalid S3 table name (value: ${tableName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -737,6 +740,11 @@ export class Table extends TableBase {
    * @internal
    */
   private readonly _resource: CfnTable;
+
+  /**
+   * The tag manager for this resource.
+   */
+  public readonly cdkTagManager: TagManager;
 
   /**
    * The name of this table
@@ -763,7 +771,7 @@ export class Table extends TableBase {
 
     if (props.withoutMetadata && props.icebergMetadata) {
       throw new UnscopedValidationError(
-        'MutuallyExclusiveProps',
+        lit`MutuallyExclusiveProps`,
         "TableProps: 'withoutMetadata' and 'icebergMetadata' are mutually exclusive. Specify only one.",
       );
     }
@@ -784,6 +792,7 @@ export class Table extends TableBase {
     this.namespace = props.namespace;
     this.tableName = props.tableName;
     this.tableArn = this._resource.attrTableArn;
+    this.cdkTagManager = this._resource.cdkTagManager;
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.node.addDependency(this.namespace);
   }
@@ -862,7 +871,7 @@ export class Table extends TableBase {
     const duplicateKeys = keys.filter((key, index) => keys.indexOf(key) !== index);
     if (duplicateKeys.length > 0) {
       throw new UnscopedValidationError(
-        'DuplicateTablePropertyKey',
+        lit`DuplicateTablePropertyKey`,
         `Duplicate table property keys are not allowed: ${[...new Set(duplicateKeys)].join(', ')}`,
       );
     }

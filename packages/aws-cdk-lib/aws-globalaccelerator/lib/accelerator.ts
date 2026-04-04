@@ -4,6 +4,7 @@ import type { ListenerOptions } from './listener';
 import { Listener } from './listener';
 import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IAcceleratorRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
 
@@ -244,13 +245,13 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   private validateAcceleratorName(name?: string) {
     if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
-      throw new cdk.ValidationError('InvalidAcceleratorNameLength', `Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`, this);
+      throw new cdk.ValidationError(lit`InvalidAcceleratorNameLength`, `Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`, this);
     }
   }
 
   private validateIpAddresses(ipAddresses?: string[]) {
     if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
-      throw new cdk.ValidationError('InvalidIpAddressesLength', `Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
+      throw new cdk.ValidationError(lit`InvalidIpAddressesLength`, `Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`, this);
     }
   }
 }

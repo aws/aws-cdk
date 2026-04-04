@@ -9,6 +9,7 @@ import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
@@ -249,14 +250,14 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       const cfnSvc = (props.service as ecs.BaseService).node.defaultChild as ecs.CfnService;
       if (cfnSvc.deploymentController === undefined ||
         (cfnSvc.deploymentController! as ecs.CfnService.DeploymentControllerProperty).type !== ecs.DeploymentControllerType.CODE_DEPLOY) {
-        throw new ValidationError('ServiceAssociatedDeploymentGroupDe', 'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type', this);
+        throw new ValidationError(lit`ServiceAssociatedDeploymentGroupDe`, 'The ECS service associated with the deployment group must use the CODE_DEPLOY deployment controller type', this);
       }
 
       const taskDef = (props.service as ecs.BaseService).taskDefinition;
       // Type assertion is safe: BaseService constructor (base-service.ts:877-882) already validates
       // that CODE_DEPLOY deployment controller requires an owned TaskDefinition
       if (cfnSvc.taskDefinition !== (taskDef as ecs.TaskDefinition).family) {
-        throw new ValidationError('ServiceAssociatedDeploymentGroupSpecify', 'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack', this);
+        throw new ValidationError(lit`ServiceAssociatedDeploymentGroupSpecify`, 'The ECS service associated with the deployment group must specify the task definition using the task definition family name only. Otherwise, the task definition cannot be updated in the stack', this);
       }
     }
 

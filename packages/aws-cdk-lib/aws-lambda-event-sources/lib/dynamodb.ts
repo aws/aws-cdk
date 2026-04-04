@@ -3,6 +3,7 @@ import { StreamEventSource } from './stream';
 import type * as dynamodb from '../../aws-dynamodb';
 import type * as lambda from '../../aws-lambda';
 import { Names, Token, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface DynamoEventSourceProps extends StreamEventSourceProps {
 }
@@ -20,13 +21,13 @@ export class DynamoEventSource extends StreamEventSource {
     if (this.props.batchSize !== undefined
       && !Token.isUnresolved(this.props.batchSize)
       && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {
-      throw new ValidationError('MaximumBatchSizeInclusiveGiven', `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`, table);
+      throw new ValidationError(lit`MaximumBatchSizeInclusiveGiven`, `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`, table);
     }
   }
 
   public bind(target: lambda.IFunction) {
     if (!this.table.tableStreamArn) {
-      throw new ValidationError('DynamoStreamsEnabledTable', `DynamoDB Streams must be enabled on the table ${this.table.node.path}`, this.table);
+      throw new ValidationError(lit`DynamoStreamsEnabledTable`, `DynamoDB Streams must be enabled on the table ${this.table.node.path}`, this.table);
     }
 
     const eventSourceMapping = target.addEventSourceMapping(`DynamoDBEventSource:${Names.nodeUniqueId(this.table.node)}`,
@@ -47,7 +48,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new ValidationError('DynamoEventSourceYetBound', 'DynamoEventSource is not yet bound to an event source mapping', this.table);
+      throw new ValidationError(lit`DynamoEventSourceYetBound`, 'DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingId;
   }
@@ -57,7 +58,7 @@ export class DynamoEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new ValidationError('DynamoEventSourceYetBound', 'DynamoEventSource is not yet bound to an event source mapping', this.table);
+      throw new ValidationError(lit`DynamoEventSourceYetBound`, 'DynamoEventSource is not yet bound to an event source mapping', this.table);
     }
     return this._eventSourceMappingArn;
   }
