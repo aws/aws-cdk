@@ -39,6 +39,7 @@ import {
   CustomResourceProviderRuntime,
   DefaultStackSynthesizer,
   Duration,
+  Bitrate,
   Fn,
   IAspect,
   ITaggable,
@@ -104,16 +105,6 @@ class MyAspect implements IAspect {
 }
 
 class MyMixin extends Mixin {
-  supports(_construct: IConstruct): boolean { return true; }
-  applyTo(_construct: IConstruct): void { }
-}
-
-class EncryptionAtRest extends Mixin {
-  supports(_construct: IConstruct): boolean { return true; }
-  applyTo(_construct: IConstruct): void { }
-}
-
-class AutoDeleteObjects extends Mixin {
   supports(_construct: IConstruct): boolean { return true; }
   applyTo(_construct: IConstruct): void { }
 }

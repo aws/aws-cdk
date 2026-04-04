@@ -1,13 +1,18 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
     "BedrockActionGroup/DefaultTest": {
       "stacks": [
         "aws-cdk-bedrock-action-group-1"
       ],
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "eu-central-1"
+      ],
       "assertionStack": "BedrockActionGroup/DefaultTest/DeployAssert",
       "assertionStackName": "BedrockActionGroupDefaultTestDeployAssertE2AFA81B"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1105.0"
 }

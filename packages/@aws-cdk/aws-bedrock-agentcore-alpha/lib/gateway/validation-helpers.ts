@@ -1,15 +1,8 @@
 import { Token } from 'aws-cdk-lib';
 
 /**
- * Error thrown when validation fails
  * @internal
  */
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'ValidationError';
-  }
-}
 interface IntervalValidation {
   fieldName: string;
   minLength: number;
