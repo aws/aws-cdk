@@ -762,6 +762,20 @@ export interface GitHubSourceProps extends CommonGithubSourceProps {
    * @default undefined will create an organization webhook
    */
   readonly repo?: string;
+
+  /**
+   * The ARN of the CodeConnections connection to use for authentication.
+   *
+   * When provided, the source will use CodeConnections (GitHub App) authentication
+   * instead of the default OAuth or personal access token credentials.
+   *
+   * The required IAM permissions for the connection will be automatically granted
+   * to the project's role.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/connections-github-app.html
+   * @default - the source will use the default credentials configured for GitHub in the account
+   */
+  readonly connectionArn?: string;
 }
 
 /**
@@ -771,20 +785,37 @@ class GitHubSource extends CommonGithubSource {
   public readonly type = GITHUB_SOURCE_TYPE;
   private readonly sourceLocation: string;
   private readonly organization?: string;
+  private readonly connectionArn?: string;
   protected readonly webhookFilters: FilterGroup[];
   constructor(props: GitHubSourceProps) {
     super(props);
     this.organization = props.repo === undefined ? props.owner : undefined;
     this.webhookFilters = props.webhookFilters ?? (this.organization ? [FilterGroup.inEventOf(EventAction.WORKFLOW_JOB_QUEUED)] : []);
     this.sourceLocation = this.organization ? 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION' : `https://github.com/${props.owner}/${props.repo}.git`;
+    this.connectionArn = props.connectionArn;
   }
 
   public bind(_scope: Construct, project: IProject): SourceConfig {
+    if (this.connectionArn) {
+      project.addToRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'codeconnections:UseConnection',
+          'codeconnections:GetConnectionToken',
+          'codeconnections:GetConnection',
+        ],
+        resources: [this.connectionArn],
+      }));
+    }
+
     const superConfig = super.bind(_scope, project);
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
         location: this.sourceLocation,
+        auth: this.connectionArn ? {
+          type: 'CODECONNECTIONS',
+          resource: this.connectionArn,
+        } : undefined,
       },
       sourceVersion: superConfig.sourceVersion,
       buildTriggers: this.organization

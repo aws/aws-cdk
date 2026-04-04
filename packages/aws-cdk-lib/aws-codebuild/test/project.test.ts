@@ -252,6 +252,138 @@ describe('GitHub source', () => {
     });
   });
 
+  test('can create GitHub source with CodeConnections auth', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+        connectionArn: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+        webhookFilters: [
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED),
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'https://github.com/testowner/testrepo.git',
+        Auth: {
+          Type: 'CODECONNECTIONS',
+          Resource: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+        },
+      },
+      Triggers: {
+        Webhook: true,
+        FilterGroups: [
+          [
+            {
+              Type: 'EVENT',
+              Pattern: 'WORKFLOW_JOB_QUEUED',
+            },
+          ],
+        ],
+      },
+    });
+  });
+
+  test('can create organizational webhook with CodeConnections auth', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        connectionArn: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'CODEBUILD_DEFAULT_WEBHOOK_SOURCE_LOCATION',
+        Auth: {
+          Type: 'CODECONNECTIONS',
+          Resource: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+        },
+      },
+      Triggers: {
+        Webhook: true,
+        ScopeConfiguration: {
+          Name: 'testowner',
+        },
+        FilterGroups: [
+          [
+            {
+              Type: 'EVENT',
+              Pattern: 'WORKFLOW_JOB_QUEUED',
+            },
+          ],
+        ],
+      },
+    });
+  });
+
+  test('CodeConnections auth grants required IAM permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+        connectionArn: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'codeconnections:UseConnection',
+              'codeconnections:GetConnectionToken',
+              'codeconnections:GetConnection',
+            ],
+            Effect: 'Allow',
+            Resource: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('GitHub source without connectionArn does not set auth', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Source: {
+        Type: 'GITHUB',
+        Location: 'https://github.com/testowner/testrepo.git',
+        Auth: Match.absent(),
+      },
+    });
+  });
+
   test('can be added to a CodePipeline', () => {
     const stack = new cdk.Stack();
     const project = new codebuild.Project(stack, 'Project', {
