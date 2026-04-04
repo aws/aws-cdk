@@ -1446,7 +1446,7 @@ export class Cluster extends ClusterBase {
       if (this._kubectlProviderOptions?.securityGroup !== undefined &&
           this._kubectlProviderOptions?.securityGroups !== undefined) {
         throw new ValidationError(
-          'SecurityGroupConflict',
+          lit`SecurityGroupConflict`,
           'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
           this,
         );

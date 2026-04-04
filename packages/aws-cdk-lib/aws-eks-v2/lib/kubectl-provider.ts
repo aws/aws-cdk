@@ -8,6 +8,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import type { RemovalPolicy, Size } from '../../core';
 import { Duration, CfnCondition, Fn, Aws, RemovalPolicies, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -191,7 +192,7 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
 
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
       throw new ValidationError(
-        'SecurityGroupConflict',
+        lit`SecurityGroupConflict`,
         'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
         this,
       );
