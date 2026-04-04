@@ -4,6 +4,7 @@ import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IGateway } from '../gateway-base';
 import { validateOpenApiSchema, validateFieldPattern, validateStringField } from '../validation-helpers';
@@ -213,7 +214,7 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
           schemaName: 'OpenAPI schema for target',
         });
         if (errors.length > 0) {
-          throw new UnscopedValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+          throw new UnscopedValidationError(lit`OpenApiSchemaValidationFailed`, `OpenAPI schema validation failed:\n${errors.join('\n')}`);
         }
       } else if (this.apiSchema instanceof AssetApiSchema) {
         // For asset schemas (local files)
@@ -224,13 +225,14 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
             schemaName: `OpenAPI schema from file ${this.apiSchema._getFilePath()}`,
           });
           if (errors.length > 0) {
-            throw new UnscopedValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+            throw new UnscopedValidationError(lit`OpenApiSchemaValidationFailed`, `OpenAPI schema validation failed:\n${errors.join('\n')}`);
           }
         } catch (e) {
           if (e instanceof ValidationError) {
             throw e;
           }
           throw new UnscopedValidationError(
+            lit`OpenApiSchemaFileReadFailed`,
             `Failed to read OpenAPI schema from ${this.apiSchema._getFilePath()}: ${e instanceof Error ? e.message : String(e)}`,
           );
         }
@@ -397,12 +399,13 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (errors.length > 0) {
-      throw new UnscopedValidationError(errors.join('\n'));
+      throw new UnscopedValidationError(lit`McpServerEndpointInvalid`, errors.join('\n'));
     }
 
     // Additional helpful validation for common URL encoding issues
     if (endpoint.includes(' ') || endpoint.includes('<') || endpoint.includes('>')) {
       throw new UnscopedValidationError(
+        lit`McpServerEndpointEncodingInvalid`,
         'MCP server endpoint contains characters that should be URL-encoded. ' +
         'Please ensure the URL is properly encoded before passing to the construct.',
       );
@@ -726,7 +729,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (restApiIdErrors.length > 0) {
-        throw new UnscopedValidationError(restApiIdErrors.join('\n'));
+        throw new UnscopedValidationError(lit`RestApiIdInvalid`, restApiIdErrors.join('\n'));
       }
     }
 
@@ -740,13 +743,13 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (stageErrors.length > 0) {
-        throw new UnscopedValidationError(stageErrors.join('\n'));
+        throw new UnscopedValidationError(lit`StageNameInvalid`, stageErrors.join('\n'));
       }
     }
 
     // Validate tool filters
     if (!this.apiGatewayToolConfiguration.toolFilters || this.apiGatewayToolConfiguration.toolFilters.length === 0) {
-      throw new UnscopedValidationError('At least one tool filter is required for API Gateway target configuration');
+      throw new UnscopedValidationError(lit`ToolFiltersRequired`, 'At least one tool filter is required for API Gateway target configuration');
     }
 
     // Validate each tool filter
@@ -835,6 +838,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     // Check if array is empty
     if (array.length === 0) {
       throw new UnscopedValidationError(
+        lit`MetadataArrayEmpty`,
         `${fieldName} cannot be an empty array. It must contain at least ${minItems} item(s)`,
       );
     }
@@ -842,12 +846,14 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     // Check array size constraints
     if (array.length < minItems) {
       throw new UnscopedValidationError(
+        lit`MetadataArrayTooFew`,
         `${fieldName} must contain at least ${minItems} item(s). Found ${array.length} item(s)`,
       );
     }
 
     if (array.length > maxItems) {
       throw new UnscopedValidationError(
+        lit`MetadataArrayTooMany`,
         `${fieldName} cannot exceed ${maxItems} items. Found ${array.length} items`,
       );
     }
@@ -866,7 +872,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (errors.length > 0) {
-        throw new UnscopedValidationError(errors.join('\n'));
+        throw new UnscopedValidationError(lit`MetadataArrayItemInvalid`, errors.join('\n'));
       }
     });
   }
@@ -889,12 +895,12 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (pathErrors.length > 0) {
-      throw new UnscopedValidationError(pathErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolFilterPathInvalid`, pathErrors.join('\n'));
     }
 
     // Validate methods
     if (!filter.methods || filter.methods.length === 0) {
-      throw new UnscopedValidationError(`At least one HTTP method is required for filter path: ${filter.filterPath}`);
+      throw new UnscopedValidationError(lit`ToolFilterMethodsRequired`, `At least one HTTP method is required for filter path: ${filter.filterPath}`);
     }
   }
 
@@ -910,6 +916,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     // Validate that override path is explicit (no wildcards)
     if (override.path.includes('*')) {
       throw new UnscopedValidationError(
+        lit`ToolOverridePathWildcardNotAllowed`,
         `Tool override path cannot contain wildcards. Path: ${override.path}. ` +
         'Tool overrides must specify an explicit path that matches an existing operation in your API.',
       );
@@ -924,7 +931,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (pathErrors.length > 0) {
-      throw new UnscopedValidationError(pathErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolOverridePathInvalid`, pathErrors.join('\n'));
     }
 
     // Validate override name
@@ -940,7 +947,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     });
 
     if (nameErrors.length > 0) {
-      throw new UnscopedValidationError(nameErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolOverrideNameInvalid`, nameErrors.join('\n'));
     }
 
     // Validate override description if provided
@@ -953,7 +960,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (descErrors.length > 0) {
-        throw new UnscopedValidationError(descErrors.join('\n'));
+        throw new UnscopedValidationError(lit`ToolOverrideDescriptionInvalid`, descErrors.join('\n'));
       }
     }
   }
