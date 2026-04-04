@@ -800,8 +800,6 @@ class GitHubSource extends CommonGithubSource {
       project.addToRolePolicy(new iam.PolicyStatement({
         actions: [
           'codeconnections:UseConnection',
-          'codeconnections:GetConnectionToken',
-          'codeconnections:GetConnection',
         ],
         resources: [this.connectionArn],
       }));

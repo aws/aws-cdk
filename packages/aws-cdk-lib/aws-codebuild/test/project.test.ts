@@ -349,11 +349,7 @@ describe('GitHub source', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: [
-              'codeconnections:UseConnection',
-              'codeconnections:GetConnectionToken',
-              'codeconnections:GetConnection',
-            ],
+            Action: 'codeconnections:UseConnection',
             Effect: 'Allow',
             Resource: 'arn:aws:codeconnections:us-east-1:123456789012:connection/test-connection-id',
           }),
