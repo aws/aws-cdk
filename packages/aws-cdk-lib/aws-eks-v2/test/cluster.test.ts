@@ -5,7 +5,7 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import { testFixture, testFixtureNoVpc } from './util';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as asg from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -1348,7 +1348,7 @@ describe('cluster', () => {
       });
     });
 
-    test('throws when kubectl subnets include isolated subnets', () => {
+    test('warns when kubectl subnets include isolated subnets', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const vpc = new ec2.Vpc(stack, 'Vpc', {
@@ -1359,19 +1359,20 @@ describe('cluster', () => {
         ],
       });
 
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
+      });
+
       // THEN
-      expect(() => {
-        new eks.Cluster(stack, 'Cluster', {
-          version: CLUSTER_VERSION,
-          vpc,
-          vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
-          endpointAccess: eks.EndpointAccess.PRIVATE,
-          kubectlProviderOptions: {
-            kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
-          },
-          prune: false,
-        });
-      }).toThrow(/Isolated subnets cannot be used for kubectl private subnets/);
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', Match.stringLikeRegexp('Isolated subnets are being used for kubectl private subnets'));
     });
 
     test('does not throw when kubectl subnets are PRIVATE_WITH_EGRESS', () => {

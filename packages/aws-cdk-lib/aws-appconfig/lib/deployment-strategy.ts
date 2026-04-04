@@ -3,6 +3,7 @@ import { CfnDeploymentStrategy } from './appconfig.generated';
 import type { IResource } from '../../core';
 import { Resource, Stack, ArnFormat, Names, Duration, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IDeploymentStrategyRef, DeploymentStrategyReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
@@ -60,7 +61,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     const parsedArn = Stack.of(scope).splitArn(deploymentStrategyArn, ArnFormat.SLASH_RESOURCE_NAME);
     const deploymentStrategyId = parsedArn.resourceName;
     if (!deploymentStrategyId) {
-      throw new ValidationError('MissingDeploymentStrategyId', 'Missing required deployment strategy id from deployment strategy ARN', scope);
+      throw new ValidationError(lit`MissingDeploymentStrategyId`, 'Missing required deployment strategy id from deployment strategy ARN', scope);
     }
 
     class Import extends Resource implements IDeploymentStrategy {
