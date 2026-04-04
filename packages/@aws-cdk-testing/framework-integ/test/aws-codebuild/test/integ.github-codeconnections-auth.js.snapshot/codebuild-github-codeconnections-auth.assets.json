@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "b995985c1658db9952258b0841faec3eeaa0be91e70d925f0ba4598ac241c687": {
+      "displayName": "codebuild-github-codeconnections-auth Template",
+      "source": {
+        "path": "codebuild-github-codeconnections-auth.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c218c7ac": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b995985c1658db9952258b0841faec3eeaa0be91e70d925f0ba4598ac241c687.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
