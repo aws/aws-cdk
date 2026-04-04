@@ -1,16 +1,18 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "2b69b4bc6b7625472eab3367e63c8231391414b38c68f5e6fe105dc7009cb1d9": {
+    "b454f8d64d41636101a3ac8bacd9888451db55a1624fe0ec5e352e898ac1f0ac": {
+      "displayName": "aws-cdk-route53-dnssec Template",
       "source": {
         "path": "aws-cdk-route53-dnssec.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2b69b4bc6b7625472eab3367e63c8231391414b38c68f5e6fe105dc7009cb1d9.json",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        "current_account-us-east-1-12e47079": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "b454f8d64d41636101a3ac8bacd9888451db55a1624fe0ec5e352e898ac1f0ac.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
       }
     }

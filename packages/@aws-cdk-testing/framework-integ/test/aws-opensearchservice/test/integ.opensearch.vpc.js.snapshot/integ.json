@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "50.0.0",
   "testCases": {
     "cdk-integ-opensearch-vpc-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkintegopensearchvpctestDefaultTestDeployAssertF8864CE2"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1105.0"
 }

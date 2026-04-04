@@ -1,0 +1,14 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-auto-delete-images-mixin/DefaultTest": {
+      "stacks": [
+        "aws-ecr-auto-delete-images-mixin-stack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-integ-auto-delete-images-mixin/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegautodeleteimagesmixinDefaultTestDeployAssertEB377E94"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

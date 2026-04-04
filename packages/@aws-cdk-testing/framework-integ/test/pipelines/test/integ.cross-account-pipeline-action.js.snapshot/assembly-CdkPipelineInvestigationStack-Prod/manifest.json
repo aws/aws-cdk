@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "CdkPipelineInvestigationStackProdProdStackD4D4A90A.assets": {
       "type": "cdk:asset-manifest",
@@ -34,35 +34,7 @@
       "dependencies": [
         "CdkPipelineInvestigationStackProdProdStackD4D4A90A.assets"
       ],
-      "metadata": {
-        "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "queueName": "*",
-              "visibilityTimeout": "*"
-            }
-          }
-        ],
-        "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyQueueE6CA6235"
-          }
-        ],
-        "/CdkPipelineInvestigationStack/Prod/ProdStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/CdkPipelineInvestigationStack/Prod/ProdStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "CdkPipelineInvestigationStackProdProdStackD4D4A90A.metadata.json",
       "displayName": "CdkPipelineInvestigationStack/Prod/ProdStack"
     },
     "aws-cdk-lib/feature-flag-report": {
@@ -356,6 +328,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -551,12 +528,28 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1108.0"
 }

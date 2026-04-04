@@ -1,4 +1,4 @@
-import type { AwsIamConfig } from './data-source';
+import type { AwsIamConfig, DataSourceMetricsConfig } from './data-source';
 import {
   DynamoDbDataSource,
   HttpDataSource,
@@ -22,6 +22,7 @@ import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import type { CfnResource, IResource } from '../../core';
 import { ArnFormat, Resource, Stack, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IGraphQLApiRef, GraphQLApiReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
@@ -41,6 +42,14 @@ export interface DataSourceOptions {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * Whether to enable enhanced metrics of the data source
+   * Value will be ignored, if `enhancedMetricsConfig.dataSourceLevelMetricsBehavior` on AppSync GraphqlApi construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`
+   *
+   * @default - Enhance metrics are disabled
+   */
+  readonly metricsConfig?: DataSourceMetricsConfig;
 }
 
 /**
@@ -68,7 +77,7 @@ export class IamResource {
    */
   public static custom(...arns: string[]): IamResource {
     if (arns.length === 0) {
-      throw new UnscopedValidationError('At least 1 custom ARN must be provided.');
+      throw new UnscopedValidationError(lit`MustBeLeastCustomProvided`, 'At least 1 custom ARN must be provided.');
     }
     return new IamResource(arns);
   }
@@ -381,6 +390,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -397,6 +407,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       table,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -413,6 +424,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       endpoint,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       authorizationConfig: options?.authorizationConfig,
     });
   }
@@ -430,6 +442,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -452,6 +465,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -477,6 +491,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -496,6 +511,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       domain,
     });
   }
@@ -512,6 +528,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       eventBus,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -527,6 +544,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       domain,
     });
   }

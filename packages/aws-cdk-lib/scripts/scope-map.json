@@ -255,6 +255,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -708,6 +715,13 @@
       }
     ]
   },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
+      }
+    ]
+  },
   "aws-emr": {
     "scopes": [
       {
@@ -915,6 +929,13 @@
     "scopes": [
       {
         "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
       }
     ]
   },
@@ -1572,6 +1593,13 @@
       }
     ]
   },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
+      }
+    ]
+  },
   "aws-route53profiles": {
     "scopes": [
       {
@@ -1871,6 +1899,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },

@@ -4,9 +4,12 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-pipeline-ami-all-parameters');
+
+const inspector = enableInspector(stack, ['EC2']);
 
 const executionRole = new iam.Role(stack, 'ExecutionRole', {
   assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
@@ -46,6 +49,7 @@ const imagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipeline-AMI',
   imageTestsEnabled: true,
   imageScanningEnabled: true,
 });
+imagePipeline.node.addDependency(inspector);
 
 imagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 imagePipeline.onEvent('ImageBuildSuccessTriggerRule');

@@ -1,0 +1,48 @@
+{
+  "/integ-appregistry-all-stacks/resourcesStack": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]",
+      "trace": [
+        "Annotations.addMessage (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/annotations.js:179:29)",
+        "Annotations.addWarningV2 (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/annotations.js:69:18)",
+        "CheckedStageStackAssociator.warning (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:58:37)",
+        "CheckedStageStackAssociator.handleCrossRegionStack (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:70:18)",
+        "CheckedStageStackAssociator.visit (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:31:18)",
+        "recurse (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/private/synthesis.js:261:38)",
+        "recurse (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/private/synthesis.js:275:43)",
+        "recurse (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/private/synthesis.js:275:43)",
+        "invokeAspectsV2 (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/private/synthesis.js:233:5)",
+        "synthesize (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/private/synthesis.js:31:9)",
+        "App.synth (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/aws-cdk-lib/core/lib/stage.js:158:96)",
+        "Object.<anonymous> (/local/home/aemada/Desktop/aws-cdk-integ-2/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association.js:72:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Object..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/integ-appregistry-all-stacks/resourcesStack/AppRegistryAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRegistryAssociation"
+    }
+  ],
+  "/integ-appregistry-all-stacks/resourcesStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-appregistry-all-stacks/resourcesStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

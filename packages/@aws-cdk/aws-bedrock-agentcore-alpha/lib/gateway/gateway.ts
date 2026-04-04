@@ -5,6 +5,8 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -23,7 +25,7 @@ import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -792,7 +794,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError(lengthErrors.join('\n'));
+      throw new ValidationError(lit`GatewayNameLengthInvalid`, lengthErrors.join('\n'), this);
     }
 
     const patternErrors = validateFieldPattern(
@@ -803,7 +805,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError(lit`GatewayNamePatternInvalid`, patternErrors.join('\n'), this);
     }
   }
 
@@ -827,7 +829,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError(lit`GatewayDescriptionInvalid`, errors.join('\n'), this);
     }
   }
 
@@ -941,14 +943,18 @@ export class Gateway extends GatewayBase {
     if (interceptionPoint === InterceptionPoint.REQUEST) {
       if (this.requestInterceptorConfig) {
         throw new ValidationError(
+          lit`RequestInterceptorAlreadyExists`,
           'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+          this,
         );
       }
       this.requestInterceptorConfig = interceptor.bind(this, this);
     } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
       if (this.responseInterceptorConfig) {
         throw new ValidationError(
+          lit`ResponseInterceptorAlreadyExists`,
           'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+          this,
         );
       }
       this.responseInterceptorConfig = interceptor.bind(this, this);
@@ -965,13 +971,17 @@ export class Gateway extends GatewayBase {
 
     if (requestCount > 1) {
       throw new ValidationError(
+        lit`TooManyRequestInterceptors`,
         `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+        this,
       );
     }
 
     if (responseCount > 1) {
       throw new ValidationError(
+        lit`TooManyResponseInterceptors`,
         `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
+        this,
       );
     }
 

@@ -252,7 +252,7 @@ describe('function', () => {
 
       expect(getWarnings(app.synth())).toEqual([
         {
-          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
+          message: expect.stringMatching(/^addPermission\(\) has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=\${Token\[AWS\.Region\.\d+]}, account=\${Token\[AWS\.AccountId\.\d+]}. Suppress this warning if this is intentional, or pass sameEnvironment=true to fromFunctionAttributes\(\) if you would like to add the permissions\. \[ack: UnclearLambdaEnvironment]$/),
           path: '/Default/Imported',
         },
       ]);
@@ -2061,7 +2061,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -2086,7 +2086,7 @@ describe('function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async () => {}'),
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
@@ -4264,7 +4264,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
     });
 
@@ -4280,7 +4280,7 @@ describe('function', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       // No tenancyConfig specified
     });
 

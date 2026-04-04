@@ -44,6 +44,7 @@ import {
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
@@ -174,7 +175,7 @@ export class Cluster extends Resource implements ICluster {
     const clusterName = arn.resourceName;
 
     if (!clusterName) {
-      throw new ValidationError(`Missing required Cluster Name from Cluster ARN: ${clusterArn}`, scope);
+      throw new ValidationError(lit`MissingRequiredClusterName`, `Missing required Cluster Name from Cluster ARN: ${clusterArn}`, scope);
     }
 
     const errorSuffix = 'is not available for a Cluster imported using fromClusterArn(), please use fromClusterAttributes() instead.';
@@ -183,13 +184,13 @@ export class Cluster extends Resource implements ICluster {
       public readonly clusterArn = clusterArn;
       public readonly clusterName = clusterName!;
       get hasEc2Capacity(): boolean {
-        throw new ValidationError(`hasEc2Capacity ${errorSuffix}`, this);
+        throw new ValidationError(lit`HasEc2Capacity`, `hasEc2Capacity ${errorSuffix}`, this);
       }
       get connections(): ec2.Connections {
-        throw new ValidationError(`connections ${errorSuffix}`, this);
+        throw new ValidationError(lit`ConnectionsNotAvailable`, `connections ${errorSuffix}`, this);
       }
       get vpc(): ec2.IVpc {
-        throw new ValidationError(`vpc ${errorSuffix}`, this);
+        throw new ValidationError(lit`ValidationError`, `vpc ${errorSuffix}`, this);
       }
       public get clusterRef(): ClusterReference {
         return {
@@ -290,7 +291,7 @@ export class Cluster extends Resource implements ICluster {
     addConstructMetadata(this, props);
 
     if ((props.containerInsights !== undefined) && props.containerInsightsV2) {
-      throw new ValidationError('You cannot set both containerInsights and containerInsightsV2', this);
+      throw new ValidationError(lit`CannotSetBothContainerInsightsAndContainerInsightsV2`, 'You cannot set both containerInsights and containerInsightsV2', this);
     }
 
     /**
@@ -319,7 +320,7 @@ export class Cluster extends Resource implements ICluster {
     if (props.executeCommandConfiguration) {
       if ((props.executeCommandConfiguration.logging === ExecuteCommandLogging.OVERRIDE) !==
         (props.executeCommandConfiguration.logConfiguration !== undefined)) {
-        throw new ValidationError('Execute command log configuration must only be specified when logging is OVERRIDE.', this);
+        throw new ValidationError(lit`ExecuteCommandConfigurationOnly`, 'Execute command log configuration must only be specified when logging is OVERRIDE.', this);
       }
       this._executeCommandConfiguration = props.executeCommandConfiguration;
     }
@@ -426,22 +427,22 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addDefaultCapacityProviderStrategy(defaultCapacityProviderStrategy: CapacityProviderStrategy[]) {
     if (this._defaultCapacityProviderStrategy.length > 0) {
-      throw new ValidationError('Cluster default capacity provider strategy is already set.', this);
+      throw new ValidationError(lit`ClusterDefaultCapacityProvider`, 'Cluster default capacity provider strategy is already set.', this);
     }
 
     if (defaultCapacityProviderStrategy.some(dcp => dcp.capacityProvider.includes('FARGATE')) && defaultCapacityProviderStrategy.some(dcp => !dcp.capacityProvider.includes('FARGATE'))) {
-      throw new ValidationError('A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.', this);
+      throw new ValidationError(lit`CapacityProviderStrategyCannot`, 'A capacity provider strategy cannot contain a mix of capacity providers using Auto Scaling groups and Fargate providers. Specify one or the other and try again.', this);
     }
 
     defaultCapacityProviderStrategy.forEach(dcp => {
       if (!this._capacityProviderNames.includes(dcp.capacityProvider) && !this._clusterScopedCapacityProviderNames.includes(dcp.capacityProvider)) {
-        throw new ValidationError(`Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() or addManagedInstancesCapacityProvider() before it can be used in a default capacity provider strategy.`, this);
+        throw new ValidationError(lit`MustBeCapacityProviderAdded`, `Capacity provider ${dcp.capacityProvider} must be added to the cluster with addAsgCapacityProvider() or addManagedInstancesCapacityProvider() before it can be used in a default capacity provider strategy.`, this);
       }
     });
 
     const defaultCapacityProvidersWithBase = defaultCapacityProviderStrategy.filter(dcp => !!dcp.base);
     if (defaultCapacityProvidersWithBase.length > 1) {
-      throw new ValidationError('Only 1 capacity provider in a capacity provider strategy can have a nonzero base.', this);
+      throw new ValidationError(lit`OnlyCapacityProviderCapacity`, 'Only 1 capacity provider in a capacity provider strategy can have a nonzero base.', this);
     }
     this._defaultCapacityProviderStrategy = defaultCapacityProviderStrategy;
   }
@@ -464,10 +465,10 @@ export class Cluster extends Resource implements ICluster {
   private renderExecuteCommandLogConfiguration(): CfnCluster.ExecuteCommandLogConfigurationProperty {
     const logConfiguration = this._executeCommandConfiguration?.logConfiguration;
     if (logConfiguration?.s3EncryptionEnabled && !logConfiguration?.s3Bucket) {
-      throw new ValidationError('You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.', this);
+      throw new ValidationError(lit`SpecifyBucketNameExecute`, 'You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption.', this);
     }
     if (logConfiguration?.cloudWatchEncryptionEnabled && !logConfiguration?.cloudWatchLogGroup) {
-      throw new ValidationError('You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.', this);
+      throw new ValidationError(lit`SpecifyCloudWatchGroupExecute`, 'You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption.', this);
     }
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
@@ -486,15 +487,15 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addDefaultCloudMapNamespace(options: CloudMapNamespaceOptions): cloudmap.INamespace {
     if (this._defaultCloudMapNamespace !== undefined) {
-      throw new ValidationError('Can only add default namespace once.', this);
+      throw new ValidationError(lit`OnlyDefaultNamespaceOnce`, 'Can only add default namespace once.', this);
     }
 
     // Validate mutually exclusive options
     if (options.namespace && options.name) {
-      throw new ValidationError('Cannot specify both "namespace" and "name". Use "namespace" to use an existing namespace, or "name" to create a new one.', this);
+      throw new ValidationError(lit`CannotSpecifyBoth`, 'Cannot specify both "namespace" and "name". Use "namespace" to use an existing namespace, or "name" to create a new one.', this);
     }
     if (!options.namespace && !options.name) {
-      throw new ValidationError('Must specify either "namespace" or "name".', this);
+      throw new ValidationError(lit`MustSpecifyNamespaceOrName`, 'Must specify either "namespace" or "name".', this);
     }
 
     let sdNamespace: cloudmap.INamespace;
@@ -526,7 +527,7 @@ export class Cluster extends Resource implements ICluster {
           });
           break;
         default:
-          throw new ValidationError(`Namespace type ${namespaceType} is not supported.`, this);
+          throw new ValidationError(lit`NamespaceTypeSupported`, `Namespace type ${namespaceType} is not supported.`, this);
       }
     }
 
@@ -664,7 +665,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
-      throw new ValidationError('Cannot configure the AutoScalingGroup because it is an imported resource.', this);
+      throw new ValidationError(lit`CannotConfigureAutoScalingGroup`, 'Cannot configure the AutoScalingGroup because it is an imported resource.', this);
     }
 
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
@@ -767,7 +768,7 @@ export class Cluster extends Resource implements ICluster {
   @MethodMetadata()
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
-      throw new ValidationError('CapacityProvider not supported', this);
+      throw new ValidationError(lit`CapacityProviderSupported`, 'CapacityProvider not supported', this);
     }
 
     if (!this._capacityProviderNames.includes(provider)) {
@@ -814,7 +815,6 @@ export class Cluster extends Resource implements ICluster {
     // set the cluster name environment variable
     autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
     autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
-    // tslint:disable-next-line: max-line-length
     autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")');
 
     // enable instance draining
@@ -1696,11 +1696,11 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     addConstructMetadata(this, props);
 
     if (props.subnets.length === 0) {
-      throw new ValidationError('Subnets are required and should be non-empty.', this);
+      throw new ValidationError(lit`ShouldBeSubnetsRequiredShould`, 'Subnets are required and should be non-empty.', this);
     }
 
     if (props.securityGroups.length === 0) {
-      throw new ValidationError('Security groups cannot be an empty array. Provide at least one security group.', this);
+      throw new ValidationError(lit`SecurityGroupsCannotEmpty`, 'Security groups cannot be an empty array. Provide at least one security group.', this);
     }
 
     // Create or use provided infrastructure role
@@ -1719,7 +1719,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
     if (capacityProviderName) {
       if (!(capacityProviderNameRegex.test(capacityProviderName))) {
-        throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
+        throw new ValidationError(lit`InvalidCapacityProvider`, `Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
       }
     } else {
       if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
@@ -1819,7 +1819,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               resources: [Lazy.string({
                 produce: () => {
                   if (!this._cluster) {
-                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
+                    throw new ValidationError(lit`MustBeManagedInstancesCapacity`, 'Managed instances capacity provider must be associated with a cluster.', scope);
                   }
                   return this._cluster.clusterArn;
                 },
@@ -1852,7 +1852,7 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
               resources: [Lazy.string({
                 produce: () => {
                   if (!this._cluster) {
-                    throw new ValidationError('Managed instances capacity provider must be associated with a cluster.', scope);
+                    throw new ValidationError(lit`MustBeManagedInstancesCapacity`, 'Managed instances capacity provider must be associated with a cluster.', scope);
                   }
                   return this._cluster.clusterArn;
                 },
@@ -1880,13 +1880,13 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
     // Validate that allowedInstanceTypes and excludedInstanceTypes are not both specified
     if (instanceRequirements.allowedInstanceTypes && instanceRequirements.allowedInstanceTypes.length > 0 &&
         instanceRequirements.excludedInstanceTypes && instanceRequirements.excludedInstanceTypes.length > 0) {
-      throw new ValidationError('Cannot specify both allowedInstanceTypes and excludedInstanceTypes. Use one or the other.', this);
+      throw new ValidationError(lit`CannotSpecifyBoth`, 'Cannot specify both allowedInstanceTypes and excludedInstanceTypes. Use one or the other.', this);
     }
 
     // Validate that spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice are not both specified
     if (instanceRequirements.spotMaxPricePercentageOverLowestPrice !== undefined &&
         instanceRequirements.onDemandMaxPricePercentageOverLowestPrice !== undefined) {
-      throw new ValidationError('Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.', this);
+      throw new ValidationError(lit`CannotSpecifyBoth`, 'Cannot specify both spotMaxPricePercentageOverLowestPrice and onDemandMaxPricePercentageOverLowestPrice. Use one or the other.', this);
     }
 
     return {
@@ -2007,20 +2007,20 @@ export class AsgCapacityProvider extends Construct {
     }
 
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
-      throw new ValidationError('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.', this);
+      throw new ValidationError(lit`CannotEnableManaged`, 'Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.', this);
     }
     if (this.enableManagedTerminationProtection) {
       if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
         this.autoScalingGroup.protectNewInstancesFromScaleIn();
       } else {
-        throw new ValidationError('Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.', this);
+        throw new ValidationError(lit`CannotEnableManaged`, 'Cannot enable Managed Termination Protection on a Capacity Provider when providing an imported AutoScalingGroup.', this);
       }
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
     if (capacityProviderName) {
       if (!(capacityProviderNameRegex.test(capacityProviderName))) {
-        throw new ValidationError(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
+        throw new ValidationError(lit`InvalidCapacityProvider`, `Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`, this);
       }
     } else {
       if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
@@ -2033,7 +2033,7 @@ export class AsgCapacityProvider extends Construct {
 
     if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
       if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
-        throw new ValidationError(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`, this);
+        throw new ValidationError(lit`MustBeInstanceWarmupPeriodBetween10000`, `InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`, this);
       }
     }
 
