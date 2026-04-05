@@ -2,6 +2,7 @@ import type { FileSet, IFileSetProducer } from './file-set';
 import type { StackOutputReference } from './shell-step';
 import type { Stack } from '../../../core';
 import { Token, UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { StepOutput } from '../helpers-internal/step-output';
 
 /**
@@ -48,7 +49,7 @@ export abstract class Step implements IFileSetProducer {
     /** Identifier for this step */
     public readonly id: string) {
     if (Token.isUnresolved(id)) {
-      throw new UnscopedValidationError('StepCannotUnresolved', `Step id cannot be unresolved, got '${id}'`);
+      throw new UnscopedValidationError(lit`StepCannotUnresolved`, `Step id cannot be unresolved, got '${id}'`);
     }
   }
 

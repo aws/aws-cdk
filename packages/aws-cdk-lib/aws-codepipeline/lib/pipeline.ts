@@ -44,6 +44,7 @@ import {
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -628,7 +629,7 @@ export class Pipeline extends PipelineBase {
 
     // only one of artifactBucket and crossRegionReplicationBuckets can be supplied
     if (props.artifactBucket && props.crossRegionReplicationBuckets) {
-      throw new ValidationError('OnlyArtifactBucketOrCrossRegionReplicationBucketsSpecified', 'Only one of artifactBucket and crossRegionReplicationBuckets can be specified!', this);
+      throw new ValidationError(lit`OnlyArtifactBucketOrCrossRegionReplicationBucketsSpecified`, 'Only one of artifactBucket and crossRegionReplicationBuckets can be specified!', this);
     }
 
     // The feature flag is set to true by default for new projects, otherwise false.
@@ -638,7 +639,7 @@ export class Pipeline extends PipelineBase {
 
     // Cross account keys must be set for key rotation to be enabled
     if (this.enableKeyRotation && !this.crossAccountKeys) {
-      throw new ValidationError('CrossAccountKeysRequiredForKeyRotation', "Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled", this);
+      throw new ValidationError(lit`CrossAccountKeysRequiredForKeyRotation`, "Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled", this);
     }
 
     this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
@@ -695,7 +696,7 @@ export class Pipeline extends PipelineBase {
       && [ExecutionMode.QUEUED, ExecutionMode.PARALLEL].includes(props.executionMode)
       && this.pipelineType !== PipelineType.V2
     ) {
-      throw new ValidationError('ExecutionModeRequiresV2Pipeline', `${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``, this);
+      throw new ValidationError(lit`ExecutionModeRequiresV2Pipeline`, `${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``, this);
     }
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
@@ -748,7 +749,7 @@ export class Pipeline extends PipelineBase {
   public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this._stages.find(s => s.stageName === props.stageName)) {
-      throw new ValidationError('StageDuplicateNameAdded', `Stage with duplicate name '${props.stageName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`StageDuplicateNameAdded`, `Stage with duplicate name '${props.stageName}' added to the Pipeline`, this);
     }
 
     const stage = new Stage(props, this);
@@ -780,7 +781,7 @@ export class Pipeline extends PipelineBase {
   public addVariable(variable: Variable): Variable {
     // check for duplicate variables and names
     if (this.variables.find(v => v.variableName === variable.variableName)) {
-      throw new ValidationError('VariableDuplicateNameAdded', `Variable with duplicate name '${variable.variableName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`VariableDuplicateNameAdded`, `Variable with duplicate name '${variable.variableName}' added to the Pipeline`, this);
     }
 
     this.variables.push(variable);
@@ -800,7 +801,7 @@ export class Pipeline extends PipelineBase {
 
     // check for duplicate source actions for triggers
     if (actionName !== undefined && this.triggers.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
-      throw new ValidationError('TriggerDuplicateSourceAction', `Trigger with duplicate source action '${actionName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`TriggerDuplicateSourceAction`, `Trigger with duplicate source action '${actionName}' added to the Pipeline`, this);
     }
 
     this.triggers.push(trigger);
@@ -836,7 +837,7 @@ export class Pipeline extends PipelineBase {
         return stage;
       }
     }
-    throw new ValidationError('PipelineDoesNotContainStage', `Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`, this);
+    throw new ValidationError(lit`PipelineDoesNotContainStage`, `Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`, this);
   }
 
   /**
@@ -914,7 +915,7 @@ export class Pipeline extends PipelineBase {
 
     // source actions have to be in the same region as the pipeline
     if (action.actionProperties.category === ActionCategory.SOURCE) {
-      throw new ValidationError('SourceActionMustBeSameRegion', `Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`, this);
+      throw new ValidationError(lit`SourceActionMustBeSameRegion`, `Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`, this);
     }
 
     // check whether we already have a bucket in that region,
@@ -971,7 +972,7 @@ export class Pipeline extends PipelineBase {
     const pipelineStack = Stack.of(this);
     const pipelineAccount = pipelineStack.account;
     if (Token.isUnresolved(pipelineAccount)) {
-      throw new ValidationError('ExplicitAccountRequiredForCrossRegion', "You need to specify an explicit account when using CodePipeline's cross-region support", this);
+      throw new ValidationError(lit`ExplicitAccountRequiredForCrossRegion`, "You need to specify an explicit account when using CodePipeline's cross-region support", this);
     }
 
     const app = this.supportScope();
@@ -1071,7 +1072,7 @@ export class Pipeline extends PipelineBase {
     if (action.isCrossAccount) {
       const artifactBucket = this.ensureReplicationResourcesExistFor(action).artifactBucket;
       if (!artifactBucket.encryptionKey) {
-        throw new ValidationError('ArtifactBucketMustHaveKmsKey',
+        throw new ValidationError(lit`ArtifactBucketMustHaveKmsKey`,
           `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' ` +
           `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(action.effectiveAccount)}'). ` +
           'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
@@ -1099,7 +1100,7 @@ export class Pipeline extends PipelineBase {
       } else {
         // ...except if the Action is not owned by 'AWS',
         // as that would be rejected by CodePipeline at deploy time
-        throw new ValidationError('RoleNotSupportedForNonAwsActions',
+        throw new ValidationError(lit`RoleNotSupportedForNonAwsActions`,
           "Specifying a Role is not supported for actions with an owner different than 'AWS' - " +
           `got '${action.actionProperties.owner}' (Action: '${action.actionProperties.actionName}' in Stage: '${stage.stageName}')`,
           this,
@@ -1165,14 +1166,14 @@ export class Pipeline extends PipelineBase {
         // the pipeline is also env-agnostic, so that's fine
         return undefined;
       } else {
-        throw new ValidationError('AccountPropertyMustBeConcrete', `The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`, this);
+        throw new ValidationError(lit`AccountPropertyMustBeConcrete`, `The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`, this);
       }
     }
 
     // At this point, we know that the action's account is a static string.
     // In this case, the pipeline's account must also be a static string.
     if (Token.isUnresolved(this.env.account)) {
-      throw new ValidationError('PipelineStackMustHaveExplicitAccount', 'Pipeline stack which uses cross-environment actions must have an explicitly set account', this);
+      throw new ValidationError(lit`PipelineStackMustHaveExplicitAccount`, 'Pipeline stack which uses cross-environment actions must have an explicitly set account', this);
     }
 
     // at this point, we know that both the Pipeline's account,
@@ -1245,7 +1246,7 @@ export class Pipeline extends PipelineBase {
     const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
       .filter((prop) => (placement as any)[prop] !== undefined);
     if (providedPlacementProps.length > 1) {
-      throw new ValidationError('PlacementPropertiesConflict',
+      throw new ValidationError(lit`PlacementPropertiesConflict`,
         'Error adding Stage to the Pipeline: ' +
         'you can only provide at most one placement property, but ' +
         `'${providedPlacementProps.join(', ')}' were given`,
@@ -1256,7 +1257,7 @@ export class Pipeline extends PipelineBase {
     if (placement.rightBefore !== undefined) {
       const targetIndex = this.findStageIndex(placement.rightBefore);
       if (targetIndex === -1) {
-        throw new ValidationError('StageNotFoundForRightBefore',
+        throw new ValidationError(lit`StageNotFoundForRightBefore`,
           'Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it before, '${placement.rightBefore.stageName}', was not found`,
           this,
@@ -1268,7 +1269,7 @@ export class Pipeline extends PipelineBase {
     if (placement.justAfter !== undefined) {
       const targetIndex = this.findStageIndex(placement.justAfter);
       if (targetIndex === -1) {
-        throw new ValidationError('StageNotFoundForJustAfter',
+        throw new ValidationError(lit`StageNotFoundForJustAfter`,
           'Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`,
           this,
@@ -1451,7 +1452,7 @@ export class Pipeline extends PipelineBase {
   private requireRegion(): string {
     const region = this.env.region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('PipelineStackMustHaveExplicitRegion', 'Pipeline stack which uses cross-environment actions must have an explicitly set region', this);
+      throw new ValidationError(lit`PipelineStackMustHaveExplicitRegion`, 'Pipeline stack which uses cross-environment actions must have an explicitly set region', this);
     }
     return region;
   }
@@ -1459,7 +1460,7 @@ export class Pipeline extends PipelineBase {
   private supportScope(): CdkStage {
     const scope = CdkStage.of(this);
     if (!scope) {
-      throw new ValidationError('PipelineStackMustBePartOfCdkApp', 'Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage', this);
+      throw new ValidationError(lit`PipelineStackMustBePartOfCdkApp`, 'Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage', this);
     }
     return scope;
   }
